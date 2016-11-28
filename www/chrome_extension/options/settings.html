@@ -22,8 +22,15 @@
 
 					<div id="sync-status" class="settings-row">
 
-					  <span id="signinStatusText">Signed in as <span id="accountNameSpan">[...]</span>. <a href="https://app.quantimo.do/api/v2/account" target="_blank">Manage your account</a>  Not <span id="accountNameSpan">[...]</span>?  <a href="https://app.quantimo.do/api/v2/auth/logout" target="_blank">Sign in as another user</a>.</span>
-
+					<span id="signinStatusText">Signed in as <span id="accountNameSpan">[...]</span>.
+						<a href="https://app.quantimo.do/api/v2/account" target="_blank">Manage your account</a>
+					</span>
+					<span>
+						Not you?
+						<a href="https://app.quantimo.do/api/v2/auth/logout" target="_blank">
+							Sign in as another user
+						</a>
+					</span>
 
 					  <span id="accountNameSpanHide">
 						<a href="https://app.quantimo.do/api/v2/auth/login" ><button>Sign In</button></a>
@@ -64,7 +71,7 @@
 						<span class="controlled-setting-with-label">
 						  <input id="showNotificationCheckbox" type="checkbox">
 						  <span>
-							<label for="showNotificationCheckbox">Show a pop-up reminder notification.</label>
+							<label for="showNotificationCheckbox">Show a more subtle notification that disappears after a few seconds</label>
 						  </span>
 						</span>
 					  </div>

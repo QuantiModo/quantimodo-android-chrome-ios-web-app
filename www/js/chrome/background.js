@@ -55,13 +55,48 @@ chrome.runtime.onInstalled.addListener(function()
 chrome.alarms.onAlarm.addListener(function(alarm)
 {
 	console.debug('onAlarm Listener heard this alarm ', alarm);
-	var showNotification = (localStorage.showNotification || "true") === "true";
 
-    if(showNotification){
-		showTrackingInboxNotification(alarm);
-        //checkForNotifications();
-    }
+	showNotificationForAlarm(alarm);
+
 });
+
+function openPopup(notificationId) {
+
+	if(!notificationId){
+		notificationId = null;
+	}
+	var badgeParams = {text:""};
+	chrome.browserAction.setBadgeText(badgeParams);
+
+	var windowParams = {
+		url: "/www/index.html#/app/reminders-inbox",
+		type: 'panel',
+		top: 0.2 * screen.height,
+		left: 0.4 * screen.width,
+		width: 450,
+		height: 750
+	};
+
+	if(notificationId === "moodReportNotification")
+	{
+		windowParams = {url: "rating_popup.html",
+			type: 'panel',
+			top: 0.6 * screen.height,
+			left: screen.width - 371,
+			width: 371,
+			height: 70
+		};
+	} else if (notificationId && IsJsonString(notificationId)) {
+		windowParams.url = "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
+	} else {
+		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
+	}
+
+	chrome.windows.create(windowParams);
+	if(notificationId){
+		chrome.notifications.clear(notificationId);
+	}
+}
 
 /*
 **	Called when the "report your mood" notification is clicked
@@ -69,35 +104,7 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
     console.debug('onClicked: notificationId:', notificationId);
-	var badgeParams = {text:""};
-	chrome.browserAction.setBadgeText(badgeParams);
-
-    var windowParams = {
-        url: "/www/index.html#/app/reminders-inbox",
-        type: 'panel',
-        top: 0.2 * screen.height,
-        left: 0.4 * screen.width,
-        width: 450,
-        height: 750
-    };
-
-	if(notificationId === "moodReportNotification")
-	{
-		windowParams = {url: "rating_popup.html",
-							type: 'panel',
-							top: 0.6 * screen.height,
-							left: screen.width - 371,
-							width: 371,
-							height: 70
-						   };
-	} else if (IsJsonString(notificationId)) {
-		windowParams.url = "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
-	} else {
-        console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
-    }
-
-    chrome.windows.create(windowParams);
-	chrome.notifications.clear(notificationId);
+	openPopup(notificationId);
 
 	// chrome.notifications.getAll(function (notifications){
 	// 	console.debug('Got all notifications ', notifications);
@@ -158,7 +165,7 @@ function objectLength(obj) {
     return result;
 }
 
-function showGenericTrackingNotification(alarm)
+function showInboxNotificationIfWeHaveWaitingOnes(alarm)
 {
 
     var xhr = new XMLHttpRequest();
@@ -178,9 +185,15 @@ function showGenericTrackingNotification(alarm)
 					priority: 2
 				};
 				var notificationId = alarm.name;
-				
+
 				chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
-				chrome.notifications.create(notificationId, notificationParams, function(id){});
+
+				var showNotification = localStorage.showNotification == "true";
+				if(showNotification){
+					openPopup(notificationId);
+				} else {
+					chrome.notifications.create(notificationId, notificationParams, function(id){});
+				}
             } else {
 				chrome.browserAction.setBadgeText({text: ""});
 			}
@@ -199,9 +212,9 @@ function IsJsonString(str) {
     return true;
 }
 
-function showTrackingInboxNotification(alarm){
+function showNotificationForAlarm(alarm){
 
-	console.debug('showTrackingInboxNotification alarm: ', alarm);
+	console.debug('showNotificationForAlarm alarm: ', alarm);
 
 	var notificationParams = {
 		type: "basic",
@@ -214,7 +227,7 @@ function showTrackingInboxNotification(alarm){
     var notificationId = "trackingInboxNotification";
 
 	if(alarm.name === "genericTrackingReminderNotificationAlarm"){
-		showGenericTrackingNotification(alarm);
+		showInboxNotificationIfWeHaveWaitingOnes(alarm);
 	} else if (IsJsonString(alarm.name)) {
 		console.debug('alarm.name IsJsonString', alarm);
 		var trackingReminder = JSON.parse(alarm.name);
@@ -226,5 +239,11 @@ function showTrackingInboxNotification(alarm){
 	}
 
 	console.debug('notificationParams: ', notificationParams);
-    chrome.notifications.create(notificationId, notificationParams, function(id){});
+
+	var showNotification = localStorage.showNotification == "true";
+	if(showNotification) {
+		chrome.notifications.create(notificationId, notificationParams, function(id){});
+	} else {
+		openPopup(notificationId);
+	}
 }

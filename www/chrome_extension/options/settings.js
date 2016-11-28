@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function ()
 	
 	// Set notification enabled checkbox
 	var showNotificationCheckbox = document.getElementById('showNotificationCheckbox');
-	var showNotification = (localStorage["showNotification"] || "true") == "true" ? true : false;
+	var showNotification = localStorage["showNotification"] == "true" ? true : false;
 	showNotificationCheckbox.checked = showNotification;
 	showNotificationCheckbox.onchange=onShowNotificationChanged;
 	
