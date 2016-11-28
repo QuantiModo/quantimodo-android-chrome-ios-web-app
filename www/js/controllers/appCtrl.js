@@ -96,6 +96,10 @@ angular.module('starter')
             });
         };
 
+        $scope.openUrl = function(url){
+            window.open(url);
+        };
+
         $rootScope.setLocalStorageFlagTrue = function (flagName) {
             $rootScope[flagName] = true;
             localStorageService.setItem(flagName, true);
