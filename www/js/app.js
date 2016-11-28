@@ -731,38 +731,7 @@ angular.module('starter',
             cache: false,
             params: {
                 title: "Predictors", // Gets cut off on iPod if any longer
-                variableSearchPlaceholderText: "Search for an prediictor...",
-                helpText: "Search for a predictor like a food or treatment that you want to know the effects of...",
-                variableCategoryName: null,
-                nextState: 'app.outcomesAll',
-                doNotShowAddVariableButton: true,
-                excludeSingularBloodPressure: true,
-                noVariablesFoundCard: {
-                    body: "I don't have enough data to determine the top outcomes of __VARIABLE_NAME__, yet. " +
-                    "I generally need about a month of data to produce significant results so start tracking!"
-                },
-                variableSearchParameters: {
-                    includePublic: true,
-                    fallbackToAggregatedCorrelations: true,
-                    numberOfUserCorrelationsAsCause: '(gt)1'
-                },
-                commonVariableSearchParameters: {
-                    numberOfAggregateCorrelationsAsCause: '(gt)1'
-                }
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
-        .state('app.outcomeSearch', {
-            url: "/outcome-search",
-            cache: false,
-            params: {
-                title: "Predictors", // Gets cut off on iPod if any longer
-                variableSearchPlaceholderText: "Search for an prediictor...",
+                variableSearchPlaceholderText: "Search for an predictor...",
                 helpText: "Search for a predictor like a food or treatment that you want to know the effects of...",
                 variableCategoryName: null,
                 nextState: 'app.outcomesAll',
