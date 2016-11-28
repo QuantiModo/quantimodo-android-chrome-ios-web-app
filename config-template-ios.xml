@@ -84,7 +84,7 @@
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1"/>
   <plugin name="ionic-plugin-keyboard" version="2.2.1"/>
   <plugin name="cordova-plugin-statusbar" version="2.2.0"/>
-  <plugin name="ionic-plugin-deploy" spec="~0.6.5" />
+  <plugin name="ionic-plugin-deploy" spec="~0.6.5"/>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="2.2.1.0" id="com.quantimodo.moodimodoapp"/>
   </vs:platformSpecificValues>

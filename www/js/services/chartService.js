@@ -15,8 +15,8 @@ angular.module('starter')
 			var valueLabel;
 			for (var i = 0; i < allMeasurements.length; i++) {
 				valueLabel = String(allMeasurements[i].value);
-				if(valueLabel.length > 3) {
-					valueLabel = String(allMeasurements[i].value.toFixed(2));
+				if(valueLabel.length > 1) {
+					valueLabel = String(Number(allMeasurements[i].value.toPrecision(1)));
 				}
 				if(typeof distributionArray[valueLabel] === "undefined"){
 					distributionArray[valueLabel] = 0;
@@ -236,6 +236,21 @@ angular.module('starter')
 				variableObject.unitName = measurements[0].abbreviatedUnitName;
 			}
 			var hourlyMeasurementArray = this.generateHourlyMeasurementArray(measurements);
+			var count = 0;
+			for(var i = 0; i < hourlyMeasurementArray.length; ++i){
+				if(hourlyMeasurementArray[i]) {
+					count++;
+				}
+			}
+
+			if(variableObject.name.toLowerCase().indexOf('daily') !== -1){
+				console.debug('Not showing hourly chart because variable name contains daily');
+				return false;
+			}
+			if(count < 3){
+				console.debug('Not showing hourly chart because we have less than 3 hours with measurements');
+				return false;
+			}
 			var averageValueByHourArray = this.calculateAverageValueByHour(hourlyMeasurementArray);
 			return this.configureHourlyChart(averageValueByHourArray, variableObject);
 		};

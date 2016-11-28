@@ -192,7 +192,7 @@ angular.module('starter')
             if($rootScope.variableObject.name){
                 $rootScope.variableName = $rootScope.variableObject.name;
                 var params = {
-                    sort: "startTimeEpoch",
+                    sort: "-startTimeEpoch",
                     variableName: $rootScope.variableObject.name,
                     limit: 200,
                     offset: 0

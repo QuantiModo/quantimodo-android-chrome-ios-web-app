@@ -279,6 +279,17 @@ angular.module('starter')
                     }
                 }
 
+                if( $stateParams.excludeDuplicateBloodPressure ) {
+                    if(item.name.toLowerCase().indexOf('diastolic') !== -1 ||
+                        item.name.toLowerCase().indexOf('systolic') !== -1 ) {
+                        return false;
+                    }
+                }
+
+                if($stateParams.excludeSingularBloodPressure &&  item.name.toLowerCase() === 'blood pressure') {
+                    return false;
+                }
+
                 var variableObjectAsString = JSON.stringify(item).toLowerCase();
 
                 var lowercaseVariableSearchQuery = $scope.state.variableSearchQuery.name.toLowerCase();

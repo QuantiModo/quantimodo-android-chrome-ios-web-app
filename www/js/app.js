@@ -457,6 +457,7 @@ angular.module('starter',
                 variableObject : null,
                 nextState: 'app.measurementAdd',
                 variableCategoryName: null,
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -478,6 +479,7 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 nextState: 'app.measurementAdd',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -500,6 +502,7 @@ angular.module('starter',
                 measurement : null,
                 reminderSearch: true,
                 nextState: 'app.reminderAdd',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -522,6 +525,7 @@ angular.module('starter',
                 measurement : null,
                 reminderSearch: true,
                 nextState: 'app.reminderAdd',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -563,6 +567,7 @@ angular.module('starter',
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
                 pageTitle: 'Add a favorite',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -586,6 +591,7 @@ angular.module('starter',
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
                 pageTitle: 'Add a favorite',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -668,7 +674,7 @@ angular.module('starter',
                 measurement: null,
                 nextState: 'app.charts',
                 doNotShowAddVariableButton: true,
-
+                excludeSingularBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false
@@ -692,6 +698,7 @@ angular.module('starter',
                 measurement: null,
                 nextState: 'app.charts',
                 doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false
@@ -715,6 +722,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.predictorsAll',
                 doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
                     body: "I don't have enough data to determine the top predictors of __VARIABLE_NAME__, yet. " +
                     "I generally need about a month of data to produce significant results so start tracking!"
@@ -743,6 +751,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.predictors',
                 doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
                 variableSearchParameters: {
                     includePublic: false,
                     //manualTracking: false,  Shouldn't do this because it will only include explicitly false variables
@@ -763,6 +772,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.predictors',
                 doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
                 variableSearchParameters: {
                     includePublic: true,
                     //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
