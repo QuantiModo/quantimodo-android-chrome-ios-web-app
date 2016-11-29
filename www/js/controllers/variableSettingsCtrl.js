@@ -6,6 +6,7 @@ angular.module('starter')
                  QuantiModo, measurementService, localStorageService, variableService, $ionicLoading) {
 
         $scope.controller_name = "VariableSettingsCtrl";
+        $rootScope.showFilterBarSearchIcon = false;
 
         $scope.state = {
             unitCategories : {},

@@ -10,6 +10,7 @@ angular.module('starter')
         var variableCategoryName = $stateParams.variableCategoryName;
         var variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
         var currentTime = new Date();
+        $rootScope.showFilterBarSearchIcon = false;
 
         $scope.state = {
             measurementIsSetup : false,

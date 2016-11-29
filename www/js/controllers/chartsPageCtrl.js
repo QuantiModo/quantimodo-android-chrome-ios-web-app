@@ -19,6 +19,8 @@ angular.module('starter')
             dailyHistoryOffset: 0
         };
 
+        $rootScope.showFilterBarSearchIcon = false;
+
         $scope.addNewReminderButtonClick = function() {
             console.debug("addNewReminderButtonClick");
             $state.go('app.reminderAdd', {

@@ -5,7 +5,7 @@ angular.module('starter')
                                                     chartService, localStorageService, ratingService, $stateParams) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
-
+        $rootScope.showFilterBarSearchIcon = false;
         //$scope.showCharts = false;
         $scope.showRatingFaces = true;
         // flags

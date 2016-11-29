@@ -11,6 +11,7 @@ angular.module('starter')
         $scope.reportedVariableValue = false;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
+        $rootScope.showFilterBarSearchIcon = false;
 
 
         localStorageService.getItem('primaryOutcomeRatingFrequencyDescription',
