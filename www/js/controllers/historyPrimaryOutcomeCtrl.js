@@ -18,6 +18,8 @@ angular.module('starter')
 			});
 		};
 
+        $rootScope.showFilterBarSearchIcon = false;
+
 		$scope.init = function(){
 			console.debug($state.current.name + ' initializing...');
 			$rootScope.stateParams = $stateParams;

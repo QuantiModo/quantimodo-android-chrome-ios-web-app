@@ -10,10 +10,9 @@ angular.module('starter')
             increasingDecreasing: '',
             correlationObjects: [],
             showLoadMoreButton: false,
-
         };
 
-        $scope.data = { "airlines" : [], "search" : '' };
+        $scope.data = { "search" : '' };
 
         $scope.filterSearchQuery = '';
 
@@ -30,15 +29,27 @@ angular.module('starter')
         };
 
         $scope.filterSearch = function () {
+
             console.debug($scope.data.search);
-            if($scope.data.search.length < 4) {
+            if($scope.outcomeList) {
+                $scope.state.correlationObjects = $scope.state.correlationObjects.filter(function( obj ) {
+                    return obj.effectVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1;
+                });
+            } else {
+                $scope.state.correlationObjects = $scope.state.correlationObjects.filter(function( obj ) {
+                    return obj.causeVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1;
+                });
+            }
+            if($scope.data.search.length < 4 || $scope.state.correlationObjects.length) {
                 return;
             }
+
             if($scope.outcomeList) {
                 $scope.state.requestParams.effectVariableName = '**' + $scope.data.search + '**';
             } else {
                 $scope.state.requestParams.causeVariableName = '**' + $scope.data.search + '**';
             }
+            $scope.state.requestParams.offset = null;
             populateUserCorrelationList();
         };
         
@@ -47,6 +58,8 @@ angular.module('starter')
             if($scope.state.correlationObjects.length &&
                 $scope.state.correlationObjects.length%$scope.state.requestParams.limit === 0){
                 $scope.state.showLoadMoreButton = true;
+            } else {
+                $scope.state.showLoadMoreButton = false;
             }
         }
 
@@ -59,7 +72,11 @@ angular.module('starter')
             correlationService.getAggregatedCorrelations($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
-                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                        if($scope.state.requestParams.offset){
+                            $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                        } else {
+                            $scope.state.correlationObjects = correlationObjects;
+                        }
                         showLoadMoreButtonIfNecessary();
                         $scope.searching = false;
                         $ionicLoading.hide();
@@ -74,7 +91,11 @@ angular.module('starter')
                                     setupUserPredictors();
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
                                         " predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
-                                    $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                                    if($scope.state.requestParams.offset){
+                                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                                    } else {
+                                        $scope.state.correlationObjects = correlationObjects;
+                                    }
                                     showLoadMoreButtonIfNecessary();
                                 } else {
                                     $scope.state.noCorrelations = true;
@@ -111,31 +132,23 @@ angular.module('starter')
             correlationService.getUserCorrelations($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
-                        if(typeof correlationObjects[0].userId === "undefined") {
-                            setupAggregatedPredictors();
+                        if($scope.state.requestParams.offset){
+                            $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                        } else {
+                            $scope.state.correlationObjects = correlationObjects;
                         }
-                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                        if(!$scope.state.correlationObjects[0].userId){
+                            setupAggregatedPredictors();
+                            $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
+                                "your personal predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
+                        }
                         showLoadMoreButtonIfNecessary();
-                        $ionicLoading.hide();
-                        $scope.searching = false;
-                        $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
-                        correlationService.getAggregatedCorrelations($scope.state.requestParams)
-                            .then(function (correlationObjects) {
-                                $ionicLoading.hide();
-                                $scope.searching = false;
-                                if(correlationObjects.length) {
-                                    setupAggregatedPredictors();
-                                    $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
-                                        "your personal predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
-                                    $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
-                                    showLoadMoreButtonIfNecessary();
-                                    $scope.$broadcast('scroll.infiniteScrollComplete');
-                                } else {
-                                    $scope.state.noCorrelations = true;
-                                }
-                            });
+                        $scope.state.noCorrelations = true;
                     }
+                    $ionicLoading.hide();
+                    $scope.searching = false;
+                    $scope.$broadcast('scroll.infiniteScrollComplete');
                 }, function (error) {
                     $ionicLoading.hide();
                     $scope.searching = false;
@@ -222,13 +235,13 @@ angular.module('starter')
             if ($scope.state.requestParams.causeVariableName){
                 $rootScope.variableName = $scope.state.requestParams.causeVariableName;
                 $scope.outcomeList = true;
-                $scope.searchFilterBoxPlaceholderText = "Filter by specific outcome"
+                $scope.searchFilterBoxPlaceholderText = "Filter by specific outcome";
             }
 
             if ($scope.state.requestParams.effectVariableName) {
                 $rootScope.variableName = $scope.state.requestParams.effectVariableName;
                 $scope.predictorList = true;
-                $scope.searchFilterBoxPlaceholderText = "Filter by specific predictor"
+                $scope.searchFilterBoxPlaceholderText = "Filter by specific predictor";
             }
 
             if($scope.state.requestParams.effectVariableName){

@@ -41,6 +41,10 @@
         </div>
         <div ng-show="searching" style="text-align: center">
             <br>
+            <br>
+            <br>
+            <br>
+            <br>
             <ion-spinner icon="android"></ion-spinner>
             <br>
         </div>
@@ -64,7 +68,7 @@
                         border-radius: 4px;"
                     ></i>-->
                     <img ng-src="{{correlationObject.causeVariableImageUrl}}">
-                    <p ng-if="state.requestParams.causeVariableName" ng-click="goToStudyPage(correlationObject)"
+                    <p ng-if="outcomeList" ng-click="goToStudyPage(correlationObject)"
                        style="
                             height: 40px;
                             line-height: 40px;
@@ -73,7 +77,7 @@
                             font-size: 18px;">
                         {{correlationObject.effectVariableName}}
                     </p>
-                    <p ng-if="state.requestParams.effectVariableName" ng-click="goToStudyPage(correlationObject)"
+                    <p ng-if="predictorList" ng-click="goToStudyPage(correlationObject)"
                             style="
                             height: 40px;
                             line-height: 40px;

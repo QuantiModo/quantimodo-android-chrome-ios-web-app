@@ -4,6 +4,8 @@ angular.module('starter')
 	.controller('MapCtrl', function($scope, $cordovaGeolocation, $ionicLoading, $ionicPlatform) {
 		$ionicPlatform.ready(function() {
 
+            $rootScope.showFilterBarSearchIcon = false;
+
 			$ionicLoading.show({
 				template: '<ion-spinner icon="bubbles"></ion-spinner><br/>Acquiring location!'
 			});

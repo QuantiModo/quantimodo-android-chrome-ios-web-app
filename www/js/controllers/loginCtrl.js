@@ -9,6 +9,7 @@ angular.module('starter')
         $rootScope.hideNavigationMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
+        $rootScope.showFilterBarSearchIcon = false;
         var $cordovaFacebook = {};
         if (($rootScope.isIOS || $rootScope.isAndroid) && $injector.has('$cordovaFacebook')) {
             console.debug('Injecting $cordovaFacebook');

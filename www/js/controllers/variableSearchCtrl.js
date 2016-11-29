@@ -3,6 +3,7 @@ angular.module('starter')
                                                QuantiModo,  variableCategoryService, variableService, $timeout) {
 
         $scope.controller_name = "VariableSearchCtrl";
+        $rootScope.showFilterBarSearchIcon = false;
 
         $scope.state = {
             showAddVariableButton: false,
