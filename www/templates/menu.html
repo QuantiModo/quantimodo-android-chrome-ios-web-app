@@ -8,6 +8,7 @@
 
             <ion-nav-buttons side="right">
                 <div class="buttons">
+                    <button class="button button-icon ion-search" ng-show="showFilterBarSearchIcon" ng-click="toggleFilterBar($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText" ng-click="onGenericHelpButtonPress()"></button>
                     <button class="button button-icon ion-help-circled" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
