@@ -5,6 +5,8 @@ angular.module('starter')
 									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams, localStorageService) {
 
 		$scope.controller_name = "ImportCtrl";
+
+        $rootScope.showFilterBarSearchIcon = false;
 		
 		/*// redirect if not logged in
 	    if(!$rootScope.user){

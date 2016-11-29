@@ -502,7 +502,8 @@ angular.module('starter')
 			var index;
 			for (index = 0; index < reminders.length; ++index) {
 				if (reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0 &&
-					reminders[index].valueAndFrequencyTextDescription.indexOf(' at ') === -1) {
+					reminders[index].valueAndFrequencyTextDescription.indexOf(' at ') === -1 &&
+					reminders[index].valueAndFrequencyTextDescription.toLowerCase().indexOf('disabled') === -1) {
 					reminders[index].valueAndFrequencyTextDescription =
 						reminders[index].valueAndFrequencyTextDescription + ' at ' +
 						reminderService.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");

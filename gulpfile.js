@@ -586,6 +586,46 @@ gulp.task('getAppNameFromGitBranchName', function(){
   });
 });
 
+gulp.task('gitPull', function(){
+	var commandForGit = 'git pull';
+	execute(commandForGit, function(error, output){
+		output = output.trim();
+		if(error){
+			console.log("Failed to pull: " + output, error);
+		} else {
+			console.log("Pulled changes " + output);
+		}
+	});
+});
+
+gulp.task('gitCheckoutAppJs', function(){
+	var commandForGit = 'git checkout -- www/js/app.js';
+	execute(commandForGit, function(error, output){
+		output = output.trim();
+		if(error){
+			console.log("Failed to gitCheckoutAppJs: " + output, error);
+		} else {
+			console.log("gitCheckoutAppJs " + output);
+		}
+	});
+});
+
+gulp.task('ionicUpload', function(){
+	var commandForGit = 'git log -1 HEAD --pretty=format:%s';
+	execute(commandForGit, function(error, output){
+		var commitMessage = output.trim();
+		var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
+			' --note "' + commitMessage + '" --deploy staging';
+		console.log('\n' + uploadCommand);
+		execute(uploadCommand, function(error, uploadOutput){
+			uploadOutput = uploadOutput.trim();
+			if(error){
+				console.log("Failed to ionicUpload: " + uploadOutput + error);
+			}
+		});
+	});
+});
+
 var FACEBOOK_APP_ID = false;
 var FACEBOOK_APP_NAME = false;
 var REVERSED_CLIENT_ID = false;
@@ -1053,11 +1093,11 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 
 gulp.task('replaceVersionNumbersInFiles', function(callback){
 
-	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.1.8.0';
+	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.1.0';
 	console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
 	process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.1.9.0';
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.2.0';
 	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 
 	runSequence(
@@ -1121,6 +1161,23 @@ gulp.task('setVersionNumberInFiles', function(callback){
 		.pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_IOS_APP_VERSION_NUMBER))
 		.pipe(replace(process.env.OLD_IONIC_APP_VERSION_NUMBER, process.env.IONIC_APP_VERSION_NUMBER))
 		.pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_APP_VERSION_NUMBER))
+		.pipe(gulp.dest('./'));
+	callback();
+
+});
+
+gulp.task('setIonicAppId', function(callback){
+
+	if(!process.env.IONIC_APP_ID){
+		throw 'Please set process.env.IONIC_APP_ID';
+	}
+
+	var filesToUpdate = [
+		'www/js/app.js'
+	];
+
+	gulp.src(filesToUpdate, {base: "."}) // Every file allown.
+		.pipe(replace('__IONIC_APP_ID__', process.env.IONIC_APP_ID))
 		.pipe(gulp.dest('./'));
 	callback();
 
@@ -1260,6 +1317,7 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "moodimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodoapp";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
+	process.env.IONIC_APP_ID = "470c1f1b";
 	callback();
 });
 
@@ -1268,6 +1326,7 @@ gulp.task('setQuantiModoEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "quantimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
+	process.env.IONIC_APP_ID = "42fe48d4";
 	callback();
 });
 
@@ -1276,6 +1335,7 @@ gulp.task('setMindFirstEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "mindfirst";
 	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
 	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
+	process.env.IONIC_APP_ID = "6d8e312f";
 	callback();
 });
 
@@ -1309,6 +1369,10 @@ gulp.task('copyPrivateConfig', [], function () {
 	return gulp.src([process.env.pathToPrivateConfig + process.env.LOWERCASE_APP_NAME + '.config.js'], {
 		base: process.env.pathToPrivateConfig
 	}).pipe(gulp.dest('./www/private_configs/'));
+});
+
+gulp.task('copyIonicCloudLibrary', [], function () {
+	return gulp.src(['node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js']).pipe(gulp.dest('www/lib'));
 });
 
 gulp.task('removeTransparentPng', ['copyAppResources'], function () {
@@ -1406,11 +1470,16 @@ gulp.task('deletePlugins', [], function(){
 
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
+		'gitPull',
+		'gitCheckoutAppJs',
 		'deletePlugins',
 		'generateIosResources',
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
+		'setIonicAppId',
+		'copyIonicCloudLibrary',
+		'ionicUpload',
 		callback);
 });
 
@@ -1549,6 +1618,7 @@ gulp.task('ionicRunAndroid', [], function(callback){
 
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
+		'gitCheckoutAppJs',
 		'setVersionNumberEnvs',
 		'setAndroidEnvs',
 		'updateConfigXmlUsingEnvs',
@@ -1556,6 +1626,7 @@ gulp.task('prepareAndroidApp', function(callback){
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
 		'copyAndroidResources',
+		'setIonicAppId',
 		callback);
 });
 

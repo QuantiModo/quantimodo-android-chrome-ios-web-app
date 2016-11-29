@@ -3,7 +3,9 @@
 
 angular.module('starter',
     [
-        'ionic','ionic.service.core',
+        'ionic',
+        //'ionic.service.core',
+        'ionic.cloud',
         //'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
@@ -15,7 +17,8 @@ angular.module('starter',
         'ng-mfb',
         //'templates',
         'fabric',
-        'ngCordovaOauth'
+        'ngCordovaOauth',
+        'jtt_wikipedia'
     ]
 )
 
@@ -323,7 +326,14 @@ angular.module('starter',
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider, $ionicConfigProvider) {
+                 ionicDatePickerProvider, $ionicConfigProvider, $ionicCloudProvider) {
+
+    $ionicCloudProvider.init({
+        "core": {
+            "app_id": "__IONIC_APP_ID__"
+        }
+    });
+
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
@@ -447,6 +457,7 @@ angular.module('starter',
                 variableObject : null,
                 nextState: 'app.measurementAdd',
                 variableCategoryName: null,
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -468,6 +479,7 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 nextState: 'app.measurementAdd',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -490,6 +502,7 @@ angular.module('starter',
                 measurement : null,
                 reminderSearch: true,
                 nextState: 'app.reminderAdd',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -512,6 +525,7 @@ angular.module('starter',
                 measurement : null,
                 reminderSearch: true,
                 nextState: 'app.reminderAdd',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -535,6 +549,7 @@ angular.module('starter',
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
                 pageTitle: 'Add a favorite',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -558,6 +573,7 @@ angular.module('starter',
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
                 pageTitle: 'Add a favorite',
+                excludeDuplicateBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: true,
@@ -640,7 +656,7 @@ angular.module('starter',
                 measurement: null,
                 nextState: 'app.charts',
                 doNotShowAddVariableButton: true,
-
+                excludeSingularBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false
@@ -664,6 +680,7 @@ angular.module('starter',
                 measurement: null,
                 nextState: 'app.charts',
                 doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false
@@ -687,6 +704,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.predictorsAll',
                 doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
                     body: "I don't have enough data to determine the top predictors of __VARIABLE_NAME__, yet. " +
                     "I generally need about a month of data to produce significant results so start tracking!"
@@ -708,6 +726,37 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.outcomeSearch', {
+            url: "/outcome-search",
+            cache: false,
+            params: {
+                title: "Predictors", // Gets cut off on iPod if any longer
+                variableSearchPlaceholderText: "Search for an predictor...",
+                helpText: "Search for a predictor like a food or treatment that you want to know the effects of...",
+                variableCategoryName: null,
+                nextState: 'app.outcomesAll',
+                doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
+                noVariablesFoundCard: {
+                    body: "I don't have enough data to determine the top outcomes of __VARIABLE_NAME__, yet. " +
+                    "I generally need about a month of data to produce significant results so start tracking!"
+                },
+                variableSearchParameters: {
+                    includePublic: true,
+                    fallbackToAggregatedCorrelations: true,
+                    numberOfUserCorrelationsAsCause: '(gt)1'
+                },
+                commonVariableSearchParameters: {
+                    numberOfAggregateCorrelationsAsCause: '(gt)1'
+                }
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
         .state('app.searchVariablesWithUserPredictors', {
             url: "/search-variables-with-user-predictors",
             cache: false,
@@ -715,6 +764,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.predictors',
                 doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
                 variableSearchParameters: {
                     includePublic: false,
                     //manualTracking: false,  Shouldn't do this because it will only include explicitly false variables
@@ -735,6 +785,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.predictors',
                 doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
                 variableSearchParameters: {
                     includePublic: true,
                     //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
@@ -805,6 +856,25 @@ angular.module('starter',
         })
         .state('app.predictorsAll', {
             url: "/predictors",
+            params: {
+                aggregated: false,
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.outcomesAll', {
+            url: "/outcomes",
             params: {
                 aggregated: false,
                 variableObject : null,
@@ -1222,6 +1292,7 @@ angular.module('starter',
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
         if (typeof Bugsnag !== "undefined") {
+            Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
             Bugsnag.notifyException(exception, {diagnostics: {cause: cause}});
         }
     };

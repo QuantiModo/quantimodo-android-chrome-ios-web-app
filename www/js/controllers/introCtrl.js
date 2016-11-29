@@ -6,6 +6,8 @@ angular.module('starter')
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
     $scope.introSlides = config.appSettings.intro;
 
+    $rootScope.showFilterBarSearchIcon = false;
+
     $scope.myIntro = {
         ready : false,
         backgroundColor : 'white',

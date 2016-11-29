@@ -5,7 +5,7 @@ angular.module('starter')
                                                     chartService, localStorageService, ratingService, $stateParams) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
-
+        $rootScope.showFilterBarSearchIcon = false;
         //$scope.showCharts = false;
         $scope.showRatingFaces = true;
         // flags
@@ -14,18 +14,6 @@ angular.module('starter')
         $scope.averagePrimaryOutcomeVariableValue = false;
         $scope.showRatingFaces = true;
         $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
-
-        var windowResize = function() {
-            $(window).resize();
-
-            // Not sure what this does
-            console.debug('Setting windowResize timeout');
-            $timeout(function() {
-                $scope.$broadcast('highchartsng.reflow');
-            }, 10);
-            // Fixes chart width
-            $scope.$broadcast('highchartsng.reflow');
-        };
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -66,7 +54,7 @@ angular.module('starter')
             if($scope.averagePrimaryOutcomeVariableText){
                 $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
             }
-            windowResize();
+            $scope.highchartsReflow();
         };
 
         var updateCharts = function(){
@@ -93,7 +81,7 @@ angular.module('starter')
                     chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
             }
-            windowResize();
+            $scope.highchartsReflow();
         };
 
 

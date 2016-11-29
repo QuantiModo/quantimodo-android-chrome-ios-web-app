@@ -19,6 +19,8 @@ angular.module('starter')
             dailyHistoryOffset: 0
         };
 
+        $rootScope.showFilterBarSearchIcon = false;
+
         $scope.addNewReminderButtonClick = function() {
             console.debug("addNewReminderButtonClick");
             $state.go('app.reminderAdd', {
@@ -39,18 +41,6 @@ angular.module('starter')
                 {variableObject: $rootScope.variableObject});
         };
 
-        var windowResize = function() {
-            $(window).resize();
-
-            // Not sure what this does
-            var seconds = 0.1;
-            console.debug('Setting windowResize timeout for ' + seconds + ' seconds');
-            $timeout(function() {
-                $scope.$broadcast('highchartsng.reflow');
-            }, seconds * 1000);
-            // Fixes chart width
-            $scope.$broadcast('highchartsng.reflow');
-        };
 
         var updateDailyCharts = function(){
 
@@ -71,7 +61,7 @@ angular.module('starter')
                 $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.weekdayChartConfig =
                     chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
-                windowResize();
+                $scope.highchartsReflow();
             }
         };
 
@@ -93,7 +83,7 @@ angular.module('starter')
                 }
                 $scope.hourlyChartConfig =
                     chartService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
-                windowResize();
+                $scope.highchartsReflow();
             }
         };
 
@@ -204,7 +194,7 @@ angular.module('starter')
             if($rootScope.variableObject.name){
                 $rootScope.variableName = $rootScope.variableObject.name;
                 var params = {
-                    sort: "startTimeEpoch",
+                    sort: "-startTimeEpoch",
                     variableName: $rootScope.variableObject.name,
                     limit: 200,
                     offset: 0

@@ -7,7 +7,7 @@ angular.module('starter')
 	    $scope.controller_name = "RemindersInboxCtrl";
 
 		console.debug('Loading ' + $scope.controller_name);
-		
+        $rootScope.showFilterBarSearchIcon = false;
 	    $scope.state = {
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
@@ -74,7 +74,7 @@ angular.module('starter')
 				} else if ($stateParams.variableCategoryName) {
 					$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
 				} else {
-					$scope.state.title = 'Reminder Inbox';
+					$scope.state.title = 'Inbox';
 				}
 			}
 		};
@@ -106,11 +106,12 @@ angular.module('starter')
 			var subjectLine = "Install%20the%20" + config.appSettings.appName + "%20Chrome%20Browser%20Extension";
 			var linkToChromeExtension = config.appSettings.linkToChromeExtension;
 			var emailBody = "Did%20you%20know%20that%20you%20can%20easily%20track%20everything%20on%20your%20laptop%20and%20desktop%20with%20our%20Google%20Chrome%20browser%20extension%3F%20%20Your%20data%20is%20synced%20between%20devices%20so%20you%27ll%20never%20have%20to%20track%20twice!%0A%0ADownload%20it%20here!%0A%0A" + encodeURIComponent(linkToChromeExtension)  + "%0A%0ALove%2C%20%0AYou";
-
+			var fallbackUrl = null;
+			var emailAddress = $rootScope.user.email;
 			if($rootScope.isMobile){
-				$scope.sendWithEmailComposer(subjectLine, emailBody);
+				$scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 			} else {
-				$scope.sendWithMailTo(subjectLine, emailBody);
+				$scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
 			}
 		};
 
@@ -257,6 +258,12 @@ angular.module('starter')
 		var getFilteredTrackingReminderNotifications = function(){
 			reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
+                    trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
+                    	if(obj.variableName === 'Blood Pressure'){
+                    		console.debug('Removing Blood Pressure notification until I make the UI for it');
+						}
+                        return obj.variableName !== 'Blood Pressure';
+                    });
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications =
 						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
@@ -278,6 +285,12 @@ angular.module('starter')
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
 			var trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
 				'trackingReminderNotifications', 'variableCategoryName', $stateParams.variableCategoryName);
+            trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
+                if(obj.variableName === 'Blood Pressure'){
+                    console.debug('Removing Blood Pressure notification until I make the UI for it');
+                }
+                return obj.variableName !== 'Blood Pressure';
+            });
 			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 			$scope.filteredTrackingReminderNotifications =
 				reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);

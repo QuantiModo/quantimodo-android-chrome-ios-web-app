@@ -21,6 +21,8 @@ angular.module('starter')
 			moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
 	    };
 
+        $rootScope.showFilterBarSearchIcon = false;
+
 		$scope.favoriteAddButtonClick = function () {
 			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
 		};
