@@ -3,6 +3,8 @@ angular.module('starter')
 	// Handles all views that have an iFrame
 	.controller('ExternalCtrl', function($scope, $stateParams, $rootScope, $state) {
 		$scope.controller_name = "ExternalCtrl";
+
+        $rootScope.showFilterBarSearchIcon = false;
 	    
 	    // when page load completes
 	    window.closeLoading = function(){

@@ -7,7 +7,7 @@ angular.module('starter')
 	    $scope.controller_name = "RemindersInboxCtrl";
 
 		console.debug('Loading ' + $scope.controller_name);
-		
+        $rootScope.showFilterBarSearchIcon = false;
 	    $scope.state = {
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
