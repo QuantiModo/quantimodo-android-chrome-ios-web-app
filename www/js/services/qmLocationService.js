@@ -90,7 +90,8 @@ angular.module('starter')
                     console.error("Where's the damn location info?");
                 }
                 if (result.address) {
-                    $rootScope.lastLocationAddress = result.address;
+                    $rootScope.lastLocationAddress = result.address + ' (From ' + result.type + ' on ' +
+                        $rootScope.appName + ' for ' + $rootScope.currentPlatform + ')';
                     localStorageService.setItem('lastLocationAddress', result.address);
                     $rootScope.lastLocationResultType = result.type;
                     localStorageService.setItem('lastLocationResultType', result.type);
