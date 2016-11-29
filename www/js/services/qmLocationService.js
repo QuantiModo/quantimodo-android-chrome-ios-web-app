@@ -90,8 +90,7 @@ angular.module('starter')
                     console.error("Where's the damn location info?");
                 }
                 if (result.address) {
-                    $rootScope.lastLocationAddress = result.address + ' (From ' + result.type + ' on ' +
-                        $rootScope.appName + ' for ' + $rootScope.currentPlatform + ')';
+                    $rootScope.lastLocationAddress = result.address;
                     localStorageService.setItem('lastLocationAddress', result.address);
                     $rootScope.lastLocationResultType = result.type;
                     localStorageService.setItem('lastLocationResultType', result.type);
@@ -122,7 +121,7 @@ angular.module('starter')
                         variableName: variableName,
                         abbreviatedUnitName: 'h',
                         startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
-                        sourceName: $rootScope.lastLocationResultType,
+                        sourceName: $rootScope.lastLocationResultType + ' on ' + $rootScope.appName + ' for ' + $rootScope.currentPlatform,
                         value: hoursAtLocation,
                         variableCategoryName: 'Location',
                         note: $rootScope.lastLocationAddress,
