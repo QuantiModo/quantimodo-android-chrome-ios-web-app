@@ -306,10 +306,12 @@ angular.module('starter')
                 null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName,
                 greaterThanPropertyValue);
 
-            for(var i = 0; i < filterPropertyNames.length; i++){
-                results = results.filter(function( obj ) {
-                    return obj[filterPropertyNames[i]] === filterPropertyValues[i];
-                });
+            if(results){
+                for(var i = 0; i < filterPropertyNames.length; i++){
+                    results = results.filter(function( obj ) {
+                        return obj[filterPropertyNames[i]] === filterPropertyValues[i];
+                    });
+                }
             }
 
             return results;
