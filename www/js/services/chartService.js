@@ -508,6 +508,10 @@ angular.module('starter')
 		};
 
 		chartService.processDataAndConfigureCorrelationOverTimeChart = function(correlations) {
+			if(!correlations){
+				return false;
+			}
+
 			var forwardPearsonCorrelationSeries = {
 				name : 'Pearson Correlation Coefficient',
 				data : [],
