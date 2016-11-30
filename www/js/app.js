@@ -730,14 +730,12 @@ angular.module('starter',
             url: "/tag-search",
             cache: false,
             params: {
-                variableObject: null,
+                taggedVariableObject: null,
                 title: "Tags", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a tag...",
-                helpText: "Search for an variable like an ingredient, category, or duplicate variable that you'd like " +
-                    "to tag __VARIABLE_NAME with.  Then when your tag variable is analyzed, measurements from " +
-                    "__TAGGED_VARIABLE_NAME___ will be included.",
                 variableCategoryName: null,
                 nextState: 'app.tagAdd',
+                fromState: null,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
@@ -759,12 +757,10 @@ angular.module('starter',
             url: "/tag-add",
             cache: false,
             params: {
-                trackingReminder: null,
-                reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
-                measurement : null,
-                variableObject : null
+                tagVariableObject : null,
+                taggedVariableObject : null
             },
             views: {
                 'menuContent': {

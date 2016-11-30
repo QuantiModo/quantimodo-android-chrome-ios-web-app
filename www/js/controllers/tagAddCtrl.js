@@ -1,7 +1,7 @@
 angular.module('starter')
 
     .controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, variableService) {
+                                               $ionicActionSheet, $ionicHistory, variableService, $ionicLoading, QuantiModo) {
 
         $scope.controller_name = "TagAddCtrl";
 
@@ -14,9 +14,33 @@ angular.module('starter')
 
         // delete measurement
         $scope.deleteTag = function(){
+
         };
 
         $scope.done = function(){
+
+            if(!$scope.tagValue){
+                $scope.tagValue = 1;
+            }
+            var userTagData = {
+                tagVariableId: $rootScope.stateParams.tagVariableObject.id,
+                taggedVariableId: $rootScope.stateParams.taggedVariableObject.id,
+                conversionFactor: $scope.tagValue
+            };
+
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+
+            QuantiModo.postUserTagDeferred(userTagData).then(function () {
+                $ionicLoading.hide();
+                $state.go($stateParams.fromState, {
+                    variableObject: $stateParams.taggedVariableObject
+                });
+            }, function (error) {
+                $ionicLoading.hide();
+                console.error(error);
+            });
         };
 
         // update data when view is navigated to
@@ -30,14 +54,22 @@ angular.module('starter')
             $scope.state.title = 'Record a Tag';
             $rootScope.stateParams = $stateParams;
             if(!$rootScope.stateParams.tagVariableObject){
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
                 variableService.getVariablesByName('Anxiety').then(function (variable) {
                     $rootScope.stateParams.tagVariableObject = variable;
+                    $ionicLoading.hide();
                 });
             }
 
             if(!$rootScope.stateParams.taggedVariableObject){
-                variableService.getVariablesByName('Anxiety').then(function (variable) {
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
+                variableService.getVariablesByName('Overall Mood').then(function (variable) {
                     $rootScope.stateParams.taggedVariableObject = variable;
+                    $ionicLoading.hide();
                 });
             }
             console.debug($state.current.name + ": beforeEnter");

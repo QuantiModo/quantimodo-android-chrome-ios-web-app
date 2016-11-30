@@ -7,14 +7,20 @@
             </div>
             <div class="list">
                 <label class="item item-input">
-                    <input type="number" ng-model="stateParams.tagVariableObjectValue" id="stateParams.tagVariableObjectValue"
-                           ng-click="onTextClick($event)" placeholder={{state.defaultValuePlaceholderText}} >
-                    <span class="input-label">{{stateParams.tagVariableObject.defaultUnitAbbreivatedName}} {{stateParams.tagVariableObject.name}}</span>
+                    <input type="number"
+                           style="text-align: center; max-width: 125px; padding-right: 10px"
+                           ng-model="tagValue"
+                           id="tagValueField"
+                           ng-click="onTextClick($event)"
+                           placeholder="Enter amount" >
+                    <span style="text-align: right;"
+                            class="input-label">
+                        {{stateParams.tagVariableObject.abbreviatedUnitName}} {{stateParams.tagVariableObject.name}}
+                    </span>
                 </label>
-                <label class="item item-input item-select">
-                    <div class="input-label">
-                        per 1 {{stateParams.taggedVariableObject.defaultUnitAbbreivatedName}} {{stateParams.taggedVariableObject.name}}
-                    </div>
+                <label class="item"
+                       style="text-align: right;">
+                    per 1 {{stateParams.taggedVariableObject.abbreviatedUnitName}} {{stateParams.taggedVariableObject.name}}
                 </label>
             </div>
             <div class="row">

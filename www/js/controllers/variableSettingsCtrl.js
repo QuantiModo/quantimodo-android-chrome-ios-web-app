@@ -19,8 +19,10 @@ angular.module('starter')
         };
 
         $scope.addTag = function () {
-            $state.go('app.tagSearch',  {variableObject: $rootScope.variableObject});
-
+            $state.go('app.tagSearch',  {
+                fromState: $state.current.name,
+                taggedVariableObject: $rootScope.variableObject
+            });
         };
 
         $scope.resetToDefaultSettings = function() {
@@ -255,10 +257,9 @@ angular.module('starter')
             } else if ($stateParams.variableName) {
                 $scope.state.title = $stateParams.variableName + ' Variable Settings';
                 $rootScope.variableName = $stateParams.variableName;
-                $ionicLoading.show({
-                    template: '<ion-spinner></ion-spinner>'
-                });
-                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+                var params = {includeUserTags : true};
+                variableService.getVariablesByName($stateParams.variableName, params).then(function(variableObject){
                     $ionicLoading.hide();
                     $rootScope.variableObject = variableObject;
                     setupByVariableObject(variableObject);

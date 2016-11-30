@@ -36,7 +36,11 @@ angular.module('starter')
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
                 $state.go($stateParams.nextState, {requestParams: {causeVariableName: variableObject.name}});
             } else if ($stateParams.nextState.indexOf('tag') !== -1) {
-                $state.go($stateParams.nextState, {variableObject: $stateParams.variableObject});
+                $state.go($stateParams.nextState, {
+                    taggedVariableObject: $stateParams.taggedVariableObject,
+                    fromState: $stateParams.fromState,
+                    tagVariableObject: variableObject
+                });
             } else {
                 $rootScope.stateParams.variableObject = variableObject;
                 $state.go($stateParams.nextState, $rootScope.stateParams);
@@ -269,6 +273,13 @@ angular.module('starter')
                     $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = "Select " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1));
                 $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
+            }
+
+            if($stateParams.taggedVariableObject){
+                $scope.state.helpText = "Search for an variable like an ingredient, category, or duplicate variable " +
+                    "that you'd like to tag " + $stateParams.taggedVariableObject.name.toUpperCase() + " with.  Then " +
+                    "when your tag variable is analyzed, measurements from " +
+                    $stateParams.taggedVariableObject.name.toUpperCase() + " will be included.";
             }
         });
 

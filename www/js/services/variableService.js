@@ -33,11 +33,11 @@ angular.module('starter')
             return $rootScope.lastSearchUserVariablesPromise.promise;
         };
 
-        variableService.getVariablesByName = function(name){
+        variableService.getVariablesByName = function(name, params){
             var deferred = $q.defer();
 
             // refresh always
-            QuantiModo.getVariablesByName(name, function(variable){
+            QuantiModo.getVariablesByName(name, params, function(variable){
                 deferred.resolve(variable);
             }, function(error){
                 deferred.reject(error);
