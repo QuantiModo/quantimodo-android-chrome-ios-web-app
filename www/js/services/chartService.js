@@ -572,7 +572,8 @@ angular.module('starter')
 					//x: -20 //center
 				},
 				subtitle: {
-					text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
+					text: '',
+					//text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
 					//x: -20
 				},
 				legend : {
