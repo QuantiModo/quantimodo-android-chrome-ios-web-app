@@ -35,6 +35,8 @@ angular.module('starter')
                 $state.go($stateParams.nextState, {requestParams: {effectVariableName: variableObject.name}});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
                 $state.go($stateParams.nextState, {requestParams: {causeVariableName: variableObject.name}});
+            } else if ($stateParams.nextState.indexOf('tag') !== -1) {
+                $state.go($stateParams.nextState, {variableObject: $stateParams.variableObject});
             } else {
                 $rootScope.stateParams.variableObject = variableObject;
                 $state.go($stateParams.nextState, $rootScope.stateParams);

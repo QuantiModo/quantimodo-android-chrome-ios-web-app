@@ -18,6 +18,11 @@ angular.module('starter')
             $ionicHistory.goBack();
         };
 
+        $scope.addTag = function () {
+            $state.go('app.tagSearch',  {variableObject: $rootScope.variableObject});
+
+        };
+
         $scope.resetToDefaultSettings = function() {
             // Populate fields with original settings for variable
             $ionicLoading.show({

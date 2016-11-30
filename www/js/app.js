@@ -330,7 +330,7 @@ angular.module('starter',
 
     $ionicCloudProvider.init({
         "core": {
-            "app_id": "__IONIC_APP_ID__"
+            "app_id": "470c1f1b"
         }
     });
 
@@ -723,6 +723,53 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
                     controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.tagSearch', {
+            url: "/tag-search",
+            cache: false,
+            params: {
+                variableObject: null,
+                title: "Tags", // Gets cut off on iPod if any longer
+                variableSearchPlaceholderText: "Search for a tag...",
+                helpText: "Search for an variable like an ingredient, category, or duplicate variable that you'd like " +
+                    "to tag __VARIABLE_NAME with.  Then when your tag variable is analyzed, measurements from " +
+                    "__TAGGED_VARIABLE_NAME___ will be included.",
+                variableCategoryName: null,
+                nextState: 'app.tagAdd',
+                doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
+                noVariablesFoundCard: {
+                    body: "I can't find __VARIABLE_NAME__. Please try another"
+                },
+                variableSearchParameters: {
+                    includePublic: true
+                },
+                commonVariableSearchParameters: {}
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.tagAdd', {
+            url: "/tag-add/:variableName",
+            cache: false,
+            params: {
+                trackingReminder: null,
+                reminderNotification: null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/measurement-add.html",
+                    controller: 'MeasurementAddCtrl'
                 }
             }
         })
