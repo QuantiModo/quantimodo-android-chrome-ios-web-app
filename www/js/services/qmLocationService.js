@@ -121,7 +121,7 @@ angular.module('starter')
                         variableName: variableName,
                         abbreviatedUnitName: 'h',
                         startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
-                        sourceName: $rootScope.lastLocationResultType,
+                        sourceName: $rootScope.lastLocationResultType + ' on ' + $rootScope.appName + ' for ' + $rootScope.currentPlatform,
                         value: hoursAtLocation,
                         variableCategoryName: 'Location',
                         note: $rootScope.lastLocationAddress,

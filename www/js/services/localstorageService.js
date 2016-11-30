@@ -273,6 +273,9 @@ angular.module('starter')
             var filterPropertyValue = null;
 
             var log = [];
+            var filterPropertyValues = [];
+            var filterPropertyNames = [];
+
             angular.forEach(requestParams, function(value, key) {
                 if(typeof value === "string" && value.indexOf('(lt)') !== -1){
                     lessThanPropertyValue = value.replace('(lt)', "");
@@ -286,21 +289,32 @@ angular.module('starter')
                         greaterThanPropertyValue = Number(greaterThanPropertyValue);
                     }
                     greaterThanPropertyName = key;
-                } else if (typeof value === "string"){
-                    filterPropertyValue = value;
-                    if(!isNaN(filterPropertyValue)){
-                        filterPropertyValue = Number(filterPropertyValue);
+                } else if (typeof value === "string" && value !== "Anything"){
+                    if(!isNaN(value)){
+                        filterPropertyValues = Number(filterPropertyValue);
+                    } else {
+                        filterPropertyValues.push(value);
                     }
-                    filterPropertyName = key;
+                    filterPropertyNames.push(key);
                 } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
-                    filterPropertyValue = value;
-                    filterPropertyName = key;
+                    filterPropertyValues.push(value);
+                    filterPropertyNames.push(key);
                 }
             }, log);
 
-            return localStorageService.getElementsFromItemWithFilters(localStorageItemName, filterPropertyName,
-                filterPropertyValue, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName,
+            var results =  localStorageService.getElementsFromItemWithFilters(localStorageItemName, null,
+                null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName,
                 greaterThanPropertyValue);
+
+            if(results){
+                for(var i = 0; i < filterPropertyNames.length; i++){
+                    results = results.filter(function( obj ) {
+                        return obj[filterPropertyNames[i]] === filterPropertyValues[i];
+                    });
+                }
+            }
+
+            return results;
         };
 
         return localStorageService;

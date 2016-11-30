@@ -164,6 +164,8 @@ angular.module('starter')
 			}
 		};
 
+        $rootScope.showFilterBarSearchIcon = false;
+
 		$scope.showActionSheet = function(measurement, $index) {
 
 			$scope.state.measurement = measurement;

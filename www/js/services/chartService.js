@@ -464,14 +464,148 @@ angular.module('starter')
 			return chartService.configureLineChart(lineChartData, variableObject);
 		};
 
-		chartService.processDataAndConfigureCorrelationOverTimeChart = function(correlations) {
-			var lineChartData = [];
-			var lineChartItem;
-			for (var i = 0; i < correlations.length; i++) {
-				lineChartItem = [correlations[i].onsetDelay * 1000, correlations[i].correlationCoefficient];
-				lineChartData.push(lineChartItem);
+		var ctx = this;
+		var origMovingAverage = ctx.movingAverage;
+
+		function isNumber(obj) {
+			if (isNaN(obj)) {
+				return false;
 			}
-			return chartService.configureCorrelationOverTimeLineChart(lineChartData, correlations[0]);
+
+			return Object.prototype.toString.call(obj) === '[object Number]';
+		}
+
+		function maybeCoerce(item) {
+			if (! isNumber(item)) {
+				item = parseFloat(item) || 0;
+			}
+
+			return item;
+		}
+
+		function reducer(memo, item, index, arr) {
+			Object.defineProperty(memo, 'currentTotal', {
+				value: (memo.currentTotal || 0) + item,
+				enumerable: false,
+				writable: true
+			});
+
+			memo.push(memo.currentTotal / (index + 1));
+			return memo;
+		}
+
+		function movingAverage(items) {
+			if (! Array.isArray(items)) {
+				items = [];
+			}
+
+			return items.map(maybeCoerce).reduce(reducer, []);
+		}
+
+		movingAverage.noConflict = function () {
+			ctx.movingAverage = origMovingAverage;
+			return movingAverage;
+		};
+
+		chartService.processDataAndConfigureCorrelationOverTimeChart = function(correlations) {
+			if(!correlations){
+				return false;
+			}
+
+			var forwardPearsonCorrelationSeries = {
+				name : 'Pearson Correlation Coefficient',
+				data : [],
+				tooltip: {
+					valueDecimals: 2
+				}
+			};
+
+			var forwardSpearmanCorrelationSeries = {
+				name : 'Spearman Correlation Coefficient',
+				data : [],
+				tooltip: {
+					valueDecimals: 2
+				}
+			};
+
+			var qmScoreSeries = {
+				name : 'QM Score',
+				data : [],
+				tooltip: {
+					valueDecimals: 2
+				}
+			};
+
+			var xAxis = [];
+
+			var excludeSpearman = false;
+			var excludeQmScoreSeries = false;
+			for (var i = 0; i < correlations.length; i++) {
+				xAxis.push('Day ' + correlations[i].onsetDelay/(60 * 60 * 24));
+				forwardPearsonCorrelationSeries.data.push(correlations[i].correlationCoefficient);
+				forwardSpearmanCorrelationSeries.data.push(correlations[i].forwardSpearmanCorrelationCoefficient);
+				if(correlations[i].forwardSpearmanCorrelationCoefficient === null){
+					excludeSpearman = true;
+				}
+				qmScoreSeries.data.push(correlations[i].qmScore);
+				if(correlations[i].qmScore === null){
+					excludeQmScoreSeries = true;
+				}
+			}
+
+			var seriesToChart = [];
+			seriesToChart.push(forwardPearsonCorrelationSeries);
+			if(!excludeSpearman){
+				seriesToChart.push(forwardSpearmanCorrelationSeries);
+			}
+			if(!excludeQmScoreSeries){
+				seriesToChart.push(qmScoreSeries);
+			}
+			var minimumTimeEpochMilliseconds = correlations[0].onsetDelay * 1000;
+			var maximumTimeEpochMilliseconds = correlations[correlations.length - 1].onsetDelay * 1000;
+			var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
+
+			if(millisecondsBetweenLatestAndEarliest < 86400*1000){
+				console.warn('Need at least a day worth of data for line chart');
+				return;
+			}
+
+			var config = {
+				title: {
+					text: 'Correlations Over Onset Delays',
+					//x: -20 //center
+				},
+				subtitle: {
+					text: '',
+					//text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
+					//x: -20
+				},
+				legend : {
+					enabled : false
+				},
+				xAxis: {
+					title: {
+						text: 'Onset Delay (Time Shift in Days Relative to Stimulus Event)'
+					},
+					categories: xAxis
+				},
+				yAxis: {
+					title: {
+						text: 'Value'
+					},
+					plotLines: [{
+						value: 0,
+						width: 1,
+						color: '#808080'
+					}]
+				},
+				tooltip: {
+					valueSuffix: ''
+				},
+				series : seriesToChart
+			};
+
+			return config;
 		};
 
 		chartService.createScatterPlot = function (params, pairs) {
@@ -824,75 +958,6 @@ angular.module('starter')
 					}
 				}]
 			};
-		};
-
-		chartService.configureCorrelationOverTimeLineChart = function(data, correlationObject) {
-
-			if(data.length < 1){
-				console.error("ERROR: No data provided to configureLineChart");
-				return;
-			}
-
-			data = data.sort(function(a, b){
-				return a[0] - b[0];
-			});
-
-			var xAxis = [];
-			var yAxis = [];
-			for (var i = 0; i < data.length; i++) {
-				xAxis.push('Day ' + data[i][0]/(1000 * 60 * 60 * 24));
-				yAxis.push(data[i][1]);
-			}
-
-			var minimumTimeEpochMilliseconds = data[0][0];
-			var maximumTimeEpochMilliseconds = data[data.length-1][0];
-			var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
-
-			if(millisecondsBetweenLatestAndEarliest < 86400*1000){
-				console.warn('Need at least a day worth of data for line chart');
-				return;
-			}
-
-			return {
-				title: {
-					text: 'Correlations Over Onset Delays',
-						//x: -20 //center
-				},
-				subtitle: {
-					text: 'Effect of ' + correlationObject.causeVariableName + ' on ' + correlationObject.effectVariableName + ' Over Time',
-					//x: -20
-				},
-				legend : {
-					enabled : false
-				},
-				xAxis: {
-					title: {
-						text: 'Days After Stimulus Event'
-					},
-					categories: xAxis
-				},
-				yAxis: {
-					title: {
-						text: 'Correlation Coefficient'
-					},
-					plotLines: [{
-						value: 0,
-						width: 1,
-						color: '#808080'
-					}]
-				},
-				tooltip: {
-					valueSuffix: '°C'
-				},
-				series :[{
-					name : 'Correlation Coefficient',
-					data : yAxis,
-					tooltip: {
-						valueDecimals: 2
-					}
-				}]
-			};
-
 		};
 
 		return chartService;

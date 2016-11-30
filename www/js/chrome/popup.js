@@ -44,7 +44,7 @@ var onFaceButtonClicked = function() {
         payload: [{
             measurements: measurements,
             variableName: "Overall Mood",
-            source: "MoodiModo",
+            sourceName: "MoodiModo Chrome",
             category: "Mood",
             combinationOperation: "MEAN",
             unit: "/5"

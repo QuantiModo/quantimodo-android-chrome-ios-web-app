@@ -7,7 +7,7 @@ angular.module('starter')
 	    $scope.controller_name = "RemindersInboxCtrl";
 
 		console.debug('Loading ' + $scope.controller_name);
-		
+        $rootScope.showFilterBarSearchIcon = false;
 	    $scope.state = {
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
@@ -349,7 +349,7 @@ angular.module('starter')
 		};
 
 		var getWeekdayChartIfNecessary = function () {
-			if(!$state.numberOfDisplayedNotifications && !$scope.weekdayChartConfig){
+			if(!$scope.state.numberOfDisplayedNotifications && !$scope.weekdayChartConfig){
 				chartService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
 					config.appSettings.primaryOutcomeVariableDetails).then(function (chartConfig) {
 					$scope.weekdayChartConfig = chartConfig;

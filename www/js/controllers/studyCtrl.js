@@ -4,7 +4,8 @@ angular.module('starter')
                                       wikipediaFactory) {
 
 		$scope.controller_name = "StudyCtrl";
-        
+        $rootScope.showFilterBarSearchIcon = false;
+
         $scope.init = function(){
 
             $rootScope.getAllUrlParams();
@@ -83,7 +84,9 @@ angular.module('starter')
                 if(causeData.data.query) {
                     $scope.causeWikiEntry = causeData.data.query.pages[0].extract;
                     //$scope.correlationObject.studyBackground = $scope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
-                    $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source;
+                    if(causeData.data.query.pages[0].thumbnail){
+                        $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source;
+                    }
                     //on success
                 } else {
                     var error = 'Wiki not found for ' + causeSearchTerm;
@@ -112,7 +115,10 @@ angular.module('starter')
                 if(effectData.data.query){
                     $scope.effectWikiEntry = effectData.data.query.pages[0].extract;
                     //$scope.correlationObject.studyBackground = $scope.correlationObject.studyBackground + '<br>' + $scope.effectWikiEntry;
-                    $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source;
+                    if(effectData.data.query.pages[0].thumbnail){
+                        $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source;
+                    }
+
                 } else {
                     var error = 'Wiki not found for ' + effectSearchTerm;
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
@@ -138,6 +144,8 @@ angular.module('starter')
                     data.causeProcessedMeasurements, {variableName: params.causeVariableName});
                 $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
                     data.effectProcessedMeasurements, {variableName: params.effectVariableName});
+                $scope.correlationOverTimeChartConfig =
+                    chartService.processDataAndConfigureCorrelationOverTimeChart(data.correlationsOverTime);
                 $scope.highchartsReflow();
             });
         }

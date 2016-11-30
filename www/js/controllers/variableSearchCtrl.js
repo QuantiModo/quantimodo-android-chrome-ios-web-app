@@ -3,6 +3,7 @@ angular.module('starter')
                                                QuantiModo,  variableCategoryService, variableService, $timeout) {
 
         $scope.controller_name = "VariableSearchCtrl";
+        $rootScope.showFilterBarSearchIcon = false;
 
         $scope.state = {
             showAddVariableButton: false,
@@ -50,6 +51,9 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.showHelpInfoPopupIfNecessary();
+            if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+                $stateParams.variableSearchParameters.variableCategoryName = $stateParams.variableCategoryName;
+            }
             if($scope.state.variableSearchResults.length < 10){
                 populateUserVariables();
                 populateCommonVariables();

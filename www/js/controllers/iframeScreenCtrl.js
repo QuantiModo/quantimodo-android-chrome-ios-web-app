@@ -4,6 +4,8 @@ angular.module('starter')
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
 
+        $rootScope.showFilterBarSearchIcon = false;
+
         var embedPlugin;
         var urlParameters = '';
         var iFrameUrl;

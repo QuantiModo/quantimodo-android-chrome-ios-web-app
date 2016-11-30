@@ -1,5 +1,18 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Predictors">
     <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-header-bar ng-if="showSearchFilterBox" class="bar-subheader item-input-inset">
+        <label class="item-input-wrapper">
+            <i class="icon ion-ios7-search placeholder-icon"></i>
+            <input type="search"
+                   ng-model-options="{ debounce: 500 }"
+                   placeholder="{{searchFilterBoxPlaceholderText}}"
+                   ng-change="filterSearch()"
+                   ng-model="data.search">
+        </label>
+        <button ng-click="toggleFilterBar()" class="button button-positive ">
+            Cancel
+        </button>
+    </ion-header-bar>
     <ion-content>
         <div class="card" ng-show="state.correlationObjects.length">
             <div class="item item-avatar">
@@ -26,6 +39,15 @@
                 {{state.explanationText}}
             </div>
         </div>
+        <div ng-show="searching" style="text-align: center">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <ion-spinner icon="android"></ion-spinner>
+            <br>
+        </div>
         <ion-list>
 <!--            <div class="list card correlationResultList"
                  style="text-align: center"
@@ -46,7 +68,16 @@
                         border-radius: 4px;"
                     ></i>-->
                     <img ng-src="{{correlationObject.causeVariableImageUrl}}">
-                    <p ng-click="goToStudyPage(correlationObject)"
+                    <p ng-if="outcomeList" ng-click="goToStudyPage(correlationObject)"
+                       style="
+                            height: 40px;
+                            line-height: 40px;
+                            white-space: nowrap;
+                            color: black;
+                            font-size: 18px;">
+                        {{correlationObject.effectVariableName}}
+                    </p>
+                    <p ng-if="predictorList" ng-click="goToStudyPage(correlationObject)"
                             style="
                             height: 40px;
                             line-height: 40px;
@@ -59,8 +90,18 @@
                 <div class="item item-body">
                     <img ng-src="{{correlationObject.gaugeImage}}">
                     <p>{{correlationObject.predictorExplanation}}</p>
-                    <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
-                    <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                    <p ng-if="correlationObject.valuePredictingHighOutcomeExplanation" >
+                        {{correlationObject.valuePredictingHighOutcomeExplanation}}
+                    </p>
+                    <p ng-if="correlationObject.valuePredictingLowOutcomeExplanation" >
+                        {{correlationObject.valuePredictingLowOutcomeExplanation}}
+                    </p>
+                    <p ng-if="correlationObject.averageEffectFollowingHighCauseExplanation" >
+                        {{correlationObject.averageEffectFollowingHighCauseExplanation}}
+                    </p>
+                    <p ng-if="correlationObject.averageEffectFollowingLowCauseExplanation" >
+                        {{correlationObject.averageEffectFollowingLowCauseExplanation}}
+                    </p>
                     <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
                 </div>
 <!--                <div class="item tabs tabs-secondary tabs-icon-left">

@@ -832,7 +832,7 @@ config.appSettings  = {
             icon : 'ion-ios-pulse'
         },
         {
-            title : 'Strongest Predictors',
+            title : 'Relationships',
             click : 'togglePredictorSearchSubMenu',
             showSubMenuVariable : 'showPredictorSearchSubMenu',
             isSubMenuParent : true,
@@ -844,7 +844,14 @@ config.appSettings  = {
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/predictor-search',
-            icon : 'ion-search'
+            icon : 'ion-log-in'
+        },
+        {
+            title : 'Outcome Search',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/outcome-search',
+            icon : 'ion-log-out'
         },
         /*        {
          title : 'For Everyone',
