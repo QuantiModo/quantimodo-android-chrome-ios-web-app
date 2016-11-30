@@ -647,3 +647,15 @@ img.intro-primary-outcome-variable-rating-buttons {
 #statisticsCard label {
     padding: 6px 10px 5px 16px;
 }
+
+#skipButtonIntro:hover, #nextButtonIntro:hover
+{
+    border: none;
+    outline:none;
+}
+
+#skipButtonIntro, #nextButtonIntro
+{
+    border: none;
+    outline:none;
+}
