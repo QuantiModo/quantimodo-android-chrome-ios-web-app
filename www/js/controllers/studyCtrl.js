@@ -144,6 +144,8 @@ angular.module('starter')
                     data.causeProcessedMeasurements, {variableName: params.causeVariableName});
                 $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
                     data.effectProcessedMeasurements, {variableName: params.effectVariableName});
+                $scope.correlationOverTimeChartConfig =
+                    chartService.processDataAndConfigureCorrelationOverTimeChart(data.correlationsOverTime);
                 $scope.highchartsReflow();
             });
         }
