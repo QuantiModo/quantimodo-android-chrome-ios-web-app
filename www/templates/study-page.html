@@ -20,15 +20,23 @@
                     <br>
                     <ion-spinner icon="android"></ion-spinner>
                     <br>
+                    <br>
+                    <br>
                 </div>
                 <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig"></highchart>
                 <highchart ng-show="effectTimelineChartConfig" id="effectTimeline" config="effectTimelineChartConfig"></highchart>
                 <highchart ng-show="scatterplotChartConfig" id="scatterplot" config="scatterplotChartConfig"></highchart>
+                <highchart ng-show="correlationOverTimeChartConfig" id="chart2" config="correlationOverTimeChartConfig"></highchart>
                 <div id="studyBody" >
-                    <h3 id="studyBackground">Study Background</h3>
-                       <p ng-bind-html="correlationObject.studyBackground" style="text-align: justify"></p>
-                    <br>
-
+                    <h3 ng-if="causeWikiEntry || effectWikiEntry || correlationObject.studyBackground"
+                        id="studyBackground">
+                        Study Background
+                    </h3>
+                   <p ng-bind-html="correlationObject.studyBackground"
+                      ng-if="correlationObject.studyBackground"
+                      style="text-align: justify">
+                       <br>
+                   </p>
                     <div>
                         <div ng-if="causeWikiImage" style="width: 100%">
                             <img hspace="20" style="float:right; padding: 5px" ng-show="causeWikiImage" ng-src="{{causeWikiImage}}" >
@@ -62,7 +70,6 @@
                     <br>
                 </div>
             </div>
-            <highchart ng-show="lineChartConfig" id="chart2" config="lineChartConfig"></highchart>
             <div class="list card"  ng-if="state.studyNotFound">
                 <div class="item" style="padding-bottom:10px;">
                     <p style=" text-align: center; line-height: normal; font-size: 25px;">Study Not Found</p>

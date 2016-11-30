@@ -1,20 +1,3 @@
-/*favorite page */
-
-/* to increase the input area width */
-/*.yiInput{
- 
-  width: 500px!important;}*/
-
-.resetButton{
-  float:right;
-  margin-right:10%;
-}
-.nonBorder{
-  border:none
-}
-.inputMea{
-  border-radius:8px;
-}
 body
 {
     font-family: 'Helvetica', 'Arial', sans-serif;
@@ -665,8 +648,14 @@ img.intro-primary-outcome-variable-rating-buttons {
     padding: 6px 10px 5px 16px;
 }
 
- #skipButtonIntro:hover, #nextButtonIntro:hover
- {
-  border-color:transparent;
+#skipButtonIntro:hover, #nextButtonIntro:hover
+{
+    border: none;
+    outline:none;
 }
 
+#skipButtonIntro, #nextButtonIntro
+{
+    border: none;
+    outline:none;
+}

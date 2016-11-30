@@ -239,7 +239,7 @@ function showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm)
 
 				chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
 
-				var showNotification = localStorage.showNotification == "true";
+				var showNotification = localStorage.showNotification === "true";
 				if(showNotification){
 					chrome.notifications.create(notificationId, notificationParams, function(id){});
 				} else {

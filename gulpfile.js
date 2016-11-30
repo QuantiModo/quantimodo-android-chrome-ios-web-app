@@ -610,7 +610,7 @@ gulp.task('gitCheckoutAppJs', function(){
 	});
 });
 
-gulp.task('ionicUpload', function(){
+gulp.task('ionicUploadStaging', function(){
 	var commandForGit = 'git log -1 HEAD --pretty=format:%s';
 	execute(commandForGit, function(error, output){
 		var commitMessage = output.trim();
@@ -624,6 +624,22 @@ gulp.task('ionicUpload', function(){
 			}
 		});
 	});
+});
+
+gulp.task('ionicUploadProduction', function(){
+    var commandForGit = 'git log -1 HEAD --pretty=format:%s';
+    execute(commandForGit, function(error, output){
+        var commitMessage = output.trim();
+        var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
+            ' --note "' + commitMessage + '" --deploy production';
+        console.log('\n' + uploadCommand);
+        execute(uploadCommand, function(error, uploadOutput){
+            uploadOutput = uploadOutput.trim();
+            if(error){
+                console.log("Failed to ionicUpload: " + uploadOutput + error);
+            }
+        });
+    });
 });
 
 var FACEBOOK_APP_ID = false;
@@ -1479,7 +1495,8 @@ gulp.task('prepareIosApp', function(callback){
 		'copyPrivateConfig',
 		'setIonicAppId',
 		'copyIonicCloudLibrary',
-		'ionicUpload',
+		'ionicUploadStaging',
+        'ionicUploadProduction',
 		callback);
 });
 
