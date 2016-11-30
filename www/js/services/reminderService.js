@@ -565,11 +565,12 @@ angular.module('starter')
 			$rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
 			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
 				trackingReminderNotificationId);
+			/* We don't have separate items for categories
 			if(body.trackingReminderNotification && typeof body.trackingReminderNotification.variableCategoryName !== "undefined"){
 				localStorageService.deleteElementOfItemById('trackingReminderNotifications' +
 					body.trackingReminderNotification.variableCategoryName,
 					trackingReminderNotificationId);
-			}
+			}*/
 		};
 
 		reminderService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
