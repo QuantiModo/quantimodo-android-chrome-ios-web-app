@@ -727,6 +727,26 @@ angular.module('starter')
                 errorHandler);
         };
 
+        QuantiModo.deleteUserTagDeferred = function(tagData, successHandler, errorHandler) {
+            var deferred = $q.defer();
+            QuantiModo.deleteUserTag(tagData, function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        // delete tracking reminder
+        QuantiModo.deleteUserTag = function(userTagData, successHandler, errorHandler) {
+            QuantiModo.post('api/v1/userTags/delete',
+                [],
+                userTagData,
+                successHandler,
+                errorHandler);
+        };
+
         QuantiModo.getUserTagsDeferred = function(variableCategoryName) {
             var deferred = $q.defer();
             QuantiModo.getUserTags.then(function (userTags) {

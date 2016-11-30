@@ -14,18 +14,38 @@ angular.module('starter')
 
         // delete measurement
         $scope.deleteTag = function(){
+            var userTagData = {
+                tagVariableId: $rootScope.stateParams.tagVariableObject.id,
+                taggedVariableId: $rootScope.stateParams.taggedVariableObject.id
+            };
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
 
+            $stateParams.taggedVariableObject.userTagVariables = $stateParams.taggedVariableObject.userTagVariables.filter(function( obj ) {
+                return obj.id !== $rootScope.stateParams.tagVariableObject.id;
+            });
+
+            QuantiModo.deleteUserTagDeferred(userTagData).then(function () {
+                $ionicLoading.hide();
+                $state.go($stateParams.fromState, {
+                    variableObject: $stateParams.taggedVariableObject
+                });
+            }, function (error) {
+                $ionicLoading.hide();
+                console.error(error);
+            });
         };
 
         $scope.done = function(){
 
-            if(!$scope.tagValue){
-                $scope.tagValue = 1;
+            if(!$rootScope.stateParams.tagVariableObject.tagConversionFactor){
+                $rootScope.stateParams.tagVariableObject.tagConversionFactor = 1;
             }
             var userTagData = {
                 tagVariableId: $rootScope.stateParams.tagVariableObject.id,
                 taggedVariableId: $rootScope.stateParams.taggedVariableObject.id,
-                conversionFactor: $scope.tagValue
+                conversionFactor: $rootScope.stateParams.tagVariableObject.tagConversionFactor
             };
 
             $ionicLoading.show({
@@ -34,9 +54,14 @@ angular.module('starter')
 
             QuantiModo.postUserTagDeferred(userTagData).then(function () {
                 $ionicLoading.hide();
-                $state.go($stateParams.fromState, {
-                    variableObject: $stateParams.taggedVariableObject
-                });
+                if($stateParams.fromState){
+                    $state.go($stateParams.fromState, {
+                        variableObject: $stateParams.taggedVariableObject
+                    });
+                } else {
+                    $state.go(config.appSettings.defaultState);
+                }
+
             }, function (error) {
                 $ionicLoading.hide();
                 console.error(error);

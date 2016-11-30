@@ -3,13 +3,13 @@
     <ion-content>
         <div class="card" style="overflow: visible" id="tagAddCard">
             <div class="item item-divider">
-                Tagging {{stateParams.taggedVariableObject.name}} with {{stateParams.tagVariableObject.name}}
+                Tag {{stateParams.taggedVariableObject.name}} with {{stateParams.tagVariableObject.name}}
             </div>
             <div class="list">
                 <label class="item item-input">
                     <input type="number"
-                           style="text-align: center; max-width: 125px; padding-right: 10px"
-                           ng-model="tagValue"
+                           style="text-align: center; max-width: 95px; padding-right: 5px"
+                           ng-model="stateParams.tagVariableObject.tagConversionFactor"
                            id="tagValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter amount" >
@@ -20,7 +20,7 @@
                 </label>
                 <label class="item"
                        style="text-align: right;">
-                    per 1 {{stateParams.taggedVariableObject.abbreviatedUnitName}} {{stateParams.taggedVariableObject.name}}
+                    per 1{{stateParams.taggedVariableObject.abbreviatedUnitName}} {{stateParams.taggedVariableObject.name}}
                 </label>
             </div>
             <div class="row">

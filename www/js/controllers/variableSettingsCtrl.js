@@ -269,6 +269,14 @@ angular.module('starter')
                 $ionicHistory.goBack();
             }
         };
+
+        $scope.editTag = function(tagVariable){
+            $state.go('app.tagAdd', {
+                taggedVariableObject: $rootScope.variableObject,
+                fromState: $state.current.name,
+                tagVariableObject: tagVariable
+            });
+        };
         
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
