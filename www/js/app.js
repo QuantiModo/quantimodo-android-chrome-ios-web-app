@@ -330,7 +330,7 @@ angular.module('starter',
 
     $ionicCloudProvider.init({
         "core": {
-            "app_id": "470c1f1b"
+            "app_id": "__IONIC_APP_ID__"
         }
     });
 
