@@ -11,6 +11,8 @@ echo "IONIC_PATH is $IONIC_PATH"
 sudo bash ${IONIC_PATH}/scripts/android_sdk_install.sh
 
 sudo curl -sSL https://get.docker.com/ | sh
+sudo usermod -aG docker jenkins
+echo "You'll probably need to restart to script to run docker without sudo"
 
 sudo bash ${IONIC_PATH}/scripts/node_js_install.sh
 
