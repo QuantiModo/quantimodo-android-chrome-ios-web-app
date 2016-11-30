@@ -756,7 +756,7 @@ angular.module('starter',
             }
         })
         .state('app.tagAdd', {
-            url: "/tag-add/:variableName",
+            url: "/tag-add",
             cache: false,
             params: {
                 trackingReminder: null,
@@ -768,8 +768,8 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/measurement-add.html",
-                    controller: 'MeasurementAddCtrl'
+                    templateUrl: "templates/tag-add.html",
+                    controller: 'TagAddCtrl'
                 }
             }
         })
