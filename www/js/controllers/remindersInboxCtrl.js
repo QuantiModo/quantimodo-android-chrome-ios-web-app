@@ -36,6 +36,206 @@ angular.module('starter')
 			favoritesTitle: "Your Favorites"
 	    };
 
+	    var setupHelpCards = function () {
+			var defaultHelpCards = [
+				{
+					id: "addTreatmentRemindersCard",
+					ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
+					title: 'Treatment Tracking',
+					iconClass: "icon positive ion-ios-medkit-outline",
+					bodyText: 'Get reminded to take and record treatments to identify how they might be affecting you.',
+					buttons: [
+						{
+							id: "goToReminderSearchCategoryTreatmentsButton",
+							clickFunctionCall: "goToReminderSearchCategory('Treatments')",
+							buttonText: 'Add treatment reminder',
+							buttonIconClass: "ion-plus-round",
+							buttonClass: "button button-clear button-balanced"
+						},
+						{
+							id: "hideAddTreatmentRemindersCardButton",
+							clickFunctionCall: "hideHelpCard(card)",
+							buttonText: 'Done adding treatments',
+							buttonIconClass: "ion-close-circled",
+							buttonClass: "button button-clear button-assertive"
+						}
+					]
+				},
+				{
+					id: "addSymptomRemindersCard",
+					ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
+					title: 'Symptom Ratings',
+					iconClass: "icon positive ion-sad-outline",
+					bodyText: 'Rate symptoms regularly in order to determine which factors are influencing them.',
+					buttons: [
+						{
+							id: "goToReminderSearchCategorySymptomsButton",
+							clickFunctionCall: "goToReminderSearchCategory('Symptoms')",
+							buttonText: 'Add symptom reminder',
+							buttonIconClass: "ion-plus-round",
+							buttonClass: "button button-clear button-balanced"
+						},
+						{
+							id: "hideAddSymptomRemindersCardButton",
+							clickFunctionCall: "hideHelpCard(card)",
+							buttonText: 'Done adding symptom',
+							buttonIconClass: "ion-close-circled",
+							buttonClass: "button button-clear button-assertive"
+						}
+					]
+				},
+				{
+					id: "addEmotionRemindersCard",
+					ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
+					title: 'Varying Emotions?',
+					iconClass: "icon positive ion-happy-outline",
+					bodyText: "It's important to rate variable emotions regularly in order to determine which factors are influencing them.",
+					buttons: [
+						{
+							id: "goToReminderSearchCategoryEmotionsButton",
+							clickFunctionCall: "goToReminderSearchCategory('Emotions')",
+							buttonText: 'Add emotions reminder',
+							buttonIconClass: "ion-plus-round",
+							buttonClass: "button button-clear button-balanced"
+						},
+						{
+							id: "hideAddEmotionRemindersCardButton",
+							clickFunctionCall: "hideHelpCard(card)",
+							buttonText: 'Done adding emotions',
+							buttonIconClass: "ion-close-circled",
+							buttonClass: "button button-clear button-assertive"
+						}
+					]
+				},
+				{
+					id: "addFoodRemindersCard",
+					ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
+					title: 'Track Diet',
+					iconClass: "icon positive ion-ios-nutrition-outline",
+					bodyText: "Diet can have a significant impact on your health. It's important to enter any foods that " +
+					"you regularly eat to see how they might be affecting you.",
+					buttons: [
+						{
+							id: "goToReminderSearchCategoryFoodsButton",
+							clickFunctionCall: "goToReminderSearchCategory('Foods')",
+							buttonText: 'Add a food reminder ',
+							buttonIconClass: "ion-plus-round",
+							buttonClass: "button button-clear button-balanced"
+						},
+						{
+							id: "hideAddFoodRemindersCardButton",
+							clickFunctionCall: "hideHelpCard(card)",
+							buttonText: 'Done adding common foods',
+							buttonIconClass: "ion-close-circled",
+							buttonClass: "button button-clear button-assertive"
+						}
+					]
+				},
+				{
+					id: "recordMeasurementInfoCard",
+					ngIfLogic: "stateParams.showHelpCards === true && !hideRecordMeasurementInfoCard",
+					title: 'Record Measurements',
+					iconClass: "icon positive ion-edit",
+					bodyText: "Want to just record a medication, food or symptom immediately instead of creating a reminder? " +
+					"Just go to the Record Measurement menu item and select the appropriate variable category. " +
+					"Alternatively, you can just press the little red button at the bottom of the screen.",
+					buttons: [
+						{
+							id: "hideRecordMeasurementInfoCardButton",
+							clickFunctionCall: "hideHelpCard(card)",
+							buttonText: 'Got it!',
+							buttonIconClass: "ion-checkmark",
+							buttonClass: "button button-clear button-balanced"
+						}
+					]
+				},
+				{
+					id: "locationTrackingInfoCard",
+					ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
+					title: 'Location Tracking',
+					iconClass: "icon positive ion-ios-location",
+					bodyText: "To determine how the amount of time spent at work, restaurants, the gym, or doctor's offices " +
+					"might be influencing you, you can enable automatic location tracking in the Settings page.",
+					buttons: [
+						{
+							id: "goToStateAppSettingsButton",
+							clickFunctionCall: "goToState('app.settings')",
+							buttonText: 'Go to settings',
+							buttonIconClass: "ion-gear-a",
+							buttonClass: "button button-clear button-balanced"
+						},
+						{
+							id: "hideLocationTrackingInfoCardButton",
+							clickFunctionCall: "hideHelpCard(card)",
+							buttonText: 'Dismiss',
+							buttonIconClass: "ion-close-circled",
+							buttonClass: "button button-clear button-assertive"
+						}
+					]
+				},
+				{
+					id: "chromeExtensionInfoCard",
+					ngIfLogic: "stateParams.showHelpCards === true && isMobile && !hideChromeExtensionInfoCard",
+					title: 'Track on the Computer',
+					iconClass: "icon positive ion-social-chrome",
+					bodyText: "Did you know that you can easily track everything on your laptop and desktop with our " +
+					"Google Chrome browser extension?  Your data is synced between devices so you'll never have to " +
+					"track twice!",
+					buttons: [
+						{
+							id: "sendChromeEmailLinkButton",
+							clickFunctionCall: "sendChromeEmailLink()",
+							buttonText: 'Send Yourself a Link',
+							buttonIconClass: "ion-email",
+							buttonClass: "button button-clear button-balanced"
+						},
+						{
+							id: "hideChromeExtensionInfoCardButton",
+							clickFunctionCall: "hideHelpCard(card)",
+							buttonText: 'Dismiss',
+							buttonIconClass: "ion-close-circled",
+							buttonClass: "button button-clear button-assertive"
+						}
+					]
+				},
+				{
+					id: "importDataCard",
+					ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
+					title: 'Import Your Data',
+					iconClass: "icon positive ion-ios-cloud-download-outline",
+					bodyText: "Start by scrolling down to the Weather connector and enter your zip code so we can see how " +
+					"the weather might be affecting you.",
+					buttons: [
+						{
+							id: "goToStateAppImportButton",
+							clickFunctionCall: "goToState('app.import')",
+							buttonText: ' Connect an app or device',
+							buttonIconClass: "ion-plus-round",
+							buttonClass: "button button-clear button-balanced"
+						},
+						{
+							id: "hideImportDataCardButton",
+							clickFunctionCall: "hideHelpCard(card)",
+							buttonText: 'Done connecting data sources',
+							buttonIconClass: "ion-close-circled",
+							buttonClass: "button button-clear button-assertive"
+						}
+					]
+				}
+			];
+
+			if(typeof $rootScope.defaultHelpCards === "undefined"){
+				localStorageService.getItem('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
+					if(defaultHelpCardsFromLocalStorage === null){
+						$rootScope.defaultHelpCards = defaultHelpCards;
+						localStorageService.setItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
+					} else {
+						$rootScope.defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
+					}
+				});
+			}
+		};
+
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
 			$scope.state.showAddHowIFeelResponseButton = config.appSettings.remindersInbox.showAddHowIFeelResponseButton;
 		}
@@ -499,16 +699,7 @@ angular.module('starter')
 
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			setPageTitle();
-			$rootScope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
-			$rootScope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
-			$rootScope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
-			$rootScope.hideAddEmotionRemindersCard = localStorageService.getItemSync('hideAddEmotionRemindersCard');
-			$rootScope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
-			$rootScope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
-			$rootScope.hideRecordMeasurementInfoCard = localStorageService.getItemSync('hideRecordMeasurementInfoCard');
-			$rootScope.hideNotificationSettingsInfoCard = localStorageService.getItemSync('hideNotificationSettingsInfoCard');
-			$rootScope.hideLocationTrackingInfoCard = localStorageService.getItemSync('hideLocationTrackingInfoCard');
-			$rootScope.hideChromeExtensionInfoCard = localStorageService.getItemSync('hideChromeExtensionInfoCard');
+			setupHelpCards();
 			getTrackingReminderNotifications();
 		});
 
