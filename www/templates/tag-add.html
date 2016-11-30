@@ -1,0 +1,41 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Add Tag">
+    <ion-nav-title>Add Tag</ion-nav-title>
+    <ion-content>
+        <div class="card" style="overflow: visible" id="tagAddCard">
+            <div class="item item-divider">
+                Tag {{stateParams.taggedVariableObject.name}} with {{stateParams.tagVariableObject.name}}
+            </div>
+            <div class="list">
+                <label class="item item-input">
+                    <input type="number"
+                           style="text-align: center; max-width: 95px; padding-right: 5px"
+                           ng-model="stateParams.tagVariableObject.tagConversionFactor"
+                           id="tagValueField"
+                           ng-click="onTextClick($event)"
+                           placeholder="Enter amount" >
+                    <span style="text-align: right;"
+                            class="input-label">
+                        {{stateParams.tagVariableObject.abbreviatedUnitName}} {{stateParams.tagVariableObject.name}}
+                    </span>
+                </label>
+                <label class="item"
+                       style="text-align: right;">
+                    per 1{{stateParams.taggedVariableObject.abbreviatedUnitName}} {{stateParams.taggedVariableObject.name}}
+                </label>
+            </div>
+            <div class="row">
+                <div class="col col-50">
+                    <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                </div>
+                <div class="col col-50">
+                    <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="done()">Save</button>
+                </div>
+            </div>
+            <div class="row">
+                <button id="deleteButton" ng-click="deleteTag()" class="button icon-left ion-trash-a button-assertive button-block">
+                    Delete Tag
+                </button>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

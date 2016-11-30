@@ -1,5 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Settings">
-    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-nav-title>Variable Settings</ion-nav-title>
     <ion-content>
         <div ng-show="variableObject" class="card variable-settings" >
             <div class="list">
@@ -28,50 +28,69 @@
                     <span class="input-label right-text ">{{variableObject.combinationOperation}}</span>
                 </label>
                 <div class="item item-divider ng-binding">Data Optimization</div>
-                    <!--
-                    <label class="item item-input item-select">
-                        <div class="input-label" style="white-space:normal; width: 60%">Combination method:</div>
-                        <select ng-model="state.sumAvg">
-                            <option value="sum" name="group">Sum</option>
-                            <option value="avg" name="group">Avg</option>
-                        </select>
-                    </label>
-                    -->
-                    <div ng-hide="state.hideMinMax" class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">Minimum Value &nbsp; <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span"><input class="right-input" ng-model="state.minimumAllowedValue" type="number" placeholder="-Infinity"></span>
+                <!--
+                <label class="item item-input item-select">
+                    <div class="input-label" style="white-space:normal; width: 60%">Combination method:</div>
+                    <select ng-model="state.sumAvg">
+                        <option value="sum" name="group">Sum</option>
+                        <option value="avg" name="group">Avg</option>
+                    </select>
+                </label>
+                -->
+                <div ng-hide="state.hideMinMax" class="item item-input">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">Minimum Value &nbsp; <i class="icon ion-help-circled"></i></span>
+                    <span class="right-span"><input class="right-input" ng-model="state.minimumAllowedValue" type="number" placeholder="-Infinity"></span>
+                </div>
+                <div ng-hide="state.hideMinMax" class="item item-input">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">Maximum Value &nbsp; <i class="icon ion-help-circled"></i></span>
+                    <span class="right-span"><input class="right-input" ng-model="state.maximumAllowedValue" type="number" placeholder="Infinity"></span>
+                </div>
+                <div class="item item-input">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('Onset delay')">Onset Delay (hours) &nbsp; <i class="icon ion-help-circled"></i></span>
+                    <span class="right-span" style="width:45%"><input class="right-input" ng-model="state.onsetDelay" type="number"></span>
+                </div>
+                <div class="item item-input">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('Duration of action')">Duration of Action (hours) &nbsp; <i class="icon ion-help-circled"></i></span>
+                    <span class="right-span" style="width: 34%"><input class="right-input" ng-model="state.durationOfAction" type="number"></span>
+                </div>
+                <div class="item item-input">
+                    <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling Value &nbsp; <i class="icon ion-help-circled"></i></span>
+                    <span class="right-span"><input class="right-input" ng-model="state.fillingValue" type="number" placeholder="None"></span>
+                </div>
+                <div class="item item-divider ng-binding">Your Tags</div>
+                <ion-list ng-show="variableObject.userTagVariables">
+                    <ion-item ng-click="editTag(item)"
+                              class="item item-text-wrap"
+                              ng-repeat="item in variableObject.userTagVariables">
+                        <p>{{item.tagDisplayText}}</p>
+                    </ion-item>
+                    <div class="row">
+                        <div class="col">
+                            <button class="button button-block icon-left ion-pricetag button-positive" ng-click="addTag()">Add a Tag</button>
+                        </div>
                     </div>
-                    <div ng-hide="state.hideMinMax" class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">Maximum Value &nbsp; <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span"><input class="right-input" ng-model="state.maximumAllowedValue" type="number" placeholder="Infinity"></span>
-                    </div>
-                    <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Onset delay')">Onset Delay (hours) &nbsp; <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span" style="width:45%"><input class="right-input" ng-model="state.onsetDelay" type="number"></span>
-                    </div>
-                    <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Duration of action')">Duration of Action (hours) &nbsp; <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span" style="width: 34%"><input class="right-input" ng-model="state.durationOfAction" type="number"></span>
-                    </div>
-                    <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling Value &nbsp; <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span"><input class="right-input" ng-model="state.fillingValue" type="number" placeholder="None"></span>
-                    </div>
+                </ion-list>
+                <div ng-show="variableObject.commonTagVariables" class="item item-divider ng-binding">Common Tags</div>
+                <ion-list ng-show="variableObject.commonTagVariables">
+                    <ion-item ng-click="editTag(item)"
+                              class="item item-text-wrap"
+                              ng-repeat="item in variableObject.commonTagVariables">
+                        <p >{{item.tagDisplayText}}</p>
+                    </ion-item>
+                </ion-list>
             </div>
 
-            <div class="card" >
-                <div class="row">
-                    <div class="col col-50">
-                        <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
-                    </div>
-                    <div class="col col-50">
-                        <button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
-                    </div>
+            <div class="row">
+                <div class="col col-50">
+                    <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <button class="button button-block icon-left ion-android-cancel button-positive" ng-click="resetToDefaultSettings()">Reset to Default Settings</button>
-                    </div>
+                <div class="col col-50">
+                    <button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="button button-block icon-left ion-android-cancel button-positive" ng-click="resetToDefaultSettings()">Reset to Default Settings</button>
                 </div>
             </div>
         </div>

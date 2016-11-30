@@ -18,6 +18,13 @@ angular.module('starter')
             $ionicHistory.goBack();
         };
 
+        $scope.addTag = function () {
+            $state.go('app.tagSearch',  {
+                fromState: $state.current.name,
+                taggedVariableObject: $rootScope.variableObject
+            });
+        };
+
         $scope.resetToDefaultSettings = function() {
             // Populate fields with original settings for variable
             $ionicLoading.show({
@@ -250,10 +257,9 @@ angular.module('starter')
             } else if ($stateParams.variableName) {
                 $scope.state.title = $stateParams.variableName + ' Variable Settings';
                 $rootScope.variableName = $stateParams.variableName;
-                $ionicLoading.show({
-                    template: '<ion-spinner></ion-spinner>'
-                });
-                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+                var params = {includeUserTags : true};
+                variableService.getVariablesByName($stateParams.variableName, params).then(function(variableObject){
                     $ionicLoading.hide();
                     $rootScope.variableObject = variableObject;
                     setupByVariableObject(variableObject);
@@ -262,6 +268,14 @@ angular.module('starter')
                 console.error("Variable name not provided to variable settings controller!");
                 $ionicHistory.goBack();
             }
+        };
+
+        $scope.editTag = function(tagVariable){
+            $state.go('app.tagAdd', {
+                taggedVariableObject: $rootScope.variableObject,
+                fromState: $state.current.name,
+                tagVariableObject: tagVariable
+            });
         };
         
         // update data when view is navigated to

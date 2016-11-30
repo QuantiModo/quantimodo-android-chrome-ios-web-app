@@ -726,6 +726,54 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.tagSearch', {
+            url: "/tag-search",
+            cache: false,
+            params: {
+                taggedVariableObject: null,
+                title: "Tags", // Gets cut off on iPod if any longer
+                variableSearchPlaceholderText: "Search for a tag...",
+                variableCategoryName: null,
+                nextState: 'app.tagAdd',
+                fromState: null,
+                doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
+                noVariablesFoundCard: {
+                    body: "I can't find __VARIABLE_NAME__. Please try another"
+                },
+                variableSearchParameters: {
+                    includePublic: true
+                },
+                commonVariableSearchParameters: {}
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.tagAdd', {
+            url: "/tag-add",
+            cache: false,
+            params: {
+                fromState : null,
+                fromUrl : null,
+                tagVariableObject : null,
+                taggedVariableObject : null,
+                helpText: "Say I want to track how much sugar I consume and see how that affects me.  I don't need to " +
+                    "check the label every time.  I can just tag Candy Bar and Lollypop with the amount sugar. Then during " +
+                    "analysis the sugar from those items will be included.  Additionally if I have multiple variables that " +
+                    "are basically the same thing like maybe a drug and it's generic name, I can tag those and then the " +
+                    "measurements from both variables will be included in the analysis."
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/tag-add.html",
+                    controller: 'TagAddCtrl'
+                }
+            }
+        })
         .state('app.outcomeSearch', {
             url: "/outcome-search",
             cache: false,

@@ -1,6 +1,6 @@
 angular.module('starter')
     .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
-                                               QuantiModo,  variableCategoryService, variableService, $timeout) {
+                                               QuantiModo,  variableCategoryService, variableService, $timeout, $ionicLoading) {
 
         $scope.controller_name = "VariableSearchCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -35,6 +35,36 @@ angular.module('starter')
                 $state.go($stateParams.nextState, {requestParams: {effectVariableName: variableObject.name}});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
                 $state.go($stateParams.nextState, {requestParams: {causeVariableName: variableObject.name}});
+            } else if ($stateParams.nextState.indexOf('tag') !== -1) {
+                if($stateParams.taggedVariableObject.abbreviatedUnitName !== '/5'){
+                    $state.go($stateParams.nextState, {
+                        taggedVariableObject: $stateParams.taggedVariableObject,
+                        fromState: $stateParams.fromState,
+                        tagVariableObject: variableObject
+                    });
+                } else {
+                    var userTagData = {
+                        tagVariableId: variableObject.id,
+                        taggedVariableId: $stateParams.taggedVariableObject.id,
+                        conversionFactor: 1
+                    };
+
+                    $ionicLoading.show({
+                        template: '<ion-spinner></ion-spinner>'
+                    });
+
+                    QuantiModo.postUserTagDeferred(userTagData).then(function () {
+                        $ionicLoading.hide();
+                        if ($stateParams.fromState) {
+                            $state.go($stateParams.fromState, {
+                                variableName: $stateParams.taggedVariableObject.name
+                            });
+                        } else {
+                            $state.go(config.appSettings.defaultState);
+                        }
+                    });
+                }
+
             } else {
                 $rootScope.stateParams.variableObject = variableObject;
                 $state.go($stateParams.nextState, $rootScope.stateParams);
@@ -267,6 +297,13 @@ angular.module('starter')
                     $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = "Select " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1));
                 $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
+            }
+
+            if($stateParams.taggedVariableObject){
+                $scope.state.helpText = "Search for an variable like an ingredient, category, or duplicate variable " +
+                    "that you'd like to tag " + $stateParams.taggedVariableObject.name.toUpperCase() + " with.  Then " +
+                    "when your tag variable is analyzed, measurements from " +
+                    $stateParams.taggedVariableObject.name.toUpperCase() + " will be included.";
             }
         });
 
