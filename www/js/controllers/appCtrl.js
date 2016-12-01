@@ -908,9 +908,7 @@ angular.module('starter')
         $scope.favoriteValidationFailure = function (message) {
             utilsService.showAlert(message);
             console.error(message);
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.notify(message, message, {}, "error");
-            }
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
         };
 
         $scope.trackFavoriteByValueField = function(trackingReminder, $index){
