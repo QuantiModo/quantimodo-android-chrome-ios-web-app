@@ -148,7 +148,7 @@ angular.module('starter')
 							buttonClass: "button button-clear button-balanced"
 						}
 					]
-				},
+				},/*
 				{
 					id: "locationTrackingInfoCard",
 					ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
@@ -172,7 +172,7 @@ angular.module('starter')
 							buttonClass: "button button-clear button-assertive"
 						}
 					]
-				},
+				},*/
 				{
 					id: "chromeExtensionInfoCard",
 					ngIfLogic: "stateParams.showHelpCards === true && isMobile && !hideChromeExtensionInfoCard",
