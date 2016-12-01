@@ -78,7 +78,7 @@ angular.module('starter')
 						{
 							id: "hideAddSymptomRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding symptom',
+							buttonText: 'Done adding symptoms',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
