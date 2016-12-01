@@ -2,13 +2,13 @@
     <ion-nav-title>Add Tag</ion-nav-title>
     <ion-content>
         <div class="card">
-            <div class="item item-body">
+            <div class="item item-body" style="text-align: center">
                 If you tag {{stateParams.taggedVariableObject.name}} with {{stateParams.tagVariableObject.name}},
                 {{stateParams.taggedVariableObject.name}} measurements will converted as specified and included in the analysis of
                 {{stateParams.tagVariableObject.name}}.
             </div>
         </div>
-        <div class="card" style="overflow: visible" id="tagAddCard">
+        <div class="card" style="overflow: visible" id="tagAddCard" ng-if="stateParams.tagVariableObject.abbreviatedUnitName !== '/5'">
             <div class="item item-divider">
                 Tag {{stateParams.taggedVariableObject.name}} with {{stateParams.tagVariableObject.name}}
             </div>
@@ -30,19 +30,19 @@
                     per 1{{stateParams.taggedVariableObject.abbreviatedUnitName}} {{stateParams.taggedVariableObject.name}}
                 </label>
             </div>
-            <div class="row">
-                <div class="col col-50">
-                    <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
-                </div>
-                <div class="col col-50">
-                    <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="done()">Save</button>
-                </div>
+        </div>
+        <div class="row">
+            <div class="col col-50">
+                <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
             </div>
-            <div class="row">
-                <button id="deleteButton" ng-click="deleteTag()" class="button icon-left ion-trash-a button-assertive button-block">
-                    Delete Tag
-                </button>
+            <div class="col col-50">
+                <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="done()">Save</button>
             </div>
+        </div>
+        <div class="row">
+            <button id="deleteButton" ng-click="deleteTag()" class="button icon-left ion-trash-a button-assertive button-block">
+                Delete Tag
+            </button>
         </div>
     </ion-content>
 </ion-view>
