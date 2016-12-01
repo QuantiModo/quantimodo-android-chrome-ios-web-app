@@ -1,5 +1,5 @@
 <div class="card" ng-if="!card.hide" id="{{card.id}}" >
-    <div class="item item-avatar">
+    <div class="item item-avatar item-borderless">
         <i class="{{card.iconClass}}"
            style="position: absolute;
 							top: 15px;
@@ -19,7 +19,7 @@
            {{card.title}}
         </p>
     </div>
-    <div class="item item-body" style="text-align: center;">
+    <div class="item item-body item-borderless" style="text-align: center;">
         {{card.bodyText}}
     </div>
     <!--buttons: <pre>{{card.buttons|json}}</pre>-->

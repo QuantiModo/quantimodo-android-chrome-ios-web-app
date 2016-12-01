@@ -57,40 +57,31 @@
                     <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling Value &nbsp; <i class="icon ion-help-circled"></i></span>
                     <span class="right-span"><input class="right-input" ng-model="state.fillingValue" type="number" placeholder="None"></span>
                 </div>
-                <div class="item item-divider ng-binding">Your Tags</div>
-                <ion-list ng-show="variableObject.userTagVariables">
-                    <ion-item ng-click="editTag(item)"
-                              class="item item-text-wrap"
-                              ng-repeat="item in variableObject.userTagVariables">
-                        <p>{{item.tagDisplayText}}</p>
-                    </ion-item>
-                    <div class="row">
-                        <div class="col">
-                            <button class="button button-block icon-left ion-pricetag button-positive" ng-click="addTag()">Add a Tag</button>
-                        </div>
-                    </div>
-                </ion-list>
-                <div ng-show="variableObject.commonTagVariables" class="item item-divider ng-binding">Common Tags</div>
-                <ion-list ng-show="variableObject.commonTagVariables">
-                    <ion-item ng-click="editTag(item)"
-                              class="item item-text-wrap"
-                              ng-repeat="item in variableObject.commonTagVariables">
-                        <p >{{item.tagDisplayText}}</p>
-                    </ion-item>
-                </ion-list>
+                <div ng-include="'templates/fragments/tags-fragment.html'"></div>
             </div>
-
             <div class="row">
                 <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                    <button class="button button-block icon-left ion-android-cancel button-assertive"
+                            id="cancelButton"
+                            ng-click="cancel()">
+                        Cancel
+                    </button>
                 </div>
                 <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                    <button class="button button-block icon-left ion-android-done button-positive"
+                            id="saveButton"
+                            ng-click="save()">
+                        Save
+                    </button>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <button class="button button-block icon-left ion-android-cancel button-positive" ng-click="resetToDefaultSettings()">Reset to Default Settings</button>
+                    <button class="button button-block icon-left ion-android-cancel button-assertive"
+                            id="resetButton"
+                            ng-click="resetToDefaultSettings()">
+                        Reset to Default Settings
+                    </button>
                 </div>
             </div>
         </div>
