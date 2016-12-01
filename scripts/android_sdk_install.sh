@@ -31,3 +31,7 @@ cd /opt/android-sdk-linux/tools
 
 sudo chmod -R 777 /opt/android-sdk-linux/
 sudo /opt/android-sdk-linux/tools/android update sdk -u --all --filter platform-tool,android-23,build-tools-23.0.1,extra-android-support
+
+sudo mkdir /opt/android-sdk-linux/licenses
+sudo cp ${IONIC_PATH}/android-licenses/* /opt/android-sdk-linux/licenses/
+sudo chmod -R 777 /opt/android-sdk-linux/licenses
