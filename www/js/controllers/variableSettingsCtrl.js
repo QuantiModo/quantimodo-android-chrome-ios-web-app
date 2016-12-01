@@ -261,7 +261,7 @@ angular.module('starter')
                 $scope.state.title = $stateParams.variableName + ' Variable Settings';
                 $rootScope.variableName = $stateParams.variableName;
                 $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-                var params = {includeUserTags : true};
+                var params = {includeTags : true};
                 variableService.getVariablesByName($stateParams.variableName, params).then(function(variableObject){
                     $ionicLoading.hide();
                     $rootScope.variableObject = variableObject;
