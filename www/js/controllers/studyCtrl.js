@@ -251,6 +251,44 @@ angular.module('starter')
             }
         };
 
+        $rootScope.showActionSheetMenu = function() {
+
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-log-in"></i>' + $scope.correlationObject.causeVariableName + ' Settings' },
+                    { text: '<i class="icon ion-log-out"></i>' + $scope.correlationObject.effectVariableName + ' Settings' },
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Seems Wrong',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.debug($state.current.name + ": " + 'CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
+                    if(index === 0){
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.correlationObject.causeVariableName});
+                    }
+                    if(index === 1){
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.correlationObject.effectVariableName});
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.downVote();
+                    return true;
+                }
+            });
+
+            console.debug('Setting hideSheet timeout');
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
+        };
+
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
