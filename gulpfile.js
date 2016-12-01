@@ -533,6 +533,15 @@ gulp.task('ionicResources', function(){
 	return deferred.promise;
 });
 
+gulp.task('symlinkForChromeExtension', function(){
+    execute("mklink /D apps/" + process.env.LOWERCASE_APP_NAME + "/resources/chrome_extension/www www", function(error){
+        if(error !== null){
+            console.log("ERROR GENERATING RESOURCES " + error);
+            deferred.reject();
+        }
+    });
+});
+
 var LOWERCASE_APP_NAME = false;
 
 gulp.task('getAppName', function(){
@@ -649,6 +658,11 @@ gulp.task('ionicAddCrosswalk', function(){
             console.log("Failed to ionicAddCrosswalk: " + error);
         }
     });
+});
+
+gulp.task('downloadGradle', function(){
+    return request('https://services.gradle.org/distributions/gradle-2.14.1-bin.zip')
+		.pipe(fs.createWriteStream('gradle-2.14.1-bin.zip'));
 });
 
 var FACEBOOK_APP_ID = false;
@@ -1533,17 +1547,18 @@ gulp.task('zipChromeExtension', [], function(){
 
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
-		'copyWwwFolderToChromeExtension',
+		//'copyWwwFolderToChromeExtension',
+        'symlinkForChromeExtension',
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
 		'zipChromeExtension',
 		callback);
 });
 
-gulp.task('prepareQuantiModo', function(callback){
+gulp.task('prepareQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
-        'prepareIosApp',
+        //'prepareIosApp',
         'buildChromeExtension',
         callback);
 });
@@ -1563,6 +1578,16 @@ gulp.task('buildQuantiModo', function(callback){
 		'setIosEnvs',
 		'prepareIosApp',
 		callback);
+});
+
+
+gulp.task('buildQuantiModoAndroid', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+        'prepareAndroidApp',
+        'setIosEnvs',
+        'prepareIosApp',
+        callback);
 });
 
 gulp.task('ionicPlatformAddAndroid', function(callback){
