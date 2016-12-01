@@ -61,15 +61,27 @@
             </div>
             <div class="row">
                 <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                    <button class="button button-block icon-left ion-android-cancel button-assertive"
+                            id="cancelButton"
+                            ng-click="cancel()">
+                        Cancel
+                    </button>
                 </div>
                 <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                    <button class="button button-block icon-left ion-android-done button-positive"
+                            id="saveButton"
+                            ng-click="save()">
+                        Save
+                    </button>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="resetToDefaultSettings()">Reset to Default Settings</button>
+                    <button class="button button-block icon-left ion-android-cancel button-assertive"
+                            id="resetButton"
+                            ng-click="resetToDefaultSettings()">
+                        Reset to Default Settings
+                    </button>
                 </div>
             </div>
         </div>
