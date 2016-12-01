@@ -726,6 +726,33 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.tageeSearch', {
+            url: "/tagee-search",
+            cache: false,
+            params: {
+                tagVariableObject: null,
+                title: "Select Tagee", // Gets cut off on iPod if any longer
+                variableSearchPlaceholderText: "Search for a variable to tag...",
+                variableCategoryName: null,
+                nextState: 'app.tagAdd',
+                fromState: null,
+                doNotShowAddVariableButton: true,
+                excludeSingularBloodPressure: true,
+                noVariablesFoundCard: {
+                    body: "I can't find __VARIABLE_NAME__. Please try another"
+                },
+                variableSearchParameters: {
+                    includePublic: true
+                },
+                commonVariableSearchParameters: {}
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
         .state('app.tagSearch', {
             url: "/tag-search",
             cache: false,
@@ -757,6 +784,7 @@ angular.module('starter',
             url: "/tag-add",
             cache: false,
             params: {
+                tagConversionFactor: null,
                 fromState : null,
                 fromUrl : null,
                 tagVariableObject : null,

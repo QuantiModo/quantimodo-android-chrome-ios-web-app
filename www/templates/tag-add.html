@@ -1,6 +1,13 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Add Tag">
     <ion-nav-title>Add Tag</ion-nav-title>
     <ion-content>
+        <div class="card">
+            <div class="item item-body">
+                If you tag {{stateParams.taggedVariableObject.name}} with {{stateParams.tagVariableObject.name}},
+                {{stateParams.taggedVariableObject.name}} measurements will converted as specified and included in the analysis of
+                {{stateParams.tagVariableObject.name}}.
+            </div>
+        </div>
         <div class="card" style="overflow: visible" id="tagAddCard">
             <div class="item item-divider">
                 Tag {{stateParams.taggedVariableObject.name}} with {{stateParams.tagVariableObject.name}}
@@ -9,7 +16,7 @@
                 <label class="item item-input">
                     <input type="number"
                            style="text-align: center; max-width: 95px; padding-right: 5px"
-                           ng-model="stateParams.tagVariableObject.tagConversionFactor"
+                           ng-model="stateParams.tagConversionFactor"
                            id="tagValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter amount" >

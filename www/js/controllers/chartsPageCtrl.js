@@ -219,7 +219,9 @@ angular.module('starter')
                         { text: '<i class="icon ion-compose"></i>Record Measurement'},
                         { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                         { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                        { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+                        { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                        { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
+                        { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
                     ],
                     destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -243,6 +245,13 @@ angular.module('starter')
                         if (index === 4) {
                             $state.go('app.variableSettings',
                                 {variableObject: $rootScope.variableObject});
+                        }
+                        if (index === 5) {
+                            $scope.addTag($rootScope.variableObject);
+                        }
+                        if(index === 6) {
+                            console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
+                            $scope.tagAnotherVariable($rootScope.variableObject);
                         }
 
                         return true;

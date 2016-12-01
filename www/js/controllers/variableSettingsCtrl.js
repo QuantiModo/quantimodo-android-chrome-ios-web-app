@@ -18,13 +18,6 @@ angular.module('starter')
             $ionicHistory.goBack();
         };
 
-        $scope.addTag = function () {
-            $state.go('app.tagSearch',  {
-                fromState: $state.current.name,
-                taggedVariableObject: $rootScope.variableObject
-            });
-        };
-
         $scope.resetToDefaultSettings = function() {
             // Populate fields with original settings for variable
             $ionicLoading.show({
@@ -158,7 +151,10 @@ angular.module('starter')
                     { text: '<i class="icon ion-compose"></i>Record Measurement'},
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
-                    { text: '<i class="icon ion-ios-list-outline"></i>History'}
+                    { text: '<i class="icon ion-ios-list-outline"></i>History'},
+                    { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
+                    { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
+
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -182,6 +178,13 @@ angular.module('starter')
                     if(index === 4) {
                         console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
                         $scope.goToHistoryForVariableObject($rootScope.variableObject);
+                    }
+                    if (index === 5) {
+                        $scope.addTag($rootScope.variableObject);
+                    }
+                    if(index === 6) {
+                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
+                        $scope.tagAnotherVariable($rootScope.variableObject);
                     }
 
                     return true;
@@ -270,13 +273,7 @@ angular.module('starter')
             }
         };
 
-        $scope.editTag = function(tagVariable){
-            $state.go('app.tagAdd', {
-                taggedVariableObject: $rootScope.variableObject,
-                fromState: $state.current.name,
-                tagVariableObject: tagVariable
-            });
-        };
+
         
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
