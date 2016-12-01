@@ -365,6 +365,14 @@ angular.module('starter')
 
         $scope.matchEveryWord = function() {
             return function( item ) {
+
+                if(!item.name){
+                    var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
+                    console.error(message);
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                    return false;
+                }
+
                 if(item.variableCategoryName){
                     if($stateParams.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
                         if(item.variableCategoryName.indexOf('Location') !== -1 ||
