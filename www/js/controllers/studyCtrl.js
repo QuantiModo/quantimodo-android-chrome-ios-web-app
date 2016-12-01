@@ -1,7 +1,7 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
                                       correlationService, chartService, $timeout, $ionicLoading, localStorageService,
-                                      wikipediaFactory) {
+                                      wikipediaFactory, $ionicActionSheet) {
 
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -30,7 +30,7 @@ angular.module('starter')
                     effectVariableName: $scope.correlationObject.effectVariableName
                 };
                 $scope.state.title = $scope.correlationObject.predictorExplanation;
-                addWikipediaInfo();
+                //addWikipediaInfo();
                 if($scope.correlationObject.userId){
                     createUserCharts($scope.state.requestParams);
                 }
@@ -45,17 +45,30 @@ angular.module('starter')
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
-            if ($rootScope.urlParameters.aggregated) {
-                var fallbackToUserStudy = false;
-                if($rootScope.user){
-                    fallbackToUserStudy = true;
+            if(!$scope.state.requestParams.effectVariableName){
+                $scope.correlationObject = localStorageService.getItemAsObject('lastStudy');
+                $scope.state.requestParams = {
+                    causeVariableName: $scope.correlationObject.causeVariableName,
+                    effectVariableName: $scope.correlationObject.effectVariableName
+                };
+                $scope.state.title = $scope.correlationObject.predictorExplanation;
+                //addWikipediaInfo();
+                if($scope.correlationObject.userId){
+                    createUserCharts($scope.state.requestParams);
                 }
-                getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
-                addWikipediaInfo();
             } else {
-                var fallbackToAggregateStudy = true;
-                getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
-                addWikipediaInfo();
+                if ($rootScope.urlParameters.aggregated) {
+                    var fallbackToUserStudy = false;
+                    if($rootScope.user){
+                        fallbackToUserStudy = true;
+                    }
+                    getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
+                    //addWikipediaInfo();
+                } else {
+                    var fallbackToAggregateStudy = true;
+                    getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
+                    //addWikipediaInfo();
+                }
             }
 
             //chartCorrelationsOverTime();
