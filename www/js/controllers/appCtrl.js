@@ -206,6 +206,20 @@ angular.module('starter')
             });
         };
 
+        $scope.addTag = function () {
+            $state.go('app.tagSearch',  {
+                fromState: $state.current.name,
+                taggedVariableObject: $rootScope.variableObject
+            });
+        };
+
+        $scope.tagAnotherVariable = function () {
+            $state.go('app.tageeSearch',  {
+                fromState: $state.current.name,
+                tagVariableObject: $rootScope.variableObject
+            });
+        };
+
         $scope.showHelpInfoPopupIfNecessary = function (e) {
             localStorageService.getItem('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {
@@ -359,7 +373,8 @@ angular.module('starter')
                 e.targetScope.controller_name === "ChartsPageCtrl" ||
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
                 e.targetScope.controller_name === "RemindersInboxCtrl" ||
-                e.targetScope.controller_name === "RemindersManageCtrl"
+                e.targetScope.controller_name === "RemindersManageCtrl" ||
+                e.targetScope.controller_name === "StudyCtrl"
             ) {
                 $scope.showMoreMenuButton = true;
             } else {
@@ -506,6 +521,24 @@ angular.module('starter')
                     $state.current.name);
                 $state.go(config.appSettings.defaultState);
             }
+        };
+
+        $scope.editTag = function(tagVariable){
+            $state.go('app.tagAdd', {
+                tagConversionFactor: tagVariable.tagConversionFactor,
+                taggedVariableObject: $rootScope.variableObject,
+                fromState: $state.current.name,
+                tagVariableObject: tagVariable
+            });
+        };
+
+        $scope.editTagged = function(taggedVariable){
+            $state.go('app.tagAdd', {
+                tagConversionFactor: taggedVariable.tagConversionFactor,
+                taggedVariableObject: taggedVariable,
+                fromState: $state.current.name,
+                tagVariableObject: $rootScope.variableObject
+            });
         };
 
         $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){

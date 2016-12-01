@@ -39,13 +39,13 @@ angular.module('starter')
 
         $scope.done = function(){
 
-            if(!$rootScope.stateParams.tagVariableObject.tagConversionFactor){
-                $rootScope.stateParams.tagVariableObject.tagConversionFactor = 1;
+            if(!$rootScope.stateParams.tagConversionFactor){
+                $rootScope.stateParams.tagConversionFactor = 1;
             }
             var userTagData = {
                 tagVariableId: $rootScope.stateParams.tagVariableObject.id,
                 taggedVariableId: $rootScope.stateParams.taggedVariableObject.id,
-                conversionFactor: $rootScope.stateParams.tagVariableObject.tagConversionFactor
+                conversionFactor: $rootScope.stateParams.tagConversionFactor
             };
 
             $ionicLoading.show({
@@ -98,7 +98,7 @@ angular.module('starter')
                 });
             }
             console.debug($state.current.name + ": beforeEnter");
-            $scope.init();
+
         });
 
     });

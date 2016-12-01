@@ -29,13 +29,14 @@ angular.module('starter')
             }
             localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('commonVariables', variableObject);
 
+            var userTagData;
             if($state.current.name === 'app.favoriteSearch') {
                 $scope.addToFavoritesUsingVariableObject(variableObject);
             } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
                 $state.go($stateParams.nextState, {requestParams: {effectVariableName: variableObject.name}});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
                 $state.go($stateParams.nextState, {requestParams: {causeVariableName: variableObject.name}});
-            } else if ($stateParams.nextState.indexOf('tag') !== -1) {
+            } else if ($stateParams.taggedVariableObject) {
                 if($stateParams.taggedVariableObject.abbreviatedUnitName !== '/5'){
                     $state.go($stateParams.nextState, {
                         taggedVariableObject: $stateParams.taggedVariableObject,
@@ -43,7 +44,7 @@ angular.module('starter')
                         tagVariableObject: variableObject
                     });
                 } else {
-                    var userTagData = {
+                    userTagData = {
                         tagVariableId: variableObject.id,
                         taggedVariableId: $stateParams.taggedVariableObject.id,
                         conversionFactor: 1
@@ -65,6 +66,37 @@ angular.module('starter')
                     });
                 }
 
+            } else if($stateParams.tagVariableObject) {
+
+                if($stateParams.tagVariableObject.abbreviatedUnitName !== '/5'){
+                    $state.go($stateParams.nextState, {
+                        taggedVariableObject: variableObject,
+                        fromState: $stateParams.fromState,
+                        tagVariableObject: $stateParams.tagVariableObject
+                    });
+                } else {
+                    userTagData = {
+                        tagVariableId: $stateParams.tagVariableObject.id,
+                        taggedVariableId: variableObject.id,
+                        conversionFactor: 1
+                    };
+
+                    $ionicLoading.show({
+                        template: '<ion-spinner></ion-spinner>'
+                    });
+
+                    QuantiModo.postUserTagDeferred(userTagData).then(function () {
+                        $ionicLoading.hide();
+                        if ($stateParams.fromState) {
+                            $state.go($stateParams.fromState, {
+                                variableName: $stateParams.tagVariableObject.name
+                            });
+                        } else {
+                            $state.go(config.appSettings.defaultState);
+                        }
+                    });
+                }
+
             } else {
                 $rootScope.stateParams.variableObject = variableObject;
                 $state.go($stateParams.nextState, $rootScope.stateParams);
@@ -77,7 +109,7 @@ angular.module('starter')
 
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
-            $rootScope.stateParams = $stateParams;
+
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.showHelpInfoPopupIfNecessary();
@@ -88,6 +120,7 @@ angular.module('starter')
                 populateUserVariables();
                 populateCommonVariables();
             }
+            setHelpText();
         };
 
         // when a query is searched in the search box
@@ -260,7 +293,36 @@ angular.module('starter')
         });
 
         // update data when view is navigated to
+        function setHelpText() {
+            if ($stateParams.taggedVariableObject) {
+                $scope.state.helpText = "Search for a variable like an ingredient, category, or duplicate variable " +
+                    "that you'd like to tag " + $stateParams.taggedVariableObject.name.toUpperCase() + " with.  Then " +
+                    "when your tag variable is analyzed, measurements from " +
+                    $stateParams.taggedVariableObject.name.toUpperCase() + " will be included.";
+                $rootScope.stateParams.helpText = " <br><br> Search for a variable " +
+                    "that you'd like to tag with " + $stateParams.taggedVariableObject.name.toUpperCase() + ".  Then " +
+                    "when " + $stateParams.taggedVariableObject.name.toUpperCase() +
+                    " is analyzed, measurements from your selected tagged variable will be included. <br><br> For instance, if " +
+                    "your currently selected variable were Inflammatory Pain, you could search for and select Back Pain " +
+                    "to be tagged with Inflammatory Pain since Inflammatory Pain includes Back Pain.  Then Back Pain " +
+                    "measurements would be included when Inflammatory Pain is analyzed";
+            }
+
+            if ($stateParams.tagVariableObject) {
+                $scope.state.helpText = "Search for a child variable " +
+                    "that you'd like to tag with " + $stateParams.tagVariableObject.name.toUpperCase() + ".  Then " +
+                    "when " + $stateParams.tagVariableObject.name.toUpperCase() +
+                    " is analyzed, measurements from your selected tagged variable will be included.";
+                $rootScope.stateParams.helpText = $scope.state.helpText + " <br><br> For instance, if " +
+                    "your currently selected variable were Sugar, you could search for Coke and tag it with 37 grams of " +
+                    "sugar per serving. Then coke measurements would be included when analyzing to see how sugar affects you.  <br><br>" +
+                    "If your current parent tag variable were Inflammatory Pain, you could search for Back Pain and then your " +
+                    "Inflammatory Pain analysis would include Back Pain measurements as well.";
+            }
+        }
+
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+            $rootScope.stateParams = $stateParams;
             if($stateParams.helpText){
                 $scope.state.helpText = $stateParams.helpText;
             }
@@ -298,17 +360,19 @@ angular.module('starter')
                 $scope.state.title = "Select " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1));
                 $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
             }
-
-            if($stateParams.taggedVariableObject){
-                $scope.state.helpText = "Search for an variable like an ingredient, category, or duplicate variable " +
-                    "that you'd like to tag " + $stateParams.taggedVariableObject.name.toUpperCase() + " with.  Then " +
-                    "when your tag variable is analyzed, measurements from " +
-                    $stateParams.taggedVariableObject.name.toUpperCase() + " will be included.";
-            }
+            setHelpText();
         });
 
         $scope.matchEveryWord = function() {
             return function( item ) {
+
+                if(!item.name){
+                    var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
+                    console.error(message);
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                    return false;
+                }
+
                 if(item.variableCategoryName){
                     if($stateParams.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
                         if(item.variableCategoryName.indexOf('Location') !== -1 ||
