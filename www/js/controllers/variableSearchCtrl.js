@@ -214,6 +214,14 @@ angular.module('starter')
             populateUserVariables();
         });
 
+        function checkThatVariableNamesExist() {
+            for (var i = 0; i < $scope.state.variableSearchResults.length; i++) {
+                if (!checkNameExists($scope.state.variableSearchResults[i])) {
+                    console.debug("No name for variable " + i);
+                }
+            }
+        }
+
         var populateCommonVariables = function(){
             if(!$stateParams.variableSearchParameters.includePublic) {
                 return;
@@ -229,6 +237,7 @@ angular.module('starter')
                 if(commonVariables && commonVariables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3) {
                         $scope.state.variableSearchResults = arrayUniqueId($scope.state.variableSearchResults.concat(commonVariables));
+                        //checkThatVariableNamesExist();
                         $scope.state.searching = false;
                     }
                 }
@@ -265,7 +274,9 @@ angular.module('starter')
                         $scope.state.variableSearchResults = arrayUniqueId(userVariables.concat($scope.state.variableSearchResults));
                         $scope.state.searching = false;
                         $scope.state.noVariablesFoundCard.show = false;
+                        //checkThatVariableNamesExist();
                     }
+
                 } else {
                     if(!$stateParams.variableSearchParameters.includePublic){
                         $scope.state.noVariablesFoundCard.show = true;
@@ -373,16 +384,22 @@ angular.module('starter')
             setHelpText();
         });
 
+        var checkNameExists = function (item) {
+            if(!item.name){
+                var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
+                console.error(message);
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                return false;
+            }
+            return true;
+        };
+
         $scope.matchEveryWord = function() {
             return function( item ) {
 
-                if(!item.name){
-                    var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-                    console.error(message);
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                if(!checkNameExists(item)){
                     return false;
                 }
-
                 if(item.variableCategoryName){
                     if($stateParams.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
                         if(item.variableCategoryName.indexOf('Location') !== -1 ||
