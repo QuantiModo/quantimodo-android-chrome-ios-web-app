@@ -642,6 +642,15 @@ gulp.task('ionicUploadProduction', function(){
     });
 });
 
+gulp.task('ionicAddCrosswalk', function(){
+    var command = 'ionic browser add crosswalk@12.41.296.5';
+    execute(command, function(error) {
+        if (error) {
+            console.log("Failed to ionicAddCrosswalk: " + error);
+        }
+    });
+});
+
 var FACEBOOK_APP_ID = false;
 var FACEBOOK_APP_NAME = false;
 var REVERSED_CLIENT_ID = false;
@@ -1551,7 +1560,6 @@ gulp.task('buildQuantiModo', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
 		'prepareAndroidApp',
-
 		'setIosEnvs',
 		'prepareIosApp',
 		callback);
@@ -1566,6 +1574,17 @@ gulp.task('ionicPlatformAddAndroid', function(callback){
 				callback();
 			}
 		});
+});
+
+gulp.task('ionicPlatformRemoveAndroid', function(callback){
+    return execute("ionic platform remove android", function(error){
+        if(error !== null){
+            console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+        } else {
+            console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+            callback();
+        }
+    });
 });
 
 gulp.task('cordovaBuildAndroidDebug', function(callback){
@@ -1638,10 +1657,11 @@ gulp.task('prepareAndroidApp', function(callback){
 		'gitCheckoutAppJs',
 		'setVersionNumberEnvs',
 		'setAndroidEnvs',
+        'ionicPlatformRemoveAndroid',
 		'updateConfigXmlUsingEnvs',
-		'generateAndroidResources',
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
+        'generateAndroidResources',
 		'copyAndroidResources',
 		'setIonicAppId',
 		callback);
@@ -1660,6 +1680,13 @@ gulp.task('prepareMindFirstAndroid', function(callback){
 		'setMindFirstEnvs',
 		'prepareAndroidApp',
 		callback);
+});
+
+gulp.task('prepareQuantiModoAndroid', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+        'prepareAndroidApp',
+        callback);
 });
 
 gulp.task('runMindFirstAndroid', function(callback){
