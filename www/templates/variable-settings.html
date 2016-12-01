@@ -3,7 +3,7 @@
     <ion-content>
         <div ng-show="variableObject" class="card variable-settings" >
             <div class="list">
-                <div class="item item-divider ng-binding">Properties</div>
+                <div class="item item-divider ng-binding">Variable Properties</div>
                 <!--FIXME Use this once variable aliasing is implemented-->
                 <!--
                     <div class="item item-input">
@@ -27,7 +27,11 @@
                     <span class="input-label left-span" >Combination Method &nbsp; <i class="icon ion-help-circled"></i></span>
                     <span class="input-label right-text ">{{variableObject.combinationOperation}}</span>
                 </label>
-                <div class="item item-divider ng-binding">Data Optimization</div>
+            </div>
+        </div>
+        <div ng-show="variableObject" class="card variable-settings" >
+            <div class="list">
+                <div class="item item-divider ng-binding">Analysis Settings</div>
                 <!--
                 <label class="item item-input item-select">
                     <div class="input-label" style="white-space:normal; width: 60%">Combination method:</div>
@@ -57,32 +61,33 @@
                     <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling Value &nbsp; <i class="icon ion-help-circled"></i></span>
                     <span class="right-span"><input class="right-input" ng-model="state.fillingValue" type="number" placeholder="None"></span>
                 </div>
-                <div ng-include="'templates/fragments/tags-fragment.html'"></div>
             </div>
-            <div class="row">
-                <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-cancel button-assertive"
-                            id="cancelButton"
-                            ng-click="cancel()">
-                        Cancel
-                    </button>
-                </div>
-                <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-done button-positive"
-                            id="saveButton"
-                            ng-click="save()">
-                        Save
-                    </button>
-                </div>
+        </div>
+        <div ng-show="variableObject" ng-include="'templates/fragments/tags-fragment.html'"></div>
+        <div ng-show="variableObject" ng-include="'templates/fragments/tagged-variables-fragment.html'"></div>
+        <div ng-show="variableObject" class="row">
+            <div class="col col-50">
+                <button class="button button-block icon-left ion-android-cancel button-assertive"
+                        id="cancelButton"
+                        ng-click="cancel()">
+                    Cancel
+                </button>
             </div>
-            <div class="row">
-                <div class="col">
-                    <button class="button button-block icon-left ion-android-cancel button-assertive"
-                            id="resetButton"
-                            ng-click="resetToDefaultSettings()">
-                        Reset to Default Settings
-                    </button>
-                </div>
+            <div class="col col-50">
+                <button class="button button-block icon-left ion-android-done button-positive"
+                        id="saveButton"
+                        ng-click="save()">
+                    Save
+                </button>
+            </div>
+        </div>
+        <div ng-show="variableObject" class="row">
+            <div class="col">
+                <button class="button button-block icon-left ion-android-cancel button-assertive"
+                        id="resetButton"
+                        ng-click="resetToDefaultSettings()">
+                    Reset to Default Settings
+                </button>
             </div>
         </div>
     </ion-content>

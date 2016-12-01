@@ -22,9 +22,17 @@ angular.module('starter')
                 template: '<ion-spinner></ion-spinner>'
             });
 
-            $stateParams.taggedVariableObject.userTagVariables = $stateParams.taggedVariableObject.userTagVariables.filter(function( obj ) {
-                return obj.id !== $rootScope.stateParams.tagVariableObject.id;
-            });
+            if($stateParams.taggedVariableObject.userTagVariables){
+                $stateParams.taggedVariableObject.userTagVariables = $stateParams.taggedVariableObject.userTagVariables.filter(function( obj ) {
+                    return obj.id !== $rootScope.stateParams.tagVariableObject.id;
+                });
+            }
+
+            if($stateParams.taggedVariableObject.userTaggedVariables){
+                $stateParams.taggedVariableObject.userTaggedVariables = $stateParams.taggedVariableObject.userTaggedVariables.filter(function( obj ) {
+                    return obj.id !== $rootScope.stateParams.taggedVariableObject.id;
+                });
+            }
 
             QuantiModo.deleteUserTagDeferred(userTagData).then(function () {
                 $ionicLoading.hide();
