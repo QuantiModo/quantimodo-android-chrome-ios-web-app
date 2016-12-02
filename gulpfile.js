@@ -534,11 +534,8 @@ gulp.task('ionicResources', function(){
 });
 
 gulp.task('symlinkForChromeExtension', function(){
-    execute("mklink /D apps/" + process.env.LOWERCASE_APP_NAME + "/resources/chrome_extension/www www", function(error){
-        if(error !== null){
-            console.log("ERROR GENERATING RESOURCES " + error);
-            deferred.reject();
-        }
+    execute("mklink /D apps/quantimodo/resources/chrome_extension/www www", function(error){
+    //execute("mklink /D apps/" + process.env.LOWERCASE_APP_NAME + "/resources/chrome_extension/www www", function(error){
     });
 });
 
@@ -1192,6 +1189,7 @@ gulp.task('setVersionNumberInFiles', function(callback){
 		'config-template.xml',
 		'config-template-ios.xml',
 		'resources/chrome_extension/manifest.json',
+        'build/chrome_extension/manifest.json',
 		'resources/chrome_app/manifest.json'
 	];
 	
@@ -1525,22 +1523,27 @@ gulp.task('prepareIosApp', function(callback){
 
 gulp.task('copyWwwFolderToChromeExtension', ['copyPrivateConfig'], function(){
 	return gulp.src(['www/**/*'])
-		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME + '/www'));
+		.pipe(gulp.dest('build/chrome_extension/www'));
+});
+
+gulp.task('symlinkWwwFolderInChromeExtension', ['copyPrivateConfig'], function(){
+    return gulp.src(['www/**/*'])
+        .pipe(gulp.dest('build/chrome_extension/www'));
 });
 
 gulp.task('copyManifestToChromeExtension', ['copyWwwFolderToChromeExtension'], function(){
 	return gulp.src(['resources/chrome_extension/manifest.json'])
-		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME));
+		.pipe(gulp.dest('build/chrome_extension'));
 });
 
 gulp.task('removeFacebookFromChromeExtension', [], function(){
-	return gulp.src("build/chrome_extensions/" + process.env.LOWERCASE_APP_NAME + "/www/lib/phonegap-facebook-plugin/*",
+	return gulp.src("build/chrome_extension/www/lib/phonegap-facebook-plugin/*",
 		{ read: false })
 		.pipe(clean());
 });
 
 gulp.task('zipChromeExtension', [], function(){
-	return gulp.src(["build/chrome_extensions/" + process.env.LOWERCASE_APP_NAME + '/**/*'])
+	return gulp.src(['build/chrome_extension/**/*'])
 		.pipe(zip(process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip'))
 		.pipe(gulp.dest('build'));
 });
@@ -1587,6 +1590,14 @@ gulp.task('buildQuantiModoAndroid', function(callback){
         'prepareAndroidApp',
         'setIosEnvs',
         'prepareIosApp',
+        callback);
+});
+
+gulp.task('buildQuantiModoChromeExtension', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+		'replaceVersionNumbersInFiles',
+        'buildChromeExtension',
         callback);
 });
 
