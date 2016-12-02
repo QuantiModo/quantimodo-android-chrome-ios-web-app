@@ -1413,6 +1413,11 @@ gulp.task('copyAppResources', ['cleanResources'], function () {
 	}).pipe(gulp.dest('.'));
 });
 
+gulp.task('copyIconsToChromeExtension', [], function(){
+    return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/resources/icon*.png'])
+        .pipe(gulp.dest('build/chrome_extension/www/img/icons'));
+});
+
 gulp.task('copyPrivateConfig', [], function () {
 	if(!process.env.LOWERCASE_APP_NAME){
 		process.env.LOWERCASE_APP_NAME = 'mindfirst';
@@ -1543,7 +1548,7 @@ gulp.task('symlinkWwwFolderInChromeExtension', ['copyPrivateConfig'], function()
         .pipe(gulp.dest('build/chrome_extension/www'));
 });
 
-gulp.task('copyManifestToChromeExtension', ['copyWwwFolderToChromeExtension'], function(){
+gulp.task('copyManifestToChromeExtension', [], function(){
 	return gulp.src(['resources/chrome_extension/manifest.json'])
 		.pipe(gulp.dest('build/chrome_extension'));
 });
@@ -1562,12 +1567,12 @@ gulp.task('zipChromeExtension', [], function(){
 
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
+	    'copyAppResources',
 	    'cleanChromeBuildFolder',
-		'copyAppResources',
         'replaceVersionNumbersInFiles',
-		'copyWwwFolderToChromeExtension',
-        'resizeIcons',
-        //'symlinkForChromeExtension',
+        'copyWwwFolderToChromeExtension',
+        'resizeIconsForChromeExtension',
+        'copyIconsToChromeExtension',
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
 		'zipChromeExtension',
@@ -1577,7 +1582,7 @@ gulp.task('buildChromeExtension', [], function(callback){
 gulp.task('prepareQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
-		'resizeIcons',
+		'resizeIconsForChromeExtension',
         //'prepareIosApp',
         'buildChromeExtension',
         callback);
@@ -1743,14 +1748,20 @@ gulp.task('resizeIcon16', [], function(callback){ return resizeIcon(callback, 16
 gulp.task('resizeIcon48', [], function(callback){ return resizeIcon(callback, 48); });
 gulp.task('resizeIcon128', [], function(callback){ return resizeIcon(callback, 128); });
 
-gulp.task('resizeIcons', function(callback){
+gulp.task('createChromeExtensionAndResources', [], function(callback){
+    runSequence(
+        'resizeIconsForChromeExtension',
+        'copyIconsToChromeExtension',
+        callback);
+});
+
+gulp.task('resizeIconsForChromeExtension', function(callback){
     runSequence('resizeIcon700',
         'resizeIcon16',
         'resizeIcon48',
         'resizeIcon128',
         callback);
 });
-
 
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
