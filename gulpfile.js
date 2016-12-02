@@ -1390,6 +1390,18 @@ gulp.task('cleanResources', [], function(){
 	return gulp.src("resources/*", { read: false }).pipe(clean());
 });
 
+gulp.task('cleanPlugins', [], function(){
+    return gulp.src("plugins", { read: false }).pipe(clean());
+});
+
+gulp.task('cleanPlatformsAndroid', [], function(){
+    return gulp.src("platforms/android", { read: false }).pipe(clean());
+});
+
+gulp.task('cleanPlatforms', [], function(){
+    return gulp.src("platforms", { read: false }).pipe(clean());
+});
+
 gulp.task('cleanChromeBuildFolder', [], function(){
     return gulp.src("build/chrome_extension/*", { read: false }).pipe(clean());
 });
@@ -1503,18 +1515,12 @@ gulp.task('bumpIosVersion', function(callback){
 	});
 });
 
-gulp.task('deletePlugins', [], function(){
-	return gulp.src("plugins/*",
-		{ read: false })
-		.pipe(clean());
-});
-
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
         'setIosEnvs',
 		'gitPull',
 		'gitCheckoutAppJs',
-		'deletePlugins',
+		'cleanPlugins',
 		'generateIosResources',
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
@@ -1592,12 +1598,38 @@ gulp.task('buildQuantiModo', function(callback){
 		callback);
 });
 
+gulp.task('buildMoodiModo', function(callback){
+    runSequence(
+        'setMoodiModoEnvs',
+        'buildChromeExtension',
+        //'buildAndroidApp',
+        'prepareIosApp',
+        callback);
+});
+
+gulp.task('buildMindFirst', function(callback){
+    runSequence(
+        'setMindFirstEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'prepareIosApp',
+        callback);
+});
+
+gulp.task('buildMedTlc', function(callback){
+    runSequence(
+        'setMedTlcEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'prepareIosApp',
+        callback);
+});
+
 
 gulp.task('buildQuantiModoAndroid', function(callback){
     runSequence(
         'setQuantiModoEnvs',
-        'prepareAndroidApp',
-        'prepareIosApp',
+        'buildAndroidApp',
         callback);
 });
 
@@ -1655,6 +1687,11 @@ gulp.task('cordovaBuildAndroidRelease', function(callback){
 gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
 	return gulp.src(['resources/android/**/*'])
 		.pipe(gulp.dest('platforms/android'));
+});
+
+gulp.task('copyAndroidBuild', [], function(){
+    return gulp.src(['platforms/android/build/outputs/*e.apk'])
+        .pipe(gulp.dest('build/' + process.env.LOWERCASE_APP_NAME));
 });
 
 gulp.task('prepareQuantiModoIos', function(callback){
@@ -1719,7 +1756,9 @@ gulp.task('prepareAndroidApp', function(callback){
 		'gitCheckoutAppJs',
 		'setVersionNumberEnvs',
 		'setAndroidEnvs',
-        'ionicPlatformRemoveAndroid',
+        'cleanPlatforms',
+        'cleanPlugins',
+        //'ionicPlatformRemoveAndroid',
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
@@ -1734,7 +1773,8 @@ gulp.task('buildAndroidApp', function(callback){
 	runSequence(
 		'prepareAndroidApp',
 		'cordovaBuildAndroidRelease',
-		'cordovaBuildAndroidDebug',
+        'copyAndroidBuild',
+		//'cordovaBuildAndroidDebug',
 		callback);
 });
 
