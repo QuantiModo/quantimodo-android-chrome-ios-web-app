@@ -2,6 +2,9 @@
 ****	EVENT HANDLERS
 ***/
 
+var v = null;
+var vid = null;
+
 /*
 **	Returns true in the result listener if the user is logged in, false if not
 */
@@ -105,8 +108,41 @@ function openPopup(notificationId) {
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
 
+	if(vid){
+        chrome.windows.get(vid, function(chromeWindow) {
+            if (!chrome.runtime.lastError && chromeWindow) {
+                chrome.windows.update(vid, {focused: true});
+                return;
+            }
+            chrome.windows.create(
+                windowParams,
+                function(chromeWindow) {
+                    vid = chromeWindow.id;
+                }
+            );
+        });
+	} else {
+        chrome.windows.create(
+            windowParams,
+            function(chromeWindow) {
+                vid = chromeWindow.id;
+            }
+        );
+	}
 
-	chrome.windows.create(windowParams);
+/*
+	chrome.windows.update(vid, {focused: true}, function() {
+		if (chrome.runtime.lastError) {
+			chrome.windows.create(
+				windowParams,
+				function(chromeWindow) {
+					vid = chromeWindow.id;
+				});
+		}
+	});
+*/
+
+	//chrome.windows.create(windowParams);
 	if(notificationId){
 		chrome.notifications.clear(notificationId);
 	}
