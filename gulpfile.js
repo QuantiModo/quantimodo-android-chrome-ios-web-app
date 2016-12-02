@@ -649,7 +649,7 @@ gulp.task('ionicUploadProduction', function(){
 });
 
 gulp.task('ionicAddCrosswalk', function(){
-    var command = 'ionic browser add crosswalk@12.41.296.5';
+    var command = 'ionic plugin add cordova-plugin-crosswalk-webview';
     execute(command, function(error) {
         if (error) {
             console.log("Failed to ionicAddCrosswalk: " + error);
@@ -1390,6 +1390,10 @@ gulp.task('cleanResources', [], function(){
 	return gulp.src("resources/*", { read: false }).pipe(clean());
 });
 
+gulp.task('cleanChromeBuildFolder', [], function(){
+    return gulp.src("build/chrome_extension/*", { read: false }).pipe(clean());
+});
+
 gulp.task('copyAppResources', ['cleanResources'], function () {
 	return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
 		base: 'apps/' + process.env.LOWERCASE_APP_NAME
@@ -1507,6 +1511,7 @@ gulp.task('deletePlugins', [], function(){
 
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
+        'setIosEnvs',
 		'gitPull',
 		'gitCheckoutAppJs',
 		'deletePlugins',
@@ -1550,8 +1555,12 @@ gulp.task('zipChromeExtension', [], function(){
 
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
-		//'copyWwwFolderToChromeExtension',
-        'symlinkForChromeExtension',
+	    'cleanChromeBuildFolder',
+		'copyAppResources',
+        'replaceVersionNumbersInFiles',
+		'copyWwwFolderToChromeExtension',
+        'resizeIcons',
+        //'symlinkForChromeExtension',
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
 		'zipChromeExtension',
@@ -1561,6 +1570,7 @@ gulp.task('buildChromeExtension', [], function(callback){
 gulp.task('prepareQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
+		'resizeIcons',
         //'prepareIosApp',
         'buildChromeExtension',
         callback);
@@ -1569,7 +1579,6 @@ gulp.task('prepareQuantiModoChromeExtension', function(callback){
 gulp.task('prepareMoodiModoIos', function(callback){
 	runSequence(
 		'setMoodiModoEnvs',
-		'setIosEnvs',
 		'prepareIosApp',
 		callback);
 });
@@ -1577,8 +1586,8 @@ gulp.task('prepareMoodiModoIos', function(callback){
 gulp.task('buildQuantiModo', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
-		'prepareAndroidApp',
-		'setIosEnvs',
+        'buildChromeExtension',
+		'buildAndroidApp',
 		'prepareIosApp',
 		callback);
 });
@@ -1588,7 +1597,6 @@ gulp.task('buildQuantiModoAndroid', function(callback){
     runSequence(
         'setQuantiModoEnvs',
         'prepareAndroidApp',
-        'setIosEnvs',
         'prepareIosApp',
         callback);
 });
@@ -1596,7 +1604,6 @@ gulp.task('buildQuantiModoAndroid', function(callback){
 gulp.task('buildQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
-		'replaceVersionNumbersInFiles',
         'buildChromeExtension',
         callback);
 });
@@ -1653,7 +1660,6 @@ gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
 gulp.task('prepareQuantiModoIos', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
-		'setIosEnvs',
 		'prepareIosApp',
 		callback);
 });
@@ -1661,7 +1667,6 @@ gulp.task('prepareQuantiModoIos', function(callback){
 gulp.task('prepareMindFirstIos', function(callback){
 	runSequence(
 		'setMindFirstEnvs',
-		'setIosEnvs',
 		'prepareIosApp',
 		callback);
 });
@@ -1688,6 +1693,27 @@ gulp.task('ionicRunAndroid', [], function(callback){
 	});
 });
 
+
+function resizeIcon(callback, resolution) {
+    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' build/www/img/icons/icon_' +
+        resolution + '.png', function (error) {
+        callback();
+    });
+}
+gulp.task('resizeIcon700', [], function(callback){ return resizeIcon(callback, 700); });
+gulp.task('resizeIcon16', [], function(callback){ return resizeIcon(callback, 16); });
+gulp.task('resizeIcon48', [], function(callback){ return resizeIcon(callback, 48); });
+gulp.task('resizeIcon128', [], function(callback){ return resizeIcon(callback, 128); });
+
+gulp.task('resizeIcons', function(callback){
+    runSequence('resizeIcon700',
+        'resizeIcon16',
+        'resizeIcon48',
+        'resizeIcon128',
+        callback);
+});
+
+
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
 		'gitCheckoutAppJs',
@@ -1697,6 +1723,7 @@ gulp.task('prepareAndroidApp', function(callback){
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
+        'ionicAddCrosswalk',
         'generateAndroidResources',
 		'copyAndroidResources',
 		'setIonicAppId',
