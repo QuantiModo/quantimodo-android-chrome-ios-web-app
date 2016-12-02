@@ -125,21 +125,21 @@ angular.module('starter')
                 //joinWith
                 maximumAllowedValue: maximumAllowedValue,
                 minimumAllowedValue: minimumAllowedValue,
-                onsetDelay: $scope.state.onsetDelay*60*60
+                onsetDelay: $scope.state.onsetDelay*60*60,
+                combinationOperation: $rootScope.variableObject.combinationOperation
                 //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime
             };
             console.debug(params);
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
             variableService.postUserVariable(params).then(function() {
                 console.debug("variableService.postUserVariable: success: " + JSON.stringify(params));
-            },
-            function(error) {
+                $ionicLoading.hide();
+                $ionicHistory.goBack();
+            }, function(error) {
                 console.error(error);
             });
-
-            $ionicHistory.goBack();
-
         };
 
         $rootScope.showActionSheetMenu = function() {

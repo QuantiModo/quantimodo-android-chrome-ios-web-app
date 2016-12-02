@@ -159,14 +159,14 @@ angular.module('starter')
                     data.effectProcessedMeasurements, {variableName: params.effectVariableName});
                 $scope.correlationOverTimeChartConfig =
                     chartService.processDataAndConfigureCorrelationOverTimeChart(data.correlationsOverTime);
+                $scope.pairsOverTimeChartConfig =
+                    chartService.processDataAndConfigurePairsOverTimeChart(data.pairs, params);
                 $scope.highchartsReflow();
             });
         }
 
         var getUserStudy = function (params, fallbackToAggregateStudy) {
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
             
             correlationService.getUserCorrelations(params).then(function (correlations) {
                 $ionicLoading.hide();
