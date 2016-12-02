@@ -1691,7 +1691,7 @@ gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
 
 gulp.task('copyAndroidBuild', [], function(){
     return gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
-        .pipe(gulp.dest('build/' + process.env.LOWERCASE_APP_NAME));
+        .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
 });
 
 gulp.task('prepareQuantiModoIos', function(callback){
