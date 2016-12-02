@@ -1434,21 +1434,21 @@ gulp.task('copyIonicCloudLibrary', [], function () {
 	return gulp.src(['node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js']).pipe(gulp.dest('www/lib'));
 });
 
-gulp.task('removeTransparentPng', ['copyAppResources'], function () {
+gulp.task('removeTransparentPng', [], function () {
 	return gulp.src("resources/icon.png", { read: false }).pipe(clean());
 });
 
-gulp.task('removeTransparentPsd', ['removeTransparentPng'], function () {
+gulp.task('removeTransparentPsd', [], function () {
 	return gulp.src("resources/icon.psd", { read: false }).pipe(clean());
 });
 
-gulp.task('useWhiteIcon', ['removeTransparentPsd'], function () {
+gulp.task('useWhiteIcon', [], function () {
 	return gulp.src('./resources/icon_white.png')
 		.pipe(rename('icon.png'))
 		.pipe(gulp.dest('resources'));
 });
 
-gulp.task('generateIosResources', ['useWhiteIcon'], function(callback){
+gulp.task('generateIosResources', [], function(callback){
 	return execute("ionic resources ios", function(error){
 		if(error !== null){
 			console.log("ERROR GENERATING iOS RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
@@ -1527,6 +1527,10 @@ gulp.task('prepareIosApp', function(callback){
 		'gitPull',
 		'gitCheckoutAppJs',
 		'cleanPlugins',
+        'copyAppResources',
+        'removeTransparentPng',
+        'removeTransparentPsd',
+        'useWhiteIcon',
 		'generateIosResources',
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
@@ -1538,7 +1542,7 @@ gulp.task('prepareIosApp', function(callback){
 		callback);
 });
 
-gulp.task('copyWwwFolderToChromeExtension', ['copyPrivateConfig'], function(){
+gulp.task('copyWwwFolderToChromeExtension', [], function(){
 	return gulp.src(['www/**/*'])
 		.pipe(gulp.dest('build/chrome_extension/www'));
 });
@@ -1567,6 +1571,7 @@ gulp.task('zipChromeExtension', [], function(){
 
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
+	    'copyPrivateConfig',
 	    'copyAppResources',
 	    'cleanChromeBuildFolder',
         'replaceVersionNumbersInFiles',
@@ -1690,7 +1695,7 @@ gulp.task('cordovaBuildAndroidRelease', function(callback){
 	});
 });
 
-gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
+gulp.task('copyAndroidResources', [], function(){
 	return gulp.src(['resources/android/**/*'])
 		.pipe(gulp.dest('platforms/android'));
 });
@@ -1714,7 +1719,7 @@ gulp.task('prepareMindFirstIos', function(callback){
 		callback);
 });
 
-gulp.task('generateAndroidResources', ['copyAppResources'], function(callback){
+gulp.task('generateAndroidResources', [], function(callback){
 	return execute("ionic resources android", function(error){
 		if(error !== null){
 			console.log("ERROR GENERATING Android RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
@@ -1771,6 +1776,7 @@ gulp.task('prepareAndroidApp', function(callback){
         'cleanPlatforms',
         'cleanPlugins',
         //'ionicPlatformRemoveAndroid',
+        'copyAppResources',
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
