@@ -14,6 +14,31 @@ cd ${SCRIPT_FOLDER}
 cd ..
 export IONIC_PATH="$PWD"
 echo "IONIC_PATH is $IONIC_PATH"
+
+echo "Using node 4.4.4 because 6 seems to break stuff: https://github.com/steelbrain/exec/issues/13"
+source /home/ubuntu/.nvm/nvm.sh
+nvm install 4.4.4
+nvm use 4.4.4
+
+sudo mkdir $DROPBOX_PATH
+sudo mkdir /home/ubuntu/Dropbox/QuantiModo
+sudo mkdir /home/ubuntu/Dropbox/QuantiModo/apps
+sudo mkdir /var/lib/jenkins/.android
+sudo usermod -a -G ubuntu jenkins
+
+sudo chmod -R 777 $DROPBOX_PATH
+sudo chmod -R 777 /home/ubuntu/Dropbox/QuantiModo
+sudo chmod -R 777 /usr/lib/node_modules
+sudo chmod -R 777 /usr/local/lib
+sudo chmod -R 777 /var/lib/jenkins/.android
+sudo chmod 777 -R $PWD
+sudo ln -s /usr/bin/nodejs /usr/bin/node
+
+keytool -exportcert -list -v \
+-alias androiddebugkey -keystore ${ANDROID_DEBUG_KEYSTORE_PATH}
+
+ionic info
+
 #cd ..
 #mkdir qm-ionic-intermediates
 #cd qm-ionic-intermediates

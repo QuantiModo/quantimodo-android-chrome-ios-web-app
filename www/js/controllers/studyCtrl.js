@@ -1,7 +1,7 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
                                       correlationService, chartService, $timeout, $ionicLoading, localStorageService,
-                                      wikipediaFactory) {
+                                      wikipediaFactory, $ionicActionSheet) {
 
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -30,7 +30,7 @@ angular.module('starter')
                     effectVariableName: $scope.correlationObject.effectVariableName
                 };
                 $scope.state.title = $scope.correlationObject.predictorExplanation;
-                addWikipediaInfo();
+                //addWikipediaInfo();
                 if($scope.correlationObject.userId){
                     createUserCharts($scope.state.requestParams);
                 }
@@ -45,17 +45,30 @@ angular.module('starter')
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
-            if ($rootScope.urlParameters.aggregated) {
-                var fallbackToUserStudy = false;
-                if($rootScope.user){
-                    fallbackToUserStudy = true;
+            if(!$scope.state.requestParams.effectVariableName){
+                $scope.correlationObject = localStorageService.getItemAsObject('lastStudy');
+                $scope.state.requestParams = {
+                    causeVariableName: $scope.correlationObject.causeVariableName,
+                    effectVariableName: $scope.correlationObject.effectVariableName
+                };
+                $scope.state.title = $scope.correlationObject.predictorExplanation;
+                //addWikipediaInfo();
+                if($scope.correlationObject.userId){
+                    createUserCharts($scope.state.requestParams);
                 }
-                getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
-                addWikipediaInfo();
             } else {
-                var fallbackToAggregateStudy = true;
-                getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
-                addWikipediaInfo();
+                if ($rootScope.urlParameters.aggregated) {
+                    var fallbackToUserStudy = false;
+                    if($rootScope.user){
+                        fallbackToUserStudy = true;
+                    }
+                    getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
+                    //addWikipediaInfo();
+                } else {
+                    var fallbackToAggregateStudy = true;
+                    getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
+                    //addWikipediaInfo();
+                }
             }
 
             //chartCorrelationsOverTime();
@@ -236,6 +249,44 @@ angular.module('starter')
                     }
                 });
             }
+        };
+
+        $rootScope.showActionSheetMenu = function() {
+
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-log-in"></i>' + $scope.correlationObject.causeVariableName + ' Settings' },
+                    { text: '<i class="icon ion-log-out"></i>' + $scope.correlationObject.effectVariableName + ' Settings' },
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Seems Wrong',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.debug($state.current.name + ": " + 'CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
+                    if(index === 0){
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.correlationObject.causeVariableName});
+                    }
+                    if(index === 1){
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.correlationObject.effectVariableName});
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.downVote();
+                    return true;
+                }
+            });
+
+            console.debug('Setting hideSheet timeout');
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
         };
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);

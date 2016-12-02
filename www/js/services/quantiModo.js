@@ -437,10 +437,10 @@ angular.module('starter')
                 errorHandler);
         };
 
-        QuantiModo.getVariablesByName = function(variableName, successHandler, errorHandler){
+        QuantiModo.getVariablesByName = function(variableName, params, successHandler, errorHandler){
             QuantiModo.get('api/v1/variables/' + encodeURIComponent(variableName),
                 [],
-                {},
+                params,
                 successHandler,
                 errorHandler);
         };
@@ -684,6 +684,68 @@ angular.module('starter')
             QuantiModo.post('api/v1/trackingReminders',
                 [],
                 trackingRemindersArray,
+                successHandler,
+                errorHandler);
+        };
+
+        QuantiModo.postUserTagDeferred = function(tagData, successHandler, errorHandler) {
+            var deferred = $q.defer();
+            QuantiModo.postUserTag(tagData, function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        // post tracking reminder
+        QuantiModo.postUserTag = function(userTagData, successHandler, errorHandler) {
+            if(userTagData.constructor !== Array){
+                userTagData = [userTagData];
+            }
+
+            QuantiModo.post('api/v1/userTags',
+                [],
+                userTagData,
+                successHandler,
+                errorHandler);
+        };
+
+        QuantiModo.deleteUserTagDeferred = function(tagData, successHandler, errorHandler) {
+            var deferred = $q.defer();
+            QuantiModo.deleteUserTag(tagData, function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        // delete tracking reminder
+        QuantiModo.deleteUserTag = function(userTagData, successHandler, errorHandler) {
+            QuantiModo.post('api/v1/userTags/delete',
+                [],
+                userTagData,
+                successHandler,
+                errorHandler);
+        };
+
+        QuantiModo.getUserTagsDeferred = function(variableCategoryName) {
+            var deferred = $q.defer();
+            QuantiModo.getUserTags.then(function (userTags) {
+                deferred.resolve(userTags);
+            });
+
+            return deferred.promise;
+        };
+
+        // get reminders
+        QuantiModo.getUserTags = function(params, successHandler, errorHandler){
+            QuantiModo.get('api/v1/userTags',
+                ['variableCategoryName', 'id'],
+                params,
                 successHandler,
                 errorHandler);
         };

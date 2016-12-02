@@ -533,6 +533,12 @@ gulp.task('ionicResources', function(){
 	return deferred.promise;
 });
 
+gulp.task('symlinkForChromeExtension', function(){
+    execute("mklink /D apps/quantimodo/resources/chrome_extension/www www", function(error){
+    //execute("mklink /D apps/" + process.env.LOWERCASE_APP_NAME + "/resources/chrome_extension/www www", function(error){
+    });
+});
+
 var LOWERCASE_APP_NAME = false;
 
 gulp.task('getAppName', function(){
@@ -640,6 +646,20 @@ gulp.task('ionicUploadProduction', function(){
             }
         });
     });
+});
+
+gulp.task('ionicAddCrosswalk', function(){
+    var command = 'ionic plugin add cordova-plugin-crosswalk-webview';
+    execute(command, function(error) {
+        if (error) {
+            console.log("Failed to ionicAddCrosswalk: " + error);
+        }
+    });
+});
+
+gulp.task('downloadGradle', function(){
+    return request('https://services.gradle.org/distributions/gradle-2.14.1-bin.zip')
+		.pipe(fs.createWriteStream('gradle-2.14.1-bin.zip'));
 });
 
 var FACEBOOK_APP_ID = false;
@@ -1169,6 +1189,7 @@ gulp.task('setVersionNumberInFiles', function(callback){
 		'config-template.xml',
 		'config-template-ios.xml',
 		'resources/chrome_extension/manifest.json',
+        'build/chrome_extension/manifest.json',
 		'resources/chrome_app/manifest.json'
 	];
 	
@@ -1369,6 +1390,22 @@ gulp.task('cleanResources', [], function(){
 	return gulp.src("resources/*", { read: false }).pipe(clean());
 });
 
+gulp.task('cleanPlugins', [], function(){
+    return gulp.src("plugins", { read: false }).pipe(clean());
+});
+
+gulp.task('cleanPlatformsAndroid', [], function(){
+    return gulp.src("platforms/android", { read: false }).pipe(clean());
+});
+
+gulp.task('cleanPlatforms', [], function(){
+    return gulp.src("platforms", { read: false }).pipe(clean());
+});
+
+gulp.task('cleanChromeBuildFolder', [], function(){
+    return gulp.src("build/chrome_extension/*", { read: false }).pipe(clean());
+});
+
 gulp.task('copyAppResources', ['cleanResources'], function () {
 	return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
 		base: 'apps/' + process.env.LOWERCASE_APP_NAME
@@ -1478,17 +1515,12 @@ gulp.task('bumpIosVersion', function(callback){
 	});
 });
 
-gulp.task('deletePlugins', [], function(){
-	return gulp.src("plugins/*",
-		{ read: false })
-		.pipe(clean());
-});
-
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
+        'setIosEnvs',
 		'gitPull',
 		'gitCheckoutAppJs',
-		'deletePlugins',
+		'cleanPlugins',
 		'generateIosResources',
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
@@ -1502,39 +1534,50 @@ gulp.task('prepareIosApp', function(callback){
 
 gulp.task('copyWwwFolderToChromeExtension', ['copyPrivateConfig'], function(){
 	return gulp.src(['www/**/*'])
-		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME + '/www'));
+		.pipe(gulp.dest('build/chrome_extension/www'));
+});
+
+gulp.task('symlinkWwwFolderInChromeExtension', ['copyPrivateConfig'], function(){
+    return gulp.src(['www/**/*'])
+        .pipe(gulp.dest('build/chrome_extension/www'));
 });
 
 gulp.task('copyManifestToChromeExtension', ['copyWwwFolderToChromeExtension'], function(){
 	return gulp.src(['resources/chrome_extension/manifest.json'])
-		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME));
+		.pipe(gulp.dest('build/chrome_extension'));
 });
 
 gulp.task('removeFacebookFromChromeExtension', [], function(){
-	return gulp.src("build/chrome_extensions/" + process.env.LOWERCASE_APP_NAME + "/www/lib/phonegap-facebook-plugin/*",
+	return gulp.src("build/chrome_extension/www/lib/phonegap-facebook-plugin/*",
 		{ read: false })
 		.pipe(clean());
 });
 
 gulp.task('zipChromeExtension', [], function(){
-	return gulp.src(["build/chrome_extensions/" + process.env.LOWERCASE_APP_NAME + '/**/*'])
+	return gulp.src(['build/chrome_extension/**/*'])
 		.pipe(zip(process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip'))
 		.pipe(gulp.dest('build'));
 });
 
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
+	    'cleanChromeBuildFolder',
+		'copyAppResources',
+        'replaceVersionNumbersInFiles',
 		'copyWwwFolderToChromeExtension',
+        'resizeIcons',
+        //'symlinkForChromeExtension',
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
 		'zipChromeExtension',
 		callback);
 });
 
-gulp.task('prepareQuantiModo', function(callback){
+gulp.task('prepareQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
-        'prepareIosApp',
+		'resizeIcons',
+        //'prepareIosApp',
         'buildChromeExtension',
         callback);
 });
@@ -1542,7 +1585,6 @@ gulp.task('prepareQuantiModo', function(callback){
 gulp.task('prepareMoodiModoIos', function(callback){
 	runSequence(
 		'setMoodiModoEnvs',
-		'setIosEnvs',
 		'prepareIosApp',
 		callback);
 });
@@ -1550,11 +1592,52 @@ gulp.task('prepareMoodiModoIos', function(callback){
 gulp.task('buildQuantiModo', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
-		'prepareAndroidApp',
-
-		'setIosEnvs',
+        'buildChromeExtension',
+		'buildAndroidApp',
 		'prepareIosApp',
 		callback);
+});
+
+gulp.task('buildMoodiModo', function(callback){
+    runSequence(
+        'setMoodiModoEnvs',
+        'buildChromeExtension',
+        //'buildAndroidApp',
+        'prepareIosApp',
+        callback);
+});
+
+gulp.task('buildMindFirst', function(callback){
+    runSequence(
+        'setMindFirstEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'prepareIosApp',
+        callback);
+});
+
+gulp.task('buildMedTlc', function(callback){
+    runSequence(
+        'setMedTlcEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'prepareIosApp',
+        callback);
+});
+
+
+gulp.task('buildQuantiModoAndroid', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+        'buildAndroidApp',
+        callback);
+});
+
+gulp.task('buildQuantiModoChromeExtension', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+        'buildChromeExtension',
+        callback);
 });
 
 gulp.task('ionicPlatformAddAndroid', function(callback){
@@ -1566,6 +1649,17 @@ gulp.task('ionicPlatformAddAndroid', function(callback){
 				callback();
 			}
 		});
+});
+
+gulp.task('ionicPlatformRemoveAndroid', function(callback){
+    return execute("ionic platform remove android", function(error){
+        if(error !== null){
+            console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+        } else {
+            console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+            callback();
+        }
+    });
 });
 
 gulp.task('cordovaBuildAndroidDebug', function(callback){
@@ -1595,10 +1689,14 @@ gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
 		.pipe(gulp.dest('platforms/android'));
 });
 
+gulp.task('copyAndroidBuild', [], function(){
+    return gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
+        .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
+});
+
 gulp.task('prepareQuantiModoIos', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
-		'setIosEnvs',
 		'prepareIosApp',
 		callback);
 });
@@ -1606,7 +1704,6 @@ gulp.task('prepareQuantiModoIos', function(callback){
 gulp.task('prepareMindFirstIos', function(callback){
 	runSequence(
 		'setMindFirstEnvs',
-		'setIosEnvs',
 		'prepareIosApp',
 		callback);
 });
@@ -1633,15 +1730,40 @@ gulp.task('ionicRunAndroid', [], function(callback){
 	});
 });
 
+
+function resizeIcon(callback, resolution) {
+    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' build/www/img/icons/icon_' +
+        resolution + '.png', function (error) {
+        callback();
+    });
+}
+gulp.task('resizeIcon700', [], function(callback){ return resizeIcon(callback, 700); });
+gulp.task('resizeIcon16', [], function(callback){ return resizeIcon(callback, 16); });
+gulp.task('resizeIcon48', [], function(callback){ return resizeIcon(callback, 48); });
+gulp.task('resizeIcon128', [], function(callback){ return resizeIcon(callback, 128); });
+
+gulp.task('resizeIcons', function(callback){
+    runSequence('resizeIcon700',
+        'resizeIcon16',
+        'resizeIcon48',
+        'resizeIcon128',
+        callback);
+});
+
+
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
 		'gitCheckoutAppJs',
 		'setVersionNumberEnvs',
 		'setAndroidEnvs',
+        'cleanPlatforms',
+        'cleanPlugins',
+        //'ionicPlatformRemoveAndroid',
 		'updateConfigXmlUsingEnvs',
-		'generateAndroidResources',
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
+        'ionicAddCrosswalk',
+        'generateAndroidResources',
 		'copyAndroidResources',
 		'setIonicAppId',
 		callback);
@@ -1651,7 +1773,8 @@ gulp.task('buildAndroidApp', function(callback){
 	runSequence(
 		'prepareAndroidApp',
 		'cordovaBuildAndroidRelease',
-		'cordovaBuildAndroidDebug',
+        'copyAndroidBuild',
+		//'cordovaBuildAndroidDebug',
 		callback);
 });
 
@@ -1660,6 +1783,13 @@ gulp.task('prepareMindFirstAndroid', function(callback){
 		'setMindFirstEnvs',
 		'prepareAndroidApp',
 		callback);
+});
+
+gulp.task('prepareQuantiModoAndroid', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+        'prepareAndroidApp',
+        callback);
 });
 
 gulp.task('runMindFirstAndroid', function(callback){

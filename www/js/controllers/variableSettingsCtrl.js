@@ -151,7 +151,10 @@ angular.module('starter')
                     { text: '<i class="icon ion-compose"></i>Record Measurement'},
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
-                    { text: '<i class="icon ion-ios-list-outline"></i>History'}
+                    { text: '<i class="icon ion-ios-list-outline"></i>History'},
+                    { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
+                    { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
+
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -175,6 +178,13 @@ angular.module('starter')
                     if(index === 4) {
                         console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
                         $scope.goToHistoryForVariableObject($rootScope.variableObject);
+                    }
+                    if (index === 5) {
+                        $scope.addTag($rootScope.variableObject);
+                    }
+                    if(index === 6) {
+                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
+                        $scope.tagAnotherVariable($rootScope.variableObject);
                     }
 
                     return true;
@@ -250,10 +260,9 @@ angular.module('starter')
             } else if ($stateParams.variableName) {
                 $scope.state.title = $stateParams.variableName + ' Variable Settings';
                 $rootScope.variableName = $stateParams.variableName;
-                $ionicLoading.show({
-                    template: '<ion-spinner></ion-spinner>'
-                });
-                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+                var params = {includeTags : true};
+                variableService.getVariablesByName($stateParams.variableName, params).then(function(variableObject){
                     $ionicLoading.hide();
                     $rootScope.variableObject = variableObject;
                     setupByVariableObject(variableObject);
@@ -263,6 +272,8 @@ angular.module('starter')
                 $ionicHistory.goBack();
             }
         };
+
+
         
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);

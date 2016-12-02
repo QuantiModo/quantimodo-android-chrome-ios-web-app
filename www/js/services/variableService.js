@@ -33,11 +33,11 @@ angular.module('starter')
             return $rootScope.lastSearchUserVariablesPromise.promise;
         };
 
-        variableService.getVariablesByName = function(name){
+        variableService.getVariablesByName = function(name, params){
             var deferred = $q.defer();
 
             // refresh always
-            QuantiModo.getVariablesByName(name, function(variable){
+            QuantiModo.getVariablesByName(name, params, function(variable){
                 deferred.resolve(variable);
             }, function(error){
                 deferred.reject(error);
@@ -125,9 +125,9 @@ angular.module('starter')
                 return deferred.promise;
             }
 
-            userVariables = JSON.parse(localStorageService.getItemSync('commonVariables'));
+            userVariables = JSON.parse(localStorageService.getItemSync('userVariables'));
             if(userVariables && userVariables.length && typeof userVariables[0].manualTracking !== "undefined"){
-                console.debug("We already have commonVariables that didn't match filters so no need to refresh them");
+                console.debug("We already have userVariables that didn't match filters so no need to refresh them");
                 deferred.resolve([]);
                 return deferred.promise;
             }

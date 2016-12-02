@@ -648,13 +648,13 @@ img.intro-primary-outcome-variable-rating-buttons {
     padding: 6px 10px 5px 16px;
 }
 
-#skipButtonIntro:hover, #nextButtonIntro:hover
+#skipButtonIntro:hover, #nextButtonIntro:hover, #goButtonIntro:hover
 {
     border: none;
     outline:none;
 }
 
-#skipButtonIntro, #nextButtonIntro
+#skipButtonIntro, #nextButtonIntro, #goButtonIntro
 {
     border: none;
     outline:none;

@@ -101,8 +101,17 @@ angular.module('starter')
         };
 
         $rootScope.setLocalStorageFlagTrue = function (flagName) {
+            console.debug('Set ' + flagName + ' to true');
             $rootScope[flagName] = true;
             localStorageService.setItem(flagName, true);
+        };
+
+        $rootScope.hideHelpCard = function (card) {
+            card.hide = true;
+            $rootScope.defaultHelpCards = $rootScope.defaultHelpCards.filter(function( obj ) {
+                return obj.id !== card.id;
+            });
+            localStorageService.deleteElementOfItemById('defaultHelpCards', card.id);
         };
 
         // open datepicker for "from" date
@@ -194,6 +203,20 @@ angular.module('starter')
                         }
                     }
                 ]
+            });
+        };
+
+        $scope.addTag = function () {
+            $state.go('app.tagSearch',  {
+                fromState: $state.current.name,
+                taggedVariableObject: $rootScope.variableObject
+            });
+        };
+
+        $scope.tagAnotherVariable = function () {
+            $state.go('app.tageeSearch',  {
+                fromState: $state.current.name,
+                tagVariableObject: $rootScope.variableObject
             });
         };
 
@@ -350,7 +373,8 @@ angular.module('starter')
                 e.targetScope.controller_name === "ChartsPageCtrl" ||
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
                 e.targetScope.controller_name === "RemindersInboxCtrl" ||
-                e.targetScope.controller_name === "RemindersManageCtrl"
+                e.targetScope.controller_name === "RemindersManageCtrl" ||
+                e.targetScope.controller_name === "StudyCtrl"
             ) {
                 $scope.showMoreMenuButton = true;
             } else {
@@ -497,6 +521,24 @@ angular.module('starter')
                     $state.current.name);
                 $state.go(config.appSettings.defaultState);
             }
+        };
+
+        $scope.editTag = function(tagVariable){
+            $state.go('app.tagAdd', {
+                tagConversionFactor: tagVariable.tagConversionFactor,
+                taggedVariableObject: $rootScope.variableObject,
+                fromState: $state.current.name,
+                tagVariableObject: tagVariable
+            });
+        };
+
+        $scope.editTagged = function(taggedVariable){
+            $state.go('app.tagAdd', {
+                tagConversionFactor: taggedVariable.tagConversionFactor,
+                taggedVariableObject: taggedVariable,
+                fromState: $state.current.name,
+                tagVariableObject: $rootScope.variableObject
+            });
         };
 
         $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
@@ -866,9 +908,7 @@ angular.module('starter')
         $scope.favoriteValidationFailure = function (message) {
             utilsService.showAlert(message);
             console.error(message);
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.notify(message, message, {}, "error");
-            }
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
         };
 
         $scope.trackFavoriteByValueField = function(trackingReminder, $index){
