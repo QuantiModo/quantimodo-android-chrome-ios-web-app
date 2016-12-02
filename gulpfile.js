@@ -1690,7 +1690,7 @@ gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
 });
 
 gulp.task('copyAndroidBuild', [], function(){
-    return gulp.src(['platforms/android/build/outputs/*e.apk'])
+    return gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
         .pipe(gulp.dest('build/' + process.env.LOWERCASE_APP_NAME));
 });
 
