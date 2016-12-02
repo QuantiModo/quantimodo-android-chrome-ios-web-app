@@ -1407,6 +1407,7 @@ gulp.task('cleanChromeBuildFolder', [], function(){
 });
 
 gulp.task('copyAppResources', ['cleanResources'], function () {
+	console.log("If this fails, make sure there are no symlinks in the apps folder!");
 	return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
 		base: 'apps/' + process.env.LOWERCASE_APP_NAME
 	}).pipe(gulp.dest('.'));
