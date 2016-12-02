@@ -32,7 +32,7 @@ angular.module('starter')
                 $scope.state.title = $scope.correlationObject.predictorExplanation;
                 //addWikipediaInfo();
                 if($scope.correlationObject.userId){
-                    createUserCharts($scope.state.requestParams);
+                    getPairsAndCreateUserCharts($scope.state.requestParams);
                 }
                 return;
             }
@@ -54,7 +54,12 @@ angular.module('starter')
                 $scope.state.title = $scope.correlationObject.predictorExplanation;
                 //addWikipediaInfo();
                 if($scope.correlationObject.userId){
-                    createUserCharts($scope.state.requestParams);
+                    var data = localStorageService.getItemAsObject('lastPairsData');
+                    if(data){
+                        createUserCharts($scope.state.requestParams, data);
+                    } else {
+                        getPairsAndCreateUserCharts($scope.state.requestParams);
+                    }
                 }
             } else {
                 if ($rootScope.urlParameters.aggregated) {
@@ -145,25 +150,31 @@ angular.module('starter')
             });
         }
 
-        function createUserCharts(params) {
+        function createUserCharts(params, data) {
+            $scope.loadingCharts = false;
+            $scope.scatterplotChartConfig = chartService.createScatterPlot(params, data.pairs);
+            //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
+            //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
+            $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+                data.causeProcessedMeasurements, {variableName: params.causeVariableName});
+            $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+                data.effectProcessedMeasurements, {variableName: params.effectVariableName});
+            $scope.correlationOverTimeChartConfig =
+                chartService.processDataAndConfigureCorrelationOverTimeChart(data.correlationsOverTime);
+            $scope.pairsOverTimeChartConfig =
+                chartService.processDataAndConfigurePairsOverTimeChart(data.pairs, params);
+            $scope.highchartsReflow();
+        }
+
+        function getPairsAndCreateUserCharts(params) {
             $scope.loadingCharts = true;
             params.includeProcessedMeasurements = true;
             QuantiModo.getPairsDeferred(params).then(function (data) {
-                $scope.loadingCharts = false;
-                $scope.scatterplotChartConfig = chartService.createScatterPlot(params, data.pairs);
-                //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-                //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-                $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                    data.causeProcessedMeasurements, {variableName: params.causeVariableName});
-                $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                    data.effectProcessedMeasurements, {variableName: params.effectVariableName});
-                $scope.correlationOverTimeChartConfig =
-                    chartService.processDataAndConfigureCorrelationOverTimeChart(data.correlationsOverTime);
-                $scope.pairsOverTimeChartConfig =
-                    chartService.processDataAndConfigurePairsOverTimeChart(data.pairs, params);
-                $scope.highchartsReflow();
+                localStorageService.setItem('lastPairsData', JSON.stringify(data));
+                createUserCharts(params, data);
             });
         }
+
 
         var getUserStudy = function (params, fallbackToAggregateStudy) {
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
@@ -174,7 +185,7 @@ angular.module('starter')
                     $scope.correlationObject = correlations[0];
                     localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
-                    createUserCharts(params);
+                    getPairsAndCreateUserCharts(params);
                 } else {
                     if(!fallbackToAggregateStudy){
                         $scope.state.studyNotFound = true;
