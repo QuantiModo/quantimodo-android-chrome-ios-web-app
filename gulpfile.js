@@ -1733,7 +1733,7 @@ gulp.task('ionicRunAndroid', [], function(callback){
 
 
 function resizeIcon(callback, resolution) {
-    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' build/www/img/icons/icon_' +
+    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' build/chrome_extension/www/img/icons/icon_' +
         resolution + '.png', function (error) {
         callback();
     });
