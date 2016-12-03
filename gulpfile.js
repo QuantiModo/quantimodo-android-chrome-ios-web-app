@@ -213,7 +213,7 @@ gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
 });
 
 var answer = '';
-gulp.task('getApp', function(){
+gulp.task('getAppName', function(){
 	var deferred = q.defer();
 
 	inquirer.prompt([{
@@ -230,13 +230,13 @@ gulp.task('getApp', function(){
 });
 
 var updatedVersion = '';
-gulp.task('getUpdatedVersion', ['getApp'], function(){
+gulp.task('getUpdatedVersion', ['getAppName'], function(){
 	var deferred = q.defer();
 	inquirer.prompt([{
 		type : 'confirm',
 		name : 'updatedVersion',
 		'default' : false,
-		message : 'Have you updated the app\'s version number in chromeApps/'+answer+'/menifest.json ?'
+		message : 'Have you updated the app\'s version number in chromeApps/'+answer+'/manifest.json ?'
 	}], function(answers){
 		if (answers.updatedVersion){
 			updatedVersion = answers.updatedVersion;
@@ -249,18 +249,18 @@ gulp.task('getUpdatedVersion', ['getApp'], function(){
 	return deferred.promise;
 });
 
-gulp.task('copywww', ['getUpdatedVersion'], function(){
+gulp.task('copyWwwFolderToChromeApp', ['getUpdatedVersion'], function(){
 	return gulp.src(['www/**/*'])
 	.pipe(gulp.dest('chromeApps/'+answer+'/www'));
 });
 
-gulp.task('makezip', ['copywww'], function(){
+gulp.task('zipChromeApp', ['copyWwwFolderToChromeApp'], function(){
 	return gulp.src(['chromeApps/'+answer+'/**/*'])
 	.pipe(zip(answer+'.zip'))
 	.pipe(gulp.dest('chromeApps/zips'));
 });
 
-gulp.task('openbrowser', ['makezip'], function(){
+gulp.task('openChromeAuthorizationPage', ['zipChromeApp'], function(){
 	 var deferred = q.defer();
 
 	 gulp.src(__filename)
@@ -272,10 +272,10 @@ gulp.task('openbrowser', ['makezip'], function(){
 });
 
 var code = '';
-gulp.task('getCode', ['openbrowser'], function(){
+gulp.task('getChromeAuthorizationCode', ['openChromeAuthorizationPage'], function(){
 	var deferred = q.defer();
 	setTimeout(function(){
-		console.log("Starting getCode");
+		console.log("Starting getChromeAuthorizationCode");
 		inquirer.prompt([{
 			type : 'input',
 			name : 'code',
@@ -292,7 +292,7 @@ gulp.task('getCode', ['openbrowser'], function(){
 });
 
 var access_token = '';
-gulp.task('getAccessTokenFromGoogle', ['getCode'], function(){
+gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function(){
 	var deferred = q.defer();
 
 	var options = {
@@ -325,9 +325,9 @@ var getAppIds = function(){
 	return appIds;
 };
 
-gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
+gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function(){
 	var deferred = q.defer();
-	var appIds =getAppIds();
+	var appIds = getAppIds();
 
 	var source = fs.createReadStream('./chromeApps/zips/'+answer+'.zip');
 
@@ -341,7 +341,7 @@ gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
 		}
 	};
 
-	console.log('Gnerated URL for upload operation: ', options.url);
+	console.log('Generated URL for upload operation: ', options.url);
 	console.log('The Access Token: Bearer '+access_token);
 	console.log("UPLOADING. .. .. Please Wait! .. .");
 
@@ -350,7 +350,7 @@ gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
 			console.log("Error in Uploading Data", error);
 			deferred.reject();
 		} else {
-			console.log('Upload Response Recieved');
+			console.log('Upload Response Received');
 			data = JSON.parse(data);
 
 			if(data.uploadState === "SUCCESS"){
@@ -368,7 +368,7 @@ gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
 });
 
 var shouldPublish = true;
-gulp.task('shouldPublish', ['uploadToAppServer'], function(){
+gulp.task('shouldPublish', ['uploadChromeApp'], function(){
 	var deferred = q.defer();
 	inquirer.prompt([{
 		type : 'confirm',
@@ -388,9 +388,9 @@ gulp.task('shouldPublish', ['uploadToAppServer'], function(){
 	return deferred.promise;
 });
 
-gulp.task('publishToGoogleAppStore', ['shouldPublish'],function(){
+gulp.task('publishToGoogleAppStore', ['shouldPublish'], function(){
 	var deferred = q.defer();
-	var appIds =getAppIds();
+	var appIds = getAppIds();
 
 	// upload the package
 	var options = {
