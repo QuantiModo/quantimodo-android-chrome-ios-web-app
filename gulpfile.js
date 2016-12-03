@@ -1575,7 +1575,7 @@ gulp.task('buildChromeExtension', [], function(callback){
 	    'copyAppResources',
 	    'cleanChromeBuildFolder',
         'replaceVersionNumbersInFiles',
-        'copyWwwFolderToChromeExtension',
+        //'copyWwwFolderToChromeExtension',  Better to use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
 		'copyManifestToChromeExtension',
