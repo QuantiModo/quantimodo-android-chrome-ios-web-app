@@ -97,7 +97,11 @@ angular.module('starter')
         };
 
         $scope.openUrl = function(url){
-            window.open(url);
+            if(typeof cordova !== "undefined"){
+                cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
+            } else {
+                window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+            }
         };
 
         $rootScope.setLocalStorageFlagTrue = function (flagName) {
