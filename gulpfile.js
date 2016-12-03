@@ -16,6 +16,7 @@ var fs = require('fs');
 var CodeGen = require('swagger-js-codegen').CodeGen;
 var glob = require('glob');
 var zip = require('gulp-zip');
+var unzip = require('gulp-unzip');
 var request = require('request');
 var open = require('gulp-open');
 var gcallback = require('gulp-callback');
@@ -37,6 +38,14 @@ var paths = {
 };
 
 gulp.task('default', ['sass']);
+
+gulp.task('unzipChromeExtension', function() {
+    var minimatch = require('minimatch');
+    gulp.src('./build/' + process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip')
+        .pipe(unzip())
+        .pipe(gulp.dest('./build/' + process.env.LOWERCASE_APP_NAME + '-Chrome-Extension'));
+});
+
 
 gulp.task('sass', function(done) {
 	gulp.src('./scss/ionic.app.scss')
@@ -1129,11 +1138,11 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 
 gulp.task('replaceVersionNumbersInFiles', function(callback){
 
-	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.2.0';
+	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.3.0';
 	console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
 	process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.3.0';
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.4.0';
 	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 
 	runSequence(
@@ -1429,6 +1438,10 @@ gulp.task('cleanChromeBuildFolder', [], function(){
     return gulp.src("build/chrome_extension/*", { read: false }).pipe(clean());
 });
 
+gulp.task('cleanBuildFolder', [], function(){
+    return gulp.src("build/*", { read: false }).pipe(clean());
+});
+
 gulp.task('copyAppResources', ['cleanResources'], function () {
 	console.log("If this fails, make sure there are no symlinks in the apps folder!");
 	return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
@@ -1587,6 +1600,7 @@ gulp.task('removeFacebookFromChromeExtension', [], function(){
 });
 
 gulp.task('zipChromeExtension', [], function(){
+	console.log('If this fails, make sure there are no symlinks.');
 	return gulp.src(['build/chrome_extension/**/*'])
 		.pipe(zip(process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip'))
 		.pipe(gulp.dest('build'));
@@ -1597,13 +1611,14 @@ gulp.task('buildChromeExtension', [], function(callback){
 	    'copyPrivateConfig',
 	    'copyAppResources',
 	    //'cleanChromeBuildFolder',  //Better to use symlinks
-        'replaceVersionNumbersInFiles',
+        //'replaceVersionNumbersInFiles',
         'copyWwwFolderToChromeExtension',  //Better to use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
 		'zipChromeExtension',
+		'unzipChromeExtension',
 		callback);
 });
 
@@ -1669,6 +1684,7 @@ gulp.task('buildQuantiModoAndroid', function(callback){
 
 gulp.task('buildAllChromeExtensions', function(callback){
     runSequence(
+    	'cleanBuildFolder',
         'setEnergyModoEnvs',
         'buildChromeExtension',
         'setMedTlcEnvs',
