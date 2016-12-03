@@ -1198,6 +1198,7 @@ angular.module('starter')
 
         QuantiModo.setUserInLocalStorageBugsnagIntercomPush = function(user){
             localStorageService.setItem('user', JSON.stringify(user));
+            localStorage.user = JSON.stringify(user); // For Chrome Extension
             QuantiModo.saveAccessTokenInLocalStorage(user);
             $rootScope.user = user;
             if (typeof Bugsnag !== "undefined") {
