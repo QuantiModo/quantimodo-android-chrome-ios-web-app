@@ -426,12 +426,18 @@ angular.module('starter')
                     return;
                 }
                 console.debug('Checking for new snapshot');
+                $scope.showLoader('Checking something...');
+                
+                $timeout(function () {
+                    $scope.hideLoader();
+                }, 60 * 1000);
                 $ionicDeploy.check().then(function(snapshotAvailable) {
                     if (snapshotAvailable) {
                         message = 'New snapshot available';
                         console.debug(message);
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                         // When snapshotAvailable is true, you can apply the snapshot
+                        $scope.showLoader('Downloading...');
                         $ionicDeploy.download().then(function() {
                             message = 'Downloaded new version';
                             console.debug(message);
@@ -440,6 +446,7 @@ angular.module('starter')
                                 title: 'Registration Successful',
                                 //template: "Wait a few seconds for extract and restart app to update."
                             });*/
+                            $scope.showLoader('Extracting...');
                             return $ionicDeploy.extract();
                         });
                     } else {
@@ -447,6 +454,7 @@ angular.module('starter')
                             title: 'Not Updating',
                             template: "No new snapshot available"
                         });*/
+                        $scope.showLoader('No new downloads');
                         message = 'No new snapshot available';
                         console.debug(message);
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
