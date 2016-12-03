@@ -1,6 +1,6 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(ratingService, localStorageService, $q, $timeout) {
+	.factory('chartService', function(ratingService, localStorageService, $q) {
 	    var chartService = {};
 
 		chartService.getWeekdayChartConfigForPrimaryOutcome = function () {
@@ -507,7 +507,7 @@ angular.module('starter')
 			return movingAverage;
 		};
 
-		chartService.processDataAndConfigureCorrelationOverTimeChart = function(correlations) {
+		chartService.processDataAndConfigureCorrelationOverTimeChart = function(correlations, weightedPeriod) {
 			if(!correlations){
 				return false;
 			}
@@ -519,6 +519,14 @@ angular.module('starter')
 					valueDecimals: 2
 				}
 			};
+
+            var smoothedPearsonCorrelationSeries = {
+                name : 'Smoothed Pearson Correlation Coefficient',
+                data : [],
+                tooltip: {
+                    valueDecimals: 2
+                }
+            };
 
 			var forwardSpearmanCorrelationSeries = {
 				name : 'Spearman Correlation Coefficient',
@@ -555,6 +563,24 @@ angular.module('starter')
 
 			var seriesToChart = [];
 			seriesToChart.push(forwardPearsonCorrelationSeries);
+
+            function calculateWeightedMovingAverage( array, weightedPeriod ) {
+                var weightedArray = [];
+                for( var i = 0; i <= array.length - weightedPeriod; i++ ) {
+                    var sum = 0;
+                    for( var j = 0; j < weightedPeriod; j++ ) {
+                        sum += array[ i + j ] * ( weightedPeriod - j );
+                    }
+                    weightedArray[i] = sum / (( weightedPeriod * ( weightedPeriod + 1 )) / 2 );
+                }
+                return weightedArray;
+            }
+
+            smoothedPearsonCorrelationSeries.data =
+				calculateWeightedMovingAverage(forwardPearsonCorrelationSeries.data, weightedPeriod);
+
+            seriesToChart.push(smoothedPearsonCorrelationSeries);
+
 			if(!excludeSpearman){
 				seriesToChart.push(forwardSpearmanCorrelationSeries);
 			}
