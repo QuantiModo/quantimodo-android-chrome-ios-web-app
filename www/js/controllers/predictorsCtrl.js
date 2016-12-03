@@ -274,7 +274,9 @@ angular.module('starter')
 	    	// make url
 	    	name = name.split(' ').join('+');
             // launch inAppBrowser
-            window.open('http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k='+name, '_blank', 'location=no');
+
+            var url  = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
+            $scope.openUrl(url);
 	    };
 
         $scope.showLoader = function (loadingText) {
