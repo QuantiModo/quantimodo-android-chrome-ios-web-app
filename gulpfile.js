@@ -1349,7 +1349,38 @@ gulp.task('template', function(done){
 		.on('end', done);
 });
 
+gulp.task('setEnergyModoEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037652";
+    process.env.APP_DISPLAY_NAME = "EnergyModo";
+    process.env.LOWERCASE_APP_NAME = "energymodo";
+    process.env.APP_IDENTIFIER = "com.quantimodo.energymodo";
+    process.env.APP_DESCRIPTION = "Track and find out what affects your energy levels";
+    process.env.IONIC_APP_ID = "f837bb35";
+    callback();
+});
+
+gulp.task('setMedTlcEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037661";
+    process.env.APP_DISPLAY_NAME = "MedTLC";
+    process.env.LOWERCASE_APP_NAME = "medtlc";
+    process.env.APP_IDENTIFIER = "com.quantimodo.medtlcapp";
+    process.env.APP_DESCRIPTION = "Medication. Track. Learn. Connect.";
+    process.env.IONIC_APP_ID = "e85b92b4";
+    callback();
+});
+
+gulp.task('setMindFirstEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037661";
+    process.env.APP_DISPLAY_NAME = "MindFirst";
+    process.env.LOWERCASE_APP_NAME = "mindfirst";
+    process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
+    process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
+    process.env.IONIC_APP_ID = "6d8e312f";
+    callback();
+});
+
 gulp.task('setMoodiModoEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037661";
 	process.env.APP_DISPLAY_NAME = "MoodiModo";
 	process.env.LOWERCASE_APP_NAME = "moodimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodoapp";
@@ -1359,20 +1390,12 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
 });
 
 gulp.task('setQuantiModoEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037661";
 	process.env.APP_DISPLAY_NAME = "QuantiModo";
 	process.env.LOWERCASE_APP_NAME = "quantimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
 	process.env.IONIC_APP_ID = "42fe48d4";
-	callback();
-});
-
-gulp.task('setMindFirstEnvs', [], function(callback){
-	process.env.APP_DISPLAY_NAME = "MindFirst";
-	process.env.LOWERCASE_APP_NAME = "mindfirst";
-	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
-	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
-	process.env.IONIC_APP_ID = "6d8e312f";
 	callback();
 });
 
@@ -1573,9 +1596,9 @@ gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
 	    'copyPrivateConfig',
 	    'copyAppResources',
-	    'cleanChromeBuildFolder',
+	    //'cleanChromeBuildFolder',  //Better to use symlinks
         'replaceVersionNumbersInFiles',
-        //'copyWwwFolderToChromeExtension',  Better to use symlinks
+        'copyWwwFolderToChromeExtension',  //Better to use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
 		'copyManifestToChromeExtension',
@@ -1641,6 +1664,21 @@ gulp.task('buildQuantiModoAndroid', function(callback){
     runSequence(
         'setQuantiModoEnvs',
         'buildAndroidApp',
+        callback);
+});
+
+gulp.task('buildAllChromeExtensions', function(callback){
+    runSequence(
+        'setEnergyModoEnvs',
+        'buildChromeExtension',
+        'setMedTlcEnvs',
+        'buildChromeExtension',
+        'setMindFirstEnvs',
+        'buildChromeExtension',
+        'setMoodiModoEnvs',
+        'buildChromeExtension',
+        'setQuantiModoEnvs',
+        'buildChromeExtension',
         callback);
 });
 
