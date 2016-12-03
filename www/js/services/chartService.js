@@ -672,13 +672,13 @@ angular.module('starter')
                     yAxis: [{
                         lineWidth: 1,
                         title: {
-                            text: params.causeVariableName
+                            text: params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')'
                         }
                     }, {
                         lineWidth: 1,
                         opposite: true,
                         title: {
-                            text: params.effectVariableName
+                            text: params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')'
                         }
                     }]
 				},
@@ -686,7 +686,7 @@ angular.module('starter')
                     valueSuffix: ''
                 },
                 series: [ {
-                    name: params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')',
+                    name: params.causeVariableName,
                     type: 'spline',
                     color: '#00A1F1',
                     data: predictorSeries.data,
@@ -695,17 +695,17 @@ angular.module('starter')
                     },
                     dashStyle: 'shortdot',
                     tooltip: {
-                        valueSuffix: ' ' + pairs[0].causeAbbreviatedUnitName
+                        valueSuffix: '' + pairs[0].causeAbbreviatedUnitName
                     }
 
                 }, {
-                    name: params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')',
+                    name: params.effectVariableName,
                     color: '#EA4335',
                     type: 'spline',
                     yAxis: 1,
                     data: outcomeSeries.data,
                     tooltip: {
-                        valueSuffix: ' ' + pairs[0].effectAbbreviatedUnitName
+                        valueSuffix: '' + pairs[0].effectAbbreviatedUnitName
                     }
                 }]
             };
