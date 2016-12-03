@@ -174,7 +174,15 @@ angular.module('starter')
 
                 $http(request)
                     .success(function (data, status, headers, config) {
-                        if (data.error) {
+                        if(!data) {
+                            if (typeof Bugsnag !== "undefined") {
+                                var groupingHash = 'No data returned from this request';
+                                Bugsnag.notify(groupingHash,
+                                    status + " response from url " + request.url,
+                                    {groupingHash: groupingHash},
+                                    "error");
+                            }
+                        } else if (data.error) {
                             QuantiModo.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                             errorHandler(data);
                         } else {
