@@ -1,6 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
     <ion-nav-title>Study</ion-nav-title>
         <ion-content>
+            <ion-refresher on-refresh="getStudy()"></ion-refresher>
             <div class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
                 <br>
                 <h2 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h2>
