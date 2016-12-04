@@ -1,6 +1,6 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(ratingService, localStorageService, $q) {
+	.factory('chartService', function(ratingService, localStorageService, $q, $timeout) {
 	    var chartService = {};
 
 		chartService.getWeekdayChartConfigForPrimaryOutcome = function () {
@@ -464,50 +464,134 @@ angular.module('starter')
 			return chartService.configureLineChart(lineChartData, variableObject);
 		};
 
-		var ctx = this;
-		var origMovingAverage = ctx.movingAverage;
+        function calculateWeightedMovingAverage( array, weightedPeriod ) {
+            var weightedArray = [];
+            for( var i = 0; i <= array.length - weightedPeriod; i++ ) {
+                var sum = 0;
+                for( var j = 0; j < weightedPeriod; j++ ) {
+                    sum += array[ i + j ] * ( weightedPeriod - j );
+                }
+                weightedArray[i] = sum / (( weightedPeriod * ( weightedPeriod + 1 )) / 2 );
+            }
+            return weightedArray;
+        }
 
-		function isNumber(obj) {
-			if (isNaN(obj)) {
-				return false;
-			}
+		chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart = function(correlations, weightedPeriod) {
+            if(!correlations){
+                return false;
+            }
 
-			return Object.prototype.toString.call(obj) === '[object Number]';
-		}
+            var forwardPearsonCorrelationSeries = {
+                name : 'Pearson Correlation Coefficient',
+                data : [],
+                tooltip: {
+                    valueDecimals: 2
+                }
+            };
 
-		function maybeCoerce(item) {
-			if (! isNumber(item)) {
-				item = parseFloat(item) || 0;
-			}
+            var smoothedPearsonCorrelationSeries = {
+                name : 'Smoothed Pearson Correlation Coefficient',
+                data : [],
+                tooltip: {
+                    valueDecimals: 2
+                }
+            };
 
-			return item;
-		}
+            var forwardSpearmanCorrelationSeries = {
+                name : 'Spearman Correlation Coefficient',
+                data : [],
+                tooltip: {
+                    valueDecimals: 2
+                }
+            };
 
-		function reducer(memo, item, index, arr) {
-			Object.defineProperty(memo, 'currentTotal', {
-				value: (memo.currentTotal || 0) + item,
-				enumerable: false,
-				writable: true
-			});
+            var qmScoreSeries = {
+                name : 'QM Score',
+                data : [],
+                tooltip: {
+                    valueDecimals: 2
+                }
+            };
 
-			memo.push(memo.currentTotal / (index + 1));
-			return memo;
-		}
+            var xAxis = [];
 
-		function movingAverage(items) {
-			if (! Array.isArray(items)) {
-				items = [];
-			}
+            var excludeSpearman = false;
+            var excludeQmScoreSeries = false;
+            for (var i = 0; i < correlations.length; i++) {
+                xAxis.push('Day ' + correlations[i].onsetDelay/(60 * 60 * 24));
+                forwardPearsonCorrelationSeries.data.push(correlations[i].correlationCoefficient);
+                forwardSpearmanCorrelationSeries.data.push(correlations[i].forwardSpearmanCorrelationCoefficient);
+                if(correlations[i].forwardSpearmanCorrelationCoefficient === null){
+                    excludeSpearman = true;
+                }
+                qmScoreSeries.data.push(correlations[i].qmScore);
+                if(correlations[i].qmScore === null){
+                    excludeQmScoreSeries = true;
+                }
+            }
 
-			return items.map(maybeCoerce).reduce(reducer, []);
-		}
+            var seriesToChart = [];
+            seriesToChart.push(forwardPearsonCorrelationSeries);
 
-		movingAverage.noConflict = function () {
-			ctx.movingAverage = origMovingAverage;
-			return movingAverage;
-		};
+            smoothedPearsonCorrelationSeries.data =
+                calculateWeightedMovingAverage(forwardPearsonCorrelationSeries.data, weightedPeriod);
 
-		chartService.processDataAndConfigureCorrelationOverTimeChart = function(correlations, weightedPeriod) {
+            seriesToChart.push(smoothedPearsonCorrelationSeries);
+
+            if(!excludeSpearman){
+                seriesToChart.push(forwardSpearmanCorrelationSeries);
+            }
+            if(!excludeQmScoreSeries){
+                seriesToChart.push(qmScoreSeries);
+            }
+            var minimumTimeEpochMilliseconds = correlations[0].durationOfAction * 1000;
+            var maximumTimeEpochMilliseconds = correlations[correlations.length - 1].durationOfAction * 1000;
+            var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
+
+            if(millisecondsBetweenLatestAndEarliest < 86400*1000){
+                console.warn('Need at least a day worth of data for line chart');
+                return;
+            }
+
+            var config = {
+                title: {
+                    text: 'Correlations Over Durations of Action',
+                    //x: -20 //center
+                },
+                subtitle: {
+                    text: '',
+                    //text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
+                    //x: -20
+                },
+                legend : {
+                    enabled : false
+                },
+                xAxis: {
+                    title: {
+                        text: 'Duration of Action (Time Over Which Perceivable Effect is Assumed)'
+                    },
+                    categories: xAxis
+                },
+                yAxis: {
+                    title: {
+                        text: 'Value'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#EA4335'
+                    }]
+                },
+                tooltip: {
+                    valueSuffix: ''
+                },
+                series : seriesToChart
+            };
+
+            return config;
+        };
+
+		chartService.processDataAndConfigureCorrelationsOverOnsetDelaysChart = function(correlations, weightedPeriod) {
 			if(!correlations){
 				return false;
 			}
@@ -564,17 +648,6 @@ angular.module('starter')
 			var seriesToChart = [];
 			seriesToChart.push(forwardPearsonCorrelationSeries);
 
-            function calculateWeightedMovingAverage( array, weightedPeriod ) {
-                var weightedArray = [];
-                for( var i = 0; i <= array.length - weightedPeriod; i++ ) {
-                    var sum = 0;
-                    for( var j = 0; j < weightedPeriod; j++ ) {
-                        sum += array[ i + j ] * ( weightedPeriod - j );
-                    }
-                    weightedArray[i] = sum / (( weightedPeriod * ( weightedPeriod + 1 )) / 2 );
-                }
-                return weightedArray;
-            }
 
             smoothedPearsonCorrelationSeries.data =
 				calculateWeightedMovingAverage(forwardPearsonCorrelationSeries.data, weightedPeriod);
