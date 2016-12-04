@@ -1276,7 +1276,7 @@ angular.module('starter')
             $rootScope.variableObject.durationOfActionInHours = variableObject.durationOfAction/3600;
             $scope.loading = false;
             $scope.hideLoader() ;
-        }
+        };
 
         $scope.getVariableByName = function (variableName) {
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});

@@ -88,7 +88,7 @@
                     </p>
                 </div>
                 <div class="item item-body">
-                    <img ng-src="{{correlationObject.gaugeImage}}">
+                    <img ng-src="{{correlationObject.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
                     <p>{{correlationObject.predictorExplanation}}</p>
                     <p ng-if="correlationObject.valuePredictingHighOutcomeExplanation" >
                         {{correlationObject.valuePredictingHighOutcomeExplanation}}
