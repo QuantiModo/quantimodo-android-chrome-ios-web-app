@@ -88,6 +88,12 @@ angular.module('starter')
         };
 
         var getHistoryForVariable = function(params){
+
+            if($scope.stopGettingMeasurements){
+                console.debug('Stopping getting of measurements');
+                return;
+            }
+
             if(!params.variableName){
                 console.error("ERROR: params.variableName not provided to getHistoryForVariable");
                 console.error($state.current.name + " params: " + JSON.stringify(params));
@@ -128,6 +134,12 @@ angular.module('starter')
         };
 
         var getDailyHistoryForVariable = function(params){
+
+            if($scope.stopGettingMeasurements){
+                console.debug('Stopping getting of measurements');
+                return;
+            }
+
             if(!params.variableName){
                 console.error("ERROR: params.variableName not provided to getHistoryForVariable");
                 console.error("params: " + JSON.stringify(params));
@@ -173,8 +185,15 @@ angular.module('starter')
                 $rootScope.variableObject = variableObject;
             });
         };
+
+        $scope.$on('$ionicView.beforeLeave', function(){
+            console.debug('Leaving so setting $scope.stopGettingMeasurements to true');
+            $scope.stopGettingMeasurements = true;
+        });
         
         $scope.init = function(){
+            $scope.stopGettingMeasurements = false;
+            $ionicLoading.hide();
             //$scope.showLoader('Fetching measurements');
             $scope.state.loading = true;
             console.debug("variablePageCtrl: init");
