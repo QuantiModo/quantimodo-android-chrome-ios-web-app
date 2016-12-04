@@ -37,4 +37,6 @@ expect {
 }
 '
 
+sudo source scripts/jenkins_install.sh
+
 #sudo gem install sass

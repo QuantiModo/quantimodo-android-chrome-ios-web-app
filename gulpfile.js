@@ -16,6 +16,7 @@ var fs = require('fs');
 var CodeGen = require('swagger-js-codegen').CodeGen;
 var glob = require('glob');
 var zip = require('gulp-zip');
+var unzip = require('gulp-unzip');
 var request = require('request');
 var open = require('gulp-open');
 var gcallback = require('gulp-callback');
@@ -37,6 +38,14 @@ var paths = {
 };
 
 gulp.task('default', ['sass']);
+
+gulp.task('unzipChromeExtension', function() {
+    var minimatch = require('minimatch');
+    gulp.src('./build/' + process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip')
+        .pipe(unzip())
+        .pipe(gulp.dest('./build/' + process.env.LOWERCASE_APP_NAME + '-Chrome-Extension'));
+});
+
 
 gulp.task('sass', function(done) {
 	gulp.src('./scss/ionic.app.scss')
@@ -213,7 +222,7 @@ gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
 });
 
 var answer = '';
-gulp.task('getApp', function(){
+gulp.task('getAppName', function(){
 	var deferred = q.defer();
 
 	inquirer.prompt([{
@@ -230,13 +239,13 @@ gulp.task('getApp', function(){
 });
 
 var updatedVersion = '';
-gulp.task('getUpdatedVersion', ['getApp'], function(){
+gulp.task('getUpdatedVersion', ['getAppName'], function(){
 	var deferred = q.defer();
 	inquirer.prompt([{
 		type : 'confirm',
 		name : 'updatedVersion',
 		'default' : false,
-		message : 'Have you updated the app\'s version number in chromeApps/'+answer+'/menifest.json ?'
+		message : 'Have you updated the app\'s version number in chromeApps/'+answer+'/manifest.json ?'
 	}], function(answers){
 		if (answers.updatedVersion){
 			updatedVersion = answers.updatedVersion;
@@ -249,18 +258,18 @@ gulp.task('getUpdatedVersion', ['getApp'], function(){
 	return deferred.promise;
 });
 
-gulp.task('copywww', ['getUpdatedVersion'], function(){
+gulp.task('copyWwwFolderToChromeApp', ['getUpdatedVersion'], function(){
 	return gulp.src(['www/**/*'])
 	.pipe(gulp.dest('chromeApps/'+answer+'/www'));
 });
 
-gulp.task('makezip', ['copywww'], function(){
+gulp.task('zipChromeApp', ['copyWwwFolderToChromeApp'], function(){
 	return gulp.src(['chromeApps/'+answer+'/**/*'])
 	.pipe(zip(answer+'.zip'))
 	.pipe(gulp.dest('chromeApps/zips'));
 });
 
-gulp.task('openbrowser', ['makezip'], function(){
+gulp.task('openChromeAuthorizationPage', ['zipChromeApp'], function(){
 	 var deferred = q.defer();
 
 	 gulp.src(__filename)
@@ -272,10 +281,10 @@ gulp.task('openbrowser', ['makezip'], function(){
 });
 
 var code = '';
-gulp.task('getCode', ['openbrowser'], function(){
+gulp.task('getChromeAuthorizationCode', ['openChromeAuthorizationPage'], function(){
 	var deferred = q.defer();
 	setTimeout(function(){
-		console.log("Starting getCode");
+		console.log("Starting getChromeAuthorizationCode");
 		inquirer.prompt([{
 			type : 'input',
 			name : 'code',
@@ -292,7 +301,7 @@ gulp.task('getCode', ['openbrowser'], function(){
 });
 
 var access_token = '';
-gulp.task('getAccessTokenFromGoogle', ['getCode'], function(){
+gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function(){
 	var deferred = q.defer();
 
 	var options = {
@@ -325,9 +334,9 @@ var getAppIds = function(){
 	return appIds;
 };
 
-gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
+gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function(){
 	var deferred = q.defer();
-	var appIds =getAppIds();
+	var appIds = getAppIds();
 
 	var source = fs.createReadStream('./chromeApps/zips/'+answer+'.zip');
 
@@ -341,7 +350,7 @@ gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
 		}
 	};
 
-	console.log('Gnerated URL for upload operation: ', options.url);
+	console.log('Generated URL for upload operation: ', options.url);
 	console.log('The Access Token: Bearer '+access_token);
 	console.log("UPLOADING. .. .. Please Wait! .. .");
 
@@ -350,7 +359,7 @@ gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
 			console.log("Error in Uploading Data", error);
 			deferred.reject();
 		} else {
-			console.log('Upload Response Recieved');
+			console.log('Upload Response Received');
 			data = JSON.parse(data);
 
 			if(data.uploadState === "SUCCESS"){
@@ -368,7 +377,7 @@ gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
 });
 
 var shouldPublish = true;
-gulp.task('shouldPublish', ['uploadToAppServer'], function(){
+gulp.task('shouldPublish', ['uploadChromeApp'], function(){
 	var deferred = q.defer();
 	inquirer.prompt([{
 		type : 'confirm',
@@ -388,9 +397,9 @@ gulp.task('shouldPublish', ['uploadToAppServer'], function(){
 	return deferred.promise;
 });
 
-gulp.task('publishToGoogleAppStore', ['shouldPublish'],function(){
+gulp.task('publishToGoogleAppStore', ['shouldPublish'], function(){
 	var deferred = q.defer();
-	var appIds =getAppIds();
+	var appIds = getAppIds();
 
 	// upload the package
 	var options = {
@@ -1101,7 +1110,7 @@ var setVersionNumberInConfigXml = function(configFilePath, callback){
 	});
 };
 
-gulp.task('bumpVersionNumberEnvs', ['setVersionNumberEnvs'], function(callback){
+gulp.task('bumpVersionNumberEnvs', ['setVersionNumberEnvsFromIosConfig'], function(callback){
 	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER;
 	var numberToBumpArr = process.env.IONIC_APP_VERSION_NUMBER.split('.');
 	numberToBumpArr[2] = (parseInt(numberToBumpArr[2]) + 1).toString();
@@ -1127,18 +1136,19 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 		callback);
 });
 
+gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.3.0';
+    console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
+    process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.4.0';
+    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+    callback();
+});
+
 gulp.task('replaceVersionNumbersInFiles', function(callback){
-
-	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.1.0';
-	console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
-	process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.2.0';
-	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-
 	runSequence(
 		//'setVersionNumberInConfigXml',  Messes it up, I think. Replacing with shell script for now.
-		//'setVersionNumberInIosConfigXml',
+		'setVersionNumberEnvsFromGulpFile',
 		'setVersionNumberInFiles',
 		callback);
 });
@@ -1349,7 +1359,38 @@ gulp.task('template', function(done){
 		.on('end', done);
 });
 
+gulp.task('setEnergyModoEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037652";
+    process.env.APP_DISPLAY_NAME = "EnergyModo";
+    process.env.LOWERCASE_APP_NAME = "energymodo";
+    process.env.APP_IDENTIFIER = "com.quantimodo.energymodo";
+    process.env.APP_DESCRIPTION = "Track and find out what affects your energy levels";
+    process.env.IONIC_APP_ID = "f837bb35";
+    callback();
+});
+
+gulp.task('setMedTlcEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037661";
+    process.env.APP_DISPLAY_NAME = "MedTLC";
+    process.env.LOWERCASE_APP_NAME = "medtlc";
+    process.env.APP_IDENTIFIER = "com.quantimodo.medtlcapp";
+    process.env.APP_DESCRIPTION = "Medication. Track. Learn. Connect.";
+    process.env.IONIC_APP_ID = "e85b92b4";
+    callback();
+});
+
+gulp.task('setMindFirstEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037661";
+    process.env.APP_DISPLAY_NAME = "MindFirst";
+    process.env.LOWERCASE_APP_NAME = "mindfirst";
+    process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
+    process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
+    process.env.IONIC_APP_ID = "6d8e312f";
+    callback();
+});
+
 gulp.task('setMoodiModoEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037661";
 	process.env.APP_DISPLAY_NAME = "MoodiModo";
 	process.env.LOWERCASE_APP_NAME = "moodimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodoapp";
@@ -1359,20 +1400,12 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
 });
 
 gulp.task('setQuantiModoEnvs', [], function(callback){
+    process.env.APPLE_ID = "1115037661";
 	process.env.APP_DISPLAY_NAME = "QuantiModo";
 	process.env.LOWERCASE_APP_NAME = "quantimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
 	process.env.IONIC_APP_ID = "42fe48d4";
-	callback();
-});
-
-gulp.task('setMindFirstEnvs', [], function(callback){
-	process.env.APP_DISPLAY_NAME = "MindFirst";
-	process.env.LOWERCASE_APP_NAME = "mindfirst";
-	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
-	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
-	process.env.IONIC_APP_ID = "6d8e312f";
 	callback();
 });
 
@@ -1406,10 +1439,20 @@ gulp.task('cleanChromeBuildFolder', [], function(){
     return gulp.src("build/chrome_extension/*", { read: false }).pipe(clean());
 });
 
+gulp.task('cleanBuildFolder', [], function(){
+    return gulp.src("build/*", { read: false }).pipe(clean());
+});
+
 gulp.task('copyAppResources', ['cleanResources'], function () {
+	console.log("If this fails, make sure there are no symlinks in the apps folder!");
 	return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
 		base: 'apps/' + process.env.LOWERCASE_APP_NAME
 	}).pipe(gulp.dest('.'));
+});
+
+gulp.task('copyIconsToChromeExtension', [], function(){
+    return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/resources/icon*.png'])
+        .pipe(gulp.dest('build/chrome_extension/www/img/icons'));
 });
 
 gulp.task('copyPrivateConfig', [], function () {
@@ -1428,21 +1471,21 @@ gulp.task('copyIonicCloudLibrary', [], function () {
 	return gulp.src(['node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js']).pipe(gulp.dest('www/lib'));
 });
 
-gulp.task('removeTransparentPng', ['copyAppResources'], function () {
+gulp.task('removeTransparentPng', [], function () {
 	return gulp.src("resources/icon.png", { read: false }).pipe(clean());
 });
 
-gulp.task('removeTransparentPsd', ['removeTransparentPng'], function () {
+gulp.task('removeTransparentPsd', [], function () {
 	return gulp.src("resources/icon.psd", { read: false }).pipe(clean());
 });
 
-gulp.task('useWhiteIcon', ['removeTransparentPsd'], function () {
+gulp.task('useWhiteIcon', [], function () {
 	return gulp.src('./resources/icon_white.png')
 		.pipe(rename('icon.png'))
 		.pipe(gulp.dest('resources'));
 });
 
-gulp.task('generateIosResources', ['useWhiteIcon'], function(callback){
+gulp.task('generateIosResources', [], function(callback){
 	return execute("ionic resources ios", function(error){
 		if(error !== null){
 			console.log("ERROR GENERATING iOS RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
@@ -1521,6 +1564,10 @@ gulp.task('prepareIosApp', function(callback){
 		'gitPull',
 		'gitCheckoutAppJs',
 		'cleanPlugins',
+        'copyAppResources',
+        'removeTransparentPng',
+        'removeTransparentPsd',
+        'useWhiteIcon',
 		'generateIosResources',
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
@@ -1532,7 +1579,7 @@ gulp.task('prepareIosApp', function(callback){
 		callback);
 });
 
-gulp.task('copyWwwFolderToChromeExtension', ['copyPrivateConfig'], function(){
+gulp.task('copyWwwFolderToChromeExtension', [], function(){
 	return gulp.src(['www/**/*'])
 		.pipe(gulp.dest('build/chrome_extension/www'));
 });
@@ -1542,7 +1589,7 @@ gulp.task('symlinkWwwFolderInChromeExtension', ['copyPrivateConfig'], function()
         .pipe(gulp.dest('build/chrome_extension/www'));
 });
 
-gulp.task('copyManifestToChromeExtension', ['copyWwwFolderToChromeExtension'], function(){
+gulp.task('copyManifestToChromeExtension', [], function(){
 	return gulp.src(['resources/chrome_extension/manifest.json'])
 		.pipe(gulp.dest('build/chrome_extension'));
 });
@@ -1554,6 +1601,7 @@ gulp.task('removeFacebookFromChromeExtension', [], function(){
 });
 
 gulp.task('zipChromeExtension', [], function(){
+	console.log('If this fails, make sure there are no symlinks.');
 	return gulp.src(['build/chrome_extension/**/*'])
 		.pipe(zip(process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip'))
 		.pipe(gulp.dest('build'));
@@ -1561,22 +1609,24 @@ gulp.task('zipChromeExtension', [], function(){
 
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
-	    'cleanChromeBuildFolder',
-		'copyAppResources',
+	    'copyPrivateConfig',
+	    'copyAppResources',
+	    //'cleanChromeBuildFolder',  //Can't clean here because we can't build multiple extensions then
         'replaceVersionNumbersInFiles',
-		'copyWwwFolderToChromeExtension',
-        'resizeIcons',
-        //'symlinkForChromeExtension',
+        'copyWwwFolderToChromeExtension',  //Can't use symlinks
+        'resizeIconsForChromeExtension',
+        'copyIconsToChromeExtension',
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
 		'zipChromeExtension',
+		'unzipChromeExtension',
 		callback);
 });
 
 gulp.task('prepareQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
-		'resizeIcons',
+		'resizeIconsForChromeExtension',
         //'prepareIosApp',
         'buildChromeExtension',
         callback);
@@ -1633,6 +1683,22 @@ gulp.task('buildQuantiModoAndroid', function(callback){
         callback);
 });
 
+gulp.task('buildAllChromeExtensions', function(callback){
+    runSequence(
+    	'cleanBuildFolder',
+        'setEnergyModoEnvs',
+        'buildChromeExtension',
+        'setMedTlcEnvs',
+        'buildChromeExtension',
+        'setMindFirstEnvs',
+        'buildChromeExtension',
+        'setMoodiModoEnvs',
+        'buildChromeExtension',
+        'setQuantiModoEnvs',
+        'buildChromeExtension',
+        callback);
+});
+
 gulp.task('buildQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
@@ -1684,7 +1750,7 @@ gulp.task('cordovaBuildAndroidRelease', function(callback){
 	});
 });
 
-gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
+gulp.task('copyAndroidResources', [], function(){
 	return gulp.src(['resources/android/**/*'])
 		.pipe(gulp.dest('platforms/android'));
 });
@@ -1708,7 +1774,7 @@ gulp.task('prepareMindFirstIos', function(callback){
 		callback);
 });
 
-gulp.task('generateAndroidResources', ['copyAppResources'], function(callback){
+gulp.task('generateAndroidResources', [], function(callback){
 	return execute("ionic resources android", function(error){
 		if(error !== null){
 			console.log("ERROR GENERATING Android RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
@@ -1732,7 +1798,7 @@ gulp.task('ionicRunAndroid', [], function(callback){
 
 
 function resizeIcon(callback, resolution) {
-    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' build/www/img/icons/icon_' +
+    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' build/chrome_extension/www/img/icons/icon_' +
         resolution + '.png', function (error) {
         callback();
     });
@@ -1742,7 +1808,14 @@ gulp.task('resizeIcon16', [], function(callback){ return resizeIcon(callback, 16
 gulp.task('resizeIcon48', [], function(callback){ return resizeIcon(callback, 48); });
 gulp.task('resizeIcon128', [], function(callback){ return resizeIcon(callback, 128); });
 
-gulp.task('resizeIcons', function(callback){
+gulp.task('createChromeExtensionAndResources', [], function(callback){
+    runSequence(
+        'resizeIconsForChromeExtension',
+        'copyIconsToChromeExtension',
+        callback);
+});
+
+gulp.task('resizeIconsForChromeExtension', function(callback){
     runSequence('resizeIcon700',
         'resizeIcon16',
         'resizeIcon48',
@@ -1750,15 +1823,15 @@ gulp.task('resizeIcons', function(callback){
         callback);
 });
 
-
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
 		'gitCheckoutAppJs',
-		'setVersionNumberEnvs',
+		'setVersionNumberEnvsFromGulpFile',
 		'setAndroidEnvs',
         'cleanPlatforms',
         'cleanPlugins',
         //'ionicPlatformRemoveAndroid',
+        'copyAppResources',
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
@@ -1800,7 +1873,7 @@ gulp.task('runMindFirstAndroid', function(callback){
 		callback);
 });
 
-gulp.task('setVersionNumberEnvs', [], function(callback){
+gulp.task('setVersionNumberEnvsFromIosConfig', [], function(callback){
 	var configFilePath = './config-template-ios.xml';
 	var xml = fs.readFileSync(configFilePath, 'utf8');
 	parseString(xml, function (err, result) {

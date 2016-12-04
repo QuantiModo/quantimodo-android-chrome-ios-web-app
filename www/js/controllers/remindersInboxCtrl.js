@@ -458,12 +458,12 @@ angular.module('starter')
 		var getFilteredTrackingReminderNotifications = function(){
 			reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
-                    trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
+/*                    trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
                     	if(obj.variableName === 'Blood Pressure'){
                     		console.debug('Removing Blood Pressure notification until I make the UI for it');
 						}
                         return obj.variableName !== 'Blood Pressure';
-                    });
+                    });*/
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications =
 						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
@@ -485,12 +485,12 @@ angular.module('starter')
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
 			var trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
 				'trackingReminderNotifications', 'variableCategoryName', $stateParams.variableCategoryName);
-            trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
+/*            trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
                 if(obj.variableName === 'Blood Pressure'){
                     console.debug('Removing Blood Pressure notification until I make the UI for it');
                 }
                 return obj.variableName !== 'Blood Pressure';
-            });
+            });*/
 			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 			$scope.filteredTrackingReminderNotifications =
 				reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);

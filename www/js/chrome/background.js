@@ -2,6 +2,9 @@
 ****	EVENT HANDLERS
 ***/
 
+var v = null;
+var vid = null;
+
 /*
 **	Returns true in the result listener if the user is logged in, false if not
 */
@@ -18,12 +21,12 @@ function isUserLoggedIn(resultListener)
 			if (xhr.readyState === 4)
 			{
 				var userObject = JSON.parse(xhr.responseText);
+				localStorage.user = xhr.responseText;
 				/*
 				 * it should hide and show sign in button based upon the cookie set or not
 				 */
-				if(typeof userObject.displayName !== "undefined")
-				{
-						console.debug(userObject.displayName + " is logged in.  ");
+				if(typeof userObject.displayName !== "undefined") {
+					console.debug(userObject.displayName + " is logged in.  ");
 				} else {
 					var url = "https://app.quantimo.do/api/v2/auth/login";
 					chrome.tabs.create({"url":url, "selected":true});
@@ -59,10 +62,47 @@ chrome.runtime.onInstalled.addListener(function()
 chrome.alarms.onAlarm.addListener(function(alarm)
 {
 	console.debug('onAlarm Listener heard this alarm ', alarm);
-
-	showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm);
-
+    checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
 });
+
+function openOrFocusPopupWindow(windowParams) {
+    if (vid) {
+        chrome.windows.get(vid, function (chromeWindow) {
+            if (!chrome.runtime.lastError && chromeWindow) {
+                chrome.windows.update(vid, {focused: true});
+                return;
+            }
+            chrome.windows.create(
+                windowParams,
+                function (chromeWindow) {
+                    vid = chromeWindow.id;
+                }
+            );
+        });
+    } else {
+        chrome.windows.create(
+            windowParams,
+            function (chromeWindow) {
+                vid = chromeWindow.id;
+            }
+        );
+    }
+}
+
+function executeCallbackOrFocusExistingPopup(callback) {
+    if (vid) {
+        chrome.windows.get(vid, function (chromeWindow) {
+            if (!chrome.runtime.lastError && chromeWindow) {
+                chrome.windows.update(vid, {focused: true});
+                return;
+            }
+            callback();
+        });
+    } else {
+        callback();
+    }
+}
+
 
 function openPopup(notificationId) {
 
@@ -105,8 +145,21 @@ function openPopup(notificationId) {
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
 
+    openOrFocusPopupWindow(windowParams);
 
-	chrome.windows.create(windowParams);
+/*
+	chrome.windows.update(vid, {focused: true}, function() {
+		if (chrome.runtime.lastError) {
+			chrome.windows.create(
+				windowParams,
+				function(chromeWindow) {
+					vid = chromeWindow.id;
+				});
+		}
+	});
+*/
+
+	//chrome.windows.create(windowParams);
 	if(notificationId){
 		chrome.notifications.clear(notificationId);
 	}
@@ -183,9 +236,77 @@ function objectLength(obj) {
     return result;
 }
 
-function showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm)
+function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
+    var xhr = new XMLHttpRequest();
+    var url = "https://app.quantimo.do:443/api/v1/trackingReminderNotifications/past";
+    if (localStorage.accessToken) {
+        url = url + '?access_token=' + localStorage.accessToken;
+    }
+    xhr.open("GET", url, false);
+
+    xhr.onreadystatechange = function () {
+        var notificationId;
+        if (xhr.status === 401) {
+            notificationParams = {
+                type: "basic",
+                title: "How are you?",
+                message: "Click to sign in and record a measurement",
+                iconUrl: "www/img/icons/icon_700.png",
+                priority: 2
+            };
+            notificationId = 'signin';
+            chrome.notifications.create(notificationId, notificationParams, function (id) {
+            });
+        } else if (xhr.readyState === 4) {
+            var notificationsObject = JSON.parse(xhr.responseText);
+            var numberOfWaitingNotifications = objectLength(notificationsObject.data);
+            if (numberOfWaitingNotifications > 0) {
+                notificationParams = {
+                    type: "basic",
+                    title: numberOfWaitingNotifications + " new tracking reminder notifications!",
+                    message: "Click to open reminder inbox",
+                    iconUrl: "www/img/icons/icon_700.png",
+                    priority: 2
+                };
+                notificationId = alarm.name;
+
+                chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
+
+                var showNotification = localStorage.showNotification === "true";
+                if (showNotification) {
+                    chrome.notifications.create(notificationId, notificationParams, function (id) {
+                    });
+                } else {
+                    openPopup(notificationId);
+                }
+            } else {
+                chrome.browserAction.setBadgeText({text: ""});
+            }
+        }
+    };
+
+    xhr.send();
+    return notificationParams;
+}
+
+function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)
 {
 	console.debug('showNotificationOrPopupForAlarm alarm: ', alarm);
+
+    var userString = localStorage.user;
+    if(userString){
+        var userObject = JSON.parse(userString);
+        if(userObject){
+            var now = new Date();
+            var hours = now.getHours();
+            var currentTime = hours + ':00:00';
+            if(currentTime > userObject.latestReminderTime ||
+                currentTime < userObject.earliestReminderTime ){
+                console.debug('Not showing notification because outside allowed time range');
+                return false;
+            }
+        }
+    }
 
 	var notificationParams = {
 		type: "basic",
@@ -204,54 +325,17 @@ function showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm)
 		console.debug('alarm.name is not a json object', alarm);
 	}
 
-    var xhr = new XMLHttpRequest();
-	var url = "https://app.quantimo.do:443/api/v1/trackingReminderNotifications/past";
-	if(localStorage.accessToken){
-		url = url + '?access_token=' + localStorage.accessToken;
-	}
-    xhr.open("GET", url, false);
-
-    xhr.onreadystatechange = function()
-    {
-		var notificationId;
-		if(xhr.status === 401){
-			notificationParams = {
-				type: "basic",
-				title: "How are you?",
-				message: "Click to sign in and record a measurement",
-				iconUrl: "www/img/icons/icon_700.png",
-				priority: 2
-			};
-			notificationId = 'signin';
-			chrome.notifications.create(notificationId, notificationParams, function(id){});
-		} else if (xhr.readyState === 4) {
-            var notificationsObject = JSON.parse(xhr.responseText);
-            var numberOfWaitingNotifications = objectLength(notificationsObject.data);
-            if(numberOfWaitingNotifications > 0) {
-				notificationParams = {
-					type: "basic",
-					title: numberOfWaitingNotifications + " new tracking reminder notifications!",
-					message: "Click to open reminder inbox",
-					iconUrl: "www/img/icons/icon_700.png",
-					priority: 2
-				};
-				notificationId = alarm.name;
-
-				chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
-
-				var showNotification = localStorage.showNotification === "true";
-				if(showNotification){
-					chrome.notifications.create(notificationId, notificationParams, function(id){});
-				} else {
-					openPopup(notificationId);
-				}
-            } else {
-				chrome.browserAction.setBadgeText({text: ""});
-			}
-        }
-    };
-
-    xhr.send();
+    if (vid) {
+        chrome.windows.get(vid, function (chromeWindow) {
+            if (!chrome.runtime.lastError && chromeWindow) {
+                chrome.windows.update(vid, {focused: true});
+                return;
+            }
+            checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);
+        });
+    } else {
+        checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);
+    }
 }
 
 function IsJsonString(str) {

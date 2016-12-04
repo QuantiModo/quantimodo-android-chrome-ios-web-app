@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Inbox">
 	<ion-nav-title>{{state.title}}</ion-nav-title>
-	<ion-content>
+	<ion-content style="background-color: #f2f2f2">
 		<!--<ion-content scroll="true" overflow-scroll="true">-->
 		<ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
 		<div ng-if="stateParams.showHelpCards === true"
@@ -62,7 +62,9 @@
 								<i class="ion-settings"> &nbsp; Settings</i>
 							</button>
 						</div>
-						<label ng-if="trackingReminderNotification.defaultValue === null && trackingReminderNotification.abbreviatedUnitName !== '/5'"
+						<label ng-if="trackingReminderNotification.defaultValue === null &&
+										trackingReminderNotification.variableName !== 'Blood Pressure' &&
+										trackingReminderNotification.abbreviatedUnitName !== '/5'"
 							   class="item item-input">
 							<input type="number" ng-model="trackingReminderNotification.total" id="defaultValueField"
 								   ng-click="onTextClick($event)"
@@ -77,6 +79,7 @@
 							</span>
 						</label>
 						<div class="row" ng-if="trackingReminderNotification.defaultValue !== null &&
+												trackingReminderNotification.variableName !== 'Blood Pressure' &&
 												trackingReminderNotification.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
 								<button ng-show="trackingReminderNotification.defaultValue"
@@ -92,8 +95,9 @@
 								</button>
 							</div>
 						</div>
-						<div class="row" ng-if="trackingReminderNotification.defaultValue !== null &&
-												trackingReminderNotification.abbreviatedUnitName !== '/5' " >
+						<div class="row" ng-if="(trackingReminderNotification.defaultValue !== null &&
+												trackingReminderNotification.abbreviatedUnitName !== '/5') ||
+												trackingReminderNotification.variableName === 'Blood Pressure'" >
 							<div class="button-bar">
 								<button class="button button-clear button-calm"
 										style="text-overflow: clip; font-size: 14px;"
