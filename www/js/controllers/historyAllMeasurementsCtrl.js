@@ -10,7 +10,7 @@ angular.module('starter')
         
 	    $scope.state = {
 	    	offset : 0,
-	    	limit : 200,
+	    	limit : 50,
 	    	history : [],
 			units : [],
 			variableCategories : [],
@@ -71,7 +71,7 @@ angular.module('starter')
 				}
 				$scope.state.history = ratingService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
-				if(history.length < 200){
+				if(history.length < $scope.state.limit){
 					$scope.state.hideLoadMoreButton = true;
 					$scope.state.noHistory = history.length === 0;
 				} else {
