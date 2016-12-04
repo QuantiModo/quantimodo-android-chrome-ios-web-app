@@ -1241,6 +1241,60 @@ angular.module('starter')
             });
 
         };
-        
+
+        $scope.saveVariableSettings = function(variableObject){
+            var params = {
+                variableId: variableObject.id,
+                durationOfAction: variableObject.durationOfAction*60*60,
+                fillingValue: variableObject.fillingValue,
+                //joinWith
+                maximumAllowedValue: variableObject.maximumAllowedValue,
+                minimumAllowedValue: variableObject.minimumAllowedValue,
+                onsetDelay: variableObject.onsetDelay*60*60,
+                combinationOperation: variableObject.combinationOperation
+                //userVariableAlias: $scope.state.userVariableAlias
+                //experimentStartTime
+                //experimentEndTime
+            };
+
+            console.debug('Saving variable settings ' + JSON.stringify(params));
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+            variableService.postUserVariable(params).then(function() {
+                console.debug("variableService.postUserVariable: success: " + JSON.stringify(params));
+                $ionicLoading.hide();
+                $ionicHistory.goBack();
+            }, function(error) {
+                $ionicLoading.hide();
+                console.error(error);
+            });
+        };
+
+        $scope.setupVariableByVariableObject = function(variableObject) {
+            $rootScope.variableName = variableObject.name;
+            $rootScope.variableObject = variableObject;
+            $rootScope.variableObject.onsetDelayInHours = $rootScope.variableObject.onsetDelay/3600;
+            $rootScope.variableObject.durationOfActionInHours = $rootScope.variableObject.durationOfAction/3600;
+            $scope.state.loading = false;
+            $scope.hideLoader() ;
+        }
+
+        $scope.getVariableByName = function (variableName) {
+            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+            var params = {includeTags : true};
+            variableService.getVariablesByName(variableName, params).then(function(variableObject){
+                $ionicLoading.hide();
+                $rootScope.variableObject = variableObject;
+                $scope.setupVariableByVariableObject(variableObject);
+            });
+        };
+
+        $scope.resetVariableToDefaultSettings = function(variableObject) {
+            // Populate fields with original settings for variable
+            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+            variableService.resetUserVariable(variableObject.id).then(function() {
+                $scope.getVariableByName(variableObject.name);
+            });
+        };
+
         $scope.init();
     });

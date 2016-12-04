@@ -8,7 +8,7 @@
                 <option value="MEAN" name="group">Average</option>
             </select>
         </label>
-        <div ng-hide="state.hideMinMax" class="item item-input">
+        <div ng-hide="variableObject.abbreviatedUnitName !== '/5'" class="item item-input">
             <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">
                 Minimum Value &nbsp; <i class="icon ion-help-circled"></i>
             </span>
@@ -16,7 +16,7 @@
                 <input id="minimumAllowedValue" class="right-input" ng-model="variableObject.minimumAllowedValue"  type="number" placeholder="-Infinity">
             </span>
         </div>
-        <div ng-hide="state.hideMinMax" class="item item-input">
+        <div ng-hide="variableObject.abbreviatedUnitName !== '/5'" class="item item-input">
             <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">
                 Maximum Value &nbsp; <i class="icon ion-help-circled"></i>
             </span>
