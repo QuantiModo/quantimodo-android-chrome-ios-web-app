@@ -69,11 +69,11 @@ angular.module('starter')
                 $scope.state.title = $scope.correlationObject.predictorExplanation;
                 //addWikipediaInfo();
                 if($scope.correlationObject.userId){
-                    var data;
+                    $scope.data = [];
                     //We shouldn't cache because they don't update after we change settings
-                    //data = localStorageService.getItemAsObject('lastPairsData');
-                    if(data){
-                        createUserCharts(data);
+                    $scope.data = localStorageService.getItemAsObject('lastPairsData');
+                    if($scope.data){
+                        $scope.createUserCharts();
                     } else {
                         getPairsAndCreateUserCharts($scope.state.requestParams);
                     }
@@ -156,19 +156,21 @@ angular.module('starter')
             });
         }
 
-        function createUserCharts(data) {
+        $scope.weightedPeriod = 5;
+
+        $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
-            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams, data.pairs);
+            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams, $scope.data.pairs);
             //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
             //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
             $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                data.causeProcessedMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
+                $scope.data.causeProcessedMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
             $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                data.effectProcessedMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
+                $scope.data.effectProcessedMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
             $scope.correlationOverTimeChartConfig =
-                chartService.processDataAndConfigureCorrelationOverTimeChart(data.correlationsOverTime);
+                chartService.processDataAndConfigureCorrelationOverTimeChart($scope.data.correlationsOverTime, $scope.weightedPeriod);
             $scope.pairsOverTimeChartConfig =
-                chartService.processDataAndConfigurePairsOverTimeChart(data.pairs, $scope.state.requestParams);
+                chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.state.requestParams);
             $scope.highchartsReflow();
         }
 
@@ -177,8 +179,9 @@ angular.module('starter')
             $scope.state.requestParams.includeProcessedMeasurements = true;
             QuantiModo.getPairsDeferred($scope.state.requestParams).then(function (data) {
                 //We shouldn't cache because they don't update after we change settings
-                //localStorageService.setItem('lastPairsData', JSON.stringify(data));
-                createUserCharts(data);
+                $scope.data = data;
+                localStorageService.setItem('lastPairsData', JSON.stringify(data));
+                $scope.createUserCharts();
             });
         }
 

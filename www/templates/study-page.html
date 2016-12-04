@@ -28,6 +28,14 @@
                 <highchart ng-show="effectTimelineChartConfig" id="effectTimeline" config="effectTimelineChartConfig"></highchart>
                 <highchart ng-show="scatterplotChartConfig" id="scatterplot" config="scatterplotChartConfig"></highchart>
                 <highchart ng-show="correlationOverTimeChartConfig" id="correlationOverTimeChart" config="correlationOverTimeChartConfig"></highchart>
+                <label class="item item-input"
+                       ng-show="correlationOverTimeChartConfig">
+                    <span class="input-label">Moving Average Period</span>
+                    <input type="number"
+                           ng-change="createUserCharts()"
+                           ng-model="weightedPeriod"
+                           id="weightedPeriod" placeholder="" >
+                </label>
                 <highchart ng-show="pairsOverTimeChartConfig" id="pairsOverTimeChart" config="pairsOverTimeChartConfig"></highchart>
                 <div id="studyBody" >
                     <h3 ng-if="causeWikiEntry || effectWikiEntry || correlationObject.studyBackground"
