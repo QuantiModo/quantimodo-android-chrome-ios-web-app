@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Inbox">
 	<ion-nav-title>{{state.title}}</ion-nav-title>
-	<ion-content>
+	<ion-content style="background-color: #f2f2f2">
 		<!--<ion-content scroll="true" overflow-scroll="true">-->
 		<ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
 		<div ng-if="stateParams.showHelpCards === true"
