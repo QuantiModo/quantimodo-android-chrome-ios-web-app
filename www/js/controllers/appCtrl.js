@@ -84,6 +84,11 @@ angular.module('starter')
                 {variableName: correlationObject.causeVariableName});
         };
 
+        $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
+            $state.go('app.variableSettings',
+                {variableName: correlationObject.effectVariableName});
+        };
+
         $scope.goToState = function (state, stateParameters) {
             var variableCategoryName = null;
             if (stateParameters && stateParameters.variableCategoryName) {
