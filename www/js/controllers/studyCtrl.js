@@ -81,8 +81,6 @@ angular.module('starter')
             } else {
                 $scope.getStudy();
             }
-
-            //chartCorrelationsOverTime();
         };
 
         function addWikipediaInfo() {
@@ -167,8 +165,10 @@ angular.module('starter')
                 $scope.data.causeProcessedMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
             $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
                 $scope.data.effectProcessedMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
-            $scope.correlationOverTimeChartConfig =
-                chartService.processDataAndConfigureCorrelationOverTimeChart($scope.data.correlationsOverTime, $scope.weightedPeriod);
+            $scope.correlationsOverOnsetDelaysChartConfig =
+                chartService.processDataAndConfigureCorrelationsOverOnsetDelaysChart($scope.data.correlationsOverTime, $scope.weightedPeriod);
+            $scope.correlationsOverDurationsOfActionChartConfig =
+                chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart($scope.data.correlationsOverDurationsOfAction);
             $scope.pairsOverTimeChartConfig =
                 chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.state.requestParams);
             $scope.highchartsReflow();
@@ -243,33 +243,6 @@ angular.module('starter')
                     getUserStudy();
                 }
             });
-        };
-
-        var chartCorrelationsOverTime = function () {
-            var params = {
-                effectVariableName: $scope.correlationObject.effectVariableName,
-                causeVariableName: $scope.correlationObject.causeVariableName,
-                durationOfAction: 86400,
-                doNotGroup: true
-            };
-
-            if($scope.correlationObject.userId){
-                correlationService.getUserCorrelations($scope.state.requestParams).then(function(userCorrelations){
-                    if(userCorrelations.length > 2){
-                        $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(userCorrelations);
-                        console.debug($scope.lineChartConfig);
-                        $scope.highchartsReflow();
-                    }
-                });
-            } else {
-                correlationService.getAggregatedCorrelations($scope.state.requestParams).then(function(aggregatedCorrelations){
-                    if(aggregatedCorrelations.length > 2){
-                        $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(aggregatedCorrelations);
-                        console.debug($scope.lineChartConfig);
-                        $scope.highchartsReflow();
-                    }
-                });
-            }
         };
 
         $rootScope.showActionSheetMenu = function() {
