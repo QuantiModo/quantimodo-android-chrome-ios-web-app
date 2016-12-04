@@ -75,7 +75,7 @@ angular.module('starter')
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.state.loading = true;
+            $scope.loading = true;
             $scope.showLoader('Getting variable details');
             $scope.showHelpInfoPopupIfNecessary();
             if($stateParams.variableObject){

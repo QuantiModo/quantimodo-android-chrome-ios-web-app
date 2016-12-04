@@ -205,6 +205,10 @@ angular.module('starter')
                 return;
             }
 
+            if($rootScope.offlineConnectionErrorShowing){
+                $rootScope.offlineConnectionErrorShowing = false;
+            }
+
             console.debug('QuantiModo.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(items));
             QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 

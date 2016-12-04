@@ -1245,12 +1245,12 @@ angular.module('starter')
         $scope.saveVariableSettings = function(variableObject){
             var params = {
                 variableId: variableObject.id,
-                durationOfAction: variableObject.durationOfAction*60*60,
+                durationOfAction: variableObject.durationOfActionInHours*60*60,
                 fillingValue: variableObject.fillingValue,
                 //joinWith
                 maximumAllowedValue: variableObject.maximumAllowedValue,
                 minimumAllowedValue: variableObject.minimumAllowedValue,
-                onsetDelay: variableObject.onsetDelay*60*60,
+                onsetDelay: variableObject.onsetDelayInHours*60*60,
                 combinationOperation: variableObject.combinationOperation
                 //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
@@ -1272,9 +1272,9 @@ angular.module('starter')
         $scope.setupVariableByVariableObject = function(variableObject) {
             $rootScope.variableName = variableObject.name;
             $rootScope.variableObject = variableObject;
-            $rootScope.variableObject.onsetDelayInHours = $rootScope.variableObject.onsetDelay/3600;
-            $rootScope.variableObject.durationOfActionInHours = $rootScope.variableObject.durationOfAction/3600;
-            $scope.state.loading = false;
+            $rootScope.variableObject.onsetDelayInHours = variableObject.onsetDelay/3600;
+            $rootScope.variableObject.durationOfActionInHours = variableObject.durationOfAction/3600;
+            $scope.loading = false;
             $scope.hideLoader() ;
         }
 

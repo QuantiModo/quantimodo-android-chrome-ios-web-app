@@ -8,7 +8,7 @@
                 <option value="MEAN" name="group">Average</option>
             </select>
         </label>
-        <div ng-hide="variableObject.abbreviatedUnitName !== '/5'" class="item item-input">
+        <div ng-hide="variableObject.abbreviatedUnitName === '/5'" class="item item-input">
             <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">
                 Minimum Value &nbsp; <i class="icon ion-help-circled"></i>
             </span>
@@ -16,7 +16,7 @@
                 <input id="minimumAllowedValue" class="right-input" ng-model="variableObject.minimumAllowedValue"  type="number" placeholder="-Infinity">
             </span>
         </div>
-        <div ng-hide="variableObject.abbreviatedUnitName !== '/5'" class="item item-input">
+        <div ng-hide="variableObject.abbreviatedUnitName === '/5'" class="item item-input">
             <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">
                 Maximum Value &nbsp; <i class="icon ion-help-circled"></i>
             </span>
@@ -29,7 +29,7 @@
                 Onset Delay (hours) &nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span" style="width:45%">
-                <input id="onsetDelay" class="right-input" ng-model="variableObject.onsetDelay" type="number">
+                <input id="onsetDelay" class="right-input" ng-model="variableObject.onsetDelayInHours" type="number">
             </span>
         </div>
         <div class="item item-input">
@@ -37,7 +37,7 @@
                 Duration of Action (hours) &nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span" style="width: 34%">
-                <input id="durationOfAction" class="right-input" ng-model="variableObject.durationOfAction" type="number">
+                <input id="durationOfAction" class="right-input" ng-model="variableObject.durationOfActionInHours" type="number">
             </span>
         </div>
         <div class="item item-input">
