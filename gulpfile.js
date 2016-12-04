@@ -1110,7 +1110,7 @@ var setVersionNumberInConfigXml = function(configFilePath, callback){
 	});
 };
 
-gulp.task('bumpVersionNumberEnvs', ['setVersionNumberEnvs'], function(callback){
+gulp.task('bumpVersionNumberEnvs', ['setVersionNumberEnvsFromIosConfig'], function(callback){
 	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER;
 	var numberToBumpArr = process.env.IONIC_APP_VERSION_NUMBER.split('.');
 	numberToBumpArr[2] = (parseInt(numberToBumpArr[2]) + 1).toString();
@@ -1136,18 +1136,19 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 		callback);
 });
 
+gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.3.0';
+    console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
+    process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.4.0';
+    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+    callback();
+});
+
 gulp.task('replaceVersionNumbersInFiles', function(callback){
-
-	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.3.0';
-	console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
-	process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.4.0';
-	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-
 	runSequence(
 		//'setVersionNumberInConfigXml',  Messes it up, I think. Replacing with shell script for now.
-		//'setVersionNumberInIosConfigXml',
+		'setVersionNumberEnvsFromGulpFile',
 		'setVersionNumberInFiles',
 		callback);
 });
@@ -1610,9 +1611,9 @@ gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
 	    'copyPrivateConfig',
 	    'copyAppResources',
-	    //'cleanChromeBuildFolder',  //Better to use symlinks
-        //'replaceVersionNumbersInFiles',
-        'copyWwwFolderToChromeExtension',  //Better to use symlinks
+	    //'cleanChromeBuildFolder',  //Can't clean here because we can't build multiple extensions then
+        'replaceVersionNumbersInFiles',
+        'copyWwwFolderToChromeExtension',  //Can't use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
 		'copyManifestToChromeExtension',
@@ -1825,7 +1826,7 @@ gulp.task('resizeIconsForChromeExtension', function(callback){
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
 		'gitCheckoutAppJs',
-		'setVersionNumberEnvs',
+		'setVersionNumberEnvsFromGulpFile',
 		'setAndroidEnvs',
         'cleanPlatforms',
         'cleanPlugins',
@@ -1872,7 +1873,7 @@ gulp.task('runMindFirstAndroid', function(callback){
 		callback);
 });
 
-gulp.task('setVersionNumberEnvs', [], function(callback){
+gulp.task('setVersionNumberEnvsFromIosConfig', [], function(callback){
 	var configFilePath = './config-template-ios.xml';
 	var xml = fs.readFileSync(configFilePath, 'utf8');
 	parseString(xml, function (err, result) {
