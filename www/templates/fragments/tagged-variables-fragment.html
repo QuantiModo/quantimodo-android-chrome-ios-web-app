@@ -1,5 +1,5 @@
 <div class="card variable-settings" >
-    <div ng-show="variableObject.userTaggedVariables && variableObject.userTaggedVariables.length" class="item item-divider ng-binding">Tagged By {{variableName}}</div>
+    <div ng-show="variableObject.userTaggedVariables" class="item item-divider ng-binding">Tagged with {{variableName}}</div>
     <ion-list >
         <ion-item ng-show="variableObject.userTaggedVariables && variableObject.userTaggedVariables.length" ng-click="editTagged(item)"
                   class="item item-text-wrap"
@@ -8,7 +8,7 @@
         </ion-item>
         <div class="row">
             <div class="col">
-                <button class="button button-block icon-left ion-pricetag button-positive" ng-click="tagAnotherVariable()">Tag a variable with {{variableName}}</button>
+                <button class="button button-block icon-left ion-pricetag button-positive" ng-click="tagAnotherVariable()">Tag a different variable</button>
             </div>
         </div>
     </ion-list>

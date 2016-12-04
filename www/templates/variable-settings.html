@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Settings">
     <ion-nav-title>Variable Settings</ion-nav-title>
-    <ion-content style="background-color: #f2f2f2">
+    <ion-content>
         <div id="variablePropertiesCard" ng-show="variableObject" class="card variable-settings" >
             <div class="list">
                 <div class="item item-divider ng-binding">Variable Properties</div>
@@ -43,7 +43,7 @@
             <div class="col col-50">
                 <button class="button button-block icon-left ion-android-done button-positive"
                         id="saveButton"
-                        ng-click="save()">
+                        ng-click="saveVariableSettings(variableObject)">
                     Save
                 </button>
             </div>
@@ -52,7 +52,7 @@
             <div class="col">
                 <button class="button button-block icon-left ion-android-cancel button-assertive"
                         id="resetButton"
-                        ng-click="resetToDefaultSettings()">
+                        ng-click="resetVariableToDefaultSettings(variableObject)">
                     Reset to Default Settings
                 </button>
             </div>
