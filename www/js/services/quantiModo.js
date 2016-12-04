@@ -3,13 +3,13 @@ angular.module('starter')
     .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state,
                                     localStorageService, bugsnagService, utilsService) {
         var QuantiModo = {};
-        $rootScope.connectionErrorShowing = false; // to prevent more than one popup
+        $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
         QuantiModo.successHandler = function(data, baseURL, status){
             var maxLength = 140;
             console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
-            if($rootScope.connectionErrorShowing){
-                $rootScope.connectionErrorShowing = false;
+            if($rootScope.offlineConnectionErrorShowing){
+                $rootScope.offlineConnectionErrorShowing = false;
             }
             if(!data.success){
                 console.warn('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
@@ -55,8 +55,8 @@ angular.module('starter')
                         {groupingHash: groupingHash},
                         "error");
                 }
-                if (!$rootScope.connectionErrorShowing) {
-                    $rootScope.connectionErrorShowing = true;
+                if (!$rootScope.offlineConnectionErrorShowing) {
+                    $rootScope.offlineConnectionErrorShowing = true;
                     if($rootScope.isIOS){
                         $ionicPopup.show({
                             title: 'NOT CONNECTED',
@@ -65,7 +65,7 @@ angular.module('starter')
                                 {text: 'OK',
                                     type: 'button-positive',
                                     onTap: function(){
-                                        $rootScope.connectionErrorShowing = false;
+                                        $rootScope.offlineConnectionErrorShowing = false;
                                     }
                                 }
                             ]

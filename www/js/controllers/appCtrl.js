@@ -1198,6 +1198,49 @@ angular.module('starter')
                 $scope.$broadcast('scroll.refreshComplete');
             });
         };
+
+        $scope.showExplanationsPopup = function(settingName) {
+            var explanationText = {
+                "Minimum value": "The minimum allowed value for measurements. " +
+                "While you can record a value below this minimum, it will be " +
+                "excluded from the correlation analysis.",
+                "Maximum value": "The maximum allowed value for measurements. " +
+                "While you can record a value above this maximum, it will be " +
+                "excluded from the correlation analysis.",
+                "Onset delay": "An outcome is always preceded by the predictor or stimulus. " +
+                "The amount of time that elapses after the predictor/stimulus event " +
+                "before the outcome as perceived by a self-tracker is known as the “onset delay”.  " +
+                "For example, the “onset delay” between the time a person takes an aspirin " +
+                "(predictor/stimulus event) and the time a person perceives a change in their" +
+                " headache severity (outcome) is approximately 30 minutes.",
+                "Duration of action": "The amount of time over " +
+                "which a predictor/stimulus event can exert an observable influence " +
+                "on an outcome variable’s value. For instance, aspirin (stimulus/predictor) " +
+                "typically decreases headache severity for approximately four hours" +
+                " (duration of action) following the onset delay.",
+                "Filling value": "When it comes to analysis to determine the effects of this variable," +
+                " knowing when it did not occur is as important as knowing when it did occur. " +
+                "For example, if you are tracking a medication, it is important to know " +
+                "when you did not take it, but you do not have to log zero values for " +
+                "all the days when you haven't taken it. Hence, you can specify a filling value " +
+                "(typically 0) to insert whenever data is missing.",
+                "Combination Method": "How multiple measurements are combined over time.  We use the average (or mean) " +
+                "for things like your weight.  Summing is used for things like number of apples eaten. "
+            };
+
+            $ionicPopup.show({
+                title: settingName,
+                subTitle: explanationText[settingName],
+                scope: $scope,
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive'
+                    }
+                ]
+            });
+
+        };
         
         $scope.init();
     });
