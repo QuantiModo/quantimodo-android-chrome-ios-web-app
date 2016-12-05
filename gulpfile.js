@@ -90,6 +90,15 @@ gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
 	return deferred.promise;
 });
 
+gulp.task('updateDefaultAppInAppsJsUsingEnvs', function(){
+   return gulp.src('./www/js/apps.js')
+        .pipe(change(function(content){
+            deferred.resolve();
+            return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + process.env.LOWERCASE_APP_NAME + '",');
+        }))
+        .pipe(gulp.dest('./www/js/'));
+});
+
 gulp.task('deleteNodeModules', function(){
 	console.log('If file is locked in Windows, open Resource Monitor as Administrator.  Then go to CPU -> Associated ' +
 		'Handles and search for the locked file.  Then right click to kill all the processes using it.  Then try this ' +
@@ -122,6 +131,48 @@ gulp.task('swagger', function(){
 			deferred.resolve();
 	});
 	return deferred.promise;
+});
+
+gulp.task('generatePrivateConfigFromEnvs', function(){
+
+    if(!process.env.LOWERCASE_APP_NAME){
+        console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
+        process.env.LOWERCASE_APP_NAME = 'moodimodo';
+    }
+
+    if(!process.env.APP_DISPLAY_NAME){
+        console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
+        process.env.APP_DISPLAY_NAME = 'MoodiModo';
+    }
+
+    if(!process.env.QUANTIMODO_CLIENT_ID){
+        console.error('Please set QUANTIMODO_CLIENT_ID environmental variable!');
+        return;
+    }
+
+    if(!process.env.QUANTIMODO_CLIENT_SECRET){
+        console.error('Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
+        return;
+    }
+
+	var privateConfigKeys = {
+		client_ids : {},
+		client_secrets : {}
+	};
+
+	privateConfigKeys.client_ids.Web = process.env.QUANTIMODO_CLIENT_ID;
+	console.log('Detected ' + process.env.QUANTIMODO_CLIENT_ID + ' QUANTIMODO_CLIENT_ID');
+	privateConfigKeys.client_secrets.Web = process.env.QUANTIMODO_CLIENT_SECRET;
+
+	if(typeof process.env.IONIC_BUGSNAG_KEY !== "undefined"){
+		privateConfigKeys.bugsnag_key = process.env.IONIC_BUGSNAG_KEY;
+		console.log('IONIC_BUGSNAG_KEY' +' Detected');
+	}
+
+	var privateConfigContent = 'window.private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
+	fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
+	console.log('Created '+ './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js');
+
 });
 
 gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
@@ -1871,6 +1922,13 @@ gulp.task('runMindFirstAndroid', function(callback){
 		'prepareAndroidApp',
 		'ionicRunAndroid',
 		callback);
+});
+
+gulp.task('configureAppUsingEnvs', function(callback){
+    runSequence(
+        'generatePrivateConfigFromEnvs',
+        'updateDefaultAppInAppsJsUsingEnvs',
+        callback);
 });
 
 gulp.task('setVersionNumberEnvsFromIosConfig', [], function(callback){

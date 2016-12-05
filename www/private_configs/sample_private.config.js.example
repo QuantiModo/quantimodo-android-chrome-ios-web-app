@@ -1,18 +1,28 @@
 window.private_keys = {
     "bugsnag_key" : "xyz",
     "client_ids": {
-        "iOS": "your_client_id_here",
-        "Android": "your_client_id_here",
-        "Web": "your_client_id_here",
-        "Chrome": "your_client_id_here",
-        "Windows": "your_client_id_here"
+        "iOS": "xyz",
+        "Android": "xyz",
+        "Web": "xyz",
+        "Chrome": "xyz"
     },
     "client_secrets": {
-        "iOS": "your_client_secret_here",
-        "Android": "your_client_secret_here",
-        "Web": "your_client_secret_here",
-        "Chrome": "your_client_secret_here",
-        "Windows": "your_client_secret_here"
+        "iOS": "xyz",
+        "Android": "xyz",
+        "Web": "xyz",
+        "Chrome": "xyz"
+    },
+    "redirect_uris": {
+        "iOS": "https://app.quantimo.do/ionic/Modo/www/callback/",
+        "Android": "https://app.quantimo.do/ionic/Modo/www/callback/",
+        "Web": "https://app.quantimo.do/ionic/Modo/www/callback/",
+        "Chrome": "https://app.quantimo.do/ionic/Modo/www/callback/"
+    },
+    "api_urls": {
+        "iOS": "https://app.quantimo.do",
+        "Android": "https://app.quantimo.do",
+        "Web": "https://app.quantimo.do",
+        "Chrome": "https://app.quantimo.do"
     },
     "FACEBOOK_APP_ID" : "123456789",
     "FACEBOOK_APP_NAME" : "SOMEAPPNAME",
