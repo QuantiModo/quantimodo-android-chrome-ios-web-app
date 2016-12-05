@@ -110,15 +110,6 @@ gulp.task('deleteNodeModules', function(){
 	return gulp.src("node_modules/*", { read: false }).pipe(clean());
 });
 
-gulp.task('updateAppsJs', function(){
-	gulp.src('./www/js/apps.js')
-		.pipe(change(function(content){
-			deferred.resolve();
-			return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + process.env.LOWERCASE_APP_NAME + '",');
-		}))
-		.pipe(gulp.dest('./www/js/'));
-});
-
 gulp.task('swagger', function(){
 	var deferred = q.defer();
 	var file = '../../api/docs/swagger.json';
@@ -149,11 +140,13 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
         process.env.APP_DISPLAY_NAME = 'MoodiModo';
     }
 
+    //process.env.QUANTIMODO_CLIENT_ID = 'abc';
     if(!process.env.QUANTIMODO_CLIENT_ID){
         console.error('Please set QUANTIMODO_CLIENT_ID environmental variable!');
         return;
     }
 
+    //process.env.QUANTIMODO_CLIENT_SECRET = 'abc';
     if(!process.env.QUANTIMODO_CLIENT_SECRET){
         console.error('Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
         return;
@@ -1931,7 +1924,7 @@ gulp.task('runMindFirstAndroid', function(callback){
 gulp.task('configureAppUsingEnvs', function(callback){
     runSequence(
         'generatePrivateConfigFromEnvs',
-        'updateDefaultAppInAppsJsUsingEnvs',
+        //'updateDefaultAppInAppsJsUsingEnvs',  //Doesn't work on Heroku for some reason
         callback);
 });
 
