@@ -60,6 +60,10 @@ angular.module('starter')
 
         // post changes to user variable settings
         variableService.postUserVariable = function(userVariable) {
+
+            if(userVariable.fillingValue === null){
+                userVariable.fillingValue = -1;
+            }
             var deferred = $q.defer();
             QuantiModo.postUserVariable(userVariable, function(userVariable) {
                 deferred.resolve(userVariable);

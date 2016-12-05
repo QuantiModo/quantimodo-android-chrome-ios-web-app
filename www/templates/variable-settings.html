@@ -43,7 +43,7 @@
             <div class="col col-50">
                 <button class="button button-block icon-left ion-android-done button-positive"
                         id="saveButton"
-                        ng-click="save()">
+                        ng-click="saveVariableSettings(variableObject)">
                     Save
                 </button>
             </div>
@@ -52,7 +52,7 @@
             <div class="col">
                 <button class="button button-block icon-left ion-android-cancel button-assertive"
                         id="resetButton"
-                        ng-click="resetToDefaultSettings()">
+                        ng-click="resetVariableToDefaultSettings(variableObject)">
                     Reset to Default Settings
                 </button>
             </div>

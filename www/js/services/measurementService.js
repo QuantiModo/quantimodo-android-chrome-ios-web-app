@@ -352,7 +352,7 @@ angular.module('starter')
                             value: measurementInfo.value,
                             variableCategoryName : measurementInfo.variableCategoryName,
                             note : measurementInfo.note,
-                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                            combinationOperation : measurementInfo.combinationOperation,
                             latitude: $rootScope.lastLatitude,
                             longitude: $rootScope.lastLongitude,
                             location: $rootScope.lastLocationNameAndAddress
@@ -370,7 +370,7 @@ angular.module('starter')
                             value: measurementInfo.value,
                             variableCategoryName : measurementInfo.variableCategoryName,
                             note : measurementInfo.note,
-                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                            combinationOperation : measurementInfo.combinationOperation,
                             latitude: $rootScope.lastLatitude,
                             longitude: $rootScope.lastLongitude,
                             location: $rootScope.lastLocationNameAndAddress
@@ -398,7 +398,7 @@ angular.module('starter')
                             source: measurementSourceName,
                             variableCategoryName: measurementInfo.variableCategoryName,
                             abbreviatedUnitName: measurementInfo.abbreviatedUnitName,
-                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                            combinationOperation : measurementInfo.combinationOperation,
                             measurements : [
                                 {
                                     id: measurementInfo.id,
@@ -422,7 +422,7 @@ angular.module('starter')
                         value: measurementInfo.value,
                         variableCategoryName : measurementInfo.variableCategoryName,
                         note : measurementInfo.note,
-                        combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                        combinationOperation : measurementInfo.combinationOperation,
                         latitude: $rootScope.lastLatitude,
                         longitude: $rootScope.lastLongitude,
                         location: $rootScope.lastLocationNameAndAddress

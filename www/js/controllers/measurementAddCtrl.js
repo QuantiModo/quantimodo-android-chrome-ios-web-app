@@ -26,8 +26,6 @@ angular.module('starter')
             helpText: variableCategoryObject.helpText,
             abbreviatedUnitName : '',
             measurement : {},
-            // default operation
-            sumAvg : "avg",
             searchedUnits : [],
             defaultValueLabel : 'Value',
             defaultValuePlaceholderText : 'Enter a value',
@@ -271,7 +269,7 @@ angular.module('starter')
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch,
                 abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
-                isAvg : $scope.state.sumAvg === "avg"
+                combinationOperation : $rootScope.variableObject.combinationOperation
             };
 
             // Assign measurement value if it does not exist

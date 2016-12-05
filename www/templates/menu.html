@@ -17,14 +17,14 @@
             </ion-nav-buttons>
         </ion-nav-bar>
         <div class="col"
-             ng-show="hideNavigationMenu && connectionErrorShowing;"
+             ng-show="hideNavigationMenu && offlineConnectionErrorShowing;"
              style="top:0px!important;"
-             ng-class="{'connection-error-indicator':connectionErrorShowing}">
+             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
             <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
         </div>
         <div class="col"
-             ng-show="!hideNavigationMenu && connectionErrorShowing;"
-             ng-class="{'connection-error-indicator':connectionErrorShowing}">
+             ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
+             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
             <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
         </div>
         <div class="col"

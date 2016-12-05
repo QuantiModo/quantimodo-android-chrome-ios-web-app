@@ -751,10 +751,10 @@ angular.module('starter')
         };
 
         $rootScope.showActionSheetMenu = function() {
-            $scope.variableObject = $scope.state.trackingReminder;
-            $scope.variableObject.id = $scope.state.trackingReminder.variableId;
-            $scope.variableObject.name = $scope.state.trackingReminder.variableName;
-            console.debug("remindersAddCtrl.showActionSheetMenu:   $scope.variableObject: ", $scope.variableObject);
+            $rootScope.variableObject = $scope.state.trackingReminder;
+            $rootScope.variableObject.id = $scope.state.trackingReminder.variableId;
+            $rootScope.variableObject.name = $scope.state.trackingReminder.variableName;
+            console.debug("remindersAddCtrl.showActionSheetMenu:   $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
@@ -773,16 +773,16 @@ angular.module('starter')
                     console.debug('BUTTON CLICKED', index);
 
                     if(index === 0){
-                        $scope.addToFavoritesUsingVariableObject($scope.variableObject);
+                        $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
                     }
                     if(index === 1){
-                        $scope.goToAddMeasurementForVariableObject($scope.variableObject);
+                        $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
                     }
                     if(index === 2){
-                        $scope.goToChartsPageForVariableObject($scope.variableObject);
+                        $scope.goToChartsPageForVariableObject($rootScope.variableObject);
                     }
                     if(index === 3) {
-                        $scope.goToHistoryForVariableObject($scope.variableObject);
+                        $scope.goToHistoryForVariableObject($rootScope.variableObject);
                     }
                     if (index === 4) {
                         $state.go('app.variableSettings',
