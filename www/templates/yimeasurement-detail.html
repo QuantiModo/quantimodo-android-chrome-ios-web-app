@@ -1,0 +1,43 @@
+
+<ion-view view-title="{{measurements.default[selectedMeasurement].shortName}}">
+  <ion-content class="padding">
+     <p align="middle"> Enter Measurements</p>
+         
+			<div class="item item-input-inset radiusChange">
+                 
+				   <div blood-pressure ng-if="measurements.default[selectedMeasurement].abbreviatedUnitName==='mmHg'"></div>
+				   <div nonblood-pressure ng-if="measurements.default[selectedMeasurement].abbreviatedUnitName!=='mmHg'"></div>
+				
+			      <p class='unitName'>{{measurements.default[selectedMeasurement].abbreviatedUnitName}}</p>
+			</div>
+			 <div class="item item-input-inset radiusChange increaseHeight" >
+				
+				  <label class="item-input-wrapper removeWrapper">
+				    <textarea class="inputNote" placeholder="Note:free text e.g. medications"></textarea>
+				 </label>
+				  
+			
+			</div>
+
+			<br>
+			<div align="middle" >
+		
+			<button class="button button-outline button-assertive"  ng-click="goBack()">
+  				 cancel
+			</button>
+			
+			<button class="button button-balanced button-outline" ng-click="save()">
+  				 save
+			</button>
+            
+            <!--this button is just added after making the video.-->
+			<button class="button button-positive button-outline" ng-click="history()">
+  				 History
+			</button>
+			</div>
+			<br>
+			<div  align="middle" class="special" >
+				<a class="button button-outline icon-left ion-pen button-royal" ng-click="addToReminder()">Remind me to track</a>
+			</div>
+  </ion-content>
+</ion-view>
