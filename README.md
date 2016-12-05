@@ -23,7 +23,7 @@ and `YourAppDisplayNameHere` with your app name within the file.
 (This configuration file is where you can define the app menu, the primary outcome variable for the app, the intro tour, 
 and many other features.)
 1. Copy and rename `www/private_configs/yourlowercaseappnamehere.config.js` with your app name. Replace 
-    `your_client_id_here` and `your_client_secret_here` with the credentials you got in the 
+    `your_quantimodo_client_id_here` and `your_quantimodo_client_secret_here` with the credentials you got in the 
     [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps). 
 1. Open `config.xml` in the root of this repository.  Replace `yourlowercaseappnamehere` and `YourAppDisplayNameHere`.
 1. Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community]
