@@ -93,7 +93,11 @@ gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
 gulp.task('updateDefaultAppInAppsJsUsingEnvs', function(){
    return gulp.src('./www/js/apps.js')
         .pipe(change(function(content){
-            deferred.resolve();
+            if(!process.env.LOWERCASE_APP_NAME){
+                console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
+                process.env.LOWERCASE_APP_NAME = 'moodimodo';
+            }
+            console.log('Setting defaultApp to ' + process.env.LOWERCASE_APP_NAME + ' in www/js/apps/js...');
             return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + process.env.LOWERCASE_APP_NAME + '",');
         }))
         .pipe(gulp.dest('./www/js/'));
