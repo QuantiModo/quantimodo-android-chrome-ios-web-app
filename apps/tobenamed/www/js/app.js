@@ -5,10 +5,10 @@ var appsManager = {
 		"mindfirst" : "configs/mindfirst",
 		"medtlc" : "configs/medtlc",
 		"quantimodo" : "configs/quantimodo",
-		"supercell" : "configs/supercell",
+		"tobenamed" : "configs/tobenamed",
 	},
 
-	defaultApp : "supercell",
+	defaultApp : "tobenamed",
 	getDefaultConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? appsManager.apps[appsManager.defaultApp]+'.js' : false;
 	},
