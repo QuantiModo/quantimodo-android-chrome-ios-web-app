@@ -490,6 +490,11 @@ config.appSettings  = {
             href : '#/app/yimeasurements',
             icon : 'ion-speedometer'
         },
+            {
+            title : 'yiMeasurements-detail',
+            href : '#/app/yimeasurements-detail',
+            icon : 'ion-info'
+        },
         {
             title : 'Overall Mood',
             click : 'togglePrimaryOutcomeSubMenu',

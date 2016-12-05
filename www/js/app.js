@@ -557,6 +557,25 @@ angular.module('starter',
                 }
             }
         })
+
+             .state('app.yimeasurements-detail', {
+            url: "/yimeasurements/:id",
+            cache: false,
+            params: {
+                reminderFrequency: 0,
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/Yimeasurements-detail.html",
+                    controller: 'YiMeasurementsDetailCtrl'
+                }
+            }
+        })
         .state('app.favoriteSearchCategory', {
             url: "/favorite-search-category/:variableCategoryName",
             params: {
