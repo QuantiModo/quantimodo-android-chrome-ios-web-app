@@ -90,18 +90,7 @@
                 <div class="item item-body">
                     <img ng-src="{{correlationObject.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
                     <p>{{correlationObject.predictorExplanation}}</p>
-                    <p ng-if="correlationObject.valuePredictingHighOutcomeExplanation" >
-                        {{correlationObject.valuePredictingHighOutcomeExplanation}}
-                    </p>
-                    <p ng-if="correlationObject.valuePredictingLowOutcomeExplanation" >
-                        {{correlationObject.valuePredictingLowOutcomeExplanation}}
-                    </p>
-                    <p ng-if="correlationObject.averageEffectFollowingHighCauseExplanation" >
-                        {{correlationObject.averageEffectFollowingHighCauseExplanation}}
-                    </p>
-                    <p ng-if="correlationObject.averageEffectFollowingLowCauseExplanation" >
-                        {{correlationObject.averageEffectFollowingLowCauseExplanation}}
-                    </p>
+                    <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
                     <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
                 </div>
 <!--                <div class="item tabs tabs-secondary tabs-icon-left">
