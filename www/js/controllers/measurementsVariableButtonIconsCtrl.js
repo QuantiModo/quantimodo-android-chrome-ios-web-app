@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	// .controller('MeasurementVariableButtonIconsCtrl, function($scope, $state, $ionicActionSheet, $timeout, reminderService, QuantiModo,
+	// .controller('MeasurementsVariableButtonIconsCtrl, function($scope, $state, $ionicActionSheet, $timeout, reminderService, QuantiModo,
 	// 									  localStorageService, measurementService, variableCategoryService, $rootScope,
 	// 									  $stateParams, utilsService) {
 
