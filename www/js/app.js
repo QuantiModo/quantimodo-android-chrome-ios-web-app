@@ -539,8 +539,8 @@ angular.module('starter',
                 }
             }
         })
-      .state('app.yimeasurements', {
-            url: "/yimeasurements",
+      .state('app.measurementsVariableButtonIcons', {
+            url: "/measurements-variable-button-icons",
             cache: false,
             params: {
                 reminderFrequency: 0,
@@ -552,15 +552,14 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/Yimeasurements.html",
-                    controller: 'YiMeasurementsCtrl'
+                    templateUrl: "templates/measurements-variable-button-icons.html",
+                    controller: 'MeasurementsVariableButtonIconsCtrl'
                 }
             }
         })
 
-      .state('app.yimeasurements-detail', {
-            url: "/yimeasurements/:measurementId",
-            //url:"yi/measurements/:measurementVariableName",
+      .state('app.measurementVariableButtonDetails', {
+            url: "/measurement-variable-button-details/:measurementId",
             cache: false,
             params: {
                 reminderFrequency: 0,
@@ -572,8 +571,8 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/Yimeasurements-detail.html",
-                    controller: 'YiMeasurementsDetailCtrl'
+                    templateUrl: "templates/measurement-variable-button-details.html",
+                    controller: 'MeasurementVariableButtonDetailsCtrl'
                 }
             }
         })

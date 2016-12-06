@@ -1,12 +1,12 @@
 angular.module('starter')
 
-	// .controller('YiMeasurementsCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, QuantiModo,
+	// .controller('MeasurementVariableButtonIconsCtrl, function($scope, $state, $ionicActionSheet, $timeout, reminderService, QuantiModo,
 	// 									  localStorageService, measurementService, variableCategoryService, $rootScope,
 	// 									  $stateParams, utilsService) {
 
-	//     $scope.controller_name = "YiMeasurementsCtrl";
+	//     $scope.controller_name = "MeasurementVariableButtonIconsCtrl";
 
-.controller('yiMeasurementsCtrl', function($scope, $http) {
+.controller('MeasurementVariableButtonIconsCtrl', function($scope, $http) {
 
   /* now this part is set to Quantimodo-tobenamed.js, so the rest link should be changed also*/
   $http.get('js/defaultReminders.json').success(function(data){

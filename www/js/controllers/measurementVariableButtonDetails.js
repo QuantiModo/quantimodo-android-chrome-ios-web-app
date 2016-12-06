@@ -1,5 +1,5 @@
 
-.controller('MeasurementDetailCtrl', function($scope, $stateParams,$http,$ionicHistory,$ionicLoading,$timeout,$state) {
+.controller('MeasurementVariableButtonDetailCtrl', function($scope, $stateParams,$http,$ionicHistory,$ionicLoading,$timeout,$state) {
 
 $http.get('js/defaultReminders.json').success(function(data){
     $scope.measurements=data;
