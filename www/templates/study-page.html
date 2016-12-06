@@ -11,9 +11,7 @@
 <!--                        Doesn't look right yet
                 <img ng-src="{{correlationObject.causeVariableImageUrl}}">
                 <img ng-src="{{correlationObject.effectVariableImageUrl}}">-->
-                <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}
-                <br><br>
-                <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div><br>
                 <h3 id="studyAbstract">Study Abstract</h3>
                 <p>{{correlationObject.studyAbstract}}</p><br>
