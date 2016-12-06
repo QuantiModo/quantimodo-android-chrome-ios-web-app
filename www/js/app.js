@@ -539,7 +539,7 @@ angular.module('starter',
                 }
             }
         })
-           .state('app.yimeasurements', {
+      .state('app.yimeasurements', {
             url: "/yimeasurements",
             cache: false,
             params: {
@@ -558,8 +558,9 @@ angular.module('starter',
             }
         })
 
-             .state('app.yimeasurements-detail', {
-            url: "/yimeasurements/:id",
+      .state('app.yimeasurements-detail', {
+            url: "/yimeasurements/:measurementId",
+            //url:"yi/measurements/:measurementVariableName",
             cache: false,
             params: {
                 reminderFrequency: 0,

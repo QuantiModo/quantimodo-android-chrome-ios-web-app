@@ -291,11 +291,11 @@ config.appSettings  = {
 
    //****modified default reminders
 
-     "default" : [
+     "defaultVariables" : [
         {   "id":0,
             "variableName" : "Pulse",
             "shortName" :"Pulse",
-            "Chinese Name": "脉搏",
+            "ChineseName": "脉搏",
             "defaultValue" :  null,
             "abbreviatedUnitName": "bpm",
             "reminderFrequency ": 0,

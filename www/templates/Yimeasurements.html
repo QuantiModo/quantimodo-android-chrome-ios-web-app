@@ -14,8 +14,9 @@
           <p class="avaText">Blood Pressure</p>
         </div> -->
       
-        <div class="col-33" ng-repeat="measurement in measurements.default|filter:{show:true}">
-          <a href="#/tab/measurements/{{measurements.default.indexOf(measurement)}}">
+        <div class="col-33" ng-repeat="measurement in measurements.defaultVariables|filter:{show:true}">
+          <a href="#/tab/measurements/{{measurements.defaultVariables.indexOf(measurement)}}">
+          <!--<a href="#/tab/measurements/{{measurements.defaultVariables.variableNameOf(measurement)}}">-->
              <img class="myAvatar" ng-src="{{measurement.localImage}}"/>
             
           </a>
