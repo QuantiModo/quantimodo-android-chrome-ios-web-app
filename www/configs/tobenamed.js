@@ -186,116 +186,13 @@ config.appSettings  = {
         }
     },
 
-    // defaultReminders : [
-    //     {
-    //         variableName : 'Pulse',
-    //         defaultValue :  null,
-    //         abbreviatedUnitName: 'bpm',
-    //         reminderFrequency : 0,
-    //         icon: 'ion-heart',
-    //         variableCategoryName : 'Vital Signs',
-    //         img:'https://maxcdn.icons8.com/windows10/PNG/96/Programming/system_task-100.png'
-    //     },
-    //     {
-    //         variableName: 'Blood Pressure (Systolic - Top Number)',
-    //         icon: 'ion-heart',
-    //         abbreviatedUnitName: 'mmHg',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Vital Signs',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png'
-    //     },
-    //     {
-    //         variableName: 'Blood Pressure (Diastolic - Bottom Number)',
-    //         icon: 'ion-heart',
-    //         abbreviatedUnitName: 'mmHg',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Vital Signs',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png'
-    //     },
-    //     {
-    //         variableName: 'Core Body Temperature',
-    //         icon: null,
-    //         abbreviatedUnitName: 'C',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Vital Signs',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Science/temperature-100.png'
-    //     },
-    //     {
-    //         variableName: 'Oxygen Saturation',
-    //         icon: null,
-    //         abbreviatedUnitName: '%',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Vital Signs',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Science/oxygen-100.png'
-    //     },
-    //     {
-    //         variableName: 'Respiratory Rate',
-    //         icon: null,
-    //         abbreviatedUnitName: '/minute',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Vital Signs',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Healthcare/lungs-100.png'
-    //     },
-    //     {
-    //         variableName: 'Weight',
-    //         icon: null,
-    //         abbreviatedUnitName: 'lb',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Physique',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Science/weight-100.png'
-    //     },
-    //     {
-    //         variableName: 'Height',
-    //         icon: null,
-    //         abbreviatedUnitName: 'cm',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Physique',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Science/height-100.png'
-    //     },
-    //     {
-    //         variableName: 'BMI',
-    //         icon: null,
-    //         abbreviatedUnitName: 'index',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Physique',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Healthcare/body_scan-100.png'
-    //     },
-    //     {
-    //         variableName: 'Blood Glucose Sugar',
-    //         icon: null,
-    //         abbreviatedUnitName: 'mg/dL',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Vital Signs',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Industry/water-100.png'
-    //     },
-    //     {
-    //         variableName: 'Bowel Movements Count(Poop)',
-    //         icon: null,
-    //         abbreviatedUnitName: 'count',
-    //         reminderFrequency : 0,
-    //         defaultValue :  null,
-    //         variableCategoryName : 'Symptoms',
-    //         img:'https://maxcdn.icons8.com/iOS7/PNG/100/Messaging/poo-100.png'
-    //     }
-    // ],
-   
-
    //****modified default reminders
 
      "defaultVariables" : [
         {   "id":0,
             "variableName" : "Pulse",
             "shortName" :"Pulse",
-            "ChineseName": "脉搏",
+            "chineseName": "脉搏",
             "defaultValue" :  null,
             "abbreviatedUnitName": "bpm",
             "reminderFrequency ": 0,
@@ -310,7 +207,7 @@ config.appSettings  = {
             "id":12,
             "variableName": "Blood Pressure",
             "shortName" :"Blood Pressure",
-            "ChineseName":"血压",
+            "chineseName":"血压",
             "icon": "ion-heart",
             "abbreviatedUnitName": "mmHg",
             "reminderFrequency" : "0",
@@ -348,7 +245,7 @@ config.appSettings  = {
             "id":3,
             "variableName": "Core Body Temperature",
             "shortName" :"Body Temp",
-            "ChineseName":"体温",
+            "chineseName":"体温",
             "icon": "null",
             "abbreviatedUnitName": "C",
             "reminderFrequency" : 0,
@@ -362,7 +259,7 @@ config.appSettings  = {
             "id":4,
             "variableName": "Oxygen Saturation",
             "shortName" :"H2O Oxygen",
-            "ChineseName" :"血氧饱和度",
+            "chineseName" :"血氧饱和度",
             "icon": null,
             "abbreviatedUnitName": "%",
             "reminderFrequency" : 0,
@@ -376,7 +273,7 @@ config.appSettings  = {
             "id":5,
             "variableName": "Height",
             "shortName": "Height",
-            "ChineseName": "身高",
+            "chineseName": "身高",
             "icon": null,
             "abbreviatedUnitName": "cm",
             "reminderFrequency" : 0,
@@ -390,7 +287,7 @@ config.appSettings  = {
             "id":6,
             "variableName": "Weight",
             "shortName" :"Weight",
-            "ChineseName" :"体重",
+            "chineseName" :"体重",
             "icon": null,
             "abbreviatedUnitName": "kg",
             "reminderFrequency": 0,
@@ -404,7 +301,7 @@ config.appSettings  = {
             "id":7,
             "variableName": "Bowel Movements Count(Poop)",
             "shortName": "Poop",
-            "ChineseName": "排便",
+            "chineseName": "排便",
             "icon": null,
             "abbreviatedUnitName": "count",
             "reminderFrequency" : 0,
@@ -418,7 +315,7 @@ config.appSettings  = {
             "id":8,
             "variableName": "Respiratory Rate",
             "shortName" :"Respiratory Rate",
-            "ChineseName" :"呼吸频率",
+            "chineseName" :"呼吸频率",
             "icon": null,
             "abbreviatedUnitName": "/minute",
             "reminderFrequency" : 0,
@@ -432,7 +329,7 @@ config.appSettings  = {
             "id":9,
             "variableName": "Blood Glucose Sugar",
             "shortName": "Blood Sugar",
-            "ChineseName": "血糖",
+            "chineseName": "血糖",
             "icon": null,
             "abbreviatedUnitName": "mg/dL",
             "reminderFrequency" : 0,
@@ -446,7 +343,7 @@ config.appSettings  = {
             "id":10,
             "variableName": "Mood",
             "shortName": "Mood",
-            "ChineseName": "心情",
+            "chineseName": "心情",
             "icon": null,
             "abbreviatedUnitName": "count",
             "reminderFrequency" : 0,
@@ -460,7 +357,7 @@ config.appSettings  = {
             "id":11,
             "variableName": "Symptoms",
             "shortName": "Symptoms",
-            "ChineseName": "症状",
+            "chineseName": "症状",
             "icon": null,
             "abbreviatedUnitName": "count",
             "reminderFrequency" : 0,
@@ -486,7 +383,7 @@ config.appSettings  = {
             icon : 'ion-ios-star'
         },
            {
-            title : 'YiMeasurements',
+            title : 'yiMeasurements',
             href : '#/app/yimeasurements',
             icon : 'ion-speedometer'
         },
