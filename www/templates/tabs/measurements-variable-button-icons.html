@@ -1,0 +1,26 @@
+<ion-view  view-title="Measurements">
+  <ion-content>
+     <div class="item item-divider dividerSet item-royal">
+         <span class="mini">Please select an icon and input the measurement.</span>
+      </div>
+       
+   
+      <br>
+      <div class="row row-wrap" align="middle">
+       <!-- <div class="col-33" >
+          <a href="#/tab/measurements/{{measurements.default[1]}}">
+             <img class="myAvatar" ng-src="{{measurements.default[1].localImage}}"/>
+          </a>
+          <p class="avaText">Blood Pressure</p>
+        </div> -->
+      
+        <div class="col-33" 
+             ng-click="editMeasurementForVariable(variable)"
+             ng-repeat="variable in appSettings.defaultVariables|filter:{show:true}">
+             <img class="myAvatar" ng-src="{{variables.localImage}}"/>
+          <p class="avaText royal">{{measurement.shortName}}</p>
+        </div>
+      </div>
+   
+  </ion-content>
+</ion-view> 
