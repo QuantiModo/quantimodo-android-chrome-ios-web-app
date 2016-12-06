@@ -90,15 +90,9 @@ angular.module('starter')
         };
 
         $scope.goToState = function (state, stateParameters) {
-            var variableCategoryName = null;
-            if (stateParameters && stateParameters.variableCategoryName) {
-                variableCategoryName = stateParameters.variableCategoryName;
-            }
-            $state.go(state, {
-                fromState: $state.current.name,
-                fromUrl: window.location.href,
-                variableCategoryName: variableCategoryName
-            });
+            stateParameters.fromState = $state.current.name;
+            stateParameters.fromUrl = window.location.href;
+            $state.go(state, stateParameters);
         };
 
         $scope.openUrl = function(url){
