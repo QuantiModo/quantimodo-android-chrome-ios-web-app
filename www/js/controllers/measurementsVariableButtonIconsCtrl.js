@@ -6,7 +6,7 @@ angular.module('starter')
 
 	//     $scope.controller_name = "MeasurementVariableButtonIconsCtrl";
 
-.controller('MeasurementVariableButtonIconsCtrl', function($scope, $http) {
+.controller('MeasurementsVariableButtonIconsCtrl', function($scope, $http) {
 
   /* now this part is set to Quantimodo-tobenamed.js, so the rest link should be changed also*/
   $http.get('js/defaultReminders.json').success(function(data){

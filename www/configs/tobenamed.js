@@ -383,13 +383,13 @@ config.appSettings  = {
             icon : 'ion-ios-star'
         },
            {
-            title : 'yiMeasurements',
-            href : '#/app/yimeasurements',
+            title : 'Measurements Variable Icons',
+            href : '#/app/measurements-variable-button-icons',
             icon : 'ion-speedometer'
         },
             {
-            title : 'yiMeasurements-detail',
-            href : '#/app/yimeasurements-detail',
+            title : 'Measurement Variable Button Details',
+            href : '#/app/measurement-variable-button-details/:measurementId',
             icon : 'ion-info'
         },
         {

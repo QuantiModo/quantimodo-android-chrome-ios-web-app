@@ -1,5 +1,5 @@
-
-.controller('MeasurementVariableButtonDetailCtrl', function($scope, $stateParams,$http,$ionicHistory,$ionicLoading,$timeout,$state) {
+angular.module('starter')
+.controller('MeasurementVariableButtonDetailsCtrl', function($scope, $stateParams,$http,$ionicHistory,$ionicLoading,$timeout,$state) {
 
 $http.get('js/defaultReminders.json').success(function(data){
     $scope.measurements=data;
