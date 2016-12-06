@@ -6,7 +6,8 @@ angular.module('starter')
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
 
-        $scope.getStudy = function() {
+        var getStudy = function() {
+
             if ($rootScope.urlParameters.aggregated) {
                 var fallbackToUserStudy = false;
                 if ($rootScope.user) {
@@ -19,6 +20,11 @@ angular.module('starter')
                 getUserStudy(fallbackToAggregateStudy);
                 //addWikipediaInfo();
             }
+        };
+
+        $scope.refreshStudy = function() {
+            correlationService.clearCorrelationCache();
+            getStudy();
         };
 
         $scope.init = function(){
@@ -79,7 +85,7 @@ angular.module('starter')
                     }
                 }
             } else {
-                $scope.getStudy();
+                getStudy();
             }
         };
 
@@ -172,7 +178,7 @@ angular.module('starter')
             $scope.pairsOverTimeChartConfig =
                 chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.state.requestParams);
             $scope.highchartsReflow();
-        }
+        };
 
         function getPairsAndCreateUserCharts() {
             $scope.loadingCharts = true;
@@ -191,6 +197,8 @@ angular.module('starter')
             
             correlationService.getUserCorrelations($scope.state.requestParams).then(function (correlations) {
                 $ionicLoading.hide();
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
                     localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
@@ -207,6 +215,8 @@ angular.module('starter')
             }, function (error) {
                 console.error(error);
                 $ionicLoading.hide();
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
                 if(!fallbackToAggregateStudy){
                     $scope.state.studyNotFound = true;
                     $scope.state.title = 'Study Not Found';
@@ -222,6 +232,8 @@ angular.module('starter')
             });
             correlationService.getAggregatedCorrelations($scope.state.requestParams).then(function (correlations) {
                 $ionicLoading.hide();
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
                     localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
@@ -236,6 +248,8 @@ angular.module('starter')
                 }
             }, function (error) {
                 $ionicLoading.hide();
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
                 if(!fallbackToUserStudy){
                     $scope.state.studyNotFound = true;
                     $scope.state.title = 'Study Not Found';
