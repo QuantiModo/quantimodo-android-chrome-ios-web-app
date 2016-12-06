@@ -536,13 +536,13 @@ angular.module('starter')
             smoothedPearsonCorrelationSeries.data =
                 calculateWeightedMovingAverage(forwardPearsonCorrelationSeries.data, weightedPeriod);
 
-            //seriesToChart.push(smoothedPearsonCorrelationSeries);
+            seriesToChart.push(smoothedPearsonCorrelationSeries);
 
             if(!excludeSpearman){
-                //seriesToChart.push(forwardSpearmanCorrelationSeries);
+                seriesToChart.push(forwardSpearmanCorrelationSeries);
             }
             if(!excludeQmScoreSeries){
-                //seriesToChart.push(qmScoreSeries);
+                seriesToChart.push(qmScoreSeries);
             }
             var minimumTimeEpochMilliseconds = correlations[0].durationOfAction * 1000;
             var maximumTimeEpochMilliseconds = correlations[correlations.length - 1].durationOfAction * 1000;
@@ -812,7 +812,56 @@ angular.module('starter')
             return config;
         };
 
-		chartService.createScatterPlot = function (params, pairs) {
+        var calculatePearsonsCorrelation = function(xyValues)
+        {
+            var length = xyValues.length;
+
+            var xy = [];
+            var x2 = [];
+            var y2 = [];
+
+            $.each(xyValues,function(index,value){
+                xy.push(value[0] * value[1]);
+                x2.push(value[0] * value[0]);
+                y2.push(value[1] * value[1]);
+            });
+
+            var sum_x = 0;
+            var sum_y = 0;
+            var sum_xy = 0;
+            var sum_x2 = 0;
+            var sum_y2 = 0;
+
+            var i=0;
+            $.each(xyValues,function(index,value){
+                sum_x += value[0];
+                sum_y += value[1];
+                sum_xy += xy[i];
+                sum_x2 += x2[i];
+                sum_y2 += y2[i];
+                i+=1;
+            });
+
+            var step1 = (length * sum_xy) - (sum_x * sum_y);
+            var step2 = (length * sum_x2) - (sum_x * sum_x);
+            var step3 = (length * sum_y2) - (sum_y * sum_y);
+            var step4 = Math.sqrt(step2 * step3);
+            var answer = step1 / step4;
+
+            // check if answer is NaN, it can occur in the case of very small values
+            return isNaN(answer) ? 0 : answer;
+        };
+
+
+
+        chartService.createScatterPlot = function (params, pairs, title) {
+
+            var xyVariableValues = [];
+
+            for(var i = 0; i < pairs.length; i++ ){
+                xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
+            }
+
 			var scatterplotOptions = {
 				options: {
 					chart: {
@@ -839,7 +888,7 @@ angular.module('starter')
 							},
 							tooltip: {
 								//headerFormat: '<b>{series.name}</b><br>',
-								pointFormat: '{point.x} ' + params.causeVariableName + ', {point.y} ' + params.effectVariableName
+								pointFormat: '{point.x}' + pairs[0].causeAbbreviatedUnitName + ', {point.y}' + pairs[0].effectAbbreviatedUnitName
 							}
 						}
 					},
@@ -850,7 +899,7 @@ angular.module('starter')
 				xAxis: {
 					title: {
 						enabled: true,
-						text: 'Height (cm)'
+						text: params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')'
 					},
 					startOnTick: true,
 					endOnTick: true,
@@ -858,17 +907,16 @@ angular.module('starter')
 				},
 				yAxis: {
 					title: {
-						text: 'Weight (kg)'
+						text: params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')'
 					}
 				},
-
 				series: [{
 					name: params.effectVariableName + ' by ' + params.causeVariableName,
 					color: 'rgba(223, 83, 83, .5)',
-					data: []
+					data: xyVariableValues
 				}],
 				title: {
-					text: params.effectVariableName + ' by ' + params.causeVariableName
+					text: title + ' (R = ' + calculatePearsonsCorrelation(xyVariableValues).toFixed(2) + ')'
 				},
 				subtitle: {
 					text: ''
@@ -876,19 +924,7 @@ angular.module('starter')
 				loading: false
 			};
 
-			var xyVariableValues = [];
-
-			for(var i = 0; i < pairs.length; i++ ){
-				xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
-			}
-
-			scatterplotOptions.series[0].data = xyVariableValues;
-			scatterplotOptions.xAxis.title.text = params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')';
-			scatterplotOptions.yAxis.title.text = params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')';
-			scatterplotOptions.options.plotOptions.scatter.tooltip.pointFormat = '{point.x}' + pairs[0].causeAbbreviatedUnitName + ', {point.y}' + pairs[0].effectAbbreviatedUnitName;
 			return scatterplotOptions;
-
-
 		};
 
 		chartService.configureLineChartForCause  = function(params, pairs) {

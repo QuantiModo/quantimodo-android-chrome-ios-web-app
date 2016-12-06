@@ -24,15 +24,17 @@
                 </div>
                 <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig"></highchart>
                 <highchart ng-show="effectTimelineChartConfig" id="effectTimeline" config="effectTimelineChartConfig"></highchart>
+                <highchart ng-show="aggregatedCauseScatterplotChartConfig" id="aggregatedCauseScatterplotChartConfig" config="aggregatedCauseScatterplotChartConfig"></highchart>
+                <highchart ng-show="aggregatedEffectScatterplotChartConfig" id="aggregatedEffectScatterplotChartConfig" config="aggregatedEffectScatterplotChartConfig"></highchart>
                 <highchart ng-show="scatterplotChartConfig" id="scatterplot" config="scatterplotChartConfig"></highchart>
-                <label class="item item-input"
+<!--                <label class="item item-input"
                        ng-show="correlationsOverOnsetDelaysChartConfig">
                     <span class="input-label">Moving Average Period</span>
                     <input type="number"
                            ng-change="createUserCharts()"
                            ng-model="weightedPeriod"
                            id="weightedPeriod" placeholder="" >
-                </label>
+                </label>-->
                 <highchart ng-show="correlationsOverOnsetDelaysChartConfig" id="correlationsOverOnsetDelaysChart" config="correlationsOverOnsetDelaysChartConfig"></highchart>
                 <highchart ng-show="correlationsOverDurationsOfActionChartConfig" id="correlationsOverDurationsOfActionChart" config="correlationsOverDurationsOfActionChartConfig"></highchart>
                 <highchart ng-show="pairsOverTimeChartConfig" id="pairsOverTimeChart" config="pairsOverTimeChartConfig"></highchart>
