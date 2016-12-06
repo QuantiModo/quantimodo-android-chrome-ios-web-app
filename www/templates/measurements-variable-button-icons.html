@@ -14,13 +14,10 @@
           <p class="avaText">Blood Pressure</p>
         </div> -->
       
-        <div class="col-33" ng-repeat="measurement in measurements.defaultVariables|filter:{show:true}">
-          <a href="#/tab/measurements/{{measurements.defaultVariables.indexOf(measurement)}}">
-          <!--<a href="#/tab/measurements/{{measurements.defaultVariables.variableNameOf(measurement)}}">-->
-             <img class="myAvatar" ng-src="{{measurement.localImage}}"/>
-            
-          </a>
-
+        <div class="col-33" 
+             ng-click="editMeasurementForVariable(variable)"
+             ng-repeat="variable in appSettings.defaultVariables|filter:{show:true}">
+             <img class="myAvatar" ng-src="{{variables.localImage}}"/>
           <p class="avaText royal">{{measurement.shortName}}</p>
         </div>
       </div>
