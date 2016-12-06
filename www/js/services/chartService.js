@@ -518,7 +518,7 @@ angular.module('starter')
             var excludeSpearman = false;
             var excludeQmScoreSeries = false;
             for (var i = 0; i < correlations.length; i++) {
-                xAxis.push('Day ' + correlations[i].onsetDelay/(60 * 60 * 24));
+                xAxis.push('Day ' + correlations[i].durationOfAction/(60 * 60 * 24));
                 forwardPearsonCorrelationSeries.data.push(correlations[i].correlationCoefficient);
                 forwardSpearmanCorrelationSeries.data.push(correlations[i].forwardSpearmanCorrelationCoefficient);
                 if(correlations[i].forwardSpearmanCorrelationCoefficient === null){
@@ -536,13 +536,13 @@ angular.module('starter')
             smoothedPearsonCorrelationSeries.data =
                 calculateWeightedMovingAverage(forwardPearsonCorrelationSeries.data, weightedPeriod);
 
-            seriesToChart.push(smoothedPearsonCorrelationSeries);
+            //seriesToChart.push(smoothedPearsonCorrelationSeries);
 
             if(!excludeSpearman){
-                seriesToChart.push(forwardSpearmanCorrelationSeries);
+                //seriesToChart.push(forwardSpearmanCorrelationSeries);
             }
             if(!excludeQmScoreSeries){
-                seriesToChart.push(qmScoreSeries);
+                //seriesToChart.push(qmScoreSeries);
             }
             var minimumTimeEpochMilliseconds = correlations[0].durationOfAction * 1000;
             var maximumTimeEpochMilliseconds = correlations[correlations.length - 1].durationOfAction * 1000;
