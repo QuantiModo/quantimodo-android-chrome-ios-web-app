@@ -1,14 +1,15 @@
 
-<ion-view view-title="{{measurements.default[selectedMeasurement].shortName}}">
+<ion-view view-title="{{measurements.defaultVariables[selectedMeasurement].shortName}}">
   <ion-content class="padding">
      <p align="middle"> Enter Measurements</p>
          
 			<div class="item item-input-inset radiusChange">
                  
-				   <div blood-pressure ng-if="measurements.default[selectedMeasurement].abbreviatedUnitName==='mmHg'"></div>
-				   <div nonblood-pressure ng-if="measurements.default[selectedMeasurement].abbreviatedUnitName!=='mmHg'"></div>
+				   <div blood-pressure ng-if="measurements.defaultVariables[selectedMeasurement].abbreviatedUnitName==='mmHg'"></div>
+				   <div nonblood-pressure ng-if="measurements.defaultVariables
+				   [selectedMeasurement].abbreviatedUnitName!=='mmHg'"></div>
 				
-			      <p class='unitName'>{{measurements.default[selectedMeasurement].abbreviatedUnitName}}</p>
+			      <p class='unitName'>{{measurements.defaultVariables[selectedMeasurement].abbreviatedUnitName}}</p>
 			</div>
 			 <div class="item item-input-inset radiusChange increaseHeight" >
 				
