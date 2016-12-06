@@ -90,6 +90,9 @@ angular.module('starter')
         };
 
         $scope.goToState = function (state, stateParameters) {
+            if(!stateParameters){
+                stateParameters = {};
+            }
             stateParameters.fromState = $state.current.name;
             stateParameters.fromUrl = window.location.href;
             $state.go(state, stateParameters);
