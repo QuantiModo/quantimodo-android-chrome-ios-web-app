@@ -166,25 +166,25 @@ angular.module('starter')
         $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
 
-            $scope.aggregatedCauseScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
+/*            $scope.aggregatedCauseScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
                 $scope.data.pairsWithAggregatedCauseMeasurements, 'Pairs with Aggregated ' +
                 $scope.state.requestParams.causeVariableName +  ' Measurements');
 
             $scope.aggregatedEffectScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
                 $scope.data.pairsWithAggregatedEffectMeasurements, 'Pairs with Aggregated ' +
-                $scope.state.requestParams.effectVariableName +  ' Measurements');
+                $scope.state.requestParams.effectVariableName +  ' Measurements');*/
 
-            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
+            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.correlationObject,
                 $scope.data.pairs, 'All Pairs');
 
             //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
             //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
 
             $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                $scope.data.causeProcessedMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
+                $scope.data.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
 
             $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                $scope.data.effectProcessedMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
+                $scope.data.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
 
             $scope.correlationsOverOnsetDelaysChartConfig =
                 chartService.processDataAndConfigureCorrelationsOverOnsetDelaysChart(
@@ -195,7 +195,7 @@ angular.module('starter')
                     $scope.data.correlationsOverDurationsOfAction);
 
             $scope.pairsOverTimeChartConfig =
-                chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.state.requestParams);
+                chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.correlationObject);
             $scope.highchartsReflow();
             $ionicLoading.hide();
         };

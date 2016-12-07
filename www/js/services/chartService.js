@@ -477,7 +477,7 @@ angular.module('starter')
         }
 
 		chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart = function(correlations, weightedPeriod) {
-            if(!correlations){
+            if(!correlations || !correlations.length){
                 return false;
             }
 
@@ -568,7 +568,7 @@ angular.module('starter')
                 },
                 xAxis: {
                     title: {
-                        text: 'Duration of Action (Time Over Which Perceivable Effect is Assumed)'
+                        text: 'Assumed Duration Of Action'
                     },
                     categories: xAxis
                 },
@@ -684,7 +684,7 @@ angular.module('starter')
 				},
 				xAxis: {
 					title: {
-						text: 'Onset Delay (Time Shift in Days Relative to Stimulus Event)'
+						text: 'Assumed Onset Delay'
 					},
 					categories: xAxis
 				},
@@ -707,13 +707,13 @@ angular.module('starter')
 			return config;
 		};
 
-        chartService.processDataAndConfigurePairsOverTimeChart = function(pairs, params) {
+        chartService.processDataAndConfigurePairsOverTimeChart = function(pairs, correlationObject) {
             if(!pairs){
                 return false;
             }
 
             var predictorSeries = {
-                name : params.causeVariableName,
+                name : correlationObject.causeVariableName,
                 data : [],
                 tooltip: {
                     valueDecimals: 2
@@ -721,7 +721,7 @@ angular.module('starter')
             };
 
             var outcomeSeries = {
-                name : params.effectVariableName,
+                name : correlationObject.effectVariableName,
                 data : [],
                 tooltip: {
                     valueDecimals: 2
@@ -771,13 +771,13 @@ angular.module('starter')
                     yAxis: [{
                         lineWidth: 1,
                         title: {
-                            text: params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')'
+                            text: correlationObject.causeVariableName + ' (' + correlationObject.causeAbbreviatedUnitName + ')'
                         }
                     }, {
                         lineWidth: 1,
                         opposite: true,
                         title: {
-                            text: params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')'
+                            text: correlationObject.effectVariableName + ' (' + correlationObject.effectAbbreviatedUnitName + ')'
                         }
                     }]
 				},
@@ -785,7 +785,7 @@ angular.module('starter')
                     valueSuffix: ''
                 },
                 series: [ {
-                    name: params.causeVariableName,
+                    name: correlationObject.causeVariableName,
                     type: 'spline',
                     color: '#00A1F1',
                     data: predictorSeries.data,
@@ -794,17 +794,17 @@ angular.module('starter')
                     },
                     dashStyle: 'shortdot',
                     tooltip: {
-                        valueSuffix: '' + pairs[0].causeAbbreviatedUnitName
+                        valueSuffix: '' + correlationObject.causeAbbreviatedUnitName
                     }
 
                 }, {
-                    name: params.effectVariableName,
+                    name: correlationObject.effectVariableName,
                     color: '#EA4335',
                     type: 'spline',
                     yAxis: 1,
                     data: outcomeSeries.data,
                     tooltip: {
-                        valueSuffix: '' + pairs[0].effectAbbreviatedUnitName
+                        valueSuffix: '' + correlationObject.effectAbbreviatedUnitName
                     }
                 }]
             };
@@ -854,8 +854,12 @@ angular.module('starter')
 
 
 
-        chartService.createScatterPlot = function (params, pairs, title) {
+        chartService.createScatterPlot = function (correlationObject, pairs, title) {
 
+        	if(!pairs){
+        		console.warn('No pairs provided to chartService.createScatterPlot');
+        		return false;
+			}
             var xyVariableValues = [];
 
             for(var i = 0; i < pairs.length; i++ ){
@@ -888,7 +892,7 @@ angular.module('starter')
 							},
 							tooltip: {
 								//headerFormat: '<b>{series.name}</b><br>',
-								pointFormat: '{point.x}' + pairs[0].causeAbbreviatedUnitName + ', {point.y}' + pairs[0].effectAbbreviatedUnitName
+								pointFormat: '{point.x}' + correlationObject.causeAbbreviatedUnitName + ', {point.y}' + correlationObject.effectAbbreviatedUnitName
 							}
 						}
 					},
@@ -899,7 +903,7 @@ angular.module('starter')
 				xAxis: {
 					title: {
 						enabled: true,
-						text: params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')'
+						text: correlationObject.causeVariableName + ' (' + correlationObject.causeAbbreviatedUnitName + ')'
 					},
 					startOnTick: true,
 					endOnTick: true,
@@ -907,11 +911,11 @@ angular.module('starter')
 				},
 				yAxis: {
 					title: {
-						text: params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')'
+						text: correlationObject.effectVariableName + ' (' + correlationObject.effectAbbreviatedUnitName + ')'
 					}
 				},
 				series: [{
-					name: params.effectVariableName + ' by ' + params.causeVariableName,
+					name: correlationObject.effectVariableName + ' by ' + correlationObject.causeVariableName,
 					color: 'rgba(223, 83, 83, .5)',
 					data: xyVariableValues
 				}],
@@ -927,10 +931,10 @@ angular.module('starter')
 			return scatterplotOptions;
 		};
 
-		chartService.configureLineChartForCause  = function(params, pairs) {
+		chartService.configureLineChartForCause  = function(correlationObject, pairs) {
 			var variableObject = {
-				abbreviatedUnitName: pairs[0].causeAbbreviatedUnitName,
-				name: params.causeVariableName
+				abbreviatedUnitName: correlationObject.causeAbbreviatedUnitName,
+				name: correlationObject.causeVariableName
 			};
 			
 			var data = [];
@@ -942,10 +946,10 @@ angular.module('starter')
 			return chartService.configureLineChart(data, variableObject);
 		};
 
-		chartService.configureLineChartForEffect  = function(params, pairs) {
+		chartService.configureLineChartForEffect  = function(correlationObject, pairs) {
 			var variableObject = {
-				abbreviatedUnitName: pairs[0].effectAbbreviatedUnitName,
-				name: params.effectVariableName
+				abbreviatedUnitName: correlationObject.effectAbbreviatedUnitName,
+				name: correlationObject.effectVariableName
 			};
 
 			var data = [];
