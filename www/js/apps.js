@@ -4,10 +4,9 @@ var appsManager = { // jshint ignore:line
 		"energymodo" : "configs/energymodo",
 		"mindfirst" : "configs/mindfirst",
 		"medtlc" : "configs/medtlc",
-		"quantimodo" : "configs/quantimodo",
-		"yourlowercaseappnamehere": "configs/yourlowercaseappnamehere"
+		"quantimodo" : "configs/quantimodo"
 	},
-	defaultApp : "yourlowercaseappnamehere",
+	defaultApp : "moodimodo",
 	getAppConfig : function(app){
 		if(appsManager.apps[app]){
 			return 'configs/' + app + '.js';
