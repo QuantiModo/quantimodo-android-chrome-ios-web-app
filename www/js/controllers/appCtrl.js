@@ -1282,6 +1282,9 @@ angular.module('starter')
                 $ionicLoading.hide();
                 $rootScope.variableObject = variableObject;
                 $scope.setupVariableByVariableObject(variableObject);
+            }, function (error) {
+                $ionicLoading.hide();
+                console.error(error);
             });
         };
 
