@@ -1389,7 +1389,65 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
-        });
+        })
+          // all the state from tab templates....
+          // setup an abstract state for the tabs directive
+        .state('tab', {
+            url: '/tab',
+            abstract: true,
+            templateUrl: 'templates/tabs.html'
+          })
+
+          // Each tab has its own nav history stack:
+
+          .state('tab.settings', {
+            url: '/settings',
+            views: {
+              'tab-settings': {
+                templateUrl: 'templates/tab-settings.html',
+                controller: 'SettingsCtrl'
+              }
+            }
+          })
+
+          .state('tab.measurements-variable-button-icons', {
+              url: '/measurements-variable-button-icons',
+              views: {
+                'tab-measurements-variable-button-icons': {
+                  templateUrl: 'templates/tab-measurements-variable-button-icons.html',
+                  controller: 'MeasurementsVariableButtonIconsCtrl'
+                }
+              }
+            })
+            .state('tab.measurement-detail-variable-button-details.html', {
+              url: '/measurements-variable-button-icons/:measurementId',
+              views: {
+                'tab-measurements-variable-button-icons': {
+                  templateUrl: 'templates/measurement-variable-button-details.html',
+                  controller: 'MeasurementVariableButtonDetailsCtrl'
+                }
+              }
+            })
+
+          .state('tab.history', {
+            url: '/history',
+            views: {
+              'tab-measurements': {
+                templateUrl: 'templates/history.html',
+                controller: 'HistoryCtrl'
+              }
+            }
+          })
+           
+          .state('tab.reminder', {
+              url: '/reminder',
+              views: {
+                'tab-reminder': {
+                  templateUrl: 'templates/tab-reminder.html',
+                  controller: 'ReminderCtrl'
+                }
+              }
+            });
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
