@@ -1449,6 +1449,12 @@ angular.module('starter',
               }
             });
 
+  
+  // defined tabs default state 
+   $urlRouterProvider.otherwise('/tab/measurements');
+  // finished tab default state...
+
+
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
         $urlRouterProvider.otherwise('/app/reminders-inbox');
