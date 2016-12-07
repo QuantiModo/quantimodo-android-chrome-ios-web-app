@@ -452,6 +452,11 @@ angular.module('starter')
 		};
 
 		chartService.processDataAndConfigureLineChart = function(measurements, variableObject) {
+
+			if(!measurements || !measurements.length){
+				console.warn('No measurements provided to chartService.processDataAndConfigureLineChart');
+				return false;
+			}
 			var lineChartData = [];
 			var lineChartItem;
 			if(!variableObject.abbreviatedUnitName){
