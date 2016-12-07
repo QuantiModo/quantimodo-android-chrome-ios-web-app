@@ -398,7 +398,7 @@ angular.module('starter',
             resolve : config_resolver
         })
         .state('app', {
-            url: "/app",
+            url: "/app",  
             templateUrl: "templates/menu.html",
             controller: 'AppCtrl',
             resolve : config_resolver
@@ -1392,11 +1392,11 @@ angular.module('starter',
         })
           // all the state from tab templates....
           // setup an abstract state for the tabs directive
-        .state('tab', {
-            url: '/tab',
-            abstract: true,
-            templateUrl: 'templates/tabs.html'
-          })
+        // .state('tab', {
+        //     url: '/tab',
+        //     abstract: true,
+        //     templateUrl: 'templates/tabs.html'
+        //   })
 
           // Each tab has its own nav history stack:
 
@@ -1414,7 +1414,7 @@ angular.module('starter',
               url: '/measurements-variable-button-icons',
               views: {
                 'tab-measurements-variable-button-icons': {
-                  templateUrl: 'templates/tab-measurements-variable-button-icons.html',
+                  templateUrl: 'templates/tabs/measurements-variable-button-icons.html',
                   controller: 'MeasurementsVariableButtonIconsCtrl'
                 }
               }
@@ -1423,7 +1423,7 @@ angular.module('starter',
               url: '/measurements-variable-button-icons/:measurementId',
               views: {
                 'tab-measurements-variable-button-icons': {
-                  templateUrl: 'templates/measurement-variable-button-details.html',
+                  templateUrl: 'templates/tabs/measurement-variable-button-details.html',
                   controller: 'MeasurementVariableButtonDetailsCtrl'
                 }
               }
@@ -1451,13 +1451,14 @@ angular.module('starter',
 
   
   // defined tabs default state 
-   $urlRouterProvider.otherwise('/tab/measurements-variable-button-icons');
+  // $urlRouterProvider.otherwise('/tab/measurements-variable-button-icons');
   // finished tab default state...
 
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-        $urlRouterProvider.otherwise('/app/reminders-inbox');
+        //$urlRouterProvider.otherwise('/app/reminders-inbox');
+       $urlRouterProvider.otherwise('/app/measurements-variable-button-icons'); 
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');

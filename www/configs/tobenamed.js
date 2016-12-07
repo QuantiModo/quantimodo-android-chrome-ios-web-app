@@ -8,12 +8,12 @@ config.appSettings  = {
     loaderImagePath : 'img/pop-tart-cat.gif',
     shoppingCartEnabled : true,
     qmApiHostName: 'app.quantimo.do',
-    ionNavBarClass:'calm',
+    ionNavBarClass:'positive',
     settingsPageOptions :
     {
         showReminderFrequencySelector : true
     },
-    defaultState : 'app.remindersInbox',
+    defaultState : 'app.measurements-variable-button-icons',
     welcomeState : 'app.welcome',
     primaryOutcomeVariable : 'Mood',
     appStorageIdentifier: 'MoodiModoData*',
