@@ -1451,7 +1451,7 @@ angular.module('starter',
 
   
   // defined tabs default state 
-   $urlRouterProvider.otherwise('/tab/measurements');
+   $urlRouterProvider.otherwise('/tab/measurements-variable-button-icons');
   // finished tab default state...
 
 
