@@ -22,8 +22,8 @@ angular.module('starter')
 
         return {
             clearCorrelationCache : function(){
-                localStorageService.deleteItem('cacheGetAggregatedCorrelations');
-                localStorageService.deleteItem('cacheGetUserCorrelations');
+                localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
+                localStorageService.deleteCachedResponse('GetUserCorrelations');
             },
 
             getAggregatedCorrelations : function(params){
