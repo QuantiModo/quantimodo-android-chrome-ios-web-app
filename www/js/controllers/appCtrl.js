@@ -1279,10 +1279,14 @@ angular.module('starter')
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             var params = {includeTags : true};
             variableService.getVariablesByName(variableName, params).then(function(variableObject){
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
                 $ionicLoading.hide();
                 $rootScope.variableObject = variableObject;
                 $scope.setupVariableByVariableObject(variableObject);
             }, function (error) {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
                 $ionicLoading.hide();
                 console.error(error);
             });
