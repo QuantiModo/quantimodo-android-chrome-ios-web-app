@@ -1,50 +1,23 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Positive Predictors">
-
-    <ion-tabs id="positive-tabs" class="tabs-icon-top">>
-
-        <ion-tab title="Measurements" icon-off="ion-ios-speedometer-outline" icon-on="ion-ios-speedometer royal">
-
-            <!-- Tab 1 content -->
-
-            <ion-content style="padding-top: 45px">
-                <div class="item item-divider dividerSet item-royal">
-                    <span class="mini">Please select an icon and input the measurement.</span>
-                </div>
+<ion-content style="padding-top: 45px">
+    <div class="item item-divider dividerSet item-royal">
+        <span class="mini">Please select an icon and input the measurement.</span>
+    </div>
 
 
-                <br>
-                <div class="row row-wrap" align="middle">
-                    <!-- <div class="col-33" >
-                       <a href="#/tab/measurements/{{measurements.default[1]}}">
-                          <img class="myAvatar" ng-src="{{measurements.default[1].localImage}}"/>
-                       </a>
-                       <p class="avaText">Blood Pressure</p>
-                     </div> -->
+    <br>
+    <div class="row row-wrap" align="middle">
+        <!-- <div class="col-33" >
+           <a href="#/tab/measurements/{{measurements.default[1]}}">
+              <img class="myAvatar" ng-src="{{measurements.default[1].localImage}}"/>
+           </a>
+           <p class="avaText">Blood Pressure</p>
+         </div> -->
 
-                    <div class="col-33"
-                         ng-click="goToAddMeasurementForVariableObject(variable)"
-                         ng-repeat="variable in appSettings.defaultVariables">
-                        <img class="myAvatar" ng-src="{{variable.localImage}}"/>
-                        <p class="avaText royal">{{variable.shortName}}</p>
-                    </div>
-                </div>
-            </ion-content>
-
-
-        </ion-tab>
-
-
-        <ion-tab title="Reminder" icon-off="ion-ios-compose-outline" icon-on="ion-ios-compose royal" href="#/tab/reminder">
-            <ion-nav-view name="tab-reminder"></ion-nav-view>
-        </ion-tab>
-
-
-        <!--Settings Tab -->
-        <ion-tab title="Settings" icon-off="ion-ios-gear-outline" icon-on="ion-ios-gear royal" href="#/tab/settings">
-            <ion-nav-view name="tab-settings"></ion-nav-view>
-        </ion-tab>
-
-    </ion-tabs>
-
-
-</ion-view>
+        <div class="col-33"
+             ng-click="goToAddMeasurementForVariableObject(variable)"
+             ng-repeat="variable in appSettings.defaultVariables">
+            <img class="myAvatar" ng-src="{{variable.localImage}}"/>
+            <p class="avaText royal">{{variable.shortName}}</p>
+        </div>
+    </div>
+</ion-content>

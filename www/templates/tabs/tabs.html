@@ -1,22 +1,33 @@
-<ion-tabs class="tabs-icon-top">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Positive Predictors">
+  <ion-nav-title>{{state.title}}</ion-nav-title>
+  <ion-tabs id="positive-tabs" class="tabs-icon-top">>
 
+    <ion-tab title="Measurements"
+             icon-off="ion-ios-speedometer-outline"
+             icon-on="ion-ios-speedometer royal">
+      <div
+              ng-include="'templates/tabs/variable-button-icons.html'"></div>
+    </ion-tab>
 
-  <!-- Measurements Tab -->
-  <ion-tab title="Measurements" icon-off="ion-ios-speedometer-outline" icon-on="ion-ios-speedometer royal" href="#/tab/measurements">
-    <ion-nav-view name="tab-measurements-variable-button-details"></ion-nav-view>
-  </ion-tab>
-
-  <!-- Reminder Tab -->
-
-  <ion-tab title="Reminder" icon-off="ion-ios-compose-outline" icon-on="ion-ios-compose royal" href="#/tab/reminder">
-    <ion-nav-view name="tab-reminder"></ion-nav-view>
-  </ion-tab>
+    <ion-tab title="Reminders"
+             icon-off="ion-ios-compose-outline"
+             icon-on="ion-ios-compose royal">
+      <div
+           ng-include="'templates/tabs/tab-reminder.html'">
+      </div>
+    </ion-tab>
 
 
     <!--Settings Tab -->
-  <ion-tab title="Settings" icon-off="ion-ios-gear-outline" icon-on="ion-ios-gear royal" href="#/tab/settings">
-    <ion-nav-view name="tab-settings"></ion-nav-view>
-  </ion-tab>
+    <ion-tab title="Settings"
+
+             icon-off="ion-ios-gear-outline"
+             icon-on="ion-ios-gear royal">
+      <div
+              ng-include="'templates/tabs/tab-settings.html'"></div>
+    </ion-tab>
+
+  </ion-tabs>
 
 
-</ion-tabs>
+</ion-view>

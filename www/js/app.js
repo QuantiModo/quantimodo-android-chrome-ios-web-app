@@ -1353,23 +1353,12 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variableButtonIcons', {
-            url: '/variable-button-icons',
-            cache: false,
-            params: {
-                reminder: null,
-                variableCategoryName : null,
-                reminderNotification: null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                variableObject : null,
-                favorite: true
-            },
+        .state('app.tabs', {
+            url: '/tabs',
             views: {
                 'menuContent': {
-                    templateUrl: 'templates/tabs/variable-button-icons.html',
-                    controller: 'VariableButtonIconsCtrl'
+                    templateUrl: 'templates/tabs/tabs.html',
+                    controller: 'TabCtrl'
                 }
             }
         });
