@@ -1352,6 +1352,21 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
+        })
+        .state('tabs', {
+            url: "/tabs",
+            templateUrl: "templates/tabs/tabs.html",
+            controller: 'AppCtrl',
+            resolve : config_resolver
+        })
+        .state('tab.variableButtonIcons', {
+            url: '/variable-button-icons',
+            views: {
+                'tabContent': {
+                    templateUrl: 'templates/variable-button-icons.html',
+                    controller: 'AppCtrl'
+                }
+            }
         });
 
     if (window.localStorage.introSeen) {
