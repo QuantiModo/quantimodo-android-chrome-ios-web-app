@@ -43,6 +43,7 @@ angular.module('starter')
             if($stateParams.correlationObject){
                 $scope.correlationObject = $stateParams.correlationObject;
                 localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
+                $ionicLoading.hide();
             }
             
             if($scope.correlationObject){
@@ -164,20 +165,39 @@ angular.module('starter')
 
         $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
-            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams, $scope.data.pairs);
+
+/*            $scope.aggregatedCauseScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
+                $scope.data.pairsWithAggregatedCauseMeasurements, 'Pairs with Aggregated ' +
+                $scope.state.requestParams.causeVariableName +  ' Measurements');
+
+            $scope.aggregatedEffectScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
+                $scope.data.pairsWithAggregatedEffectMeasurements, 'Pairs with Aggregated ' +
+                $scope.state.requestParams.effectVariableName +  ' Measurements');*/
+
+            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.correlationObject,
+                $scope.data.pairs, 'All Pairs');
+
             //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
             //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
+
             $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                $scope.data.causeProcessedMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
+                $scope.data.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
+
             $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                $scope.data.effectProcessedMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
+                $scope.data.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
+
             $scope.correlationsOverOnsetDelaysChartConfig =
-                chartService.processDataAndConfigureCorrelationsOverOnsetDelaysChart($scope.data.correlationsOverTime, $scope.weightedPeriod);
+                chartService.processDataAndConfigureCorrelationsOverOnsetDelaysChart(
+                    $scope.data.correlationsOverOnsetDelays, $scope.weightedPeriod);
+
             $scope.correlationsOverDurationsOfActionChartConfig =
-                chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart($scope.data.correlationsOverDurationsOfAction);
+                chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart(
+                    $scope.data.correlationsOverDurationsOfAction);
+
             $scope.pairsOverTimeChartConfig =
-                chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.state.requestParams);
+                chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.correlationObject);
             $scope.highchartsReflow();
+            $ionicLoading.hide();
         };
 
         function getPairsAndCreateUserCharts() {
@@ -193,8 +213,6 @@ angular.module('starter')
 
 
         var getUserStudy = function (fallbackToAggregateStudy) {
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            
             correlationService.getUserCorrelations($scope.state.requestParams).then(function (correlations) {
                 $ionicLoading.hide();
                 //Stop the ion-refresher from spinning
@@ -227,9 +245,7 @@ angular.module('starter')
         };
 
         var getAggregateStudy = function (fallbackToUserStudy) {
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+
             correlationService.getAggregatedCorrelations($scope.state.requestParams).then(function (correlations) {
                 $ionicLoading.hide();
                 //Stop the ion-refresher from spinning
@@ -298,7 +314,6 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            $scope.hideLoader();
             $scope.init();
         });
 	});

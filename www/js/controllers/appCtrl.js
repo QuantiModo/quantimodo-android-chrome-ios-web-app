@@ -395,8 +395,8 @@ angular.module('starter')
 
 
         $scope.highchartsReflow = function() {
-
-            //$(window).resize();
+            // Fixes chart width
+            //$(window).resize(); This doesn't seem to do anything
 
             if(!$rootScope.reflowScheduled){
                 $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
@@ -407,8 +407,8 @@ angular.module('starter')
                     $scope.$broadcast('highchartsng.reflow');
                     $rootScope.reflowScheduled = false;
                 }, seconds * 1000);
-                // Fixes chart width
-                //$scope.$broadcast('highchartsng.reflow');
+
+                //$scope.$broadcast('highchartsng.reflow'); This doesn't seem to do anything
             } else {
                 console.debug('broadcast(highchartsng.reflow) already scheduled');
             }
