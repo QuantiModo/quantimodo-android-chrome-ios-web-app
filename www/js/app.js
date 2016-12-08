@@ -1457,8 +1457,8 @@ angular.module('starter',
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-        //$urlRouterProvider.otherwise('/app/reminders-inbox');
-       $urlRouterProvider.otherwise('/app/measurements-variable-button-icons'); 
+        $urlRouterProvider.otherwise('/app/reminders-inbox.html');
+     //  $urlRouterProvider.otherwise('/app/measurements-variable-button-icons'); 
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');
