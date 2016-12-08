@@ -28,6 +28,9 @@ angular.module('starter')
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $rootScope.appSettings = config.appSettings;
+        if(!$rootScope.appSettings.ionNavBarClass){
+            $rootScope.appSettings.ionNavBarClass = "bar-positive";
+        }
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
         $rootScope.numberOfPendingNotifications = null;
