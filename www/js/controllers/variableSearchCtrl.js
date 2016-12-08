@@ -41,7 +41,6 @@ angular.module('starter')
                     $state.go($stateParams.nextState, {
                         taggedVariableObject: $stateParams.taggedVariableObject,
                         fromState: $stateParams.fromState,
-                        fromStateParams: {variableObject: $stateParams.taggedVariableObject},
                         tagVariableObject: variableObject
                     });
                 } else {
@@ -73,7 +72,6 @@ angular.module('starter')
                     $state.go($stateParams.nextState, {
                         taggedVariableObject: variableObject,
                         fromState: $stateParams.fromState,
-                        fromStateParams: {variableObject: $stateParams.tagVariableObject},
                         tagVariableObject: $stateParams.tagVariableObject
                     });
                 } else {
