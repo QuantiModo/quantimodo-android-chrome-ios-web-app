@@ -2,7 +2,14 @@
     <ion-nav-title>Study</ion-nav-title>
         <ion-content style="background-color: #f2f2f2">
             <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
-            <div class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
+            <div ng-show="state.loading && !state.studyNotFound" style="text-align: center">
+                <br>
+                <br>
+                <br>
+                <br>
+                <ion-spinner icon="android"></ion-spinner>
+            </div>
+            <div ng-show="correlationObject" class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
                 <br>
                 <h2 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h2>
                 <br>

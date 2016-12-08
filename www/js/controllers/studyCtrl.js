@@ -29,19 +29,22 @@ angular.module('starter')
 
         $scope.init = function(){
 
+            $scope.state = {
+                title: 'Loading study...',
+                requestParams: {},
+                hideStudyButton: true,
+                loading: true
+            };
+
             $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.state = {
-                title: 'Loading study...',
-                requestParams: {},
-                hideStudyButton: true
-            };
 
             if($stateParams.correlationObject){
                 $scope.correlationObject = $stateParams.correlationObject;
+                $scope.state.loading = false;
                 localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                 $ionicLoading.hide();
             }
@@ -69,6 +72,7 @@ angular.module('starter')
 
             if(!$scope.state.requestParams.effectVariableName){
                 $scope.correlationObject = localStorageService.getItemAsObject('lastStudy');
+                $scope.state.loading = false;
                 $scope.state.requestParams = {
                     causeVariableName: $scope.correlationObject.causeVariableName,
                     effectVariableName: $scope.correlationObject.effectVariableName
@@ -219,11 +223,13 @@ angular.module('starter')
                 $scope.$broadcast('scroll.refreshComplete');
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
+                    $scope.state.loading = false;
                     localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
                     getPairsAndCreateUserCharts();
                 } else {
                     if(!fallbackToAggregateStudy){
+                        $scope.state.loading = false;
                         $scope.state.studyNotFound = true;
                         $scope.state.title = 'Study Not Found';
                     } else {
@@ -236,6 +242,7 @@ angular.module('starter')
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 if(!fallbackToAggregateStudy){
+                    $scope.state.loading = false;
                     $scope.state.studyNotFound = true;
                     $scope.state.title = 'Study Not Found';
                 } else {
@@ -252,6 +259,7 @@ angular.module('starter')
                 $scope.$broadcast('scroll.refreshComplete');
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
+                    $scope.state.loading = false;
                     localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
                 } else {

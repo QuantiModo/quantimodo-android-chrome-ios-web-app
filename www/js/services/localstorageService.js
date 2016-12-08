@@ -255,13 +255,8 @@ angular.module('starter')
             localStorageService.setItem('cached' + requestName, JSON.stringify(cachedResponse));
         };
 
-        localStorageService.deleteCachedResponse = function(requestName, params, response){
-            var cachedResponse = {
-                requestParams: params,
-                response: response,
-                expirationTimeMilliseconds: Date.now() + 86400 * 1000
-            };
-            localStorageService.setItem('cached' + requestName, JSON.stringify(cachedResponse));
+        localStorageService.deleteCachedResponse = function(requestName){
+            localStorageService.deleteItem('cached' + requestName);
         };
 
         localStorageService.getElementsFromItemWithRequestParams = function (localStorageItemName, requestParams) {
