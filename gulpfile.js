@@ -1515,6 +1515,16 @@ gulp.task('copyPrivateConfig', [], function () {
 	}).pipe(gulp.dest('./www/private_configs/'));
 });
 
+gulp.task('copyAppConfigToDefault', [], function () {
+    if(!process.env.LOWERCASE_APP_NAME){
+        process.env.LOWERCASE_APP_NAME = 'moodimodo';
+    }
+
+    return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js')
+        .pipe(rename('default.js'))
+        .pipe(gulp.dest('www/configs'));
+});
+
 gulp.task('copyIonicCloudLibrary', [], function () {
 	return gulp.src(['node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js']).pipe(gulp.dest('www/lib'));
 });
@@ -1924,7 +1934,7 @@ gulp.task('runMindFirstAndroid', function(callback){
 gulp.task('configureAppUsingEnvs', function(callback){
     runSequence(
         'generatePrivateConfigFromEnvs',
-        //'updateDefaultAppInAppsJsUsingEnvs',  //Doesn't work on Heroku for some reason
+        'copyAppConfigToDefault',
         callback);
 });
 
