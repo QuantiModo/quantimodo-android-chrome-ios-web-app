@@ -110,10 +110,11 @@ angular.module('starter')
         };
 
         $scope.shareStudy = function(correlationObject, url){
-
-            if(correlationObject.userId){
+            if(url.indexOf('userId') !== -1){
                 if(!correlationObject.shareUserMeasurements){
                     $scope.showShareStudyConfirmation(correlationObject, url);
+                } else {
+                    $scope.openUrl(url);
                 }
             } else {
                 $scope.openUrl(url);
