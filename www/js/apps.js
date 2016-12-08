@@ -8,7 +8,7 @@ var appsManager = { // jshint ignore:line
 		"tobenamed" : "configs/tobenamed",
 		"yourlowercaseappnamehere": "configs/yourlowercaseappnamehere"
 	},
-	defaultApp : "tobenamed",
+	defaultApp : "default",
 	getAppConfig : function(app){
 		if(appsManager.apps[app]){
 			return 'configs/' + app + '.js';
