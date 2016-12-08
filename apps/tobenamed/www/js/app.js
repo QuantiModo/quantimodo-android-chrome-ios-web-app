@@ -8,7 +8,7 @@ var appsManager = {
 		"tobenamed" : "configs/tobenamed",
 	},
 
-	defaultApp : "tobenamed",
+	defaultApp : "moodimodo",
 	getDefaultConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? appsManager.apps[appsManager.defaultApp]+'.js' : false;
 	},

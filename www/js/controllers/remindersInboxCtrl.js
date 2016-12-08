@@ -784,15 +784,5 @@ angular.module('starter')
 			}, 20000);
 
 		};
-		//was included into menu page, not working
-		  .directive('buttonIcons',function(){
-
-		     return{
-		  
-		       templateUrl: 'templates/tab-header-icon-html'
-		     }
-		 })
-
-
 
 	});
