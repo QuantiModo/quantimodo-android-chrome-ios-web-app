@@ -13,7 +13,7 @@ config.appSettings  = {
     {
         showReminderFrequencySelector : true
     },
-    defaultState : 'app.measurements-variable-button-icons',
+    defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
     primaryOutcomeVariable : 'Mood',
     appStorageIdentifier: 'MoodiModoData*',
