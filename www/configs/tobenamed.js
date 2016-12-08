@@ -8,7 +8,7 @@ config.appSettings  = {
     loaderImagePath : 'img/pop-tart-cat.gif',
     shoppingCartEnabled : true,
     qmApiHostName: 'app.quantimo.do',
-    ionNavBarClass:'positive',
+    ionNavBarClass:'bar-positive',
     settingsPageOptions :
     {
         showReminderFrequencySelector : true
