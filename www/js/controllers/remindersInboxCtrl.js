@@ -785,5 +785,4 @@ angular.module('starter')
 
 		};
 
-
 	});

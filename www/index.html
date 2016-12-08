@@ -25,16 +25,15 @@
 
       <title></title>
 
-    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
     <link href="lib/Ionicons/css/ionicons.css" rel="stylesheet">
 
     <link href="css/mfb.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="img/icons/icon_16.png">
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <!-- compiled css output -->
     <link href="css/ionic.app.css" rel="stylesheet">
-    -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href=" css/tobenamed-style.css" rel="stylesheet">
 
     <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
     <script src="lib/bugsnag/src/bugsnag.js" data-apikey="ae7bc49d1285848342342bb5c321a2cf"></script>
@@ -63,29 +62,29 @@
       <!--<script src="lib/templates.js"></script>-->
     <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
     <script src="lib/ng-material-floating-button/src/mfb-directive.js"></script>
-      <script src="lib/moment/moment.js"></script>
+    <script src="lib/moment/moment.js"></script>
 
       <!-- your app's js -->
     <script src="js/apps.js"></script>
     <script src="js/app.js"></script>
 
-      <script src="js/services/localstorageService.js"></script>
+    <script src="js/services/localstorageService.js"></script>
     <script src="js/services/utilsService.js"></script>
     <script src="js/services/quantiModo.js"></script>
-      <script src="js/services/unitService.js"></script>
-      <script src="js/services/reminderService.js"></script>
+    <script src="js/services/unitService.js"></script>
+    <script src="js/services/reminderService.js"></script>
     <script src="js/services/measurementService.js"></script>
     <script src="js/services/variableService.js"></script>
     <script src="js/services/chartService.js"></script>
     <script src="js/services/notificationService.js"></script>
     <script src="js/services/correlationsService.js"></script>
     <script src="js/services/variableCategoryService.js"></script>
-      <script src="js/services/bugsnagService.js"></script>
+    <script src="js/services/bugsnagService.js"></script>
     <script src="js/services/timeService.js"></script>
     <script src="js/services/ratingService.js"></script>
     <script src="js/services/migrationService.js"></script>
-      <script src="js/services/qmLocationService.js"></script>
-      <script src="js/services/connectorsService.js"></script>
+    <script src="js/services/qmLocationService.js"></script>
+    <script src="js/services/connectorsService.js"></script>
 
     <script src="js/filters/fromNow.js"></script>
     <script src="js/filters/primaryOutcomeVariables.js"></script>
@@ -98,9 +97,9 @@
     <script src="js/filters/reminderTimes.js"></script>
     <script src="js/filters/wordAliases.js"></script>
 
-      <script src="js/controllers/appCtrl.js"></script>
-      <script src="js/controllers/remindersInboxCtrl.js"></script>
-      <script src="js/controllers/favoritesCtrl.js"></script>
+    <script src="js/controllers/appCtrl.js"></script>
+    <script src="js/controllers/remindersInboxCtrl.js"></script>
+    <script src="js/controllers/favoritesCtrl.js"></script>
     <script src="js/controllers/introCtrl.js"></script>
       <script src="js/controllers/fabric.js"></script>
     <script src="js/controllers/variableSettingsCtrl.js"></script>
@@ -119,10 +118,12 @@
     <script src="js/controllers/remindersManageCtrl.js"></script>
     <script src="js/controllers/remindersAddCtrl.js"></script>
     <script src="js/controllers/measurementAddCtrl.js"></script>
-      <script src="js/controllers/tagAddCtrl.js"></script>
+    <script src="js/controllers/tagAddCtrl.js"></script>
     <script src="js/controllers/chartsPageCtrl.js"></script>
     <script src="js/controllers/studyCtrl.js"></script>
-      <script src="js/controllers/mapCtrl.js"></script>
+    <script src="js/controllers/mapCtrl.js"></script>
+    <script src="js/controllers/measurementsVariableButtonIconsCtrl.js"></script>
+    <script src="js/controllers/measurementVariableButtonDetailsCtrl.js"></script>
 
       <script src="lib/highstock-release/highstock.js"></script>
       <script src="lib/highcharts-ng/dist/highcharts-ng.js"></script>
@@ -151,8 +152,8 @@
       <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/zFZhM9zeDpFAXUFUyPKSQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
   </head>
 
-  <body ng-app="starter">
-    <ion-nav-view>
+  <body ng-app="starter" >
+    <ion-nav-view class="positive">
 
     </ion-nav-view>
 

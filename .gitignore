@@ -35,4 +35,3 @@ gradle-2.14.1-bin.zip
 apps/quantimodo/resources/chrome_extension/www
 build.json
 dropbox
-!/www/private_configs/yourlowercaseappnamehere.config.js

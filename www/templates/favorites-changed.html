@@ -1,0 +1,189 @@
+<!-- <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{stateParams.title}}" has-subheader="true">
+     <ion-nav-buttons side="left" ng-show="false">
+        <button class="button button-icon icon ion-navicon"></button>
+     </ion-nav-buttons>
+     <ion-nav-buttons side="right" ng-show="false">
+        <button class="button button-clear button-positive">Input</button>
+     </ion-nav-buttons>
+  <ion-content>  
+
+   <!--vital signs part-->
+    <div class="item item-divider narrow">Vital Signs</div>
+       
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select1" ng-class="{'icon ion-ios-circle-filled positive': selected1, 'icon ion-ios-circle-outline': !selected1}" ng-click="selected1=!selected1"></i>
+             <p>Blood Pressure</p>
+
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+
+         <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select2" ng-class="{'icon ion-ios-circle-filled positive': selected2, 'icon ion-ios-circle-outline': !selected2}" ng-click="selected2=!selected2"></i>
+           <p>  Pulse</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select4" ng-class="{'icon ion-ios-circle-filled positive': selected4, 'icon ion-ios-circle-outline': !selected4}" ng-click="selected4=!selected4"></i>
+            <p> Blood Oxygen Saturation</p>
+            <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select9" ng-class="{'icon ion-ios-circle-filled positive': selected9, 'icon ion-ios-circle-outline': !selected9}" ng-click="selected9=!selected9"></i>
+            <p> Breath Rate</p>
+            <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select5" ng-class="{'icon ion-ios-circle-filled positive': selected5, 'icon ion-ios-circle-outline': !selected5}" ng-click="selected5=!selected5"></i>
+            <p> Temperature</p>
+            <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+    <!--end of vital signs-->
+    body measurement part start
+    <div class="item item-divider narrow">Body Measurement</div>
+         <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select6" ng-class="{'icon ion-ios-circle-filled positive': selected6, 'icon ion-ios-circle-outline': !selected6}" ng-click="selected6=!selected6"></i>
+           <p> Height</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select7" ng-class="{'icon ion-ios-circle-filled positive': selected7, 'icon ion-ios-circle-outline': !selected7}" ng-click="selected7=!selected7"></i>
+           <p> Weight</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select8" ng-class="{'icon ion-ios-circle-filled positive': selected8, 'icon ion-ios-circle-outline': !selected8}" ng-click="selected8=!selected8"></i>
+           <p> BMI</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+       <!--body measurement part end-->
+       <!--Other measurement part start-->
+    <div class="item item-divider narrow">Others</div>
+         <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select10" ng-class="{'icon ion-ios-circle-filled positive': selected10, 'icon ion-ios-circle-outline': !selected10}" ng-click="selected10=!selected10"></i>
+           <p> Glucose Level</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-left" href="#">
+      
+                <i class="select11" ng-class="{'icon ion-ios-circle-filled positive': selected11, 'icon ion-ios-circle-outline': !selected11}" ng-click="selected11=!selected11"></i>
+           <p> Poo</p>
+        </a>
+        <a class="item item-icon-left item-icon-left" href="#">
+      
+                <i class="select12" ng-class="{'icon ion-ios-circle-filled positive': selected12, 'icon ion-ios-circle-outline': !selected12}" ng-click="selected12=!selected12"></i>
+           <p> Symptoms</p>
+        </a>
+       <!--body measurement part end-->
+   
+
+     <li class="item ion-plus">&nbsp;&nbsp;&nbsp;add</li>
+  </ion-list>
+
+
+    </ion-content>
+</ion-view> -->
+
+<!-- 
+		<ion-content >
+        <div class="list card" id="favoritesList" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" on-hold="showActionSheet(favorite, $index)">
+            <div class="item" style="padding-bottom:0px;">
+                <div class="row">
+                    <div ng-click="showActionSheet(favorite, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">
+                        <i style="font-size: 40px;" class="icon positive {{favorite.icon}}"></i>
+                    </div>
+                    <div class="col col-70">
+                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
+                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}} {{favorite.variableName}}</h2>
+						<button ng-if="favorite.abbreviatedUnitName != '/5' && favorite.variableDescription !== 'showValueField'"
+                                class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; "
+                                ng-click="trackByReminder(favorite, null, $index)">
+							<i class="ion-android-done"> &nbsp; Record {{favorite.defaultValue}} {{favorite.abbreviatedUnitName}}</i>
+						</button>
+					</div>
+                    <div ng-click="showActionSheet(favorite, $index)" class="col col-10">
+                        <i style="font-size: 20px;" class="icon positive ion-more"></i>
+                    </div>
+                </div>
+                <label ng-if="favorite.variableDescription === 'showValueField'" class="item item-input">
+                    <input type="number" ng-model="favorite.total" id="total"
+                           ng-click="onTextClick($event)" placeholder={{favorite.defaultValuePlaceholderText}} >
+                    <span class="input-label">{{favorite.defaultValueLabel}}</span>
+                    <i style="font-size: 40px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i>
+                </label>
+                <div class="primary-outcome-variable-reporting"
+                     ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
+                    <div class="primary-outcome-variable-rating-buttons" >
+                        <img ng-repeat="option in numericRatingOptions"
+                             ng-click="trackByReminder(favorite, option.numericValue)"
+                             ng-src="{{option.img}}">
+                    </div>
+                    <br>
+                </div>
+                <div class="primary-outcome-variable-reporting"
+                     ng-if="favorite.abbreviatedUnitName === '/5' &&
+						 	favorite.variableDescription.toLowerCase().indexOf('positive') > -1">
+                    <div class="primary-outcome-variable-rating-buttons" >
+                        <img ng-repeat="option in positiveRatingOptions"
+                             ng-click="trackByReminder(favorite, option.numericValue)"
+                             ng-src="{{option.img}}">
+                        <br>
+                    </div>
+                    <br>
+                </div>
+                <div class="primary-outcome-variable-reporting"
+                     ng-if="favorite.abbreviatedUnitName === '/5' &&
+						 	favorite.variableDescription.toLowerCase().indexOf('negative') > -1">
+                    <div class="primary-outcome-variable-rating-buttons" >
+                        <img ng-repeat="option in negativeRatingOptions"
+                             ng-click="trackByReminder(favorite, option.numericValue)"
+                             ng-src="{{option.img}}">
+                        <br>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+            <div class="list card" ng-click="favoriteAddButtonClick()">
+                <a id="addFavoriteBtn" style="white-space: normal; " class="item item-icon-left">
+                    <i class="icon {{stateParams.addButtonIcon}}"></i>
+                    {{stateParams.addButtonText}}
+                </a>
+            </div>
+            <div class="list card" id="noFavoritesExplanation" ng-if="state.favorites.length === 0" >
+                <div class="item" style="padding-bottom:0px;">
+                    <div class="row">
+                        <h2 style="white-space: normal; text-align: center; line-height: normal; ">
+                            {{stateParams.helpText}}
+                            <br><br>
+                        </h2>
+
+                    </div>
+                    <div ng-if="stateParams.moreHelpText" class="row">
+                        <p style="white-space: normal; text-align: center; line-height: normal; ">
+                            {{stateParams.moreHelpText}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+ -->
+	</ion-content>
+	<nav mfb-menu position="bl" effect="slidein-spring"
+		 active-icon="ion-minus-round" resting-icon="ion-plus-round"
+		 toggling-method="click" ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+		<button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}} ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}} ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}} ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button4.icon}} label={{floatingMaterialButton.button4.label}} ng-click="goToState({{floatingMaterialButton.button4.stateAndParameters}})"></button>
+	</nav>
+
+</ion-view>

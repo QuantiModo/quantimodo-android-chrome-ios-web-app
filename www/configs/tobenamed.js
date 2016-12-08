@@ -1,24 +1,22 @@
 window.config = {};
 
 config.appSettings  = {
-    appName : 'YourAppDisplayNameHere',
+    appName : 'ToBeNamed',
     cordovaLocalNotificationsEnabled : false,
-    linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
+    linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     allowOffline : true,
-    loaderImagePath : 'img/pop_tart_cat.gif',
+    loaderImagePath : 'img/pop-tart-cat.gif',
+    shoppingCartEnabled : true,
     qmApiHostName: 'app.quantimo.do',
+    ionNavBarClass:'bar-positive',
     settingsPageOptions :
     {
         showReminderFrequencySelector : true
     },
-
-    defaultState : 'app.remindersInbox',
+    defaultState : 'app.measurements-variable-button-icons',
     welcomeState : 'app.welcome',
-
     primaryOutcomeVariable : 'Mood',
-
-    appStorageIdentifier: 'YourAppDisplayNameHereData*',
-
+    appStorageIdentifier: 'MoodiModoData*',
     headline : 'Sync and Analyze Your Data',
     features: [
         ' - Automatically backup and sync your data across devices',
@@ -77,8 +75,10 @@ config.appSettings  = {
         'img/rating/ic_5.png'
     ],
 
-    welcomeText : "Let's start off by reporting your first mood below",
-    primaryOutcomeVariableTrackingQuestion : "How are you?",
+    /* END NEW STUFF */
+
+    welcomeText:"Let's start off by adding your first medication!",
+    primaryOutcomeVariableTrackingQuestion : "How are you",
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
@@ -96,86 +96,56 @@ config.appSettings  = {
         "happy" : 4,
         "ecstatic": 5
     },
-    backgroundColor: '#3467d6',  // TODO: Make background color configurable
 
     intro : [
         // screen 1
         {
             img : {
-                width : '250',
-                height : '250',
-                url : 'img/intro/intro_import.png'
+                width : '150',
+                height : '150',
+                url : 'img/icons/icon.png'
             },
-            textColor: 'white',
-            backgroundColor: '#3467d6',
             content : {
-                firstParagraph : {
+
+                firstP : {
                     visible : true,
-                    content : 'Import Data',
-                    classes : 'intro-header'
-                },
+                    content : 'Welcome to SuperCell',
+                    classes : 'intro-header positive'
+                }, 
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph : {
+                finalP : {
                     visible : true,
-                    content : 'Import data from all your apps and devices',
+                    content : 'SuperCell allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
-                    buttonBarVisible : true
+                    buttonBarVisible : true   
                 }
             }
         },
         {
             img : {
-                width : '250',
-                height : '250',
-                url : 'img/intro/intro_track_anything.png'
+                width : '180',
+                height : '180',
+                url : 'img/rating/ic_face_ecstatic.png'
             },
-            textColor: 'white',
-            backgroundColor: '#f09402',
             content : {
-                firstParagraph : {
+
+                firstP : {
                     visible : true,
-                    content : 'Track Anything',
-                    classes : 'intro-header'
-                },
+                    content : 'Thank you for helping us derive a mathematical equation for happiness!',
+                    classes : 'intro-paragraph positive'
+                }, 
+                
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph : {
+                finalP: {
                     visible : true,
-                    content : 'Log treatments, diet, symptoms, emotions, and anything else',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        {
-            img : {
-                width : '250',
-                height : '250',
-                url : 'img/intro/intro_make_discoveries.png'
-            },
-            textColor: 'white',
-            backgroundColor: '#0f9d58',
-            content : {
-
-                firstParagraph : {
-                    visible : true,
-                    content : 'Make Discoveries',
-                    classes : 'intro-header'
-                },
-
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalParagraph: {
-                    visible : true,
-                    content : 'Identify hidden factors most strongly linked to your well-being',
-                    classes : 'intro-paragraph',
+                    content : 'Now start tracking and optimize your life!',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
@@ -183,7 +153,7 @@ config.appSettings  = {
     ],
 
     helpPopupMessages : {
-        "#/app/example" :'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Mood for the average user.',
+        "#/app/example" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
     },
 
     remindersInbox : {
@@ -206,221 +176,201 @@ config.appSettings  = {
             stateAndParameters: "'app.measurementAddSearch'"
         },
         button3 : {
-            icon: 'ion-ios-cloud-download-outline',
-            label: 'Import Data',
-            stateAndParameters: "'app.import'"
+            icon: 'ion-ios-medkit-outline',
+            label: 'Record a Dose',
+            stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Treatments'}"
         },
         button4 : {
-            icon: 'ion-ios-star',
-            label: 'Add a Favorite Variable',
-            stateAndParameters: "'app.favoriteSearch'"
+            icon: 'ion-sad-outline',
+            label: 'Rate a Symptom',
+            stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Symptoms'}"
         }
     },
 
-    menuGroupedByVariableCategories : [
-        {
-            title : 'Medications',
-            click : 'toggleTreatmentsSubMenu',
-            icon : 'ion-ios-pulse',
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-medkit-outline',
-            expandedIcon : 'ion-chevron-down'
+   //****modified default reminders
+
+     defaultVariables : [
+        {   id:0,
+            variableName : "Pulse",
+            shortName :"Pulse",
+            chineseName: "脉搏",
+            defaultValue :  null,
+            abbreviatedUnitName: "bpm",
+            reminderFrequency : 0,
+            icon: "ion-heart",
+            variableCategoryName : "Vital Signs",
+            img:"https://maxcdn.icons8.com/windows10/PNG/96/Programming/system_task-100.png",
+            localImage:"img/iconImg/pulse.png",
+            show:true
+            
         },
         {
-            title : 'Overdue',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            href : '#/app/reminders-inbox/Treatments',
-            icon : 'ion-clock'
+            id:12,
+            variableName: "Blood Pressure",
+            shortName :"Blood Pressure",
+            chineseName:"血压",
+            icon: "ion-heart",
+            abbreviatedUnitName: "mmHg",
+            reminderFrequency : "0",
+            defaultValue:  "null",
+            variableCategoryName : "Vital Signs",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png",
+            localImage:"img/iconImg/bloodpressure.png",
+            show:true
         },
         {
-            title : "Today's Schedule",
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            href : '#/app/reminders-inbox-today/Treatments',
-            icon : 'ion-android-sunny'
+            id:1,
+            variableName: "Blood Pressure (Systolic - Top Number)",
+            icon: "ion-heart",
+            abbreviatedUnitName: "mmHg",
+            reminderFrequency: "0",
+            defaultValue:  "null",
+            variableCategoryName: "Vital Signs",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png",
+            localImage:"img/iconImg/bloodpressure.png",
+            show:false
         },
         {
-            title : 'Manage Scheduled',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            href : '#/app/manage-scheduled-meds',
-            icon : 'ion-android-notifications-none'
+            id:2,
+            variableName: "Blood Pressure (Diastolic - Bottom Number)",
+            icon: "ion-heart",
+            abbreviatedUnitName: "mmHg",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName: "Vital Signs",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png",
+            localImage:"img/iconImg/bloodpressure.png",
+            show:false
         },
         {
-            title : 'As-Needed Meds',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            href : '#/app/as-needed-meds',
-            icon : 'ion-ios-medkit-outline'
+            id:3,
+            variableName: "Core Body Temperature",
+            shortName:"Body Temp",
+            chineseName:"体温",
+            icon: "null",
+            abbreviatedUnitName: "C",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName: "Vital Signs",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Science/temperature-100.png",
+            localImage:"img/iconImg/Temperature.png",
+            show:true
         },
         {
-            title : 'Record a Dose',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            href : '#/app/measurement-add-search-category/Treatments',
-            icon : 'ion-edit'
+            id:4,
+            variableName: "Oxygen Saturation",
+            shortName:"H2O Oxygen",
+            chineseName:"血氧饱和度",
+            icon: null,
+            abbreviatedUnitName: "%",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName: "Vital Signs",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Science/oxygen-100.png",
+            localImage:"img/iconImg/Oxygen.png",
+            show:true
+        },
+          {
+            id:5,
+            variableName: "Height",
+            shortName: "Height",
+            chineseName: "身高",
+            icon: null,
+            abbreviatedUnitName: "cm",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName: "Physique",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Science/height-100.png",
+            localImage:"img/iconImg/Height.png",
+            show:true
+        },
+        {  
+            id:6,
+            variableName: "Weight",
+            shortName:"Weight",
+            chineseName:"体重",
+            icon: null,
+            abbreviatedUnitName: "kg",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName: "Physique",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Science/weight-100.png",
+            localImage:"img/iconImg/weight.png",
+            show:true
         },
         {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            href : '#/app/history-all/Treatments',
-            icon : 'ion-ios-paper-outline'
+            id:7,
+            variableName: "Bowel Movements Count(Poop)",
+            shortName: "Poop",
+            chineseName: "排便",
+            icon: null,
+            abbreviatedUnitName: "count",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName: "Symptoms",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Messaging/poo-100.png",
+            localImage:"img/iconImg/Poo.png",
+            show:true
+        },
+         {
+            id:8,
+            variableName: "Respiratory Rate",
+            shortName:"Respiratory Rate",
+            chineseName:"呼吸频率",
+            icon: null,
+            abbreviatedUnitName: "/minute",
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : "Vital Signs",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Healthcare/lungs-100.png",
+            localImage:"img/iconImg/Lungs.png",
+            show:true
         },
         {
-            title : 'Symptoms',
-            click : 'toggleSymptomsSubMenu',
-            icon : 'ion-ios-pulse',
-            isSubMenuParent : true,
-            showSubMenuVariable : 'showSymptomsSubMenu',
-            collapsedIcon : 'ion-sad-outline',
-            expandedIcon : 'ion-chevron-down'
+            id:9,
+            variableName: "Blood Glucose Sugar",
+            shortName: "Blood Sugar",
+            chineseName: "血糖",
+            icon: null,
+            abbreviatedUnitName: "mg/dL",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName : "Vital Signs",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Industry/water-100.png",
+            localImage:"img/iconImg/glucose.png",
+            show:true
         },
         {
-            title : 'Manage Reminders',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showSymptomsSubMenu',
-            href : '#/app/reminders-manage/Symptoms',
-            icon : 'ion-android-notifications-none'
+            id:10,
+            variableName: "Mood",
+            shortName: "Mood",
+            chineseName: "心情",
+            icon: null,
+            abbreviatedUnitName: "count",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName : "Mood",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Messaging/poo-100.png",
+            localImage:"img/iconImg/mood.png",
+            show:true
         },
-        {
-            title : 'Rate Symptom',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showSymptomsSubMenu',
-            href : '#/app/measurement-add-search-category/Symptoms',
-            icon : 'ion-edit'
-        },
-        {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showSymptomsSubMenu',
-            href : '#/app/history-all/Symptoms',
-            icon : 'ion-ios-paper-outline'
-        },
-        {
-            title : 'Vital Signs',
-            click : 'toggleVitalSignsSubMenu',
-            showSubMenuVariable : 'showVitalSignsSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-pulse',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'Manage Reminders',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showVitalSignsSubMenu',
-            href : '#/app/reminders-manage/Vital Signs',
-            icon : 'ion-android-notifications-none'
-        },
-        {
-            title : 'Record Now',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showVitalSignsSubMenu',
-            href : '#/app/measurement-add-search-category/Vital Signs',
-            icon : 'ion-edit'
-        },
-        {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showVitalSignsSubMenu',
-            href : '#/app/history-all/Vital Signs',
-            icon : 'ion-ios-paper-outline'
-        },
-        {
-            title : 'Physical Activity',
-            click : 'togglePhysicalActivitySubMenu',
-            showSubMenuVariable : 'showPhysicalActivitySubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-body-outline',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'Manage Reminders',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPhysicalActivitySubMenu',
-            href : '#/app/reminders-manage/Physical Activity',
-            icon : 'ion-android-notifications-none'
-        },
-        {
-            title : 'Record Activity',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPhysicalActivitySubMenu',
-            href : '#/app/measurement-add-search-category/Physical Activity',
-            icon : 'ion-edit'
-        },
-        {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPhysicalActivitySubMenu',
-            href : '#/app/history-all/Physical Activity',
-            icon : 'ion-ios-paper-outline'
-        },
-        {
-            title : 'Emotions',
-            click : 'toggleEmotionsSubMenu',
-            showSubMenuVariable : 'showEmotionsSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-happy-outline',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'Manage Reminders',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showEmotionsSubMenu',
-            href : '#/app/reminders-manage/Emotions',
-            icon : 'ion-android-notifications-none'
-        },
-        {
-            title : 'Record Rating',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showEmotionsSubMenu',
-            href : '#/app/measurement-add-search-category/Emotions',
-            icon : 'ion-edit'
-        },
-        {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showEmotionsSubMenu',
-            href : '#/app/history-all/Emotions',
-            icon : 'ion-ios-paper-outline'
-        },
-        {
-            title : 'Diet',
-            click : 'toggleDietSubMenu',
-            showSubMenuVariable : 'showDietSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-nutrition-outline',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'Manage Reminders',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showDietSubMenu',
-            href : '#/app/reminders-manage/Foods',
-            icon : 'ion-android-notifications-none'
-        },
-        {
-            title : 'Record Meal',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showDietSubMenu',
-            href : '#/app/measurement-add-search-category/Foods',
-            icon : 'ion-edit'
-        },
-        {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showDietSubMenu',
-            href : '#/app/history-all/Foods',
-            icon : 'ion-ios-paper-outline'
-        },
-        {
-            title : 'Favorites',
-            href : '#/app/favorites',
-            icon : 'ion-ios-star'
-        },
+         {
+            id:11,
+            variableName: "Symptoms",
+            shortName: "Symptoms",
+            chineseName: "症状",
+            icon: null,
+            abbreviatedUnitName: "count",
+            reminderFrequency: 0,
+            defaultValue:  null,
+            variableCategoryName: "Symptoms",
+            img:"https://maxcdn.icons8.com/iOS7/PNG/100/Messaging/poo-100.png",
+            localImage:"img/iconImg/symptoms.png",
+            show:true
+        }
     ],
+
+
 
     menu : [
         {
@@ -433,6 +383,16 @@ config.appSettings  = {
             href : '#/app/favorites',
             icon : 'ion-ios-star'
         },
+           {
+            title : 'Measurements Variable Icons',
+            href : '#/app/measurements-variable-button-icons',
+            icon : 'ion-speedometer'
+        },
+            {
+            title : 'Measurement Variable Button Details',
+            href : '#/app/measurement-variable-button-details/:measurementId',
+            icon : 'ion-info'
+        },
         {
             title : 'Overall Mood',
             click : 'togglePrimaryOutcomeSubMenu',
@@ -441,6 +401,7 @@ config.appSettings  = {
             collapsedIcon : 'ion-happy-outline',
             expandedIcon : 'ion-chevron-down'
         },
+
         {
             title : 'Charts',
             isSubMenuChild : true,
@@ -654,11 +615,11 @@ config.appSettings  = {
         },
         {
             title : 'Charts',
-            href : '#/app/chart-search',
+            href : '#/app/search-variables',
             icon : 'ion-arrow-graph-up-right'
         },
         {
-            title : 'Relationships',
+            title : 'Strongest Predictors',
             click : 'togglePredictorSearchSubMenu',
             showSubMenuVariable : 'showPredictorSearchSubMenu',
             isSubMenuParent : true,
@@ -670,14 +631,7 @@ config.appSettings  = {
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/predictor-search',
-            icon : 'ion-log-in'
-        },
-        {
-            title : 'Outcome Search',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/outcome-search',
-            icon : 'ion-log-out'
+            icon : 'ion-search'
         },
 /*        {
             title : 'For Everyone',
@@ -720,6 +674,7 @@ config.appSettings  = {
     ]
 };
 
+
 window.notification_callback = function(reportedVariable, reportingTime){
     var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
     var keyIdentifier = config.appSettings.appStorageIdentifier;
@@ -754,7 +709,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
             allMeasurements.push(allMeasurementsObject);
             localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
         }
-
+        
         //update measurementsQueue
         if(!localStorage[keyIdentifier+'measurementsQueue']){
             localStorage[keyIdentifier+'measurementsQueue'] = '[]';

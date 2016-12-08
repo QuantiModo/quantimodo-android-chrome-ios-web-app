@@ -6,8 +6,7 @@ angular.module('starter')
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
 
-        var getStudy = function() {
-
+        $scope.getStudy = function() {
             if ($rootScope.urlParameters.aggregated) {
                 var fallbackToUserStudy = false;
                 if ($rootScope.user) {
@@ -22,31 +21,22 @@ angular.module('starter')
             }
         };
 
-        $scope.refreshStudy = function() {
-            correlationService.clearCorrelationCache();
-            getStudy();
-        };
-
         $scope.init = function(){
-
-            $scope.state = {
-                title: 'Loading study...',
-                requestParams: {},
-                hideStudyButton: true,
-                loading: true
-            };
 
             $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            $scope.state = {
+                title: 'Loading study...',
+                requestParams: {},
+                hideStudyButton: true
+            };
 
             if($stateParams.correlationObject){
                 $scope.correlationObject = $stateParams.correlationObject;
-                $scope.state.loading = false;
                 localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
-                $ionicLoading.hide();
             }
             
             if($scope.correlationObject){
@@ -72,7 +62,6 @@ angular.module('starter')
 
             if(!$scope.state.requestParams.effectVariableName){
                 $scope.correlationObject = localStorageService.getItemAsObject('lastStudy');
-                $scope.state.loading = false;
                 $scope.state.requestParams = {
                     causeVariableName: $scope.correlationObject.causeVariableName,
                     effectVariableName: $scope.correlationObject.effectVariableName
@@ -90,7 +79,7 @@ angular.module('starter')
                     }
                 }
             } else {
-                getStudy();
+                $scope.getStudy();
             }
         };
 
@@ -169,40 +158,21 @@ angular.module('starter')
 
         $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
-
-/*            $scope.aggregatedCauseScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
-                $scope.data.pairsWithAggregatedCauseMeasurements, 'Pairs with Aggregated ' +
-                $scope.state.requestParams.causeVariableName +  ' Measurements');
-
-            $scope.aggregatedEffectScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
-                $scope.data.pairsWithAggregatedEffectMeasurements, 'Pairs with Aggregated ' +
-                $scope.state.requestParams.effectVariableName +  ' Measurements');*/
-
-            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.correlationObject,
-                $scope.data.pairs, 'All Pairs');
-
+            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams, $scope.data.pairs);
             //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
             //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-
             $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                $scope.data.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
-
+                $scope.data.causeProcessedMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
             $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                $scope.data.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
-
+                $scope.data.effectProcessedMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
             $scope.correlationsOverOnsetDelaysChartConfig =
-                chartService.processDataAndConfigureCorrelationsOverOnsetDelaysChart(
-                    $scope.data.correlationsOverOnsetDelays, $scope.weightedPeriod);
-
+                chartService.processDataAndConfigureCorrelationsOverOnsetDelaysChart($scope.data.correlationsOverTime, $scope.weightedPeriod);
             $scope.correlationsOverDurationsOfActionChartConfig =
-                chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart(
-                    $scope.data.correlationsOverDurationsOfAction);
-
+                chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart($scope.data.correlationsOverDurationsOfAction);
             $scope.pairsOverTimeChartConfig =
-                chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.correlationObject);
+                chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.state.requestParams);
             $scope.highchartsReflow();
-            $ionicLoading.hide();
-        };
+        }
 
         function getPairsAndCreateUserCharts() {
             $scope.loadingCharts = true;
@@ -217,19 +187,17 @@ angular.module('starter')
 
 
         var getUserStudy = function (fallbackToAggregateStudy) {
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+            
             correlationService.getUserCorrelations($scope.state.requestParams).then(function (correlations) {
                 $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
-                    $scope.state.loading = false;
                     localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
                     getPairsAndCreateUserCharts();
                 } else {
                     if(!fallbackToAggregateStudy){
-                        $scope.state.loading = false;
                         $scope.state.studyNotFound = true;
                         $scope.state.title = 'Study Not Found';
                     } else {
@@ -239,10 +207,7 @@ angular.module('starter')
             }, function (error) {
                 console.error(error);
                 $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
                 if(!fallbackToAggregateStudy){
-                    $scope.state.loading = false;
                     $scope.state.studyNotFound = true;
                     $scope.state.title = 'Study Not Found';
                 } else {
@@ -252,14 +217,13 @@ angular.module('starter')
         };
 
         var getAggregateStudy = function (fallbackToUserStudy) {
-
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
             correlationService.getAggregatedCorrelations($scope.state.requestParams).then(function (correlations) {
                 $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
-                    $scope.state.loading = false;
                     localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
                 } else {
@@ -272,8 +236,6 @@ angular.module('starter')
                 }
             }, function (error) {
                 $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
                 if(!fallbackToUserStudy){
                     $scope.state.studyNotFound = true;
                     $scope.state.title = 'Study Not Found';
@@ -322,6 +284,7 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+            $scope.hideLoader();
             $scope.init();
         });
 	});

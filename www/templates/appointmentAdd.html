@@ -1,0 +1,69 @@
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content scroll="true" overflow-scroll="true">
+
+        <div class="list card" ng-show="state.showReminderFrequencyCard" id="reminderAddCard">
+        	<div class="item item-divider">{{state.trackingReminder.variableName}} settings</div>
+   
+            <div class="list card" ng-show="state.selectedFrequency === 'Daily'">
+                <label class="item item-input">
+                    <div class="input-label" >
+                        Reminder time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderStartTimePicker('first')">
+                        {{state.firstReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+                <label ng-show="state.secondReminderStartTimeEpochTime" class="item item-input">
+                    <div class="input-label" >
+                        2nd reminder time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderStartTimePicker('second')">
+                        {{state.secondReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+                <label ng-show="state.thirdReminderStartTimeEpochTime" class="item item-input">
+                    <div class="input-label" >
+                        3nd reminder time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderStartTimePicker('third')">
+                        {{state.thirdReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+              
+            </div>
+
+            <div ng-if="false" class="row labeled-control">
+             <p>note</p>
+            </div>
+
+            <label class="item item-input" ng-show="state.showInstructionsField">
+                <span class="input-label">Instructions</span>
+                <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
+            </label>
+            <div class="row">
+                <div class="col col-50">
+                    <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                </div>
+                <div class="col col-50">
+                    <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()"
+                            class="button button-block icon-left ion-trash-a button-assertive">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </ion-content>
+</ion-view>
