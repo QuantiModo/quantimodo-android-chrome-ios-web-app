@@ -1449,16 +1449,11 @@ angular.module('starter',
               }
             });
 
-  
-  // defined tabs default state 
-  // $urlRouterProvider.otherwise('/tab/measurements-variable-button-icons');
-  // finished tab default state...
-
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-        //$urlRouterProvider.otherwise('/app/reminders-inbox');
-       $urlRouterProvider.otherwise('/app/measurements-variable-button-icons'); 
+    
+       $urlRouterProvider.otherwise('/app/reminders-inbox.html'); 
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');

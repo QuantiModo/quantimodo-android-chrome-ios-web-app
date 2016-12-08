@@ -1,6 +1,7 @@
 <ion-side-menus enable-menu-with-back-views="true" >
     <ion-side-menu-content>
-      <!--  <ion-nav-bar class="{{appSettings.ionNavBarClass}}">>
+     <ion-nav-bar class="positive">
+      <!--  <ion-nav-bar class="{{appSettings.ionNavBarClass}}"> -->
             <ion-nav-buttons side="left">
                 <button ng-hide="hideNavigationMenu" class="button button-icon button-clear ion-navicon" menu-toggle="left">
                 </button>
@@ -13,15 +14,11 @@
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText" ng-click="onGenericHelpButtonPress()"></button>
                    
                     <button class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
-                      <button class="button button-icon ion-ios-upload-outline" ></button>
 
                     <button class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>
-        </ion-nav-bar> -->
-        <div button-icons></div>
-<!--     
-        <div ng-include="templates/tab-header-icon.html" ng-controller="measurementsVariableButtonIconsCtr"></div> -->
+        </ion-nav-bar>
 </ion-nav-bar>
         <div class="col"
              ng-show="hideNavigationMenu && offlineConnectionErrorShowing;"
