@@ -167,8 +167,8 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 	}
 
 	var privateConfigContent = 'window.private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
-	fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
-	console.log('Created '+ './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js');
+	fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
+	console.log('Created '+ './www/private_configs/default.config.js');
 
 });
 
