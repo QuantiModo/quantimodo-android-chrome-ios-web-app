@@ -1,11 +1,11 @@
-var appsManager = { // jshint ignore:line
+var appsManager = {
 	apps : {
 		"moodimodo" : "configs/moodimodo",
 		"energymodo" : "configs/energymodo",
 		"mindfirst" : "configs/mindfirst",
 		"medtlc" : "configs/medtlc",
 		"quantimodo" : "configs/quantimodo",
-		"tobenamed":"configs/tobenamed"
+		"tobenamed" :"tobenamed"
 	},
 	defaultApp : "tobenamed",
 	getAppConfig : function(app){
