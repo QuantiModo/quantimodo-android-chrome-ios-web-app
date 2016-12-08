@@ -36,7 +36,9 @@ angular.module('starter')
 
             QuantiModo.deleteUserTagDeferred(userTagData).then(function () {
                 $ionicLoading.hide();
-                $state.go($stateParams.fromState, $stateParams.fromStateParams);
+                $state.go($stateParams.fromState, {
+                    variableObject: $stateParams.taggedVariableObject
+                });
             }, function (error) {
                 $ionicLoading.hide();
                 console.error(error);
@@ -54,16 +56,6 @@ angular.module('starter')
                 conversionFactor: $rootScope.stateParams.tagConversionFactor
             };
 
-            if($stateParams.fromStateParams.variableObject.id === $rootScope.stateParams.tagVariableObject.id){
-                $rootScope.stateParams.taggedVariableObject.tagConversionFactor = $rootScope.stateParams.tagConversionFactor;
-                $stateParams.fromStateParams.variableObject.userTaggedVariables.push($rootScope.stateParams.taggedVariableObject);
-            }
-
-            if($stateParams.fromStateParams.variableObject.id === $rootScope.stateParams.taggedVariableObject.id){
-                $rootScope.stateParams.tagVariableObject.tagConversionFactor = $rootScope.stateParams.tagConversionFactor;
-                $stateParams.fromStateParams.variableObject.userTagVariables.push($rootScope.stateParams.tagVariableObject);
-            }
-
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
@@ -71,7 +63,9 @@ angular.module('starter')
             QuantiModo.postUserTagDeferred(userTagData).then(function () {
                 $ionicLoading.hide();
                 if($stateParams.fromState){
-                    $state.go($stateParams.fromState, $stateParams.fromStateParams);
+                    $state.go($stateParams.fromState, {
+                        variableObject: $stateParams.taggedVariableObject
+                    });
                 } else {
                     $state.go(config.appSettings.defaultState);
                 }

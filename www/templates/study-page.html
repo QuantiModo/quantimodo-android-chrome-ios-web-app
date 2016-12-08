@@ -1,15 +1,8 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
     <ion-nav-title>Study</ion-nav-title>
         <ion-content style="background-color: #f2f2f2">
-            <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
-            <div ng-show="state.loading && !state.studyNotFound" style="text-align: center">
-                <br>
-                <br>
-                <br>
-                <br>
-                <ion-spinner icon="android"></ion-spinner>
-            </div>
-            <div ng-show="correlationObject" class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
+            <ion-refresher on-refresh="getStudy()"></ion-refresher>
+            <div class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
                 <br>
                 <h2 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h2>
                 <br>
@@ -18,7 +11,9 @@
 <!--                        Doesn't look right yet
                 <img ng-src="{{correlationObject.causeVariableImageUrl}}">
                 <img ng-src="{{correlationObject.effectVariableImageUrl}}">-->
-                <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
+                <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}
+                <br><br>
+                <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div><br>
                 <h3 id="studyAbstract">Study Abstract</h3>
                 <p>{{correlationObject.studyAbstract}}</p><br>
@@ -31,37 +26,17 @@
                 </div>
                 <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig"></highchart>
                 <highchart ng-show="effectTimelineChartConfig" id="effectTimeline" config="effectTimelineChartConfig"></highchart>
-                <highchart ng-show="aggregatedCauseScatterplotChartConfig" id="aggregatedCauseScatterplotChartConfig" config="aggregatedCauseScatterplotChartConfig"></highchart>
-                <highchart ng-show="aggregatedEffectScatterplotChartConfig" id="aggregatedEffectScatterplotChartConfig" config="aggregatedEffectScatterplotChartConfig"></highchart>
                 <highchart ng-show="scatterplotChartConfig" id="scatterplot" config="scatterplotChartConfig"></highchart>
-<!--                <label class="item item-input"
+                <label class="item item-input"
                        ng-show="correlationsOverOnsetDelaysChartConfig">
                     <span class="input-label">Moving Average Period</span>
                     <input type="number"
                            ng-change="createUserCharts()"
                            ng-model="weightedPeriod"
                            id="weightedPeriod" placeholder="" >
-                </label>-->
-                <highchart ng-show="correlationsOverOnsetDelaysChartConfig" id="correlationsOverOnsetDelaysChart"
-                           config="correlationsOverOnsetDelaysChartConfig">
-                </highchart>
-                <p ng-show="correlationsOverOnsetDelaysChartConfig">
-                    The onset delay is the amount of time which is assumed to pass after the recorded
-                    {{correlationObject.causeVariableName}} measurement before the maximum change in
-                    potentially influence {{correlationObject.effectVariableName}} is observed.   The larger the
-                    absolute value of the correlation with a positive onset delay (on the right side of the chart),
-                    the more likely it is that {{correlationObject.causeVariableName}} causally influences
-                    {{correlationObject.effectVariableName}}.
-                    The larger the absolute value of the correlation with a negative onset delay (on the left side of
-                    the chart), the more likely it is that {{correlationObject.effectVariableName}} causally
-                    influences {{correlationObject.causeVariableName}}.
-                </p>
-                <highchart ng-show="correlationsOverDurationsOfActionChartConfig"
-                           id="correlationsOverDurationsOfActionChart" config="correlationsOverDurationsOfActionChartConfig">
-                </highchart>
-                <p ng-show="correlationsOverDurationsOfActionChartConfig">
-                    The duration of action is the time over which {{correlationObject.causeVariableName}} is assumed to
-                    potentially influence {{correlationObject.effectVariableName}}</p>
+                </label>
+                <highchart ng-show="correlationsOverOnsetDelaysChartConfig" id="correlationsOverOnsetDelaysChart" config="correlationsOverOnsetDelaysChartConfig"></highchart>
+                <highchart ng-show="correlationsOverDurationsOfActionChartConfig" id="correlationsOverDurationsOfActionChart" config="correlationsOverDurationsOfActionChartConfig"></highchart>
                 <highchart ng-show="pairsOverTimeChartConfig" id="pairsOverTimeChart" config="pairsOverTimeChartConfig"></highchart>
                 <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id" class="row">
                     <div class="col">

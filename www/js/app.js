@@ -773,7 +773,6 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.tagAdd',
                 fromState: null,
-                fromStateParams: null,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
@@ -801,7 +800,6 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.tagAdd',
                 fromState: null,
-                fromStateParams: null,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
@@ -825,7 +823,6 @@ angular.module('starter',
             params: {
                 tagConversionFactor: null,
                 fromState : null,
-                fromStateParams: null,
                 fromUrl : null,
                 tagVariableObject : null,
                 taggedVariableObject : null,
@@ -1455,8 +1452,13 @@ angular.module('starter',
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
+<<<<<<< HEAD
     
        $urlRouterProvider.otherwise('/app/reminders-inbox.html'); 
+=======
+        $urlRouterProvider.otherwise('/app/reminders-inbox.html');
+     //  $urlRouterProvider.otherwise('/app/measurements-variable-button-icons'); 
+>>>>>>> 50604b791a993b1be7f9fbdf90e951b494221845
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');
