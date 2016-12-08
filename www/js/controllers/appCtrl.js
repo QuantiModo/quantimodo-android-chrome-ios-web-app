@@ -90,15 +90,12 @@ angular.module('starter')
         };
 
         $scope.goToState = function (state, stateParameters) {
-            var variableCategoryName = null;
-            if (stateParameters && stateParameters.variableCategoryName) {
-                variableCategoryName = stateParameters.variableCategoryName;
+            if(!stateParameters){
+                stateParameters = {};
             }
-            $state.go(state, {
-                fromState: $state.current.name,
-                fromUrl: window.location.href,
-                variableCategoryName: variableCategoryName
-            });
+            stateParameters.fromState = $state.current.name;
+            stateParameters.fromUrl = window.location.href;
+            $state.go(state, stateParameters);
         };
 
         $scope.openUrl = function(url){
@@ -398,8 +395,8 @@ angular.module('starter')
 
 
         $scope.highchartsReflow = function() {
-
-            //$(window).resize();
+            // Fixes chart width
+            //$(window).resize(); This doesn't seem to do anything
 
             if(!$rootScope.reflowScheduled){
                 $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
@@ -410,8 +407,8 @@ angular.module('starter')
                     $scope.$broadcast('highchartsng.reflow');
                     $rootScope.reflowScheduled = false;
                 }, seconds * 1000);
-                // Fixes chart width
-                //$scope.$broadcast('highchartsng.reflow');
+
+                //$scope.$broadcast('highchartsng.reflow'); This doesn't seem to do anything
             } else {
                 console.debug('broadcast(highchartsng.reflow) already scheduled');
             }
@@ -1282,9 +1279,16 @@ angular.module('starter')
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             var params = {includeTags : true};
             variableService.getVariablesByName(variableName, params).then(function(variableObject){
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
                 $ionicLoading.hide();
                 $rootScope.variableObject = variableObject;
                 $scope.setupVariableByVariableObject(variableObject);
+            }, function (error) {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+                $ionicLoading.hide();
+                console.error(error);
             });
         };
 

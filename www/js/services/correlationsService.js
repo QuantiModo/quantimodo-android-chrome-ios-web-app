@@ -21,6 +21,11 @@ angular.module('starter')
         };
 
         return {
+            clearCorrelationCache : function(){
+                localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
+                localStorageService.deleteCachedResponse('GetUserCorrelations');
+            },
+
             getAggregatedCorrelations : function(params){
                 var deferred = $q.defer();
                 var cachedCorrelations = localStorageService.getCachedResponse('GetAggregatedCorrelations', params);

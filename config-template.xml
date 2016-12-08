@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="APP_IDENTIFIER_PLACEHOLDER" version="2.2.4" ios-CFBundleVersion="2.2.4.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>APP_DISPLAY_NAME_PLACEHOLDER</name>
+<widget id="YourAppIdentifierHere" version="2.2.4" ios-CFBundleVersion="2.2.4.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>YourAppDisplayNameHere</name>
   <description>
-    APP_DESCRIPTION_PLACEHOLDER
+    YourAppDescriptionHere
   </description>
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo
@@ -68,7 +68,7 @@
   <preference name="UIWebViewBounce" value="false" />
   <preference name="webviewbounce" value="false" />
   <preference name="windows-target-version" value="8.1"/>
-  <preference name="WindowsStoreDisplayName" value="APP_DISPLAY_NAME_PLACEHOLDER"/>
+  <preference name="WindowsStoreDisplayName" value="YourAppDisplayNameHere"/>
   <plugin name="cordova-plugin-device" spec="~1.1.2" />
   <plugin name="cordova-plugin-console" spec="~1.0.3" />
   <plugin name="cordova-plugin-facebook4" version="1.7.2">
@@ -82,6 +82,6 @@
     <variable name="SENDER_ID" value="1052648855194" />
   </plugin>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
-    <vs:platformSpecificWidget platformName="windows" version="2.2.4.0" id="WINDOWS_APP_IDENTIFIER_PLACEHOLDER" />
+    <vs:platformSpecificWidget platformName="windows" version="2.2.4.0" id="YourWindowsAppIdentifierHere" />
   </vs:platformSpecificValues>
 </widget>
