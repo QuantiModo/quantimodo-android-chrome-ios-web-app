@@ -8,8 +8,11 @@ var appsManager = { // jshint ignore:line
 		"tobenamed":"configs/tobenamed"
 	},
 	defaultApp : "tobenamed",
+<<<<<<< HEAD
 		
 	
+=======
+>>>>>>> parent of 4ed3813... Merge branch 'develop' of https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App into develop
 	getAppConfig : function(app){
 		if(appsManager.apps[app]){
 			return 'configs/' + app + '.js';

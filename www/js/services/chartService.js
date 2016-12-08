@@ -452,11 +452,6 @@ angular.module('starter')
 		};
 
 		chartService.processDataAndConfigureLineChart = function(measurements, variableObject) {
-
-			if(!measurements || !measurements.length){
-				console.warn('No measurements provided to chartService.processDataAndConfigureLineChart');
-				return false;
-			}
 			var lineChartData = [];
 			var lineChartItem;
 			if(!variableObject.abbreviatedUnitName){
@@ -482,7 +477,7 @@ angular.module('starter')
         }
 
 		chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart = function(correlations, weightedPeriod) {
-            if(!correlations || !correlations.length){
+            if(!correlations){
                 return false;
             }
 
@@ -523,7 +518,7 @@ angular.module('starter')
             var excludeSpearman = false;
             var excludeQmScoreSeries = false;
             for (var i = 0; i < correlations.length; i++) {
-                xAxis.push('Day ' + correlations[i].durationOfAction/(60 * 60 * 24));
+                xAxis.push('Day ' + correlations[i].onsetDelay/(60 * 60 * 24));
                 forwardPearsonCorrelationSeries.data.push(correlations[i].correlationCoefficient);
                 forwardSpearmanCorrelationSeries.data.push(correlations[i].forwardSpearmanCorrelationCoefficient);
                 if(correlations[i].forwardSpearmanCorrelationCoefficient === null){
@@ -573,7 +568,7 @@ angular.module('starter')
                 },
                 xAxis: {
                     title: {
-                        text: 'Assumed Duration Of Action'
+                        text: 'Duration of Action (Time Over Which Perceivable Effect is Assumed)'
                     },
                     categories: xAxis
                 },
@@ -689,7 +684,7 @@ angular.module('starter')
 				},
 				xAxis: {
 					title: {
-						text: 'Assumed Onset Delay'
+						text: 'Onset Delay (Time Shift in Days Relative to Stimulus Event)'
 					},
 					categories: xAxis
 				},
@@ -712,13 +707,13 @@ angular.module('starter')
 			return config;
 		};
 
-        chartService.processDataAndConfigurePairsOverTimeChart = function(pairs, correlationObject) {
+        chartService.processDataAndConfigurePairsOverTimeChart = function(pairs, params) {
             if(!pairs){
                 return false;
             }
 
             var predictorSeries = {
-                name : correlationObject.causeVariableName,
+                name : params.causeVariableName,
                 data : [],
                 tooltip: {
                     valueDecimals: 2
@@ -726,7 +721,7 @@ angular.module('starter')
             };
 
             var outcomeSeries = {
-                name : correlationObject.effectVariableName,
+                name : params.effectVariableName,
                 data : [],
                 tooltip: {
                     valueDecimals: 2
@@ -776,13 +771,13 @@ angular.module('starter')
                     yAxis: [{
                         lineWidth: 1,
                         title: {
-                            text: correlationObject.causeVariableName + ' (' + correlationObject.causeAbbreviatedUnitName + ')'
+                            text: params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')'
                         }
                     }, {
                         lineWidth: 1,
                         opposite: true,
                         title: {
-                            text: correlationObject.effectVariableName + ' (' + correlationObject.effectAbbreviatedUnitName + ')'
+                            text: params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')'
                         }
                     }]
 				},
@@ -790,7 +785,7 @@ angular.module('starter')
                     valueSuffix: ''
                 },
                 series: [ {
-                    name: correlationObject.causeVariableName,
+                    name: params.causeVariableName,
                     type: 'spline',
                     color: '#00A1F1',
                     data: predictorSeries.data,
@@ -799,17 +794,17 @@ angular.module('starter')
                     },
                     dashStyle: 'shortdot',
                     tooltip: {
-                        valueSuffix: '' + correlationObject.causeAbbreviatedUnitName
+                        valueSuffix: '' + pairs[0].causeAbbreviatedUnitName
                     }
 
                 }, {
-                    name: correlationObject.effectVariableName,
+                    name: params.effectVariableName,
                     color: '#EA4335',
                     type: 'spline',
                     yAxis: 1,
                     data: outcomeSeries.data,
                     tooltip: {
-                        valueSuffix: '' + correlationObject.effectAbbreviatedUnitName
+                        valueSuffix: '' + pairs[0].effectAbbreviatedUnitName
                     }
                 }]
             };
@@ -817,60 +812,7 @@ angular.module('starter')
             return config;
         };
 
-        var calculatePearsonsCorrelation = function(xyValues)
-        {
-            var length = xyValues.length;
-
-            var xy = [];
-            var x2 = [];
-            var y2 = [];
-
-            $.each(xyValues,function(index,value){
-                xy.push(value[0] * value[1]);
-                x2.push(value[0] * value[0]);
-                y2.push(value[1] * value[1]);
-            });
-
-            var sum_x = 0;
-            var sum_y = 0;
-            var sum_xy = 0;
-            var sum_x2 = 0;
-            var sum_y2 = 0;
-
-            var i=0;
-            $.each(xyValues,function(index,value){
-                sum_x += value[0];
-                sum_y += value[1];
-                sum_xy += xy[i];
-                sum_x2 += x2[i];
-                sum_y2 += y2[i];
-                i+=1;
-            });
-
-            var step1 = (length * sum_xy) - (sum_x * sum_y);
-            var step2 = (length * sum_x2) - (sum_x * sum_x);
-            var step3 = (length * sum_y2) - (sum_y * sum_y);
-            var step4 = Math.sqrt(step2 * step3);
-            var answer = step1 / step4;
-
-            // check if answer is NaN, it can occur in the case of very small values
-            return isNaN(answer) ? 0 : answer;
-        };
-
-
-
-        chartService.createScatterPlot = function (correlationObject, pairs, title) {
-
-        	if(!pairs){
-        		console.warn('No pairs provided to chartService.createScatterPlot');
-        		return false;
-			}
-            var xyVariableValues = [];
-
-            for(var i = 0; i < pairs.length; i++ ){
-                xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
-            }
-
+		chartService.createScatterPlot = function (params, pairs) {
 			var scatterplotOptions = {
 				options: {
 					chart: {
@@ -897,7 +839,7 @@ angular.module('starter')
 							},
 							tooltip: {
 								//headerFormat: '<b>{series.name}</b><br>',
-								pointFormat: '{point.x}' + correlationObject.causeAbbreviatedUnitName + ', {point.y}' + correlationObject.effectAbbreviatedUnitName
+								pointFormat: '{point.x} ' + params.causeVariableName + ', {point.y} ' + params.effectVariableName
 							}
 						}
 					},
@@ -908,7 +850,7 @@ angular.module('starter')
 				xAxis: {
 					title: {
 						enabled: true,
-						text: correlationObject.causeVariableName + ' (' + correlationObject.causeAbbreviatedUnitName + ')'
+						text: 'Height (cm)'
 					},
 					startOnTick: true,
 					endOnTick: true,
@@ -916,16 +858,17 @@ angular.module('starter')
 				},
 				yAxis: {
 					title: {
-						text: correlationObject.effectVariableName + ' (' + correlationObject.effectAbbreviatedUnitName + ')'
+						text: 'Weight (kg)'
 					}
 				},
+
 				series: [{
-					name: correlationObject.effectVariableName + ' by ' + correlationObject.causeVariableName,
+					name: params.effectVariableName + ' by ' + params.causeVariableName,
 					color: 'rgba(223, 83, 83, .5)',
-					data: xyVariableValues
+					data: []
 				}],
 				title: {
-					text: title + ' (R = ' + calculatePearsonsCorrelation(xyVariableValues).toFixed(2) + ')'
+					text: params.effectVariableName + ' by ' + params.causeVariableName
 				},
 				subtitle: {
 					text: ''
@@ -933,13 +876,25 @@ angular.module('starter')
 				loading: false
 			};
 
+			var xyVariableValues = [];
+
+			for(var i = 0; i < pairs.length; i++ ){
+				xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
+			}
+
+			scatterplotOptions.series[0].data = xyVariableValues;
+			scatterplotOptions.xAxis.title.text = params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')';
+			scatterplotOptions.yAxis.title.text = params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')';
+			scatterplotOptions.options.plotOptions.scatter.tooltip.pointFormat = '{point.x}' + pairs[0].causeAbbreviatedUnitName + ', {point.y}' + pairs[0].effectAbbreviatedUnitName;
 			return scatterplotOptions;
+
+
 		};
 
-		chartService.configureLineChartForCause  = function(correlationObject, pairs) {
+		chartService.configureLineChartForCause  = function(params, pairs) {
 			var variableObject = {
-				abbreviatedUnitName: correlationObject.causeAbbreviatedUnitName,
-				name: correlationObject.causeVariableName
+				abbreviatedUnitName: pairs[0].causeAbbreviatedUnitName,
+				name: params.causeVariableName
 			};
 			
 			var data = [];
@@ -951,10 +906,10 @@ angular.module('starter')
 			return chartService.configureLineChart(data, variableObject);
 		};
 
-		chartService.configureLineChartForEffect  = function(correlationObject, pairs) {
+		chartService.configureLineChartForEffect  = function(params, pairs) {
 			var variableObject = {
-				abbreviatedUnitName: correlationObject.effectAbbreviatedUnitName,
-				name: correlationObject.effectVariableName
+				abbreviatedUnitName: pairs[0].effectAbbreviatedUnitName,
+				name: params.effectVariableName
 			};
 
 			var data = [];
