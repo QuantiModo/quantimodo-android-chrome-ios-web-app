@@ -236,27 +236,34 @@ function objectLength(obj) {
     return result;
 }
 
+function showSignInNotification() {
+    var notificationParams = {
+        type: "basic",
+        title: "How are you?",
+        message: "Click to sign in and record a measurement",
+        iconUrl: "www/img/icons/icon_700.png",
+        priority: 2
+    };
+    var notificationId = 'signin';
+    chrome.notifications.create(notificationId, notificationParams, function (id) {});
+}
+
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
     var url = "https://app.quantimo.do:443/api/v1/trackingReminderNotifications/past";
     if (localStorage.accessToken) {
         url = url + '?access_token=' + localStorage.accessToken;
-    }
+    } else {
+        showSignInNotification();
+        return;
+	}
+
     xhr.open("GET", url, false);
 
     xhr.onreadystatechange = function () {
         var notificationId;
         if (xhr.status === 401) {
-            notificationParams = {
-                type: "basic",
-                title: "How are you?",
-                message: "Click to sign in and record a measurement",
-                iconUrl: "www/img/icons/icon_700.png",
-                priority: 2
-            };
-            notificationId = 'signin';
-            chrome.notifications.create(notificationId, notificationParams, function (id) {
-            });
+            showSignInNotification();
         } else if (xhr.readyState === 4) {
             var notificationsObject = JSON.parse(xhr.responseText);
             var numberOfWaitingNotifications = objectLength(notificationsObject.data);
@@ -274,8 +281,7 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
 
                 var showNotification = localStorage.showNotification === "true";
                 if (showNotification) {
-                    chrome.notifications.create(notificationId, notificationParams, function (id) {
-                    });
+                    chrome.notifications.create(notificationId, notificationParams, function (id) {});
                 } else {
                     openPopup(notificationId);
                 }
