@@ -200,7 +200,7 @@ config.appSettings  = {
             icon: "ion-heart",
             variableCategoryName : "Vital Signs",
             img:"https://maxcdn.icons8.com/windows10/PNG/96/Programming/system_task-100.png",
-            localImage:"img/iconimg/pulse.png",
+            localImage:"img/variable-icons/pulse.png",
             show:true
             
         },
@@ -215,7 +215,7 @@ config.appSettings  = {
             defaultValue:  "null",
             variableCategoryName : "Vital Signs",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png",
-            localImage:"img/iconimg/bloodpressure.png",
+            localImage:"img/variable-icons/bloodpressure.png",
             show:true
         },
         {
@@ -227,7 +227,7 @@ config.appSettings  = {
             defaultValue:  "null",
             variableCategoryName: "Vital Signs",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png",
-            localImage:"img/iconimg/bloodpressure.png",
+            localImage:"img/variable-icons/bloodpressure.png",
             show:false
         },
         {
@@ -239,7 +239,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName: "Vital Signs",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png",
-            localImage:"img/iconimg/bloodpressure.png",
+            localImage:"img/variable-icons/bloodpressure.png",
             show:false
         },
         {
@@ -253,7 +253,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName: "Vital Signs",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Science/temperature-100.png",
-            localImage:"img/iconimg/temperature.png",
+            localImage:"img/variable-icons/temperature.png",
             show:true
         },
         {
@@ -267,7 +267,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName: "Vital Signs",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Science/oxygen-100.png",
-            localImage:"img/iconimg/oxygen.png",
+            localImage:"img/variable-icons/oxygen.png",
             show:true
         },
           {
@@ -281,7 +281,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName: "Physique",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Science/height-100.png",
-            localImage:"img/iconimg/height.png",
+            localImage:"img/variable-icons/height.png",
             show:true
         },
         {  
@@ -295,7 +295,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName: "Physique",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Science/weight-100.png",
-            localImage:"img/iconimg/weight.png",
+            localImage:"img/variable-icons/weight.png",
             show:true
         },
         {
@@ -309,7 +309,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName: "Symptoms",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Messaging/poo-100.png",
-            localImage:"img/iconimg/poo.png",
+            localImage:"img/variable-icons/poo.png",
             show:true
         },
          {
@@ -323,7 +323,7 @@ config.appSettings  = {
             defaultValue :  null,
             variableCategoryName : "Vital Signs",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Healthcare/lungs-100.png",
-            localImage:"img/iconimg/lungs.png",
+            localImage:"img/variable-icons/lungs.png",
             show:true
         },
         {
@@ -337,7 +337,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName : "Vital Signs",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Industry/water-100.png",
-            localImage:"img/iconimg/glucose.png",
+            localImage:"img/variable-icons/glucose.png",
             show:true
         },
         {
@@ -351,7 +351,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName : "Mood",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Messaging/poo-100.png",
-            localImage:"img/iconimg/mood.png",
+            localImage:"img/variable-icons/mood.png",
             show:true
         },
          {
@@ -365,7 +365,7 @@ config.appSettings  = {
             defaultValue:  null,
             variableCategoryName: "Symptoms",
             img:"https://maxcdn.icons8.com/iOS7/PNG/100/Messaging/poo-100.png",
-            localImage:"img/iconimg/symptoms.png",
+            localImage:"img/variable-icons/symptoms.png",
             show:true
         }
     ],

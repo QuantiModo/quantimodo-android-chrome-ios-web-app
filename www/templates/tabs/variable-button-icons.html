@@ -1,22 +1,15 @@
-<ion-content style="padding-top: 45px">
-    <div class="item item-divider dividerSet item-royal">
-        <span class="mini">Please select an icon and input the measurement.</span>
-    </div>
-    <p>test test</p>
-    <br>
-    <div class="row row-wrap" align="middle">
-        <!-- <div class="col-33" >
-           <a href="#/tab/measurements/{{measurements.default[1]}}">
-              <img class="myAvatar" ng-src="{{measurements.default[1].localImage}}"/>
-           </a>
-           <p class="avaText">Blood Pressure</p>
-         </div> -->
 
-        <div class="col-33"
-             ng-click="goToAddMeasurementForVariableObject(variable)"
-             ng-repeat="variable in appSettings.defaultVariables">
-            <img class="myAvatar" ng-src="{{variable.localImage}}"/>
-            <p class="avaText royal">{{variable.shortName}}</p>
-        </div>
-    </div>
-</ion-content>
+  <ion-content>
+      <div class="item item-divider dividerSet item-royal">
+          <span class="mini">Please select an icon and input the measurement.</span>
+      </div>
+      <br>
+      <div class="row row-wrap" align="middle">
+          <div class="col-33"
+               ng-click="goToAddMeasurementForVariableObject(variable)"
+               ng-repeat="variable in appSettings.defaultVariables|filter:{show:true}">
+              <img class="myAvatar" ng-src="{{variable.localImage}}"/>
+              <p class="avaText royal">{{variable.shortName}}</p>
+          </div>
+      </div>
+  </ion-content>
