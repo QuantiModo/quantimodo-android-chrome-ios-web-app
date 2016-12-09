@@ -1366,7 +1366,7 @@ angular.module('starter',
             }
         })
 
-       .state('app.tabs', {
+       .state('app.tab-detail', {
             url: '/tabs/:tabId',
             views: {
                 'menuContent': {
