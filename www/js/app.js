@@ -1390,7 +1390,7 @@ angular.module('starter',
                 }
             }
         })
-<<<<<<< HEAD
+
           // all the state from tab templates....
           // setup an abstract state for the tabs directive
         // .state('tab', {
@@ -1457,7 +1457,6 @@ angular.module('starter',
     
        $urlRouterProvider.otherwise('/app/reminders-inbox'); 
 
-=======
         .state('app.tabs', {
             url: '/tabs',
             views: {
@@ -1481,7 +1480,7 @@ angular.module('starter',
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
          $urlRouterProvider.otherwise('/app/tabs')
->>>>>>> 494d64807f93606364cce4fdbd97f5e8074fa322
+
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');
