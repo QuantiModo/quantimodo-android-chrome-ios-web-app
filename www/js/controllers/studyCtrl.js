@@ -190,14 +190,6 @@ angular.module('starter')
             $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
                 $scope.data.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
 
-            $scope.correlationsOverOnsetDelaysChartConfig =
-                chartService.processDataAndConfigureCorrelationsOverOnsetDelaysChart(
-                    $scope.data.correlationsOverOnsetDelays, $scope.weightedPeriod);
-
-            $scope.correlationsOverDurationsOfActionChartConfig =
-                chartService.processDataAndConfigureCorrelationsOverDurationsOfActionChart(
-                    $scope.data.correlationsOverDurationsOfAction);
-
             $scope.pairsOverTimeChartConfig =
                 chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.correlationObject);
             $scope.highchartsReflow();
@@ -212,6 +204,9 @@ angular.module('starter')
                 $scope.data = data;
                 localStorageService.setItem('lastPairsData', JSON.stringify(data));
                 $scope.createUserCharts();
+            }, function (error) {
+                console.error(error);
+                $scope.loadingCharts = false;
             });
         }
 

@@ -755,7 +755,7 @@ angular.module('starter')
 
             var config = {
                 title: {
-                    text: 'Pairs Over Time',
+                    text: 'Paired Data Over Time',
                     //x: -20 //center
                 },
                 subtitle: {
@@ -856,8 +856,6 @@ angular.module('starter')
             // check if answer is NaN, it can occur in the case of very small values
             return isNaN(answer) ? 0 : answer;
         };
-
-
 
         chartService.createScatterPlot = function (correlationObject, pairs, title) {
 

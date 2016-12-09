@@ -28,6 +28,9 @@ angular.module('starter')
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $rootScope.appSettings = config.appSettings;
+        if(!$rootScope.appSettings.ionNavBarClass){
+            $rootScope.appSettings.ionNavBarClass = "bar-positive";
+        }
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
         $rootScope.numberOfPendingNotifications = null;
@@ -103,6 +106,87 @@ angular.module('starter')
                 cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
             } else {
                 window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+            }
+        };
+
+        $scope.shareStudy = function(correlationObject, url){
+            if(url.indexOf('userId') !== -1){
+                if(!correlationObject.shareUserMeasurements){
+                    $scope.showShareStudyConfirmation(correlationObject, url);
+                } else {
+                    $scope.openUrl(url);
+                }
+            } else {
+                $scope.openUrl(url);
+            }
+        };
+
+        $scope.showShareStudyConfirmation = function(correlationObject, url) {
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Share Study',
+                template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
+                ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? <br><br> You can ' +
+                'make them private again at any time on this study page.'
+            });
+
+            confirmPopup.then(function(res) {
+                if(res) {
+                    correlationObject.shareUserMeasurements = true;
+                    var body = {
+                        causeVariableId: correlationObject.causeVariableId,
+                        effectVariableId: correlationObject.effectVariableId,
+                        shareUserMeasurements: true
+                    };
+                    QuantiModo.postStudyDeferred(body).then(function () {
+                        if(url){
+                            $scope.openUrl(url);
+                        }
+                    }, function (error) {
+                        console.error(error);
+
+                    });
+                } else {
+                    correlationObject.shareUserMeasurements = false;
+                    console.log('You are not sure');
+                }
+            });
+        };
+
+
+        $scope.showUnshareStudyConfirmation = function(correlationObject) {
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Share Study',
+                template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
+                ' and ' + correlationObject.effectVariableName + ' measurements private? <br><br> Links to studies you ' +
+                'previously shared with these variable will no longer work.'
+            });
+
+            confirmPopup.then(function(res) {
+                if(res) {
+                    correlationObject.shareUserMeasurements = false;
+                    var body = {
+                        causeVariableId: correlationObject.causeVariableId,
+                        effectVariableId: correlationObject.effectVariableId,
+                        shareUserMeasurements: false
+                    };
+                    QuantiModo.postStudyDeferred(body).then(function () {
+
+                    }, function (error) {
+                        console.error(error);
+                    });
+                } else {
+                    correlationObject.shareUserMeasurements = true;
+                    console.log('You are not sure');
+                }
+            });
+        };
+
+
+        $scope.toggleStudyShare = function (correlationObject) {
+            if(correlationObject.shareUserMeasurements){
+                $scope.showShareStudyConfirmation(correlationObject);
+            } else {
+                $scope.showUnshareStudyConfirmation(correlationObject);
             }
         };
 
