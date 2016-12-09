@@ -1341,6 +1341,7 @@ angular.module('starter')
             console.debug('Saving variable settings ' + JSON.stringify(params));
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
             variableService.postUserVariable(params).then(function() {
+                localStorageService.deleteItem('lastStudy');
                 console.debug("variableService.postUserVariable: success: " + JSON.stringify(params));
                 $ionicLoading.hide();
                 $ionicHistory.goBack();

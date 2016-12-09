@@ -6,29 +6,12 @@ angular.module('starter')
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
 
-        var getStudy = function() {
-
-            if ($rootScope.urlParameters.aggregated) {
-                var fallbackToUserStudy = false;
-                if ($rootScope.user) {
-                    fallbackToUserStudy = true;
-                }
-                getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
-                //addWikipediaInfo();
-            } else {
-                var fallbackToAggregateStudy = true;
-                getUserStudy(fallbackToAggregateStudy);
-                //addWikipediaInfo();
-            }
-        };
-
         $scope.refreshStudy = function() {
             correlationService.clearCorrelationCache();
             getStudy();
         };
 
         $scope.init = function(){
-
             $scope.state = {
                 title: 'Loading study...',
                 requestParams: {},
@@ -54,10 +37,9 @@ angular.module('starter')
                     causeVariableName: $scope.correlationObject.causeVariableName,
                     effectVariableName: $scope.correlationObject.effectVariableName
                 };
-                $scope.state.title = $scope.correlationObject.predictorExplanation;
                 //addWikipediaInfo();
-                if($scope.correlationObject.userId){
-                    getPairsAndCreateUserCharts($scope.state.requestParams);
+                if($scope.correlationObject.userId && !$scope.correlationObject.scatterPlotConfig){
+                    getStudy($scope.state.requestParams);
                 }
                 return;
             }
@@ -77,17 +59,10 @@ angular.module('starter')
                     causeVariableName: $scope.correlationObject.causeVariableName,
                     effectVariableName: $scope.correlationObject.effectVariableName
                 };
-                $scope.state.title = $scope.correlationObject.predictorExplanation;
+
                 //addWikipediaInfo();
-                if($scope.correlationObject.userId){
-                    $scope.data = [];
-                    //We shouldn't cache because they don't update after we change settings
-                    $scope.data = localStorageService.getItemAsObject('lastPairsData');
-                    if($scope.data){
-                        $scope.createUserCharts();
-                    } else {
-                        getPairsAndCreateUserCharts($scope.state.requestParams);
-                    }
+                if($scope.correlationObject.userId && !$scope.correlationObject.scatterPlotConfig){
+                    getStudy($scope.state.requestParams);
                 }
             } else {
                 getStudy();
@@ -114,11 +89,11 @@ angular.module('starter')
                 exlimit: '1', // (optional) 'max': extracts for all articles, otherwise only for the first
                 exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
             }).then(function (causeData) {
-                if(causeData.data.query) {
-                    $scope.causeWikiEntry = causeData.data.query.pages[0].extract;
+                if(causeData.correlationObject.query) {
+                    $scope.causeWikiEntry = causeData.correlationObject.query.pages[0].extract;
                     //$scope.correlationObject.studyBackground = $scope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
-                    if(causeData.data.query.pages[0].thumbnail){
-                        $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source;
+                    if(causeData.correlationObject.query.pages[0].thumbnail){
+                        $scope.causeWikiImage = causeData.correlationObject.query.pages[0].thumbnail.source;
                     }
                     //on success
                 } else {
@@ -169,114 +144,31 @@ angular.module('starter')
 
         $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
-
-/*            $scope.aggregatedCauseScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
-                $scope.data.pairsWithAggregatedCauseMeasurements, 'Pairs with Aggregated ' +
-                $scope.state.requestParams.causeVariableName +  ' Measurements');
-
-            $scope.aggregatedEffectScatterplotChartConfig = chartService.createScatterPlot($scope.state.requestParams,
-                $scope.data.pairsWithAggregatedEffectMeasurements, 'Pairs with Aggregated ' +
-                $scope.state.requestParams.effectVariableName +  ' Measurements');*/
-
-            $scope.scatterplotChartConfig = chartService.createScatterPlot($scope.correlationObject,
-                $scope.data.pairs, 'All Pairs');
-
-            //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-            //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-
             $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                $scope.data.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
-
+                $scope.correlationObject.causeProcessedDailyMeasurements,
+                {variableName: $scope.state.requestParams.causeVariableName});
             $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                $scope.data.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
+                $scope.correlationObject.effectProcessedDailyMeasurements,
+                {variableName: $scope.state.requestParams.effectVariableName});
 
-            $scope.pairsOverTimeChartConfig =
-                chartService.processDataAndConfigurePairsOverTimeChart($scope.data.pairs, $scope.correlationObject);
             $scope.highchartsReflow();
             $ionicLoading.hide();
         };
 
-        function getPairsAndCreateUserCharts() {
+        function getStudy() {
             $scope.loadingCharts = true;
-            $scope.state.requestParams.includeProcessedMeasurements = true;
-            QuantiModo.getPairsDeferred($scope.state.requestParams).then(function (data) {
-                //We shouldn't cache because they don't update after we change settings
-                $scope.data = data;
-                localStorageService.setItem('lastPairsData', JSON.stringify(data));
+            QuantiModo.getStudyDeferred($scope.state.requestParams).then(function (data) {
+                $scope.correlationObject = data.userStudy;
+                localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                 $scope.createUserCharts();
             }, function (error) {
                 console.error(error);
                 $scope.loadingCharts = false;
+                $scope.state.loading = false;
+                $scope.state.studyNotFound = true;
+                $scope.state.title = 'Study Not Found';
             });
         }
-
-
-        var getUserStudy = function (fallbackToAggregateStudy) {
-            correlationService.getUserCorrelations($scope.state.requestParams).then(function (correlations) {
-                $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                if (correlations[0]) {
-                    $scope.correlationObject = correlations[0];
-                    $scope.state.loading = false;
-                    localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
-                    $scope.state.title = $scope.correlationObject.predictorExplanation;
-                    getPairsAndCreateUserCharts();
-                } else {
-                    if(!fallbackToAggregateStudy){
-                        $scope.state.loading = false;
-                        $scope.state.studyNotFound = true;
-                        $scope.state.title = 'Study Not Found';
-                    } else {
-                        getAggregateStudy();
-                    }
-                }
-            }, function (error) {
-                console.error(error);
-                $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                if(!fallbackToAggregateStudy){
-                    $scope.state.loading = false;
-                    $scope.state.studyNotFound = true;
-                    $scope.state.title = 'Study Not Found';
-                } else {
-                    getAggregateStudy();
-                }
-            });
-        };
-
-        var getAggregateStudy = function (fallbackToUserStudy) {
-
-            correlationService.getAggregatedCorrelations($scope.state.requestParams).then(function (correlations) {
-                $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                if (correlations[0]) {
-                    $scope.correlationObject = correlations[0];
-                    $scope.state.loading = false;
-                    localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
-                    $scope.state.title = $scope.correlationObject.predictorExplanation;
-                } else {
-                    if(!fallbackToUserStudy){
-                        $scope.state.studyNotFound = true;
-                        $scope.state.title = 'Study Not Found';
-                    } else {
-                        getUserStudy();
-                    }
-                }
-            }, function (error) {
-                $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                if(!fallbackToUserStudy){
-                    $scope.state.studyNotFound = true;
-                    $scope.state.title = 'Study Not Found';
-                } else {
-                    getUserStudy();
-                }
-            });
-        };
 
         $rootScope.showActionSheetMenu = function() {
 
