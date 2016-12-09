@@ -204,6 +204,9 @@ angular.module('starter')
                 $scope.data = data;
                 localStorageService.setItem('lastPairsData', JSON.stringify(data));
                 $scope.createUserCharts();
+            }, function (error) {
+                console.error(error);
+                $scope.loadingCharts = false;
             });
         }
 

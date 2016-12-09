@@ -29,42 +29,50 @@
                     <br>
                     <br>
                 </div>
-                <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig"></highchart>
-                <highchart ng-show="effectTimelineChartConfig" id="effectTimeline" config="effectTimelineChartConfig"></highchart>
-                <highchart ng-show="aggregatedCauseScatterplotChartConfig" id="aggregatedCauseScatterplotChartConfig" config="aggregatedCauseScatterplotChartConfig"></highchart>
-                <highchart ng-show="aggregatedEffectScatterplotChartConfig" id="aggregatedEffectScatterplotChartConfig" config="aggregatedEffectScatterplotChartConfig"></highchart>
-                <highchart ng-show="scatterplotChartConfig" id="scatterplot" config="scatterplotChartConfig"></highchart>
-<!--                <label class="item item-input"
-                       ng-show="correlationsOverOnsetDelaysChartConfig">
-                    <span class="input-label">Moving Average Period</span>
-                    <input type="number"
-                           ng-change="createUserCharts()"
-                           ng-model="weightedPeriod"
-                           id="weightedPeriod" placeholder="" >
-                </label>-->
+                <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig">
+                </highchart>
+                <highchart ng-show="effectTimelineChartConfig"
+                           id="effectTimeline"
+                           config="effectTimelineChartConfig"></highchart>
+                <highchart ng-show="aggregatedCauseScatterplotChartConfig" id="aggregatedCauseScatterplotChartConfig"
+                           config="aggregatedCauseScatterplotChartConfig"></highchart>
+                <highchart ng-show="aggregatedEffectScatterplotChartConfig" id="aggregatedEffectScatterplotChartConfig"
+                           config="aggregatedEffectScatterplotChartConfig"></highchart>
+                <highchart ng-show="data.userStudy.scatterplotChartConfig" id="scatterplot"
+                           config="data.userStudy.scatterplotChartConfig">
+                </highchart>
+                <!--
+                <label class="item item-input"
+                   ng-show="correlationsOverOnsetDelaysChartConfig">
+                <span class="input-label">Moving Average Period</span>
+                <input type="number"
+                       ng-change="createUserCharts()"
+                       ng-model="weightedPeriod"
+                       id="weightedPeriod" placeholder="" >
+                </label>
+                -->
                 <highchart ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig"
                            id="correlationsOverOnsetDelaysChart"
                            config="data.userStudy.correlationsOverOnsetDelaysChartConfig">
                 </highchart>
-                <p ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig">
-                    The onset delay is the amount of time which is assumed to pass after the recorded
-                    {{correlationObject.causeVariableName}} measurement before the maximum change in
-                    potentially influence {{correlationObject.effectVariableName}} is observed.   The larger the
-                    absolute value of the correlation with a positive onset delay (on the right side of the chart),
-                    the more likely it is that {{correlationObject.causeVariableName}} causally influences
-                    {{correlationObject.effectVariableName}}.
-                    The larger the absolute value of the correlation with a negative onset delay (on the left side of
-                    the chart), the more likely it is that {{correlationObject.effectVariableName}} causally
-                    influences {{correlationObject.causeVariableName}}.
+                <highchart ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig"
+                           id="correlationsOverOnsetDelaysChart"
+                           config="data.userStudy.correlationsOverOnsetDelaysChartConfig">
+                </highchart>
+                <p ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation">
+                    {{data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation}}
                 </p>
-                <highchart ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig"
+                <highchart ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig.series.length"
                            id="correlationsOverDurationsOfActionChart"
                            config="data.userStudy.correlationsOverDurationsOfActionChartConfig">
                 </highchart>
-                <p ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig">
-                    The duration of action is the time over which {{correlationObject.causeVariableName}} is assumed to
-                    potentially influence {{correlationObject.effectVariableName}}</p>
-                <highchart ng-show="pairsOverTimeChartConfig" id="pairsOverTimeChart" config="pairsOverTimeChartConfig"></highchart>
+                <p ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig.series.length">
+                    {{data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation}}
+                </p>
+                <highchart ng-show="data.userStudy.pairsOverTimeChartConfig"
+                           id="pairsOverTimeChart"
+                           config="data.userStudy.pairsOverTimeChartConfig">
+                </highchart>
                 <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id" class="row">
                     <div class="col">
                         <button class="button button-block icon-left {{correlationObject.causeVariableIonIcon}} button-positive"
@@ -83,11 +91,16 @@
                         </button>
                     </div>
                 </div>
-                <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id" class="card sign-in" >
+                <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id"
+                     class="card sign-in" >
                     <ion-toggle ng-model="correlationObject.shareUserMeasurements"
                                 ng-change="toggleStudyShare(correlationObject)">
-                        <i ng-if="!correlationObject.shareUserMeasurements" class="icon ion-locked">&nbsp Study is Private</i>
-                        <i ng-if="correlationObject.shareUserMeasurements" class="icon ion-unlocked">&nbsp Study is Public</i>
+                        <i ng-if="!correlationObject.shareUserMeasurements" class="icon ion-locked">
+                            &nbsp Study is Private
+                        </i>
+                        <i ng-if="correlationObject.shareUserMeasurements" class="icon ion-unlocked">
+                            &nbsp Study is Public
+                        </i>
                     </ion-toggle>
                 </div>
                 <div id="studyBody" >
