@@ -1,8 +1,15 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
     <ion-nav-title>Study</ion-nav-title>
         <ion-content style="background-color: #f2f2f2">
-            <ion-refresher on-refresh="getStudy()"></ion-refresher>
-            <div class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
+            <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
+            <div ng-show="state.loading && !state.studyNotFound" style="text-align: center">
+                <br>
+                <br>
+                <br>
+                <br>
+                <ion-spinner icon="android"></ion-spinner>
+            </div>
+            <div ng-show="correlationObject" class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
                 <br>
                 <h2 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h2>
                 <br>
@@ -11,9 +18,7 @@
 <!--                        Doesn't look right yet
                 <img ng-src="{{correlationObject.causeVariableImageUrl}}">
                 <img ng-src="{{correlationObject.effectVariableImageUrl}}">-->
-                <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}
-                <br><br>
-                <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div><br>
                 <h3 id="studyAbstract">Study Abstract</h3>
                 <p>{{correlationObject.studyAbstract}}</p><br>
@@ -24,20 +29,50 @@
                     <br>
                     <br>
                 </div>
-                <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig"></highchart>
-                <highchart ng-show="effectTimelineChartConfig" id="effectTimeline" config="effectTimelineChartConfig"></highchart>
-                <highchart ng-show="scatterplotChartConfig" id="scatterplot" config="scatterplotChartConfig"></highchart>
+                <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig">
+                </highchart>
+                <highchart ng-show="effectTimelineChartConfig"
+                           id="effectTimeline"
+                           config="effectTimelineChartConfig"></highchart>
+                <highchart ng-show="aggregatedCauseScatterplotChartConfig" id="aggregatedCauseScatterplotChartConfig"
+                           config="aggregatedCauseScatterplotChartConfig"></highchart>
+                <highchart ng-show="aggregatedEffectScatterplotChartConfig" id="aggregatedEffectScatterplotChartConfig"
+                           config="aggregatedEffectScatterplotChartConfig"></highchart>
+                <highchart ng-show="data.userStudy.scatterplotChartConfig" id="scatterplot"
+                           config="data.userStudy.scatterplotChartConfig">
+                </highchart>
+                <!--
                 <label class="item item-input"
-                       ng-show="correlationsOverOnsetDelaysChartConfig">
-                    <span class="input-label">Moving Average Period</span>
-                    <input type="number"
-                           ng-change="createUserCharts()"
-                           ng-model="weightedPeriod"
-                           id="weightedPeriod" placeholder="" >
+                   ng-show="correlationsOverOnsetDelaysChartConfig">
+                <span class="input-label">Moving Average Period</span>
+                <input type="number"
+                       ng-change="createUserCharts()"
+                       ng-model="weightedPeriod"
+                       id="weightedPeriod" placeholder="" >
                 </label>
-                <highchart ng-show="correlationsOverOnsetDelaysChartConfig" id="correlationsOverOnsetDelaysChart" config="correlationsOverOnsetDelaysChartConfig"></highchart>
-                <highchart ng-show="correlationsOverDurationsOfActionChartConfig" id="correlationsOverDurationsOfActionChart" config="correlationsOverDurationsOfActionChartConfig"></highchart>
-                <highchart ng-show="pairsOverTimeChartConfig" id="pairsOverTimeChart" config="pairsOverTimeChartConfig"></highchart>
+                -->
+                <highchart ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig"
+                           id="correlationsOverOnsetDelaysChart"
+                           config="data.userStudy.correlationsOverOnsetDelaysChartConfig">
+                </highchart>
+                <highchart ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig"
+                           id="correlationsOverOnsetDelaysChart"
+                           config="data.userStudy.correlationsOverOnsetDelaysChartConfig">
+                </highchart>
+                <p ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation">
+                    {{data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation}}
+                </p>
+                <highchart ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig.series.length"
+                           id="correlationsOverDurationsOfActionChart"
+                           config="data.userStudy.correlationsOverDurationsOfActionChartConfig">
+                </highchart>
+                <p ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig.series.length">
+                    {{data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation}}
+                </p>
+                <highchart ng-show="data.userStudy.pairsOverTimeChartConfig"
+                           id="pairsOverTimeChart"
+                           config="data.userStudy.pairsOverTimeChartConfig">
+                </highchart>
                 <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id" class="row">
                     <div class="col">
                         <button class="button button-block icon-left {{correlationObject.causeVariableIonIcon}} button-positive"
@@ -55,6 +90,18 @@
                             {{correlationObject.effectVariableName}} Settings
                         </button>
                     </div>
+                </div>
+                <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id"
+                     class="card sign-in" >
+                    <ion-toggle ng-model="correlationObject.shareUserMeasurements"
+                                ng-change="toggleStudyShare(correlationObject)">
+                        <i ng-if="!correlationObject.shareUserMeasurements" class="icon ion-locked">
+                            &nbsp Study is Private
+                        </i>
+                        <i ng-if="correlationObject.shareUserMeasurements" class="icon ion-unlocked">
+                            &nbsp Study is Public
+                        </i>
+                    </ion-toggle>
                 </div>
                 <div id="studyBody" >
                     <h3 ng-if="causeWikiEntry || effectWikiEntry || correlationObject.studyBackground"

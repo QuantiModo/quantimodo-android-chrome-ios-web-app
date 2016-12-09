@@ -8,13 +8,20 @@
     &nbsp;&nbsp;
     <div ng-click="downVote(correlationObject, $index)" class="show-inline">
         <div class="tooltip" title="Relationship Seems Impossible">
-            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
-            <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1"
+                 src="img/thumb_down_white.png"
+                 height="32px"
+                 width="32px" />
+            <img ng-if="correlationObject.userVote === 0"
+                 src="img/thumb_down_black.png"
+                 height="32px"
+                 width="32px" />
         </div>
     </div>
-    &nbsp;
+
     <div ng-hide="state.hideStudyButton" ng-click="goToStudyPage(correlationObject)" class="show-inline" >
-        &nbsp;<div class="tooltip" title="Go to Full Study">
+        <div class="tooltip" title="Go to Full Study">
+        &nbsp &nbsp
             <i style="font-size: 32px;" class="ion-ios-book-outline"></i>
         </div>
     </div>
@@ -26,17 +33,17 @@
         </div>
     </div>
     &nbsp;
-    &nbsp;&nbsp;
-    <div ng-click="openUrl(correlationObject.studyLinkFacebook)" class="show-inline">
-        &nbsp;<div class="tooltip" title="Share Study to Facebook">
-        <i  style="font-size: 32px;" class="ion-social-facebook"></i>
-    </div>
+    &nbsp;
+    <div ng-click="shareStudy(correlationObject, correlationObject.studyLinkFacebook)" class="show-inline">
+        <div class="tooltip" title="Share Study to Facebook">
+            <i  style="font-size: 32px;" class="ion-social-facebook"></i>
+        </div>
     </div>
     &nbsp;
-    &nbsp;&nbsp;
-    <div ng-click="openUrl(correlationObject.studyLinkTwitter);" class="show-inline">
-        &nbsp;<div class="tooltip" title="Change Analysis Parameters">
-        <i  style="font-size: 32px;" class="ion-social-twitter"></i>
-    </div>
+    &nbsp;
+    <div ng-click="shareStudy(correlationObject, correlationObject.studyLinkTwitter);" class="show-inline">
+        <div class="tooltip" title="Share Study to Twitter">
+            <i  style="font-size: 32px;" class="ion-social-twitter"></i>
+        </div>
     </div>
 </div>
