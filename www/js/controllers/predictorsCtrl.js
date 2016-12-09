@@ -122,9 +122,6 @@ angular.module('starter')
 
 
         function populateUserCorrelationList() {
-/*            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });*/
             $scope.searching = true;
             setupUserPredictors();
             if(typeof $scope.state.requestParams.fallbackToAggregatedCorrelations === "undefined"){
@@ -161,6 +158,9 @@ angular.module('starter')
         }
 
         $scope.loadMore = function () {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
             if($scope.state.correlationObjects.length){
                 $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
                 populateUserCorrelationList();
