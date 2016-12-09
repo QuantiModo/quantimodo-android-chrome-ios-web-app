@@ -1364,6 +1364,16 @@ angular.module('starter',
                     controller: 'TabCtrl'
                 }
             }
+        })
+
+       .state('app.tabs', {
+            url: '/tabs/:tabId',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/tabs/tab-detail.html',
+                    controller: 'TabDetailCtrl'
+                }
+            }
         });
 
     if (window.localStorage.introSeen) {

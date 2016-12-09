@@ -1,0 +1,43 @@
+<ion-view view-title="{{variable.shortName}}">
+  <ion-content class="padding">
+     <p align="middle"> Enter Measurements</p>
+         
+			<div class="item item-input-inset radiusChange">
+                 
+				   <div blood-pressure ng-if="defaultVariables[selectedVariable].abbreviatedUnitName==='mmHg'"></div>
+				   <div nonblood-pressure ng-if="defaultVariables
+				   [selectedVariable].abbreviatedUnitName!=='mmHg'"></div>
+				
+			      <p class='unitName'>{{defaultVariables[selectedVariable].abbreviatedUnitName}}</p>
+			</div>
+			 <div class="item item-input-inset radiusChange increaseHeight" >
+				
+				  <label class="item-input-wrapper removeWrapper">
+				    <textarea class="inputNote" placeholder="Note:free text e.g. medications"></textarea>
+				 </label>
+				  
+			
+			</div>
+
+			<br>
+			<div align="middle" >
+		
+			<button class="button button-outline button-assertive"  ng-click="goBack()">
+  				 cancel
+			</button>
+			
+			<button class="button button-balanced button-outline" ng-click="save()">
+  				 save
+			</button>
+            
+         
+			<button class="button button-positive button-outline" ng-click="history()">
+  				 History
+			</button>
+			</div>
+			<br>
+			<div  align="middle" class="special" >
+				<a class="button button-outline icon-left ion-pen button-royal" ng-click="goToRemindersTab()">Remind me to track</a>
+			</div>
+  </ion-content>
+</ion-view>
