@@ -715,6 +715,25 @@ angular.module('starter')
                 errorHandler);
         };
 
+        QuantiModo.postStudy = function(body, successHandler, errorHandler){
+            QuantiModo.post('api/v1/study',
+                [],
+                body,
+                successHandler,
+                errorHandler);
+        };
+
+        QuantiModo.postStudyDeferred = function(body, successHandler, errorHandler) {
+            var deferred = $q.defer();
+            QuantiModo.postStudy(body, function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
         QuantiModo.postUserTagDeferred = function(tagData, successHandler, errorHandler) {
             var deferred = $q.defer();
             QuantiModo.postUserTag(tagData, function(){

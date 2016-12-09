@@ -81,6 +81,13 @@
                         </button>
                     </div>
                 </div>
+                <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id" class="card sign-in" >
+                    <ion-toggle ng-model="correlationObject.shareUserMeasurements"
+                                ng-change="toggleStudyShare(correlationObject)">
+                        <i ng-if="!correlationObject.shareUserMeasurements" class="icon ion-locked">&nbsp Study is Private</i>
+                        <i ng-if="correlationObject.shareUserMeasurements" class="icon ion-unlocked">&nbsp Study is Public</i>
+                    </ion-toggle>
+                </div>
                 <div id="studyBody" >
                     <h3 ng-if="causeWikiEntry || effectWikiEntry || correlationObject.studyBackground"
                         id="studyBackground">
