@@ -150,7 +150,7 @@
                 </div>
             </div>
         </div>
-        <div class="button-bar" ng-show="!state.noCorrelations && state.showLoadMoreButton">
+        <div class="button-bar" ng-show="!state.noCorrelations && state.showLoadMoreButton && !searching">
             <a class="button button-clear button-calm" ng-click="loadMore()" style="text-overflow: clip;">
                 <i class="ion-refresh">
                     Load More
