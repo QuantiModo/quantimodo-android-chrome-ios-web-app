@@ -42,10 +42,11 @@
                            ng-model="weightedPeriod"
                            id="weightedPeriod" placeholder="" >
                 </label>-->
-                <highchart ng-show="correlationsOverOnsetDelaysChartConfig" id="correlationsOverOnsetDelaysChart"
-                           config="correlationsOverOnsetDelaysChartConfig">
+                <highchart ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig"
+                           id="correlationsOverOnsetDelaysChart"
+                           config="data.userStudy.correlationsOverOnsetDelaysChartConfig">
                 </highchart>
-                <p ng-show="correlationsOverOnsetDelaysChartConfig">
+                <p ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig">
                     The onset delay is the amount of time which is assumed to pass after the recorded
                     {{correlationObject.causeVariableName}} measurement before the maximum change in
                     potentially influence {{correlationObject.effectVariableName}} is observed.   The larger the
@@ -56,10 +57,11 @@
                     the chart), the more likely it is that {{correlationObject.effectVariableName}} causally
                     influences {{correlationObject.causeVariableName}}.
                 </p>
-                <highchart ng-show="correlationsOverDurationsOfActionChartConfig"
-                           id="correlationsOverDurationsOfActionChart" config="correlationsOverDurationsOfActionChartConfig">
+                <highchart ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig"
+                           id="correlationsOverDurationsOfActionChart"
+                           config="data.userStudy.correlationsOverDurationsOfActionChartConfig">
                 </highchart>
-                <p ng-show="correlationsOverDurationsOfActionChartConfig">
+                <p ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig">
                     The duration of action is the time over which {{correlationObject.causeVariableName}} is assumed to
                     potentially influence {{correlationObject.effectVariableName}}</p>
                 <highchart ng-show="pairsOverTimeChartConfig" id="pairsOverTimeChart" config="pairsOverTimeChartConfig"></highchart>
