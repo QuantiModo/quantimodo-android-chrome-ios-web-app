@@ -23,20 +23,22 @@ angular.module('starter')
             });
 
             if($stateParams.taggedVariableObject.userTagVariables){
-                $stateParams.taggedVariableObject.userTagVariables = $stateParams.taggedVariableObject.userTagVariables.filter(function( obj ) {
-                    return obj.id !== $rootScope.stateParams.tagVariableObject.id;
-                });
+                $rootScope.variableObject.userTagVariables =
+                    $rootScope.variableObject.userTagVariables.filter(function( obj ) {
+                        return obj.id !== $rootScope.stateParams.tagVariableObject.id;
+                    });
             }
 
             if($stateParams.taggedVariableObject.userTaggedVariables){
-                $stateParams.taggedVariableObject.userTaggedVariables = $stateParams.taggedVariableObject.userTaggedVariables.filter(function( obj ) {
-                    return obj.id !== $rootScope.stateParams.taggedVariableObject.id;
-                });
+                $rootScope.variableObject.userTaggedVariables =
+                    $rootScope.variableObject.userTaggedVariables.filter(function( obj ) {
+                        return obj.id !== $rootScope.stateParams.taggedVariableObject.id;
+                    });
             }
 
             QuantiModo.deleteUserTagDeferred(userTagData).then(function () {
                 $ionicLoading.hide();
-                $state.go($stateParams.fromState, $stateParams.fromStateParams);
+                $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject});
             }, function (error) {
                 $ionicLoading.hide();
                 console.error(error);
@@ -56,11 +58,21 @@ angular.module('starter')
 
             if($stateParams.fromStateParams.variableObject.id === $rootScope.stateParams.tagVariableObject.id){
                 $rootScope.stateParams.taggedVariableObject.tagConversionFactor = $rootScope.stateParams.tagConversionFactor;
+                $rootScope.stateParams.taggedVariableObject.tagDisplayText = $rootScope.stateParams.tagConversionFactor +
+                    ' ' + $rootScope.stateParams.tagVariableObject.unitName + ' of ' +
+                    $rootScope.stateParams.tagVariableObject.name + ' per ' +
+                    $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
+                    $rootScope.stateParams.taggedVariableObject.name;
                 $stateParams.fromStateParams.variableObject.userTaggedVariables.push($rootScope.stateParams.taggedVariableObject);
             }
 
             if($stateParams.fromStateParams.variableObject.id === $rootScope.stateParams.taggedVariableObject.id){
                 $rootScope.stateParams.tagVariableObject.tagConversionFactor = $rootScope.stateParams.tagConversionFactor;
+                $rootScope.stateParams.tagVariableObject.tagDisplayText = $rootScope.stateParams.tagConversionFactor +
+                    ' ' + $rootScope.stateParams.tagVariableObject.unitName + ' of ' +
+                    $rootScope.stateParams.tagVariableObject.name + ' per ' +
+                    $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
+                    $rootScope.stateParams.taggedVariableObject.name;
                 $stateParams.fromStateParams.variableObject.userTagVariables.push($rootScope.stateParams.tagVariableObject);
             }
 
@@ -71,7 +83,7 @@ angular.module('starter')
             QuantiModo.postUserTagDeferred(userTagData).then(function () {
                 $ionicLoading.hide();
                 if($stateParams.fromState){
-                    $state.go($stateParams.fromState, $stateParams.fromStateParams);
+                    $state.go($stateParams.fromState, {variableObject: $stateParams.fromStateParams.variableObject});
                 } else {
                     $state.go(config.appSettings.defaultState);
                 }
