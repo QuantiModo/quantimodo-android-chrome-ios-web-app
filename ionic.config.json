@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "SuperCell",
   "app_id": "470c1f1b",
   "gulpStartupTasks": [
@@ -10,3 +11,8 @@
     "!www/lib/**/*"
   ]
 }
+=======
+  "name": "quantimodo-ionic-template-app",
+  "app_id": ""
+}
+>>>>>>> 494d64807f93606364cce4fdbd97f5e8074fa322
