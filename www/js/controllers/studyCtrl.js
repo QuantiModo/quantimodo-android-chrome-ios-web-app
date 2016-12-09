@@ -89,11 +89,11 @@ angular.module('starter')
                 exlimit: '1', // (optional) 'max': extracts for all articles, otherwise only for the first
                 exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
             }).then(function (causeData) {
-                if(causeData.correlationObject.query) {
-                    $scope.causeWikiEntry = causeData.correlationObject.query.pages[0].extract;
+                if(causeData.data.query) {
+                    $scope.causeWikiEntry = causeData.data.query.pages[0].extract;
                     //$scope.correlationObject.studyBackground = $scope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
-                    if(causeData.correlationObject.query.pages[0].thumbnail){
-                        $scope.causeWikiImage = causeData.correlationObject.query.pages[0].thumbnail.source;
+                    if(causeData.data.query.pages[0].thumbnail){
+                        $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source;
                     }
                     //on success
                 } else {
