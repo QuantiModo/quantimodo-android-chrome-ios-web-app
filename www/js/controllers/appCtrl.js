@@ -83,13 +83,23 @@ angular.module('starter')
         };
 
         $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
-            $state.go('app.variableSettings',
-                {variableName: correlationObject.causeVariableName});
+            var stateParams = {};
+            if(correlationObject.causeVariable){
+                stateParams.variableObject = correlationObject.causeVariable;
+            } else {
+                stateParams.variableName = correlationObject.causeVariableName;
+            }
+            $state.go('app.variableSettings', stateParams);
         };
 
         $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
-            $state.go('app.variableSettings',
-                {variableName: correlationObject.effectVariableName});
+            var stateParams = {};
+            if(correlationObject.effectVariable){
+                stateParams.variableObject = correlationObject.effectVariable;
+            } else {
+                stateParams.variableName = correlationObject.effectVariableName;
+            }
+            $state.go('app.variableSettings', stateParams);
         };
 
         $scope.goToState = function (state, stateParameters) {
@@ -626,7 +636,9 @@ angular.module('starter')
                 tagConversionFactor: tagVariable.tagConversionFactor,
                 taggedVariableObject: $rootScope.variableObject,
                 fromState: $state.current.name,
-                tagVariableObject: tagVariable
+                tagVariableObject: tagVariable,
+                variableObject: $rootScope.variableObject,
+                fromStateParameters: {variableName: $rootScope.variableObject.name}
             });
         };
 
@@ -635,7 +647,9 @@ angular.module('starter')
                 tagConversionFactor: taggedVariable.tagConversionFactor,
                 taggedVariableObject: taggedVariable,
                 fromState: $state.current.name,
-                tagVariableObject: $rootScope.variableObject
+                tagVariableObject: $rootScope.variableObject,
+                variableObject: $rootScope.variableObject,
+                fromStateParameters: {variableName: $rootScope.variableObject.name}
             });
         };
 
