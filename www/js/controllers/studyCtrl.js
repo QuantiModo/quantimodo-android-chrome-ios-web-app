@@ -144,6 +144,7 @@ angular.module('starter')
 
         $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
+            $scope.state.loading = false;
             $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
                 $scope.correlationObject.causeProcessedDailyMeasurements,
                 {variableName: $scope.state.requestParams.causeVariableName});
