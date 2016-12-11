@@ -38,6 +38,7 @@ dependencies:
 
 test:
   override:
+    - gulp buildQuantiModoAndroid
     - chmod +x do-exclusively
     #- echo "Going to sleep 7 minutes while previous build's GI tests run because do-exclusively interferes with storing test results"
     #- ./do-exclusively sleep 420
