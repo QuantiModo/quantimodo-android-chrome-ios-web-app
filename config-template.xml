@@ -78,7 +78,7 @@
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2" />
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
   <plugin name="ionic-plugin-deploy" spec="~0.6.5" />
-  <plugin name="phonegap-plugin-push" version="1.8.2">
+  <plugin name="phonegap-plugin-push" version="1.9.1">
     <variable name="SENDER_ID" value="1052648855194" />
   </plugin>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
