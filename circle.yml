@@ -25,6 +25,13 @@ dependencies:
     - npm install -g gulp cordova ionic bower
     - npm install
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
+    # Android SDK Platform 25
+    - if [ ! -d "/usr/local/android-sdk-linux/platforms/android-25" ]; then echo y | android update sdk --no-ui --all --filter "android-25"; fi
+    # Android SDK Build-tools, revision 25.0.0
+    - if [ ! -d "/usr/local/android-sdk-linux/build-tools/25.0.5" ]; then echo y | android update sdk --no-ui --all --filter "build-tools-25.0.5"; fi
+    # Android Support Repository, revision 39 / Local Maven repository for Support Libraries
+    - if [ ! -d "/usr/local/android-sdk-linux/extras/android/m2repository/com/android/support/design/25.0.0" ]; then echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"; fi
+    - echo y | android update sdk --no-ui --all --filter "android-24"
 
   override:
     - sudo apt-add-repository -y ppa:duggan/bats
