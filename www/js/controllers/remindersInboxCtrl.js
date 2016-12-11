@@ -345,6 +345,7 @@ angular.module('starter')
 					}
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    $scope.hideLoader();
 				});
 		};
 
@@ -398,6 +399,7 @@ angular.module('starter')
 					}
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    $scope.hideLoader();
 				});
 	    };
 
@@ -418,6 +420,7 @@ angular.module('starter')
 					}
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    $scope.hideLoader();
 				});
 	    };
 
@@ -438,6 +441,7 @@ angular.module('starter')
 					}
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    $scope.hideLoader();
 				});
 	    };
 
@@ -468,17 +472,11 @@ angular.module('starter')
 					$scope.filteredTrackingReminderNotifications =
 						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 					getWeekdayChartIfNecessary();
-					//Stop the ion-refresher from spinning
-					$scope.$broadcast('scroll.refreshComplete');
 					$scope.hideLoader();
-					$scope.state.loading = false;
 				}, function(){
 					getWeekdayChartIfNecessary();
 					$scope.hideLoader();
 					console.error("failed to get reminder notifications!");
-					//Stop the ion-refresher from spinning
-					$scope.$broadcast('scroll.refreshComplete');
-					$scope.state.loading = false;
 				});
 		};
 
@@ -494,14 +492,16 @@ angular.module('starter')
 			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 			$scope.filteredTrackingReminderNotifications =
 				reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-			//Stop the ion-refresher from spinning
-			$scope.$broadcast('scroll.refreshComplete');
-			$scope.hideLoader();
-			$scope.state.loading = false;
+            $scope.hideLoader();
 		};
 
 		$scope.hideLoader = function(){
 			$ionicLoading.hide();
+            //Stop the ion-refresher from spinning
+            $scope.$broadcast('scroll.refreshComplete');
+            if($scope.state && $scope.state.loading){
+                $scope.state.loading = false;
+			}
 		};
 
 		var getFilteredTodayTrackingReminderNotifications = function(){
@@ -561,6 +561,7 @@ angular.module('starter')
 					getTrackingReminderNotifications();
 				}, function (error) {
 					console.error('$scope.refreshTrackingReminderNotifications: ' + error);
+                    $scope.hideLoader();
 				});
 			}
 		};
