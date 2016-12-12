@@ -526,6 +526,96 @@ gulp.task('deleteIOSApp', function () {
 	return deferred.promise;
 });
 
+gulp.task('setFallbackEnvs', function(){
+    if(!process.env.LOWERCASE_APP_NAME){
+        process.env.LOWERCASE_APP_NAME = 'quantimodo';
+        console.warn('No LOWERCASE_APP_NAME set.  Falling back to ' + process.env.LOWERCASE_APP_NAME);
+    }
+
+    if(!process.env.BUILD_JSON_PATH){
+        process.env.BUILD_JSON_PATH = '../../../configs/android/';
+        console.log('BUILD_JSON_PATH env not found. Falling back to ' + process.env.BUILD_JSON_PATH);
+    }
+});
+
+var decryptFile = function (fileToDecryptPath, decryptedFilePath) {
+    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
+        "https://code.google.com/archive/p/openssl-for-windows/downloads");
+
+    if(!process.env.ENCRYPTION_SECRET){
+        console.error('Please set ENCRYPTION_SECRET environmental variable!');
+        return;
+    }
+
+    console.log("DECRYPTING " + fileToDecryptPath);
+    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath +
+        '" -d -a -out "' + decryptedFilePath + '"';
+
+    //console.log('executing ' + cmd);
+    execute(cmd, function(error){
+        if(error !== null){
+            console.log("ERROR DECRYPTING: " + error);
+        }
+    });
+};
+
+var encryptFile = function (fileToEncryptPath, encryptedFilePath) {
+    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
+        "https://code.google.com/archive/p/openssl-for-windows/downloads");
+
+    if(!process.env.ENCRYPTION_SECRET){
+        console.error('Please set ENCRYPTION_SECRET environmental variable!');
+        return;
+    }
+
+    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToEncryptPath +
+        '" -e -a -out "' + encryptedFilePath + '"';
+
+    //console.log('executing ' + cmd);
+    execute(cmd, function(error){
+        if(error !== null){
+            console.log("ERROR ENCRYPTING: " + error);
+        }
+    });
+};
+
+gulp.task('encryptAndroidKeystore', [], function(){
+    var fileToEncryptPath = 'quantimodo.keystore';
+    var encryptedFilePath = 'quantimodo.keystore.enc';
+    encryptFile(fileToEncryptPath, encryptedFilePath);
+});
+
+gulp.task('decryptAndroidKeystore', ['setFallbackEnvs'], function(){
+    var fileToDecryptPath = 'quantimodo.keystore.enc';
+    var decryptedFilePath = 'quantimodo.keystore';
+    decryptFile(fileToDecryptPath, decryptedFilePath);
+});
+
+
+gulp.task('encryptBuildJson', [], function(){
+    var fileToEncryptPath = 'build.json';
+    var encryptedFilePath = 'build.json.enc';
+    encryptFile(fileToEncryptPath, encryptedFilePath);
+});
+
+gulp.task('decryptBuildJson', ['setFallbackEnvs'], function(){
+    var fileToDecryptPath = 'build.json.enc';
+    var decryptedFilePath = 'build.json';
+    decryptFile(fileToDecryptPath, decryptedFilePath);
+});
+
+gulp.task('encryptPrivateConfig', [], function(){
+    var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
+    var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
+    encryptFile(fileToEncryptPath, encryptedFilePath);
+});
+
+gulp.task('decryptPrivateConfig', ['setFallbackEnvs'], function(){
+	var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
+	var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
+	decryptFile(fileToDecryptPath, decryptedFilePath);
+});
+
 gulp.task('deleteFacebookPlugin', function(){
 	var deferred = q.defer();
 
@@ -1843,11 +1933,7 @@ gulp.task('copyAndroidBuild', [], function(){
 });
 
 
-gulp.task('copyBuildJson', [], function(){
-	if(!process.env.BUILD_JSON_PATH){
-        process.env.BUILD_JSON_PATH = '../../../configs/android/';
-        console.log('BUILD_JSON_PATH env not found. Falling back to ' + process.env.BUILD_JSON_PATH);
-	}
+gulp.task('copyBuildJson',  ['setFallbackEnvs'], function(){
 	
     return gulp.src([process.env.BUILD_JSON_PATH + 'build.json'])
         .pipe(gulp.dest('./'));
