@@ -1786,11 +1786,11 @@ gulp.task('buildQuantiModoChromeExtension', function(callback){
 });
 
 gulp.task('ionicPlatformAddAndroid', function(callback){
-	return execute("ionic platform add android@6.0.0", function(error){
+	return execute("ionic platform add android@6.1.0", function(error){
 			if(error !== null){
-				console.log("ionic platform add android@6.0.0 ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+				console.log("ionic platform add android@6.1.0 ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
 			} else {
-				console.log("\n***ionic platform add android@6.0.0 for " + process.env.LOWERCASE_APP_NAME);
+				console.log("\n***ionic platform add android@6.1.0 for " + process.env.LOWERCASE_APP_NAME);
 				callback();
 			}
 		});
