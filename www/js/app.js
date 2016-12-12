@@ -792,6 +792,7 @@ angular.module('starter',
                 fromUrl : null,
                 tagVariableObject : null,
                 taggedVariableObject : null,
+                variableObject: null,
                 helpText: "Say I want to track how much sugar I consume and see how that affects me.  I don't need to " +
                     "check the label every time.  I can just tag Candy Bar and Lollypop with the amount sugar. Then during " +
                     "analysis the sugar from those items will be included.  Additionally if I have multiple variables that " +

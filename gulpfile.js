@@ -1492,7 +1492,7 @@ gulp.task('cleanBuildFolder', [], function(){
 });
 
 gulp.task('copyAppResources', ['cleanResources'], function () {
-	console.log("If this fails, make sure there are no symlinks in the apps folder!");
+	console.log("If this doesn't work, make sure there are no symlinks in the apps folder!");
 	return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
 		base: 'apps/' + process.env.LOWERCASE_APP_NAME
 	}).pipe(gulp.dest('.'));
@@ -1757,6 +1757,27 @@ gulp.task('buildAllChromeExtensions', function(callback){
         callback);
 });
 
+gulp.task('buildAllChromeExtensionsAndAndroidApps', function(callback){
+    runSequence(
+        'cleanBuildFolder',
+        'setEnergyModoEnvs',
+        'buildChromeExtension',
+		'buildAndroidApp',
+        'setMedTlcEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'setMindFirstEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'setMoodiModoEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'setQuantiModoEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        callback);
+});
+
 gulp.task('buildQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
@@ -1816,6 +1837,17 @@ gulp.task('copyAndroidResources', [], function(){
 gulp.task('copyAndroidBuild', [], function(){
     return gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
         .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
+});
+
+
+gulp.task('copyBuildJson', [], function(){
+	if(!process.env.BUILD_JSON_PATH){
+        process.env.BUILD_JSON_PATH = '../../../configs/android/';
+        console.log('BUILD_JSON_PATH env not found. Falling back to ' + process.env.BUILD_JSON_PATH);
+	}
+	
+    return gulp.src([process.env.BUILD_JSON_PATH + 'build.json'])
+        .pipe(gulp.dest('./'));
 });
 
 gulp.task('prepareQuantiModoIos', function(callback){
@@ -1903,6 +1935,7 @@ gulp.task('prepareAndroidApp', function(callback){
 gulp.task('buildAndroidApp', function(callback){
 	runSequence(
 		'prepareAndroidApp',
+		'copyBuildJson',
 		'cordovaBuildAndroidRelease',
         'copyAndroidBuild',
 		//'cordovaBuildAndroidDebug',

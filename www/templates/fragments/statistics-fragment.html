@@ -1,0 +1,69 @@
+<div id="statisticsCard" ng-show="correlationObject" class="card variable-settings" >
+    <div class="list">
+        <div class="item item-divider ng-binding">Quick Statistics</div>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Cause Variable Name</span>
+            <span class="input-label right-text " id="causeVariableName">{{correlationObject.causeVariableName}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Cause Variable Name</span>
+            <span class="input-label right-text " id="effectVariableName">{{correlationObject.effectVariableName}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Predictive Correlation Coefficient</span>
+            <span class="input-label right-text " id="correlationCoefficient">{{correlationObject.correlationCoefficient}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">QuantiModo Score</span>
+            <span class="input-label right-text " id="qmScore">{{correlationObject.qmScore}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Onset Delay</span>
+            <span class="input-label right-text " id="onsetDelay">{{correlationObject.onsetDelay}} Seconds</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Duration Of Action</span>
+            <span class="input-label right-text " id="durationOfAction">{{correlationObject.durationOfAction}} Seconds</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Number Of Pairs</span>
+            <span class="input-label right-text " id="numberOfPairs">{{correlationObject.numberOfPairs}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Predictor Value Changes</span>
+            <span class="input-label right-text " id="causeChanges">{{correlationObject.causeChanges}}</span>
+        </label>        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Outcome Value Changes</span>
+            <span class="input-label right-text " id="effectChanges">{{correlationObject.effectChanges}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Statistical Significance</span>
+            <span class="input-label right-text " id="statisticalSignificance">{{correlationObject.statisticalSignificance}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Typical High Outcome Change from Average</span>
+            <span class="input-label right-text " id="predictsHighEffectChange">{{correlationObject.predictsHighEffectChange}}%</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Typical Low Outcome Change from Average</span>
+            <span class="input-label right-text " id="predictsLowEffectChange">{{correlationObject.predictsLowEffectChange}}%</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">P Value</span>
+            <span class="input-label right-text " id="pValue">{{correlationObject.pValue}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">T Value</span>
+            <span class="input-label right-text " id="tValue">{{correlationObject.tValue}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Critical T Value</span>
+            <span class="input-label right-text " id="criticalTValue">{{correlationObject.criticalTValue}}</span>
+        </label>
+        <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+            <span class="input-label left-text">Confidence Interval</span>
+            <span class="input-label right-text " id="confidenceInterval">{{correlationObject.confidenceInterval}}</span>
+        </label>
+
+    </div>
+</div>

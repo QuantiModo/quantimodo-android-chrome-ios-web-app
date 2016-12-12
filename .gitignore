@@ -36,3 +36,5 @@ apps/quantimodo/resources/chrome_extension/www
 build.json
 dropbox
 !/www/private_configs/yourlowercaseappnamehere.config.js
+www/configs/default.js
+*.keystore
