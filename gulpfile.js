@@ -1492,7 +1492,7 @@ gulp.task('cleanBuildFolder', [], function(){
 });
 
 gulp.task('copyAppResources', ['cleanResources'], function () {
-	console.log("If this fails, make sure there are no symlinks in the apps folder!");
+	console.log("If this doesn't work, make sure there are no symlinks in the apps folder!");
 	return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
 		base: 'apps/' + process.env.LOWERCASE_APP_NAME
 	}).pipe(gulp.dest('.'));
@@ -1754,6 +1754,27 @@ gulp.task('buildAllChromeExtensions', function(callback){
         'buildChromeExtension',
         'setQuantiModoEnvs',
         'buildChromeExtension',
+        callback);
+});
+
+gulp.task('buildAllChromeExtensionsAndAndroidApps', function(callback){
+    runSequence(
+        'cleanBuildFolder',
+        'setEnergyModoEnvs',
+        'buildChromeExtension',
+		'buildAndroidApp',
+        'setMedTlcEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'setMindFirstEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'setMoodiModoEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'setQuantiModoEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
         callback);
 });
 
