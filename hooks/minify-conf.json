@@ -2,7 +2,7 @@
     "foldersToProcess": [
       "js",
       "css",
-      "img"
+      "img_folder_causing_problems"
     ],
     "jpgOptions":{
       "quality": 50
