@@ -132,7 +132,8 @@ cordova plugin add cordova-fabric-plugin -–variable FABRIC_API_KEY=${FABRIC_AP
 source ${IONIC_PATH}/scripts/build_scripts/push_plugin_install.sh
 
 echo "ionic browser add crosswalk@12.41.296.5"
-ionic browser add crosswalk@12.41.296.5
+# ionic browser add crosswalk@12.41.296.5  # Pre Ionic CLI 2
+ionic plugin add cordova-plugin-crosswalk-webview --save
 
 #npm install -g bower
 bower install

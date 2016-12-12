@@ -36,15 +36,6 @@ apt-get install -y libc6:i386 libstdc++6:i386 zlib1g:i386
 sudo chmod -R 777 /opt/android-sdk-linux/
 #sudo /opt/android-sdk-linux/tools/android update sdk -u --all --filter platform-tool,android-23,build-tools-23.0.1,extra-android-support
 
-expect -c '
-set timeout -1   ;
-spawn /opt/android-sdk-linux/tools/android update sdk -u --all --filter platform-tool,android-23,build-tools-23.0.1,extra-android-support
-expect {
-    "Do you accept the license" { exp_send "y\r" ; exp_continue }
-    eof
-}
-'
-
 echo y | /opt/android-sdk-linux/tools/android update sdk --no-ui --all --filter tools
 echo y | /opt/android-sdk-linux/tools/android update sdk --no-ui --all --filter platform-tools
 echo y | /opt/android-sdk-linux/tools/android update sdk --no-ui --all --filter extra-android-support
