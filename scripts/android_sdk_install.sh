@@ -25,12 +25,21 @@ apt-get update
 apt-get install -y libc6:i386 libstdc++6:i386 zlib1g:i386
 
 # install sdks
-cd /opt/android-sdk-linux/tools
-./android list sdk --all
-./android update -u -t 1,2,4,26,103
+#cd /opt/android-sdk-linux/tools
+#./android list sdk --all
+#./android update -u -t 1,2,4,26,103
 
 sudo chmod -R 777 /opt/android-sdk-linux/
-sudo /opt/android-sdk-linux/tools/android update sdk -u --all --filter platform-tool,android-23,build-tools-23.0.1,extra-android-support
+#sudo /opt/android-sdk-linux/tools/android update sdk -u --all --filter platform-tool,android-23,build-tools-23.0.1,extra-android-support
+
+expect -c '
+set timeout -1   ;
+spawn /opt/android-sdk-linux/tools/android update sdk -u --all --filter platform-tool,android-23,build-tools-23.0.1,extra-android-support
+expect {
+    "Do you accept the license" { exp_send "y\r" ; exp_continue }
+    eof
+}
+'
 
 sudo mkdir /opt/android-sdk-linux/licenses
 sudo cp ${IONIC_PATH}/android-licenses/* /opt/android-sdk-linux/licenses/
