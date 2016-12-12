@@ -529,7 +529,7 @@ gulp.task('deleteIOSApp', function () {
 gulp.task('deleteFacebookPlugin', function(){
 	var deferred = q.defer();
 
-	execute("cordova plugin rm phonegap-facebook-plugin", function(error){
+	execute("cordova plugin remove phonegap-facebook-plugin", function(error){
 		if(error !== null){
 			console.log("ERROR REMOVING FACEBOOK PLUGIN: " + error);
 			deferred.reject();

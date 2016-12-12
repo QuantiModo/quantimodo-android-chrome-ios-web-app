@@ -71,10 +71,6 @@
   <preference name="WindowsStoreDisplayName" value="YourAppDisplayNameHere"/>
   <plugin name="cordova-plugin-device" spec="~1.1.2" />
   <plugin name="cordova-plugin-console" spec="~1.0.3" />
-  <plugin name="cordova-plugin-facebook4" version="1.7.2">
-    <variable name="APP_ID" value="225078261031461" />
-    <variable name="APP_NAME" value="QuantiModo" />
-  </plugin>
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2" />
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
   <plugin name="ionic-plugin-deploy" spec="~0.6.5" />
