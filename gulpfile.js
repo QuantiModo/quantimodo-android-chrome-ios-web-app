@@ -844,12 +844,15 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 	var deferred = q.defer();
 
-	var commands = [
-		'cordova -d plugin add cordova-plugin-googleplus@4.0.8',
-		'REVERSED_CLIENT_ID="'+ REVERSED_CLIENT_ID +'"'
-	].join(' --variable ');
+	if(!process.env.REVERSED_CLIENT_ID){
+        process.env.REVERSED_CLIENT_ID = 'com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d';
+	    console.log('No REVERSED_CLIENT_ID env specified. Falling back to ' + process.env.REVERSED_CLIENT_ID);
+    }
 
-	execute(commands, function(error){
+	var command = 'cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID="' +
+        REVERSED_CLIENT_ID +'"';
+
+	execute(command, function(error){
 		if(error !== null){
 			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***", error);
 			deferred.reject();
@@ -1185,10 +1188,10 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 });
 
 gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.3.0';
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.4.0';
     console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.4.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.5.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     callback();
 });
@@ -1924,6 +1927,7 @@ gulp.task('prepareAndroidApp', function(callback){
         'copyAppResources',
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
+		'addGooglePlusPlugin',
 		'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
         'generateAndroidResources',
