@@ -64,10 +64,15 @@
     "cordova-plugin-ios-non-exempt-encryption",
     "cordova-plugin-email-composer",
     "cordova-plugin-geolocation@2.3.0",
-    "phonegap-plugin-push@1.9.1"
+    "phonegap-plugin-push@1.9.1",
+    "cordova-plugin-crosswalk-webview"
   ],
   "cordovaPlatforms": [
-    "android"
+    {
+      "platform": "android",
+      "version": "6.0.0",
+      "locator": "android@6.0.0"
+    }
   ],
   "engines": {
     "node": "0.10.x"
