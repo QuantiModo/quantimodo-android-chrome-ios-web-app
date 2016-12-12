@@ -474,7 +474,8 @@ angular.module('starter')
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
                 e.targetScope.controller_name === "RemindersInboxCtrl" ||
                 e.targetScope.controller_name === "RemindersManageCtrl" ||
-                e.targetScope.controller_name === "StudyCtrl"
+                e.targetScope.controller_name === "StudyCtrl" ||
+                e.targetScope.controller_name === "PredictorsCtrl"
             ) {
                 $scope.showMoreMenuButton = true;
             } else {
