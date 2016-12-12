@@ -16,7 +16,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu/trusty32"
+  config.vm.box = "gbarbieru/xenial"
+  #  "gbarbieru/xenial" 450Mb
+  #  "geerlingguy/ubuntu1604"   750Mb
+  #  "ubuntu/trusty64" 450Mb
+
   config.vm.hostname = "ionic-android"
 
   config.vm.provision :shell, path: "bootstrap.sh"
@@ -52,8 +56,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
-  #config.vm.synced_folder "projects", "/home/vagrant/projects"
-  config.vm.synced_folder "ionic-projects/", "/ionic-projects", create: true
+  config.vm.synced_folder "projects", "/home/vagrant/projects", create: true
+  # config.vm.synced_folder "ionic-projects/", "/ionic-projects", create: true
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
@@ -66,7 +70,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #   vb.gui = true
     #
     #   # Use VBoxManage to customize the VM. For example to change memory:
-    #   vb.customize ["modifyvm", :id, "--memory", "1024"]
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
   end
   #
   # View the documentation for the provider you're using for more

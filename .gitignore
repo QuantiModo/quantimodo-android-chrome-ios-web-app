@@ -37,3 +37,4 @@ build.json
 dropbox
 !/www/private_configs/yourlowercaseappnamehere.config.js
 www/configs/default.js
+*.keystore
