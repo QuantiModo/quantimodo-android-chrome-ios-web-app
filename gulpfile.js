@@ -1810,6 +1810,18 @@ gulp.task('ionicPlatformRemoveAndroid', function(callback){
     });
 });
 
+gulp.task('ionicPlatformRemoveWindows', function(callback){
+    console.log('Removing windows platform because it interferes with Android build sometimes...');
+    return execute("ionic platform remove windows", function(error){
+        if(error !== null){
+            console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+        } else {
+            console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+            callback();
+        }
+    });
+});
+
 gulp.task('cordovaBuildAndroidDebug', function(callback){
 	return execute("cordova build --debug android", function(error){
 		if(error !== null){
@@ -1921,13 +1933,15 @@ gulp.task('prepareAndroidApp', function(callback){
 		'gitCheckoutAppJs',
 		'setVersionNumberEnvsFromGulpFile',
 		'setAndroidEnvs',
-        'cleanPlatforms',
+        //'cleanPlatforms',
         'cleanPlugins',
-        //'ionicPlatformRemoveAndroid',
+        'ionicPlatformRemoveAndroid',
+        'ionicPlatformRemoveWindows',  // Windows platform presence seems to interfere by create undeletable files
         'copyAppResources',
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
 		'addGooglePlusPlugin',
+        'deleteFacebookPlugin',
 		'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
         'generateAndroidResources',
