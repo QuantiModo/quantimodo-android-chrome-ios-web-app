@@ -1839,6 +1839,17 @@ gulp.task('copyAndroidBuild', [], function(){
         .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
 });
 
+
+gulp.task('copyBuildJson', [], function(){
+	if(!process.env.BUILD_JSON_PATH){
+        process.env.BUILD_JSON_PATH = '../../../configs/android/';
+        console.log('BUILD_JSON_PATH env not found. Falling back to ' + process.env.BUILD_JSON_PATH);
+	}
+	
+    return gulp.src([process.env.BUILD_JSON_PATH + 'build.json'])
+        .pipe(gulp.dest('./'));
+});
+
 gulp.task('prepareQuantiModoIos', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
@@ -1924,6 +1935,7 @@ gulp.task('prepareAndroidApp', function(callback){
 gulp.task('buildAndroidApp', function(callback){
 	runSequence(
 		'prepareAndroidApp',
+		'copyBuildJson',
 		'cordovaBuildAndroidRelease',
         'copyAndroidBuild',
 		//'cordovaBuildAndroidDebug',
