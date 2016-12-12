@@ -849,8 +849,10 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 	    console.log('No REVERSED_CLIENT_ID env specified. Falling back to ' + process.env.REVERSED_CLIENT_ID);
     }
 
-	var command = 'cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID="' +
-        REVERSED_CLIENT_ID +'"';
+
+	//var command = 'cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git ' +
+    var command = 'cordova plugin add cordova-plugin-googleplus@5.1.1 ' +
+    '--variable REVERSED_CLIENT_ID="' + REVERSED_CLIENT_ID +'"';
 
 	execute(command, function(error){
 		if(error !== null){
