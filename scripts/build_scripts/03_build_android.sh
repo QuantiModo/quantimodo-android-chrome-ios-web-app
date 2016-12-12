@@ -106,7 +106,7 @@ java -version
 #echo "ionic browser add crosswalk@12.41.296.5"
 #ionic browser add crosswalk@12.41.296.5
 cordova build --debug android >/dev/null
-cordova build --release android >/dev/null
+cordova build --release android
 
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 cp -R platforms/android/build/outputs/apk/* ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
