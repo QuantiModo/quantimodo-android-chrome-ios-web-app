@@ -72,33 +72,6 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
-
-	var deferred = q.defer();
-
-	gulp.src('./apps/' + LOWERCASE_APP_NAME  +'/config.xml')
-	.pipe(rename('config.xml'))
-	.pipe(gulp.dest('./'));
-
-	gulp.src('./www/js/apps.js')
-	.pipe(change(function(content){
-		deferred.resolve();
-		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + LOWERCASE_APP_NAME + '",');
-	}))
-	.pipe(gulp.dest('./www/js/'));
-
-	return deferred.promise;
-});
-
-gulp.task('updateDefaultAppInAppsJsUsingEnvs', ['setFallbackEnvs'], function(){
-   return gulp.src('./www/js/apps.js')
-        .pipe(change(function(content){
-            console.log('Setting defaultApp to ' + process.env.LOWERCASE_APP_NAME + ' in www/js/apps/js...');
-            return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + process.env.LOWERCASE_APP_NAME + '",');
-        }))
-        .pipe(gulp.dest('./www/js/'));
-});
-
 gulp.task('deleteNodeModules', function(){
 	console.log('If file is locked in Windows, open Resource Monitor as Administrator.  Then go to CPU -> Associated ' +
 		'Handles and search for the locked file.  Then right click to kill all the processes using it.  Then try this ' +
@@ -1752,6 +1725,8 @@ gulp.task('buildChromeExtension', [], function(callback){
 	    'copyAppResources',
 	    //'cleanChromeBuildFolder',  //Can't clean here because we can't build multiple extensions then
         'replaceVersionNumbersInFiles',
+        'copyAppConfigToDefault',
+        'copyPrivateConfigToDefault',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
