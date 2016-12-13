@@ -72,37 +72,6 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
-
-	var deferred = q.defer();
-
-	gulp.src('./apps/' + LOWERCASE_APP_NAME  +'/config.xml')
-	.pipe(rename('config.xml'))
-	.pipe(gulp.dest('./'));
-
-	gulp.src('./www/js/apps.js')
-	.pipe(change(function(content){
-		deferred.resolve();
-		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + LOWERCASE_APP_NAME + '",');
-	}))
-	.pipe(gulp.dest('./www/js/'));
-
-	return deferred.promise;
-});
-
-gulp.task('updateDefaultAppInAppsJsUsingEnvs', function(){
-   return gulp.src('./www/js/apps.js')
-        .pipe(change(function(content){
-            if(!process.env.LOWERCASE_APP_NAME){
-                console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-                process.env.LOWERCASE_APP_NAME = 'moodimodo';
-            }
-            console.log('Setting defaultApp to ' + process.env.LOWERCASE_APP_NAME + ' in www/js/apps/js...');
-            return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + process.env.LOWERCASE_APP_NAME + '",');
-        }))
-        .pipe(gulp.dest('./www/js/'));
-});
-
 gulp.task('deleteNodeModules', function(){
 	console.log('If file is locked in Windows, open Resource Monitor as Administrator.  Then go to CPU -> Associated ' +
 		'Handles and search for the locked file.  Then right click to kill all the processes using it.  Then try this ' +
@@ -129,16 +98,6 @@ gulp.task('swagger', function(){
 });
 
 gulp.task('generatePrivateConfigFromEnvs', function(){
-
-    if(!process.env.LOWERCASE_APP_NAME){
-        console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-        process.env.LOWERCASE_APP_NAME = 'moodimodo';
-    }
-
-    if(!process.env.APP_DISPLAY_NAME){
-        console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-        process.env.APP_DISPLAY_NAME = 'MoodiModo';
-    }
 
     //process.env.QUANTIMODO_CLIENT_ID = 'abc';
     if(!process.env.QUANTIMODO_CLIENT_ID){
@@ -532,9 +491,9 @@ gulp.task('setFallbackEnvs', function(){
         console.warn('No LOWERCASE_APP_NAME set.  Falling back to ' + process.env.LOWERCASE_APP_NAME);
     }
 
-    if(!process.env.BUILD_JSON_PATH){
-        process.env.BUILD_JSON_PATH = '../../../configs/android/';
-        console.log('BUILD_JSON_PATH env not found. Falling back to ' + process.env.BUILD_JSON_PATH);
+    if(!process.env.APP_DISPLAY_NAME){
+        process.env.APP_DISPLAY_NAME = 'QuantiModo';
+        console.warn('No APP_DISPLAY_NAME found! Falling back to ' + process.env.APP_DISPLAY_NAME);
     }
 });
 
@@ -592,7 +551,7 @@ gulp.task('decryptAndroidKeystore', ['setFallbackEnvs'], function(){
 });
 
 
-gulp.task('encryptBuildJson', [], function(){
+gulp.task('encryptBuildJson', ['setFallbackEnvs'], function(){
     var fileToEncryptPath = 'build.json';
     var encryptedFilePath = 'build.json.enc';
     encryptFile(fileToEncryptPath, encryptedFilePath);
@@ -604,7 +563,7 @@ gulp.task('decryptBuildJson', ['setFallbackEnvs'], function(){
     decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('encryptPrivateConfig', [], function(){
+gulp.task('encryptPrivateConfig', ['setFallbackEnvs'], function(){
     var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
     encryptFile(fileToEncryptPath, encryptedFilePath);
@@ -931,7 +890,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	return deferred.promise;
 });
 
-gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
+gulp.task('addGooglePlusPlugin', [] , function(){
 	var deferred = q.defer();
 
 	if(!process.env.REVERSED_CLIENT_ID){
@@ -1608,14 +1567,16 @@ gulp.task('copyPrivateConfig', [], function () {
 	}).pipe(gulp.dest('./www/private_configs/'));
 });
 
-gulp.task('copyAppConfigToDefault', [], function () {
-    if(!process.env.LOWERCASE_APP_NAME){
-        process.env.LOWERCASE_APP_NAME = 'moodimodo';
-    }
-
+gulp.task('copyAppConfigToDefault', ['setFallbackEnvs'], function () {
     return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js')
         .pipe(rename('default.js'))
         .pipe(gulp.dest('www/configs'));
+});
+
+gulp.task('copyPrivateConfigToDefault', ['setFallbackEnvs'], function () {
+    return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js')
+        .pipe(rename('default.config.js'))
+        .pipe(gulp.dest('www/private_configs'));
 });
 
 gulp.task('copyIonicCloudLibrary', [], function () {
@@ -1764,6 +1725,8 @@ gulp.task('buildChromeExtension', [], function(callback){
 	    'copyAppResources',
 	    //'cleanChromeBuildFolder',  //Can't clean here because we can't build multiple extensions then
         'replaceVersionNumbersInFiles',
+        'copyAppConfigToDefault',
+        'copyPrivateConfigToDefault',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
@@ -1879,7 +1842,7 @@ gulp.task('buildQuantiModoChromeExtension', function(callback){
 });
 
 gulp.task('ionicPlatformAddAndroid', function(callback){
-	return execute("ionic platform add android", function(error){
+	return execute("ionic platform add android@6.1.0", function(error){
 			if(error !== null){
 				console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
 			} else {
@@ -2012,7 +1975,12 @@ gulp.task('prepareAndroidApp', function(callback){
         //'ionicPlatformRemoveAndroid',
         'copyAppResources',
 		'updateConfigXmlUsingEnvs',
+		'decryptPrivateConfig',
+        'decryptBuildJson',
+        'decryptAndroidKeystore',
 		'copyPrivateConfig',
+        'copyAppConfigToDefault',
+		'copyPrivateConfigToDefault',
 		'addGooglePlusPlugin',
 		'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
