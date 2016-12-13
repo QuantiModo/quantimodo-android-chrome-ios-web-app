@@ -1943,6 +1943,7 @@ gulp.task('prepareAndroidApp', function(callback){
         'cleanPlatforms',
         'cleanPlugins',
         //'ionicPlatformRemoveAndroid',
+		'ionicStateReset',  // Need this to install plugins from package.json
         'copyAppResources',
 		'updateConfigXmlUsingEnvs',
 		'decryptPrivateConfig',

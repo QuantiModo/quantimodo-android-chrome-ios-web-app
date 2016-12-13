@@ -67,12 +67,6 @@
       "variables": {
         "SENDER_ID": "1052648855194"
       },
-      "locator": "phonegap-plugin-push"
-    },
-    {
-      "variables": {
-        "SENDER_ID": "1052648855194"
-      },
       "locator": "https://github.com/mikepsinn/phonegap-plugin-push#93cef15c1027353132bafdd49b66805aa917defb",
       "id": "phonegap-plugin-push"
     }
