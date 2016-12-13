@@ -69,18 +69,16 @@
   <preference name="webviewbounce" value="false" />
   <preference name="windows-target-version" value="8.1"/>
   <preference name="WindowsStoreDisplayName" value="YourAppDisplayNameHere"/>
-  <plugin name="cordova-plugin-device" spec="~1.1.2" />
-  <plugin name="cordova-plugin-console" spec="~1.0.3" />
-  <plugin name="cordova-plugin-facebook4" version="1.7.2">
-    <variable name="APP_ID" value="225078261031461" />
-    <variable name="APP_NAME" value="QuantiModo" />
-  </plugin>
-  <plugin name="cordova-plugin-splashscreen" spec="~3.2.2" />
-  <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
-  <plugin name="ionic-plugin-deploy" spec="~0.6.5" />
-  <plugin name="phonegap-plugin-push" version="1.8.2">
-    <variable name="SENDER_ID" value="1052648855194" />
-  </plugin>
+  <plugin name="cordova-plugin-console" spec="~1.0.3"/>
+  <plugin name="cordova-plugin-datepicker" version="0.9.3"/>
+  <plugin name="cordova-plugin-device" spec="~1.1.2"/>
+  <plugin name="cordova-plugin-geolocation" version="2.3.0"/>
+  <plugin name="cordova-plugin-inappbrowser" version="1.2.1"/>
+  <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
+  <plugin name="cordova-plugin-statusbar" version="2.2.0"/>
+  <plugin name="cordova-plugin-whitelist" spec="~1.2.2"/>
+  <plugin name="ionic-plugin-deploy" spec="~0.6.5"/>
+  <plugin name="ionic-plugin-keyboard" version="2.2.3"/>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="2.2.5.0" id="YourWindowsAppIdentifierHere" />
   </vs:platformSpecificValues>
