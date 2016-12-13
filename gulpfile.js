@@ -1690,7 +1690,7 @@ gulp.task('prepareIosApp', function(callback){
 	runSequence(
         'setIosEnvs',
 		'gitPull',
-		'gitCheckoutAppJs',
+		//'gitCheckoutAppJs',  //Don't need this now that we use default.config.js
 		'cleanPlugins',
         'copyAppResources',
         'removeTransparentPng',
@@ -1699,7 +1699,9 @@ gulp.task('prepareIosApp', function(callback){
 		'generateIosResources',
 		'bumpIosVersion',
 		'generateConfigXmlFromTemplate',
-		'copyPrivateConfig',
+		//'copyPrivateConfig',
+        'copyAppConfigToDefault',
+        'copyPrivateConfigToDefault',
 		'setIonicAppId',
 		'copyIonicCloudLibrary',
 		'ionicUploadStaging',
@@ -1737,7 +1739,7 @@ gulp.task('zipChromeExtension', [], function(){
 
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
-	    'copyPrivateConfig',
+	    //'copyPrivateConfig',
 	    'copyAppResources',
 	    //'cleanChromeBuildFolder',  //Can't clean here because we can't build multiple extensions then
         'replaceVersionNumbersInFiles',
@@ -1998,7 +2000,7 @@ gulp.task('prepareRepositoryForAndroid', function(callback){
 
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
-		'gitCheckoutAppJs',
+		//'gitCheckoutAppJs',  Don't need this now that we use default.config.js
 		'setVersionNumberEnvsFromGulpFile',
         'setAndroidEnvs',
         'generateConfigXmlFromTemplate',
@@ -2007,7 +2009,7 @@ gulp.task('prepareAndroidApp', function(callback){
 		'decryptPrivateConfig',
         'decryptBuildJson',
         'decryptAndroidKeystore',
-		'copyPrivateConfig',
+		//'copyPrivateConfig',
         'copyAppConfigToDefault',
 		'copyPrivateConfigToDefault',
         'generateAndroidResources',
