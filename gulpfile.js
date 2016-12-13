@@ -1860,7 +1860,7 @@ gulp.task('copyAndroidResources', [], function(){
 		.pipe(gulp.dest('platforms/android'));
 });
 
-gulp.task('copyAndroidBuild', [], function(){
+gulp.task('copyAndroidBuild', ['setFallbackEnvs'], function(){
     return gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
         .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
 });
