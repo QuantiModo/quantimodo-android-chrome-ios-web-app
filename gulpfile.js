@@ -683,36 +683,73 @@ gulp.task('gitCheckoutAppJs', function(){
 	});
 });
 
-gulp.task('ionicUploadStaging', function(){
-	var commandForGit = 'git log -1 HEAD --pretty=format:%s';
-	execute(commandForGit, function(error, output){
-		var commitMessage = output.trim();
-		var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
-			' --note "' + commitMessage + '" --deploy staging';
-		console.log('\n' + uploadCommand);
-		execute(uploadCommand, function(error, uploadOutput){
-			uploadOutput = uploadOutput.trim();
-			if(error){
-				console.log("Failed to ionicUpload: " + uploadOutput + error);
-			}
-		});
-	});
-});
-
-gulp.task('ionicUploadProduction', function(){
+var ionicUpload = function(callback){
     var commandForGit = 'git log -1 HEAD --pretty=format:%s';
     execute(commandForGit, function(error, output){
         var commitMessage = output.trim();
         var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
-            ' --note "' + commitMessage + '" --deploy production';
+            ' --note "' + commitMessage + '" --deploy ' + process.env.RELEASE_STAGE;
         console.log('\n' + uploadCommand);
         execute(uploadCommand, function(error, uploadOutput){
             uploadOutput = uploadOutput.trim();
+            if(callback){
+                callback();
+			}
+
             if(error){
                 console.log("Failed to ionicUpload: " + uploadOutput + error);
             }
         });
     });
+};
+
+gulp.task('ionicUploadStaging', function(callback){
+    process.env.RELEASE_STAGE = 'staging';
+	ionicUpload(callback);
+});
+
+gulp.task('ionicUploadProduction', function(callback){
+    process.env.RELEASE_STAGE = 'production';
+    ionicUpload(callback);
+});
+
+gulp.task('ionicUpload', function(callback){
+    ionicUpload(callback);
+});
+
+gulp.task('ionicUploadProductionForAllApps', function(callback){
+    process.env.RELEASE_STAGE = 'production';
+    runSequence(
+        'ionicUploadAllApps',
+        callback);
+});
+
+gulp.task('ionicUploadStagingForAllApps', function(callback){
+    process.env.RELEASE_STAGE = 'production';
+    runSequence(
+        'ionicUploadAllApps',
+        callback);
+});
+
+
+gulp.task('ionicUploadAllApps', function(callback){
+    runSequence(
+        'setEnergyModoEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        'setMedTlcEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        'setMindFirstEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        'setMoodiModoEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        'setQuantiModoEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        callback);
 });
 
 gulp.task('ionicAddCrosswalk', function(callback){
@@ -1690,22 +1727,14 @@ gulp.task('prepareIosApp', function(callback){
 	runSequence(
         'setIosEnvs',
 		'gitPull',
-		//'gitCheckoutAppJs',  //Don't need this now that we use default.config.js
 		'cleanPlugins',
-        'copyAppResources',
+        'configureApp',
         'removeTransparentPng',
         'removeTransparentPsd',
         'useWhiteIcon',
 		'generateIosResources',
 		'bumpIosVersion',
 		'generateConfigXmlFromTemplate',
-		//'copyPrivateConfig',
-        'copyAppConfigToDefault',
-        'copyPrivateConfigToDefault',
-		'setIonicAppId',
-		'copyIonicCloudLibrary',
-		'ionicUploadStaging',
-        'ionicUploadProduction',
 		callback);
 });
 
@@ -1737,14 +1766,21 @@ gulp.task('zipChromeExtension', [], function(){
 		.pipe(gulp.dest('build'));
 });
 
-gulp.task('buildChromeExtension', [], function(callback){
-	runSequence(
-	    //'copyPrivateConfig',
-	    'copyAppResources',
-	    //'cleanChromeBuildFolder',  //Can't clean here because we can't build multiple extensions then
+gulp.task('configureApp', [], function(callback){
+    runSequence(
+        'copyAppResources',
+        'decryptPrivateConfig',
         'replaceVersionNumbersInFiles',
         'copyAppConfigToDefault',
         'copyPrivateConfigToDefault',
+        'setIonicAppId',
+        'copyIonicCloudLibrary',
+        callback);
+});
+
+gulp.task('buildChromeExtension', [], function(callback){
+	runSequence(
+	    'configureApp',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
@@ -2002,19 +2038,14 @@ gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
 		//'gitCheckoutAppJs',  Don't need this now that we use default.config.js
 		'setVersionNumberEnvsFromGulpFile',
+		'configureApp',
         'setAndroidEnvs',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
-        'copyAppResources',
-		'decryptPrivateConfig',
         'decryptBuildJson',
         'decryptAndroidKeystore',
-		//'copyPrivateConfig',
-        'copyAppConfigToDefault',
-		'copyPrivateConfigToDefault',
         'generateAndroidResources',
 		'copyAndroidResources',
-		'setIonicAppId',
 		callback);
 });
 
