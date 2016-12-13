@@ -1618,6 +1618,16 @@ gulp.task('copyAppConfigToDefault', [], function () {
         .pipe(gulp.dest('www/configs'));
 });
 
+gulp.task('copyPrivateConfigToDefault', [], function () {
+    if(!process.env.LOWERCASE_APP_NAME){
+        process.env.LOWERCASE_APP_NAME = 'moodimodo';
+    }
+
+    return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js')
+        .pipe(rename('default.config.js'))
+        .pipe(gulp.dest('www/private_configs'));
+});
+
 gulp.task('copyIonicCloudLibrary', [], function () {
 	return gulp.src(['node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js']).pipe(gulp.dest('www/lib'));
 });
@@ -2013,6 +2023,8 @@ gulp.task('prepareAndroidApp', function(callback){
         'copyAppResources',
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
+        'copyAppConfigToDefault',
+		'copyPrivateConfigToDefault',
 		'addGooglePlusPlugin',
 		'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
