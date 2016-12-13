@@ -849,7 +849,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	return deferred.promise;
 });
 
-gulp.task('addGooglePlusPlugin', [] , function(){
+gulp.task('addGooglePlusPlugin', ['deleteGooglePlusPlugin'] , function(){
 	var deferred = q.defer();
 
 	if(!process.env.REVERSED_CLIENT_ID){
@@ -858,7 +858,7 @@ gulp.task('addGooglePlusPlugin', [] , function(){
     }
 
 	var commands = [
-		'cordova -d plugin add cordova-plugin-googleplus@4.0.8',
+		'cordova -d plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git#89ac9f2e8d521bacaaf3989a22b50e4d0b5d6d09',
 		'REVERSED_CLIENT_ID="'+ REVERSED_CLIENT_ID +'"'
 	].join(' --variable ');
 
