@@ -573,6 +573,8 @@ gulp.task('decryptPrivateConfig', ['setFallbackEnvs'], function(){
 	var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
 	var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
 	decryptFile(fileToDecryptPath, decryptedFilePath);
+});
+
 gulp.task('deleteFacebookPlugin', function(callback){
     executeCommand("cordova plugin rm phonegap-facebook-plugin", callback);
 });
