@@ -41,13 +41,13 @@ general:
   branches:
     ignore:
       - gh-pages # list of branches to ignore
-      - develop
-      - master
+      #- develop
+      #- master
       - /release\/.*/ # or ignore regexes
       #- /feature\/.*/ # or ignore regexes
   artifacts:
     #- "build"
-    - "dropbox"
+    #- "dropbox"
 
 deployment:
   medtlc:
