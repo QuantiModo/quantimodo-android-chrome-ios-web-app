@@ -46,7 +46,7 @@ general:
       - /release\/.*/ # or ignore regexes
       #- /feature\/.*/ # or ignore regexes
   artifacts:
-    - "build"
+    #- "build"
     - "dropbox"
 
 deployment:
@@ -70,8 +70,8 @@ deployment:
       - gulp buildAllChromeExtensionsAndAndroidApps
       - if [ ! -f platforms/android/build/outputs/apk/android-armv7-release.apk ]; then exit 1; fi
       - if [ -f platforms/android/build/outputs/apk/android-armv7-release.apk ]; then echo "Succesfully built Android app" ; fi
-      - cp -r app/build/*.zip $CIRCLE_ARTIFACTS
-      - cp -r app/dropbox/* $CIRCLE_ARTIFACTS
+      - cp -r build/*.zip $CIRCLE_ARTIFACTS
+      - cp -r dropbox/* $CIRCLE_ARTIFACTS
 
   feature:
     branch: /feature\/.*/
