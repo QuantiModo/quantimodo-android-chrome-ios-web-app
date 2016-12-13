@@ -573,76 +573,33 @@ gulp.task('decryptPrivateConfig', ['setFallbackEnvs'], function(){
 	var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
 	var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
 	decryptFile(fileToDecryptPath, decryptedFilePath);
+gulp.task('deleteFacebookPlugin', function(callback){
+    executeCommand("cordova plugin rm phonegap-facebook-plugin", callback);
 });
 
-gulp.task('deleteFacebookPlugin', function(){
-	var deferred = q.defer();
-
-	execute("cordova plugin rm phonegap-facebook-plugin", function(error){
-		if(error !== null){
-			console.log("ERROR REMOVING FACEBOOK PLUGIN: " + error);
-			deferred.reject();
-		} else {
-			console.log("\n****FACEBOOK PLUGIN REMOVED***");
-			deferred.resolve();
-		}
-	});
-
-	return deferred.promise;
+gulp.task('deleteGooglePlusPlugin', function(callback){
+    executeCommand("cordova plugin rm cordova-plugin-googleplus", callback);
 });
 
-gulp.task('deleteGooglePlusPlugin', function(){
-	var deferred = q.defer();
-
-	execute("cordova plugin rm cordova-plugin-googleplus", function(error){
-		if(error !== null){
-			console.log("ERROR REMOVING GOOGLE PLUS PLUGIN: " + error);
-			deferred.reject();
-		} else {
-			console.log("\n****GOOGLE PLUS PLUGIN REMOVED***");
-			deferred.resolve();
-		}
-	});
-
-	return deferred.promise;
+gulp.task('addIOSApp', function(callback){
+    executeCommand("ionic platform add ios", callback);
 });
 
-gulp.task('addIOSApp', function(){
-	var deferred = q.defer();
-
-	execute("ionic platform add ios", function(error){
-		if(error !== null){
-			console.log("ERROR ADDING IOS: " + error);
-			deferred.reject();
-		} else {
-			console.log("\n***PLATFORM ADDED****");
-			deferred.resolve();
-		}
-	});
-
-	return deferred.promise;
-});
-
-gulp.task('ionicResources', function(){
-	var deferred = q.defer();
-
-	execute("ionic resources", function(error){
-		if(error !== null){
-			console.log("ERROR GENERATING RESOURCES " + error);
-			deferred.reject();
-		} else {
-			console.log("\n***RESOURCES GENERATED****");
-			deferred.resolve();
-		}
-	});
-
-	return deferred.promise;
-});
-
-gulp.task('symlinkForChromeExtension', function(){
-    execute("mklink /D apps/quantimodo/resources/chrome_extension/www www", function(error){
-    //execute("mklink /D apps/" + process.env.LOWERCASE_APP_NAME + "/resources/chrome_extension/www www", function(error){
+var executeCommand = function(command, callback){
+    exec(command, function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        callback(err);
     });
+};
+
+gulp.task('ionicStateReset', function(callback){
+	executeCommand('ionic state reset', callback);
+});
+
+
+gulp.task('ionicResources', function(callback){
+	executeCommand("ionic resources", callback);
 });
 
 var LOWERCASE_APP_NAME = false;
@@ -898,10 +855,12 @@ gulp.task('addGooglePlusPlugin', [] , function(){
 	    console.log('No REVERSED_CLIENT_ID env specified. Falling back to ' + process.env.REVERSED_CLIENT_ID);
     }
 
-	var command = 'cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID="' +
-        REVERSED_CLIENT_ID +'"';
+	var commands = [
+		'cordova -d plugin add cordova-plugin-googleplus@4.0.8',
+		'REVERSED_CLIENT_ID="'+ REVERSED_CLIENT_ID +'"'
+	].join(' --variable ');
 
-	execute(command, function(error){
+	execute(commands, function(error){
 		if(error !== null){
 			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***", error);
 			deferred.reject();
@@ -1506,6 +1465,15 @@ gulp.task('setQuantiModoEnvs', [], function(callback){
 	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
 	process.env.IONIC_APP_ID = "42fe48d4";
+	callback();
+});
+
+gulp.task('setMindFirstEnvs', [], function(callback){
+	process.env.APP_DISPLAY_NAME = "MindFirst";
+	process.env.LOWERCASE_APP_NAME = "mindfirst";
+	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
+	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
+	process.env.IONIC_APP_ID = "6d8e312f";
 	callback();
 });
 
