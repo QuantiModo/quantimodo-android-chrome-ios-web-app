@@ -46,8 +46,8 @@ dependencies:
 test:
   override:
     - gulp buildQuantiModoAndroid
-    - if [ ! -f platforms/android/build/outputs/apk/android-armv7-release-unsigned.apk ]; then exit 1; fi
-    - if [ -f platforms/android/build/outputs/apk/android-armv7-release-unsigned.apk ]; then echo "Succesfully built Android app" ; fi
+    - if [ ! -f platforms/android/build/outputs/apk/android-armv7-release.apk ]; then exit 1; fi
+    - if [ -f platforms/android/build/outputs/apk/android-armv7-release.apk ]; then echo "Succesfully built Android app" ; fi
     - chmod +x do-exclusively
     - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
     - echo "This line is to prevent automatic test detection."

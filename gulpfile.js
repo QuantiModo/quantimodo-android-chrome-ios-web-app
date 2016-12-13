@@ -72,33 +72,6 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
-
-	var deferred = q.defer();
-
-	gulp.src('./apps/' + LOWERCASE_APP_NAME  +'/config.xml')
-	.pipe(rename('config.xml'))
-	.pipe(gulp.dest('./'));
-
-	gulp.src('./www/js/apps.js')
-	.pipe(change(function(content){
-		deferred.resolve();
-		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + LOWERCASE_APP_NAME + '",');
-	}))
-	.pipe(gulp.dest('./www/js/'));
-
-	return deferred.promise;
-});
-
-gulp.task('updateDefaultAppInAppsJsUsingEnvs', ['setFallbackEnvs'], function(){
-   return gulp.src('./www/js/apps.js')
-        .pipe(change(function(content){
-            console.log('Setting defaultApp to ' + process.env.LOWERCASE_APP_NAME + ' in www/js/apps/js...');
-            return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + process.env.LOWERCASE_APP_NAME + '",');
-        }))
-        .pipe(gulp.dest('./www/js/'));
-});
-
 gulp.task('deleteNodeModules', function(){
 	console.log('If file is locked in Windows, open Resource Monitor as Administrator.  Then go to CPU -> Associated ' +
 		'Handles and search for the locked file.  Then right click to kill all the processes using it.  Then try this ' +
@@ -578,7 +551,7 @@ gulp.task('decryptAndroidKeystore', ['setFallbackEnvs'], function(){
 });
 
 
-gulp.task('encryptBuildJson', [], function(){
+gulp.task('encryptBuildJson', ['setFallbackEnvs'], function(){
     var fileToEncryptPath = 'build.json';
     var encryptedFilePath = 'build.json.enc';
     encryptFile(fileToEncryptPath, encryptedFilePath);
@@ -590,7 +563,7 @@ gulp.task('decryptBuildJson', ['setFallbackEnvs'], function(){
     decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('encryptPrivateConfig', [], function(){
+gulp.task('encryptPrivateConfig', ['setFallbackEnvs'], function(){
     var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
     encryptFile(fileToEncryptPath, encryptedFilePath);
@@ -1752,6 +1725,8 @@ gulp.task('buildChromeExtension', [], function(callback){
 	    'copyAppResources',
 	    //'cleanChromeBuildFolder',  //Can't clean here because we can't build multiple extensions then
         'replaceVersionNumbersInFiles',
+        'copyAppConfigToDefault',
+        'copyPrivateConfigToDefault',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
@@ -1867,7 +1842,7 @@ gulp.task('buildQuantiModoChromeExtension', function(callback){
 });
 
 gulp.task('ionicPlatformAddAndroid', function(callback){
-	return execute("ionic platform add android", function(error){
+	return execute("ionic platform add android@6.1.0", function(error){
 			if(error !== null){
 				console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
 			} else {
@@ -2000,6 +1975,9 @@ gulp.task('prepareAndroidApp', function(callback){
         //'ionicPlatformRemoveAndroid',
         'copyAppResources',
 		'updateConfigXmlUsingEnvs',
+		'decryptPrivateConfig',
+        'decryptBuildJson',
+        'decryptAndroidKeystore',
 		'copyPrivateConfig',
         'copyAppConfigToDefault',
 		'copyPrivateConfigToDefault',
