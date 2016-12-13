@@ -917,7 +917,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	return deferred.promise;
 });
 
-gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
+gulp.task('addGooglePlusPlugin', [] , function(){
 	var deferred = q.defer();
 
 	if(!process.env.REVERSED_CLIENT_ID){
