@@ -31,7 +31,7 @@ dependencies:
     - echo "This line is to prevent automatic dependency installation."
 
   cache_directories:
-#    - "vendor"   # Cache vendor for faster app install.
+    - "node_modules"   # Cache vendor for faster app install.
 
 test:
   override:
