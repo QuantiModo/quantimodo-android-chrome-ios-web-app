@@ -72,9 +72,7 @@
     }
   ],
   "cordovaPlatforms": [
-    "android@6.1.0",
-    "ios@4.1.1",
-    "windows@4.4.2"
+    "android@6.1.0"
   ],
   "engines": {
     "node": "0.10.x"
