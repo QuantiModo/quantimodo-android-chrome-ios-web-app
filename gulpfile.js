@@ -592,7 +592,7 @@ gulp.task('decryptAndroidKeystore', ['setFallbackEnvs'], function(){
 });
 
 
-gulp.task('encryptBuildJson', [], function(){
+gulp.task('encryptBuildJson', ['setFallbackEnvs'], function(){
     var fileToEncryptPath = 'build.json';
     var encryptedFilePath = 'build.json.enc';
     encryptFile(fileToEncryptPath, encryptedFilePath);
@@ -604,7 +604,7 @@ gulp.task('decryptBuildJson', ['setFallbackEnvs'], function(){
     decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('encryptPrivateConfig', [], function(){
+gulp.task('encryptPrivateConfig', ['setFallbackEnvs'], function(){
     var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
     encryptFile(fileToEncryptPath, encryptedFilePath);
