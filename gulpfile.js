@@ -1977,6 +1977,7 @@ gulp.task('resizeIconsForChromeExtension', function(callback){
 
 gulp.task('prepareRepositoryForAndroid', function(callback){
     runSequence(
+    	'setQuantiModoEnvs',
         'setVersionNumberEnvsFromGulpFile',
         'setAndroidEnvs',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
