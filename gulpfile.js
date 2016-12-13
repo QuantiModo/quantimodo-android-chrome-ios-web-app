@@ -576,14 +576,16 @@ gulp.task('decryptPrivateConfig', ['setFallbackEnvs'], function(){
 });
 
 gulp.task('deleteFacebookPlugin', function(callback){
+    console.log("If this doesn't work, just use gulp cleanPlugins");
     executeCommand("cordova plugin rm phonegap-facebook-plugin", callback);
 });
 
 gulp.task('deleteGooglePlusPlugin', function(callback){
-    executeCommand("cordova plugin rm cordova-plugin-googleplus", callback);
+	console.log("If this doesn't work, just use gulp cleanPlugins");
+    execute("cordova plugin rm cordova-plugin-googleplus", callback);
 });
 
-gulp.task('addIOSApp', function(callback){
+gulp.task('ionicPlatformAddIOS', function(callback){
     executeCommand("ionic platform add ios", callback);
 });
 
@@ -713,13 +715,19 @@ gulp.task('ionicUploadProduction', function(){
     });
 });
 
-gulp.task('ionicAddCrosswalk', function(){
+gulp.task('ionicAddCrosswalk', function(callback){
     var command = 'ionic plugin add cordova-plugin-crosswalk-webview';
-    execute(command, function(error) {
-        if (error) {
-            console.log("Failed to ionicAddCrosswalk: " + error);
-        }
-    });
+    executeCommand(command, callback);
+});
+
+gulp.task('ionicInfo', function(callback){
+    var command = 'ionic info';
+    executeCommand(command, callback);
+});
+
+gulp.task('cordovaPlatformVersionAndroid', function(callback){
+    var command = 'cordova platform version android';
+    executeCommand(command, callback);
 });
 
 gulp.task('downloadGradle', function(){
@@ -849,7 +857,9 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	return deferred.promise;
 });
 
-gulp.task('addGooglePlusPlugin', ['deleteGooglePlusPlugin'] , function(){
+//gulp.task('addGooglePlusPlugin', ['deleteGooglePlusPlugin'] , function(){
+// Can't do this because failure of deleteGooglePlusPlugin prevents next task.  Use runSequence instead
+gulp.task('addGooglePlusPlugin', [] , function(){
 	var deferred = q.defer();
 
 	if(!process.env.REVERSED_CLIENT_ID){
@@ -1121,22 +1131,22 @@ gulp.task('enableBitCode', function(){
 });
 
 gulp.task('makeIosApp', function(callback){
-	runSequence('deleteIOSApp',
-	'deleteFacebookPlugin',
-	'deleteGooglePlusPlugin',
-	'addIOSApp',
-    'ionicResources',
-	'readKeysForCurrentApp',
-	'addFacebookPlugin',
-	'addGooglePlusPlugin',
-	'fixResourcesPlist',
-	'addBugsnagInObjC',
-	'enableBitCode',
-	'addInheritedToOtherLinkerFlags',
-	'addDeploymentTarget',
-	'addPodfile',
-	'installPods',
-	callback);
+	runSequence(
+		'deleteIOSApp',
+		'deleteFacebookPlugin',
+		'ionicPlatformAddIOS',
+		'ionicResources',
+		'readKeysForCurrentApp',
+		'addFacebookPlugin',
+		'addGooglePlusPlugin',
+		'fixResourcesPlist',
+		'addBugsnagInObjC',
+		'enableBitCode',
+		'addInheritedToOtherLinkerFlags',
+		'addDeploymentTarget',
+		'addPodfile',
+		'installPods',
+		callback);
 });
 
 gulp.task('makeIosAppSimplified', function(callback){
@@ -1763,6 +1773,7 @@ gulp.task('buildMedTlc', function(callback){
 gulp.task('buildQuantiModoAndroid', function(callback){
     runSequence(
         'setQuantiModoEnvs',
+		'prepareRepositoryForAndroid',
         'buildAndroidApp',
         callback);
 });
@@ -1786,6 +1797,7 @@ gulp.task('buildAllChromeExtensions', function(callback){
 gulp.task('buildAllChromeExtensionsAndAndroidApps', function(callback){
     runSequence(
         'cleanBuildFolder',
+		'prepareRepositoryForAndroid',
         'setEnergyModoEnvs',
         'buildChromeExtension',
 		'buildAndroidApp',
@@ -1935,15 +1947,29 @@ gulp.task('resizeIconsForChromeExtension', function(callback){
         callback);
 });
 
+gulp.task('prepareRepositoryForAndroid', function(callback){
+    runSequence(
+        'cleanPlatforms',
+        'cleanPlugins',
+        //'ionicPlatformRemoveAndroid',
+        'ionicStateReset',  // Need this to install plugins from package.json
+        'decryptBuildJson',
+        'decryptAndroidKeystore',
+		//'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
+        'addGooglePlusPlugin',
+		//'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
+        //'ionicPlatformAddAndroid',
+        'ionicAddCrosswalk',
+		'ionicInfo',
+		'cordovaPlatformVersionAndroid',
+        callback);
+});
+
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
 		'gitCheckoutAppJs',
 		'setVersionNumberEnvsFromGulpFile',
 		'setAndroidEnvs',
-        'cleanPlatforms',
-        'cleanPlugins',
-        //'ionicPlatformRemoveAndroid',
-		'ionicStateReset',  // Need this to install plugins from package.json
         'copyAppResources',
 		'updateConfigXmlUsingEnvs',
 		'decryptPrivateConfig',
@@ -1952,9 +1978,6 @@ gulp.task('prepareAndroidApp', function(callback){
 		'copyPrivateConfig',
         'copyAppConfigToDefault',
 		'copyPrivateConfigToDefault',
-		'addGooglePlusPlugin',
-		'ionicPlatformAddAndroid',
-        'ionicAddCrosswalk',
         'generateAndroidResources',
 		'copyAndroidResources',
 		'setIonicAppId',
