@@ -90,13 +90,9 @@ gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
 	return deferred.promise;
 });
 
-gulp.task('updateDefaultAppInAppsJsUsingEnvs', function(){
+gulp.task('updateDefaultAppInAppsJsUsingEnvs', ['setFallbackEnvs'], function(){
    return gulp.src('./www/js/apps.js')
         .pipe(change(function(content){
-            if(!process.env.LOWERCASE_APP_NAME){
-                console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-                process.env.LOWERCASE_APP_NAME = 'moodimodo';
-            }
             console.log('Setting defaultApp to ' + process.env.LOWERCASE_APP_NAME + ' in www/js/apps/js...');
             return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + process.env.LOWERCASE_APP_NAME + '",');
         }))
@@ -129,16 +125,6 @@ gulp.task('swagger', function(){
 });
 
 gulp.task('generatePrivateConfigFromEnvs', function(){
-
-    if(!process.env.LOWERCASE_APP_NAME){
-        console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-        process.env.LOWERCASE_APP_NAME = 'moodimodo';
-    }
-
-    if(!process.env.APP_DISPLAY_NAME){
-        console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-        process.env.APP_DISPLAY_NAME = 'MoodiModo';
-    }
 
     //process.env.QUANTIMODO_CLIENT_ID = 'abc';
     if(!process.env.QUANTIMODO_CLIENT_ID){
@@ -532,9 +518,9 @@ gulp.task('setFallbackEnvs', function(){
         console.warn('No LOWERCASE_APP_NAME set.  Falling back to ' + process.env.LOWERCASE_APP_NAME);
     }
 
-    if(!process.env.BUILD_JSON_PATH){
-        process.env.BUILD_JSON_PATH = '../../../configs/android/';
-        console.log('BUILD_JSON_PATH env not found. Falling back to ' + process.env.BUILD_JSON_PATH);
+    if(!process.env.APP_DISPLAY_NAME){
+        process.env.APP_DISPLAY_NAME = 'QuantiModo';
+        console.warn('No APP_DISPLAY_NAME found! Falling back to ' + process.env.APP_DISPLAY_NAME);
     }
 });
 
@@ -931,7 +917,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	return deferred.promise;
 });
 
-gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
+gulp.task('addGooglePlusPlugin', [] , function(){
 	var deferred = q.defer();
 
 	if(!process.env.REVERSED_CLIENT_ID){
@@ -1608,14 +1594,16 @@ gulp.task('copyPrivateConfig', [], function () {
 	}).pipe(gulp.dest('./www/private_configs/'));
 });
 
-gulp.task('copyAppConfigToDefault', [], function () {
-    if(!process.env.LOWERCASE_APP_NAME){
-        process.env.LOWERCASE_APP_NAME = 'moodimodo';
-    }
-
+gulp.task('copyAppConfigToDefault', ['setFallbackEnvs'], function () {
     return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js')
         .pipe(rename('default.js'))
         .pipe(gulp.dest('www/configs'));
+});
+
+gulp.task('copyPrivateConfigToDefault', ['setFallbackEnvs'], function () {
+    return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js')
+        .pipe(rename('default.config.js'))
+        .pipe(gulp.dest('www/private_configs'));
 });
 
 gulp.task('copyIonicCloudLibrary', [], function () {
@@ -2015,6 +2003,9 @@ gulp.task('prepareAndroidApp', function(callback){
 		'decryptPrivateConfig',
         'decryptBuildJson',
         'decryptAndroidKeystore',
+		'copyPrivateConfig',
+        'copyAppConfigToDefault',
+		'copyPrivateConfigToDefault',
 		'addGooglePlusPlugin',
 		'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
