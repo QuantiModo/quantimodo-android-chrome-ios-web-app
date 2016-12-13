@@ -72,7 +72,6 @@ deployment:
       - if [ -f platforms/android/build/outputs/apk/android-armv7-release.apk ]; then echo "Succesfully built Android app" ; fi
       - cp -r build/*.zip $CIRCLE_ARTIFACTS
       - cp -r dropbox/* $CIRCLE_ARTIFACTS
-
   feature:
     branch: /feature\/.*/
     commands:
@@ -80,3 +79,15 @@ deployment:
       - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
       - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
       - php ghostinspector_parser.php
+  staging:
+    branch: develop
+    commands:
+      - npm install -g gulp cordova ionic bower
+      - npm install
+      - gulp ionicUploadStagingForAllApps
+  production:
+    branch: master
+    commands:
+      - npm install -g gulp cordova ionic bower
+      - npm install
+      - gulp ionicUploadProductionForAllApps
