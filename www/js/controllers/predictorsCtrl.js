@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, correlationService,
-                                           $rootScope) {
+                                           $rootScope, $ionicActionSheet) {
 
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
@@ -212,6 +212,50 @@ angular.module('starter')
                 ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
                 'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
+
+
+        // Triggered on a button click, or some other target
+        $rootScope.showActionSheetMenu = function() {
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-arrow-down-c"></i>Sort by Statistical Significance'},
+                    { text: '<i class="icon ion-arrow-down-c"></i>Sort by QM Score' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Ascending Predictive Correlation' },
+                    { text: '<i class="icon ion-arrow-up-c"></i>Descending Predictive Correlation' }
+                ],
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.debug('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.debug('BUTTON CLICKED', index);
+                    if(index === 0){
+                        console.debug("Sort by Statistical Significance");
+                        $scope.state.requestParams.sort = '-statisticalSignificance';
+                        populateUserCorrelationList();
+                    }
+                    if(index === 1){
+                        console.debug("Sort by QM Score");
+                        $scope.state.requestParams.sort = '-qmScore';
+                        populateUserCorrelationList();
+                    }
+                    if(index === 2){
+                        console.debug("Ascending Predictive Correlation");
+                        $scope.state.requestParams.sort = 'correlationCoefficient';
+                        populateUserCorrelationList();
+                    }
+                    if(index === 3){
+                        console.debug("Descending Predictive Correlation");
+                        $scope.state.requestParams.sort = '-correlationCoefficient';
+                        populateUserCorrelationList();
+                    }
+
+                    return true;
+                }
+            });
+
+        };
 
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');

@@ -20,18 +20,8 @@ dependencies:
     #- wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
     #- tar -xzf sc-latest-linux.tar.gz
   pre:
-    # Android SDK Platform 25
-    - if [ ! -d "/usr/local/android-sdk-linux/platforms/android-25" ]; then echo y | android update sdk --no-ui --all --filter "android-25"; fi
-    # Android SDK Build-tools, revision 25.0.0
-    - if [ ! -d "/usr/local/android-sdk-linux/build-tools/25.0.5" ]; then echo y | android update sdk --no-ui --all --filter "build-tools-25.0.5"; fi
-    # Android Support Repository, revision 39 / Local Maven repository for Support Libraries
-    - if [ ! -d "/usr/local/android-sdk-linux/extras/android/m2repository/com/android/support/design/25.0.0" ]; then echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"; fi
-    - echo y | android update sdk --no-ui --all --filter "android-24"
-    - echo y | android update sdk --no-ui --all --filter "extra-google-m2repository"
     - git fetch --all --unshallow || true
     - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
-    - npm install -g gulp cordova ionic bower
-    - npm install
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
   override:
@@ -41,32 +31,63 @@ dependencies:
     - echo "This line is to prevent automatic dependency installation."
 
   cache_directories:
-#    - "vendor"   # Cache vendor for faster app install.
+    #- "node_modules"   # Probably don't want to cache node_modules so we catch problematic dependency changes
 
 test:
   override:
-    - gulp buildQuantiModoAndroid
-    - if [ ! -f platforms/android/build/outputs/apk/android-armv7-release-unsigned.apk ]; then exit 1; fi
-    - if [ -f platforms/android/build/outputs/apk/android-armv7-release-unsigned.apk ]; then echo "Succesfully built Android app" ; fi
-    - chmod +x do-exclusively
-    - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
     - echo "This line is to prevent automatic test detection."
-    - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
-    - php ghostinspector_parser.php
 
 general:
   branches:
     ignore:
       - gh-pages # list of branches to ignore
-      - develop
-      - master
+      #- develop
+      #- master
       - /release\/.*/ # or ignore regexes
       #- /feature\/.*/ # or ignore regexes
   artifacts:
-    - "/home/ubuntu/QM-Docker/ghostinspector.json"
+    #- "build"
+    #- "dropbox"
 
 deployment:
   medtlc:
     branch: medtlc
     commands:
       - git push git@heroku.com:medtlc.git $CIRCLE_SHA1:refs/heads/master --force
+  build:
+    branch: /build\/.*/
+    commands:
+      - npm install -g gulp cordova ionic bower
+      - npm install
+      # Android SDK Platform 25
+      - if [ ! -d "/usr/local/android-sdk-linux/platforms/android-25" ]; then echo y | android update sdk --no-ui --all --filter "android-25"; fi
+      # Android SDK Build-tools, revision 25.0.0
+      - if [ ! -d "/usr/local/android-sdk-linux/build-tools/25.0.5" ]; then echo y | android update sdk --no-ui --all --filter "build-tools-25.0.5"; fi
+      # Android Support Repository, revision 39 / Local Maven repository for Support Libraries
+      - if [ ! -d "/usr/local/android-sdk-linux/extras/android/m2repository/com/android/support/design/25.0.0" ]; then echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"; fi
+      - echo y | android update sdk --no-ui --all --filter "android-24"
+      - echo y | android update sdk --no-ui --all --filter "extra-google-m2repository"
+      - gulp buildAllChromeExtensionsAndAndroidApps
+      - if [ ! -f platforms/android/build/outputs/apk/android-armv7-release.apk ]; then exit 1; fi
+      - if [ -f platforms/android/build/outputs/apk/android-armv7-release.apk ]; then echo "Succesfully built Android app" ; fi
+      - cp -r build/*.zip $CIRCLE_ARTIFACTS
+      - cp -r dropbox/* $CIRCLE_ARTIFACTS
+  feature:
+    branch: /feature\/.*/
+    commands:
+      - chmod +x do-exclusively
+      - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
+      - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
+      - php ghostinspector_parser.php
+  staging:
+    branch: develop
+    commands:
+      - npm install -g gulp cordova ionic bower
+      - npm install
+      - gulp ionicUploadStagingForAllApps
+  production:
+    branch: master
+    commands:
+      - npm install -g gulp cordova ionic bower
+      - npm install
+      - gulp ionicUploadProductionForAllApps

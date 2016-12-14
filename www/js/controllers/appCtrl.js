@@ -474,7 +474,8 @@ angular.module('starter')
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
                 e.targetScope.controller_name === "RemindersInboxCtrl" ||
                 e.targetScope.controller_name === "RemindersManageCtrl" ||
-                e.targetScope.controller_name === "StudyCtrl"
+                e.targetScope.controller_name === "StudyCtrl" ||
+                e.targetScope.controller_name === "PredictorsCtrl"
             ) {
                 $scope.showMoreMenuButton = true;
             } else {
@@ -510,6 +511,13 @@ angular.module('starter')
         };
 
         $scope.updateApp = function () {
+
+            var appUpdatesDisabled = true;
+            if(appUpdatesDisabled){
+                console.debug("App updates disabled until more testing is done");
+                return;
+            }
+
             var message;
             if(!$rootScope.isMobile){
                 console.debug("Cannot update app because platform is not mobile");

@@ -72,37 +72,6 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
-
-	var deferred = q.defer();
-
-	gulp.src('./apps/' + LOWERCASE_APP_NAME  +'/config.xml')
-	.pipe(rename('config.xml'))
-	.pipe(gulp.dest('./'));
-
-	gulp.src('./www/js/apps.js')
-	.pipe(change(function(content){
-		deferred.resolve();
-		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + LOWERCASE_APP_NAME + '",');
-	}))
-	.pipe(gulp.dest('./www/js/'));
-
-	return deferred.promise;
-});
-
-gulp.task('updateDefaultAppInAppsJsUsingEnvs', function(){
-   return gulp.src('./www/js/apps.js')
-        .pipe(change(function(content){
-            if(!process.env.LOWERCASE_APP_NAME){
-                console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-                process.env.LOWERCASE_APP_NAME = 'moodimodo';
-            }
-            console.log('Setting defaultApp to ' + process.env.LOWERCASE_APP_NAME + ' in www/js/apps/js...');
-            return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + process.env.LOWERCASE_APP_NAME + '",');
-        }))
-        .pipe(gulp.dest('./www/js/'));
-});
-
 gulp.task('deleteNodeModules', function(){
 	console.log('If file is locked in Windows, open Resource Monitor as Administrator.  Then go to CPU -> Associated ' +
 		'Handles and search for the locked file.  Then right click to kill all the processes using it.  Then try this ' +
@@ -129,16 +98,6 @@ gulp.task('swagger', function(){
 });
 
 gulp.task('generatePrivateConfigFromEnvs', function(){
-
-    if(!process.env.LOWERCASE_APP_NAME){
-        console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-        process.env.LOWERCASE_APP_NAME = 'moodimodo';
-    }
-
-    if(!process.env.APP_DISPLAY_NAME){
-        console.warn('No LOWERCASE_APP_NAME found!  Using moodimodo as default');
-        process.env.APP_DISPLAY_NAME = 'MoodiModo';
-    }
 
     //process.env.QUANTIMODO_CLIENT_ID = 'abc';
     if(!process.env.QUANTIMODO_CLIENT_ID){
@@ -532,9 +491,9 @@ gulp.task('setFallbackEnvs', function(){
         console.warn('No LOWERCASE_APP_NAME set.  Falling back to ' + process.env.LOWERCASE_APP_NAME);
     }
 
-    if(!process.env.BUILD_JSON_PATH){
-        process.env.BUILD_JSON_PATH = '../../../configs/android/';
-        console.log('BUILD_JSON_PATH env not found. Falling back to ' + process.env.BUILD_JSON_PATH);
+    if(!process.env.APP_DISPLAY_NAME){
+        process.env.APP_DISPLAY_NAME = 'QuantiModo';
+        console.warn('No APP_DISPLAY_NAME found! Falling back to ' + process.env.APP_DISPLAY_NAME);
     }
 });
 
@@ -592,7 +551,7 @@ gulp.task('decryptAndroidKeystore', ['setFallbackEnvs'], function(){
 });
 
 
-gulp.task('encryptBuildJson', [], function(){
+gulp.task('encryptBuildJson', ['setFallbackEnvs'], function(){
     var fileToEncryptPath = 'build.json';
     var encryptedFilePath = 'build.json.enc';
     encryptFile(fileToEncryptPath, encryptedFilePath);
@@ -604,7 +563,7 @@ gulp.task('decryptBuildJson', ['setFallbackEnvs'], function(){
     decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('encryptPrivateConfig', [], function(){
+gulp.task('encryptPrivateConfig', ['setFallbackEnvs'], function(){
     var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
     encryptFile(fileToEncryptPath, encryptedFilePath);
@@ -616,74 +575,35 @@ gulp.task('decryptPrivateConfig', ['setFallbackEnvs'], function(){
 	decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('deleteFacebookPlugin', function(){
-	var deferred = q.defer();
-
-	execute("cordova plugin remove phonegap-facebook-plugin", function(error){
-		if(error !== null){
-			console.log("ERROR REMOVING FACEBOOK PLUGIN: " + error);
-			deferred.reject();
-		} else {
-			console.log("\n****FACEBOOK PLUGIN REMOVED***");
-			deferred.resolve();
-		}
-	});
-
-	return deferred.promise;
+gulp.task('deleteFacebookPlugin', function(callback){
+    console.log("If this doesn't work, just use gulp cleanPlugins");
+    executeCommand("cordova plugin rm phonegap-facebook-plugin", callback);
 });
 
-gulp.task('deleteGooglePlusPlugin', function(){
-	var deferred = q.defer();
-
-	execute("cordova plugin rm cordova-plugin-googleplus", function(error){
-		if(error !== null){
-			console.log("ERROR REMOVING GOOGLE PLUS PLUGIN: " + error);
-			deferred.reject();
-		} else {
-			console.log("\n****GOOGLE PLUS PLUGIN REMOVED***");
-			deferred.resolve();
-		}
-	});
-
-	return deferred.promise;
+gulp.task('deleteGooglePlusPlugin', function(callback){
+	console.log("If this doesn't work, just use gulp cleanPlugins");
+    execute("cordova plugin rm cordova-plugin-googleplus", callback);
 });
 
-gulp.task('addIOSApp', function(){
-	var deferred = q.defer();
-
-	execute("ionic platform add ios", function(error){
-		if(error !== null){
-			console.log("ERROR ADDING IOS: " + error);
-			deferred.reject();
-		} else {
-			console.log("\n***PLATFORM ADDED****");
-			deferred.resolve();
-		}
-	});
-
-	return deferred.promise;
+gulp.task('ionicPlatformAddIOS', function(callback){
+    executeCommand("ionic platform add ios", callback);
 });
 
-gulp.task('ionicResources', function(){
-	var deferred = q.defer();
-
-	execute("ionic resources", function(error){
-		if(error !== null){
-			console.log("ERROR GENERATING RESOURCES " + error);
-			deferred.reject();
-		} else {
-			console.log("\n***RESOURCES GENERATED****");
-			deferred.resolve();
-		}
-	});
-
-	return deferred.promise;
-});
-
-gulp.task('symlinkForChromeExtension', function(){
-    execute("mklink /D apps/quantimodo/resources/chrome_extension/www www", function(error){
-    //execute("mklink /D apps/" + process.env.LOWERCASE_APP_NAME + "/resources/chrome_extension/www www", function(error){
+var executeCommand = function(command, callback){
+    exec(command, function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        callback(err);
     });
+};
+
+gulp.task('ionicStateReset', function(callback){
+	executeCommand('ionic state reset', callback);
+});
+
+
+gulp.task('ionicResources', function(callback){
+	executeCommand("ionic resources", callback);
 });
 
 var LOWERCASE_APP_NAME = false;
@@ -763,45 +683,89 @@ gulp.task('gitCheckoutAppJs', function(){
 	});
 });
 
-gulp.task('ionicUploadStaging', function(){
-	var commandForGit = 'git log -1 HEAD --pretty=format:%s';
-	execute(commandForGit, function(error, output){
-		var commitMessage = output.trim();
-		var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
-			' --note "' + commitMessage + '" --deploy staging';
-		console.log('\n' + uploadCommand);
-		execute(uploadCommand, function(error, uploadOutput){
-			uploadOutput = uploadOutput.trim();
-			if(error){
-				console.log("Failed to ionicUpload: " + uploadOutput + error);
-			}
-		});
-	});
-});
-
-gulp.task('ionicUploadProduction', function(){
+var ionicUpload = function(callback){
     var commandForGit = 'git log -1 HEAD --pretty=format:%s';
     execute(commandForGit, function(error, output){
         var commitMessage = output.trim();
         var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
-            ' --note "' + commitMessage + '" --deploy production';
-        console.log('\n' + uploadCommand);
+            ' --note "' + commitMessage + '" --deploy ' + process.env.RELEASE_STAGE;
+        console.log('ionic upload --note "' + commitMessage + '" --deploy ' + process.env.RELEASE_STAGE);
+        //console.log('\n' + uploadCommand);
         execute(uploadCommand, function(error, uploadOutput){
             uploadOutput = uploadOutput.trim();
             if(error){
                 console.log("Failed to ionicUpload: " + uploadOutput + error);
             }
+
+            if(callback){
+                callback();
+            }
         });
     });
+};
+
+gulp.task('ionicUploadStaging', function(callback){
+    process.env.RELEASE_STAGE = 'staging';
+	ionicUpload(callback);
 });
 
-gulp.task('ionicAddCrosswalk', function(){
+gulp.task('ionicUploadProduction', function(callback){
+    process.env.RELEASE_STAGE = 'production';
+    ionicUpload(callback);
+});
+
+gulp.task('ionicUpload', function(callback){
+    ionicUpload(callback);
+});
+
+gulp.task('ionicUploadProductionForAllApps', function(callback){
+    process.env.RELEASE_STAGE = 'production';
+    runSequence(
+        'ionicUploadAllApps',
+        callback);
+});
+
+gulp.task('ionicUploadStagingForAllApps', function(callback){
+    process.env.RELEASE_STAGE = 'production';
+    runSequence(
+        'ionicUploadAllApps',
+        callback);
+});
+
+
+gulp.task('ionicUploadAllApps', function(callback){
+    runSequence(
+        'setEnergyModoEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        'setMedTlcEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        'setMindFirstEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        'setMoodiModoEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        'setQuantiModoEnvs',
+        'configureApp',
+        'ionicUploadProduction',
+        callback);
+});
+
+gulp.task('ionicAddCrosswalk', function(callback){
     var command = 'ionic plugin add cordova-plugin-crosswalk-webview';
-    execute(command, function(error) {
-        if (error) {
-            console.log("Failed to ionicAddCrosswalk: " + error);
-        }
-    });
+    executeCommand(command, callback);
+});
+
+gulp.task('ionicInfo', function(callback){
+    var command = 'ionic info';
+    executeCommand(command, callback);
+});
+
+gulp.task('cordovaPlatformVersionAndroid', function(callback){
+    var command = 'cordova platform version android';
+    executeCommand(command, callback);
 });
 
 gulp.task('downloadGradle', function(){
@@ -931,7 +895,9 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	return deferred.promise;
 });
 
-gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
+//gulp.task('addGooglePlusPlugin', ['deleteGooglePlusPlugin'] , function(){
+// Can't do this because failure of deleteGooglePlusPlugin prevents next task.  Use runSequence instead
+gulp.task('addGooglePlusPlugin', [] , function(){
 	var deferred = q.defer();
 
 	if(!process.env.REVERSED_CLIENT_ID){
@@ -939,11 +905,12 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 	    console.log('No REVERSED_CLIENT_ID env specified. Falling back to ' + process.env.REVERSED_CLIENT_ID);
     }
 
-	var command = 'cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git ' +
-    //var command = 'cordova plugin add cordova-plugin-googleplus@5.1.1 ' +
-    '--variable REVERSED_CLIENT_ID="' + REVERSED_CLIENT_ID +'"';
+	var commands = [
+		'cordova -d plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git#89ac9f2e8d521bacaaf3989a22b50e4d0b5d6d09',
+		'REVERSED_CLIENT_ID="'+ REVERSED_CLIENT_ID +'"'
+	].join(' --variable ');
 
-	execute(command, function(error){
+	execute(commands, function(error){
 		if(error !== null){
 			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***", error);
 			deferred.reject();
@@ -1202,22 +1169,22 @@ gulp.task('enableBitCode', function(){
 });
 
 gulp.task('makeIosApp', function(callback){
-	runSequence('deleteIOSApp',
-	'deleteFacebookPlugin',
-	'deleteGooglePlusPlugin',
-	'addIOSApp',
-    'ionicResources',
-	'readKeysForCurrentApp',
-	'addFacebookPlugin',
-	'addGooglePlusPlugin',
-	'fixResourcesPlist',
-	'addBugsnagInObjC',
-	'enableBitCode',
-	'addInheritedToOtherLinkerFlags',
-	'addDeploymentTarget',
-	'addPodfile',
-	'installPods',
-	callback);
+	runSequence(
+		'deleteIOSApp',
+		'deleteFacebookPlugin',
+		'ionicPlatformAddIOS',
+		'ionicResources',
+		'readKeysForCurrentApp',
+		'addFacebookPlugin',
+		'addGooglePlusPlugin',
+		'fixResourcesPlist',
+		'addBugsnagInObjC',
+		'enableBitCode',
+		'addInheritedToOtherLinkerFlags',
+		'addDeploymentTarget',
+		'addPodfile',
+		'installPods',
+		callback);
 });
 
 gulp.task('makeIosAppSimplified', function(callback){
@@ -1551,13 +1518,22 @@ gulp.task('setQuantiModoEnvs', [], function(callback){
 	callback();
 });
 
+gulp.task('setMindFirstEnvs', [], function(callback){
+	process.env.APP_DISPLAY_NAME = "MindFirst";
+	process.env.LOWERCASE_APP_NAME = "mindfirst";
+	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
+	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
+	process.env.IONIC_APP_ID = "6d8e312f";
+	callback();
+});
+
 gulp.task('setAndroidEnvs', [], function(callback){
-	process.env.CONFIG_TEPLATE_PATH = "./config-template.xml";
+	process.env.CONFIG_XML_TEMPLATE_PATH = "./config-template.xml";
 	callback();
 });
 
 gulp.task('setIosEnvs', [], function(callback){
-	process.env.CONFIG_TEPLATE_PATH = "./config-template-ios.xml";
+	process.env.CONFIG_XML_TEMPLATE_PATH = "./config-template-ios.xml";
 	callback();
 });
 
@@ -1609,14 +1585,16 @@ gulp.task('copyPrivateConfig', [], function () {
 	}).pipe(gulp.dest('./www/private_configs/'));
 });
 
-gulp.task('copyAppConfigToDefault', [], function () {
-    if(!process.env.LOWERCASE_APP_NAME){
-        process.env.LOWERCASE_APP_NAME = 'moodimodo';
-    }
-
+gulp.task('copyAppConfigToDefault', ['setFallbackEnvs'], function () {
     return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js')
         .pipe(rename('default.js'))
         .pipe(gulp.dest('www/configs'));
+});
+
+gulp.task('copyPrivateConfigToDefault', ['setFallbackEnvs'], function () {
+    return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js')
+        .pipe(rename('default.config.js'))
+        .pipe(gulp.dest('www/private_configs'));
 });
 
 gulp.task('copyIonicCloudLibrary', [], function () {
@@ -1648,23 +1626,59 @@ gulp.task('generateIosResources', [], function(callback){
 	});
 });
 
-gulp.task('updateConfigXmlUsingEnvs', [], function(callback){
-	console.log('gulp updateConfigXmlUsingEnvs was called');
-	var xml = fs.readFileSync(process.env.CONFIG_TEPLATE_PATH, 'utf8');
+gulp.task('generateConfigXmlFromTemplate', [], function(callback){
+	//console.log('gulp generateConfigXmlFromTemplate was called');
+	if(!process.env.CONFIG_XML_TEMPLATE_PATH){
+        process.env.CONFIG_XML_TEMPLATE_PATH = "./config-template.xml";
+		console.warn("CONFIG_XML_TEMPLATE_PATH not set!  Falling back to " + process.env.CONFIG_XML_TEMPLATE_PATH);
+	}
+	
+	var xml = fs.readFileSync(process.env.CONFIG_XML_TEMPLATE_PATH, 'utf8');
+
+	if(!xml){
+        console.log("Could not find template at CONFIG_XML_TEMPLATE_PATH " + process.env.CONFIG_XML_TEMPLATE_PATH);
+        return;
+	}
 	parseString(xml, function (err, parsedXmlFile) {
 		if(err){
 			throw new Error("failed to read xml file", err);
 		} else {
 			if(process.env.APP_DISPLAY_NAME) {
 				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
+			} else {
+				console.error("Please set APP_DISPLAY_NAME env");
+				return;
 			}
+
 			if(process.env.APP_DESCRIPTION) {
 				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
-			}
+			} else {
+                console.error("Please set APP_DESCRIPTION env");
+                return;
+            }
+
 			if(process.env.APP_IDENTIFIER) {
 				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
-			}
-			var builder = new xml2js.Builder();
+			} else {
+                console.error("Please set APP_IDENTIFIER env");
+                return;
+            }
+
+            if(process.env.IONIC_APP_VERSION_NUMBER) {
+                parsedXmlFile.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
+            } else {
+                console.error("Please set IONIC_APP_VERSION_NUMBER env");
+                return;
+            }
+
+            if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
+                parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+            } else {
+                console.error("Please set IONIC_IOS_APP_VERSION_NUMBER env");
+                return;
+            }
+
+            var builder = new xml2js.Builder();
 			var updatedXmlFile = builder.buildObject(parsedXmlFile);
 
 			fs.writeFile('./config.xml', updatedXmlFile, 'utf8', function (err) {
@@ -1714,20 +1728,14 @@ gulp.task('prepareIosApp', function(callback){
 	runSequence(
         'setIosEnvs',
 		'gitPull',
-		'gitCheckoutAppJs',
 		'cleanPlugins',
-        'copyAppResources',
+        'configureApp',
         'removeTransparentPng',
         'removeTransparentPsd',
         'useWhiteIcon',
 		'generateIosResources',
 		'bumpIosVersion',
-		'updateConfigXmlUsingEnvs',
-		'copyPrivateConfig',
-		'setIonicAppId',
-		'copyIonicCloudLibrary',
-		'ionicUploadStaging',
-        'ionicUploadProduction',
+		'generateConfigXmlFromTemplate',
 		callback);
 });
 
@@ -1759,12 +1767,21 @@ gulp.task('zipChromeExtension', [], function(){
 		.pipe(gulp.dest('build'));
 });
 
+gulp.task('configureApp', [], function(callback){
+    runSequence(
+        'copyAppResources',
+        'decryptPrivateConfig',
+        'replaceVersionNumbersInFiles',
+        'copyAppConfigToDefault',
+        'copyPrivateConfigToDefault',
+        'setIonicAppId',
+        'copyIonicCloudLibrary',
+        callback);
+});
+
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
-	    'copyPrivateConfig',
-	    'copyAppResources',
-	    //'cleanChromeBuildFolder',  //Can't clean here because we can't build multiple extensions then
-        'replaceVersionNumbersInFiles',
+	    'configureApp',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
         'resizeIconsForChromeExtension',
         'copyIconsToChromeExtension',
@@ -1831,6 +1848,7 @@ gulp.task('buildMedTlc', function(callback){
 gulp.task('buildQuantiModoAndroid', function(callback){
     runSequence(
         'setQuantiModoEnvs',
+		'prepareRepositoryForAndroid',
         'buildAndroidApp',
         callback);
 });
@@ -1854,6 +1872,7 @@ gulp.task('buildAllChromeExtensions', function(callback){
 gulp.task('buildAllChromeExtensionsAndAndroidApps', function(callback){
     runSequence(
         'cleanBuildFolder',
+		'prepareRepositoryForAndroid',
         'setEnergyModoEnvs',
         'buildChromeExtension',
 		'buildAndroidApp',
@@ -1882,9 +1901,9 @@ gulp.task('buildQuantiModoChromeExtension', function(callback){
 gulp.task('ionicPlatformAddAndroid', function(callback){
 	return execute("ionic platform add android@6.1.0", function(error){
 			if(error !== null){
-				console.log("ionic platform add android@6.1.0 ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+				console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
 			} else {
-				console.log("\n***ionic platform add android@6.1.0 for " + process.env.LOWERCASE_APP_NAME);
+				console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
 				callback();
 			}
 		});
@@ -1892,18 +1911,6 @@ gulp.task('ionicPlatformAddAndroid', function(callback){
 
 gulp.task('ionicPlatformRemoveAndroid', function(callback){
     return execute("ionic platform remove android", function(error){
-        if(error !== null){
-            console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
-        } else {
-            console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
-            callback();
-        }
-    });
-});
-
-gulp.task('ionicPlatformRemoveWindows', function(callback){
-    console.log('Removing windows platform because it interferes with Android build sometimes...');
-    return execute("ionic platform remove windows", function(error){
         if(error !== null){
             console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
         } else {
@@ -1940,16 +1947,9 @@ gulp.task('copyAndroidResources', [], function(){
 		.pipe(gulp.dest('platforms/android'));
 });
 
-gulp.task('copyAndroidBuild', [], function(){
+gulp.task('copyAndroidBuild', ['setFallbackEnvs'], function(){
     return gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
         .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
-});
-
-
-gulp.task('copyBuildJson',  ['setFallbackEnvs'], function(){
-	
-    return gulp.src([process.env.BUILD_JSON_PATH + 'build.json'])
-        .pipe(gulp.dest('./'));
 });
 
 gulp.task('prepareQuantiModoIos', function(callback){
@@ -1988,7 +1988,6 @@ gulp.task('ionicRunAndroid', [], function(callback){
 	});
 });
 
-
 function resizeIcon(callback, resolution) {
     return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' build/chrome_extension/www/img/icons/icon_' +
         resolution + '.png', function (error) {
@@ -2015,32 +2014,45 @@ gulp.task('resizeIconsForChromeExtension', function(callback){
         callback);
 });
 
+gulp.task('prepareRepositoryForAndroid', function(callback){
+    runSequence(
+    	'setQuantiModoEnvs',
+        'setVersionNumberEnvsFromGulpFile',
+        'setAndroidEnvs',
+        'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
+        'cleanPlatforms',
+        'cleanPlugins',
+        //'ionicPlatformRemoveAndroid',
+        'ionicStateReset',  // Need this to install plugins from package.json
+        'decryptBuildJson',
+        'decryptAndroidKeystore',
+		//'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
+        'addGooglePlusPlugin',
+		//'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
+        //'ionicPlatformAddAndroid',
+        'ionicAddCrosswalk',
+		'ionicInfo',
+        callback);
+});
+
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
-		'gitCheckoutAppJs',
+		//'gitCheckoutAppJs',  Don't need this now that we use default.config.js
 		'setVersionNumberEnvsFromGulpFile',
-		'setAndroidEnvs',
-        //'cleanPlatforms',
-        'cleanPlugins',
-        'ionicPlatformRemoveAndroid',
-        'ionicPlatformRemoveWindows',  // Windows platform presence seems to interfere by create undeletable files
-        'copyAppResources',
-		'updateConfigXmlUsingEnvs',
-		'copyPrivateConfig',
-		'addGooglePlusPlugin',
-        'deleteFacebookPlugin',
-		'ionicPlatformAddAndroid',
-        'ionicAddCrosswalk',
+		'configureApp',
+        'setAndroidEnvs',
+        'generateConfigXmlFromTemplate',
+        'cordovaPlatformVersionAndroid',
+        'decryptBuildJson',
+        'decryptAndroidKeystore',
         'generateAndroidResources',
 		'copyAndroidResources',
-		'setIonicAppId',
 		callback);
 });
 
 gulp.task('buildAndroidApp', function(callback){
 	runSequence(
 		'prepareAndroidApp',
-		'copyBuildJson',
 		'cordovaBuildAndroidRelease',
         'copyAndroidBuild',
 		//'cordovaBuildAndroidDebug',
@@ -2072,6 +2084,7 @@ gulp.task('runMindFirstAndroid', function(callback){
 gulp.task('configureAppUsingEnvs', function(callback){
     runSequence(
         'generatePrivateConfigFromEnvs',
+		'generateConfigXmlFromTemplate',
         'copyAppConfigToDefault',
         callback);
 });
