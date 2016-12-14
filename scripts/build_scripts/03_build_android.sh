@@ -91,8 +91,8 @@ ionic platform remove android
 
 gulp setIonicAppId
 
-echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
-ionic platform add android@6.X.X
+echo "ionic platform add android@6.1.0 for $LOWERCASE_APP_NAME Android app..."
+ionic platform add android@6.1.0
 
 source ${IONIC_PATH}/scripts/create_icons.sh
 
