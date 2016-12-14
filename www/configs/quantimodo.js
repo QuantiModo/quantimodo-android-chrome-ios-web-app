@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appName : 'QuantiModo',
+    ionicAppId: '42fe48d4',
     ionNavBarClass : "bar-positive",
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",

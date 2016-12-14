@@ -326,13 +326,15 @@ angular.module('starter',
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider, $ionicConfigProvider, $ionicCloudProvider) {
+                 ionicDatePickerProvider, $ionicConfigProvider) {
 
+    /*  Trying to move to appCtrl
     $ionicCloudProvider.init({
         "core": {
             "app_id": "__IONIC_APP_ID__"
         }
     });
+    */
 
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);

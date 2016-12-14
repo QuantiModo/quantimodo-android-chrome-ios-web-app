@@ -6,7 +6,7 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
+                                    utilsService, correlationService, $ionicActionSheet, $ionicDeploy, $ionicCloudProvider) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -512,7 +512,7 @@ angular.module('starter')
 
         $scope.updateApp = function () {
 
-            var appUpdatesDisabled = true;
+            var appUpdatesDisabled = false;
             if(appUpdatesDisabled){
                 console.debug("App updates disabled until more testing is done");
                 return;
@@ -524,6 +524,19 @@ angular.module('starter')
                 return;
             }
             $ionicPlatform.ready(function () {
+
+                // We might need to move this back to app.js if it doesn't work
+                if(config.appSettings.ionicAppId){
+                    $ionicCloudProvider.init({
+                        "core": {
+                            "app_id": config.appSettings.ionicAppId
+                        }
+                    });
+                } else {
+                    console.warn('Cannot initialize $ionicCloudProvider because appSettings.ionicAppId is not set');
+                    return;
+                }
+
                 if($rootScope.user && $rootScope.user.getPreviewBuilds){
                     $ionicDeploy.channel = 'staging';
                 } else {
