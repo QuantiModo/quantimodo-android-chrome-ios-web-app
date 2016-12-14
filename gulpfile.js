@@ -1187,6 +1187,8 @@ gulp.task('replaceVersionNumbersInFiles', function(callback){
 		//'setVersionNumberInConfigXml',  Messes it up, I think. Replacing with shell script for now.
 		'setVersionNumberEnvsFromGulpFile',
 		'setVersionNumberInFiles',
+		'setVersionNumberInConfigXml',
+        'setVersionNumberInIosConfigXml',
 		callback);
 });
 
@@ -1232,9 +1234,9 @@ gulp.task('setVersionNumberInFiles', function(callback){
 		'gulp.js',
 		'scripts/build_all_apps.sh',
 		'.travis.yml',
-		'config.xml',
-		'config-template.xml',
-		'config-template-ios.xml',
+		//'config.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
+		//'config-template.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
+		//'config-template-ios.xml',  // This should be done with setVersionNumberInIosConfigXml to avoid plugin version replacements
 		'resources/chrome_extension/manifest.json',
         'build/chrome_extension/manifest.json',
 		'resources/chrome_app/manifest.json'
