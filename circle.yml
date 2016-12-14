@@ -58,7 +58,7 @@ deployment:
   build:
     branch: /build\/.*/
     commands:
-      - ./scripts/install_dependencies.sh
+      - ./scripts/circleci_install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
   feature:
     branch: /feature\/.*/
@@ -70,12 +70,12 @@ deployment:
   staging:
     branch: develop
     commands:
-      - ./scripts/install_dependencies.sh
+      - ./scripts/circleci_install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - gulp ionicUploadStagingForAllApps
   production:
     branch: master
     commands:
-      - ./scripts/install_dependencies.sh
+      - ./scripts/circleci_install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - gulp ionicUploadProductionForAllApps
