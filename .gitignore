@@ -39,3 +39,4 @@ dropbox
 www/configs/default.js
 *.keystore
 ionic.config.json
+supply_json_key_for_google_play.json

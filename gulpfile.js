@@ -453,6 +453,17 @@ gulp.task('decryptAndroidKeystore', ['setFallbackEnvs'], function(){
     decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
+gulp.task('encryptSupplyJsonKeyForGooglePlay', [], function(){
+    var fileToEncryptPath = 'supply_json_key_for_google_play.json';
+    var encryptedFilePath = 'supply_json_key_for_google_play.json.enc';
+    encryptFile(fileToEncryptPath, encryptedFilePath);
+});
+
+gulp.task('decryptSupplyJsonKeyForGooglePlay', [], function(){
+    var fileToDecryptPath = 'supply_json_key_for_google_play.json.enc';
+    var decryptedFilePath = 'supply_json_key_for_google_play.json';
+    decryptFile(fileToDecryptPath, decryptedFilePath);
+});
 
 gulp.task('encryptBuildJson', ['setFallbackEnvs'], function(){
     var fileToEncryptPath = 'build.json';
