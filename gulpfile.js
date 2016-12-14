@@ -515,6 +515,20 @@ gulp.task('ionicStateReset', function(callback){
 	executeCommand('ionic state reset', callback);
 });
 
+var fastlaneSupply = function(track, callback){
+    executeCommand('supply --apk_paths platforms/android/build/outputs/apk/android-armv7-release.apk,' +
+        'platforms/android/build/outputs/apk/android-x86-release.apk ' +
+        '--track ' + track +
+        ' --json_key supply_json_key_for_google_play.json', callback);
+};
+
+gulp.task('fastlaneSupplyBeta', function(callback){
+    fastlaneSupply('beta', callback);
+});
+
+gulp.task('fastlaneSupplyProduction', function(callback){
+    fastlaneSupply('production', callback);
+});
 
 gulp.task('ionicResources', function(callback){
 	executeCommand("ionic resources", callback);
