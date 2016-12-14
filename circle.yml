@@ -13,6 +13,7 @@ checkout:
   post:
     - git submodule sync --recursive
     - git submodule update --recursive --init # use submodules
+    - chmod -R +x scripts
 
 # Customize dependencies
 dependencies:
@@ -57,7 +58,7 @@ deployment:
   build:
     branch: /build\/.*/
     commands:
-      - chmod +x scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - ./scripts/install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
   feature:
     branch: /feature\/.*/
@@ -69,12 +70,12 @@ deployment:
   staging:
     branch: develop
     commands:
-      - chmod +x scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - ./scripts/install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - gulp ionicUploadStagingForAllApps
   production:
     branch: master
     commands:
-      - chmod +x scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - ./scripts/install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - gulp ionicUploadProductionForAllApps
