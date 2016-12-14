@@ -82,7 +82,7 @@
   <plugin name="cordova-plugin-datepicker" version="0.9.3"/>
   <plugin name="cordova-plugin-geolocation" version="2.3.0"/>
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1"/>
-  <plugin name="ionic-plugin-keyboard" version="2.2.3"/>
+  <plugin name="ionic-plugin-keyboard" version="2.2.1"/>
   <plugin name="cordova-plugin-statusbar" version="2.2.0"/>
   <plugin name="ionic-plugin-deploy" spec="~0.6.5"/>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
