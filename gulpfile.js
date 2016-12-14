@@ -1959,7 +1959,6 @@ gulp.task('prepareRepositoryForAndroid', function(callback){
 
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
-		//'gitCheckoutAppJs',  Don't need this now that we use default.config.js
 		'setVersionNumberEnvsFromGulpFile',
 		'configureApp',
         'setAndroidEnvs',
