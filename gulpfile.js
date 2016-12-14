@@ -1228,7 +1228,8 @@ gulp.task('setVersionNumberInFiles', function(callback){
 gulp.task('setIonicAppId', function(callback){
 
 	if(!process.env.IONIC_APP_ID){
-		throw 'Please set process.env.IONIC_APP_ID';
+		console.error('Cannot execute setIonicAppId because process.env.IONIC_APP_ID is not set');
+		return;
 	}
 
 	var filesToUpdate = [
