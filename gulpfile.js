@@ -131,103 +131,6 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 
 });
 
-gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
-
-	var deferred = q.defer();
-
-	// keys to set in heroku
-	// var env_keys = {
-	// 	"APPS": 'MOODIMODO,MINDFIRST,ENERGYMODO',
-	// 	"MOODIMODO_WEB_CLIENT_ID" : 'zyx',
-	// 	"MOODIMODO_WEB_CLIENT_SECRET" : 'das',
-	// 	"MINDFIRST_WEB_CLIENT_ID" : 'asd',
-	// 	"MINDFIRST_WEB_CLIENT_SECRET" : 'das',
-	// 	"ENERGYMODO_WEB_CLIENT_ID" : 'asd',
-	// 	"ENERGYMODO_WEB_CLIENT_SECRET" : 'asd',
-	// };
-
-	var environmentalVariables = process.env;
-
-	// Only run when on heroku
-	if(typeof environmentalVariables.BUILDPACK_URL === "undefined" ){
-		console.log("BUILDPACK_URL is undefined.  Heroku Not Detected.  Kashif, what is this check for?");
-		deferred.reject();
-	}
-
-	// Can't do this because it overwrites decrypted config on Travis
-	// if(typeof environmentalVariables.APPS === "undefined" || environmentalVariables.APPS.trim() === '') {
-	// 	if (environmentalVariables['LOWERCASE_APP_NAME']) {
-	// 		console.log('No APPS env found.  Using LOWERCASE_APP_NAME ' + environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase());
-	// 		environmentalVariables.APPS = environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase();
-	// 	}
-	// }
-
-	if(typeof environmentalVariables.APPS === "undefined" || environmentalVariables.APPS.trim() === ''){
-		console.error('No APPS env found!');
-		deferred.reject();
-	} else {
-		var upperCaseAppNames = environmentalVariables.APPS.split(',');
-
-		upperCaseAppNames.forEach(function(upperCaseAppName){
-			upperCaseAppName = upperCaseAppName.trim();
-			var configkeys = {
-				client_ids : {},
-				client_secrets : {},
-				redirect_uris : {},
-				api_urls : {}
-			};
-			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_ID'] !== "undefined"){
-				configkeys.client_ids.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_ID'];
-				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' Detected');
-			} else {
-				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' NOT DETECTED');
-			}
-
-			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'] !== "undefined"){
-				configkeys.client_secrets.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'];
-				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' Detected');
-			} else {
-				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
-			}
-
-			if(typeof environmentalVariables[upperCaseAppName+'_WEB_API_URL'] !== "undefined"){
-				configkeys.api_urls.Web = environmentalVariables[upperCaseAppName+'_WEB_API_URL'];
-				console.log(upperCaseAppName+'_WEB_API_URL'+' Detected');
-			} else {
-				console.log(upperCaseAppName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
-				configkeys.api_urls.Web = 'https://app.quantimo.do';
-			}
-
-			if(typeof environmentalVariables[upperCaseAppName+'_WEB_REDIRECT_URI'] !== "undefined"){
-				configkeys.redirect_uris.Web = environmentalVariables[upperCaseAppName+'_WEB_REDIRECT_URI'];
-				console.log(upperCaseAppName+'_WEB_REDIRECT_URI'+' Detected');
-			} else {
-				console.log(upperCaseAppName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
-				configkeys.redirect_uris.Web = 'https://app.quantimo.do/ionic/Modo/www/callback/';
-			}
-
-            if(typeof environmentalVariables.IONIC_BUGSNAG_KEY !== "undefined"){
-                configkeys.bugsnag_key = environmentalVariables.IONIC_BUGSNAG_KEY;
-                console.log('IONIC_BUGSNAG_KEY' +' Detected');
-            } else {
-                console.log('IONIC_BUGSNAG_KEY'+' NOT DETECTED');
-            }
-
-			var content = 'window.private_keys = '+JSON.stringify(configkeys, 0, 2);
-
-			var lowerCaseAppName = upperCaseAppName.toLowerCase();
-
-			fs.writeFileSync("./www/private_configs/" + lowerCaseAppName + ".config.js", content);
-
-			console.log('Created '+ './www/private_configs/' + lowerCaseAppName + '.config.js');
-
-		});
-	}
-
-	return deferred.promise;
-
-});
-
 var answer = '';
 gulp.task('getAppName', function(){
 	var deferred = q.defer();
@@ -1568,9 +1471,9 @@ gulp.task('copyAppResources', ['cleanResources'], function () {
 	}).pipe(gulp.dest('.'));
 });
 
-gulp.task('copyIconsToChromeExtension', [], function(){
+gulp.task('copyIconsToWwwImg', [], function(){
     return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/resources/icon*.png'])
-        .pipe(gulp.dest('build/chrome_extension/www/img/icons'));
+        .pipe(gulp.dest('www/img/icons'));
 });
 
 gulp.task('copyPrivateConfig', [], function () {
@@ -1770,12 +1673,15 @@ gulp.task('zipChromeExtension', [], function(){
 gulp.task('configureApp', [], function(callback){
     runSequence(
         'copyAppResources',
+        'generatePrivateConfigFromEnvs',
         'decryptPrivateConfig',
         'replaceVersionNumbersInFiles',
         'copyAppConfigToDefault',
         'copyPrivateConfigToDefault',
         'setIonicAppId',
         'copyIonicCloudLibrary',
+		'resizeIcons',
+		'copyIconsToWwwImg',
         callback);
 });
 
@@ -1783,8 +1689,6 @@ gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
 	    'configureApp',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
-        'resizeIconsForChromeExtension',
-        'copyIconsToChromeExtension',
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
 		'zipChromeExtension',
@@ -1795,8 +1699,6 @@ gulp.task('buildChromeExtension', [], function(callback){
 gulp.task('prepareQuantiModoChromeExtension', function(callback){
     runSequence(
         'setQuantiModoEnvs',
-		'resizeIconsForChromeExtension',
-        //'prepareIosApp',
         'buildChromeExtension',
         callback);
 });
@@ -1989,24 +1891,18 @@ gulp.task('ionicRunAndroid', [], function(callback){
 });
 
 function resizeIcon(callback, resolution) {
-    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' build/chrome_extension/www/img/icons/icon_' +
-        resolution + '.png', function (error) {
+    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution +
+		' www/img/icons/icon_' + resolution + '.png', function (error) {
         callback();
     });
 }
+
 gulp.task('resizeIcon700', [], function(callback){ return resizeIcon(callback, 700); });
 gulp.task('resizeIcon16', [], function(callback){ return resizeIcon(callback, 16); });
 gulp.task('resizeIcon48', [], function(callback){ return resizeIcon(callback, 48); });
 gulp.task('resizeIcon128', [], function(callback){ return resizeIcon(callback, 128); });
 
-gulp.task('createChromeExtensionAndResources', [], function(callback){
-    runSequence(
-        'resizeIconsForChromeExtension',
-        'copyIconsToChromeExtension',
-        callback);
-});
-
-gulp.task('resizeIconsForChromeExtension', function(callback){
+gulp.task('resizeIcons', function(callback){
     runSequence('resizeIcon700',
         'resizeIcon16',
         'resizeIcon48',
@@ -2070,22 +1966,6 @@ gulp.task('prepareQuantiModoAndroid', function(callback){
     runSequence(
         'setQuantiModoEnvs',
         'prepareAndroidApp',
-        callback);
-});
-
-gulp.task('runMindFirstAndroid', function(callback){
-	runSequence(
-		'setMindFirstEnvs',
-		'prepareAndroidApp',
-		'ionicRunAndroid',
-		callback);
-});
-
-gulp.task('configureAppUsingEnvs', function(callback){
-    runSequence(
-        'generatePrivateConfigFromEnvs',
-		'generateConfigXmlFromTemplate',
-        'copyAppConfigToDefault',
         callback);
 });
 
