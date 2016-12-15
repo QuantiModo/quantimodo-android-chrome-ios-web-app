@@ -1,0 +1,76 @@
+<ion-view view-title="Settings">
+	 <ion-nav-buttons side="primary" >
+        <i class="button icon ion-ios-home-outline changeButtonBorder" ng-click="home()"></i>
+     </ion-nav-buttons>
+
+	<ion-content style="padding-top: 45px">
+   <ion-list>
+         <ion-item>
+				  <p>Signed in as... </p>
+				  <h4 class="dark">&nbsp;Tap to sign out</h4>		  
+    	 </ion-item>
+
+    </ion-list>
+     
+     <div class="item item-divider">
+         <span class="mini">Notification Settings</span>
+      </div>
+       
+      <div class="list-item">
+         
+		  <li class="item item-toggle">
+		     <p>Combine Notifications</p>
+		     <label class="toggle toggle-royal">
+		       <input type="checkbox">
+		       <div class="track">
+		         <div class="handle"></div>
+		       </div>
+		     </label>
+		  </li>
+		   
+		  <li class="item item-icon-left" href="#">
+		    <i class="icon ion-ios-sunny-outline"></i>
+		    <p>Earliest Notification --tobe bind to selected time</p>
+		  </li>
+
+		  <li class="item item-icon-left" href="#">
+		    <i class="icon ion-ios-moon-outline"></i>
+		    <p>Latest Notification.</p>
+		  </li>
+		</div>
+
+	      <div class="item item-divider">
+	         <span class="mini">Share your data</span>
+	      </div>
+	      <div class="button-bar">
+	        <button class="button icon dark ion-ios-email"></button>
+	        <button class="button icon positive ion-social-facebook"></button>
+	        <button class="button icon calm ion-social-twitter"></button>
+	        <button class="button icon assertive ion-social-googleplus"></button>
+	        <!-- <button class="button balanced ion-social-whatsapp"></button> -->
+		  </div>
+
+	      <div class="item item-divider">
+	         <span class="mini">Export data as</span>
+	      </div>
+	      <div class="button-bar">
+			  <a class="button assertive historyCustom">PDF</a>
+			  <a class="button calm historyCustom">XLS</a>
+			  <a class="button royal historyCustom">CSV</a>
+			 
+		  </div>
+		  <div class="item item-divider  item-icon-right">
+
+		    <span class="mini"> Help & Feedback</span>
+		    <i class="icon ion-ios-arrow-right royal" ng-click="home()" ></i>
+		  </div>
+
+
+	      <div class="item item-divider item-icon-right">
+	          <span class="mini">Report bug</span>
+	          <i class="icon ion-bug royal" ng-click="home()" ></i>
+	         
+	      </div>
+	 
+  </ion-content>
+</ion-view>

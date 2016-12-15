@@ -1356,6 +1356,15 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
+        })
+        .state('app.tabs', {
+            url: '/tabs',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/tabs/tabs.html',
+                    controller: 'TabCtrl'
+                }
+            }
         });
 
     if (window.localStorage.introSeen) {

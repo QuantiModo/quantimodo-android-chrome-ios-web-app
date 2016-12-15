@@ -1,0 +1,33 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Measurements">
+  <ion-nav-title>{{state.title}}</ion-nav-title>
+  <ion-tabs id="positive-tabs" class="tabs-icon-top">>
+
+    <ion-tab title="Measurements"
+             icon-off="ion-ios-speedometer-outline"
+             icon-on="ion-ios-speedometer royal">
+      <div
+              ng-include="'templates/tabs/variable-button-icons.html'"></div>
+    </ion-tab>
+
+    <ion-tab title="Reminders"
+             icon-off="ion-ios-compose-outline"
+             icon-on="ion-ios-compose royal">
+      <div
+           ng-include="'templates/tabs/tab-reminder.html'">
+      </div>
+    </ion-tab>
+
+
+    <!--Settings Tab -->
+    <ion-tab title="Settings"
+
+             icon-off="ion-ios-gear-outline"
+             icon-on="ion-ios-gear royal">
+      <div
+              ng-include="'templates/tabs/tab-settings.html'"></div>
+    </ion-tab>
+
+  </ion-tabs>
+
+
+</ion-view>
