@@ -1,0 +1,29 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Import Spreadsheet">
+    <ion-content scroll="true" overflow-scroll="true">
+        <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
+
+            <div class="list card" >
+                <div class="item" style="padding-bottom:10px;">
+                    <div class="row">
+                        <div class="col col-20" style="padding-top: 10px;">
+                            <img ng-src="https://cdn1.cronometer.com/media/logosimple.png" alt="Connector Image" style="width:40px;height:40px;">
+                        </div>
+                        <div class="col col-70">
+                            <h1 style="white-space: normal;
+									line-height: normal; ">
+                                Chronometer Import
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="button-bar">
+                        <button  class="button button-clear button-balanced"
+                                style="text-overflow: clip;"
+                                ng-click="uploadSpreadsheet()">
+                            <i class="ion-upload"> &nbsp; Import Spreadsheet</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>
