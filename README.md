@@ -1,4 +1,4 @@
-#QuantiModo Ionic App
+# QuantiModo Ionic App
 
 A generic app that can be easily configured to help the user track and optimize any given outcome variable.
 -------
@@ -13,34 +13,34 @@ A generic app that can be easily configured to help the user track and optimize 
 
 # 5-Minute Quick Start
 1. Fork this repository.
-1. Choose a name for your app.  
-1. Create your free account and app in the [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps) to get a 
+1. Choose a name for your app.
+1. Create your free account and app in the [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps) to get a
 `client id` and `client secret`.
-1. Open `www/js/apps.json` and replace yourlowercaseappnamehere with your app's name.  (For instance, if your app 
+1. Open `www/js/apps.js` and replace yourlowercaseappnamehere with your app's name.  (For instance, if your app
 display name is `QuantiModo`, your lowercase app name would be `quantimodo`.)
-1. Copy and rename `www/js/configs/yourlowercaseappnamehere.js` with your app name. Replace `yourlowercaseappnamehere` 
-and `YourAppDisplayNameHere` with your app name within the file. 
-(This configuration file is where you can define the app menu, the primary outcome variable for the app, the intro tour, 
+1. Copy and rename `www/configs/yourlowercaseappnamehere.js` with your app name. Replace `yourlowercaseappnamehere`
+and `YourAppDisplayNameHere` with your app name within the file.
+(This configuration file is where you can define the app menu, the primary outcome variable for the app, the intro tour,
 and many other features.)
-1. Copy and rename `www/private_configs/yourlowercaseappnamehere.config.js` with your app name. Replace 
-    `your_quantimodo_client_id_here` and `your_quantimodo_client_secret_here` with the credentials you got in the 
-    [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps). 
-1. Open `config.xml` in the root of this repository.  Replace `yourlowercaseappnamehere` and `YourAppDisplayNameHere`.
+1. Copy and rename `www/private_configs/yourlowercaseappnamehere.config.js` with your app name. Replace
+    `your_quantimodo_client_id_here` and `your_quantimodo_client_secret_here` with the credentials you got in the
+    [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps).
+1. Copy and rename `config-template.xml` to `config.xml` in the root of this repository.  Replace `yourlowercaseappnamehere` and `YourAppDisplayNameHere`.
 1. Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community]
 (https://www.visualstudio.com/cordova-vs?wt.mc_id=o~display~ionic~dn948185), which comes with everything you need!)
-1. Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g cordova ionic`.  
+1. Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g cordova ionic`.
 1. Run `npm install` in the root of this repository.
-1. Run `ionic serve` in the root of this repository and you should see your app at 
+1. Run `ionic serve` in the root of this repository and you should see your app at
 [http://localhost:8100/#/](http://localhost:8100/#/).
-1. Great job!  :D  Now you can start configuring your app by changing settings in 
-`www/js/configs/yourlowercaseappnamehere.js` and modifying the code as needed!
-1. Need help?  Please contact us at [help.quantimo.do](http://help.quantimo.do). 
+1. Great job!  :D  Now you can start configuring your app by changing settings in
+`www/configs/yourlowercaseappnamehere.js` and modifying the code as needed!
+1. Need help?  Please contact us at [help.quantimo.do](http://help.quantimo.do).
 
 ### QuantiModo API
 For more info about the types of data you can store and get from the QuantiModo API, try out our [Interactive API Explorer](https://app.quantimo.do/api/v2/account/api-explorer)
 
 ### One Click Deploy
-When you're ready to share your app with the world, you can instantly deploy your app to Heroku. 
+When you're ready to share your app with the world, you can instantly deploy your app to Heroku.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
 
@@ -75,11 +75,11 @@ The main contents of the App are in the `www` folder. The structure is:
 ```
 
 ## Controllers
-  Controllers are located in `www/js/controllers` directory. Each View has a separate controller or some views share 
+  Controllers are located in `www/js/controllers` directory. Each View has a separate controller or some views share
   the same controller if the functionality is same.
   The main controller for the app is `appCtrl.js` whereas all the other controllers run when their views come to focus.
 ## Services
-  Services are the data layer, which store and obtain data from the `QuantiModo API`.  Services are also used to provide chart configurations and utility functions. 
+  Services are the data layer, which store and obtain data from the `QuantiModo API`.  Services are also used to provide chart configurations and utility functions.
 
 #### Editing an App
 The current App has 3 config files:
@@ -121,15 +121,15 @@ This will be the name for your App, and will be the name of the .xcodeproj file,
       </FourButtonLayout>
 </notificationplugin>
   ```
-  
+
 This is the notification plugin (for using interactive notifications in iOS) .
 
-  You can define the `buttons`, give each of them a unique `id` and set the text as to how they will be displayed in `display` property. 
-  
+  You can define the `buttons`, give each of them a unique `id` and set the text as to how they will be displayed in `display` property.
+
   You should also set the run mode when the button is clicked through the notification bar, it can run in `background` or `foreground`.
-  
+
   In `TwoButtonLayout`, you can select which of the two buttons you want to show by providing their id’s in `first` and `second` property.
-  
+
   In `FourButtonLayout`, you can select which of the four buttons you want to show by providing their id’s in `first`, `second`, `third` and `fourth` property.
 
 
@@ -156,30 +156,30 @@ These are the five options (available on the Track page) that the users will rat
 ### Building Chrome App
 
 For oAuth authentication, here are the three steps you need to complete:
-* Specify the redirection URL in this format https://<extension-id>.chromiumapp.org/<anything-here> For example, if 
-your app ID is abcdefghijklmnopqrstuvwxyzabcdef and you want provider_cb to be the path, to distinguish it with redirect 
+* Specify the redirection URL in this format https://<extension-id>.chromiumapp.org/<anything-here> For example, if
+your app ID is abcdefghijklmnopqrstuvwxyzabcdef and you want provider_cb to be the path, to distinguish it with redirect
 URIs from other providers, you should use: https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/provider_cb
 
-* For uploading the app for the Chrome Web Store you first need to have an active Chrome app developer account, 
+* For uploading the app for the Chrome Web Store you first need to have an active Chrome app developer account,
 that you can create here `https://Chrome.google.com/webstore/developer/dashboard/`
 * Once you have an active developer account, go to your developer account dashboard and click on add a new item.
-* Copy the `www` folder from the project directory to /ChromeApps/{{appname}} directory, create its zip archive and 
+* Copy the `www` folder from the project directory to /ChromeApps/{{appname}} directory, create its zip archive and
 upload it to the developer dashboard.
 * Fill the details of the app and hit publish button.
 
 ### Automated Chrome Web Store Upload
-You can use gulp task to simplify the process of building and publishing Chrome app. To use the gulp task you must 
-publish it once manually and copy its app id in gulpfile.js like this 
-https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/gulpfile.js. 
+You can use gulp task to simplify the process of building and publishing Chrome app. To use the gulp task you must
+publish it once manually and copy its app id in gulpfile.js like this
+https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/gulpfile.js.
 
 Once you have done that, follow these steps to build, upload, and publish the Chrome app to Webstore.
 
 1. Run `gulp chrome`
-1. Enter the name of the app that you want to release for example `moodimodo`. 
+1. Enter the name of the app that you want to release for example `moodimodo`.
 1. Task will ask you if you have increased the version number in the manifest.json file.
 1. A browser window will open, you need to login with your developer account and give permissions. After that, a code will be displayed, copy that and paste it in the console.
-1. After that, the app will be uploaded to the Chrome developer dashboard, you will be asked if you want to publish it. 
-1. Type Yes and press enter to publish it.  
+1. After that, the app will be uploaded to the Chrome developer dashboard, you will be asked if you want to publish it.
+1. Type Yes and press enter to publish it.
 
 ### Building the Chrome app for local testing
 
@@ -203,40 +203,40 @@ To run the Chrome app locally, simply follow these steps:
 - Remove any existing iOS project from the repo :
 
   `ionic platform rm iOS`
-  
+
 - Check the installed plugins by running :
 
   `ionic plugins list`
 
 - If google play services are installed remove them by running :
-  
+
   `cordova plugins rm cordova-plugin-googleplayservices`
-  
+
 - If google plus plugin is installed remove that by running :
 
   `cordova plugin rm cordova-plugin-google-plus`
-  
+
 - To remove the Facebook plugin, run :
 
-  `cordova plugin rm cordova-facebook-plugin` 
+  `cordova plugin rm cordova-facebook-plugin`
 
 - Once we are finished, add the iOS Platform to ionic by running:
 
-  `ionic platform add ios` 
+  `ionic platform add ios`
 
-- Install the Google Plus Plugin by running 
+- Install the Google Plus Plugin by running
 
-  `cordova plugin add cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d` 
+  `cordova plugin add cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d`
 
  > Replace the client id according to the app you are building from Google’s Developer’s Console
- 
-- Download Facebook Plugin to `~/Developer/fbplugin/` by running 
+
+- Download Facebook Plugin to `~/Developer/fbplugin/` by running
 
   `$ git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git`
 
-- Install the FB plugin by running 
+- Install the FB plugin by running
 
-  `cordova -d plugin add ~/Developer/fbplugin/phonegap-facebook-plugin --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"` 
+  `cordova -d plugin add ~/Developer/fbplugin/phonegap-facebook-plugin --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"`
 > Replace the app with your appid and name. Also make sure your bundle id is included in the Facebook App Settings.
 
 - When we install both of the social plugins, they tend to override properties in `Resources/info.plist` file.
@@ -245,14 +245,14 @@ To run the Chrome app locally, simply follow these steps:
 
 #### Bugsnag
 
-You have the choice to setup Bugsnag for your app. We recommend that you do because it helps to 
+You have the choice to setup Bugsnag for your app. We recommend that you do because it helps to
 identify the bugs and we'll have better data to help you. We will be using CocoaPods for dependency Management in our iOS app.
 
 - Install cocoa pods if you haven’t already by running `sudo gem install cocoa pods`.
 
 - Run `pod init` in `platforms/ios`
 
-- Open the PodFile in `platforms/ios/ProjectName/Podfile` directory and add a pod 
+- Open the PodFile in `platforms/ios/ProjectName/Podfile` directory and add a pod
 
   `’Bugsnag', :git => "https://github.com/bugsnag/bugsnag-cocoa.git”`.
 
@@ -262,7 +262,7 @@ identify the bugs and we'll have better data to help you. We will be using Cocoa
 
 - Open `YourAppDisplayNameHere.xcworkspace` in `xcode`.
 
-- Open `AppDelegate.m`. In your 
+- Open `AppDelegate.m`. In your
   `application:didFinishLaunchingWithOptions` method, register with Bugsnag by calling, `[Bugsnag startBugsnagWithApiKey:@"ae7bc49d1285848342342bb5c321a2cf”];`
 
 - Open `Project Settings` > `General`. Check `Requires Full Screen`
@@ -271,12 +271,7 @@ identify the bugs and we'll have better data to help you. We will be using Cocoa
 
 - Open `Project Settings` > `Build Settings` > `Other Linker Flags` > Add `$(inherited)`
 
-- Open `Project Settings` > `Build Settings` > (Select All and Combined Filters) > `Add Header Search Paths` 
+- Open `Project Settings` > `Build Settings` > (Select All and Combined Filters) > `Add Header Search Paths`
 (Debug & Release) to `"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include"`
 
 - You should be ready to go, so archive the project and upload it to the App Store with `bash generate_resources_fix_xcode_and_fastlane_beta.sh`
-
-
-
-
-
