@@ -1,4 +1,4 @@
-#QuantiModo Ionic App
+# QuantiModo Ionic App
 
 A generic app that can be easily configured to help the user track and optimize any given outcome variable.
 -------
@@ -16,17 +16,17 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Choose a name for your app.  
 1. Create your free account and app in the [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps) to get a 
 `client id` and `client secret`.
-1. Open [www/js/apps.json](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/www/js/apps.js#L10) 
+1. Open [www/js/apps.js](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/www/js/apps.js#L10) 
 and replace `default` with your app's name as the `defaultApp`.  (For instance, if your app 
 display name is `QuantiModo`, your lowercase app name would be `quantimodo`.)
-1. Copy and rename `www/js/configs/yourlowercaseappnamehere.js` with your app name. Replace `yourlowercaseappnamehere` 
+1. Copy and rename `www/configs/yourlowercaseappnamehere.js` with your app name. Replace `yourlowercaseappnamehere` 
 and `YourAppDisplayNameHere` with your app name within the file. 
 (This configuration file is where you can define the app menu, the primary outcome variable for the app, the intro tour, 
 and many other features.)
 1. Copy and rename `www/private_configs/yourlowercaseappnamehere.config.js` with your app name. Replace 
     `your_quantimodo_client_id_here` and `your_quantimodo_client_secret_here` with the credentials you got in the 
     [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps). 
-1. Open `config.xml` in the root of this repository.  Replace `yourlowercaseappnamehere` and `YourAppDisplayNameHere`.
+1. Copy and rename `config-template.xml` to `config.xml` in the root of this repository.  Replace `yourlowercaseappnamehere` and `YourAppDisplayNameHere`.
 1. Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community]
 (https://www.visualstudio.com/cordova-vs?wt.mc_id=o~display~ionic~dn948185), which comes with everything you need!)
 1. Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g cordova ionic`.  
@@ -34,7 +34,7 @@ and many other features.)
 1. Run `ionic serve` in the root of this repository and you should see your app at 
 [http://localhost:8100/#/](http://localhost:8100/#/).
 1. Great job!  :D  Now you can start configuring your app by changing settings in 
-`www/js/configs/yourlowercaseappnamehere.js` and modifying the code as needed!
+`www/configs/yourlowercaseappnamehere.js` and modifying the code as needed!
 1. Need help?  Please contact us at [help.quantimo.do](http://help.quantimo.do). 
 
 ## QuantiModo API
