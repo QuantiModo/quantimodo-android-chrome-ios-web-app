@@ -16,7 +16,8 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Choose a name for your app.  
 1. Create your free account and app in the [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps) to get a 
 `client id` and `client secret`.
-1. Open `www/js/apps.js` and replace yourlowercaseappnamehere with your app's name.  (For instance, if your app 
+1. Open [www/js/apps.js](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/www/js/apps.js#L10) 
+and replace `default` with your app's name as the `defaultApp`.  (For instance, if your app 
 display name is `QuantiModo`, your lowercase app name would be `quantimodo`.)
 1. Copy and rename `www/configs/yourlowercaseappnamehere.js` with your app name. Replace `yourlowercaseappnamehere` 
 and `YourAppDisplayNameHere` with your app name within the file. 
