@@ -37,7 +37,8 @@ and many other features.)
 [http://localhost:8100/#/](http://localhost:8100/#/).
 1. Great job!  :D  Now you can start configuring your app by changing settings in 
 `www/configs/yourlowercaseappnamehere.js` and modifying the code as needed!
-1. Need help?  Please contact us at [help.quantimo.do](http://help.quantimo.do). 
+1. Need help?  Please [create an issue](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/issues) 
+or contact us at [help.quantimo.do](http://help.quantimo.do). 
 
 ## QuantiModo API
 For more info about the types of data you can store and get from the QuantiModo API, try out our [Interactive API Explorer](https://app.quantimo.do/api/v2/account/api-explorer)
