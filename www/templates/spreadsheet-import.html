@@ -22,6 +22,10 @@
                             <i class="ion-upload"> &nbsp; Import Spreadsheet</i>
                         </button>
                     </div>
+                    <form novalidate="">
+                        <textarea ng-model="results"></textarea><br/>
+                        <input type="file" on-read-file="displayFileContents(contents)" /><br/>
+                    </form>
                 </div>
             </div>
     </ion-content>

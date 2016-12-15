@@ -23,7 +23,9 @@ angular.module('starter')
         	alert('Select spreadsheet');
         };
 
-
-
-
+        $scope.displayFileContents = function(contents) {
+            console.log(contents);
+            $scope.results = contents;
+        };
+		
 	});

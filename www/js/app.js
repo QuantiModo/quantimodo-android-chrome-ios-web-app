@@ -633,8 +633,8 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.importSpreadsheet', {
-            url: "/import-spreadsheet",
+        .state('app.spreadsheetImport', {
+            url: "/spreadsheet-import",
             cache: false,
             params: {
             },
