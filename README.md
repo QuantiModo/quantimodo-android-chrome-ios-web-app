@@ -30,6 +30,8 @@ and many other features.)
 1. Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community]
 (https://www.visualstudio.com/cordova-vs?wt.mc_id=o~display~ionic~dn948185), which comes with everything you need!)
 1. Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g cordova ionic`.  
+(Mac Users:  Avoid using `sudo` with your npm commands if possible as it tends to cause problems.)
+1. Install Bower (to auto-download all the libraries listed in bower.json) globally with `npm install -g bower`.  
 1. Run `npm install` in the root of this repository.
 1. Run `ionic serve` in the root of this repository and you should see your app at 
 [http://localhost:8100/#/](http://localhost:8100/#/).
