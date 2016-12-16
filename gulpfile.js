@@ -1523,6 +1523,8 @@ gulp.task('copyAppConfigToDefault', ['setFallbackEnvs'], function () {
 });
 
 gulp.task('copyPrivateConfigToDefault', ['setFallbackEnvs'], function () {
+	console.log('Copying ./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js to ' +
+		'www/private_configs/default.config.js');
     return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js')
         .pipe(rename('default.config.js'))
         .pipe(gulp.dest('www/private_configs'));
