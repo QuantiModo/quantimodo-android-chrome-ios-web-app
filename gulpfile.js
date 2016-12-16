@@ -1174,10 +1174,10 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 });
 
 gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.4.0';
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.5.0';
     console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.5.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.6.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     callback();
 });
