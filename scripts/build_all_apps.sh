@@ -20,13 +20,13 @@ source /home/ubuntu/.nvm/nvm.sh
 nvm install 4.4.4
 nvm use 4.4.4
 
-sudo mkdir $DROPBOX_PATH
+sudo mkdir ${DROPBOX_PATH}
 sudo mkdir /home/ubuntu/Dropbox/QuantiModo
 sudo mkdir /home/ubuntu/Dropbox/QuantiModo/apps
 sudo mkdir /var/lib/jenkins/.android
 sudo usermod -a -G ubuntu jenkins
 
-sudo chmod -R 777 $DROPBOX_PATH
+sudo chmod -R 777 ${DROPBOX_PATH}
 sudo chmod -R 777 /home/ubuntu/Dropbox/QuantiModo
 sudo chmod -R 777 /usr/lib/node_modules
 sudo chmod -R 777 /usr/local/lib
@@ -38,6 +38,11 @@ keytool -exportcert -list -v \
 -alias androiddebugkey -keystore ${ANDROID_DEBUG_KEYSTORE_PATH}
 
 ionic info
+sudo usermod -a -G ubuntu jenkins
+
+mkdir "$ANDROID_HOME/licenses" || true
+echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_SDK/licenses/android-sdk-license"
+echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_SDK/licenses/android-sdk-preview-license"
 
 #cd ..
 #mkdir qm-ionic-intermediates
@@ -103,6 +108,10 @@ fi
 #rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
 
+rm -rf plugins
+echo "NPM INSTALL"
+npm install
+
 echo "ionic state reset"
 ionic state reset
 
@@ -134,10 +143,6 @@ source ${IONIC_PATH}/scripts/build_scripts/push_plugin_install.sh
 echo "ionic browser add crosswalk@12.41.296.5"
 # ionic browser add crosswalk@12.41.296.5  # Pre Ionic CLI 2
 ionic plugin add cordova-plugin-crosswalk-webview --save
-
-#npm install -g bower
-bower install
-ionic config build
 
 if [ -f ${INTERMEDIATE_PATH}/www/lib/angular/angular.js ];
 then
