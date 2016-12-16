@@ -603,5 +603,34 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        measurementService.postMeasurements = function(measurementsArray){
+            var deferred = $q.defer();
+
+            var measurementsBatch = [];
+            for(var i = 0; i < measurementsArray.length; i++){
+                measurementsBatch.push(measurementsArray[i]);
+                if(i > 0 && i % 100 === 0){
+                    QuantiModo.postMeasurementsV2(measurementsBatch, function(response){
+                        if(response.success) {
+                            console.debug("QuantiModo.postMeasurementsV2 success: " + JSON.stringify(response));
+                        }
+                    });
+                    measurementsBatch = [];
+                }
+            }
+
+            QuantiModo.postMeasurementsV2(measurementsBatch, function(response){
+                if(response.success) {
+                    console.debug("QuantiModo.postMeasurementsV2 success: " + JSON.stringify(response));
+                    deferred.resolve(response);
+                } else {
+                    deferred.reject(response);
+                }
+            });
+            return deferred.promise;
+        };
+
+
+
 		return measurementService;
 	});

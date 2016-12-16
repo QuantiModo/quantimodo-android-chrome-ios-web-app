@@ -119,11 +119,81 @@ angular.module('starter')
         }
 
         $scope.displayFileContents = function(contents) {
-            console.log(contents);
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
             $scope.results = contents;
-
             $scope.resultsArray = CSVToArray(contents);
-            console.debug($scope.resultsArray);
+            parseMintMeasurements($scope.resultsArray);
+        };
+
+        var measurement = {
+            variableName: null,
+            sourceName: null,
+            abbreviatedUnitName: null,
+            variableCategoryName: null,
+            combinationOperation: null,
+            value: null,
+            startTime: null,
+            note: null
+        };
+
+
+        var parseMintMeasurements = function (csvArray) {
+            var measurements = [];
+            /**
+			 * 0 : "Date"
+             1 : "Description"
+             2 : "Original Description"
+             3 : "Amount"
+             4 : "Transaction Type"
+             5 : "Category"
+             6 : "Account Name"
+             7 : "Labels"
+             8 : "Notes
+             */
+			for(var i = 1; i < csvArray.length; i++){
+                if(!csvArray[i][3]){
+                    continue;
+                }
+
+                measurement = {
+                    variableName: csvArray[i][1] + ' Purchase',
+                    sourceName: 'Mint',
+                    abbreviatedUnitName: '$',
+                    variableCategoryName: 'Purchases',
+                    combinationOperation: 'SUM',
+                    value: Number(csvArray[i][3]),
+                    startTime: null,
+					tagVariableNames: csvArray[i][7],
+                    note: "Original Description: " + csvArray[i][2] + " - Transaction Type: " + csvArray[i][4] +
+						" - Category: " + csvArray[i][5]
+
+                };
+
+
+
+                if(csvArray[i][8]){
+                	measurement.note = measurement.note + " - Notes: " + csvArray[i][8];
+				}
+
+                measurement.tagVariableNames = [];
+                if(csvArray[i][7]){
+                    measurement.note = measurement.note + " - Labels: " + csvArray[i][7];
+                    measurement.tagVariableNames = [csvArray[i][7] + ' Purchase'];
+                }
+
+                if(csvArray[i][6]){
+                    measurement.note = measurement.note + " - Account Name: " + csvArray[i][6] ;
+                }
+
+                measurement.tagVariableNames.push(csvArray[i][5] + ' Purchase');
+
+                measurements.push(measurement);
+			}
+
+			measurementService.postMeasurements(measurements).then(function (response) {
+				console.debug(response);
+				$ionicLoading.hide();
+            });
         };
 
 	});
