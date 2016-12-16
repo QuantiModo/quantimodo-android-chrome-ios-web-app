@@ -390,13 +390,8 @@ gulp.task('deleteIOSApp', function () {
 
 gulp.task('setFallbackEnvs', function(){
     if(!process.env.LOWERCASE_APP_NAME){
-        process.env.LOWERCASE_APP_NAME = 'quantimodo';
-        console.warn('No LOWERCASE_APP_NAME set.  Falling back to ' + process.env.LOWERCASE_APP_NAME);
-    }
-
-    if(!process.env.APP_DISPLAY_NAME){
-        process.env.APP_DISPLAY_NAME = 'QuantiModo';
-        console.warn('No APP_DISPLAY_NAME found! Falling back to ' + process.env.APP_DISPLAY_NAME);
+        console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
+        setQuantiModoEnvs();
     }
 });
 
@@ -1179,12 +1174,16 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 		callback);
 });
 
-gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
+var setVersionNumberEnvsFromGulpFile = function () {
     process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.5.0';
     console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.6.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+};
+
+gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
+    setVersionNumberEnvsFromGulpFile();
     callback();
 });
 
@@ -1445,13 +1444,17 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
 	callback();
 });
 
-gulp.task('setQuantiModoEnvs', [], function(callback){
+function setQuantiModoEnvs() {
     process.env.APPLE_ID = "1115037661";
-	process.env.APP_DISPLAY_NAME = "QuantiModo";
-	process.env.LOWERCASE_APP_NAME = "quantimodo";
-	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
-	process.env.APP_DESCRIPTION = "Perfect your life!";
-	process.env.IONIC_APP_ID = "42fe48d4";
+    process.env.APP_DISPLAY_NAME = "QuantiModo";
+    process.env.LOWERCASE_APP_NAME = "quantimodo";
+    process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
+    process.env.APP_DESCRIPTION = "Perfect your life!";
+    process.env.IONIC_APP_ID = "42fe48d4";
+}
+
+gulp.task('setQuantiModoEnvs', [], function(callback){
+    setQuantiModoEnvs();
 	callback();
 });
 
@@ -1585,36 +1588,36 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 			if(process.env.APP_DISPLAY_NAME) {
 				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
 			} else {
-				console.error("Please set APP_DISPLAY_NAME env");
-				return;
+                console.warn("APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME");
+                setQuantiModoEnvs();
 			}
 
 			if(process.env.APP_DESCRIPTION) {
 				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
 			} else {
-                console.error("Please set APP_DESCRIPTION env");
-                return;
+                console.warn("APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION");
+                setQuantiModoEnvs();
             }
 
 			if(process.env.APP_IDENTIFIER) {
 				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
 			} else {
-                console.error("Please set APP_IDENTIFIER env");
-                return;
+                console.warn("APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER");
+                setQuantiModoEnvs();
             }
 
             if(process.env.IONIC_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
             } else {
-                console.error("Please set IONIC_APP_VERSION_NUMBER env");
-                return;
+                console.warn("IONIC_APP_VERSION_NUMBER env not set! Falling back to IONIC_APP_VERSION_NUMBER specified in gulpfile");
+                setVersionNumberEnvsFromGulpFile();
             }
 
             if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
             } else {
-                console.error("Please set IONIC_IOS_APP_VERSION_NUMBER env");
-                return;
+                console.warn("IONIC_IOS_APP_VERSION_NUMBER env not set! Falling back to IONIC_IOS_APP_VERSION_NUMBER specified in gulpfile");
+                setVersionNumberEnvsFromGulpFile();
             }
 
             var builder = new xml2js.Builder();
@@ -1717,6 +1720,7 @@ gulp.task('configureApp', [], function(callback){
         'copyIonicCloudLibrary',
 		'resizeIcons',
 		'copyIconsToWwwImg',
+		'generateConfigXmlFromTemplate',
         callback);
 });
 
