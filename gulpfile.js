@@ -517,10 +517,12 @@ gulp.task('ionicStateReset', function(callback){
 });
 
 var fastlaneSupply = function(track, callback){
-    executeCommand('supply --apk_paths platforms/android/build/outputs/apk/android-armv7-release.apk,' +
-        'platforms/android/build/outputs/apk/android-x86-release.apk ' +
-        '--track ' + track +
-        ' --json_key supply_json_key_for_google_play.json', callback);
+	var pathToApks = 'dropbox/' + process.env.LOWERCASE_APP_NAME;
+    executeCommand('supply' +
+		' --apk_paths ' + pathToApks + '/android-armv7-release.apk,' + pathToApks +  '/android-x86-release.apk' +
+        ' --track ' + track +
+        ' --json_key supply_json_key_for_google_play.json',
+		callback);
 };
 
 gulp.task('fastlaneSupplyBeta', function(callback){
