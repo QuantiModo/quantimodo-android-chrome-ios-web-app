@@ -1919,8 +1919,13 @@ gulp.task('ionicRunAndroid', [], function(callback){
 });
 
 function resizeIcon(callback, resolution) {
-    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution +
-		' www/img/icons/icon_' + resolution + '.png', function (error) {
+	var command  = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution +
+        ' www/img/icons/icon_' + resolution + '.png';
+	console.log('Executing command: ' + command);
+    return execute(command, function (error) {
+    	if(error){
+    		console.log("ERROR: " + JSON.stringify(error));
+		}
         callback();
     });
 }
