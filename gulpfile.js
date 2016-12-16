@@ -1714,7 +1714,8 @@ gulp.task('configureApp', [], function(callback){
         'copyAppResources',
         'generatePrivateConfigFromEnvs',
         'decryptPrivateConfigToDefault',
-        'replaceVersionNumbersInFiles',
+        //'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
+		// templates because of the git changes and weird stuff replacement does to config-template.xml
         'copyAppConfigToDefault',
         'setIonicAppId',
         'copyIonicCloudLibrary',
