@@ -489,6 +489,12 @@ gulp.task('decryptPrivateConfig', ['setFallbackEnvs'], function(){
 	decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
+gulp.task('decryptPrivateConfigToDefault', ['setFallbackEnvs'], function(){
+    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
+    var decryptedFilePath = './www/private_configs/default.config.js';
+    decryptFile(fileToDecryptPath, decryptedFilePath);
+});
+
 gulp.task('deleteFacebookPlugin', function(callback){
     console.log("If this doesn't work, just use gulp cleanPlugins");
     executeCommand("cordova plugin rm phonegap-facebook-plugin", callback);
@@ -1704,10 +1710,9 @@ gulp.task('configureApp', [], function(callback){
     runSequence(
         'copyAppResources',
         'generatePrivateConfigFromEnvs',
-        'decryptPrivateConfig',
+        'decryptPrivateConfigToDefault',
         'replaceVersionNumbersInFiles',
         'copyAppConfigToDefault',
-        'copyPrivateConfigToDefault',
         'setIonicAppId',
         'copyIonicCloudLibrary',
 		'resizeIcons',
