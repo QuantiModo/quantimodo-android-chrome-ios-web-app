@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('SpreadsheetImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, QuantiModo,
-									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams) {
+									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams, measurementService) {
 
 		$scope.controller_name = "SpreadsheetImportCtrl";
 
@@ -21,6 +21,14 @@ angular.module('starter')
 
         $scope.uploadSpreadsheet = function() {
         	alert('Select spreadsheet');
+        };
+
+        $scope.uploadFile = function(){
+            var file = $scope.myFile;
+            console.log('file is ' );
+            console.dir(file);
+            var uploadUrl = "/fileUpload";
+            fileUpload.uploadFileToUrl(file, uploadUrl);
         };
 
         // ref: http://stackoverflow.com/a/1293163/2343

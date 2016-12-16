@@ -394,9 +394,7 @@ angular.module('starter')
             }
 
             if (trackingReminder.abbreviatedUnitName === '/5' || trackingReminder.variableName === "Blood Pressure") {
-                $ionicLoading.show({
-                    template: '<ion-spinner></ion-spinner>'
-                });
+                $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                 //trackingReminder.defaultValue = 3;
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
