@@ -15,35 +15,6 @@ cd ..
 export IONIC_PATH="$PWD"
 echo "IONIC_PATH is $IONIC_PATH"
 
-echo "Using node 4.4.4 because 6 seems to break stuff: https://github.com/steelbrain/exec/issues/13"
-source /home/ubuntu/.nvm/nvm.sh
-nvm install 4.4.4
-nvm use 4.4.4
-
-sudo mkdir ${DROPBOX_PATH}
-sudo mkdir /home/ubuntu/Dropbox/QuantiModo
-sudo mkdir /home/ubuntu/Dropbox/QuantiModo/apps
-sudo mkdir /var/lib/jenkins/.android
-sudo usermod -a -G ubuntu jenkins
-
-sudo chmod -R 777 ${DROPBOX_PATH}
-sudo chmod -R 777 /home/ubuntu/Dropbox/QuantiModo
-sudo chmod -R 777 /usr/lib/node_modules
-sudo chmod -R 777 /usr/local/lib
-sudo chmod -R 777 /var/lib/jenkins/.android
-sudo chmod 777 -R $PWD
-sudo ln -s /usr/bin/nodejs /usr/bin/node
-
-keytool -exportcert -list -v \
--alias androiddebugkey -keystore ${ANDROID_DEBUG_KEYSTORE_PATH}
-
-ionic info
-sudo usermod -a -G ubuntu jenkins
-
-mkdir "$ANDROID_HOME/licenses" || true
-echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_SDK/licenses/android-sdk-license"
-echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_SDK/licenses/android-sdk-preview-license"
-
 #cd ..
 #mkdir qm-ionic-intermediates
 #cd qm-ionic-intermediates
@@ -103,6 +74,39 @@ if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
       echo -e "${RED}ERROR: ANDROID_KEYSTORE_PASSWORD does not exist for build_all_apps.sh! Quitting! "
       exit 1
 fi
+
+echo "Using node 4.4.4 because 6 seems to break stuff: https://github.com/steelbrain/exec/issues/13"
+source /home/ubuntu/.nvm/nvm.sh
+nvm install 4.4.4
+nvm use 4.4.4
+
+sudo mkdir ${DROPBOX_PATH}
+sudo mkdir /home/ubuntu/Dropbox/QuantiModo
+sudo mkdir /home/ubuntu/Dropbox/QuantiModo/apps
+sudo mkdir /var/lib/jenkins/.android
+sudo usermod -a -G ubuntu jenkins
+
+sudo chmod -R 777 ${DROPBOX_PATH}
+sudo chmod -R 777 ${INTERMEDIATE_PATH}
+sudo chmod -R 777 ${IONIC_PATH}
+sudo chmod -R 777 /home/ubuntu/Dropbox/QuantiModo
+sudo chmod -R 777 /usr/lib/node_modules
+sudo chmod -R 777 /usr/local/lib
+sudo chmod -R 777 /var/lib/jenkins/.android
+sudo chmod 777 -R $PWD
+sudo ln -s /usr/bin/nodejs /usr/bin/node
+
+keytool -exportcert -list -v \
+-alias androiddebugkey -keystore ${ANDROID_DEBUG_KEYSTORE_PATH}
+
+ionic info
+sudo usermod -a -G ubuntu jenkins
+
+mkdir "$ANDROID_HOME/licenses" || true
+echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_SDK/licenses/android-sdk-license"
+echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_SDK/licenses/android-sdk-preview-license"
+
+
 
 #echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
 #rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
