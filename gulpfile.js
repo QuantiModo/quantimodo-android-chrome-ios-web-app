@@ -1705,7 +1705,7 @@ gulp.task('configureApp', [], function(callback){
         'copyAppResources',
         'generatePrivateConfigFromEnvs',
         'decryptPrivateConfig',
-        //'replaceVersionNumbersInFiles',  // I don't think we need this here
+        'replaceVersionNumbersInFiles',
         'copyAppConfigToDefault',
         'copyPrivateConfigToDefault',
         'setIonicAppId',
