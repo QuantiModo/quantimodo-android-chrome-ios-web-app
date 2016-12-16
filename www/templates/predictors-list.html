@@ -38,6 +38,26 @@
             <div class="item item-body" style="text-align: center;">
                 {{state.explanationText}}
             </div>
+            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
+                 class="item item-body"
+                 style="text-align: center;">
+                Results in order of descending statistical significance.
+            </div>
+            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-qmScore'"
+                 class="item item-body"
+                 style="text-align: center;">
+                Results in order of descending QM Score which is a combination of effect size and statistical significance.
+            </div>
+            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-correlationCoefficient'"
+                 class="item item-body"
+                 style="text-align: center;">
+                Results in order of descending predictive correlation.  (So you'll probably just see positive correlations.)
+            </div>
+            <div ng-if="state.requestParams.sort && state.requestParams.sort === 'correlationCoefficient'"
+                 class="item item-body"
+                 style="text-align: center;">
+                Results in order of ascending predictive correlation.  (So you'll probably just see negative correlations.)
+            </div>
         </div>
         <div ng-show="searching" style="text-align: center">
             <br>
@@ -160,7 +180,7 @@
                 </div>
             </div>
         </div>
-        <div class="button-bar" ng-show="!state.noCorrelations && state.showLoadMoreButton">
+        <div class="button-bar" ng-show="!state.noCorrelations && state.showLoadMoreButton && !searching">
             <a class="button button-clear button-calm" ng-click="loadMore()" style="text-overflow: clip;">
                 <i class="ion-refresh">
                     Load More

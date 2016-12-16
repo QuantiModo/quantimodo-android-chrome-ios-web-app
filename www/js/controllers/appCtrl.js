@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.2.4.0";
+        $rootScope.appVersion = "2.2.5.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -83,13 +83,23 @@ angular.module('starter')
         };
 
         $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
-            $state.go('app.variableSettings',
-                {variableName: correlationObject.causeVariableName});
+            var stateParams = {};
+            if(correlationObject.causeVariable){
+                stateParams.variableObject = correlationObject.causeVariable;
+            } else {
+                stateParams.variableName = correlationObject.causeVariableName;
+            }
+            $state.go('app.variableSettings', stateParams);
         };
 
         $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
-            $state.go('app.variableSettings',
-                {variableName: correlationObject.effectVariableName});
+            var stateParams = {};
+            if(correlationObject.effectVariable){
+                stateParams.variableObject = correlationObject.effectVariable;
+            } else {
+                stateParams.variableName = correlationObject.effectVariableName;
+            }
+            $state.go('app.variableSettings', stateParams);
         };
 
         $scope.goToState = function (state, stateParameters) {
@@ -467,7 +477,8 @@ angular.module('starter')
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
                 e.targetScope.controller_name === "RemindersInboxCtrl" ||
                 e.targetScope.controller_name === "RemindersManageCtrl" ||
-                e.targetScope.controller_name === "StudyCtrl"
+                e.targetScope.controller_name === "StudyCtrl" ||
+                e.targetScope.controller_name === "PredictorsCtrl"
             ) {
                 $scope.showMoreMenuButton = true;
             } else {
@@ -503,6 +514,13 @@ angular.module('starter')
         };
 
         $scope.updateApp = function () {
+
+            var appUpdatesDisabled = true;
+            if(appUpdatesDisabled){
+                console.debug("App updates disabled until more testing is done");
+                return;
+            }
+
             var message;
             if(!$rootScope.isMobile){
                 console.debug("Cannot update app because platform is not mobile");
@@ -629,7 +647,9 @@ angular.module('starter')
                 tagConversionFactor: tagVariable.tagConversionFactor,
                 taggedVariableObject: $rootScope.variableObject,
                 fromState: $state.current.name,
-                tagVariableObject: tagVariable
+                tagVariableObject: tagVariable,
+                variableObject: $rootScope.variableObject,
+                fromStateParameters: {variableName: $rootScope.variableObject.name}
             });
         };
 
@@ -638,7 +658,9 @@ angular.module('starter')
                 tagConversionFactor: taggedVariable.tagConversionFactor,
                 taggedVariableObject: taggedVariable,
                 fromState: $state.current.name,
-                tagVariableObject: $rootScope.variableObject
+                tagVariableObject: $rootScope.variableObject,
+                variableObject: $rootScope.variableObject,
+                fromStateParameters: {variableName: $rootScope.variableObject.name}
             });
         };
 
@@ -1344,6 +1366,7 @@ angular.module('starter')
             console.debug('Saving variable settings ' + JSON.stringify(params));
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
             variableService.postUserVariable(params).then(function() {
+                localStorageService.deleteItem('lastStudy');
                 console.debug("variableService.postUserVariable: success: " + JSON.stringify(params));
                 $ionicLoading.hide();
                 $ionicHistory.goBack();

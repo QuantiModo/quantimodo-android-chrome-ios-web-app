@@ -22,4 +22,12 @@ echo 'jenkins   ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 #             ^^
 #             tab
 
+sudo usermod -G jenkins vagrant
+sudo usermod -G vagrant jenkins
+
+sudo usermod -G jenkins ubuntu
+sudo usermod -G ubuntu jenkins
+
+sudo ln -s /var/lib/jenkins/workspace /jenkins
+
 echo "NOW RUN `sudo su` && `visudo -f /etc/sudoers` and  add following line at the end: `jenkins ALL= NOPASSWD: ALL`"

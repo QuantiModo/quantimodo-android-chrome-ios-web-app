@@ -665,6 +665,22 @@ angular.module('starter')
                 errorHandler);
         };
 
+        QuantiModo.postTrackingReminderNotifications = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
+            if(!trackingReminderNotificationsArray){
+                successHandler();
+                return;
+            }
+            if(trackingReminderNotificationsArray.constructor !== Array){
+                trackingReminderNotificationsArray = [trackingReminderNotificationsArray];
+            }
+
+            QuantiModo.post('api/v1/trackingReminderNotifications',
+                [],
+                trackingReminderNotificationsArray,
+                successHandler,
+                errorHandler);
+        };
+
         // get reminders
         QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
             QuantiModo.get('api/v1/trackingReminders',
@@ -674,7 +690,26 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // post tracking reminder
+        // get reminders
+        QuantiModo.getStudy = function(params, successHandler, errorHandler){
+            QuantiModo.get('api/v1/study',
+                [],
+                params,
+                successHandler,
+                errorHandler);
+        };
+
+        QuantiModo.getStudyDeferred = function(params, successHandler, errorHandler) {
+            var deferred = $q.defer();
+            QuantiModo.postStudy(params, function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
         QuantiModo.postUserSettings = function(params, successHandler, errorHandler) {
             QuantiModo.post('api/v1/userSettings',
                 [],
@@ -1552,6 +1587,24 @@ angular.module('starter')
         QuantiModo.getPairsDeferred = function (params, successHandler, errorHandler){
             var deferred = $q.defer();
             QuantiModo.getPairs(params, function (pairs) {
+                if(successHandler){
+                    successHandler();
+                }
+                deferred.resolve(pairs);
+            }, function (error) {
+                if(errorHandler){
+                    errorHandler();
+                }
+                deferred.reject(error);
+                console.error(error);
+            });
+
+            return deferred.promise;
+        };
+
+        QuantiModo.getStudyDeferred = function (params, successHandler, errorHandler){
+            var deferred = $q.defer();
+            QuantiModo.getStudy(params, function (pairs) {
                 if(successHandler){
                     successHandler();
                 }

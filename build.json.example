@@ -1,0 +1,11 @@
+{
+ "android": {
+     "release": {
+         "keystore":"K:\\Development\\QM-Docker\\configs\\android\\quantimodo.keystore",
+         "storePassword":"yourAndroidKeystorePasswordHere",
+         "alias":"quantimodo",
+         "password":"yourAndroidKeystorePasswordHere",
+         "keystoreType":""
+       }
+   }
+}

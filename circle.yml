@@ -6,11 +6,14 @@ machine:
     version: 2.1.2
   php:
     version: 5.6.2
+  java:
+    version: oraclejdk8
 
 checkout:
   post:
     - git submodule sync --recursive
     - git submodule update --recursive --init # use submodules
+    - chmod -R +x scripts
 
 # Customize dependencies
 dependencies:
@@ -20,9 +23,6 @@ dependencies:
   pre:
     - git fetch --all --unshallow || true
     - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
-#    - npm install -g gulp cordova ionic bower
-#    - bower install
-#    - ionic config build
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
   override:
@@ -30,35 +30,52 @@ dependencies:
     - sudo apt-get update; sudo apt-get install -y bats
     - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
     - echo "This line is to prevent automatic dependency installation."
-    # docker run -v /home/ubuntu/QM-Docker:/data --name qm-data maxexcloo/data
-    # docker run -d --name qm-web -p 443:443 -p 80:80 --link mysql:mysql --volumes-from qm-data --env-file .env -e "DH_SIZE=512" quantimodo/web:develop
 
   cache_directories:
-#    - "vendor"   # Cache vendor for faster app install.
+    #- "node_modules"   # Probably don't want to cache node_modules so we catch problematic dependency changes
 
 test:
   override:
-    - chmod +x do-exclusively
-    #- echo "Going to sleep 7 minutes while previous build's GI tests run because do-exclusively interferes with storing test results"
-    #- ./do-exclusively sleep 420
-    - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
     - echo "This line is to prevent automatic test detection."
-    - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
-    - php ghostinspector_parser.php
 
 general:
   branches:
     ignore:
       - gh-pages # list of branches to ignore
-      - develop
-      - master
+      #- develop
+      #- master
       - /release\/.*/ # or ignore regexes
       #- /feature\/.*/ # or ignore regexes
   artifacts:
-    - "/home/ubuntu/QM-Docker/ghostinspector.json"
+    #- "build"
+    #- "dropbox"
 
 deployment:
   medtlc:
     branch: medtlc
     commands:
       - git push git@heroku.com:medtlc.git $CIRCLE_SHA1:refs/heads/master --force
+  build:
+    branch: /build\/.*/
+    commands:
+      - ./scripts/circleci_install_dependencies.sh
+      - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
+  feature:
+    branch: /feature\/.*/
+    commands:
+      - chmod +x do-exclusively
+      - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
+      - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
+      - php ghostinspector_parser.php
+  staging:
+    branch: develop
+    commands:
+      - ./scripts/circleci_install_dependencies.sh
+      - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - gulp ionicUploadStagingForAllApps
+  production:
+    branch: master
+    commands:
+      - ./scripts/circleci_install_dependencies.sh
+      - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - gulp ionicUploadProductionForAllApps

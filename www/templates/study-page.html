@@ -9,7 +9,7 @@
                 <br>
                 <ion-spinner icon="android"></ion-spinner>
             </div>
-            <div ng-show="correlationObject" class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
+            <div ng-show="correlationObject" class="item-text-wrap card-item" style="border-style:hidden; text-align: center">
                 <br>
                 <h2 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h2>
                 <br>
@@ -38,8 +38,8 @@
                            config="aggregatedCauseScatterplotChartConfig"></highchart>
                 <highchart ng-show="aggregatedEffectScatterplotChartConfig" id="aggregatedEffectScatterplotChartConfig"
                            config="aggregatedEffectScatterplotChartConfig"></highchart>
-                <highchart ng-show="data.userStudy.scatterplotChartConfig" id="scatterplot"
-                           config="data.userStudy.scatterplotChartConfig">
+                <highchart ng-show="correlationObject.scatterPlotConfig" id="scatterplot"
+                           config="correlationObject.scatterPlotConfig">
                 </highchart>
                 <!--
                 <label class="item item-input"
@@ -51,27 +51,23 @@
                        id="weightedPeriod" placeholder="" >
                 </label>
                 -->
-                <highchart ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig"
+                <highchart ng-show="correlationObject.correlationsOverOnsetDelaysChartConfig"
                            id="correlationsOverOnsetDelaysChart"
-                           config="data.userStudy.correlationsOverOnsetDelaysChartConfig">
+                           config="correlationObject.correlationsOverOnsetDelaysChartConfig">
                 </highchart>
-                <highchart ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig"
-                           id="correlationsOverOnsetDelaysChart"
-                           config="data.userStudy.correlationsOverOnsetDelaysChartConfig">
-                </highchart>
-                <p ng-show="data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation">
-                    {{data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation}}
+                <p ng-show="correlationObject.correlationsOverOnsetDelaysChartConfig.explanation">
+                    {{correlationObject.correlationsOverOnsetDelaysChartConfig.explanation}}
                 </p>
-                <highchart ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig.series.length"
+                <highchart ng-show="correlationObject.correlationsOverDurationsOfActionChartConfig.series.length"
                            id="correlationsOverDurationsOfActionChart"
-                           config="data.userStudy.correlationsOverDurationsOfActionChartConfig">
+                           config="correlationObject.correlationsOverDurationsOfActionChartConfig">
                 </highchart>
-                <p ng-show="data.userStudy.correlationsOverDurationsOfActionChartConfig.series.length">
-                    {{data.userStudy.correlationsOverOnsetDelaysChartConfig.explanation}}
+                <p ng-show="correlationObject.correlationsOverDurationsOfActionChartConfig.series.length">
+                    {{correlationObject.correlationsOverOnsetDelaysChartConfig.explanation}}
                 </p>
-                <highchart ng-show="data.userStudy.pairsOverTimeChartConfig"
+                <highchart ng-show="correlationObject.pairsOverTimeChartConfig"
                            id="pairsOverTimeChart"
-                           config="data.userStudy.pairsOverTimeChartConfig">
+                           config="correlationObject.pairsOverTimeChartConfig">
                 </highchart>
                 <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id" class="row">
                     <div class="col">
@@ -142,9 +138,12 @@
                     <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
                         <p>{{correlationObject.studyLimitations}}</p><br>
                     <br>
-                    <br>
-                    <br>
                 </div>
+            </div>
+            <div ng-show="correlationObject">
+                <div ng-include="'templates/fragments/statistics-fragment.html'"></div>
+                <br>
+                <br>
             </div>
             <div class="list card"  ng-if="state.studyNotFound">
                 <div class="item" style="padding-bottom:10px;">
