@@ -10,6 +10,7 @@ echo "QM_DOCKER_PATH is $QM_DOCKER_PATH"
 #export JENKINS_BACKUP_FOLDER=${SYNCTHING_FOLDER}/jenkins
 
 export JENKINS_BACKUP_FOLDER=/vagrant/backups/jenkins-backup
+git clone --recursive -b master --single-branch git@github.com:mikepsinn/jenkins-backup.git ${JENKINS_BACKUP_FOLDER}
 
 sudo /etc/init.d/jenkins stop
 #cd ${JENKINS_BACKUP_FOLDER}

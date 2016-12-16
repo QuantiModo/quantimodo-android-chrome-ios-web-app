@@ -656,6 +656,14 @@ gulp.task('ionicUploadProductionForAllApps', function(callback){
         callback);
 });
 
+gulp.task('fastlaneSupplyBetaQuantiModo', function(callback){
+    runSequence(
+    	'setQuantiModoEnvs',
+		'configureApp',
+        'fastlaneSupplyBeta',
+        callback);
+});
+
 gulp.task('ionicUploadStagingForAllApps', function(callback){
     process.env.RELEASE_STAGE = 'production';
     runSequence(
@@ -1891,9 +1899,15 @@ gulp.task('copyAndroidResources', [], function(){
 		.pipe(gulp.dest('platforms/android'));
 });
 
+
 gulp.task('copyAndroidBuild', ['setFallbackEnvs'], function(){
-    return gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
+    var copyApksToDropbox = gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
         .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
+
+    // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
+    var copyApksToBuildFolder = gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
+        .pipe(gulp.dest('build/apks/' + process.env.LOWERCASE_APP_NAME));
+    return es.concat(copyApksToDropbox, copyApksToBuildFolder);
 });
 
 gulp.task('prepareQuantiModoIos', function(callback){
