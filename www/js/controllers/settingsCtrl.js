@@ -193,7 +193,7 @@ angular.module('starter')
 		$scope.getPreviewBuildsChange = function() {
 			var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
 			QuantiModo.updateUserSettingsDeferred(params);
-			$scope.updateApp();
+			$scope.autoUpdateApp();
 		};
 
 		$scope.sendReminderNotificationEmailsChange = function() {
