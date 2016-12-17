@@ -398,7 +398,7 @@ angular.module('starter',
             resolve : config_resolver
         })
         .state('app', {
-            url: "/app",  
+            url: "/app",
             templateUrl: "templates/menu.html",
             controller: 'AppCtrl',
             resolve : config_resolver
@@ -536,43 +536,6 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
                     controller: 'VariableSearchCtrl'
-                }
-            }
-        })
-      .state('app.measurementsVariableButtonIcons', {
-            url: "/measurements-variable-button-icons",
-            cache: false,
-            params: {
-                reminderFrequency: 0,
-                unit: null,
-                variableName : null,
-                dateTime : null,
-                value : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/measurements-variable-button-icons.html",
-                    controller: 'MeasurementsVariableButtonIconsCtrl'
-                }
-            }
-        })
-
-      .state('app.measurementVariableButtonDetails', {
-            url: "/measurement-variable-button-details/:measurementId",
-            cache: false,
-            params: {
-                reminderFrequency: 0,
-                unit: null,
-                variableName : null,
-                dateTime : null,
-                value : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/measurement-variable-button-details.html",
-                    controller: 'MeasurementVariableButtonDetailsCtrl'
                 }
             }
         })
@@ -773,6 +736,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.tagAdd',
                 fromState: null,
+                fromStateParams: null,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
@@ -800,6 +764,7 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.tagAdd',
                 fromState: null,
+                fromStateParams: null,
                 doNotShowAddVariableButton: true,
                 excludeSingularBloodPressure: true,
                 noVariablesFoundCard: {
@@ -823,6 +788,7 @@ angular.module('starter',
             params: {
                 tagConversionFactor: null,
                 fromState : null,
+                fromStateParams: null,
                 fromUrl : null,
                 tagVariableObject : null,
                 taggedVariableObject : null,
@@ -1390,98 +1356,11 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
-        })
-
-          // all the state from tab templates....
-          // setup an abstract state for the tabs directive
-        // .state('tab', {
-        //     url: '/tab',
-        //     abstract: true,
-        //     templateUrl: 'templates/tabs.html'
-        //   })
-
-          // Each tab has its own nav history stack:
-
-          .state('tab.settings', {
-            url: '/settings',
-            views: {
-              'tab-settings': {
-                templateUrl: 'templates/tab-settings.html',
-                controller: 'SettingsCtrl'
-              }
-            }
-          })
-
-          .state('tab.measurements-variable-button-icons', {
-              url: '/measurements-variable-button-icons',
-              views: {
-                'tab-measurements-variable-button-icons': {
-                  templateUrl: 'templates/tabs/measurements-variable-button-icons.html',
-                  controller: 'MeasurementsVariableButtonIconsCtrl'
-                }
-              }
-            })
-            .state('tab.measurement-detail-variable-button-details.html', {
-              url: '/measurements-variable-button-icons/:measurementId',
-              views: {
-                'tab-measurements-variable-button-icons': {
-                  templateUrl: 'templates/tabs/measurement-variable-button-details.html',
-                  controller: 'MeasurementVariableButtonDetailsCtrl'
-                }
-              }
-            })
-
-          .state('tab.history', {
-            url: '/history',
-            views: {
-              'tab-measurements': {
-                templateUrl: 'templates/history.html',
-                controller: 'HistoryCtrl'
-              }
-            }
-          })
-           
-          .state('tab.reminder', {
-              url: '/reminder',
-              views: {
-                'tab-reminder': {
-                  templateUrl: 'templates/tab-reminder.html',
-                  controller: 'ReminderCtrl'
-                }
-              }
-            });
-
-
-    if (window.localStorage.introSeen) {
-        console.debug("Intro seen so going to inbox");
-
-    
-       $urlRouterProvider.otherwise('/app/reminders-inbox'); 
-
-        .state('app.tabs', {
-            url: '/tabs',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/tabs/tabs.html',
-                    controller: 'TabCtrl'
-                }
-            }
-        })
-
-       .state('app.tabs', {
-            url: '/tabs/:tabId',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/tabs/tab-detail.html',
-                    controller: 'TabDetailCtrl'
-                }
-            }
         });
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-         $urlRouterProvider.otherwise('/app/tabs')
-
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');
