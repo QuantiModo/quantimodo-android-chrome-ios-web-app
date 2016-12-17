@@ -87,7 +87,6 @@ The main contents of the App are in the `www` folder. The structure is:
   Services are the data layer, which store and obtain data from the `QuantiModo API`.  Services are also used to provide chart configurations and utility functions. 
 
 ## App-Specific Config Files
-The current App has 3 config files:
 1. config.xml
 2. www/configs/{{appname}}.js
 3. www/private_configs/{{appname}}.config.js
