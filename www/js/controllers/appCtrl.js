@@ -510,7 +510,7 @@ angular.module('starter')
 
         };
 
-        $scope.updateApp = function () {
+        $scope.autoUpdateApp = function () {
 
             var appUpdatesDisabled = true;
             if(appUpdatesDisabled){
@@ -518,60 +518,83 @@ angular.module('starter')
                 return;
             }
 
-            var message;
             if(!$rootScope.isMobile){
                 console.debug("Cannot update app because platform is not mobile");
                 return;
             }
+
+            $scope.updateApp();
+        };
+
+        $scope.updateApp = function () {
+            var message;
+            var releaseTrack;
             $ionicPlatform.ready(function () {
                 if($rootScope.user && $rootScope.user.getPreviewBuilds){
                     $ionicDeploy.channel = 'staging';
+                    releaseTrack = "beta";
                 } else {
                     $ionicDeploy.channel = 'production';
+                    releaseTrack = "production";
                     message = 'Not updating because user is not signed up for preview builds';
                     console.debug(message);
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                     return;
                 }
-                console.debug('Checking for new snapshot');
-                $scope.showLoader('Checking something...');
-                
-                $timeout(function () {
-                    $scope.hideLoader();
-                }, 60 * 1000);
+                message = 'Checking for ' + releaseTrack + ' updates...';
+                $scope.showLoader(message);
                 $ionicDeploy.check().then(function(snapshotAvailable) {
                     if (snapshotAvailable) {
-                        message = 'New snapshot available';
+                        message = 'Downloading ' + releaseTrack + ' update...';
                         console.debug(message);
+                        if($rootScope.isAndroid){
+                            $scope.showLoader(message);
+                        }
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                         // When snapshotAvailable is true, you can apply the snapshot
-                        $scope.showLoader('Downloading...');
                         $ionicDeploy.download().then(function() {
-                            message = 'Downloaded new version';
+                            message = 'Downloaded new version.  Extracting...';
                             console.debug(message);
+                            if($rootScope.isAndroid){
+                                $scope.showLoader(message);
+                            }
                             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
-                            /*$ionicPopup.alert({
-                                title: 'Registration Successful',
-                                //template: "Wait a few seconds for extract and restart app to update."
-                            });*/
-                            $scope.showLoader('Extracting...');
-                            return $ionicDeploy.extract();
+                            $ionicDeploy.extract().then(function() {
+                                if($rootScope.isAndroid){
+                                    $ionicPopup.show({
+                                        title: 'Update available',
+                                        subTitle: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
+                                        buttons: [
+                                            { text: 'Not now' },
+                                            {
+                                                text: 'Restart',
+                                                onTap: function(e) {
+                                                    $ionicDeploy.load();
+                                                }
+                                            }
+                                        ]
+                                    });
+                                }
+                            });
                         });
                     } else {
-                        /*$ionicPopup.alert({
-                            title: 'Not Updating',
-                            template: "No new snapshot available"
-                        });*/
-                        $scope.showLoader('No new downloads');
-                        message = 'No new snapshot available';
+                        message = 'No updates available';
+                        if($rootScope.isAndroid){
+                            $scope.showLoader(message);
+                        }
                         console.debug(message);
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                     }
                 });
+                $timeout(function () {
+                    $scope.hideLoader();
+                }, 60 * 1000);
+
             });
+
         };
 
-        $scope.updateApp();
+        $scope.autoUpdateApp();
 
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
