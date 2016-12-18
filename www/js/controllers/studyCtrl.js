@@ -1,13 +1,12 @@
 angular.module('starter')
-	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
-                                      correlationService, chartService, $timeout, $ionicLoading, localStorageService,
-                                      wikipediaFactory, $ionicActionSheet) {
+	.controller('StudyCtrl', function($scope, $state, quantimodoService, $stateParams, $ionicHistory, $rootScope,
+                                      $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet) {
 
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
 
         $scope.refreshStudy = function() {
-            correlationService.clearCorrelationCache();
+            quantimodoService.clearCorrelationCache();
             getStudy();
         };
 
@@ -28,7 +27,7 @@ angular.module('starter')
             if($stateParams.correlationObject){
                 $scope.correlationObject = $stateParams.correlationObject;
                 $scope.state.loading = false;
-                localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
+                quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($scope.correlationObject));
                 $ionicLoading.hide();
             }
             
@@ -53,7 +52,7 @@ angular.module('starter')
             }
 
             if(!$scope.state.requestParams.effectVariableName){
-                $scope.correlationObject = localStorageService.getItemAsObject('lastStudy');
+                $scope.correlationObject = quantimodoService.getLocalStorageItemAsObject('lastStudy');
                 $scope.state.loading = false;
                 $scope.state.requestParams = {
                     causeVariableName: $scope.correlationObject.causeVariableName,
@@ -145,10 +144,10 @@ angular.module('starter')
         $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
             $scope.state.loading = false;
-            $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+            $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
                 $scope.correlationObject.causeProcessedDailyMeasurements,
                 {variableName: $scope.state.requestParams.causeVariableName});
-            $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+            $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
                 $scope.correlationObject.effectProcessedDailyMeasurements,
                 {variableName: $scope.state.requestParams.effectVariableName});
 
@@ -158,9 +157,9 @@ angular.module('starter')
 
         function getStudy() {
             $scope.loadingCharts = true;
-            QuantiModo.getStudyDeferred($scope.state.requestParams).then(function (data) {
+            quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
                 $scope.correlationObject = data.userStudy;
-                localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
+                quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($scope.correlationObject));
                 $scope.createUserCharts();
             }, function (error) {
                 console.error(error);

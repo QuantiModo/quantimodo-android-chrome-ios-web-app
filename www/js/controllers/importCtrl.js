@@ -1,8 +1,8 @@
 angular.module('starter')
 	
 	// controls the Import Data page of the app
-	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, QuantiModo,
-									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams, localStorageService) {
+	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService,
+									   $cordovaOauth, $ionicPopup, $stateParams) {
 
 		$scope.controller_name = "ImportCtrl";
 
@@ -22,7 +22,7 @@ angular.module('starter')
 	    };
 
 	    $scope.refreshConnectors = function(){
-			connectorsService.refreshConnectors()
+			quantimodoService.refreshConnectors()
 				.then(function(connectors){
 					$scope.connectors = connectors;
 					//Stop the ion-refresher from spinning
@@ -40,14 +40,14 @@ angular.module('starter')
 		};
 
 		var goToWebImportDataPage = function() {
-			console.debug('importCtrl.init: Going to QuantiModo.getAccessTokenFromAnySource');
+			console.debug('importCtrl.init: Going to quantimodoService.getAccessTokenFromAnySource');
 			$state.go(config.appSettings.defaultState);
-			QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
+			quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
 				$ionicLoading.hide();
 				if(ionic.Platform.platforms[0] === "browser"){
 					console.debug("Browser Detected");
 
-					var url = utilsService.getURL("api/v2/account/connectors", true);
+					var url = quantimodoService.getQuantiModoUrl("api/v2/account/connectors", true);
 					if(accessToken){
 						url += "access_token=" + accessToken;
 					}
@@ -60,7 +60,7 @@ angular.module('starter')
 					//noinspection JSCheckFunctionSignatures
 					$state.go(config.appSettings.defaultState);
 				} else {
-					var targetUrl = utilsService.getURL("api/v1/connect/mobile", true);
+					var targetUrl = quantimodoService.getQuantiModoUrl("api/v1/connect/mobile", true);
 					if(accessToken){
 						targetUrl += "access_token=" + accessToken;
 					}
@@ -74,7 +74,7 @@ angular.module('starter')
 			}, function(){
 				$ionicLoading.hide();
 				console.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
-				localStorageService.setItem('afterLoginGoTo', window.location.href);
+				quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
 				console.debug("set afterLoginGoTo to " + window.location.href);
 				$rootScope.sendToLogin();
 			});
@@ -82,7 +82,7 @@ angular.module('starter')
 
 		var loadNativeConnectorPage = function(){
 			console.debug('importCtrl: $rootScope.isMobile so using native connector page');
-			connectorsService.getConnectors()
+			quantimodoService.getConnectorsDeferred()
 				.then(function(connectors){
 					$scope.connectors = connectors;
                     if(connectors) {
@@ -125,7 +125,7 @@ angular.module('starter')
 			connector.loadingText = 'Connecting...';
 
 			var connectWithParams = function(params, lowercaseConnectorName) {
-				connectorsService.connectWithParams(params, lowercaseConnectorName)
+				quantimodoService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
 					.then(function(result){
 						console.debug(JSON.stringify(result));
 						$scope.refreshConnectors();
@@ -141,7 +141,7 @@ angular.module('starter')
 					connectorCredentials: {token: response},
 					connector: connector
 				};
-				connectorsService.connectWithToken(body).then(function(result){
+				quantimodoService.connectConnectorWithTokenDeferred(body).then(function(result){
 					console.debug(JSON.stringify(result));
 					$scope.refreshConnectors();
 				}, function (error) {
@@ -152,7 +152,7 @@ angular.module('starter')
 
 			var connectWithAuthCode = function(authorizationCode, connector){
 				console.debug(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-				connectorsService.connectWithAuthCode(authorizationCode, connector.name).then(function (){
+				quantimodoService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
 					$scope.refreshConnectors();
 				}, function() {
 					console.error("error on connectWithAuthCode for " + connector.name);
@@ -196,7 +196,7 @@ angular.module('starter')
 					'weight'
 				];
 
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -207,7 +207,7 @@ angular.module('starter')
 
 			if(connector.name === 'runkeeper') {
 				scopes = [];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -218,7 +218,7 @@ angular.module('starter')
 
 			if(connector.name === 'rescuetime') {
 				scopes = ['time_data', 'category_data', 'productivity_data'];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -229,7 +229,7 @@ angular.module('starter')
 
 			if(connector.name === 'slice') {
 				scopes = [];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -256,7 +256,7 @@ angular.module('starter')
 					"https://www.googleapis.com/auth/fitness.location.read"
 				];
 
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -270,7 +270,7 @@ angular.module('starter')
 					"https://www.googleapis.com/auth/calendar",
 					"https://www.googleapis.com/auth/calendar.readonly"
 				];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -283,7 +283,7 @@ angular.module('starter')
 				scopes = [
 					'https://www.googleapis.com/auth/userinfo.email'
 				];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -545,7 +545,7 @@ angular.module('starter')
 
 		$scope.disconnect = function (connector){
 			connector.loadingText = 'Disconnecting...';
-			connectorsService.disconnect(connector.name).then(function (){
+			quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){
 				$scope.refreshConnectors();
 			}, function() {
 				console.error("error disconnecting " + connector.name);

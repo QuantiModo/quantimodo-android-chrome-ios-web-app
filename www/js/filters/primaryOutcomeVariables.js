@@ -1,22 +1,22 @@
 angular.module('starter')
 	// returns the Image string against value
-	.filter('positiveImageByValue', function(ratingService){
+	.filter('positiveImageByValue', function(quantimodoService){
 	    return function(ratingValue){
-	        return ratingService.getPositiveImageByRatingValue(ratingValue);
+	        return quantimodoService.getPositiveImageByRatingValue(ratingValue);
 	    };
 	})
-	.filter('negativeImageByValue', function(ratingService){
+	.filter('negativeImageByValue', function(quantimodoService){
 		return function(ratingValue){
-			return ratingService.getNegativeImageByRatingValue(ratingValue);
+			return quantimodoService.getNegativeImageByRatingValue(ratingValue);
 		};
 	})
-	.filter('numericImageByValue', function(ratingService){
+	.filter('numericImageByValue', function(quantimodoService){
 		return function(ratingValue){
-			return ratingService.getNumericImageByRatingValue(ratingValue);
+			return quantimodoService.getNumericImageByRatingValue(ratingValue);
 		};
 	})
-	.filter('PrimaryOutcomeVariableByNumber', function(ratingService){
+	.filter('PrimaryOutcomeVariableByNumber', function(quantimodoService){
 		return function(value){
-			return ratingService.getPrimaryOutcomeVariableByNumber(value);
+			return quantimodoService.getPrimaryOutcomeVariableByNumber(value);
 		};
 	});

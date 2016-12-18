@@ -1,14 +1,13 @@
 angular.module('starter')
 
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, measurementService,
-                                               utilsService, localStorageService, variableCategoryService,
-                                               ionicTimePicker, ionicDatePicker, unitService, QuantiModo) {
+                                               $ionicActionSheet, $ionicHistory, quantimodoService,
+                                               ionicTimePicker, ionicDatePicker) {
 
         $scope.controller_name = "MeasurementAddCtrl";
 
         var variableCategoryName = $stateParams.variableCategoryName;
-        var variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+        var variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
         var currentTime = new Date();
         $rootScope.showFilterBarSearchIcon = false;
 
@@ -52,9 +51,9 @@ angular.module('starter')
             }
             $rootScope.bloodPressure.startTimeEpoch = $scope.selectedDate.getTime()/1000;
             $rootScope.bloodPressure.note = $scope.state.measurement.note;
-            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
+            quantimodoService.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function () {
-                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                    console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") {
                         Bugsnag.notify(error, JSON.stringify(error), {}, "error");
@@ -125,8 +124,8 @@ angular.module('starter')
         $scope.deleteMeasurement = function(){
             $scope.showLoader('Deleting measurement...');
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
-                measurementService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
-                    measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                quantimodoService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
+                    quantimodoService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
                         $scope.hideLoader();
                         if($ionicHistory.backView()){
                             $ionicHistory.goBack();
@@ -136,7 +135,7 @@ angular.module('starter')
                     });
                 });
             } else {
-                measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                quantimodoService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
                     $scope.hideLoader();
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
@@ -148,7 +147,7 @@ angular.module('starter')
         };
 
         var validationFailure = function (message) {
-            utilsService.showAlert(message);
+            quantimodoService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
                 Bugsnag.notify(message, "measurement is " + JSON.stringify($scope.state.measurement), {}, "error");
@@ -246,7 +245,7 @@ angular.module('starter')
                 var params = {
                     trackingReminderNotificationId: $stateParams.reminderNotification.id
                 };
-                QuantiModo.skipTrackingReminderNotification(params, function(){
+                quantimodoService.skipTrackingReminderNotification(params, function(){
                     console.debug($state.current.name + ": skipTrackingReminderNotification");
                 }, function(error){
                     console.error($state.current.name + ": skipTrackingReminderNotification error");
@@ -281,7 +280,7 @@ angular.module('starter')
                 JSON.stringify(measurementInfo));
 
             // Measurement only - post measurement. This is for adding or editing
-            measurementService.postTrackingMeasurement(measurementInfo, true);
+            quantimodoService.postSingleMeasurementDeferred(measurementInfo, true);
             var backView = $ionicHistory.backView();
             if(backView.stateName.toLowerCase().indexOf('search') > -1){
                 $state.go(config.appSettings.defaultState);
@@ -293,7 +292,7 @@ angular.module('starter')
         };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
-            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
@@ -309,7 +308,7 @@ angular.module('starter')
                 variableCategoryName = '';
             }
             $scope.state.measurement.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             if(!$scope.state.measurement.abbreviatedUnitName && $scope.state.variableCategoryObject.defaultAbbreviatedUnitName){
                 $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
@@ -353,7 +352,7 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state.title = 'Record a Measurement';
-            unitService.getUnits().then(function () {
+            quantimodoService.getUnits().then(function () {
                 console.debug($state.current.name + ": " + "got units in init function");
                 if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                     console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
@@ -445,10 +444,10 @@ angular.module('starter')
 
         var setupFromUrlParameters = function() {
             console.debug($state.current.name + ": " + "setupFromUrlParameters");
-            var unit = utilsService.getUrlParameter(location.href, 'unit', true);
-            var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
-            var startTimeEpoch = utilsService.getUrlParameter(location.href, 'startTimeEpoch', true);
-            var value = utilsService.getUrlParameter(location.href, 'value', true);
+            var unit = quantimodoService.getUrlParameter(location.href, 'unit', true);
+            var variableName = quantimodoService.getUrlParameter(location.href, 'variableName', true);
+            var startTimeEpoch = quantimodoService.getUrlParameter(location.href, 'startTimeEpoch', true);
+            var value = quantimodoService.getUrlParameter(location.href, 'value', true);
 
             if (unit || variableName || startTimeEpoch || value) {
                 var measurementObject = {};
@@ -476,7 +475,7 @@ angular.module('starter')
 
         var setupFromReminderObjectInUrl = function(){
             if(!$stateParams.reminderNotification){
-                var reminderFromURL =  utilsService.getUrlParameter(window.location.href, 'trackingReminderObject', true);
+                var reminderFromURL =  quantimodoService.getUrlParameter(window.location.href, 'trackingReminderObject', true);
                 if(reminderFromURL){
                     $stateParams.reminderNotification = JSON.parse(reminderFromURL);
                     console.debug($state.current.name + ": " + "setupFromReminderObjectInUrl: ", $stateParams.reminderNotification);
@@ -487,7 +486,7 @@ angular.module('starter')
 
         var setupFromMeasurementObjectInUrl = function(){
             if(!$stateParams.measurement){
-                var measurementFromURL =  utilsService.getUrlParameter(window.location.href, 'measurementObject', true);
+                var measurementFromURL =  quantimodoService.getUrlParameter(window.location.href, 'measurementObject', true);
                 if(measurementFromURL){
                     measurementFromURL = JSON.parse(measurementFromURL);
                     console.debug($state.current.name + ": " + "setupFromMeasurementObjectInUrl: ", measurementFromURL);
@@ -539,10 +538,10 @@ angular.module('starter')
 
         var setMeasurementVariablesByMeasurementId = function(){
             var deferred = $q.defer();
-            var measurementId = utilsService.getUrlParameter(location.href, 'measurementId', true);
+            var measurementId = quantimodoService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
                 var measurementObject;
-                measurementService.getMeasurementById(measurementId).then(
+                quantimodoService.getMeasurementById(measurementId).then(
                     function(response) {
                         $scope.state.measurementIsSetup = true;
                         console.debug($state.current.name + ": " + "Setting up tracking by this measurement ");
