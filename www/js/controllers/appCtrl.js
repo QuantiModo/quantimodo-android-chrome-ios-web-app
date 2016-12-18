@@ -1389,7 +1389,15 @@ angular.module('starter')
                 localStorageService.deleteItem('lastStudy');
                 console.debug("variableService.postUserVariable: success: " + JSON.stringify(params));
                 $ionicLoading.hide();
-                $ionicHistory.goBack();
+                var backView = $ionicHistory.backView();
+                if(backView.stateName.toLowerCase().indexOf('tag') > -1){
+                    // TODO: Check the last several states to make sure we're not going back to a tag search page either
+                    $state.go(config.appSettings.defaultState);
+                    // This often doesn't work and the user should go to the inbox more anyway
+                    //$ionicHistory.goBack(-2);
+                } else {
+                    $ionicHistory.goBack();
+                }
             }, function(error) {
                 $ionicLoading.hide();
                 console.error(error);
