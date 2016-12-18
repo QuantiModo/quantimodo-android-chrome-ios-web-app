@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, quantimodoService, localStorageService,
                                              reminderService, utilsService, ionicTimePicker, variableCategoryService,
-                                             variableService, unitService, timeService, bugsnagService, $ionicPopup,
+                                             variableService, timeService, bugsnagService, $ionicPopup,
                                              ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
@@ -680,7 +680,7 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             setTitle();
-            unitService.getUnits().then(function () {
+            quantimodoService.getUnits().then(function () {
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
                 if ($stateParams.variableObject) {

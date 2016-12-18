@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, notificationService, localStorageService,
-                                    reminderService, ratingService, migrationService, ionicDatePicker, unitService,
+                                    reminderService, ratingService, migrationService, ionicDatePicker,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
                                     utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
 
@@ -970,7 +970,7 @@ angular.module('starter')
                 }
                 variableService.getUserVariables();
                 variableService.getCommonVariables();
-                unitService.getUnits();
+                quantimodoService.getUnits();
                 $rootScope.syncedEverything = true;
                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                 reminderService.syncTrackingReminderSyncQueueToServer();

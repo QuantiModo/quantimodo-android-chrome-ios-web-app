@@ -3,7 +3,7 @@ angular.module('starter')
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
                                                $ionicActionSheet, $ionicHistory, quantimodoService,
                                                utilsService, localStorageService, variableCategoryService,
-                                               ionicTimePicker, ionicDatePicker, unitService) {
+                                               ionicTimePicker, ionicDatePicker) {
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -353,7 +353,7 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state.title = 'Record a Measurement';
-            unitService.getUnits().then(function () {
+            quantimodoService.getUnits().then(function () {
                 console.debug($state.current.name + ": " + "got units in init function");
                 if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                     console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
