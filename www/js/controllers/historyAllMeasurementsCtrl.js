@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   quantimodoService, measurementService,
+													   quantimodoService,
 													   variableCategoryService, ratingService, localStorageService,
 													   qmLocationService) {
 
@@ -62,7 +62,7 @@ angular.module('starter')
 				params.variableName = $stateParams.variableObject.name;
 			}
 
-	    	measurementService.getHistoryMeasurements(params).then(function(history){
+	    	quantimodoService.getHistoryMeasurements(params).then(function(history){
 	    		if (concat) {
 					$scope.state.history = $scope.state.history.concat(history);
 				}
@@ -156,11 +156,11 @@ angular.module('starter')
 		$scope.deleteMeasurement = function(measurement){
 			measurement.hide = true;
 			if(measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
-				measurementService.deleteMeasurementFromLocalStorage(measurement).then(function (){
-					measurementService.deleteMeasurementFromServer(measurement).then(function (){});
+				quantimodoService.deleteMeasurementFromLocalStorage(measurement).then(function (){
+					quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});
 				});
 			} else {
-				measurementService.deleteMeasurementFromServer(measurement).then(function (){});
+				quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});
 			}
 		};
 

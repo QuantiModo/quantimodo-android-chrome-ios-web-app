@@ -1,6 +1,6 @@
 angular.module('starter')
 .controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading,
-                                  $rootScope, $stateParams, QuantiModo) {
+                                  $rootScope, $stateParams, quantimodoService) {
 
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;

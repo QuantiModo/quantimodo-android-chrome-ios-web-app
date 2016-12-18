@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-    .factory('migrationService', function($http, $q, quantimodoService, localStorageService, measurementService, $rootScope){
+    .factory('migrationService', function($http, $q, localStorageService, quantimodoService, $rootScope){
 
 
         // service methods
@@ -22,7 +22,7 @@ angular.module('starter')
                     });
                     localStorageService.deleteItem('allMeasurements');
                     localStorageService.deleteItem('lastSyncTime');
-                    measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+                    quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                         console.debug("Measurement sync complete!");
                     });
                     localStorageService.setItem('appMigrationVersion', 1489);

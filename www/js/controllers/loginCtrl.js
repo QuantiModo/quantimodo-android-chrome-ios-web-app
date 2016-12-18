@@ -381,7 +381,7 @@ angular.module('starter')
                         clearInterval(interval);
                         interval = false;
 
-                        // the url that QuantiModo redirected us to
+                        // the url that quantimodoService redirected us to
                         var iframe_url = event.data;
 
                         // validate if the url is same as we wanted it to be

@@ -5,7 +5,7 @@ angular.module('starter')
         // service methods
         return {
 
-            // refresh local variable categories with QuantiModo API
+            // refresh local variable categories with quantimodoService API
             refreshVariableCategories : function(){
                 var deferred = $q.defer();
 

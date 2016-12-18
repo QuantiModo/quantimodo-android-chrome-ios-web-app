@@ -53,7 +53,7 @@ angular.module('starter')
             });
         };
 
-        notificationService.setOnClickAction = function(QuantiModo) {
+        notificationService.setOnClickAction = function(quantimodoService) {
             if(!notificationService.shouldWeUseIonicLocalNotifications()) {
                 return;
             }

@@ -3,7 +3,7 @@ angular.module('starter')
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    measurementService, quantimodoService, notificationService, localStorageService,
+                                    quantimodoService, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
                                     utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
@@ -243,17 +243,17 @@ angular.module('starter')
         $scope.updateDatesLocalStorage = function () {
             var to = moment($scope.toDate).unix() * 1000;
             var from = moment($scope.fromDate).unix() * 1000;
-            console.debug("$scope.updateDatesLocalStorage is calling measurementService.setDates");
-            measurementService.setDates(to, from);
+            console.debug("$scope.updateDatesLocalStorage is calling quantimodoService.setDates");
+            quantimodoService.setDates(to, from);
         };
 
         // show main calendar popup (from and to)
         $scope.showCalendarPopup = function ($event) {
             $scope.popover.show($event);
-            measurementService.getToDate(function (endDate) {
+            quantimodoService.getToDate(function (endDate) {
                 $scope.toDate = new Date(endDate);
                 $scope.fromDatePickerObj.to = $scope.toDate;
-                measurementService.getFromDate(function (fromDate) {
+                quantimodoService.getFromDate(function (fromDate) {
                     $scope.fromDate = new Date(fromDate);
                     $scope.toDatePickerObj.from = $scope.fromDate;
                 });
@@ -638,7 +638,7 @@ angular.module('starter')
             });
 
             // redraw everything according to updated appstate
-            measurementService.syncPrimaryOutcomeVariableMeasurements();
+            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
         }
 
         $scope.goToDefaultStateIfWelcomed = function () {
@@ -726,7 +726,7 @@ angular.module('starter')
                 $ionicPlatform.ready(function () {
                     console.debug("Setting on trigger and on click actions for notifications");
                     notificationService.setOnTriggerAction();
-                    notificationService.setOnClickAction(QuantiModo);
+                    notificationService.setOnClickAction(quantimodoService);
                     notificationService.setOnUpdateAction();
                 });
             } else {
@@ -963,7 +963,7 @@ angular.module('starter')
         $scope.syncEverything = function () {
             if(!$rootScope.syncedEverything && $rootScope.user){
                 console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
-                //measurementService.syncPrimaryOutcomeVariableMeasurements();
+                //quantimodoService.syncPrimaryOutcomeVariableMeasurements();
                 if($rootScope.localNotificationsEnabled){
                     console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
                     reminderService.refreshTrackingRemindersAndScheduleAlarms();
@@ -1060,9 +1060,9 @@ angular.module('starter')
                 return;
             }
             $rootScope.favoritesArray[$index].displayTotal = "Recorded " + $rootScope.favoritesArray[$index].total + " " + $rootScope.favoritesArray[$index].abbreviatedUnitName;
-            measurementService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
+            quantimodoService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
                 .then(function () {
-                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
+                    console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     console.error(error);
@@ -1118,9 +1118,9 @@ angular.module('starter')
                     return;
                 }
                 if($rootScope.favoritesTally[trackingReminder.id].tally) {
-                    measurementService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
+                    quantimodoService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
                         .then(function () {
-                            console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                            console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function(error) {
                             if (typeof Bugsnag !== "undefined") {
                                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
@@ -1297,9 +1297,9 @@ angular.module('starter')
                 return;
             }
             $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
-            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
+            quantimodoService.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function () {
-                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                    console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     console.error('Failed to Track by favorite, Try again!');

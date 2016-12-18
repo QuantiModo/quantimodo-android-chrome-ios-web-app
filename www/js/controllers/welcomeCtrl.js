@@ -1,7 +1,7 @@
 angular.module('starter')
     
     // Handlers the Welcome Page
-    .controller('WelcomeCtrl', function($scope, $state, $rootScope, localStorageService, measurementService, $stateParams) {
+    .controller('WelcomeCtrl', function($scope, $state, $rootScope, localStorageService, quantimodoService, $stateParams) {
         
         $scope.controller_name = "WelcomeCtrl";
         $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
@@ -46,8 +46,8 @@ angular.module('starter')
         $scope.storeRatingLocally = function(ratingValue){
             $scope.reportedVariableValue = config.appSettings.ratingTextToValueConversionDataSet[ratingValue] ?
                 config.appSettings.ratingTextToValueConversionDataSet[ratingValue] : false;
-            var primaryOutcomeMeasurement = measurementService.createPrimaryOutcomeMeasurement(ratingValue);
-            measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
+            var primaryOutcomeMeasurement = quantimodoService.createPrimaryOutcomeMeasurement(ratingValue);
+            quantimodoService.addToMeasurementsQueue(primaryOutcomeMeasurement);
             $scope.hidePrimaryOutcomeVariableCard = true;
             $scope.showIntervalCard = true;
         };

@@ -1,9 +1,9 @@
 angular.module('starter')
 
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, measurementService,
+                                               $ionicActionSheet, $ionicHistory, quantimodoService,
                                                utilsService, localStorageService, variableCategoryService,
-                                               ionicTimePicker, ionicDatePicker, unitService, QuantiModo) {
+                                               ionicTimePicker, ionicDatePicker, unitService) {
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -52,9 +52,9 @@ angular.module('starter')
             }
             $rootScope.bloodPressure.startTimeEpoch = $scope.selectedDate.getTime()/1000;
             $rootScope.bloodPressure.note = $scope.state.measurement.note;
-            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
+            quantimodoService.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function () {
-                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                    console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") {
                         Bugsnag.notify(error, JSON.stringify(error), {}, "error");
@@ -125,8 +125,8 @@ angular.module('starter')
         $scope.deleteMeasurement = function(){
             $scope.showLoader('Deleting measurement...');
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
-                measurementService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
-                    measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                quantimodoService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
+                    quantimodoService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
                         $scope.hideLoader();
                         if($ionicHistory.backView()){
                             $ionicHistory.goBack();
@@ -136,7 +136,7 @@ angular.module('starter')
                     });
                 });
             } else {
-                measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                quantimodoService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
                     $scope.hideLoader();
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
@@ -281,7 +281,7 @@ angular.module('starter')
                 JSON.stringify(measurementInfo));
 
             // Measurement only - post measurement. This is for adding or editing
-            measurementService.postTrackingMeasurement(measurementInfo, true);
+            quantimodoService.postTrackingMeasurement(measurementInfo, true);
             var backView = $ionicHistory.backView();
             if(backView.stateName.toLowerCase().indexOf('search') > -1){
                 $state.go(config.appSettings.defaultState);
@@ -542,7 +542,7 @@ angular.module('starter')
             var measurementId = utilsService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
                 var measurementObject;
-                measurementService.getMeasurementById(measurementId).then(
+                quantimodoService.getMeasurementById(measurementId).then(
                     function(response) {
                         $scope.state.measurementIsSetup = true;
                         console.debug($state.current.name + ": " + "Setting up tracking by this measurement ");

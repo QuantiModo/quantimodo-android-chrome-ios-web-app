@@ -1,7 +1,7 @@
 angular.module('starter')
 
     .controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, variableService, $ionicLoading, QuantiModo) {
+                                               $ionicActionSheet, $ionicHistory, variableService, $ionicLoading, quantimodoService) {
 
         $scope.controller_name = "TagAddCtrl";
 

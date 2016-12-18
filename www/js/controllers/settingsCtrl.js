@@ -73,7 +73,7 @@ angular.module('starter')
 			var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
 				"Additional Information: " + '\r\n';
 			//template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + '\r\n';
-			template = template + "QuantiModo Client Id: " + utilsService.getClientId();
+			template = template + "quantimodoService Client Id: " + utilsService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
@@ -180,7 +180,7 @@ angular.module('starter')
 
 			var template = "Please provide the following information when submitting a bug report: <br><br>";
 			template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + "<br><br>";
-			template = template + "QuantiModo Client Id: " + utilsService.getClientId();
+			template = template + "quantimodoService Client Id: " + utilsService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}

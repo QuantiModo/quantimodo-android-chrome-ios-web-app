@@ -1,7 +1,7 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, measurementService,
+    .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, quantimodoService,
                                                     chartService, localStorageService, ratingService, $stateParams) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
@@ -28,13 +28,13 @@ angular.module('starter')
             }
 
             //  add to measurementsQueue
-            var primaryOutcomeMeasurement = measurementService.createPrimaryOutcomeMeasurement(numericRatingValue);
-            measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
+            var primaryOutcomeMeasurement = quantimodoService.createPrimaryOutcomeMeasurement(numericRatingValue);
+            quantimodoService.addToMeasurementsQueue(primaryOutcomeMeasurement);
             updateCharts();
 
             if(!$rootScope.isSyncing && $rootScope.user){
                 $scope.showLoader($scope.syncDisplayText);
-                measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+                quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();
                 });
@@ -98,7 +98,7 @@ angular.module('starter')
             if($rootScope.user || $rootScope.accessToken){
                 $scope.showLoader($scope.syncDisplayText);
                 console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
-                measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+                quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();
                 });

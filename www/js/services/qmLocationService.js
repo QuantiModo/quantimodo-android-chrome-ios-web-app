@@ -1,7 +1,7 @@
 angular.module('starter')
     // Measurement Service
     .factory('qmLocationService', function($http, $q, $rootScope, $cordovaGeolocation, $ionicPlatform,
-                                           localStorageService, measurementService) {
+                                           localStorageService, quantimodoService) {
         
         // service methods
         var qmLocationService = {
@@ -127,7 +127,7 @@ angular.module('starter')
                         note: $rootScope.lastLocationAddress,
                         combinationOperation: "SUM"
                     };
-                    measurementService.postTrackingMeasurement(newMeasurement);
+                    quantimodoService.postTrackingMeasurement(newMeasurement);
                     qmLocationService.setLocationVariables(result, currentTimeEpochSeconds);
                 }
             },
