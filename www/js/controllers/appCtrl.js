@@ -1406,6 +1406,9 @@ angular.module('starter')
         };
 
         $scope.getVariableByName = function (variableName) {
+            if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){
+                $rootScope.variableObject = null;
+            }
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             var params = {includeTags : true};
             variableService.getVariablesByName(variableName, params).then(function(variableObject){
