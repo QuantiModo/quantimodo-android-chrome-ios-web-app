@@ -1,8 +1,8 @@
 angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService,
-											   notificationService, localStorageService, $ionicLoading) {
+											   $ionicActionSheet, $timeout, quantimodoService, localStorageService,
+											   $ionicLoading) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -338,7 +338,7 @@ angular.module('starter')
 			quantimodoService.trackTrackingReminderNotificationDeferred(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
-						notificationService.decrementNotificationBadges();
+						quantimodoService.decrementNotificationBadges();
 					}
 					if($scope.state.numberOfDisplayedNotifications < 2){
 						$scope.refreshTrackingReminderNotifications();
@@ -392,7 +392,7 @@ angular.module('starter')
 	    	quantimodoService.trackTrackingReminderNotificationDeferred(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
-						notificationService.decrementNotificationBadges();
+						quantimodoService.decrementNotificationBadges();
 					}
 					if($scope.state.numberOfDisplayedNotifications < 2){
 						$scope.refreshTrackingReminderNotifications();
@@ -413,7 +413,7 @@ angular.module('starter')
 	    	quantimodoService.skipTrackingReminderNotificationDeferred(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
-						notificationService.decrementNotificationBadges();
+						quantimodoService.decrementNotificationBadges();
 					}
 					if($scope.state.numberOfDisplayedNotifications < 2){
 						$scope.refreshTrackingReminderNotifications();
@@ -434,7 +434,7 @@ angular.module('starter')
 	    	quantimodoService.snoozeTrackingReminderNotificationDeferred(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
-						notificationService.decrementNotificationBadges();
+						quantimodoService.decrementNotificationBadges();
 					}
 					if($rootScope.numberOfPendingNotifications < 2){
 						$scope.refreshTrackingReminderNotifications();
@@ -602,7 +602,7 @@ angular.module('starter')
 
 			quantimodoService.updateUserTimeZoneIfNecessary();
 
-			notificationService.shouldWeUseIonicLocalNotifications();
+			quantimodoService.shouldWeUseIonicLocalNotifications();
 
 			// Triggered on a button click, or some other target
 			$rootScope.showActionSheetMenu = function() {
@@ -628,7 +628,7 @@ angular.module('starter')
 						quantimodoService.skipAllTrackingReminderNotificationsDeferred()
 							.then(function(){
 								if($rootScope.localNotificationsEnabled){
-									notificationService.setNotificationBadge(0);
+									quantimodoService.setNotificationBadge(0);
 								}
 								$scope.init();
 							}, function(error){

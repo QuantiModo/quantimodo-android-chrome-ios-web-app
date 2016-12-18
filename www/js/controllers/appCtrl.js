@@ -3,7 +3,7 @@ angular.module('starter')
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    quantimodoService, notificationService, localStorageService, ionicDatePicker,
+                                    quantimodoService, localStorageService, ionicDatePicker,
                                     $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
@@ -723,9 +723,9 @@ angular.module('starter')
                 console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function () {
                     console.debug("Setting on trigger and on click actions for notifications");
-                    notificationService.setOnTriggerAction();
-                    notificationService.setOnClickAction(quantimodoService);
-                    notificationService.setOnUpdateAction();
+                    quantimodoService.setOnTriggerActionForLocalNotifications();
+                    quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
+                    quantimodoService.setOnUpdateActionForLocalNotifications();
                 });
             } else {
                 //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
@@ -792,7 +792,7 @@ angular.module('starter')
 
         $rootScope.updateOrRecreateNotifications = function () {
             if($rootScope.localNotificationsEnabled){
-                notificationService.updateOrRecreateNotifications();
+                quantimodoService.updateOrRecreateNotifications();
             }
         };
 

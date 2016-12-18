@@ -2,8 +2,7 @@ angular.module('starter')
 	
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
-										  notificationService, quantimodoService,
-										  ionicTimePicker, timeService, $stateParams, $ionicHistory,
+										  quantimodoService, ionicTimePicker, timeService, $stateParams, $ionicHistory,
 										  $ionicLoading, $ionicDeploy, $ionicPlatform) {
 
 		$scope.controller_name = "SettingsCtrl";
@@ -153,7 +152,7 @@ angular.module('starter')
 					'instead of a separate notification for each reminder that you create.  All ' +
 					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
-				notificationService.cancelAllNotifications().then(function() {
+				quantimodoService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
 						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
 						"frequency reminder");
@@ -168,7 +167,7 @@ angular.module('starter')
 					title: 'Enabled Multiple Notifications',
 					template: 'You will get a separate device notification for each reminder that you create.'
 				});
-				notificationService.cancelAllNotifications().then(function() {
+				quantimodoService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now " +
 						"refreshTrackingRemindersAndScheduleAlarms");
 					quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
@@ -347,7 +346,7 @@ angular.module('starter')
 				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
 				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
 				localStorageService.clear();
-				notificationService.cancelAllNotifications();
+				quantimodoService.cancelAllNotifications();
 				$ionicHistory.clearHistory();
 				$ionicHistory.clearCache();
 				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
