@@ -207,12 +207,12 @@ angular.module('starter')
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+key,function(val){
                         var item = val[keyIdentifier+key];
-                        item = quantimodoService.convertToObjectIfJsonString(item);
+                        item = convertToObjectIfJsonString(item);
                         return item;
                     });
                 } else {
                     var item = localStorage.getItem(keyIdentifier+key);
-                    item = quantimodoService.convertToObjectIfJsonString(item);
+                    item = convertToObjectIfJsonString(item);
                     return item;
                 }
             },
@@ -226,6 +226,15 @@ angular.module('starter')
             }
         };
 
+
+        var convertToObjectIfJsonString = function (stringOrObject) {
+            try {
+                stringOrObject = JSON.parse(stringOrObject);
+            } catch (e) {
+                return stringOrObject;
+            }
+            return stringOrObject;
+        };
 
         localStorageService.getCachedResponse = function(requestName, params){
             if(!params){
