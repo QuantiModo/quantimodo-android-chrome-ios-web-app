@@ -2,10 +2,8 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
-                                             $ionicActionSheet, $ionicHistory, QuantiModo, localStorageService,
-                                             reminderService, utilsService, ionicTimePicker, variableCategoryService,
-                                             variableService, unitService, timeService, bugsnagService, $ionicPopup,
-                                             ionicDatePicker) {
+                                             $ionicActionSheet, $ionicHistory,
+                                             quantimodoService, ionicTimePicker, $ionicPopup, ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
 		console.debug('Loading ' + $scope.controller_name);
@@ -32,14 +30,14 @@ angular.module('starter')
         };
 
         if(!$rootScope.user){
-            $rootScope.user = localStorageService.getItemAsObject('user');
+            $rootScope.user = quantimodoService.getLocalStorageItemAsObject('user');
         }
 
         if($rootScope.user) {
             $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
-            $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime);
+            $scope.state.firstReminderStartTimeEpochTime = quantimodoService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime);
         } else {
-            bugsnagService.reportError($state.current.name + ': $rootScope.user is not defined!');
+            quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!');
         }
         
         $scope.state.trackingReminder = {
@@ -82,30 +80,30 @@ angular.module('starter')
 
 		$scope.openReminderStartTimePicker = function(order) {
             var defaultStartTimeInSecondsSinceMidnightLocal =
-                timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
+                quantimodoService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
 		    if(order === 'first') {
                 if($scope.state.firstReminderStartTimeLocal){
                     defaultStartTimeInSecondsSinceMidnightLocal =
-                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
+                        quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
                 }
             }
 
             if(order === 'second') {
                 if($scope.state.secondReminderStartTimeLocal){
                     defaultStartTimeInSecondsSinceMidnightLocal =
-                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
+                        quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
                 }
             }
 
             if(order === 'third') {
                 if($scope.state.thirdReminderStartTimeLocal){
                     defaultStartTimeInSecondsSinceMidnightLocal =
-                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
+                        quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
                 }
             }
 
             defaultStartTimeInSecondsSinceMidnightLocal =
-                timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
+                quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
             
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
@@ -318,7 +316,7 @@ angular.module('starter')
         };
 
         var validationFailure = function (message) {
-            utilsService.showAlert(message);
+            quantimodoService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
                 Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
@@ -401,15 +399,15 @@ angular.module('starter')
             if(updatedTrackingReminder.reminderFrequency === 86400){
                 if(updatedTrackingReminder.abbreviatedUnitName === '/5'){
                     updatedTrackingReminder.valueAndFrequencyTextDescription = 'Daily at ' +
-                        timeService.humanFormat(reminderStartTimeLocal);
+                        quantimodoService.humanFormat(reminderStartTimeLocal);
                 } else {
                     updatedTrackingReminder.valueAndFrequencyTextDescription = updatedTrackingReminder.defaultValue +
                         ' ' + updatedTrackingReminder.abbreviatedUnitName + ' daily at ' +
-                        timeService.humanFormat(reminderStartTimeLocal);
+                        quantimodoService.humanFormat(reminderStartTimeLocal);
                 }
             }
             updatedTrackingReminder.reminderStartTime =
-                timeService.getUtcTimeStringFromLocalString(reminderStartTimeLocal);
+                quantimodoService.getUtcTimeStringFromLocalString(reminderStartTimeLocal);
 
             updatedTrackingReminder.reminderStartTimeEpochSeconds = reminderStartTimeEpochTime;
             updatedTrackingReminder.nextReminderTimeEpochSeconds = reminderStartTimeEpochTime;
@@ -485,12 +483,12 @@ angular.module('starter')
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders',
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders',
                 remindersArray)
                 .then(function(){
-                    reminderService.postTrackingReminders(remindersArray)
+                    quantimodoService.postTrackingRemindersDeferred(remindersArray)
                         .then(function(){
-                            reminderService.refreshTrackingReminderNotifications().then(function(){
+                            quantimodoService.refreshTrackingReminderNotifications().then(function(){
                                 console.debug('reminderAddCtrl.save successfully refreshed notifications');
                             }, function (error) {
                                 console.error(error);
@@ -498,12 +496,12 @@ angular.module('starter')
                             });
 
                             // We need to do this again in case a reminder sync replaced our updated one before posting finished
-                            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', remindersArray);
+                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
                             goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         }, function(error){
                             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
                             // We need to do this again in case a reminder sync replaced our updated one before posting finished
-                            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', remindersArray);
+                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
                             goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         });
 
@@ -521,8 +519,8 @@ angular.module('starter')
             $scope.state.trackingReminder.firstDailyReminderTime = null;
             $scope.state.trackingReminder.secondDailyReminderTime = null;
             $scope.state.trackingReminder.thirdDailyReminderTime = null;
-            $scope.state.firstReminderStartTimeLocal = timeService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
-            $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
+            $scope.state.firstReminderStartTimeLocal = quantimodoService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
+            $scope.state.firstReminderStartTimeEpochTime = quantimodoService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
             //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
             if(trackingReminder.stopTrackingDate){
                 $scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);
@@ -555,7 +553,7 @@ angular.module('starter')
             //
             //     $scope.state.reminderEndTimeStringLocal = $stateParams.reminder.reminderEndTime;
             //     $scope.state.reminderEndTimeEpochTime =
-            //         timeService.getEpochTimeFromLocalString($stateParams.reminder.reminderEndTime);
+            //         quantimodoService.getEpochTimeFromLocalString($stateParams.reminder.reminderEndTime);
             // }
 
 	    	if($scope.state.trackingReminder.reminderFrequency && $scope.state.trackingReminder.reminderFrequency !== null){
@@ -566,7 +564,7 @@ angular.module('starter')
 	    };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
-            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
@@ -588,7 +586,7 @@ angular.module('starter')
                 variableCategoryName = '';
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             if (!$scope.state.trackingReminder.abbreviatedUnitName) {
             	$scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
@@ -608,7 +606,7 @@ angular.module('starter')
 
         function setupReminderEditingFromVariableId(variableId) {
             if(variableId){
-                variableService.getVariableById(variableId)
+                quantimodoService.getVariableByIdDeferred(variableId)
                     .then(function (variables) {
                         $rootScope.variableObject = variables[0];
                         console.debug('setupReminderEditingFromVariableId got this variable object ' +
@@ -626,7 +624,7 @@ angular.module('starter')
         }
 
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
-            reminderService.getTrackingReminderById(reminderIdUrlParameter)
+            quantimodoService.getTrackingReminderByIdDeferred(reminderIdUrlParameter)
                 .then(function (reminders) {
                     if (reminders.length !== 1) {
                         validationFailure("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
@@ -680,9 +678,9 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             setTitle();
-            unitService.getUnits().then(function () {
-                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
+            quantimodoService.getUnits().then(function () {
+                var reminderIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'variableId');
                 if ($stateParams.variableObject) {
                     $rootScope.variableObject = $stateParams.variableObject;
                     setupByVariableObject($stateParams.variableObject);
@@ -707,12 +705,12 @@ angular.module('starter')
     	});
 
         $scope.deleteReminder = function(){
-            localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.id)
+            quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id)
                 .then(function(){
                     $ionicHistory.goBack();
                 });
 
-            reminderService.deleteReminder($scope.state.trackingReminder.id)
+            quantimodoService.deleteTrackingReminderDeferred($scope.state.trackingReminder.id)
                 .then(function(){
                     $ionicLoading.hide();
                     $scope.loading = false;
@@ -721,7 +719,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                     $scope.loading = false;
 
-                    console.error('ERROR: reminderService.deleteReminder Failed to Delete Reminder with id ' +
+                    console.error('ERROR: quantimodoService.deleteTrackingReminderDeferred Failed to Delete Reminder with id ' +
                         $scope.state.trackingReminder.id);
                 });
         };
