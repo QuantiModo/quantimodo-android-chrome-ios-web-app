@@ -5,7 +5,7 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker,
-                                    variableService, qmLocationService, bugsnagService,
+                                    variableService, qmLocationService,
                                     correlationService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
@@ -707,7 +707,7 @@ angular.module('starter')
                 $rootScope.user = null;
                 $rootScope.refreshUser = false;
             }
-            bugsnagService.setupBugsnag();
+            quantimodoService.setupBugsnag();
             quantimodoService.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){
@@ -1001,7 +1001,7 @@ angular.module('starter')
 
         $scope.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
             if(!cordova || !cordova.plugins.email){
-                bugsnagService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
+                quantimodoService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
                     ' Using $scope.sendWithMailTo instead.');
                 $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                 return;

@@ -1,7 +1,7 @@
 angular.module('starter')
     // quantimodoService API implementation
     .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state,
-                                    localStorageService, bugsnagService, quantimodoService) {
+                                    localStorageService) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -219,7 +219,7 @@ angular.module('starter')
                     var item = items[i];
                     for (var j = 0; j < requiredFields.length; j++) {
                         if (!(requiredFields[j] in item)) {
-                            bugsnagService.reportError('Missing required field ' + requiredFields[j] + ' in ' +
+                            quantimodoService.reportError('Missing required field ' + requiredFields[j] + ' in ' +
                                 baseURL + ' request!');
                             //throw 'missing required field in POST data; required fields: ' + requiredFields.toString();
                         }
@@ -1157,7 +1157,7 @@ angular.module('starter')
             // post
             $http(request).success(function (response) {
                 if(response.error){
-                    bugsnagService.reportError(response);
+                    quantimodoService.reportError(response);
                     alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
                     deferred.reject(response);
                 } else {
@@ -1178,7 +1178,7 @@ angular.module('starter')
             var deferred = $q.defer();
 
             if(!accessToken || accessToken === "null"){
-                bugsnagService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
+                quantimodoService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
                 deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
             }
             var url = quantimodoService.getQuantiModoUrl('api/v2/auth/social/authorizeToken');
@@ -2506,8 +2506,6 @@ angular.module('starter')
             }
         };
 
-
-
         quantimodoService.getConnectorsDeferred = function(){
             var deferred = $q.defer();
             localStorageService.getItem('connectors', function(connectors){
@@ -2585,6 +2583,49 @@ angular.module('starter')
             }
             return connectors;
         };
+
+        quantimodoService.reportError = function(exceptionOrError){
+            var deferred = $q.defer();
+            var stringifiedExceptionOrError = 'No error or exception data provided to quantimodoService';
+            var stacktrace = 'No stacktrace provided to quantimodoService';
+            if(exceptionOrError){
+                stringifiedExceptionOrError = JSON.stringify(exceptionOrError);
+                if(typeof exceptionOrError.stack !== 'undefined'){
+                    stacktrace = exceptionOrError.stack.toLocaleString();
+                } else {
+                    stacktrace = stringifiedExceptionOrError;
+                }
+            }
+            console.error('ERROR: ' + stringifiedExceptionOrError);
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.releaseStage = quantimodoService.getEnv();
+                Bugsnag.notify(stringifiedExceptionOrError, stacktrace, {groupingHash: stringifiedExceptionOrError}, "error");
+                deferred.resolve();
+            } else {
+                deferred.reject('Bugsnag is not defined');
+            }
+            return deferred.promise;
+        };
+
+        quantimodoService.setupBugsnag = function(){
+            var deferred = $q.defer();
+            if (typeof Bugsnag !== "undefined") {
+                //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+                //Bugsnag.notifyReleaseStages = ['Production','Staging'];
+                Bugsnag.releaseStage = quantimodoService.getEnv();
+                Bugsnag.appVersion = $rootScope.appVersion;
+                Bugsnag.metaData = {
+                    platform: ionic.Platform.platform(),
+                    platformVersion: ionic.Platform.version(),
+                    appName: config.appSettings.appName
+                };
+                deferred.resolve();
+            } else {
+                deferred.reject('Bugsnag is not defined');
+            }
+            return deferred.promise;
+        };
+
 
         return quantimodoService;
     });

@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, quantimodoService, localStorageService,
                                              reminderService, ionicTimePicker,
-                                             variableService, timeService, bugsnagService, $ionicPopup,
+                                             variableService, timeService, $ionicPopup,
                                              ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
@@ -39,7 +39,7 @@ angular.module('starter')
             $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
             $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime);
         } else {
-            bugsnagService.reportError($state.current.name + ': $rootScope.user is not defined!');
+            quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!');
         }
         
         $scope.state.trackingReminder = {

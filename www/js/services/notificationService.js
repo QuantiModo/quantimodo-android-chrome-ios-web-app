@@ -1,6 +1,6 @@
 angular.module('starter')
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, quantimodoService, timeService,
-                                            bugsnagService, qmLocationService,
+                                            qmLocationService,
                                             localStorageService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
@@ -850,14 +850,14 @@ angular.module('starter')
                                 }
                                 if(!(notificationSettings.at instanceof Date)){
                                     var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
-                                    bugsnagService.reportError(errorMessage);
+                                    quantimodoService.reportError(errorMessage);
                                     return;
                                 }
                                 if(!isNaN(notificationSettings.at) &&
                                     parseInt(Number(notificationSettings.at)) === notificationSettings.at &&
                                     !isNaN(parseInt(notificationSettings.at, 10))){
                                     var intErrorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
-                                    bugsnagService.reportError(intErrorMessage);
+                                    quantimodoService.reportError(intErrorMessage);
                                     return;
                                 }
                                 try{

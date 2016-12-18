@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, quantimodoService, reminderService, qmLocationService,
 										  ionicTimePicker, timeService, $stateParams, $ionicHistory,
-										  bugsnagService, $ionicLoading, $ionicDeploy, $ionicPlatform) {
+										  $ionicLoading, $ionicDeploy, $ionicPlatform) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
         $rootScope.showFilterBarSearchIcon = false;
@@ -427,10 +427,10 @@ angular.module('starter')
 
 			quantimodoService.postMeasurementsCsvExport(function(response){
 				if(!response.success) {
-					bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
+					quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
 				}
 			}, function(error){
-				bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
+				quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
 			});
 		};
 
@@ -443,10 +443,10 @@ angular.module('starter')
 
 			quantimodoService.postMeasurementsPdfExport(function(response){
 				if(!response.success) {
-					bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
+					quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
 				}
 			}, function(error){
-				bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
+				quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
 			});
 		};
 
@@ -459,10 +459,10 @@ angular.module('starter')
 			
 			quantimodoService.postMeasurementsXlsExport(function(response){
 				if(!response.success) {
-					bugsnagService.reportError("Could not export measurements.");
+					quantimodoService.reportError("Could not export measurements.");
 				}
 			}, function(error){
-				bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
+				quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
 			});
 		};
 
