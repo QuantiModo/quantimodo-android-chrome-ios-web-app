@@ -3,8 +3,7 @@ angular.module('starter')
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    quantimodoService, notificationService, localStorageService,
-                                    migrationService, ionicDatePicker,
+                                    quantimodoService, notificationService, localStorageService, ionicDatePicker,
                                     $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
