@@ -1,6 +1,5 @@
 angular.module('starter')
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, quantimodoService, timeService,
-                                            qmLocationService,
                                             localStorageService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
@@ -267,7 +266,7 @@ angular.module('starter')
                  */
 
                 try {
-                    qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                    quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
                     console.debug("onTrigger: just triggered this notification: ",  currentNotification);
                     var notificationData = null;
                     if(currentNotification && currentNotification.data){

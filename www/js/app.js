@@ -22,7 +22,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService, reminderService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, quantimodoService, reminderService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -80,7 +80,7 @@ angular.module('starter',
 
              push.on('notification', function(data) {
                  console.debug('Received push notification: ' + JSON.stringify(data));
-                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
                  reminderService.refreshTrackingReminderNotifications().then(function(){
                      console.debug('push.on.notification: successfully refreshed notifications');
                  }, function (error) {

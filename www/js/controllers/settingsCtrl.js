@@ -2,7 +2,7 @@ angular.module('starter')
 	
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
-										  notificationService, quantimodoService, reminderService, qmLocationService,
+										  notificationService, quantimodoService, reminderService,
 										  ionicTimePicker, timeService, $stateParams, $ionicHistory,
 										  $ionicLoading, $ionicDeploy, $ionicPlatform) {
 		$scope.controller_name = "SettingsCtrl";
@@ -120,7 +120,7 @@ angular.module('starter')
 			}
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			qmLocationService.getLocationVariablesFromLocalStorage();
+			quantimodoService.getLocationVariablesFromLocalStorage();
 	    };
 
 		$scope.contactUs = function() {
@@ -332,7 +332,7 @@ angular.module('starter')
 					'app is closed so you should create reminder notifications and open the app regularly to ' +
 					'keep your location up to date.'
 				});
-				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+				quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {
 				console.debug("Do not track location");
 			}

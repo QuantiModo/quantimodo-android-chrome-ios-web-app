@@ -5,7 +5,7 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker,
-                                    variableService, qmLocationService,
+                                    variableService,
                                     correlationService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
@@ -485,7 +485,7 @@ angular.module('starter')
 
         // when view is changed
         $scope.$on('$ionicView.afterEnter', function (e) {
-            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+            quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
         });
 
 
@@ -972,7 +972,7 @@ angular.module('starter')
                 variableService.getCommonVariables();
                 quantimodoService.getUnits();
                 $rootScope.syncedEverything = true;
-                qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
                 reminderService.syncTrackingReminderSyncQueueToServer();
                 //quantimodoService.getConnectorsDeferred();
             }
