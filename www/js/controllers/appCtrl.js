@@ -974,7 +974,7 @@ angular.module('starter')
                 $rootScope.syncedEverything = true;
                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                 reminderService.syncTrackingReminderSyncQueueToServer();
-                //connectorsService.getConnectorsDeferred();
+                //quantimodoService.getConnectorsDeferred();
             }
         };
 

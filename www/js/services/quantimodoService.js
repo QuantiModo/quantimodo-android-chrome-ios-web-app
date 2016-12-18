@@ -2506,5 +2506,85 @@ angular.module('starter')
             }
         };
 
+
+
+        quantimodoService.getConnectorsDeferred = function(){
+            var deferred = $q.defer();
+            localStorageService.getItem('connectors', function(connectors){
+                if(connectors){
+                    connectors = JSON.parse(connectors);
+                    connectors = quantimodoService.hideBrokenConnectors(connectors);
+                    deferred.resolve(connectors);
+                } else {
+                    quantimodoService.refreshConnectors().then(function(){
+                        deferred.resolve(connectors);
+                    });
+                }
+            });
+            return deferred.promise;
+
+        };
+
+        quantimodoService.refreshConnectors = function(){
+            var deferred = $q.defer();
+            quantimodoService.getConnectorsFromApi(function(connectors){
+                localStorageService.setItem('connectors', JSON.stringify(connectors));
+                connectors = quantimodoService.hideBrokenConnectors(connectors);
+                deferred.resolve(connectors);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
+        quantimodoService.disconnectConnectorDeferred = function(name){
+            var deferred = $q.defer();
+            quantimodoService.disconnectConnectorToApi(name, function(){
+                quantimodoService.refreshConnectors();
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
+        quantimodoService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
+            var deferred = $q.defer();
+            quantimodoService.connectConnectorWithParamsToApi(params, lowercaseConnectorName, function(){
+                quantimodoService.refreshConnectors();
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
+        quantimodoService.connectConnectorWithTokenDeferred = function(body){
+            var deferred = $q.defer();
+            quantimodoService.connectConnectorWithTokenToApi(body, function(){
+                quantimodoService.refreshConnectors();
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
+        quantimodoService.connectConnectorWithAuthCodeDeferred = function(code, lowercaseConnectorName){
+            var deferred = $q.defer();
+            quantimodoService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(){
+                quantimodoService.refreshConnectors();
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
+        quantimodoService.hideBrokenConnectors = function(connectors){
+            for(var i = 0; i < connectors.length; i++){
+                if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {
+                    connectors[i].hide = true;
+                }
+            }
+            return connectors;
+        };
+
         return quantimodoService;
     });

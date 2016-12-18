@@ -2,7 +2,7 @@ angular.module('starter')
 	
 	// controls the Import Data page of the app
 	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService,
-									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams, localStorageService) {
+									   quantimodoService, $cordovaOauth, $ionicPopup, $stateParams, localStorageService) {
 
 		$scope.controller_name = "ImportCtrl";
 
@@ -22,7 +22,7 @@ angular.module('starter')
 	    };
 
 	    $scope.refreshConnectors = function(){
-			connectorsService.refreshConnectors()
+			quantimodoService.refreshConnectors()
 				.then(function(connectors){
 					$scope.connectors = connectors;
 					//Stop the ion-refresher from spinning
@@ -82,7 +82,7 @@ angular.module('starter')
 
 		var loadNativeConnectorPage = function(){
 			console.debug('importCtrl: $rootScope.isMobile so using native connector page');
-			connectorsService.getConnectorsDeferred()
+			quantimodoService.getConnectorsDeferred()
 				.then(function(connectors){
 					$scope.connectors = connectors;
                     if(connectors) {
@@ -125,7 +125,7 @@ angular.module('starter')
 			connector.loadingText = 'Connecting...';
 
 			var connectWithParams = function(params, lowercaseConnectorName) {
-				connectorsService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
+				quantimodoService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
 					.then(function(result){
 						console.debug(JSON.stringify(result));
 						$scope.refreshConnectors();
@@ -141,7 +141,7 @@ angular.module('starter')
 					connectorCredentials: {token: response},
 					connector: connector
 				};
-				connectorsService.connectConnectorWithTokenDeferred(body).then(function(result){
+				quantimodoService.connectConnectorWithTokenDeferred(body).then(function(result){
 					console.debug(JSON.stringify(result));
 					$scope.refreshConnectors();
 				}, function (error) {
@@ -152,7 +152,7 @@ angular.module('starter')
 
 			var connectWithAuthCode = function(authorizationCode, connector){
 				console.debug(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-				connectorsService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
+				quantimodoService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
 					$scope.refreshConnectors();
 				}, function() {
 					console.error("error on connectWithAuthCode for " + connector.name);
@@ -545,7 +545,7 @@ angular.module('starter')
 
 		$scope.disconnect = function (connector){
 			connector.loadingText = 'Disconnecting...';
-			connectorsService.disconnectConnectorDeferred(connector.name).then(function (){
+			quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){
 				$scope.refreshConnectors();
 			}, function() {
 				console.error("error disconnecting " + connector.name);
