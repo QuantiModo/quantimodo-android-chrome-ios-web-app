@@ -403,7 +403,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-
         quantimodoService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/aggregatedCorrelations',
                 ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
@@ -411,7 +410,6 @@ angular.module('starter')
                 successHandler,
                 errorHandler);
         };
-
 
         quantimodoService.getUserCorrelationsFromApi = function (params, successHandler, errorHandler) {
             quantimodoService.get('api/v1/correlations',
@@ -481,7 +479,6 @@ angular.module('starter')
                 successHandler,
                 errorHandler);
         };
-
 
         // get user variables
         quantimodoService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
@@ -584,7 +581,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-
         quantimodoService.connectConnectorWithParamsToApi = function(params, lowercaseConnectorName, successHandler, errorHandler){
             var allowedParams = [
                 'location',
@@ -599,7 +595,6 @@ angular.module('starter')
                 successHandler,
                 errorHandler);
         };
-
 
         quantimodoService.connectConnectorWithTokenToApi = function(body, lowercaseConnectorName, successHandler, errorHandler){
             var requiredProperties = [
@@ -2881,7 +2876,6 @@ angular.module('starter')
             return deferred.promise;
         };
 
-
         quantimodoService.skipTrackingReminderNotificationDeferred = function(body){
             var deferred = $q.defer();
             quantimodoService.deleteTrackingReminderNotificationFromLocalStorage(body);
@@ -5051,7 +5045,6 @@ angular.module('starter')
             };
         };
 
-
         // VARIABLE SERVICE
 
         // DOES NOT WORK PROPERLY
@@ -6343,7 +6336,6 @@ angular.module('starter')
             return tomorrowLocalMidnightInUtcString;
         };
 
-
         quantimodoService.getCurrentTimeInLocalString = function () {
             var currentMoment = moment();
             var timeFormat = 'HH:mm:ss';
@@ -6717,6 +6709,155 @@ angular.module('starter')
             }
 
             return results;
+        };
+
+        // LOGIN SERVICES
+
+        quantimodoService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
+            quantimodoService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
+                .then(function(response) {
+                    if(response.error){
+                        quantimodoService.reportError(response.error);
+                        console.error("Error generating access token");
+                        quantimodoService.setLocalStorageItem('user', null);
+                    } else {
+                        console.debug("Access token received",response);
+                        quantimodoService.saveAccessTokenInLocalStorage(response);
+                        console.debug('get user details from server and going to defaultState...');
+                        quantimodoService.refreshUser().then(function(user){
+                            console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' +
+                                JSON.stringify(user));
+                            $rootScope.hideNavigationMenu = false;
+                            $rootScope.$broadcast('callAppCtrlInit');
+                        }, function(error){
+                            console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
+                        });
+                    }
+                })
+                .catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
+                    quantimodoService.setLocalStorageItem('user', null);
+                });
+        };
+
+        quantimodoService.nonNativeMobileLogin = function(register) {
+            console.debug('quantimodoService.nonNativeMobileLogin: open the auth window via inAppBrowser.');
+            // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
+
+            //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+            // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
+            // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
+            var ref = window.open(quantimodoService.generateV1OAuthUrl(register),'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+
+            // Commented because I think it's causing "$apply already in progress" error
+            // $timeout(function () {
+            //     console.debug('quantimodoService.nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
+            //     ref.close();
+            // }, 60000);
+
+            console.debug('quantimodoService.nonNativeMobileLogin: listen to its event when the page changes');
+            ref.addEventListener('loadstart', function(event) {
+                console.debug('quantimodoService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + quantimodoService.getRedirectUri());
+                if(quantimodoService.startsWith(event.url, quantimodoService.getRedirectUri())) {
+                    console.debug('quantimodoService.nonNativeMobileLogin: event.url starts with ' + quantimodoService.getRedirectUri());
+                    if(!quantimodoService.getUrlParameter(event.url,'error')) {
+                        var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
+                        ref.close();
+                        console.debug('quantimodoService.nonNativeMobileLogin: Going to get an access token using authorization code.');
+                        quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
+
+                    } else {
+                        var errorMessage = "quantimodoService.nonNativeMobileLogin: error occurred:" + quantimodoService.getUrlParameter(event.url, 'error');
+                        quantimodoService.reportError(errorMessage);
+                        ref.close();
+                    }
+                }
+
+            });
+        };
+
+        quantimodoService.chromeAppLogin = function(register){
+            console.debug("login: Use Chrome app (content script, background page, etc.");
+            var url = quantimodoService.generateV1OAuthUrl(register);
+            chrome.identity.launchWebAuthFlow({
+                'url': url,
+                'interactive': true
+            }, function() {
+                var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
+                quantimodoService.getAccessTokenFromAuthorizationCode(authorizationCode);
+            });
+        };
+
+        quantimodoService.chromeExtensionLogin = function(register) {
+            var loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/login");
+            if (register === true) {
+                loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");
+            }
+            console.debug("Using Chrome extension, so we use sessions instead of OAuth flow. ");
+            chrome.tabs.create({ url: loginUrl });
+            window.close();
+        };
+
+        quantimodoService.browserLogin = function(register) {
+            console.debug("Browser Login");
+            if (quantimodoService.getClientId() !== 'oAuthDisabled') {
+                quantimodoService.oAuthBrowserLogin(register);
+            } else {
+                quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
+            }
+        };
+
+        quantimodoService.oAuthBrowserLogin = function (register) {
+            var url = quantimodoService.generateV1OAuthUrl(register);
+            console.debug("Going to try logging in by opening new tab at url " + url);
+
+            var ref = window.open(url, '_blank');
+
+            if (!ref) {
+                alert("You must first unblock popups, and and refresh the page for this to work!");
+            } else {
+                console.debug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
+                var interval = setInterval(function () {
+                    ref.postMessage('isLoggedIn?', quantimodoService.getRedirectUri());
+                }, 1000);
+
+                // handler when a message is received from a sibling tab
+                window.onMessageReceived = function (event) {
+                    console.debug("message received from sibling tab", event.url);
+
+                    if(interval !== false){
+                        // Don't ask login question anymore
+                        clearInterval(interval);
+                        interval = false;
+
+                        // the url that quantimodoService redirected us to
+                        var iframe_url = event.data;
+
+                        // validate if the url is same as we wanted it to be
+                        if (quantimodoService.startsWith(iframe_url, quantimodoService.getRedirectUri())) {
+                            // if there is no error
+                            if (!quantimodoService.getUrlParameter(iframe_url, 'error')) {
+                                var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
+                                // get access token from authorization code
+                                quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
+
+                                // close the sibling tab
+                                ref.close();
+
+                            } else {
+                                // TODO : display_error
+                                console.error("Error occurred validating redirect url. Closing the sibling tab.",
+                                    quantimodoService.getUrlParameter(iframe_url, 'error'));
+
+                                // close the sibling tab
+                                ref.close();
+                            }
+                        }
+                    }
+                };
+
+                // listen to broadcast messages from other tabs within browser
+                window.addEventListener("message", window.onMessageReceived, false);
+            }
         };
 
         return quantimodoService;
