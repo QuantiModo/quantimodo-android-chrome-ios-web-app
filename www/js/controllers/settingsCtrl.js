@@ -1,7 +1,7 @@
 angular.module('starter')
 	
 	// Controls the settings page
-	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
+	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
 										  quantimodoService, ionicTimePicker, $stateParams, $ionicHistory,
 										  $ionicLoading, $ionicDeploy, $ionicPlatform) {
 
@@ -23,7 +23,7 @@ angular.module('starter')
 		//quantimodoService.updateUserTimeZoneIfNecessary();
 
 		// populate ratings interval
-		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+		quantimodoService.getLocalStorageItemWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 			if($rootScope.isIOS){
 				if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
@@ -31,7 +31,7 @@ angular.module('starter')
 					$scope.primaryOutcomeRatingFrequencyDescription !== 'never'
 				) {
 					$scope.primaryOutcomeRatingFrequencyDescription = 'day';
-					localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', 'day');
+					quantimodoService.setLocalStorageItem('primaryOutcomeRatingFrequencyDescription', 'day');
 				}
 			}
 		});
@@ -46,7 +46,7 @@ angular.module('starter')
 			//schedule notification
 			//TODO we can pass callback function to check the status of scheduling
 			$scope.saveInterval(interval);
-			localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', interval);
+			quantimodoService.setLocalStorageItem('primaryOutcomeRatingFrequencyDescription', interval);
 			$scope.primaryOutcomeRatingFrequencyDescription = interval;
 			// hide popover
 			$scope.ratingPopover.hide();
@@ -343,16 +343,16 @@ angular.module('starter')
 
 			var completelyResetAppState = function(){
 				// Getting token so we can post as the new user if they log in again
-				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
+				$rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
 				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
-				localStorageService.clear();
+				quantimodoService.clearLocalStorage();
 				quantimodoService.cancelAllNotifications();
 				$ionicHistory.clearHistory();
 				$ionicHistory.clearCache();
 				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
 				}
-				localStorageService.setItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
+				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
@@ -360,14 +360,14 @@ angular.module('starter')
 
 			var afterLogoutDoNotDeleteMeasurements = function(){
 				// Getting token so we can post as the new user if they log in again
-				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
+				$rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
 				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
 				quantimodoService.clearTokensFromLocalStorage();
 				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
 				}
-				localStorageService.setItem('isWelcomed', false);
-				localStorageService.setItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
+				quantimodoService.setLocalStorageItem('isWelcomed', false);
+				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
 				//hard reload
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true

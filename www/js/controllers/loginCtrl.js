@@ -2,8 +2,7 @@ angular.module('starter')
 
     // Handlers the Welcome Page
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector,
-                                      localStorageService, $timeout, $stateParams,
-                                      quantimodoService) {
+                                      $timeout, $stateParams, quantimodoService) {
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
@@ -50,7 +49,7 @@ angular.module('starter')
         $scope.login = function(register) {
             
             $scope.showLoader('Logging you in...');
-            localStorageService.setItem('isWelcomed', true);
+            quantimodoService.setLocalStorageItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
             if($rootScope.isChromeApp){
@@ -79,7 +78,7 @@ angular.module('starter')
                     if(response.error){
                         quantimodoService.reportError(response.error);
                         console.error("Error generating access token");
-                        localStorageService.setItem('user', null);
+                        quantimodoService.setLocalStorageItem('user', null);
                     } else {
                         console.debug("Access token received",response);
                         quantimodoService.saveAccessTokenInLocalStorage(response);
@@ -95,7 +94,7 @@ angular.module('starter')
                     }
                 })
                 .catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-                    localStorageService.setItem('user', null);
+                    quantimodoService.setLocalStorageItem('user', null);
                 });
         };
 
@@ -158,7 +157,7 @@ angular.module('starter')
         };
 
         $scope.nativeSocialLogin = function(provider, accessToken){
-            localStorageService.setItem('isWelcomed', true);
+            quantimodoService.setLocalStorageItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
             console.debug('$scope.nativeSocialLogin: Going to try to quantimodoService.getTokensAndUserViaNativeSocialLogin for ' +
                 provider + ' provider');
@@ -341,7 +340,7 @@ angular.module('starter')
 
         // when user click's skip button
         $scope.skipLogin = function(){
-            localStorageService.setItem('isWelcomed', true);
+            quantimodoService.setLocalStorageItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
             // move to the next screen
             $scope.goToDefaultStateIfWelcomed();

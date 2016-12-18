@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   quantimodoService, localStorageService) {
+													   quantimodoService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -148,7 +148,7 @@ angular.module('starter')
 
 		// when view is changed
 		$scope.$on('$ionicView.beforeEnter', function(e) {
-			$rootScope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
+			$rootScope.hideHistoryPageInstructionsCard = quantimodoService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
 		});
 
 		$scope.deleteMeasurement = function(measurement){

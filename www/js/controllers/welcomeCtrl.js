@@ -1,7 +1,7 @@
 angular.module('starter')
     
     // Handlers the Welcome Page
-    .controller('WelcomeCtrl', function($scope, $state, $rootScope, localStorageService, quantimodoService, $stateParams) {
+    .controller('WelcomeCtrl', function($scope, $state, $rootScope, quantimodoService, $stateParams) {
         
         $scope.controller_name = "WelcomeCtrl";
         $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
@@ -14,7 +14,7 @@ angular.module('starter')
         $rootScope.showFilterBarSearchIcon = false;
 
 
-        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription',
+        quantimodoService.getLocalStorageItemWithCallback('primaryOutcomeRatingFrequencyDescription',
             function(primaryOutcomeRatingFrequencyDescription) {
                 if (primaryOutcomeRatingFrequencyDescription) {
                     $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;

@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
-                                             $ionicActionSheet, $ionicHistory, localStorageService,
+                                             $ionicActionSheet, $ionicHistory,
                                              quantimodoService, ionicTimePicker, $ionicPopup, ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
@@ -30,7 +30,7 @@ angular.module('starter')
         };
 
         if(!$rootScope.user){
-            $rootScope.user = localStorageService.getItemAsObject('user');
+            $rootScope.user = quantimodoService.getLocalStorageItemAsObject('user');
         }
 
         if($rootScope.user) {
@@ -483,7 +483,7 @@ angular.module('starter')
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders',
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders',
                 remindersArray)
                 .then(function(){
                     quantimodoService.postTrackingRemindersDeferred(remindersArray)
@@ -496,12 +496,12 @@ angular.module('starter')
                             });
 
                             // We need to do this again in case a reminder sync replaced our updated one before posting finished
-                            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', remindersArray);
+                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
                             goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         }, function(error){
                             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
                             // We need to do this again in case a reminder sync replaced our updated one before posting finished
-                            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', remindersArray);
+                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
                             goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         });
 
@@ -705,7 +705,7 @@ angular.module('starter')
     	});
 
         $scope.deleteReminder = function(){
-            localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.id)
+            quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id)
                 .then(function(){
                     $ionicHistory.goBack();
                 });

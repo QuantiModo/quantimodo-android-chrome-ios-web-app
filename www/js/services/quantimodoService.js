@@ -1,7 +1,6 @@
 angular.module('starter')
     // quantimodoService API implementation
-    .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout,
-                                    localStorageService) {
+    .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -35,7 +34,7 @@ angular.module('starter')
                 } else {
                     console.warn('quantimodoService.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
-                    localStorageService.setItem('afterLoginGoTo', window.location.href);
+                    quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
                     console.debug("set afterLoginGoTo to " + window.location.href);
                     if (quantimodoService.getClientId() !== 'oAuthDisabled') {
                         $rootScope.sendToLogin();
@@ -292,7 +291,7 @@ angular.module('starter')
                 if (response.length === 0 || typeof response === "string" || params.offset >= 2000) {
                     defer.resolve(response_array);
                 } else {
-                    localStorageService.getItem('user', function(user){
+                    quantimodoService.getLocalStorageItemWithCallback('user', function(user){
                         if(!user){
                             defer.reject('No user in local storage!');
                         } else {
@@ -538,8 +537,8 @@ angular.module('starter')
 
         // deletes all of a user's measurements for a variable
         quantimodoService.deleteUserVariableMeasurements = function(variableId, successHandler, errorHandler) {
-            localStorageService.deleteElementOfItemByProperty('userVariables', 'variableId', variableId);
-            localStorageService.deleteElementOfItemById('commonVariables', variableId);
+            quantimodoService.deleteElementOfLocalStorageItemByProperty('userVariables', 'variableId', variableId);
+            quantimodoService.deleteElementOfLocalStorageItemById('commonVariables', variableId);
             quantimodoService.post('api/v1/userVariables/delete',
             [
                 'variableId'
@@ -942,12 +941,12 @@ angular.module('starter')
                 $rootScope.accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'access_token');
             }
             if($rootScope.accessTokenInUrl){
-                localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
-                localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+                quantimodoService.setLocalStorageItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
+                quantimodoService.setLocalStorageItem('accessToken', $rootScope.accessTokenInUrl);
                 localStorage.accessToken = $rootScope.accessTokenInUrl;  // This is for Chrome extension
                 $rootScope.accessToken = $rootScope.accessTokenInUrl;
             } else {
-                localStorageService.deleteItem('accessTokenInUrl');
+                quantimodoService.deleteItemFromLocalStorage('accessTokenInUrl');
             }
 
             return $rootScope.accessTokenInUrl;
@@ -968,9 +967,9 @@ angular.module('starter')
             }
 
             var now = new Date().getTime();
-            var expiresAtMilliseconds = localStorageService.getItemSync('expiresAtMilliseconds');
-            var refreshToken = localStorageService.getItemSync('refreshToken');
-            var accessToken = localStorageService.getItemSync('accessToken');
+            var expiresAtMilliseconds = quantimodoService.getLocalStorageItemAsString('expiresAtMilliseconds');
+            var refreshToken = quantimodoService.getLocalStorageItemAsString('refreshToken');
+            var accessToken = quantimodoService.getLocalStorageItemAsString('accessToken');
 
             console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
                 expiresAtMilliseconds: expiresAtMilliseconds,
@@ -982,7 +981,7 @@ angular.module('starter')
                 var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds +
                     '.  How did this happen?';
                 Bugsnag.notify(errorMessage,
-                    localStorageService.getItemSync('user'),
+                    quantimodoService.getLocalStorageItemAsString('user'),
                     {groupingHash: errorMessage},
                     "error");
             }
@@ -1035,7 +1034,7 @@ angular.module('starter')
             var accessToken = accessResponse.accessToken || accessResponse.access_token;
             if (accessToken) {
                 $rootScope.accessToken = accessToken;
-                localStorageService.setItem('accessToken', accessToken);
+                quantimodoService.setLocalStorageItem('accessToken', accessToken);
                 localStorage.accessToken = accessToken;   // This is for Chrome extension
             } else {
                 console.error('No access token provided to quantimodoService.saveAccessTokenInLocalStorage');
@@ -1044,7 +1043,7 @@ angular.module('starter')
 
             var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
             if (refreshToken) {
-                localStorageService.setItem('refreshToken', refreshToken);
+                quantimodoService.setLocalStorageItem('refreshToken', refreshToken);
             }
 
             var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
@@ -1067,12 +1066,12 @@ angular.module('starter')
             }
 
             if(expiresAtMilliseconds){
-                localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds - bufferInMilliseconds);
+                quantimodoService.setLocalStorageItem('expiresAtMilliseconds', expiresAtMilliseconds - bufferInMilliseconds);
                 return accessToken;
             } else {
                 console.error('No expiresAtMilliseconds!');
                 Bugsnag.notify('No expiresAtMilliseconds!',
-                    'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
+                    'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + quantimodoService.getLocalStorageItemAsString('user'),
                     {groupingHash: 'No expiresAtMilliseconds!'},
                     "error");
             }
@@ -1080,7 +1079,7 @@ angular.module('starter')
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';
             console.error(groupingHash);
             Bugsnag.notify(groupingHash,
-                'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
+                'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + quantimodoService.getLocalStorageItemAsString('user'),
                 {groupingHash: groupingHash},
                 "error");
         };
@@ -1236,8 +1235,8 @@ angular.module('starter')
 
             console.debug("Posting deviceToken to server: ", deviceToken);
             quantimodoService.postDeviceToken(deviceToken, function(response){
-                localStorageService.deleteItem('deviceTokenToSync');
-                localStorageService.setItem('deviceTokenOnServer', deviceToken);
+                quantimodoService.deleteItemFromLocalStorage('deviceTokenToSync');
+                quantimodoService.setLocalStorageItem('deviceTokenOnServer', deviceToken);
                 console.debug(response);
                 deferred.resolve();
             }, function(error){
@@ -1250,7 +1249,7 @@ angular.module('starter')
         };
 
         quantimodoService.setUserInLocalStorageBugsnagIntercomPush = function(user){
-            localStorageService.setItem('user', JSON.stringify(user));
+            quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
             localStorage.user = JSON.stringify(user); // For Chrome Extension
             quantimodoService.saveAccessTokenInLocalStorage(user);
             $rootScope.user = user;
@@ -1297,8 +1296,8 @@ angular.module('starter')
             };
             */
 
-            var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
-            var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
+            var deviceTokenOnServer = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
+            var deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenToSync');
             if(deviceTokenOnServer){
                 console.debug("This token is already on the server: " + deviceTokenOnServer);
             }
@@ -1309,10 +1308,10 @@ angular.module('starter')
                 quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
                 $rootScope.sendReminderNotificationEmails = null;
             }
-            var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
+            var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
             console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
             if(afterLoginGoTo) {
-                localStorageService.deleteItem('afterLoginGoTo');
+                quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
                 window.location.replace(afterLoginGoTo);
             } else {
                 //$state.go(config.appSettings.defaultState);
@@ -1336,10 +1335,10 @@ angular.module('starter')
                 loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");
             }
             console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
-            var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
+            var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
             console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
             if(afterLoginGoTo) {
-                localStorageService.deleteItem('afterLoginGoTo');
+                quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
                 loginUrl += "redirect_uri=" + encodeURIComponent(afterLoginGoTo);
             } else {
                 loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
@@ -1365,9 +1364,9 @@ angular.module('starter')
         };
 
         quantimodoService.clearTokensFromLocalStorage = function(){
-            localStorageService.deleteItem('accessToken');
-            localStorageService.deleteItem('refreshToken');
-            localStorageService.deleteItem('expiresAtMilliseconds');
+            quantimodoService.deleteItemFromLocalStorage('accessToken');
+            quantimodoService.deleteItemFromLocalStorage('refreshToken');
+            quantimodoService.deleteItemFromLocalStorage('expiresAtMilliseconds');
         };
 
         quantimodoService.updateUserSettingsDeferred = function(params){
@@ -1390,7 +1389,7 @@ angular.module('starter')
         quantimodoService.getFavoriteTrackingRemindersFromLocalStorage = function(variableCategoryName){
             console.debug('Getting favorites from local storage');
             $rootScope.favoritesArray = [];
-            var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+            var favorites = quantimodoService.getElementsFromLocalStorageItemWithFilters('trackingReminders', 'reminderFrequency', 0);
             if(!favorites){
                 return false;
             }
@@ -1631,11 +1630,11 @@ angular.module('starter')
         };
 
         quantimodoService.getAllLocalMeasurements = function(){
-            var primaryOutcomeMeasurements = localStorageService.getItemAsObject('allMeasurements');
+            var primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('allMeasurements');
             if(!primaryOutcomeMeasurements) {
                 primaryOutcomeMeasurements = [];
             }
-            var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
+            var measurementsQueue = quantimodoService.getLocalStorageItemAsObject('measurementsQueue');
             if(measurementsQueue){
                 primaryOutcomeMeasurements = primaryOutcomeMeasurements.concat(measurementsQueue);
             }
@@ -1654,7 +1653,7 @@ angular.module('starter')
             var deferred = $q.defer();
             isSyncing = true;
 
-            $rootScope.lastSyncTime = localStorageService.getItemSync('lastSyncTime');
+            $rootScope.lastSyncTime = quantimodoService.getLocalStorageItemAsString('lastSyncTime');
             if (!$rootScope.lastSyncTime) {
                 $rootScope.lastSyncTime = 0;
             }
@@ -1680,7 +1679,7 @@ angular.module('starter')
                 offset:0
             };
 
-            localStorageService.getItem('user', function(user){
+            quantimodoService.getLocalStorageItemWithCallback('user', function(user){
                 if(!user){
                     deferred.resolve();
                 }
@@ -1692,7 +1691,7 @@ angular.module('starter')
                     if (response.length > 0 && response.length <= 200) {
                         // Update local data
                         var allMeasurements;
-                        localStorageService.getItem('allMeasurements',function(allMeasurements){
+                        quantimodoService.getLocalStorageItemWithCallback('allMeasurements',function(allMeasurements){
                             allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
 
                             var filteredStoredMeasurements = [];
@@ -1730,7 +1729,7 @@ angular.module('starter')
                             //quantimodoService.setDates(new Date().getTime(),s*1000);
                             //console.debug("getPrimaryOutcomeVariableMeasurements: allMeasurements length is " + allMeasurements.length);
                             //console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
-                            localStorageService.setItem('allMeasurements', JSON.stringify(allMeasurements));
+                            quantimodoService.setLocalStorageItem('allMeasurements', JSON.stringify(allMeasurements));
                             console.debug("getPrimaryOutcomeVariableMeasurements broadcasting to update charts");
                             $rootScope.$broadcast('updateCharts');
                         });
@@ -1738,7 +1737,7 @@ angular.module('starter')
 
                     if (response.length < 200 || params.offset > 1000) {
                         $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
-                        localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
+                        quantimodoService.setLocalStorageItem('lastSyncTime', $rootScope.lastSyncTime);
                         console.debug("Measurement sync completed and lastSyncTime set to " + $rootScope.lastSyncTime);
                         deferred.resolve(response);
                     } else if (response.length === 200 && params.offset < 1001) {
@@ -1777,7 +1776,7 @@ angular.module('starter')
                 return defer.promise;
             }
 
-            localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
+            quantimodoService.getLocalStorageItemWithCallback('measurementsQueue',function(measurementsQueue) {
 
                 var measurementObjects = JSON.parse(measurementsQueue);
 
@@ -1801,7 +1800,7 @@ angular.module('starter')
                     console.debug('Syncing measurements to server: ' + JSON.stringify(measurementObjects));
 
                     quantimodoService.postMeasurementsToApi(measurements, function (response) {
-                        localStorageService.setItem('measurementsQueue', JSON.stringify([]));
+                        quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
                         quantimodoService.getMeasurements().then(function() {
                             defer.resolve();
                             console.debug("quantimodoService.postMeasurementsToApi success: " + JSON.stringify(response));
@@ -1818,10 +1817,10 @@ angular.module('starter')
 
         // date setter from - to
         quantimodoService.setDates = function(to, from){
-            var oldFromDate = localStorageService.getItemSync('fromDate');
-            var oldToDate = localStorageService.getItemSync('toDate');
-            localStorageService.setItem('fromDate',parseInt(from));
-            localStorageService.setItem('toDate',parseInt(to));
+            var oldFromDate = quantimodoService.getLocalStorageItemAsString('fromDate');
+            var oldToDate = quantimodoService.getLocalStorageItemAsString('toDate');
+            quantimodoService.setLocalStorageItem('fromDate',parseInt(from));
+            quantimodoService.setLocalStorageItem('toDate',parseInt(to));
             // if date range changed, update charts
             if (parseInt(oldFromDate) !== parseInt(from) || parseInt(oldToDate) !== parseInt(to)) {
                 console.debug("setDates broadcasting to update charts");
@@ -1833,7 +1832,7 @@ angular.module('starter')
 
         // retrieve date to end on
         quantimodoService.getToDate = function(callback){
-            localStorageService.getItem('toDate',function(toDate){
+            quantimodoService.getLocalStorageItemWithCallback('toDate',function(toDate){
                 if(toDate){
                     callback(parseInt(toDate));
                 }else{
@@ -1845,7 +1844,7 @@ angular.module('starter')
 
         // retrieve date to start from
         quantimodoService.getFromDate = function(callback){
-            localStorageService.getItem('fromDate',function(fromDate){
+            quantimodoService.getLocalStorageItemWithCallback('fromDate',function(fromDate){
                 if(fromDate){
                     callback(parseInt(fromDate));
                 }else{
@@ -1889,7 +1888,7 @@ angular.module('starter')
             console.debug("added to measurementsQueue: id = " + measurementObject.id);
             var deferred = $q.defer();
 
-            localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
+            quantimodoService.getLocalStorageItemWithCallback('measurementsQueue',function(measurementsQueue) {
                 measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
                 // add to queue
                 measurementsQueue.push({
@@ -1907,7 +1906,7 @@ angular.module('starter')
                     location: $rootScope.lastLocationNameAndAddress
                 });
                 //resave queue
-                localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
+                quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify(measurementsQueue));
             });
             return deferred.promise;
         };
@@ -1929,7 +1928,7 @@ angular.module('starter')
                 // Primary outcome variable - update through measurementsQueue
                 var found = false;
                 if (measurementInfo.prevStartTimeEpoch) {
-                    localStorageService.getItemAsObject('measurementsQueue',function(measurementsQueue) {
+                    quantimodoService.getLocalStorageItemAsObject('measurementsQueue',function(measurementsQueue) {
                         var i = 0;
                         while (!found && i < measurementsQueue.length) {
                             if (measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch) {
@@ -1939,12 +1938,12 @@ angular.module('starter')
                                 measurementsQueue[i].note = measurementInfo.note;
                             }
                         }
-                        localStorageService.setItem('measurementsQueue',JSON.stringify(measurementsQueue));
+                        quantimodoService.setLocalStorageItem('measurementsQueue',JSON.stringify(measurementsQueue));
                     });
 
                 } else if(measurementInfo.id) {
                     var newAllMeasurements = [];
-                    localStorageService.getItem('allMeasurements',function(oldAllMeasurements) {
+                    quantimodoService.getLocalStorageItemWithCallback('allMeasurements',function(oldAllMeasurements) {
                         oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
                         oldAllMeasurements.forEach(function (storedMeasurement) {
                             // look for edited measurement based on IDs
@@ -1961,7 +1960,7 @@ angular.module('starter')
                     });
                     console.debug("postTrackingMeasurement: newAllMeasurements length is " + newAllMeasurements.length);
                     //console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
-                    localStorageService.setItem('allMeasurements', JSON.stringify(newAllMeasurements));
+                    quantimodoService.setLocalStorageItem('allMeasurements', JSON.stringify(newAllMeasurements));
                     var editedMeasurement = {
                         id: measurementInfo.id,
                         variableName: measurementInfo.variableName,
@@ -2155,10 +2154,10 @@ angular.module('starter')
 
         quantimodoService.deleteMeasurementFromLocalStorage = function(measurement) {
             var deferred = $q.defer();
-            localStorageService.deleteElementOfItemById('allMeasurements', measurement.id).then(function(){
+            quantimodoService.deleteElementOfLocalStorageItemById('allMeasurements', measurement.id).then(function(){
                 deferred.resolve();
             });
-            localStorageService.deleteElementOfItemByProperty('measurementQueue', 'startTimeEpoch',
+            quantimodoService.deleteElementOfLocalStorageItemByProperty('measurementQueue', 'startTimeEpoch',
                 measurement.startTimeEpoch).then(function (){
                 deferred.resolve();
             });
@@ -2253,7 +2252,7 @@ angular.module('starter')
         quantimodoService.getUnits = function(){
             var deferred = $q.defer();
 
-            localStorageService.getItem('units', function(unitsString){
+            quantimodoService.getLocalStorageItemWithCallback('units', function(unitsString){
                 if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
                     $rootScope.abbreviatedUnitNames = [];
                 }
@@ -2278,7 +2277,7 @@ angular.module('starter')
                 if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
                     $rootScope.abbreviatedUnitNames = [];
                 }
-                localStorageService.setItem('units', JSON.stringify(unitObjects));
+                quantimodoService.setLocalStorageItem('units', JSON.stringify(unitObjects));
                 addUnitsToRootScope(unitObjects);
                 deferred.resolve(unitObjects);
             }, function(error){
@@ -2292,7 +2291,7 @@ angular.module('starter')
             var deferred = $q.defer();
 
             quantimodoService.getVariableCategoriesFromApi(function(vars){
-                localStorageService.setItem('variableCategories',JSON.stringify(vars));
+                quantimodoService.setLocalStorageItem('variableCategories',JSON.stringify(vars));
                 deferred.resolve(vars);
             }, function(error){
                 deferred.reject(error);
@@ -2305,12 +2304,12 @@ angular.module('starter')
         quantimodoService.getVariableCategories = function(){
             var deferred = $q.defer();
 
-            localStorageService.getItem('variableCategories',function(variableCategories){
+            quantimodoService.getLocalStorageItemWithCallback('variableCategories',function(variableCategories){
                 if(variableCategories){
                     deferred.resolve(JSON.parse(variableCategories));
                 } else {
                     quantimodoService.getVariableCategoriesFromApi(function(variableCategories){
-                        localStorageService.setItem('variableCategories', JSON.stringify(variableCategories));
+                        quantimodoService.setLocalStorageItem('variableCategories', JSON.stringify(variableCategories));
                         deferred.resolve(variableCategories);
                     }, function(error){
                         deferred.reject(error);
@@ -2518,7 +2517,7 @@ angular.module('starter')
 
         quantimodoService.getConnectorsDeferred = function(){
             var deferred = $q.defer();
-            localStorageService.getItem('connectors', function(connectors){
+            quantimodoService.getLocalStorageItemWithCallback('connectors', function(connectors){
                 if(connectors){
                     connectors = JSON.parse(connectors);
                     connectors = quantimodoService.hideBrokenConnectors(connectors);
@@ -2536,7 +2535,7 @@ angular.module('starter')
         quantimodoService.refreshConnectors = function(){
             var deferred = $q.defer();
             quantimodoService.getConnectorsFromApi(function(connectors){
-                localStorageService.setItem('connectors', JSON.stringify(connectors));
+                quantimodoService.setLocalStorageItem('connectors', JSON.stringify(connectors));
                 connectors = quantimodoService.hideBrokenConnectors(connectors);
                 deferred.resolve(connectors);
             }, function(error){
@@ -2712,26 +2711,26 @@ angular.module('starter')
         quantimodoService.setLocationVariables = function (result, currentTimeEpochSeconds) {
             if (result.name && result.name !== "undefined") {
                 $rootScope.lastLocationName = result.name;
-                localStorageService.setItem('lastLocationName', result.name);
+                quantimodoService.setLocalStorageItem('lastLocationName', result.name);
             } else if (result.address && result.address !== "undefined") {
                 $rootScope.lastLocationName = result.address;
-                localStorageService.setItem('lastLocationName', result.address);
+                quantimodoService.setLocalStorageItem('lastLocationName', result.address);
             } else {
                 console.error("Where's the damn location info?");
             }
             if (result.address) {
                 $rootScope.lastLocationAddress = result.address;
-                localStorageService.setItem('lastLocationAddress', result.address);
+                quantimodoService.setLocalStorageItem('lastLocationAddress', result.address);
                 $rootScope.lastLocationResultType = result.type;
-                localStorageService.setItem('lastLocationResultType', result.type);
+                quantimodoService.setLocalStorageItem('lastLocationResultType', result.type);
                 $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
-                localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                quantimodoService.setLocalStorageItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
                 if($rootScope.lastLocationAddress === $rootScope.lastLocationName){
                     $rootScope.lastLocationNameAndAddress = $rootScope.lastLocationAddress;
                 } else{
                     $rootScope.lastLocationNameAndAddress = $rootScope.lastLocationName + " (" + $rootScope.lastLocationAddress + ")";
                 }
-                localStorageService.setItem('lastLocationNameAndAddress', $rootScope.lastLocationNameAndAddress);
+                quantimodoService.setLocalStorageItem('lastLocationNameAndAddress', $rootScope.lastLocationNameAndAddress);
             }
         };
 
@@ -2764,11 +2763,11 @@ angular.module('starter')
 
         quantimodoService.getLocationVariablesFromLocalStorage = function () {
             if($rootScope.user && $rootScope.user.trackLocation){
-                $rootScope.lastLocationName = localStorageService.getItemSync('lastLocationName');
-                $rootScope.lastLocationAddress = localStorageService.getItemSync('lastLocationAddress');
-                $rootScope.lastLocationResultType = localStorageService.getItemSync('lastLocationResultType');
-                $rootScope.lastLocationUpdateTimeEpochSeconds = localStorageService.getItemSync('lastLocationUpdateTimeEpochSeconds');
-                $rootScope.lastLocationNameAndAddress = localStorageService.getItemSync('lastLocationNameAndAddress');
+                $rootScope.lastLocationName = quantimodoService.getLocalStorageItemAsString('lastLocationName');
+                $rootScope.lastLocationAddress = quantimodoService.getLocalStorageItemAsString('lastLocationAddress');
+                $rootScope.lastLocationResultType = quantimodoService.getLocalStorageItemAsString('lastLocationResultType');
+                $rootScope.lastLocationUpdateTimeEpochSeconds = quantimodoService.getLocalStorageItemAsString('lastLocationUpdateTimeEpochSeconds');
+                $rootScope.lastLocationNameAndAddress = quantimodoService.getLocalStorageItemAsString('lastLocationNameAndAddress');
             }
         };
 
@@ -2793,9 +2792,9 @@ angular.module('starter')
 
                 $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
                     $rootScope.lastLatitude  = position.coords.latitude;
-                    localStorageService.setItem('lastLatitude', position.coords.latitude);
+                    quantimodoService.setLocalStorageItem('lastLatitude', position.coords.latitude);
                     $rootScope.lastLongitude = position.coords.longitude;
-                    localStorageService.setItem('lastLongitude', position.coords.longitude);
+                    quantimodoService.setLocalStorageItem('lastLongitude', position.coords.longitude);
 
                     quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps($rootScope.lastLongitude,
                         $rootScope.lastLatitude).then(function(result) {
@@ -2855,7 +2854,7 @@ angular.module('starter')
 
         quantimodoService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
             var deferred = $q.defer();
-            var trackingReminderNotificationsArray = localStorageService.getItemAsObject('notificationsSyncQueue');
+            var trackingReminderNotificationsArray = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
             if(!trackingReminderNotificationsArray){
                 if(successHandler){
                     successHandler();
@@ -2864,7 +2863,7 @@ angular.module('starter')
                 return deferred.promise;
             }
             quantimodoService.postTrackingReminderNotificationsToApi(trackingReminderNotificationsArray, function(){
-                localStorageService.deleteItem('notificationsSyncQueue');
+                quantimodoService.deleteItemFromLocalStorage('notificationsSyncQueue');
                 if($rootScope.showUndoButton){
                     $rootScope.showUndoButton = false;
                 }
@@ -2887,7 +2886,7 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.deleteTrackingReminderNotificationFromLocalStorage(body);
             body.action = 'skip';
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('notificationsSyncQueue', body);
             $timeout(function() {
                 // Post notification queue in 5 minutes if it's still there
                 quantimodoService.postTrackingReminderNotificationsDeferred();
@@ -2910,7 +2909,7 @@ angular.module('starter')
 
         quantimodoService.skipAllTrackingReminderNotificationsDeferred = function(params){
             var deferred = $q.defer();
-            localStorageService.deleteItem('trackingReminderNotifications');
+            quantimodoService.deleteItemFromLocalStorage('trackingReminderNotifications');
             quantimodoService.skipAllTrackingReminderNotifications(params, function(response){
                 if(response.success) {
                     deferred.resolve();
@@ -2931,7 +2930,7 @@ angular.module('starter')
             console.debug('quantimodoService.trackTrackingReminderNotificationDeferred: Going to track ' + JSON.stringify(body));
             quantimodoService.deleteTrackingReminderNotificationFromLocalStorage(body);
             body.action = 'track';
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('notificationsSyncQueue', body);
             $timeout(function() {
                 // Post notification queue in 5 minutes if it's still there
                 quantimodoService.postTrackingReminderNotificationsDeferred();
@@ -2957,7 +2956,7 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.deleteTrackingReminderNotificationFromLocalStorage(body);
             body.action = 'snooze';
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('notificationsSyncQueue', body);
             $timeout(function() {
                 // Post notification queue in 5 minutes if it's still there
                 quantimodoService.postTrackingReminderNotificationsDeferred();
@@ -3051,7 +3050,7 @@ angular.module('starter')
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     }
 
-                    localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
+                    quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(trackingReminders));
                     $rootScope.$broadcast('getFavoriteTrackingRemindersFromLocalStorage');
                     $rootScope.syncingReminders = false;
                     if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
@@ -3110,7 +3109,7 @@ angular.module('starter')
 
         quantimodoService.getTrackingReminderNotificationsDeferred = function(variableCategoryName){
             var deferred = $q.defer();
-            var trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+            var trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
                 'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
             if(trackingReminderNotifications && trackingReminderNotifications.length){
                 $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
@@ -3121,7 +3120,7 @@ angular.module('starter')
             } else {
                 $rootScope.numberOfPendingNotifications = 0;
                 quantimodoService.refreshTrackingReminderNotifications().then(function () {
-                    trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+                    trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
                         'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
                     deferred.resolve(trackingReminderNotifications);
                 }, function(error){
@@ -3168,7 +3167,7 @@ angular.module('starter')
                         if (window.chrome && window.chrome.browserAction) {
                             chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
-                        localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
+                        quantimodoService.setLocalStorageItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
                         $rootScope.refreshingTrackingReminderNotifications = false;
                         $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
                         deferred.resolve(trackingRemindersNotifications);
@@ -3276,23 +3275,23 @@ angular.module('starter')
             var trackingReminderNotifications = [];
 
             if(today && !category){
-                trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+                trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
                     'trackingReminderNotifications', null, null, null, null, 'reminderTime', localMidnightInUtcString);
                 var reminderTime = '(gt)' + localMidnightInUtcString;
             }
 
             if(!today && category){
-                trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+                trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
                     'trackingReminderNotifications', 'variableCategoryName', category, 'reminderTime', currentDateTimeInUtcString, null, null);
             }
 
             if(today && category){
-                trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+                trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
                     'trackingReminderNotifications', 'variableCategoryName', category, null, null, 'reminderTime', localMidnightInUtcString);
             }
 
             if(!today && !category){
-                trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+                trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
                     'trackingReminderNotifications', null, null, 'reminderTime', currentDateTimeInUtcString, null, null);
             }
 
@@ -3310,7 +3309,7 @@ angular.module('starter')
                 $rootScope.syncingReminders = false;
             }
 
-            localStorageService.deleteElementOfItemById('trackingReminders', reminderId);
+            quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminderId);
 
             quantimodoService.deleteTrackingReminder(reminderId, function(response){
                 if(response.success) {
@@ -3364,16 +3363,16 @@ angular.module('starter')
         };
 
         quantimodoService.addToTrackingReminderSyncQueue = function(trackingReminder) {
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder);
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder);
         };
 
         quantimodoService.syncTrackingReminderSyncQueueToServer = function() {
             quantimodoService.createDefaultReminders();
-            localStorageService.getItem('trackingReminderSyncQueue', function (trackingReminders) {
+            quantimodoService.getLocalStorageItemWithCallback('trackingReminderSyncQueue', function (trackingReminders) {
                 if(trackingReminders){
                     quantimodoService.postTrackingRemindersDeferred(JSON.parse(trackingReminders)).then(function () {
                         console.debug('reminder queue synced' + trackingReminders);
-                        localStorageService.deleteItem('trackingReminderSyncQueue');
+                        quantimodoService.deleteItemFromLocalStorage('trackingReminderSyncQueue');
                         quantimodoService.refreshTrackingReminderNotifications().then(function(){
                             console.debug('quantimodoService.syncTrackingReminderSyncQueueToServer successfully refreshed notifications');
                         }, function (error) {
@@ -3397,11 +3396,11 @@ angular.module('starter')
                 trackingReminderNotificationId = body.trackingReminderNotificationId;
             }
             $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
-            localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+            quantimodoService.deleteElementOfLocalStorageItemById('trackingReminderNotifications',
                 trackingReminderNotificationId);
             /* We don't have separate items for categories
              if(body.trackingReminderNotification && typeof body.trackingReminderNotification.variableCategoryName !== "undefined"){
-             localStorageService.deleteElementOfItemById('trackingReminderNotifications' +
+             quantimodoService.deleteElementOfLocalStorageItemById('trackingReminderNotifications' +
              body.trackingReminderNotification.variableCategoryName,
              trackingReminderNotificationId);
              }*/
@@ -3469,7 +3468,7 @@ angular.module('starter')
             var deferred = $q.defer();
             var allReminders = [];
             var nonFavoriteReminders = [];
-            var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
+            var unfilteredReminders = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminders'));
             unfilteredReminders =
                 quantimodoService.attachVariableCategoryIcons(unfilteredReminders);
             if(unfilteredReminders) {
@@ -3496,11 +3495,11 @@ angular.module('starter')
         quantimodoService.createDefaultReminders = function () {
             var deferred = $q.defer();
 
-            localStorageService.getItem('defaultRemindersCreated', function (defaultRemindersCreated) {
+            quantimodoService.getLocalStorageItemWithCallback('defaultRemindersCreated', function (defaultRemindersCreated) {
                 if(JSON.parse(defaultRemindersCreated) !== true) {
                     var defaultReminders = config.appSettings.defaultReminders;
                     if(defaultReminders && defaultReminders.length){
-                        localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', defaultReminders);
+                        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', defaultReminders);
                         console.debug('Creating default reminders ' + JSON.stringify(defaultReminders));
                         quantimodoService.postTrackingRemindersDeferred(defaultReminders).then(function () {
                             console.debug('Default reminders created ' + JSON.stringify(defaultReminders));
@@ -3510,7 +3509,7 @@ angular.module('starter')
                                 console.error('quantimodoService.createDefaultReminders: ' + error);
                             });
                             quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
-                            localStorageService.setItem('defaultRemindersCreated', true);
+                            quantimodoService.setLocalStorageItem('defaultRemindersCreated', true);
                             deferred.resolve();
                         }, function(error) {
                             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
@@ -3541,13 +3540,13 @@ angular.module('starter')
         };
 
         quantimodoService.clearCorrelationCache = function(){
-            localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
-            localStorageService.deleteCachedResponse('GetUserCorrelations');
+            quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
+            quantimodoService.deleteCachedResponse('GetUserCorrelations');
         };
 
         quantimodoService.getAggregatedCorrelationsDeferred = function(params){
             var deferred = $q.defer();
-            var cachedCorrelations = localStorageService.getCachedResponse('GetAggregatedCorrelations', params);
+            var cachedCorrelations = quantimodoService.getCachedResponse('GetAggregatedCorrelations', params);
             if(cachedCorrelations){
                 deferred.resolve(cachedCorrelations);
                 return deferred.promise;
@@ -3555,7 +3554,7 @@ angular.module('starter')
 
             quantimodoService.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
                 correlationObjects = useLocalImages(correlationObjects);
-                localStorageService.storeCachedResponse('GetAggregatedCorrelations', params, correlationObjects);
+                quantimodoService.storeCachedResponse('GetAggregatedCorrelations', params, correlationObjects);
                 deferred.resolve(correlationObjects);
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {
@@ -3568,14 +3567,14 @@ angular.module('starter')
 
         quantimodoService.getUserCorrelationsDeferred = function (params) {
             var deferred = $q.defer();
-            var cachedCorrelations = localStorageService.getCachedResponse('GetUserCorrelations', params);
+            var cachedCorrelations = quantimodoService.getCachedResponse('GetUserCorrelations', params);
             if(cachedCorrelations){
                 deferred.resolve(cachedCorrelations);
                 return deferred.promise;
             }
             quantimodoService.getUserCorrelationsFromApi(params, function(correlationObjects){
                 correlationObjects = useLocalImages(correlationObjects);
-                localStorageService.storeCachedResponse('GetUserCorrelations', params, correlationObjects);
+                quantimodoService.storeCachedResponse('GetUserCorrelations', params, correlationObjects);
                 deferred.resolve(correlationObjects);
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {
@@ -3589,8 +3588,8 @@ angular.module('starter')
         quantimodoService.postVoteDeferred = function(correlationObject){
             var deferred = $q.defer();
             quantimodoService.postVoteToApi(correlationObject, function(response){
-                localStorageService.deleteCachedResponse('GetUserCorrelations');
-                localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
+                quantimodoService.deleteCachedResponse('GetUserCorrelations');
+                quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
                 console.debug("postVote response", response);
                 deferred.resolve(true);
             }, function(error){
@@ -3603,8 +3602,8 @@ angular.module('starter')
         quantimodoService.deleteVoteDeferred = function(correlationObject){
             var deferred = $q.defer();
             quantimodoService.deleteVoteToApi(correlationObject, function(response){
-                localStorageService.deleteCachedResponse('GetUserCorrelations');
-                localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
+                quantimodoService.deleteCachedResponse('GetUserCorrelations');
+                quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
                 console.debug("deleteVote response", response);
                 deferred.resolve(true);
             }, function(error){
@@ -3859,7 +3858,7 @@ angular.module('starter')
 
         quantimodoService.getWeekdayChartConfigForPrimaryOutcome = function () {
             var deferred = $q.defer();
-            deferred.resolve(quantimodoService.processDataAndConfigureWeekdayChart(localStorageService.getItemAsObject('allMeasurements'),
+            deferred.resolve(quantimodoService.processDataAndConfigureWeekdayChart(quantimodoService.getLocalStorageItemAsObject('allMeasurements'),
                 config.appSettings.primaryOutcomeVariableDetails));
             return deferred.promise;
         };
@@ -5183,7 +5182,7 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.deleteUserVariableMeasurements(variableId, function() {
                 // Delete user variable from local storage
-                localStorageService.deleteElementOfItemById('userVariables', variableId);
+                quantimodoService.deleteElementOfLocalStorageItemById('userVariables', variableId);
                 deferred.resolve();
             }, function(error) {
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); }
@@ -5196,7 +5195,7 @@ angular.module('starter')
 
         quantimodoService.getUserVariablesDeferred = function(params){
             var deferred = $q.defer();
-            var userVariables = localStorageService.getElementsFromItemWithRequestParams(
+            var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
                 'userVariables', params);
 
             if(userVariables && userVariables.length > 0){
@@ -5204,12 +5203,12 @@ angular.module('starter')
                 return deferred.promise;
             }
 
-            if(localStorageService.getItemSync('userVariables') === "[]"){
+            if(quantimodoService.getLocalStorageItemAsString('userVariables') === "[]"){
                 deferred.resolve([]);
                 return deferred.promise;
             }
 
-            userVariables = JSON.parse(localStorageService.getItemSync('userVariables'));
+            userVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
             if(userVariables && userVariables.length && typeof userVariables[0].manualTracking !== "undefined"){
                 console.debug("We already have userVariables that didn't match filters so no need to refresh them");
                 deferred.resolve([]);
@@ -5217,7 +5216,7 @@ angular.module('starter')
             }
 
             quantimodoService.refreshUserVariables().then(function () {
-                userVariables = localStorageService.getElementsFromItemWithRequestParams(
+                userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
                     'userVariables', params);
                 deferred.resolve(userVariables);
             }, function (error) {
@@ -5249,7 +5248,7 @@ angular.module('starter')
                 };
 
                 quantimodoService.getUserVariablesFromApi(parameters, function(userVariables){
-                    localStorageService.setItem('userVariables', JSON.stringify(userVariables))
+                    quantimodoService.setLocalStorageItem('userVariables', JSON.stringify(userVariables))
                         .then(function () {
                             $rootScope.$broadcast('populateUserVariables');
                             $rootScope.syncingUserVariables = false;
@@ -5266,7 +5265,7 @@ angular.module('starter')
 
         quantimodoService.getCommonVariablesDeferred = function(params){
             var deferred = $q.defer();
-            var commonVariables = localStorageService.getElementsFromItemWithRequestParams(
+            var commonVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
                 'commonVariables', params);
 
             if(commonVariables && commonVariables.length && typeof commonVariables[0].manualTracking !== "undefined"){
@@ -5274,7 +5273,7 @@ angular.module('starter')
                 return deferred.promise;
             }
 
-            commonVariables = JSON.parse(localStorageService.getItemSync('commonVariables'));
+            commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
             if(commonVariables && commonVariables.length && typeof commonVariables[0].manualTracking !== "undefined"){
                 console.debug("We already have commonVariables that didn't match filters so no need to refresh them");
                 deferred.resolve([]);
@@ -5282,7 +5281,7 @@ angular.module('starter')
             }
 
             quantimodoService.refreshCommonVariables().then(function () {
-                commonVariables = localStorageService.getElementsFromItemWithRequestParams(
+                commonVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
                     'commonVariables', params);
                 deferred.resolve(commonVariables);
             }, function (error) {
@@ -5309,7 +5308,7 @@ angular.module('starter')
                 }, 10000);
 
                 var successHandler = function(commonVariables) {
-                    localStorageService.setItem('commonVariables', JSON.stringify(commonVariables)).then(function () {
+                    quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables)).then(function () {
                         $rootScope.$broadcast('populateCommonVariables');
                     });
                     $rootScope.syncingCommonVariables = false;
@@ -5509,7 +5508,7 @@ angular.module('starter')
                         $rootScope.trackingRemindersNotifications =
                             quantimodoService.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
                         if($rootScope.trackingRemindersNotifications.length > 1){
-                            localStorageService.setItem('trackingReminderNotifications',
+                            quantimodoService.setLocalStorageItem('trackingReminderNotifications',
                                 JSON.stringify($rootScope.trackingRemindersNotifications));
                         }
 
@@ -6336,7 +6335,6 @@ angular.module('starter')
             return utcTimeString;
         };
 
-
         quantimodoService.getLocalMidnightInUtcString = function () {
             var localMidnightMoment = moment(0, "HH");
             var timeFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -6373,7 +6371,7 @@ angular.module('starter')
             var currentDateTimeInUtcStringPlus15Min = currentMoment.utc().format(timeFormat);
             return currentDateTimeInUtcStringPlus15Min;
         };
-        
+
         quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen = function (defaultStartTimeInSecondsSinceMidnightLocal) {
             // Round minutes
             var defaultStartTime = new Date(defaultStartTimeInSecondsSinceMidnightLocal * 1000);
@@ -6410,6 +6408,322 @@ angular.module('starter')
         quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString = function (localString) {
             var secondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString(localString);
             return quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(secondsSinceMidnightLocal);
+        };
+
+        // Local Storage Services
+
+        quantimodoService.deleteItemFromLocalStorage  = function(key){
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            if ($rootScope.isChromeApp) {
+
+                // Code running in a Chrome extension (content script, background page, etc.)
+                chrome.storage.local.remove(keyIdentifier+key);
+
+            } else {
+                localStorage.removeItem(keyIdentifier+key);
+            }
+        };
+
+        quantimodoService.deleteElementOfLocalStorageItemById = function(localStorageItemName, elementId){
+            var deferred = $q.defer();
+            var elementsToKeep = [];
+            var localStorageItemAsString = this.getItemSync(localStorageItemName);
+            var localStorageItemArray = JSON.parse(localStorageItemAsString);
+            if(!localStorageItemArray){
+                console.warn("Local storage item " + localStorageItemName + " not found");
+            } else {
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    if(localStorageItemArray[i].id !== elementId){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
+                }
+                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+            }
+            deferred.resolve(elementsToKeep);
+            return deferred.promise;
+        };
+
+        quantimodoService.deleteElementOfLocalStorageItemByProperty = function(localStorageItemName, propertyName, propertyValue){
+            var deferred = $q.defer();
+            var elementsToKeep = [];
+            var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+            if(!localStorageItemArray){
+                console.error("Local storage item " + localStorageItemName + " not found");
+            } else {
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    if(localStorageItemArray[i][propertyName] !== propertyValue){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
+                }
+                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+            }
+            deferred.resolve();
+            return deferred.promise;
+        };
+
+        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront = function(localStorageItemName, replacementElementArray){
+            var deferred = $q.defer();
+            if(replacementElementArray.constructor !== Array){
+                replacementElementArray = [replacementElementArray];
+            }
+            // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
+            var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
+            var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+            var found = false;
+            if(localStorageItemArray){
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    found = false;
+                    for (var j = 0; j < replacementElementArray.length; j++){
+                        if(replacementElementArray[j].id &&
+                            localStorageItemArray[i].id === replacementElementArray[j].id){
+                            found = true;
+                        }
+                    }
+                    if(!found){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
+                }
+            }
+            this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+            deferred.resolve();
+            return deferred.promise;
+        };
+
+        quantimodoService.setLocalStorageItem = function(key, value){
+            var deferred = $q.defer();
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            if ($rootScope.isChromeApp) {
+                // Code running in a Chrome extension (content script, background page, etc.)
+                var obj = {};
+                obj[keyIdentifier+key] = value;
+                chrome.storage.local.set(obj);
+                deferred.resolve();
+            } else {
+                localStorage.setItem(keyIdentifier+key,value);
+                deferred.resolve();
+            }
+            return deferred.promise;
+        };
+
+        quantimodoService.getLocalStorageItemWithCallback = function(key, callback){
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            if ($rootScope.isChromeApp) {
+                // Code running in a Chrome extension (content script, background page, etc.)
+                chrome.storage.local.get(keyIdentifier+key,function(val){
+                    callback(val[keyIdentifier+key]);
+                });
+            } else {
+                var val = localStorage.getItem(keyIdentifier+key);
+                callback(val);
+            }
+        };
+
+        quantimodoService.getLocalStorageItemAsString = function(key) {
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            if ($rootScope.isChromeApp) {
+                // Code running in a Chrome extension (content script, background page, etc.)
+                chrome.storage.local.get(keyIdentifier+key,function(val){
+                    return val[keyIdentifier+key];
+                });
+            } else {
+                return localStorage.getItem(keyIdentifier+key);
+            }
+        };
+
+        quantimodoService.getElementsFromLocalStorageItemWithFilters = function (localStorageItemName, filterPropertyName, filterPropertyValue,
+                                                                                 lessThanPropertyName, lessThanPropertyValue,
+                                                                                 greaterThanPropertyName, greaterThanPropertyValue) {
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            var unfilteredElementArray = [];
+            var itemAsString;
+
+            var i;
+            if ($rootScope.isChromeApp) {
+                // Code running in a Chrome extension (content script, background page, etc.)
+                chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
+                    itemAsString = localStorageItems[keyIdentifier + localStorageItemName];
+                });
+            } else {
+                //console.debug(localStorage.getItem(keyIdentifier + localStorageItemName));
+                itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
+            }
+
+            if(!itemAsString){
+                return null;
+            }
+
+            var matchingElements = JSON.parse(itemAsString);
+
+            if(matchingElements.length){
+
+                if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
+                    console.error(greaterThanPropertyName + " greaterThanPropertyName does not exist for " + localStorageItemName);
+                }
+
+                if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
+                    console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
+                }
+
+                if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
+                    console.error(lessThanPropertyName + " lessThanPropertyName does not exist for " + localStorageItemName);
+                }
+            }
+
+            if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
+                if(matchingElements){
+                    unfilteredElementArray = matchingElements;
+                }
+                matchingElements = [];
+                for(i = 0; i < unfilteredElementArray.length; i++){
+                    if(unfilteredElementArray[i][filterPropertyName] == filterPropertyValue){
+                        matchingElements.push(unfilteredElementArray[i]);
+                    }
+                }
+            }
+
+            if(lessThanPropertyName && lessThanPropertyValue){
+                if(matchingElements){
+                    unfilteredElementArray = matchingElements;
+                }
+                matchingElements = [];
+                for(i = 0; i < unfilteredElementArray.length; i++){
+                    if(unfilteredElementArray[i][lessThanPropertyName] < lessThanPropertyValue){
+                        matchingElements.push(unfilteredElementArray[i]);
+                    }
+                }
+            }
+
+            if(greaterThanPropertyName && greaterThanPropertyValue){
+                if(matchingElements){
+                    unfilteredElementArray = matchingElements;
+                }
+                matchingElements = [];
+                for(i = 0; i < unfilteredElementArray.length; i++){
+                    if(unfilteredElementArray[i][greaterThanPropertyName] > greaterThanPropertyValue){
+                        matchingElements.push(unfilteredElementArray[i]);
+                    }
+                }
+            }
+
+            return matchingElements;
+        };
+
+        quantimodoService.getLocalStorageItemAsObject = function(key) {
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            if ($rootScope.isChromeApp) {
+                // Code running in a Chrome extension (content script, background page, etc.)
+                chrome.storage.local.get(keyIdentifier+key,function(val){
+                    var item = val[keyIdentifier+key];
+                    item = convertToObjectIfJsonString(item);
+                    return item;
+                });
+            } else {
+                var item = localStorage.getItem(keyIdentifier+key);
+                item = convertToObjectIfJsonString(item);
+                return item;
+            }
+        };
+
+        quantimodoService.clearLocalStorage = function(){
+            if ($rootScope.isChromeApp) {
+                chrome.storage.local.clear();
+            } else {
+                localStorage.clear();
+            }
+        };
+
+        var convertToObjectIfJsonString = function(stringOrObject) {
+            try {
+                stringOrObject = JSON.parse(stringOrObject);
+            } catch (e) {
+                return stringOrObject;
+            }
+            return stringOrObject;
+        };
+
+        quantimodoService.getCachedResponse = function(requestName, params){
+            if(!params){
+                console.error('No params provided to getCachedResponse');
+                return false;
+            }
+            var cachedResponse = JSON.parse(quantimodoService.getLocalStorageItemAsString('cached' + requestName));
+            if(!cachedResponse){
+                return false;
+            }
+            var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
+            var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
+
+            if(cachedResponse && paramsMatch && cachedResponse.response.length && cacheNotExpired){
+                return cachedResponse.response;
+            } else {
+                return false;
+            }
+        };
+
+        quantimodoService.storeCachedResponse = function(requestName, params, response){
+            var cachedResponse = {
+                requestParams: params,
+                response: response,
+                expirationTimeMilliseconds: Date.now() + 86400 * 1000
+            };
+            quantimodoService.setLocalStorageItem('cached' + requestName, JSON.stringify(cachedResponse));
+        };
+
+        quantimodoService.deleteCachedResponse = function(requestName){
+            quantimodoService.deleteItemFromLocalStorage('cached' + requestName);
+        };
+
+        quantimodoService.getElementsFromLocalStorageItemWithRequestParams = function(localStorageItemName, requestParams) {
+            var greaterThanPropertyName = null;
+            var greaterThanPropertyValue = null;
+            var lessThanPropertyName = null;
+            var lessThanPropertyValue = null;
+            var filterPropertyName = null;
+            var filterPropertyValue = null;
+
+            var log = [];
+            var filterPropertyValues = [];
+            var filterPropertyNames = [];
+
+            angular.forEach(requestParams, function(value, key) {
+                if(typeof value === "string" && value.indexOf('(lt)') !== -1){
+                    lessThanPropertyValue = value.replace('(lt)', "");
+                    if(!isNaN(lessThanPropertyValue)){
+                        lessThanPropertyValue = Number(lessThanPropertyValue);
+                    }
+                    lessThanPropertyName = key;
+                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
+                    greaterThanPropertyValue = value.replace('(gt)', "");
+                    if(!isNaN(greaterThanPropertyValue)){
+                        greaterThanPropertyValue = Number(greaterThanPropertyValue);
+                    }
+                    greaterThanPropertyName = key;
+                } else if (typeof value === "string" && value !== "Anything"){
+                    if(!isNaN(value)){
+                        filterPropertyValues = Number(filterPropertyValue);
+                    } else {
+                        filterPropertyValues.push(value);
+                    }
+                    filterPropertyNames.push(key);
+                } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
+                    filterPropertyValues.push(value);
+                    filterPropertyNames.push(key);
+                }
+            }, log);
+
+            var results =  quantimodoService.getElementsFromLocalStorageItemWithFilters(localStorageItemName, null,
+                null, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName,
+                greaterThanPropertyValue);
+
+            if(results){
+                for(var i = 0; i < filterPropertyNames.length; i++){
+                    results = results.filter(function( obj ) {
+                        return obj[filterPropertyNames[i]] === filterPropertyValues[i];
+                    });
+                }
+            }
+
+            return results;
         };
 
         return quantimodoService;

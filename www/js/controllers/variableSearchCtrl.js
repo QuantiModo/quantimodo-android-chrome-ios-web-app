@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
+    .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter,
                                                quantimodoService, $timeout, $ionicLoading) {
 
         $scope.controller_name = "VariableSearchCtrl";
@@ -25,9 +25,9 @@ angular.module('starter')
         $scope.selectVariable = function(variableObject) {
             console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject));
             if(variableObject.lastValue !== null){
-                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('userVariables', variableObject);
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);
             }
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('commonVariables', variableObject);
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variableObject);
 
             var userTagData;
             if($state.current.name === 'app.favoriteSearch') {

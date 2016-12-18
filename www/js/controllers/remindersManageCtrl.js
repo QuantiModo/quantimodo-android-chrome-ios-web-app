@@ -1,8 +1,7 @@
 angular.module('starter')
 
 	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout,
-												$ionicLoading, $filter, $ionicActionSheet,  quantimodoService,
-												localStorageService) {
+												$ionicLoading, $filter, $ionicActionSheet,  quantimodoService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
@@ -209,7 +208,7 @@ angular.module('starter')
 			// 	$scope.state.trackingReminders.splice($index, 1);
 			// }
 
-			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId)
+			quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId)
 				.then(function(){
 					quantimodoService.getTrackingRemindersFromLocalStorage($stateParams.variableCategoryName)
 						.then(function (trackingReminders) {

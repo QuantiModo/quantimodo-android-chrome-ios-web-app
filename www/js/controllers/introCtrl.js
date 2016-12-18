@@ -1,5 +1,5 @@
 angular.module('starter')
-.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading,
+.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                   $rootScope, $stateParams, quantimodoService) {
 
     $scope.viewTitle = config.appSettings.appName;

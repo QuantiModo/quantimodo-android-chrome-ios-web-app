@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, quantimodoService,
-                                                    localStorageService, $stateParams) {
+                                                    $stateParams) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
         $rootScope.showFilterBarSearchIcon = false;
@@ -58,8 +58,8 @@ angular.module('starter')
         };
 
         var updateCharts = function(){
-            $scope.state.primaryOutcomeMeasurements = localStorageService.getItemAsObject('allMeasurements');
-            var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
+            $scope.state.primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('allMeasurements');
+            var measurementsQueue = quantimodoService.getLocalStorageItemAsObject('measurementsQueue');
             if(!$scope.state.primaryOutcomeMeasurements){
                 $scope.state.primaryOutcomeMeasurements = [];
             }

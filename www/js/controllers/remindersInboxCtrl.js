@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService, localStorageService,
+											   $ionicActionSheet, $timeout, quantimodoService,
 											   $ionicLoading) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
@@ -225,10 +225,10 @@ angular.module('starter')
 			];
 
 			if(typeof $rootScope.defaultHelpCards === "undefined"){
-				localStorageService.getItem('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
+				quantimodoService.getLocalStorageItemWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
 					if(defaultHelpCardsFromLocalStorage === null){
 						$rootScope.defaultHelpCards = defaultHelpCards;
-						localStorageService.setItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
+						quantimodoService.setLocalStorageItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
 					} else {
 						$rootScope.defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
 					}
@@ -447,14 +447,14 @@ angular.module('starter')
 
 		$scope.undo = function(){
 			$rootScope.showUndoButton = false;
-			var notificationsSyncQueue = localStorageService.getItemAsObject('notificationsSyncQueue');
+			var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
 			if(!notificationsSyncQueue){
 				return false;
 			}
 			notificationsSyncQueue[0].trackingReminderNotification.hide = false;
-			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminderNotifications',
+			quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications',
 				notificationsSyncQueue[0].trackingReminderNotification);
-			localStorageService.deleteElementOfItemByProperty('notificationsSyncQueue',
+			quantimodoService.deleteElementOfLocalStorageItemByProperty('notificationsSyncQueue',
 				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
 			getTrackingReminderNotifications();
 		};
@@ -481,7 +481,7 @@ angular.module('starter')
 		};
 
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
-			var trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+			var trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
 				'trackingReminderNotifications', 'variableCategoryName', $stateParams.variableCategoryName);
 /*            trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
                 if(obj.variableName === 'Blood Pressure'){
@@ -661,7 +661,7 @@ angular.module('starter')
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
-			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+			quantimodoService.deleteElementOfLocalStorageItemById('trackingReminderNotifications',
 				trackingReminderNotification.id);
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 			$state.go('app.measurementAdd',

@@ -3,7 +3,7 @@ angular.module('starter')
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    quantimodoService, localStorageService, ionicDatePicker,
+                                    quantimodoService, ionicDatePicker,
                                     $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
@@ -13,7 +13,7 @@ angular.module('starter')
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
-            localStorageService.getItem('trackLocation', function(trackLocation){
+            quantimodoService.getLocalStorageItemWithCallback('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
                 if($rootScope.user.trackLocation){
                     quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
@@ -201,7 +201,7 @@ angular.module('starter')
         $rootScope.setLocalStorageFlagTrue = function (flagName) {
             console.debug('Set ' + flagName + ' to true');
             $rootScope[flagName] = true;
-            localStorageService.setItem(flagName, true);
+            quantimodoService.setLocalStorageItem(flagName, true);
         };
 
         $rootScope.hideHelpCard = function (card) {
@@ -209,7 +209,7 @@ angular.module('starter')
             $rootScope.defaultHelpCards = $rootScope.defaultHelpCards.filter(function( obj ) {
                 return obj.id !== card.id;
             });
-            localStorageService.deleteElementOfItemById('defaultHelpCards', card.id);
+            quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
         };
 
         // open datepicker for "from" date
@@ -271,7 +271,7 @@ angular.module('starter')
                         text: 'OK',
                         type: 'button-positive',
                         onTap: function () {
-                            localStorageService.setItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
+                            quantimodoService.setLocalStorageItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
                         }
                     }
                 ]
@@ -319,10 +319,10 @@ angular.module('starter')
         };
 
         $scope.showHelpInfoPopupIfNecessary = function (e) {
-            localStorageService.getItem('isWelcomed', function (isWelcomed) {
+            quantimodoService.getLocalStorageItemWithCallback('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {
                     if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
-                        localStorageService.getItem('notShowHelpPopup', function (val) {
+                        quantimodoService.getLocalStorageItemWithCallback('notShowHelpPopup', function (val) {
                             if (typeof val === "undefined" || val === "undefined") {
                                 $scope.notShowHelpPopup = false;
                             } else {
@@ -396,7 +396,7 @@ angular.module('starter')
                     template: '<ion-spinner></ion-spinner>'
                 });
                 //trackingReminder.defaultValue = 3;
-                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
                         $state.go('app.favorites',
@@ -641,7 +641,7 @@ angular.module('starter')
 
         $scope.goToDefaultStateIfWelcomed = function () {
             console.debug('appCtrl: user has seen the welcome screen before...');
-            localStorageService.getItem('isWelcomed', function (isWelcomed) {
+            quantimodoService.getLocalStorageItemWithCallback('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {
                     $rootScope.isWelcomed = true;
                     console.debug('goToDefaultStateIfWelcomed: Going to default state...');
@@ -699,7 +699,7 @@ angular.module('starter')
             $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
             
             if($rootScope.urlParameters.refreshUser){
-                localStorageService.clear();
+                quantimodoService.clearLocalStorage();
                 window.localStorage.introSeen = true;
                 window.localStorage.isWelcomed = true;
                 $rootScope.user = null;
@@ -709,7 +709,7 @@ angular.module('starter')
             quantimodoService.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){
-                $rootScope.user = JSON.parse(localStorageService.getItemSync('user'));
+                $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user'));
             }
             if(!$rootScope.user){
                 quantimodoService.refreshUser().then(function(){
@@ -902,9 +902,9 @@ angular.module('starter')
         }
 
         $rootScope.sendToLogin = function(){
-            localStorageService.deleteItem('user');
-            localStorageService.deleteItem('accessToken');
-            localStorageService.deleteItem('accessTokenInUrl');
+            quantimodoService.deleteItemFromLocalStorage('user');
+            quantimodoService.deleteItemFromLocalStorage('accessToken');
+            quantimodoService.deleteItemFromLocalStorage('accessTokenInUrl');
             $rootScope.accessToken = null;
             console.debug('appCtrl.sendToLogin just set $rootScope.user to null');
             $rootScope.user = null;
@@ -1140,10 +1140,10 @@ angular.module('starter')
             quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
                 // If primaryOutcomeVariable, delete local storage measurements
                 if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
-                    localStorageService.setItem('allMeasurements',[]);
-                    localStorageService.setItem('measurementsQueue',[]);
-                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
-                    localStorageService.setItem('lastSyncTime',0);
+                    quantimodoService.setLocalStorageItem('allMeasurements',[]);
+                    quantimodoService.setLocalStorageItem('measurementsQueue',[]);
+                    quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
+                    quantimodoService.setLocalStorageItem('lastSyncTime',0);
                 }
                 $ionicLoading.hide();
                 $state.go(config.appSettings.defaultState);
@@ -1258,7 +1258,7 @@ angular.module('starter')
                             }, function(error){
                                 console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify(favorite));
                             });
-                        localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
+                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', favorite.id)
                             .then(function(){
                                 //$scope.init();
                             });
@@ -1272,7 +1272,7 @@ angular.module('starter')
                             }, function(error){
                                 console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($rootScope.bloodPressure));
                             });
-                        localStorageService.deleteElementOfItemById('trackingReminders', $rootScope.bloodPressureReminderId)
+                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $rootScope.bloodPressureReminderId)
                             .then(function(){
                                 //$scope.init();
                             });
@@ -1384,7 +1384,7 @@ angular.module('starter')
             console.debug('Saving variable settings ' + JSON.stringify(params));
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
             quantimodoService.postUserVariableDeferred(params).then(function() {
-                localStorageService.deleteItem('lastStudy');
+                quantimodoService.deleteItemFromLocalStorage('lastStudy');
                 console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(params));
                 $ionicLoading.hide();
 

@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
-                                             $stateParams, localStorageService, quantimodoService) {
+                                             $stateParams, quantimodoService) {
         $scope.controller_name = "ChartsPageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -45,8 +45,8 @@ angular.module('starter')
 
             if ($scope.state.dailyHistory.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
-                /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
-                 var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                /*var fromDate = parseInt(quantimodoService.getLocalStorageItemAsString('fromDate'));
+                 var toDate = parseInt(quantimodoService.getLocalStorageItemAsString('toDate'));
                  if (!fromDate) {
                  fromDate = 0;
                  }
@@ -68,8 +68,8 @@ angular.module('starter')
 
             if ($scope.state.history.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
-                /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
-                var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                /*var fromDate = parseInt(quantimodoService.getLocalStorageItemAsString('fromDate'));
+                var toDate = parseInt(quantimodoService.getLocalStorageItemAsString('toDate'));
                 if (!fromDate) {
                     fromDate = 0;
                 }
