@@ -3646,7 +3646,7 @@ angular.module('starter')
         };
 
         quantimodoService.getPositiveImageByRatingValue = function(numericValue){
-            var positiveRatingOptions = this.getPositiveRatingOptions();
+            var positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
             var filteredList = positiveRatingOptions.filter(function(option){
                 return option.numericValue === numericValue;
             });
@@ -6420,7 +6420,7 @@ angular.module('starter')
         quantimodoService.deleteElementOfLocalStorageItemById = function(localStorageItemName, elementId){
             var deferred = $q.defer();
             var elementsToKeep = [];
-            var localStorageItemAsString = this.getLocalStorageItemAsString(localStorageItemName);
+            var localStorageItemAsString = quantimodoService.getLocalStorageItemAsString(localStorageItemName);
             var localStorageItemArray = JSON.parse(localStorageItemAsString);
             if(!localStorageItemArray){
                 console.warn("Local storage item " + localStorageItemName + " not found");
@@ -6430,7 +6430,7 @@ angular.module('starter')
                         elementsToKeep.push(localStorageItemArray[i]);
                     }
                 }
-                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+                this.setLocalStorageItem(localStorageItemName, JSON.stringify(elementsToKeep));
             }
             deferred.resolve(elementsToKeep);
             return deferred.promise;
@@ -6439,7 +6439,7 @@ angular.module('starter')
         quantimodoService.deleteElementOfLocalStorageItemByProperty = function(localStorageItemName, propertyName, propertyValue){
             var deferred = $q.defer();
             var elementsToKeep = [];
-            var localStorageItemArray = JSON.parse(this.getLocalStorageItemAsString(localStorageItemName));
+            var localStorageItemArray = JSON.parse(quantimodoService.getLocalStorageItemAsString(localStorageItemName));
             if(!localStorageItemArray){
                 console.error("Local storage item " + localStorageItemName + " not found");
             } else {
@@ -6448,7 +6448,7 @@ angular.module('starter')
                         elementsToKeep.push(localStorageItemArray[i]);
                     }
                 }
-                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+                quantimodoService.setLocalStorageItem(localStorageItemName, JSON.stringify(elementsToKeep));
             }
             deferred.resolve();
             return deferred.promise;
@@ -6461,7 +6461,7 @@ angular.module('starter')
             }
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
-            var localStorageItemArray = JSON.parse(this.getLocalStorageItemAsString(localStorageItemName));
+            var localStorageItemArray = JSON.parse(quantimodoService.getLocalStorageItemAsString(localStorageItemName));
             var found = false;
             if(localStorageItemArray){
                 for(var i = 0; i < localStorageItemArray.length; i++){
@@ -6477,7 +6477,7 @@ angular.module('starter')
                     }
                 }
             }
-            this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+            quantimodoService.setLocalStorageItem(localStorageItemName, JSON.stringify(elementsToKeep));
             deferred.resolve();
             return deferred.promise;
         };
