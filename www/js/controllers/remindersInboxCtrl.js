@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 											   $ionicActionSheet, $timeout, quantimodoService,
-											   notificationService, localStorageService, $ionicLoading, chartService) {
+											   notificationService, localStorageService, $ionicLoading) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -351,7 +351,7 @@ angular.module('starter')
 
 		var getWeekdayChartIfNecessary = function () {
 			if(!$scope.state.numberOfDisplayedNotifications && !$scope.weekdayChartConfig){
-				chartService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
+				quantimodoService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
 					config.appSettings.primaryOutcomeVariableDetails).then(function (chartConfig) {
 					$scope.weekdayChartConfig = chartConfig;
 				});

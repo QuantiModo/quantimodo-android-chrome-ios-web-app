@@ -5,29 +5,6 @@ angular.module('starter')
 		// service methods
 		var timeService = {
 
-			getSecondsSinceMidnightLocalFromUtcString: function (utcTimeString) {
-
-				var timeFormat = "HH:mm:ss Z";
-				var utcTimeStringFull = moment().format(timeFormat);
-				if(utcTimeString){
-					utcTimeStringFull = utcTimeString + " +0000";
-				}
-				
-				var hours = parseInt(moment(utcTimeStringFull, timeFormat).format("HH"));
-				var minutes = parseInt(moment(utcTimeStringFull, timeFormat).format("mm"));
-				var seconds = parseInt(moment(utcTimeStringFull, timeFormat).format("ss"));
-				var secondsSinceMidnightLocal =
-					hours * 60 *60 + minutes * 60 + seconds;
-
-                // not sure why this is necessary
-                secondsSinceMidnightLocal = secondsSinceMidnightLocal - 60 * 60;
-                if(secondsSinceMidnightLocal < 0) {
-                    secondsSinceMidnightLocal = secondsSinceMidnightLocal + 86400;
-                }
-
-				return secondsSinceMidnightLocal;
-			},
-
 			getSecondsSinceMidnightLocalFromLocalString: function (localTimeString) {
 				var timeFormat = "HH:mm:ss";
 				var hours = parseInt(moment(localTimeString, timeFormat).format("HH"));
@@ -37,12 +14,6 @@ angular.module('starter')
 					hours * 60 *60 + minutes * 60 + seconds;
 				return secondsSinceMidnightLocal;
 			},
-
-            getEpochTimeFromUtcString: function (utcTimeString) {
-                var timeFormat = "HH:mm:ss";
-                var epochTime = moment(utcTimeString, timeFormat).unix();
-                return epochTime;
-            },
 
 			getEpochTimeFromLocalString: function (localTimeString) {
 				var timeFormat = "HH:mm:ss";
@@ -80,11 +51,6 @@ angular.module('starter')
 				return utcTimeString;
 			},
 
-			getEpochMillisecondsFromUtcDateTimeString: function (utcDateTimeString) {
-				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
-				var epochMilliseconds = 1000 * moment(utcDateTimeString, timeFormat).unix();
-				return epochMilliseconds;
-			},
 
 			getLocalMidnightInUtcString: function () {
 				var localMidnightMoment = moment(0, "HH");
@@ -100,13 +66,7 @@ angular.module('starter')
 				var tomorrowLocalMidnightInUtcString = tomorrowLocalMidnightMoment.utc().format(timeFormat);
 				return tomorrowLocalMidnightInUtcString;
 			},
-			
-			getCurrentTimeInUtcString: function () {
-				var currentMoment = moment();
-				var timeFormat = 'HH:mm:ss';
-				var currentTimeInUtcString = currentMoment.utc().format(timeFormat);
-				return currentTimeInUtcString;
-			},
+
 
 			getCurrentTimeInLocalString: function () {
 				var currentMoment = moment();
@@ -127,7 +87,7 @@ angular.module('starter')
 				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 				var currentDateTimeInUtcStringPlus15Min = currentMoment.utc().format(timeFormat);
 				return currentDateTimeInUtcStringPlus15Min;
-			},
+			}
 
 		};
 

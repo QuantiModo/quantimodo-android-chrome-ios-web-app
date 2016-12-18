@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
-                                             $stateParams, chartService, localStorageService, quantimodoService) {
+                                             $stateParams, localStorageService, quantimodoService) {
         $scope.controller_name = "ChartsPageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -55,11 +55,11 @@ angular.module('starter')
                  }*/
                 if($rootScope.variableObject.fillingValue !== null && $rootScope.variableObject.fillingValue !== -1){
                     $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
+                        quantimodoService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
                 }
-                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
+                $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
+                    quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.highchartsReflow();
             }
         };
@@ -78,10 +78,10 @@ angular.module('starter')
                 }*/
                 if($rootScope.variableObject.fillingValue === null || $rootScope.variableObject.fillingValue === -1){
                     $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
+                        quantimodoService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
                 }
                 $scope.hourlyChartConfig =
-                    chartService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
+                    quantimodoService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
                 $scope.highchartsReflow();
             }
         };

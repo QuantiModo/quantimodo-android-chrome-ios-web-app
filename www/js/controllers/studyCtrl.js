@@ -1,6 +1,6 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, quantimodoService, $stateParams, $ionicHistory, $rootScope,
-                                      chartService, $timeout, $ionicLoading, localStorageService,
+                                      $timeout, $ionicLoading, localStorageService,
                                       wikipediaFactory, $ionicActionSheet) {
 
 		$scope.controller_name = "StudyCtrl";
@@ -145,10 +145,10 @@ angular.module('starter')
         $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
             $scope.state.loading = false;
-            $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+            $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
                 $scope.correlationObject.causeProcessedDailyMeasurements,
                 {variableName: $scope.state.requestParams.causeVariableName});
-            $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+            $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
                 $scope.correlationObject.effectProcessedDailyMeasurements,
                 {variableName: $scope.state.requestParams.effectVariableName});
 

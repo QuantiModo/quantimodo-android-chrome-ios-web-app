@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, quantimodoService,
-                                                    chartService, localStorageService, $stateParams) {
+                                                    localStorageService, $stateParams) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
         $rootScope.showFilterBarSearchIcon = false;
@@ -68,17 +68,17 @@ angular.module('starter')
             }
             if( $scope.state.primaryOutcomeMeasurements) {
                 $scope.hourlyChartConfig =
-                    chartService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
+                    quantimodoService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements,
+                    quantimodoService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 $scope.distributionChartConfig =
-                    chartService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
+                    quantimodoService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 updateAveragePrimaryOutcomeRatingView();
                 $scope.lineChartConfig =
-                    chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
+                    quantimodoService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
             }
             $scope.highchartsReflow();
