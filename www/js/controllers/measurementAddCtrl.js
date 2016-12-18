@@ -2,7 +2,7 @@ angular.module('starter')
 
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
                                                $ionicActionSheet, $ionicHistory, quantimodoService,
-                                               utilsService, localStorageService, variableCategoryService,
+                                               utilsService, localStorageService,
                                                ionicTimePicker, ionicDatePicker) {
 
         $scope.controller_name = "MeasurementAddCtrl";

@@ -540,7 +540,7 @@ angular.module('starter')
         };
 
         // get variable categories
-        quantimodoService.getVariableCategories = function(successHandler, errorHandler){
+        quantimodoService.getVariableCategoriesFromApi = function(successHandler, errorHandler){
             quantimodoService.get('api/variableCategories',
                 [],
                 {},
@@ -2277,6 +2277,50 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        // refresh local variable categories with quantimodoService API
+        quantimodoService.refreshVariableCategories = function(){
+            var deferred = $q.defer();
+
+            quantimodoService.getVariableCategoriesFromApi(function(vars){
+                localStorageService.setItem('variableCategories',JSON.stringify(vars));
+                deferred.resolve(vars);
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        // get variable categories
+        quantimodoService.getVariableCategories = function(){
+            var deferred = $q.defer();
+
+            localStorageService.getItem('variableCategories',function(variableCategories){
+                if(variableCategories){
+                    deferred.resolve(JSON.parse(variableCategories));
+                } else {
+                    quantimodoService.getVariableCategoriesFromApi(function(variableCategories){
+                        localStorageService.setItem('variableCategories', JSON.stringify(variableCategories));
+                        deferred.resolve(variableCategories);
+                    }, function(error){
+                        deferred.reject(error);
+                    });
+                }
+            });
+
+            return deferred.promise;
+        },
+
+        quantimodoService.getVariableCategoryIcon = function(variableCategoryName){
+                var variableCategoryInfo = quantimodoService.getVariableCategoryInfo(variableCategoryName);
+                if(variableCategoryInfo.icon){
+                    return variableCategoryInfo.icon;
+                } else {
+                    console.warn('Could not find icon for variableCategoryName ' + variableCategoryName);
+                    return 'ion-speedometer';
+                }
+
+            };
 
         return quantimodoService;
     });

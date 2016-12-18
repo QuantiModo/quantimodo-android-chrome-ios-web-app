@@ -1,5 +1,5 @@
 angular.module('starter')
-	.factory('ratingService', function(variableCategoryService) {
+	.factory('ratingService', function(quantimodoService) {
         
 		var ratingService = {
 
@@ -240,7 +240,7 @@ angular.module('starter')
 
                     if (measurements[index].variableCategoryName){
                         measurements[index].icon =
-                            variableCategoryService.getVariableCategoryIcon(measurements[index].variableCategoryName);
+                            quantimodoService.getVariableCategoryIcon(measurements[index].variableCategoryName);
                     }
                 }
                 return measurements;

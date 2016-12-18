@@ -1,6 +1,6 @@
 angular.module('starter')
     .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
-                                               quantimodoService,  variableCategoryService, variableService, $timeout, $ionicLoading) {
+                                               quantimodoService, variableService, $timeout, $ionicLoading) {
 
         $scope.controller_name = "VariableSearchCtrl";
         $rootScope.showFilterBarSearchIcon = false;

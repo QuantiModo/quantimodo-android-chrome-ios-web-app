@@ -2,8 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   quantimodoService,
-													   variableCategoryService, ratingService, localStorageService,
+													   quantimodoService, ratingService, localStorageService,
 													   qmLocationService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
@@ -131,7 +130,7 @@ angular.module('starter')
 				$scope.state.trackLocation = $rootScope.user.trackLocation;
 			}
 			$scope.showHelpInfoPopupIfNecessary();
-			variableCategoryService.getVariableCategories()
+			quantimodoService.getVariableCategories()
 				.then(function(variableCategories){
 					$scope.state.variableCategories = variableCategories;
 				}, function(error){

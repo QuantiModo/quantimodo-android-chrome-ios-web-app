@@ -5,7 +5,7 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker,
-                                    variableService, qmLocationService, variableCategoryService, bugsnagService,
+                                    variableService, qmLocationService, bugsnagService,
                                     utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;

@@ -1,6 +1,6 @@
 angular.module('starter')
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, quantimodoService, timeService,
-                                            bugsnagService, qmLocationService, variableCategoryService,
+                                            bugsnagService, qmLocationService,
                                             localStorageService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {

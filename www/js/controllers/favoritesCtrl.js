@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, quantimodoService,
-										  localStorageService, variableCategoryService, $rootScope,
+										  localStorageService, $rootScope,
 										  $stateParams) {
 
 	    $scope.controller_name = "FavoritesCtrl";
