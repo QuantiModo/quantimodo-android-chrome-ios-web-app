@@ -67,7 +67,7 @@ angular.module('starter')
     			else {
 					$scope.state.history = history;
 				}
-				$scope.state.history = ratingService.addInfoAndImagesToMeasurements($scope.state.history);
+				$scope.state.history = quantimodoService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
 				if(history.length < $scope.state.limit){
 					$scope.state.hideLoadMoreButton = true;
