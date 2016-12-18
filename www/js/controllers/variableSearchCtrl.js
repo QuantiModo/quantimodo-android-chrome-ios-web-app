@@ -1,6 +1,6 @@
 angular.module('starter')
     .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
-                                               QuantiModo,  variableCategoryService, variableService, $timeout, $ionicLoading) {
+                                               quantimodoService,  variableCategoryService, variableService, $timeout, $ionicLoading) {
 
         $scope.controller_name = "VariableSearchCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -55,7 +55,7 @@ angular.module('starter')
                         template: '<ion-spinner></ion-spinner>'
                     });
 
-                    QuantiModo.postUserTagDeferred(userTagData).then(function () {
+                    quantimodoService.postUserTagDeferred(userTagData).then(function () {
                         $ionicLoading.hide();
                         if ($stateParams.fromState) {
                             $state.go($stateParams.fromState, {
@@ -87,7 +87,7 @@ angular.module('starter')
                         template: '<ion-spinner></ion-spinner>'
                     });
 
-                    QuantiModo.postUserTagDeferred(userTagData).then(function () {
+                    quantimodoService.postUserTagDeferred(userTagData).then(function () {
                         $ionicLoading.hide();
                         if ($stateParams.fromState) {
                             $state.go($stateParams.fromState, {

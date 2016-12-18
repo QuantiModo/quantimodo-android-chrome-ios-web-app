@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('connectorsService', function($q, $rootScope, QuantiModo, timeService, localStorageService) {
+	.factory('connectorsService', function($q, $rootScope, quantimodoService, timeService, localStorageService) {
 
 		var connectorsService = {};
 
@@ -23,7 +23,7 @@ angular.module('starter')
 
 		connectorsService.refreshConnectors = function(){
 			var deferred = $q.defer();
-			QuantiModo.getConnectors(function(connectors){
+			quantimodoService.getConnectors(function(connectors){
 				localStorageService.setItem('connectors', JSON.stringify(connectors));
 				connectors = connectorsService.hideBrokenConnectors(connectors);
 				deferred.resolve(connectors);
@@ -35,7 +35,7 @@ angular.module('starter')
 
 		connectorsService.disconnect = function(name){
 			var deferred = $q.defer();
-			QuantiModo.disconnectConnector(name, function(){
+			quantimodoService.disconnectConnector(name, function(){
 				connectorsService.refreshConnectors();
 			}, function(error){
 				deferred.reject(error);
@@ -45,7 +45,7 @@ angular.module('starter')
 
 		connectorsService.connectWithParams = function(params, lowercaseConnectorName){
 			var deferred = $q.defer();
-			QuantiModo.connectConnectorWithParams(params, lowercaseConnectorName, function(){
+			quantimodoService.connectConnectorWithParams(params, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
 			}, function(error){
 				deferred.reject(error);
@@ -55,7 +55,7 @@ angular.module('starter')
 
 		connectorsService.connectWithToken = function(body){
 			var deferred = $q.defer();
-			QuantiModo.connectConnectorWithToken(body, function(){
+			quantimodoService.connectConnectorWithToken(body, function(){
 				connectorsService.refreshConnectors();
 			}, function(error){
 				deferred.reject(error);
@@ -65,7 +65,7 @@ angular.module('starter')
 
 		connectorsService.connectWithAuthCode = function(code, lowercaseConnectorName){
 			var deferred = $q.defer();
-			QuantiModo.connectWithAuthCode(code, lowercaseConnectorName, function(){
+			quantimodoService.connectWithAuthCode(code, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
 			}, function(error){
 				deferred.reject(error);

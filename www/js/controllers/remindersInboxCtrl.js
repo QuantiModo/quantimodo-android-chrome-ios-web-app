@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, QuantiModo, reminderService, utilsService,
+											   $ionicActionSheet, $timeout, quantimodoService, reminderService, utilsService,
 											   notificationService, localStorageService, $ionicLoading, chartService) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
@@ -588,7 +588,7 @@ angular.module('starter')
 				$rootScope.variableCategoryName = null;
 			}
 			showLoader();
-			QuantiModo.getAccessTokenFromUrlParameter();
+			quantimodoService.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
 			$scope.refreshTrackingReminderNotifications();
 			//getTrackingReminderNotifications();
@@ -598,9 +598,9 @@ angular.module('starter')
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
 
-			QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
+			quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 
-			QuantiModo.updateUserTimeZoneIfNecessary();
+			quantimodoService.updateUserTimeZoneIfNecessary();
 
 			notificationService.shouldWeUseIonicLocalNotifications();
 

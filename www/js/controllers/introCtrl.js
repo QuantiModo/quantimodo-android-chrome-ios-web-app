@@ -53,7 +53,7 @@ angular.module('starter')
         if($scope.introSlides[0].textColor){
             $scope.myIntro.textColor = $scope.introSlides[0].textColor;
         }
-        if(QuantiModo.getAccessTokenFromUrlParameter()){
+        if(quantimodoService.getAccessTokenFromUrlParameter()){
             console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {

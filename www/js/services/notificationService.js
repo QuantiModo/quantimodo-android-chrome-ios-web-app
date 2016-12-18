@@ -1,5 +1,5 @@
 angular.module('starter')
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, QuantiModo, timeService,
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, quantimodoService, timeService,
                                             bugsnagService, qmLocationService, variableCategoryService,
                                             localStorageService) {
 
@@ -94,7 +94,7 @@ angular.module('starter')
                 }
 
                 if(params.trackingReminderId || params.trackingReminderNotificationId ){
-                    QuantiModo.skipTrackingReminderNotification(params, function(response){
+                    quantimodoService.skipTrackingReminderNotification(params, function(response){
                         console.debug(response);
                     }, function(error){
                         console.error(JSON.stringify(error));
@@ -166,12 +166,12 @@ angular.module('starter')
                 var params = {
                     reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
                 };
-                QuantiModo.getTrackingReminderNotifications(params, function (response) {
+                quantimodoService.getTrackingReminderNotifications(params, function (response) {
                     if (response.success) {
                         $rootScope.trackingReminderNotifications = response.data;
                         $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
                         $rootScope.trackingRemindersNotifications =
-                            QuantiModo.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
+                            quantimodoService.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
                         if($rootScope.trackingRemindersNotifications.length > 1){
                             localStorageService.setItem('trackingReminderNotifications',
                                 JSON.stringify($rootScope.trackingRemindersNotifications));

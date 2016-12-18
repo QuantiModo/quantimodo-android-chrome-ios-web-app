@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
-                                             $ionicActionSheet, $ionicHistory, QuantiModo, localStorageService,
+                                             $ionicActionSheet, $ionicHistory, quantimodoService, localStorageService,
                                              reminderService, utilsService, ionicTimePicker, variableCategoryService,
                                              variableService, unitService, timeService, bugsnagService, $ionicPopup,
                                              ionicDatePicker) {
@@ -566,7 +566,7 @@ angular.module('starter')
 	    };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
-            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
@@ -588,7 +588,7 @@ angular.module('starter')
                 variableCategoryName = '';
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             if (!$scope.state.trackingReminder.abbreviatedUnitName) {
             	$scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }

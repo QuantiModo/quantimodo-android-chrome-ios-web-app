@@ -1,6 +1,6 @@
 angular.module('starter')
     // Measurement Service
-    .factory('unitService', function($q, $rootScope, QuantiModo, localStorageService) {
+    .factory('unitService', function($q, $rootScope, quantimodoService, localStorageService) {
         
         // service methods
         function addUnitsToRootScope(units) {
@@ -57,7 +57,7 @@ angular.module('starter')
 
             refreshUnits : function(){
                 var deferred = $q.defer();
-                QuantiModo.getUnits(function(unitObjects){
+                quantimodoService.getUnits(function(unitObjects){
                     if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
                         $rootScope.abbreviatedUnitNames = [];
                     }

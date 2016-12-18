@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, QuantiModo,
+	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, quantimodoService,
 										  localStorageService, measurementService, variableCategoryService, $rootScope,
 										  $stateParams, utilsService) {
 
@@ -32,7 +32,7 @@ angular.module('starter')
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Syncing...');
 				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
-					QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
+					quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 				});
@@ -72,7 +72,7 @@ angular.module('starter')
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
 			} else {
-				QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
+				quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 				$scope.refreshFavorites();
 			}
 			$scope.showHelpInfoPopupIfNecessary();

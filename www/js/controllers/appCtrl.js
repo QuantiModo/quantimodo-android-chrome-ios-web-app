@@ -3,7 +3,7 @@ angular.module('starter')
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    measurementService, QuantiModo, notificationService, localStorageService,
+                                    measurementService, quantimodoService, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
                                     utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
@@ -18,7 +18,7 @@ angular.module('starter')
             localStorageService.getItem('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
                 if($rootScope.user.trackLocation){
-                    QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+                    quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
                 }
             });
         }
@@ -147,7 +147,7 @@ angular.module('starter')
                         effectVariableId: correlationObject.effectVariableId,
                         shareUserMeasurements: true
                     };
-                    QuantiModo.postStudyDeferred(body).then(function () {
+                    quantimodoService.postStudyDeferred(body).then(function () {
                         if(url){
                             $scope.openUrl(url);
                         }
@@ -179,7 +179,7 @@ angular.module('starter')
                         effectVariableId: correlationObject.effectVariableId,
                         shareUserMeasurements: false
                     };
-                    QuantiModo.postStudyDeferred(body).then(function () {
+                    quantimodoService.postStudyDeferred(body).then(function () {
 
                     }, function (error) {
                         console.error(error);
@@ -685,7 +685,7 @@ angular.module('starter')
         };
 
         $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
-            QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
+            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
         });
 
         $scope.init = function () {
@@ -708,13 +708,13 @@ angular.module('starter')
                 $rootScope.refreshUser = false;
             }
             bugsnagService.setupBugsnag();
-            QuantiModo.getAccessTokenFromUrlParameter();
+            quantimodoService.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){
                 $rootScope.user = JSON.parse(localStorageService.getItemSync('user'));
             }
             if(!$rootScope.user){
-                QuantiModo.refreshUser().then(function(){
+                quantimodoService.refreshUser().then(function(){
                     $scope.syncEverything();
                 }, function(error){
                     console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));

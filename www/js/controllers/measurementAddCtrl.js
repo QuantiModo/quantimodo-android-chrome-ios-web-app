@@ -8,7 +8,7 @@ angular.module('starter')
         $scope.controller_name = "MeasurementAddCtrl";
 
         var variableCategoryName = $stateParams.variableCategoryName;
-        var variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+        var variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
         var currentTime = new Date();
         $rootScope.showFilterBarSearchIcon = false;
 
@@ -246,7 +246,7 @@ angular.module('starter')
                 var params = {
                     trackingReminderNotificationId: $stateParams.reminderNotification.id
                 };
-                QuantiModo.skipTrackingReminderNotification(params, function(){
+                quantimodoService.skipTrackingReminderNotification(params, function(){
                     console.debug($state.current.name + ": skipTrackingReminderNotification");
                 }, function(error){
                     console.error($state.current.name + ": skipTrackingReminderNotification error");
@@ -293,7 +293,7 @@ angular.module('starter')
         };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
-            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
@@ -309,7 +309,7 @@ angular.module('starter')
                 variableCategoryName = '';
             }
             $scope.state.measurement.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             if(!$scope.state.measurement.abbreviatedUnitName && $scope.state.variableCategoryObject.defaultAbbreviatedUnitName){
                 $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }

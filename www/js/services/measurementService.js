@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($q, $rootScope, QuantiModo, localStorageService,
+	.factory('measurementService', function($q, $rootScope, quantimodoService, localStorageService,
                                             ratingService, utilsService) {
 
         //flag to indicate if data syncing is in progress
@@ -66,7 +66,7 @@ angular.module('starter')
                 });
 
                 var getPrimaryOutcomeVariableMeasurements = function(params) {
-                    QuantiModo.getV1Measurements(params, function(response){
+                    quantimodoService.getV1Measurements(params, function(response){
                         // Do the stuff with adding to allMeasurements
                         if (response.length > 0 && response.length <= 200) {
                             // Update local data
@@ -179,11 +179,11 @@ angular.module('starter')
 
                         console.debug('Syncing measurements to server: ' + JSON.stringify(measurementObjects));
 
-                        QuantiModo.postMeasurementsV2(measurements, function (response) {
+                        quantimodoService.postMeasurementsV2(measurements, function (response) {
                             localStorageService.setItem('measurementsQueue', JSON.stringify([]));
                             measurementService.getMeasurements().then(function() {
                                 defer.resolve();
-                                console.debug("QuantiModo.postMeasurementsV2 success: " + JSON.stringify(response));
+                                console.debug("quantimodoService.postMeasurementsV2 success: " + JSON.stringify(response));
                             });
                         }, function (response) {
                             console.debug("error: " + JSON.stringify(response));
@@ -429,20 +429,20 @@ angular.module('starter')
                     };
 
                     // send request
-                    QuantiModo.postMeasurementsV2(measurements, function(response){
+                    quantimodoService.postMeasurementsV2(measurements, function(response){
                         if(response.success) {
                             console.debug("postMeasurementsV2 success " + JSON.stringify(response));
                             if(usePromise) {
                                 deferred.resolve();
                             }
                         } else {
-                            console.debug("QuantiModo.postMeasurementsV2 error" + JSON.stringify(response));
+                            console.debug("quantimodoService.postMeasurementsV2 error" + JSON.stringify(response));
                             if(usePromise) {
                                 deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
                             }
                         }
                     }, function(response){
-                        console.debug("QuantiModo.postMeasurementsV2 error" + JSON.stringify(response));
+                        console.debug("quantimodoService.postMeasurementsV2 error" + JSON.stringify(response));
                         if(usePromise) {
                             deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
                         }
@@ -485,9 +485,9 @@ angular.module('starter')
 
                 var deferred = $q.defer();
 
-                QuantiModo.postMeasurementsV2(measurementSet, function(response){
+                quantimodoService.postMeasurementsV2(measurementSet, function(response){
                     if(response.success) {
-                        console.debug("QuantiModo.postMeasurementsV2 success: " + JSON.stringify(response));
+                        console.debug("quantimodoService.postMeasurementsV2 success: " + JSON.stringify(response));
                         deferred.resolve();
                     } else {
                         deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
@@ -500,7 +500,7 @@ angular.module('starter')
             getHistoryMeasurements : function(params){
                 var deferred = $q.defer();
 
-                QuantiModo.getV1Measurements(params, function(response){
+                quantimodoService.getV1Measurements(params, function(response){
                     deferred.resolve(response);
                 }, function(error){
                     if (typeof Bugsnag !== "undefined") {
@@ -515,7 +515,7 @@ angular.module('starter')
             getMeasurementById : function(measurementId){
                 var deferred = $q.defer();
                 var params = {id : measurementId};
-                QuantiModo.getV1Measurements(params, function(response){
+                quantimodoService.getV1Measurements(params, function(response){
                     var measurementArray = response;
                     if(!measurementArray[0]){
                         console.debug('Could not get measurement with id: ' + measurementId);
@@ -548,7 +548,7 @@ angular.module('starter')
 
             deleteMeasurementFromServer : function(measurement){
                 var deferred = $q.defer();
-                QuantiModo.deleteV1Measurements(measurement, function(response){
+                quantimodoService.deleteV1Measurements(measurement, function(response){
                     deferred.resolve(response);
                     console.debug("deleteMeasurementFromServer success " + JSON.stringify(response));
                 }, function(response){
@@ -592,9 +592,9 @@ angular.module('starter')
                 }
             ];
 
-            QuantiModo.postMeasurementsV2(measurementSets, function(response){
+            quantimodoService.postMeasurementsV2(measurementSets, function(response){
                 if(response.success) {
-                    console.debug("QuantiModo.postMeasurementsV2 success: " + JSON.stringify(response));
+                    console.debug("quantimodoService.postMeasurementsV2 success: " + JSON.stringify(response));
                     deferred.resolve(response);
                 } else {
                     deferred.reject(response);

@@ -1,5 +1,5 @@
 angular.module('starter')
-	.factory('variableService', function($q, $rootScope, QuantiModo, localStorageService, $timeout) {
+	.factory('variableService', function($q, $rootScope, quantimodoService, localStorageService, $timeout) {
 
 	    var variableService = {};
 
@@ -20,7 +20,7 @@ angular.module('starter')
                 variableSearchQuery = '*';
             }
 
-            QuantiModo.searchUserVariables(variableSearchQuery, params, function(vars){
+            quantimodoService.searchUserVariables(variableSearchQuery, params, function(vars){
                 if($rootScope.lastSearchUserVariablesPromise){
                     $rootScope.lastSearchUserVariablesPromise.resolve(vars);
                     $rootScope.lastSearchUserVariablesPromise = null;
@@ -37,7 +37,7 @@ angular.module('starter')
             var deferred = $q.defer();
 
             // refresh always
-            QuantiModo.getVariablesByName(name, params, function(variable){
+            quantimodoService.getVariablesByName(name, params, function(variable){
                 deferred.resolve(variable);
             }, function(error){
                 deferred.reject(error);
@@ -48,7 +48,7 @@ angular.module('starter')
 
         variableService.getPublicVariablesByName = function(name) {
             var deferred = $q.defer();
-            QuantiModo.getPublicVariablesByName(name, function(variable){
+            quantimodoService.getPublicVariablesByName(name, function(variable){
                 deferred.resolve(variable);
             }, function(error){
                 deferred.reject(error);
@@ -62,7 +62,7 @@ angular.module('starter')
         variableService.postUserVariable = function(userVariable) {
 
             var deferred = $q.defer();
-            QuantiModo.postUserVariable(userVariable, function(userVariable) {
+            quantimodoService.postUserVariable(userVariable, function(userVariable) {
                 deferred.resolve(userVariable);
             }, function(error){
                 deferred.reject(error);
@@ -74,7 +74,7 @@ angular.module('starter')
         variableService.resetUserVariable = function(variableId) {
             var deferred = $q.defer();
             var body = {variableId: variableId};
-            QuantiModo.resetUserVariable(body, function(userVariable) {
+            quantimodoService.resetUserVariable(body, function(userVariable) {
                 deferred.resolve(userVariable);
             }, function(error){
                 deferred.reject(error);
@@ -87,7 +87,7 @@ angular.module('starter')
             var deferred = $q.defer();
 
             // refresh always
-            QuantiModo.getVariableById(variableId, function(variable){
+            quantimodoService.getVariableById(variableId, function(variable){
                 deferred.resolve(variable);
             }, function(error){
                 deferred.reject(error);
@@ -98,7 +98,7 @@ angular.module('starter')
 
         variableService.deleteAllMeasurementsForVariable = function(variableId) {
             var deferred = $q.defer();
-            QuantiModo.deleteUserVariableMeasurements(variableId, function() {
+            quantimodoService.deleteUserVariableMeasurements(variableId, function() {
                 // Delete user variable from local storage
                 localStorageService.deleteElementOfItemById('userVariables', variableId);
                 deferred.resolve();
@@ -165,7 +165,7 @@ angular.module('starter')
                     sort: "-latestMeasurementTime"
                 };
 
-                QuantiModo.getUserVariables(parameters, function(userVariables){
+                quantimodoService.getUserVariables(parameters, function(userVariables){
                     localStorageService.setItem('userVariables', JSON.stringify(userVariables))
                         .then(function () {
                             $rootScope.$broadcast('populateUserVariables');
@@ -246,7 +246,7 @@ angular.module('starter')
                 };
 
 
-                QuantiModo.get('api/v1/public/variables',
+                quantimodoService.get('api/v1/public/variables',
                     ['category', 'includePublic', 'numberOfUserVariables'],
                     parameters,
                     successHandler,

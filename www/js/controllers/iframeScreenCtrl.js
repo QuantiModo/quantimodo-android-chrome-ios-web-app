@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, $rootScope, QuantiModo, localStorageService) {
+    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, $rootScope, quantimodoService, localStorageService) {
 
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
@@ -48,8 +48,8 @@ angular.module('starter')
             iFrameUrl = $rootScope.qmApiUrl + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
-        console.debug('iframeScreen.init: Going to QuantiModo.getAccessTokenFromAnySource');
-        QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
+        console.debug('iframeScreen.init: Going to quantimodoService.getAccessTokenFromAnySource');
+        quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
 
             if(accessToken){
                 if(iFrameUrl.indexOf('?') > -1){

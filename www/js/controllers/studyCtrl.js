@@ -1,5 +1,5 @@
 angular.module('starter')
-	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
+	.controller('StudyCtrl', function($scope, $state, quantimodoService, $stateParams, $ionicHistory, $rootScope,
                                       correlationService, chartService, $timeout, $ionicLoading, localStorageService,
                                       wikipediaFactory, $ionicActionSheet) {
 
@@ -158,7 +158,7 @@ angular.module('starter')
 
         function getStudy() {
             $scope.loadingCharts = true;
-            QuantiModo.getStudyDeferred($scope.state.requestParams).then(function (data) {
+            quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
                 $scope.correlationObject = data.userStudy;
                 localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                 $scope.createUserCharts();

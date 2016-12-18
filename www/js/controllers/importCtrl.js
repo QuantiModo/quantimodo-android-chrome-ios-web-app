@@ -1,7 +1,7 @@
 angular.module('starter')
 	
 	// controls the Import Data page of the app
-	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, QuantiModo,
+	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, quantimodoService,
 									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams, localStorageService) {
 
 		$scope.controller_name = "ImportCtrl";
@@ -40,9 +40,9 @@ angular.module('starter')
 		};
 
 		var goToWebImportDataPage = function() {
-			console.debug('importCtrl.init: Going to QuantiModo.getAccessTokenFromAnySource');
+			console.debug('importCtrl.init: Going to quantimodoService.getAccessTokenFromAnySource');
 			$state.go(config.appSettings.defaultState);
-			QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
+			quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
 				$ionicLoading.hide();
 				if(ionic.Platform.platforms[0] === "browser"){
 					console.debug("Browser Detected");

@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-    .factory('migrationService', function($http, $q, QuantiModo, localStorageService, measurementService, $rootScope){
+    .factory('migrationService', function($http, $q, quantimodoService, localStorageService, measurementService, $rootScope){
 
 
         // service methods

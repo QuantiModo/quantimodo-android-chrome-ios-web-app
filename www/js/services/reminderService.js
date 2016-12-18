@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('reminderService', function($q, $rootScope, QuantiModo, timeService, notificationService,
+	.factory('reminderService', function($q, $rootScope, quantimodoService, timeService, notificationService,
 										 localStorageService, $timeout) {
 
 		var reminderService = {};
@@ -8,7 +8,7 @@ angular.module('starter')
 
 		reminderService.postTrackingReminders = function(trackingRemindersArray){
 			var deferred = $q.defer();
-			QuantiModo.postTrackingReminders(trackingRemindersArray, function(){
+			quantimodoService.postTrackingReminders(trackingRemindersArray, function(){
 				//update alarms and local notifications
 				console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
@@ -30,7 +30,7 @@ angular.module('starter')
 				deferred.resolve();
 				return deferred.promise;
 			}
-			QuantiModo.postTrackingReminderNotifications(trackingReminderNotificationsArray, function(){
+			quantimodoService.postTrackingReminderNotifications(trackingReminderNotificationsArray, function(){
 				localStorageService.deleteItem('notificationsSyncQueue');
                 if($rootScope.showUndoButton){
                     $rootScope.showUndoButton = false;
@@ -60,7 +60,7 @@ angular.module('starter')
                 reminderService.postTrackingReminderNotifications();
             }, delayBeforePostingNotifications);
 /*
-			QuantiModo.skipTrackingReminderNotification(body, function(response){
+			quantimodoService.skipTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
 				}
@@ -78,7 +78,7 @@ angular.module('starter')
 		reminderService.skipAllReminderNotifications = function(params){
 			var deferred = $q.defer();
 			localStorageService.deleteItem('trackingReminderNotifications');
-			QuantiModo.skipAllTrackingReminderNotifications(params, function(response){
+			quantimodoService.skipAllTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					deferred.resolve();
 				}
@@ -104,7 +104,7 @@ angular.module('starter')
                 reminderService.postTrackingReminderNotifications();
             }, delayBeforePostingNotifications);
 /*
-			QuantiModo.trackTrackingReminderNotification(body, function(response){
+			quantimodoService.trackTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
 				}
@@ -131,7 +131,7 @@ angular.module('starter')
             }, delayBeforePostingNotifications);
 
 /*
-			QuantiModo.snoozeTrackingReminderNotification(body, function(response){
+			quantimodoService.snoozeTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
 				}
@@ -191,7 +191,7 @@ angular.module('starter')
 					limit: 200
 				};
 
-				QuantiModo.getTrackingReminders(params, function(remindersResponse){
+				quantimodoService.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
 					if(remindersResponse.success) {
 						if($rootScope.user){
@@ -214,7 +214,7 @@ angular.module('starter')
 								}
 							}
 						} else {
-							var error = 'No $rootScope.user in successful QuantiModo.getTrackingReminders callback! How did this happen?';
+							var error = 'No $rootScope.user in successful quantimodoService.getTrackingReminders callback! How did this happen?';
 							if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 						}
 
@@ -257,10 +257,10 @@ angular.module('starter')
 				params.variableCategoryName = variableCategoryName;
 			}
 			var deferred = $q.defer();
-			QuantiModo.getTrackingReminderNotifications(params, function(response){
+			quantimodoService.getTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					var trackingRemindersNotifications =
-						QuantiModo.attachVariableCategoryIcons(response.data);
+						quantimodoService.attachVariableCategoryIcons(response.data);
 					$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
 					deferred.resolve(trackingRemindersNotifications);
 				}
@@ -327,10 +327,10 @@ angular.module('starter')
 				var params = {};
 				params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
 				params.sort = '-reminderTime';
-				QuantiModo.getTrackingReminderNotifications(params, function(response){
+				quantimodoService.getTrackingReminderNotifications(params, function(response){
 					if(response.success) {
 						var trackingRemindersNotifications =
-							QuantiModo.attachVariableCategoryIcons(response.data);
+							quantimodoService.attachVariableCategoryIcons(response.data);
 						$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
 						if (window.chrome && window.chrome.browserAction) {
 							chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
@@ -361,7 +361,7 @@ angular.module('starter')
 		reminderService.getTrackingReminderById = function(reminderId){
 			var deferred = $q.defer();
 			var params = {id : reminderId};
-			QuantiModo.getTrackingReminders(params, function(remindersResponse){
+			quantimodoService.getTrackingReminders(params, function(remindersResponse){
 				var trackingReminders = remindersResponse.data;
 				if(remindersResponse.success) {
 					deferred.resolve(trackingReminders);
@@ -427,7 +427,7 @@ angular.module('starter')
 			};
 
 
-			QuantiModo.get('api/v1/trackingReminderNotifications',
+			quantimodoService.get('api/v1/trackingReminderNotifications',
 				['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
 				params,
 				successHandler,
@@ -479,7 +479,7 @@ angular.module('starter')
 
 			localStorageService.deleteElementOfItemById('trackingReminders', reminderId);
 
-			QuantiModo.deleteTrackingReminder(reminderId, function(response){
+			quantimodoService.deleteTrackingReminder(reminderId, function(response){
 				if(response.success) {
 					//update alarms and local notifications
 					console.debug("remindersService:  Finished deleteReminder so now refreshTrackingRemindersAndScheduleAlarms");
@@ -638,7 +638,7 @@ angular.module('starter')
 			var nonFavoriteReminders = [];
 			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
 			unfilteredReminders =
-				QuantiModo.attachVariableCategoryIcons(unfilteredReminders);
+				quantimodoService.attachVariableCategoryIcons(unfilteredReminders);
 			if(unfilteredReminders) {
 				for(var k = 0; k < unfilteredReminders.length; k++){
 					if(unfilteredReminders[k].reminderFrequency !== 0){

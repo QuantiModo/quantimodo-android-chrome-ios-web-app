@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   QuantiModo, measurementService,
+													   quantimodoService, measurementService,
 													   variableCategoryService, ratingService, localStorageService,
 													   qmLocationService) {
 
@@ -99,7 +99,7 @@ angular.module('starter')
 
 			console.debug($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+			quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {

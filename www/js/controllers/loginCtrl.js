@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Handlers the Welcome Page
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService,
-                                      localStorageService, $timeout, bugsnagService, QuantiModo, $stateParams, reminderService) {
+                                      localStorageService, $timeout, bugsnagService, quantimodoService, $stateParams, reminderService) {
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
@@ -73,7 +73,7 @@ angular.module('starter')
         };
 
         var fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
-            QuantiModo.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
+            quantimodoService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
                     if(response.error){
                         bugsnagService.reportError(response.error);
@@ -81,9 +81,9 @@ angular.module('starter')
                         localStorageService.setItem('user', null);
                     } else {
                         console.debug("Access token received",response);
-                        QuantiModo.saveAccessTokenInLocalStorage(response);
+                        quantimodoService.saveAccessTokenInLocalStorage(response);
                         console.debug('get user details from server and going to defaultState...');
-                        QuantiModo.refreshUser().then(function(user){
+                        quantimodoService.refreshUser().then(function(user){
                             console.debug($state.current.name + ' fetchAccessTokenAndUserDetails got this user ' +
                                 JSON.stringify(user));
                             $rootScope.hideNavigationMenu = false;
@@ -105,7 +105,7 @@ angular.module('starter')
             //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
             // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
             // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
-            var ref = window.open(QuantiModo.generateV1OAuthUrl(register),'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+            var ref = window.open(quantimodoService.generateV1OAuthUrl(register),'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
 
             // Commented because I think it's causing "$apply already in progress" error
             // $timeout(function () {
@@ -119,7 +119,7 @@ angular.module('starter')
                 if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {
                     console.debug('nonNativeMobileLogin: event.url starts with ' + utilsService.getRedirectUri());
                     if(!utilsService.getUrlParameter(event.url,'error')) {
-                        var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
+                        var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
                         ref.close();
                         console.debug('nonNativeMobileLogin: Going to get an access token using authorization code.');
                         fetchAccessTokenAndUserDetails(authorizationCode);
@@ -136,13 +136,13 @@ angular.module('starter')
 
         var chromeAppLogin = function(register){
           console.debug("login: Use Chrome app (content script, background page, etc.");
-          var url = QuantiModo.generateV1OAuthUrl(register);
+          var url = quantimodoService.generateV1OAuthUrl(register);
           chrome.identity.launchWebAuthFlow({
               'url': url,
               'interactive': true
           }, function() {
-              var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
-              QuantiModo.getAccessTokenFromAuthorizationCode(authorizationCode);
+              var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
+              quantimodoService.getAccessTokenFromAuthorizationCode(authorizationCode);
           });
         };
 
@@ -159,16 +159,16 @@ angular.module('starter')
         $scope.nativeSocialLogin = function(provider, accessToken){
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
-            console.debug('$scope.nativeSocialLogin: Going to try to QuantiModo.getTokensAndUserViaNativeSocialLogin for ' +
+            console.debug('$scope.nativeSocialLogin: Going to try to quantimodoService.getTokensAndUserViaNativeSocialLogin for ' +
                 provider + ' provider');
 
-            QuantiModo.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
+            quantimodoService.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
                 .then(function(response){
-                    console.debug('$scope.nativeSocialLogin: Response from QuantiModo.getTokensAndUserViaNativeSocialLogin:' +
+                    console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
                         JSON.stringify(response));
 
                     if(response.user){
-                        QuantiModo.setUserInLocalStorageBugsnagIntercomPush(response.user);
+                        quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                         $rootScope.hideNavigationMenu = false;
                         console.debug($scope.controller_name + ".getTokensAndUserViaNativeSocialLogin: Got user and going to default state");
                         $state.go(config.appSettings.defaultState);
@@ -177,7 +177,7 @@ angular.module('starter')
 
                     var JWTToken = response.jwtToken;
                     console.debug("nativeSocialLogin: Mobile device detected and provider is " + provider + ". Got JWT token " + JWTToken);
-                    var url = QuantiModo.generateV2OAuthUrl(JWTToken);
+                    var url = quantimodoService.generateV2OAuthUrl(JWTToken);
 
                     console.debug('nativeSocialLogin: open the auth window via inAppBrowser.');
                     var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
@@ -197,7 +197,7 @@ angular.module('starter')
 
                         if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {
                             if(!utilsService.getUrlParameter(event.url,'error')) {
-                                var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
+                                var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
                                 console.debug('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                                 ref.close();
 
@@ -216,7 +216,7 @@ angular.module('starter')
                     });
                 }, function(error){
                     $scope.hideLoader();
-                    bugsnagService.reportError("QuantiModo.getTokensAndUserViaNativeSocialLogin error occurred! " +
+                    bugsnagService.reportError("quantimodoService.getTokensAndUserViaNativeSocialLogin error occurred! " +
                         "Couldn't generate JWT! Error response: " + JSON.stringify(error));
                 });
         };
@@ -353,13 +353,13 @@ angular.module('starter')
                 oAuthBrowserLogin(register);
             } else {
                 $scope.showLoader('Logging you in...');
-                QuantiModo.sendToNonOAuthBrowserLoginUrl(register);
+                quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
             }
         };
 
         var oAuthBrowserLogin = function (register) {
             //$scope.showLoader();
-            var url = QuantiModo.generateV1OAuthUrl(register);
+            var url = quantimodoService.generateV1OAuthUrl(register);
             console.debug("Going to try logging in by opening new tab at url " + url);
 
             var ref = window.open(url, '_blank');
@@ -388,7 +388,7 @@ angular.module('starter')
                         if (utilsService.startsWith(iframe_url, utilsService.getRedirectUri())) {
                             // if there is no error
                             if (!utilsService.getUrlParameter(iframe_url, 'error')) {
-                                var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
+                                var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
                                 // get access token from authorization code
                                 fetchAccessTokenAndUserDetails(authorizationCode);
 

@@ -1,6 +1,6 @@
 angular.module('starter')
     // Variable Category Service
-    .factory('variableCategoryService', function($filter, $q, QuantiModo, localStorageService) {
+    .factory('variableCategoryService', function($filter, $q, quantimodoService, localStorageService) {
 
         // service methods
         return {
@@ -9,7 +9,7 @@ angular.module('starter')
             refreshVariableCategories : function(){
                 var deferred = $q.defer();
 
-                QuantiModo.getVariableCategories(function(vars){
+                quantimodoService.getVariableCategories(function(vars){
                     localStorageService.setItem('variableCategories',JSON.stringify(vars));
                     deferred.resolve(vars);
                 }, function(error){
@@ -27,7 +27,7 @@ angular.module('starter')
                     if(variableCategories){
                         deferred.resolve(JSON.parse(variableCategories));
                     } else {
-                        QuantiModo.getVariableCategories(function(variableCategories){
+                        quantimodoService.getVariableCategories(function(variableCategories){
                             localStorageService.setItem('variableCategories', JSON.stringify(variableCategories));
                             deferred.resolve(variableCategories);
                         }, function(error){
@@ -40,7 +40,7 @@ angular.module('starter')
             },
             
             getVariableCategoryIcon : function(variableCategoryName){
-                var variableCategoryInfo = QuantiModo.getVariableCategoryInfo(variableCategoryName);
+                var variableCategoryInfo = quantimodoService.getVariableCategoryInfo(variableCategoryName);
                 if(variableCategoryInfo.icon){
                     return variableCategoryInfo.icon;
                 } else {

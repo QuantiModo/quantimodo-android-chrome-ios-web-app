@@ -2,7 +2,7 @@ angular.module('starter')
 	
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
-										  notificationService, QuantiModo, reminderService, qmLocationService, 
+										  notificationService, quantimodoService, reminderService, qmLocationService,
 										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory,
 										  bugsnagService, $ionicLoading, $ionicDeploy, $ionicPlatform) {
 		$scope.controller_name = "SettingsCtrl";
@@ -20,7 +20,7 @@ angular.module('starter')
 			}
 		}
 
-		//QuantiModo.updateUserTimeZoneIfNecessary();
+		//quantimodoService.updateUserTimeZoneIfNecessary();
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
@@ -53,7 +53,7 @@ angular.module('starter')
 		};
 
 		$scope.refreshUser = function () {
-			QuantiModo.refreshUser();
+			quantimodoService.refreshUser();
 		};
 
 		$scope.sendSharingInvitation= function() {
@@ -108,7 +108,7 @@ angular.module('starter')
 				$ionicLoading.show({
 					template: '<ion-spinner></ion-spinner>'
 				});
-				QuantiModo.refreshUserEmailPreferences({userEmail: $rootScope.urlParameters.userEmail}).then(function(user){
+				quantimodoService.refreshUserEmailPreferences({userEmail: $rootScope.urlParameters.userEmail}).then(function(user){
 					$rootScope.user = user;
 					$scope.state.loading = false;
 					$ionicLoading.hide();
@@ -144,7 +144,7 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
-			QuantiModo.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
+			quantimodoService.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
 			if($rootScope.user.combineNotifications){
 				$ionicPopup.alert({
 					title: 'Disabled Individual Notifications',
@@ -192,7 +192,7 @@ angular.module('starter')
 
 		$scope.getPreviewBuildsChange = function() {
 			var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
-			QuantiModo.updateUserSettingsDeferred(params);
+			quantimodoService.updateUserSettingsDeferred(params);
 			$scope.autoUpdateApp();
 		};
 
@@ -201,7 +201,7 @@ angular.module('starter')
 			if($rootScope.urlParameters.userEmail){
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}
-			QuantiModo.updateUserSettingsDeferred(params);
+			quantimodoService.updateUserSettingsDeferred(params);
 			if($rootScope.user.sendReminderNotificationEmails){
 				$ionicPopup.alert({
 					title: 'Reminder Emails Enabled',
@@ -220,7 +220,7 @@ angular.module('starter')
 			if($rootScope.urlParameters.userEmail){
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}
-            QuantiModo.updateUserSettingsDeferred(params);
+            quantimodoService.updateUserSettingsDeferred(params);
 			if($rootScope.user.sendPredictorEmails){
 				$ionicPopup.alert({
 					title: 'Discovery Emails Enabled',
@@ -259,7 +259,7 @@ angular.module('starter')
 						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
-							QuantiModo.updateUserSettingsDeferred(params).then(function(){
+							quantimodoService.updateUserSettingsDeferred(params).then(function(){
 								reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							});
 							$ionicPopup.alert({
@@ -302,7 +302,7 @@ angular.module('starter')
 						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
 							params.latestReminderTime = $rootScope.user.latestReminderTime;
-							QuantiModo.updateUserSettingsDeferred(params).then(function(){
+							quantimodoService.updateUserSettingsDeferred(params).then(function(){
 								reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							});
 							$ionicPopup.alert({
@@ -323,7 +323,7 @@ angular.module('starter')
 		$scope.trackLocationChange = function() {
 			console.debug('trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+			quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				$ionicPopup.alert({
 					title: 'Location Tracking Enabled',
@@ -344,7 +344,7 @@ angular.module('starter')
 			var completelyResetAppState = function(){
 				// Getting token so we can post as the new user if they log in again
 				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
-				QuantiModo.deleteDeviceToken($rootScope.deviceTokenToSync);
+				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
 				localStorageService.clear();
 				notificationService.cancelAllNotifications();
 				$ionicHistory.clearHistory();
@@ -361,8 +361,8 @@ angular.module('starter')
 			var afterLogoutDoNotDeleteMeasurements = function(){
 				// Getting token so we can post as the new user if they log in again
 				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
-				QuantiModo.deleteDeviceToken($rootScope.deviceTokenToSync);
-				QuantiModo.clearTokensFromLocalStorage();
+				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
+				quantimodoService.clearTokensFromLocalStorage();
 				if (utilsService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
@@ -425,7 +425,7 @@ angular.module('starter')
 				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
 			});
 
-			QuantiModo.postMeasurementsCsvExport(function(response){
+			quantimodoService.postMeasurementsCsvExport(function(response){
 				if(!response.success) {
 					bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
 				}
@@ -441,7 +441,7 @@ angular.module('starter')
 				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
 			});
 
-			QuantiModo.postMeasurementsPdfExport(function(response){
+			quantimodoService.postMeasurementsPdfExport(function(response){
 				if(!response.success) {
 					bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
 				}
@@ -457,7 +457,7 @@ angular.module('starter')
 				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
 			});
 			
-			QuantiModo.postMeasurementsXlsExport(function(response){
+			quantimodoService.postMeasurementsXlsExport(function(response){
 				if(!response.success) {
 					bugsnagService.reportError("Could not export measurements.");
 				}
