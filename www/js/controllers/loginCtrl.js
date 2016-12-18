@@ -148,9 +148,9 @@ angular.module('starter')
         };
 
         var chromeExtensionLogin = function(register) {
-            var loginUrl = quantimodoService.getURL("api/v2/auth/login");
+            var loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/login");
             if (register === true) {
-                loginUrl = quantimodoService.getURL("api/v2/auth/register");
+                loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");
             }
             console.debug("Using Chrome extension, so we use sessions instead of OAuth flow. ");
             chrome.tabs.create({ url: loginUrl });

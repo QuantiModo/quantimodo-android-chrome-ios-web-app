@@ -47,7 +47,7 @@ angular.module('starter')
 				if(ionic.Platform.platforms[0] === "browser"){
 					console.debug("Browser Detected");
 
-					var url = quantimodoService.getURL("api/v2/account/connectors", true);
+					var url = quantimodoService.getQuantiModoUrl("api/v2/account/connectors", true);
 					if(accessToken){
 						url += "access_token=" + accessToken;
 					}
@@ -60,7 +60,7 @@ angular.module('starter')
 					//noinspection JSCheckFunctionSignatures
 					$state.go(config.appSettings.defaultState);
 				} else {
-					var targetUrl = quantimodoService.getURL("api/v1/connect/mobile", true);
+					var targetUrl = quantimodoService.getQuantiModoUrl("api/v1/connect/mobile", true);
 					if(accessToken){
 						targetUrl += "access_token=" + accessToken;
 					}

@@ -152,7 +152,7 @@ angular.module('starter')
                 //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
                 // configure request
-                var url = quantimodoService.getURL(baseURL);
+                var url = quantimodoService.getQuantiModoUrl(baseURL);
                 var request = {
                     method: 'GET',
                     url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
@@ -230,7 +230,7 @@ angular.module('starter')
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
                 items.clientId = quantimodoService.getClientId();
 
-                var url = quantimodoService.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
+                var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
                 // configure request
                 var request = {
@@ -395,7 +395,7 @@ angular.module('starter')
         };
 
 
-        quantimodoService.getAggregatedCorrelations = function(params, successHandler, errorHandler){
+        quantimodoService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/aggregatedCorrelations',
                 ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
@@ -404,7 +404,7 @@ angular.module('starter')
         };
 
 
-        quantimodoService.getUserCorrelations = function (params, successHandler, errorHandler) {
+        quantimodoService.getUserCorrelationsFromApi = function (params, successHandler, errorHandler) {
             quantimodoService.get('api/v1/correlations',
                 ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
@@ -423,7 +423,7 @@ angular.module('starter')
         };
 
         // post a vote
-        quantimodoService.postVote = function(correlationSet, successHandler ,errorHandler){
+        quantimodoService.postVoteToApi = function(correlationSet, successHandler ,errorHandler){
             quantimodoService.post('api/v1/votes',
                 ['causeVariableName', 'effectVariableName', 'correlation', 'vote'],
                 correlationSet,
@@ -432,7 +432,7 @@ angular.module('starter')
         };
 
         // delete a vote
-        quantimodoService.deleteVote = function(correlationSet, successHandler ,errorHandler){
+        quantimodoService.deleteVoteToApi = function(correlationSet, successHandler ,errorHandler){
             quantimodoService.post('api/v1/votes/delete',
                 ['causeVariableName', 'effectVariableName', 'correlation'],
                 correlationSet,
@@ -623,7 +623,7 @@ angular.module('starter')
         };
 
         // get user data
-        quantimodoService.getUser = function(successHandler, errorHandler){
+        quantimodoService.getUserFromApi = function(successHandler, errorHandler){
             if($rootScope.user){
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
             }
@@ -997,8 +997,8 @@ angular.module('starter')
 
         quantimodoService.refreshAccessToken = function(refreshToken, deferred) {
             console.debug('Refresh token will be used to fetch access token from ' +
-                quantimodoService.getURL("api/oauth2/token") + ' with client id ' + quantimodoService.getClientId());
-            var url = quantimodoService.getURL("api/oauth2/token");
+                quantimodoService.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + quantimodoService.getClientId());
+            var url = quantimodoService.getQuantiModoUrl("api/oauth2/token");
             $http.post(url, {
                 client_id: quantimodoService.getClientId(),
                 client_secret: quantimodoService.getClientSecret(),
@@ -1100,7 +1100,7 @@ angular.module('starter')
         };
 
         quantimodoService.generateV2OAuthUrl= function(JWTToken) {
-            var url = quantimodoService.getURL("api/v2/bshaffer/oauth/authorize", true);
+            var url = quantimodoService.getQuantiModoUrl("api/v2/bshaffer/oauth/authorize", true);
             url += "response_type=code";
             url += "&client_id=" + quantimodoService.getClientId();
             url += "&client_secret=" + quantimodoService.getClientSecret();
@@ -1132,7 +1132,7 @@ angular.module('starter')
 
             var deferred = $q.defer();
 
-            var url = quantimodoService.getURL("api/oauth2/token");
+            var url = quantimodoService.getQuantiModoUrl("api/oauth2/token");
 
             // make request
             var request = {
@@ -1181,7 +1181,7 @@ angular.module('starter')
                 bugsnagService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
                 deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
             }
-            var url = quantimodoService.getURL('api/v2/auth/social/authorizeToken');
+            var url = quantimodoService.getQuantiModoUrl('api/v2/auth/social/authorizeToken');
 
             url += "provider=" + encodeURIComponent(provider);
             url += "&accessToken=" + encodeURIComponent(accessToken);
@@ -1311,7 +1311,7 @@ angular.module('starter')
 
         quantimodoService.refreshUser = function(){
             var deferred = $q.defer();
-            quantimodoService.getUser(function(user){
+            quantimodoService.getUserFromApi(function(user){
                 quantimodoService.setUserInLocalStorageBugsnagIntercomPush(user);
                 deferred.resolve(user);
             }, function(error){
@@ -1321,9 +1321,9 @@ angular.module('starter')
         };
 
         quantimodoService.sendToNonOAuthBrowserLoginUrl = function(register) {
-            var loginUrl = quantimodoService.getURL("api/v2/auth/login");
+            var loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/login");
             if (register === true) {
-                loginUrl = quantimodoService.getURL("api/v2/auth/register");
+                loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");
             }
             console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
             var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
@@ -2446,7 +2446,7 @@ angular.module('starter')
             return "https://app.quantimo.do";
         };
 
-        quantimodoService.getURL = function (path) {
+        quantimodoService.getQuantiModoUrl = function (path) {
             if(typeof path === "undefined") {
                 path = "";
             } else {

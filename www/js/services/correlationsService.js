@@ -34,7 +34,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
 
-                quantimodoService.getAggregatedCorrelations(params, function(correlationObjects){
+                quantimodoService.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
                     correlationObjects = useLocalImages(correlationObjects);
                     localStorageService.storeCachedResponse('GetAggregatedCorrelations', params, correlationObjects);
                     deferred.resolve(correlationObjects);
@@ -54,7 +54,7 @@ angular.module('starter')
                     deferred.resolve(cachedCorrelations);
                     return deferred.promise;
                 }
-                quantimodoService.getUserCorrelations(params, function(correlationObjects){
+                quantimodoService.getUserCorrelationsFromApi(params, function(correlationObjects){
                     correlationObjects = useLocalImages(correlationObjects);
                     localStorageService.storeCachedResponse('GetUserCorrelations', params, correlationObjects);
                     deferred.resolve(correlationObjects);
@@ -69,7 +69,7 @@ angular.module('starter')
 
             vote : function(correlationObject){
                 var deferred = $q.defer();
-                quantimodoService.postVote(correlationObject, function(response){
+                quantimodoService.postVoteToApi(correlationObject, function(response){
                     localStorageService.deleteCachedResponse('GetUserCorrelations');
                     localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
                     console.debug("postVote response", response);
@@ -83,7 +83,7 @@ angular.module('starter')
             
             deleteVote: function(correlationObject){
                 var deferred = $q.defer();
-                quantimodoService.deleteVote(correlationObject, function(response){
+                quantimodoService.deleteVoteToApi(correlationObject, function(response){
                     localStorageService.deleteCachedResponse('GetUserCorrelations');
                     localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
                     console.debug("deleteVote response", response);
