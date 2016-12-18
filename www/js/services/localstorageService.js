@@ -1,6 +1,6 @@
 angular.module('starter')
 
-    .factory('localStorageService',function($rootScope, $q, quantimodoService) {
+    .factory('localStorageService',function($rootScope, $q) {
 
         var localStorageService = {
 
