@@ -1,6 +1,6 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(ratingService, localStorageService, $q, $timeout) {
+	.factory('chartService', function(quantimodoService, localStorageService, $q, $timeout) {
 	    var chartService = {};
 
 		chartService.getWeekdayChartConfigForPrimaryOutcome = function () {
@@ -137,7 +137,7 @@ angular.module('starter')
 			}
 
 			if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name) {
-				xAxisLabels = ratingService.getPrimaryOutcomeVariableOptionLabels();
+				xAxisLabels = quantimodoService.getPrimaryOutcomeVariableOptionLabels();
 				xAxisTitle = '';
 			}
 			return {

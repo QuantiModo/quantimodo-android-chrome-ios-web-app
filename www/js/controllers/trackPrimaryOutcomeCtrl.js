@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, quantimodoService,
-                                                    chartService, localStorageService, ratingService, $stateParams) {
+                                                    chartService, localStorageService, $stateParams) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
         $rootScope.showFilterBarSearchIcon = false;
@@ -52,7 +52,7 @@ angular.module('starter')
             $scope.averagePrimaryOutcomeVariableText =
                 config.appSettings.ratingValueToTextConversionDataSet[$scope.averagePrimaryOutcomeVariableValue ];
             if($scope.averagePrimaryOutcomeVariableText){
-                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
+                $scope.averagePrimaryOutcomeVariableImage = quantimodoService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
             }
             $scope.highchartsReflow();
         };

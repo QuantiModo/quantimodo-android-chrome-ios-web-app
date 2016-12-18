@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, notificationService, localStorageService,
-                                    ratingService, migrationService, ionicDatePicker,
+                                    migrationService, ionicDatePicker,
                                     variableService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
@@ -38,7 +38,7 @@ angular.module('starter')
         $rootScope.appName = config.appSettings.appName;
 
         // Not used
-        //$scope.ratingInfo = ratingService.getRatingInfo();
+        //$scope.ratingInfo = quantimodoService.getRatingInfo();
         $scope.closeMenu = function () {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
@@ -445,9 +445,9 @@ angular.module('starter')
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
         $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-        $scope.positiveRatingOptions = ratingService.getPositiveRatingOptions();
-        $scope.negativeRatingOptions = ratingService.getNegativeRatingOptions();
-        $scope.numericRatingOptions = ratingService.getNumericRatingOptions();
+        $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
+        $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
+        $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
         $scope.welcomeText = config.appSettings.welcomeText;
         $scope.primaryOutcomeVariableTrackingQuestion = config.appSettings.primaryOutcomeVariableTrackingQuestion;
         $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;

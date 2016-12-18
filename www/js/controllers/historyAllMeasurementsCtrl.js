@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   quantimodoService, ratingService, localStorageService) {
+													   quantimodoService, localStorageService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
