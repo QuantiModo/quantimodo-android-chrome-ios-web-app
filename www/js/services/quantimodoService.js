@@ -1,6 +1,6 @@
 angular.module('starter')
     // quantimodoService API implementation
-    .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout) {
+    .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -1651,7 +1651,6 @@ angular.module('starter')
         // get data from quantimodoService API
         quantimodoService.getMeasurements = function(){
             var deferred = $q.defer();
-            isSyncing = true;
 
             $rootScope.lastSyncTime = quantimodoService.getLocalStorageItemAsString('lastSyncTime');
             if (!$rootScope.lastSyncTime) {
@@ -2179,6 +2178,7 @@ angular.module('starter')
         quantimodoService.postBloodPressureMeasurements = function(parameters){
             var deferred = $q.defer();
             var startTimeEpochSeconds;
+            /** @namespace parameters.startTimeEpochSeconds */
             if(!parameters.startTimeEpochSeconds){
                 var startTimeEpochMilliseconds = new Date();
                 startTimeEpochSeconds = startTimeEpochMilliseconds/1000;
@@ -2318,7 +2318,7 @@ angular.module('starter')
             });
 
             return deferred.promise;
-        },
+        };
 
         quantimodoService.getVariableCategoryIcon = function(variableCategoryName){
                 var variableCategoryInfo = quantimodoService.getVariableCategoryInfo(variableCategoryName);
@@ -3114,6 +3114,7 @@ angular.module('starter')
             if(trackingReminderNotifications && trackingReminderNotifications.length){
                 $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
                 if (window.chrome && window.chrome.browserAction && !variableCategoryName) {
+                    //noinspection JSUnresolvedFunction
                     chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                 }
                 deferred.resolve(trackingReminderNotifications);
@@ -3128,21 +3129,6 @@ angular.module('starter')
                 });
             }
             return deferred.promise;
-        };
-
-        var canWeMakeRequestYet = function(type, baseURL, minimumSecondsBetweenRequests){
-            var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
-            if(!$rootScope[requestVariableName]){
-                $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
-                return true;
-            }
-            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
-                console.debug('Cannot make ' + type + ' request to ' + baseURL + " because " +
-                    "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
-                return false;
-            }
-            $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
-            return true;
         };
 
         quantimodoService.refreshTrackingReminderNotifications = function(){
@@ -3415,6 +3401,7 @@ angular.module('starter')
             var monthold = reference.clone().subtract(30, 'days').startOf('day');
 
             var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+                /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
                 return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
             });
 
@@ -4719,9 +4706,13 @@ angular.module('starter')
             var xyVariableValues = [];
 
             for(var i = 0; i < pairs.length; i++ ){
+                /** @namespace pairs[i].causeMeasurementValue */
+                /** @namespace pairs[i].effectMeasurementValue */
                 xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
             }
 
+            /** @namespace correlationObject.causeAbbreviatedUnitName */
+            /** @namespace correlationObject.effectAbbreviatedUnitName */
             var scatterplotOptions = {
                 options: {
                     chart: {
@@ -5630,6 +5621,7 @@ angular.module('starter')
         quantimodoService.decrementNotificationBadges = function(){
             if($rootScope.numberOfPendingNotifications > 0){
                 if (window.chrome && window.chrome.browserAction) {
+                    //noinspection JSUnresolvedFunction
                     chrome.browserAction.setBadgeText({
                         text: String($rootScope.numberOfPendingNotifications)
                     });
@@ -5721,6 +5713,7 @@ angular.module('starter')
         quantimodoService.cancelNotificationsForDeletedReminders = function(trackingRemindersFromApi) {
 
             function cancelChromeExtensionNotificationsForDeletedReminders(trackingRemindersFromApi) {
+                /** @namespace chrome.alarms */
                 chrome.alarms.getAll(function(scheduledTrackingReminders) {
                     for (var i = 0; i < scheduledTrackingReminders.length; i++) {
                         var existingReminderFoundInApiResponse = false;
@@ -6427,7 +6420,7 @@ angular.module('starter')
         quantimodoService.deleteElementOfLocalStorageItemById = function(localStorageItemName, elementId){
             var deferred = $q.defer();
             var elementsToKeep = [];
-            var localStorageItemAsString = this.getItemSync(localStorageItemName);
+            var localStorageItemAsString = this.getLocalStorageItemAsString(localStorageItemName);
             var localStorageItemArray = JSON.parse(localStorageItemAsString);
             if(!localStorageItemArray){
                 console.warn("Local storage item " + localStorageItemName + " not found");
@@ -6446,7 +6439,7 @@ angular.module('starter')
         quantimodoService.deleteElementOfLocalStorageItemByProperty = function(localStorageItemName, propertyName, propertyValue){
             var deferred = $q.defer();
             var elementsToKeep = [];
-            var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+            var localStorageItemArray = JSON.parse(this.getLocalStorageItemAsString(localStorageItemName));
             if(!localStorageItemArray){
                 console.error("Local storage item " + localStorageItemName + " not found");
             } else {
@@ -6468,7 +6461,7 @@ angular.module('starter')
             }
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
-            var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+            var localStorageItemArray = JSON.parse(this.getLocalStorageItemAsString(localStorageItemName));
             var found = false;
             if(localStorageItemArray){
                 for(var i = 0; i < localStorageItemArray.length; i++){
