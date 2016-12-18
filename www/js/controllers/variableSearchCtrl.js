@@ -1,6 +1,6 @@
 angular.module('starter')
     .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
-                                               quantimodoService, variableService, $timeout, $ionicLoading) {
+                                               quantimodoService, $timeout, $ionicLoading) {
 
         $scope.controller_name = "VariableSearchCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -187,7 +187,7 @@ angular.module('starter')
             console.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
-                variableService.searchUserVariables($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
+                quantimodoService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
                     .then(function(variables){
                         $scope.state.noVariablesFoundCard.show = false;
                         $scope.state.showAddVariableButton = false;
@@ -230,7 +230,7 @@ angular.module('starter')
             if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
                 $scope.state.searching = true;
             }
-            variableService.getCommonVariables($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
+            quantimodoService.getCommonVariablesDeferred($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
                 if(commonVariables && commonVariables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3) {
                         $scope.state.variableSearchResults = arrayUniqueId($scope.state.variableSearchResults.concat(commonVariables));
@@ -264,7 +264,7 @@ angular.module('starter')
                 $scope.state.searching = true;
             }
 
-            variableService.getUserVariables($stateParams.variableSearchParameters).then(function (userVariables) {
+            quantimodoService.getUserVariablesDeferred($stateParams.variableSearchParameters).then(function (userVariables) {
                 if(userVariables && userVariables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3) {
                         // Put user variables at top of list

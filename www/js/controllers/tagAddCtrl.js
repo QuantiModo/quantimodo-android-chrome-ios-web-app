@@ -1,7 +1,7 @@
 angular.module('starter')
 
     .controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, variableService, $ionicLoading, quantimodoService) {
+                                               $ionicActionSheet, $ionicHistory, $ionicLoading, quantimodoService) {
 
         $scope.controller_name = "TagAddCtrl";
 
@@ -108,7 +108,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                variableService.getVariablesByName('Anxiety').then(function (variable) {
+                quantimodoService.getVariablesByNameDeferred('Anxiety').then(function (variable) {
                     $rootScope.stateParams.tagVariableObject = variable;
                     $ionicLoading.hide();
                 });
@@ -118,7 +118,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                variableService.getVariablesByName('Overall Mood').then(function (variable) {
+                quantimodoService.getVariablesByNameDeferred('Overall Mood').then(function (variable) {
                     $rootScope.stateParams.taggedVariableObject = variable;
                     $ionicLoading.hide();
                 });

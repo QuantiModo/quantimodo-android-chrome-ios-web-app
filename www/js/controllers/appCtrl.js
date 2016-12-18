@@ -5,7 +5,7 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, notificationService, localStorageService,
                                     migrationService, ionicDatePicker,
-                                    variableService, $ionicActionSheet, $ionicDeploy) {
+                                    $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -967,8 +967,8 @@ angular.module('starter')
                     console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
                     quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
                 }
-                variableService.getUserVariables();
-                variableService.getCommonVariables();
+                quantimodoService.getUserVariablesDeferred();
+                quantimodoService.getCommonVariablesDeferred();
                 quantimodoService.getUnits();
                 $rootScope.syncedEverything = true;
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
@@ -1138,7 +1138,7 @@ angular.module('starter')
                 template: '<ion-spinner></ion-spinner>'
             });
             // Delete all measurements for a variable
-            variableService.deleteAllMeasurementsForVariable($rootScope.variableObject.id).then(function() {
+            quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
                 // If primaryOutcomeVariable, delete local storage measurements
                 if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
                     localStorageService.setItem('allMeasurements',[]);
@@ -1306,7 +1306,7 @@ angular.module('starter')
         };
 
         $scope.refreshVariables = function () {
-            variableService.refreshCommonVariables().then(function () {
+            quantimodoService.refreshCommonVariables().then(function () {
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
             }, function (error) {
@@ -1314,7 +1314,7 @@ angular.module('starter')
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
             });
-            variableService.refreshUserVariables().then(function () {
+            quantimodoService.refreshUserVariables().then(function () {
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
             }, function (error) {
@@ -1384,9 +1384,9 @@ angular.module('starter')
 
             console.debug('Saving variable settings ' + JSON.stringify(params));
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            variableService.postUserVariable(params).then(function() {
+            quantimodoService.postUserVariableDeferred(params).then(function() {
                 localStorageService.deleteItem('lastStudy');
-                console.debug("variableService.postUserVariable: success: " + JSON.stringify(params));
+                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(params));
                 $ionicLoading.hide();
 
                 var viewHistory = $ionicHistory.viewHistory();
@@ -1429,7 +1429,7 @@ angular.module('starter')
             }
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             var params = {includeTags : true};
-            variableService.getVariablesByName(variableName, params).then(function(variableObject){
+            quantimodoService.getVariablesByNameDeferred(variableName, params).then(function(variableObject){
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 $ionicLoading.hide();
@@ -1446,7 +1446,7 @@ angular.module('starter')
         $scope.resetVariableToDefaultSettings = function(variableObject) {
             // Populate fields with original settings for variable
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-            variableService.resetUserVariable(variableObject.id).then(function() {
+            quantimodoService.resetUserVariableDeferred(variableObject.id).then(function() {
                 $scope.getVariableByName(variableObject.name);
             });
         };

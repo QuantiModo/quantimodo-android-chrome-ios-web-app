@@ -2,8 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
-                                             $stateParams, chartService, localStorageService, quantimodoService,
-                                             variableService) {
+                                             $stateParams, chartService, localStorageService, quantimodoService) {
         $scope.controller_name = "ChartsPageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -185,7 +184,7 @@ angular.module('starter')
                 name:  variableName
             };
             $rootScope.variableName = variableName;
-            variableService.getVariablesByName(variableName).then(function(variableObject){
+            quantimodoService.getVariablesByNameDeferred(variableName).then(function(variableObject){
                 $rootScope.variableObject = variableObject;
             });
         };

@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, localStorageService,
                                              quantimodoService, ionicTimePicker,
-                                             variableService, timeService, $ionicPopup,
+                                             timeService, $ionicPopup,
                                              ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
@@ -608,7 +608,7 @@ angular.module('starter')
 
         function setupReminderEditingFromVariableId(variableId) {
             if(variableId){
-                variableService.getVariableById(variableId)
+                quantimodoService.getVariableByIdDeferred(variableId)
                     .then(function (variables) {
                         $rootScope.variableObject = variables[0];
                         console.debug('setupReminderEditingFromVariableId got this variable object ' +
