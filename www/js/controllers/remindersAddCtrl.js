@@ -3,9 +3,7 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, localStorageService,
-                                             quantimodoService, ionicTimePicker,
-                                             timeService, $ionicPopup,
-                                             ionicDatePicker) {
+                                             quantimodoService, ionicTimePicker, $ionicPopup, ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
 		console.debug('Loading ' + $scope.controller_name);
@@ -37,7 +35,7 @@ angular.module('starter')
 
         if($rootScope.user) {
             $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
-            $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime);
+            $scope.state.firstReminderStartTimeEpochTime = quantimodoService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime);
         } else {
             quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!');
         }
@@ -82,30 +80,30 @@ angular.module('starter')
 
 		$scope.openReminderStartTimePicker = function(order) {
             var defaultStartTimeInSecondsSinceMidnightLocal =
-                timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
+                quantimodoService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
 		    if(order === 'first') {
                 if($scope.state.firstReminderStartTimeLocal){
                     defaultStartTimeInSecondsSinceMidnightLocal =
-                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
+                        quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
                 }
             }
 
             if(order === 'second') {
                 if($scope.state.secondReminderStartTimeLocal){
                     defaultStartTimeInSecondsSinceMidnightLocal =
-                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
+                        quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
                 }
             }
 
             if(order === 'third') {
                 if($scope.state.thirdReminderStartTimeLocal){
                     defaultStartTimeInSecondsSinceMidnightLocal =
-                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
+                        quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
                 }
             }
 
             defaultStartTimeInSecondsSinceMidnightLocal =
-                timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
+                quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
             
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
@@ -401,15 +399,15 @@ angular.module('starter')
             if(updatedTrackingReminder.reminderFrequency === 86400){
                 if(updatedTrackingReminder.abbreviatedUnitName === '/5'){
                     updatedTrackingReminder.valueAndFrequencyTextDescription = 'Daily at ' +
-                        timeService.humanFormat(reminderStartTimeLocal);
+                        quantimodoService.humanFormat(reminderStartTimeLocal);
                 } else {
                     updatedTrackingReminder.valueAndFrequencyTextDescription = updatedTrackingReminder.defaultValue +
                         ' ' + updatedTrackingReminder.abbreviatedUnitName + ' daily at ' +
-                        timeService.humanFormat(reminderStartTimeLocal);
+                        quantimodoService.humanFormat(reminderStartTimeLocal);
                 }
             }
             updatedTrackingReminder.reminderStartTime =
-                timeService.getUtcTimeStringFromLocalString(reminderStartTimeLocal);
+                quantimodoService.getUtcTimeStringFromLocalString(reminderStartTimeLocal);
 
             updatedTrackingReminder.reminderStartTimeEpochSeconds = reminderStartTimeEpochTime;
             updatedTrackingReminder.nextReminderTimeEpochSeconds = reminderStartTimeEpochTime;
@@ -521,8 +519,8 @@ angular.module('starter')
             $scope.state.trackingReminder.firstDailyReminderTime = null;
             $scope.state.trackingReminder.secondDailyReminderTime = null;
             $scope.state.trackingReminder.thirdDailyReminderTime = null;
-            $scope.state.firstReminderStartTimeLocal = timeService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
-            $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
+            $scope.state.firstReminderStartTimeLocal = quantimodoService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
+            $scope.state.firstReminderStartTimeEpochTime = quantimodoService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
             //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
             if(trackingReminder.stopTrackingDate){
                 $scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);
@@ -555,7 +553,7 @@ angular.module('starter')
             //
             //     $scope.state.reminderEndTimeStringLocal = $stateParams.reminder.reminderEndTime;
             //     $scope.state.reminderEndTimeEpochTime =
-            //         timeService.getEpochTimeFromLocalString($stateParams.reminder.reminderEndTime);
+            //         quantimodoService.getEpochTimeFromLocalString($stateParams.reminder.reminderEndTime);
             // }
 
 	    	if($scope.state.trackingReminder.reminderFrequency && $scope.state.trackingReminder.reminderFrequency !== null){

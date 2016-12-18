@@ -2,7 +2,7 @@ angular.module('starter')
 	
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
-										  quantimodoService, ionicTimePicker, timeService, $stateParams, $ionicHistory,
+										  quantimodoService, ionicTimePicker, $stateParams, $ionicHistory,
 										  $ionicLoading, $ionicDeploy, $ionicPlatform) {
 
 		$scope.controller_name = "SettingsCtrl";
@@ -269,7 +269,7 @@ angular.module('starter')
 						}
 					}
 				},
-				inputTime: timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.earliestReminderTime),
+				inputTime: quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.earliestReminderTime),
 				step: 15,
 				closeLabel: 'Cancel'
 			};
@@ -312,7 +312,7 @@ angular.module('starter')
 						}
 					}
 				},
-				inputTime: timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.latestReminderTime),
+				inputTime: quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.latestReminderTime),
 				step: 15,
 				closeLabel: 'Cancel'
 			};

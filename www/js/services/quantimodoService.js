@@ -3082,8 +3082,8 @@ angular.module('starter')
 
         quantimodoService.getTodayTrackingReminderNotificationsDeferred = function(variableCategoryName){
             var params = {
-                minimumReminderTimeUtcString : timeService.getLocalMidnightInUtcString(),
-                maximumReminderTimeUtcString : timeService.getTomorrowLocalMidnightInUtcString(),
+                minimumReminderTimeUtcString : quantimodoService.getLocalMidnightInUtcString(),
+                maximumReminderTimeUtcString : quantimodoService.getTomorrowLocalMidnightInUtcString(),
                 sort : 'reminderTime'
             };
             if (variableCategoryName) {
@@ -3156,7 +3156,7 @@ angular.module('starter')
             }
 
             quantimodoService.postTrackingReminderNotificationsDeferred(function(){
-                var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
+                var currentDateTimeInUtcStringPlus5Min = quantimodoService.getCurrentDateTimeInUtcStringPlusMin(5);
                 var params = {};
                 params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
                 params.sort = '-reminderTime';
@@ -3211,8 +3211,8 @@ angular.module('starter')
 
         quantimodoService.getCurrentTrackingReminderNotificationsFromApi = function(category, today){
 
-            var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
-            var currentDateTimeInUtcString = timeService.getCurrentDateTimeInUtcString();
+            var localMidnightInUtcString = quantimodoService.getLocalMidnightInUtcString();
+            var currentDateTimeInUtcString = quantimodoService.getCurrentDateTimeInUtcString();
             var params = {};
             if(today && !category){
                 var reminderTime = '(gt)' + localMidnightInUtcString;
@@ -3271,8 +3271,8 @@ angular.module('starter')
 
         quantimodoService.getTrackingReminderNotificationsDeferredFromLocalStorage = function(category, today){
 
-            var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
-            var currentDateTimeInUtcString = timeService.getCurrentDateTimeInUtcString();
+            var localMidnightInUtcString = quantimodoService.getLocalMidnightInUtcString();
+            var currentDateTimeInUtcString = quantimodoService.getCurrentDateTimeInUtcString();
             var trackingReminderNotifications = [];
 
             if(today && !category){
@@ -5498,7 +5498,7 @@ angular.module('starter')
                 return;
             }
             function getNotificationsFromApiAndClearOrUpdateLocalNotifications() {
-                var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
+                var currentDateTimeInUtcStringPlus5Min = quantimodoService.getCurrentDateTimeInUtcStringPlusMin(5);
                 var params = {
                     reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
                 };
@@ -5565,9 +5565,9 @@ angular.module('starter')
                 console.debug("onTrigger.clearNotificationIfOutsideAllowedTimes: Checking notification time limits",
                     currentNotification);
                 if (notificationData.reminderFrequency < 86400) {
-                    var currentTimeInLocalString = timeService.getCurrentTimeInLocalString();
-                    var reminderStartTimeInLocalString = timeService.getLocalTimeStringFromUtcString(notificationData.reminderStartTime);
-                    var reminderEndTimeInLocalString = timeService.getLocalTimeStringFromUtcString(notificationData.reminderEndTime);
+                    var currentTimeInLocalString = quantimodoService.getCurrentTimeInLocalString();
+                    var reminderStartTimeInLocalString = quantimodoService.getLocalTimeStringFromUtcString(notificationData.reminderStartTime);
+                    var reminderEndTimeInLocalString = quantimodoService.getLocalTimeStringFromUtcString(notificationData.reminderEndTime);
                     if (currentTimeInLocalString < reminderStartTimeInLocalString) {
                         $ionicPlatform.ready(function () {
                             cordova.plugins.notification.local.clear(currentNotification.id, function (currentNotification) {
@@ -6286,6 +6286,130 @@ angular.module('starter')
             }
 
             return deferred.promise;
+        };
+
+        // TIME SERVICE
+
+        quantimodoService.getSecondsSinceMidnightLocalFromLocalString = function (localTimeString) {
+            var timeFormat = "HH:mm:ss";
+            var hours = parseInt(moment(localTimeString, timeFormat).format("HH"));
+            var minutes = parseInt(moment(localTimeString, timeFormat).format("mm"));
+            var seconds = parseInt(moment(localTimeString, timeFormat).format("ss"));
+            var secondsSinceMidnightLocal =
+                hours * 60 *60 + minutes * 60 + seconds;
+            return secondsSinceMidnightLocal;
+        };
+
+        quantimodoService.getEpochTimeFromLocalString = function (localTimeString) {
+            var timeFormat = "HH:mm:ss";
+            var epochTime = moment(localTimeString, timeFormat).unix();
+            return epochTime;
+        };
+
+        quantimodoService.getLocalTimeStringFromUtcString = function (utcTimeString) {
+
+            var timeFormat = "HH:mm:ss Z";
+            var utcTimeStringFull = moment().format(timeFormat);
+            if(utcTimeString){
+                utcTimeStringFull = utcTimeString + " +0000";
+            }
+            var returnTimeFormat = "HH:mm:ss";
+
+            var localTimeString = moment(utcTimeStringFull, timeFormat).format(returnTimeFormat);
+            //console.debug("localTimeString is " + localTimeString);
+
+            return localTimeString;
+        };
+
+        quantimodoService.humanFormat = function(hhmmssFormatString){
+            var intitialTimeFormat = "HH:mm:ss";
+            var humanTimeFormat = "hh:mm A";
+            return moment(hhmmssFormatString, intitialTimeFormat).format(humanTimeFormat);
+        };
+
+        quantimodoService.getUtcTimeStringFromLocalString = function (localTimeString) {
+
+            var returnTimeFormat = "HH:mm:ss";
+            var utcTimeString = moment(localTimeString, returnTimeFormat).utc().format(returnTimeFormat);
+            console.debug("utcTimeString is " + utcTimeString);
+
+            return utcTimeString;
+        };
+
+
+        quantimodoService.getLocalMidnightInUtcString = function () {
+            var localMidnightMoment = moment(0, "HH");
+            var timeFormat = 'YYYY-MM-DD HH:mm:ss';
+            var localMidnightInUtcString = localMidnightMoment.utc().format(timeFormat);
+            return localMidnightInUtcString;
+        };
+
+        quantimodoService.getTomorrowLocalMidnightInUtcString = function () {
+            var tomorrowLocalMidnightMoment = moment(0, "HH");
+            var timeFormat = 'YYYY-MM-DD HH:mm:ss';
+            tomorrowLocalMidnightMoment.add(1, 'days');
+            var tomorrowLocalMidnightInUtcString = tomorrowLocalMidnightMoment.utc().format(timeFormat);
+            return tomorrowLocalMidnightInUtcString;
+        };
+
+
+        quantimodoService.getCurrentTimeInLocalString = function () {
+            var currentMoment = moment();
+            var timeFormat = 'HH:mm:ss';
+            var currentTimeInLocalString = currentMoment.format(timeFormat);
+            return currentTimeInLocalString;
+        };
+
+        quantimodoService.getCurrentDateTimeInUtcString = function () {
+            var currentMoment = moment();
+            var timeFormat = 'YYYY-MM-DD HH:mm:ss';
+            var currentDateTimeInUtcString = currentMoment.utc().format(timeFormat);
+            return currentDateTimeInUtcString;
+        };
+
+        quantimodoService.getCurrentDateTimeInUtcStringPlusMin = function (minutes) {
+            var currentMoment = moment().add(minutes, 'minutes');
+            var timeFormat = 'YYYY-MM-DD HH:mm:ss';
+            var currentDateTimeInUtcStringPlus15Min = currentMoment.utc().format(timeFormat);
+            return currentDateTimeInUtcStringPlus15Min;
+        };
+        
+        quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen = function (defaultStartTimeInSecondsSinceMidnightLocal) {
+            // Round minutes
+            var defaultStartTime = new Date(defaultStartTimeInSecondsSinceMidnightLocal * 1000);
+            var defaultStartTimeHours = defaultStartTime.getUTCHours();
+            var defaultStartTimeMinutes = defaultStartTime.getUTCMinutes();
+            if (defaultStartTimeMinutes % 15 !== 0) {
+                if ((defaultStartTimeMinutes > 0 && defaultStartTimeMinutes <= 7)) {
+                    defaultStartTimeMinutes = 0;
+                }
+                else if (defaultStartTimeMinutes > 7 && defaultStartTimeMinutes <= 22) {
+                    defaultStartTimeMinutes = 15;
+                }
+                else if (defaultStartTimeMinutes > 22 && defaultStartTimeMinutes <= 37) {
+                    defaultStartTimeMinutes = 30;
+                }
+                else if (defaultStartTimeMinutes > 37 && defaultStartTimeMinutes <= 52) {
+                    defaultStartTimeMinutes = 45;
+                }
+                else if (defaultStartTimeMinutes > 52) {
+                    defaultStartTimeMinutes = 0;
+                    if (defaultStartTimeHours === 23) {
+                        defaultStartTimeHours = 0;
+                    }
+                    else {
+                        defaultStartTimeHours += 1;
+                    }
+                }
+            }
+            defaultStartTimeInSecondsSinceMidnightLocal =
+                quantimodoService.getSecondsSinceMidnightLocalFromLocalString("" + defaultStartTimeHours + ":" + defaultStartTimeMinutes + ":00");
+            return defaultStartTimeInSecondsSinceMidnightLocal;
+        };
+
+        quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString = function (localString) {
+            var secondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString(localString);
+            return quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(secondsSinceMidnightLocal);
         };
 
         return quantimodoService;
