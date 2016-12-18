@@ -3,9 +3,8 @@ angular.module('starter')
 
 	    var variableService = {};
 
-
-        // get user variables (without public)
-        variableService.searchUserVariables = function(variableSearchQuery, params){
+        // DOES NOT WORK PROPERLY
+        variableService.searchUserVariablesFancy = function(variableSearchQuery, params){
 
             if($rootScope.lastSearchUserVariablesPromise){
                 var message = 'Got new search request before last one completed';
@@ -20,17 +19,40 @@ angular.module('starter')
                 variableSearchQuery = '*';
             }
 
-            quantimodoService.searchUserVariables(variableSearchQuery, params, function(vars){
+            quantimodoService.searchUserVariables(variableSearchQuery, params, function(variables){
                 if($rootScope.lastSearchUserVariablesPromise){
-                    $rootScope.lastSearchUserVariablesPromise.resolve(vars);
+                    $rootScope.lastSearchUserVariablesPromise.resolve(variables);
                     $rootScope.lastSearchUserVariablesPromise = null;
+                } else {
+                    console.warn('Not resolving variables because no $rootScope.lastSearchUserVariablesPromise: ' +
+                        JSON.stringify(variables));
                 }
             }, function(error){
+                console.error(JSON.stringify(error));
                 $rootScope.lastSearchUserVariablesPromise.reject(error);
                 $rootScope.lastSearchUserVariablesPromise = null;
             });
 
             return $rootScope.lastSearchUserVariablesPromise.promise;
+        };
+        
+        // get user variables (without public)
+        variableService.searchUserVariables = function(variableSearchQuery, params){
+            
+            var deferred = $q.defer();
+
+            if(!variableSearchQuery){
+                variableSearchQuery = '*';
+            }
+
+            quantimodoService.searchUserVariables(variableSearchQuery, params, function(variables){
+                deferred.resolve(variables);
+            }, function(error){
+                console.error(JSON.stringify(error));
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
         };
 
         variableService.getVariablesByName = function(name, params){
