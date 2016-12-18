@@ -1,13 +1,13 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, quantimodoService, $stateParams, $ionicHistory, $rootScope,
-                                      correlationService, chartService, $timeout, $ionicLoading, localStorageService,
+                                      chartService, $timeout, $ionicLoading, localStorageService,
                                       wikipediaFactory, $ionicActionSheet) {
 
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
 
         $scope.refreshStudy = function() {
-            correlationService.clearCorrelationCache();
+            quantimodoService.clearCorrelationCache();
             getStudy();
         };
 

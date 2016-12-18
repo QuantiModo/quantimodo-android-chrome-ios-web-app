@@ -5,8 +5,7 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, notificationService, localStorageService,
                                     ratingService, migrationService, ionicDatePicker,
-                                    variableService,
-                                    correlationService, $ionicActionSheet, $ionicDeploy) {
+                                    variableService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -844,7 +843,7 @@ angular.module('starter')
                             onTap: function(){
                                 correlationObject.userVote = 0;
                                 correlationObject.vote = 0;
-                                correlationService.vote(correlationObject)
+                                quantimodoService.postVoteDeferred(correlationObject)
                                     .then(function () {
                                         console.debug('Down voted!');
                                     }, function () {
@@ -879,7 +878,7 @@ angular.module('starter')
                             onTap: function(){
                                 correlationObject.userVote = 1;
                                 correlationObject.vote = 1;
-                                correlationService.vote(correlationObject)
+                                quantimodoService.postVoteDeferred(correlationObject)
                                     .then(function () {
                                         console.debug('upVote');
                                     }, function () {
@@ -896,7 +895,7 @@ angular.module('starter')
 
         function deleteVote(correlationObject, $index) {
             correlationObject.userVote = null;
-            correlationService.deleteVote(correlationObject, function(response){
+            quantimodoService.deleteVoteDeferred(correlationObject, function(response){
                 console.debug("deleteVote response", response);
             }, function(response){
                 console.error("deleteVote response", response);

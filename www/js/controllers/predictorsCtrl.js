@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, correlationService,
+	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, quantimodoService,
                                            $rootScope, $ionicActionSheet) {
 
 		$scope.controller_name = "PredictorsCtrl";
@@ -69,7 +69,7 @@ angular.module('starter')
             });*/
             $scope.searching = true;
             setupAggregatedPredictors();
-            correlationService.getAggregatedCorrelations($scope.state.requestParams)
+            quantimodoService.getAggregatedCorrelationsDeferred($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         if($scope.state.requestParams.offset){
@@ -82,7 +82,7 @@ angular.module('starter')
                         $ionicLoading.hide();
                         $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
-                        correlationService.getUserCorrelations($scope.state.requestParams)
+                        quantimodoService.getUserCorrelationsDeferred($scope.state.requestParams)
                             .then(function (correlationObjects) {
                                 $ionicLoading.hide();
                                 $scope.searching = false;
@@ -128,7 +128,7 @@ angular.module('starter')
                 $scope.state.requestParams.fallbackToAggregatedCorrelations = true;
             }
 
-            correlationService.getUserCorrelations($scope.state.requestParams)
+            quantimodoService.getUserCorrelationsDeferred($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         if($scope.state.requestParams.offset){
@@ -169,7 +169,7 @@ angular.module('starter')
         
         $scope.refreshList = function () {
             $scope.state.requestParams.offset = 0;
-            correlationService.clearCorrelationCache();
+            quantimodoService.clearCorrelationCache();
             $scope.init();
         };
 
