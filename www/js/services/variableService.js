@@ -19,7 +19,7 @@ angular.module('starter')
                 variableSearchQuery = '*';
             }
 
-            quantimodoService.searchUserVariables(variableSearchQuery, params, function(variables){
+            quantimodoService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
                 if($rootScope.lastSearchUserVariablesPromise){
                     $rootScope.lastSearchUserVariablesPromise.resolve(variables);
                     $rootScope.lastSearchUserVariablesPromise = null;
@@ -45,7 +45,7 @@ angular.module('starter')
                 variableSearchQuery = '*';
             }
 
-            quantimodoService.searchUserVariables(variableSearchQuery, params, function(variables){
+            quantimodoService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
                 deferred.resolve(variables);
             }, function(error){
                 console.error(JSON.stringify(error));
@@ -59,7 +59,7 @@ angular.module('starter')
             var deferred = $q.defer();
 
             // refresh always
-            quantimodoService.getVariablesByName(name, params, function(variable){
+            quantimodoService.getVariablesByNameFromApi(name, params, function(variable){
                 deferred.resolve(variable);
             }, function(error){
                 deferred.reject(error);
@@ -70,7 +70,7 @@ angular.module('starter')
 
         variableService.getPublicVariablesByName = function(name) {
             var deferred = $q.defer();
-            quantimodoService.getPublicVariablesByName(name, function(variable){
+            quantimodoService.getPublicVariablesByNameFromApi(name, function(variable){
                 deferred.resolve(variable);
             }, function(error){
                 deferred.reject(error);
@@ -84,7 +84,7 @@ angular.module('starter')
         variableService.postUserVariable = function(userVariable) {
 
             var deferred = $q.defer();
-            quantimodoService.postUserVariable(userVariable, function(userVariable) {
+            quantimodoService.postUserVariableToApi(userVariable, function(userVariable) {
                 deferred.resolve(userVariable);
             }, function(error){
                 deferred.reject(error);
@@ -109,7 +109,7 @@ angular.module('starter')
             var deferred = $q.defer();
 
             // refresh always
-            quantimodoService.getVariableById(variableId, function(variable){
+            quantimodoService.getVariableByIdFromApi(variableId, function(variable){
                 deferred.resolve(variable);
             }, function(error){
                 deferred.reject(error);
@@ -187,7 +187,7 @@ angular.module('starter')
                     sort: "-latestMeasurementTime"
                 };
 
-                quantimodoService.getUserVariables(parameters, function(userVariables){
+                quantimodoService.getUserVariablesFromApi(parameters, function(userVariables){
                     localStorageService.setItem('userVariables', JSON.stringify(userVariables))
                         .then(function () {
                             $rootScope.$broadcast('populateUserVariables');

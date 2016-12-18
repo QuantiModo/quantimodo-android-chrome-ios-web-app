@@ -335,7 +335,7 @@ angular.module('starter')
 			if(!$rootScope.showUndoButton){
 				$rootScope.showUndoButton = true;
 			}
-			reminderService.trackReminderNotification(body)
+			reminderService.trackReminderNotificationDeferred(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
@@ -389,7 +389,7 @@ angular.module('starter')
 				trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
 			$scope.lastAction = 'Record ' + modifiedReminderValue + trackingReminderNotification.abbreviatedUnitName;
-	    	reminderService.trackReminderNotification(body)
+	    	reminderService.trackReminderNotificationDeferred(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
@@ -410,7 +410,7 @@ angular.module('starter')
 			$scope.lastAction = 'Skip';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
-	    	reminderService.skipReminderNotification(params)
+	    	reminderService.skipReminderNotificationDeferred(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
@@ -431,7 +431,7 @@ angular.module('starter')
 			$scope.lastAction = 'Snooze';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
-	    	reminderService.snoozeReminderNotification(params)
+	    	reminderService.snoozeReminderNotificationDeferred(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
@@ -460,7 +460,7 @@ angular.module('starter')
 		};
 
 		var getFilteredTrackingReminderNotifications = function(){
-			reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
+			reminderService.getTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
 /*                    trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
                     	if(obj.variableName === 'Blood Pressure'){
@@ -505,7 +505,7 @@ angular.module('starter')
 		};
 
 		var getFilteredTodayTrackingReminderNotifications = function(){
-			reminderService.getTodayTrackingReminderNotifications($stateParams.variableCategoryName)
+			reminderService.getTodayTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications = reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
@@ -625,7 +625,7 @@ angular.module('starter')
 					},
 					destructiveButtonClicked: function() {
 						$scope.showLoader('Skipping all reminder notifications...');
-						reminderService.skipAllReminderNotifications()
+						reminderService.skipAllReminderNotificationsDeferred()
 							.then(function(){
 								if($rootScope.localNotificationsEnabled){
 									notificationService.setNotificationBadge(0);
@@ -763,7 +763,7 @@ angular.module('starter')
 						trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId
 					};
 					$scope.showLoader('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
-					reminderService.skipAllReminderNotifications(params)
+					reminderService.skipAllReminderNotificationsDeferred(params)
 						.then(function(){
 							$scope.hideLoader();
 							$scope.init();

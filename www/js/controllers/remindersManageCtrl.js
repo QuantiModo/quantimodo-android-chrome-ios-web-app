@@ -75,7 +75,7 @@ angular.module('starter')
 		};
 
 		var getTrackingReminders = function(){
-			reminderService.getTrackingReminders($stateParams.variableCategoryName)
+			reminderService.getTrackingRemindersDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminders) {
 					$scope.state.trackingReminders = trackingReminders;
 					showAppropriateHelpInfoCards();
@@ -217,12 +217,12 @@ angular.module('starter')
 						});
 				});
 
-			reminderService.deleteReminder(reminder.trackingReminderId)
+			reminderService.deleteTrackingReminderDeferred(reminder.trackingReminderId)
 				.then(function(){
 					reminderService.refreshTrackingReminderNotifications().then(function(){
-						console.debug('reminderService.deleteReminder successfully refreshed notifications');
+						console.debug('reminderService.deleteTrackingReminderDeferred successfully refreshed notifications');
 					}, function (error) {
-						console.error('reminderService.deleteReminder: ' + error);
+						console.error('reminderService.deleteTrackingReminderDeferred: ' + error);
 					});
 					console.debug("Reminder deleted");
 				}, function(error){

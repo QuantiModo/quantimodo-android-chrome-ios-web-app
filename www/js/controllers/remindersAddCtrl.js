@@ -488,7 +488,7 @@ angular.module('starter')
             localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders',
                 remindersArray)
                 .then(function(){
-                    reminderService.postTrackingReminders(remindersArray)
+                    reminderService.postTrackingRemindersDeferred(remindersArray)
                         .then(function(){
                             reminderService.refreshTrackingReminderNotifications().then(function(){
                                 console.debug('reminderAddCtrl.save successfully refreshed notifications');
@@ -626,7 +626,7 @@ angular.module('starter')
         }
 
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
-            reminderService.getTrackingReminderById(reminderIdUrlParameter)
+            reminderService.getTrackingReminderByIdDeferred(reminderIdUrlParameter)
                 .then(function (reminders) {
                     if (reminders.length !== 1) {
                         validationFailure("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
@@ -712,7 +712,7 @@ angular.module('starter')
                     $ionicHistory.goBack();
                 });
 
-            reminderService.deleteReminder($scope.state.trackingReminder.id)
+            reminderService.deleteTrackingReminderDeferred($scope.state.trackingReminder.id)
                 .then(function(){
                     $ionicLoading.hide();
                     $scope.loading = false;
@@ -721,7 +721,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                     $scope.loading = false;
 
-                    console.error('ERROR: reminderService.deleteReminder Failed to Delete Reminder with id ' +
+                    console.error('ERROR: reminderService.deleteTrackingReminderDeferred Failed to Delete Reminder with id ' +
                         $scope.state.trackingReminder.id);
                 });
         };

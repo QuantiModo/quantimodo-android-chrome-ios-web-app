@@ -408,7 +408,7 @@ angular.module('starter')
                                 fromUrl: window.location.href
                             }
                         );
-                        reminderService.postTrackingReminders(trackingReminder)
+                        reminderService.postTrackingRemindersDeferred(trackingReminder)
                             .then(function () {
                                 $ionicLoading.hide();
                                 console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
@@ -1254,7 +1254,7 @@ angular.module('starter')
                 destructiveButtonClicked: function() {
                     if(!bloodPressure){
                         $rootScope.favoritesArray.splice($index, 1);
-                        reminderService.deleteReminder(favorite.id)
+                        reminderService.deleteTrackingReminderDeferred(favorite.id)
                             .then(function(){
                                 console.debug('Favorite deleted: ' + JSON.stringify(favorite));
                             }, function(error){
@@ -1268,7 +1268,7 @@ angular.module('starter')
                     }
 
                     if(bloodPressure){
-                        reminderService.deleteReminder($rootScope.bloodPressureReminderId)
+                        reminderService.deleteTrackingReminderDeferred($rootScope.bloodPressureReminderId)
                             .then(function(){
                                 console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
                             }, function(error){

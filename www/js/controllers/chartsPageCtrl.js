@@ -151,7 +151,7 @@ angular.module('starter')
                 return;
             }
             //$scope.showLoader('Fetching measurements');
-            quantimodoService.getV1MeasurementsDaily(params, function(dailyHistory){
+            quantimodoService.getMeasurementsDailyFromApiDeferred(params).then(function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
                 if(dailyHistory.length > 0 && $scope.state.dailyHistory.length < 1000){

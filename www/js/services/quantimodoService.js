@@ -324,7 +324,7 @@ angular.module('starter')
             );
         };
 
-        quantimodoService.getV1MeasurementsDaily = function(params, successHandler, errorHandler){
+        quantimodoService.getMeasurementsDailyFromApi = function(params, successHandler, errorHandler){
             var minimumSecondsBetweenRequests = 0;
             quantimodoService.get('api/v1/measurements/daily',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
@@ -333,6 +333,16 @@ angular.module('starter')
                 errorHandler,
                 minimumSecondsBetweenRequests
             );
+        };
+
+        quantimodoService.getMeasurementsDailyFromApiDeferred = function(params, successHandler, errorHandler){
+            var deferred = $q.defer();
+            quantimodoService.getMeasurementsDailyFromApi(params, function(dailyHistory){
+                deferred.resolve(dailyHistory);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
         };
 
         quantimodoService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
@@ -371,9 +381,9 @@ angular.module('starter')
         };
 
         // post new Measurements for user
-        quantimodoService.postMeasurementsV2 = function(measurementSet, successHandler, errorHandler){
+        quantimodoService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
             if(!measurementSet[0].measurements && !measurementSet[0].value){
-                console.error("No measurementSet.measurements provided to quantimodoService.postMeasurementsV2");
+                console.error("No measurementSet.measurements provided to quantimodoService.postMeasurementsToApi");
             } else {
                 quantimodoService.post('api/measurements/v2',
                     //['measurements', 'variableName', 'source', 'variableCategoryName', 'abbreviatedUnitName'],
@@ -414,7 +424,7 @@ angular.module('starter')
         };
 
         // post new correlation for user
-        quantimodoService.postCorrelation = function(correlationSet, successHandler ,errorHandler){
+        quantimodoService.postCorrelationToApi = function(correlationSet, successHandler ,errorHandler){
             quantimodoService.post('api/v1/correlations',
                 ['causeVariableName', 'effectVariableName', 'correlation', 'vote'],
                 correlationSet,
@@ -441,7 +451,7 @@ angular.module('starter')
         };
 
         // search for user variables
-        quantimodoService.searchUserVariables = function(query, params, successHandler, errorHandler){
+        quantimodoService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
             quantimodoService.get('api/v1/variables/search/' + encodeURIComponent(query),
                 ['limit','includePublic', 'manualTracking'],
                 params,
@@ -449,7 +459,7 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.getVariablesByName = function(variableName, params, successHandler, errorHandler){
+        quantimodoService.getVariablesByNameFromApi = function(variableName, params, successHandler, errorHandler){
             quantimodoService.get('api/v1/variables/' + encodeURIComponent(variableName),
                 [],
                 params,
@@ -457,7 +467,7 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.getPublicVariablesByName = function(variableName, successHandler, errorHandler){
+        quantimodoService.getPublicVariablesByNameFromApi = function(variableName, successHandler, errorHandler){
             quantimodoService.get('api/v1/public/variables',
                 ['name'],
                 {name: variableName},
@@ -465,7 +475,7 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.getVariableById = function(variableId, successHandler, errorHandler){
+        quantimodoService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
             quantimodoService.get('api/v1/variables' ,
                 ['id'],
                 {id: variableId},
@@ -475,7 +485,7 @@ angular.module('starter')
 
 
         // get user variables
-        quantimodoService.getUserVariables = function(params, successHandler, errorHandler){
+        quantimodoService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
 
             if(!params){
                 params = {};
@@ -497,7 +507,7 @@ angular.module('starter')
         };
 
         // post changes to user variable
-        quantimodoService.postUserVariable = function(userVariable, successHandler, errorHandler) {
+        quantimodoService.postUserVariableToApi = function(userVariable, successHandler, errorHandler) {
             quantimodoService.post('api/v1/userVariables',
                 [
                     'user',
@@ -657,7 +667,7 @@ angular.module('starter')
         };
 
         // get pending reminders
-        quantimodoService.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
+        quantimodoService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/trackingReminderNotifications',
                 ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'],
                 params,
@@ -665,7 +675,7 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.postTrackingReminderNotifications = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
+        quantimodoService.postTrackingReminderNotificationsToApi = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
             if(!trackingReminderNotificationsArray){
                 successHandler();
                 return;
@@ -682,7 +692,7 @@ angular.module('starter')
         };
 
         // get reminders
-        quantimodoService.getTrackingReminders = function(params, successHandler, errorHandler){
+        quantimodoService.getTrackingRemindersFromApi = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/trackingReminders',
                 ['variableCategoryName', 'id'],
                 params,
@@ -719,7 +729,7 @@ angular.module('starter')
         };
 
         // post tracking reminder
-        quantimodoService.postTrackingReminders = function(trackingRemindersArray, successHandler, errorHandler) {
+        quantimodoService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
             if(trackingRemindersArray.constructor !== Array){
                 trackingRemindersArray = [trackingRemindersArray];
             }
@@ -1790,11 +1800,11 @@ angular.module('starter')
 
                     console.debug('Syncing measurements to server: ' + JSON.stringify(measurementObjects));
 
-                    quantimodoService.postMeasurementsV2(measurements, function (response) {
+                    quantimodoService.postMeasurementsToApi(measurements, function (response) {
                         localStorageService.setItem('measurementsQueue', JSON.stringify([]));
                         quantimodoService.getMeasurements().then(function() {
                             defer.resolve();
-                            console.debug("quantimodoService.postMeasurementsV2 success: " + JSON.stringify(response));
+                            console.debug("quantimodoService.postMeasurementsToApi success: " + JSON.stringify(response));
                         });
                     }, function (response) {
                         console.debug("error: " + JSON.stringify(response));
@@ -2038,20 +2048,20 @@ angular.module('starter')
                 };
 
                 // send request
-                quantimodoService.postMeasurementsV2(measurements, function(response){
+                quantimodoService.postMeasurementsToApi(measurements, function(response){
                     if(response.success) {
                         console.debug("postMeasurementsV2 success " + JSON.stringify(response));
                         if(usePromise) {
                             deferred.resolve();
                         }
                     } else {
-                        console.debug("quantimodoService.postMeasurementsV2 error" + JSON.stringify(response));
+                        console.debug("quantimodoService.postMeasurementsToApi error" + JSON.stringify(response));
                         if(usePromise) {
                             deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
                         }
                     }
                 }, function(response){
-                    console.debug("quantimodoService.postMeasurementsV2 error" + JSON.stringify(response));
+                    console.debug("quantimodoService.postMeasurementsToApi error" + JSON.stringify(response));
                     if(usePromise) {
                         deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
                     }
@@ -2094,9 +2104,9 @@ angular.module('starter')
 
             var deferred = $q.defer();
 
-            quantimodoService.postMeasurementsV2(measurementSet, function(response){
+            quantimodoService.postMeasurementsToApi(measurementSet, function(response){
                 if(response.success) {
-                    console.debug("quantimodoService.postMeasurementsV2 success: " + JSON.stringify(response));
+                    console.debug("quantimodoService.postMeasurementsToApi success: " + JSON.stringify(response));
                     deferred.resolve();
                 } else {
                     deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
@@ -2200,9 +2210,9 @@ angular.module('starter')
                 }
             ];
 
-            quantimodoService.postMeasurementsV2(measurementSets, function(response){
+            quantimodoService.postMeasurementsToApi(measurementSets, function(response){
                 if(response.success) {
-                    console.debug("quantimodoService.postMeasurementsV2 success: " + JSON.stringify(response));
+                    console.debug("quantimodoService.postMeasurementsToApi success: " + JSON.stringify(response));
                     deferred.resolve(response);
                 } else {
                     deferred.reject(response);

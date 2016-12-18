@@ -127,7 +127,7 @@ angular.module('starter',
                      modifiedValue: 1
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -139,7 +139,7 @@ angular.module('starter',
                      modifiedValue: 2
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -151,7 +151,7 @@ angular.module('starter',
                      modifiedValue: 3
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -163,7 +163,7 @@ angular.module('starter',
                      modifiedValue: 4
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -175,7 +175,7 @@ angular.module('starter',
                      modifiedValue: 5
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -186,7 +186,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -196,7 +196,7 @@ angular.module('starter',
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
-                 reminderService.snoozeReminderNotification(body);
+                 reminderService.snoozeReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -207,7 +207,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.lastValue
                  };
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -218,7 +218,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.secondToLastValue
                  };
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -229,7 +229,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.thirdToLastValue
                  };
-                 reminderService.trackReminderNotification(body);
+                 reminderService.trackReminderNotificationDeferred(body);
                  finishPush(data);
              };
          }

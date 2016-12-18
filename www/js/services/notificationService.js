@@ -165,7 +165,7 @@ angular.module('starter')
                 var params = {
                     reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
                 };
-                quantimodoService.getTrackingReminderNotifications(params, function (response) {
+                quantimodoService.getTrackingReminderNotificationsFromApi(params, function (response) {
                     if (response.success) {
                         $rootScope.trackingReminderNotifications = response.data;
                         $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
