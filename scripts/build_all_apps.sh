@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export IONIC_IOS_APP_VERSION_NUMBER="2.2.5.0"
+export IONIC_IOS_APP_VERSION_NUMBER="2.2.6.0"
 export IONIC_APP_VERSION_NUMBER=${IONIC_IOS_APP_VERSION_NUMBER:0:5}
 
 export RED='\033[0;31m'
@@ -14,30 +14,6 @@ cd ${SCRIPT_FOLDER}
 cd ..
 export IONIC_PATH="$PWD"
 echo "IONIC_PATH is $IONIC_PATH"
-
-echo "Using node 4.4.4 because 6 seems to break stuff: https://github.com/steelbrain/exec/issues/13"
-source /home/ubuntu/.nvm/nvm.sh
-nvm install 4.4.4
-nvm use 4.4.4
-
-sudo mkdir $DROPBOX_PATH
-sudo mkdir /home/ubuntu/Dropbox/QuantiModo
-sudo mkdir /home/ubuntu/Dropbox/QuantiModo/apps
-sudo mkdir /var/lib/jenkins/.android
-sudo usermod -a -G ubuntu jenkins
-
-sudo chmod -R 777 $DROPBOX_PATH
-sudo chmod -R 777 /home/ubuntu/Dropbox/QuantiModo
-sudo chmod -R 777 /usr/lib/node_modules
-sudo chmod -R 777 /usr/local/lib
-sudo chmod -R 777 /var/lib/jenkins/.android
-sudo chmod 777 -R $PWD
-sudo ln -s /usr/bin/nodejs /usr/bin/node
-
-keytool -exportcert -list -v \
--alias androiddebugkey -keystore ${ANDROID_DEBUG_KEYSTORE_PATH}
-
-ionic info
 
 #cd ..
 #mkdir qm-ionic-intermediates
@@ -99,9 +75,46 @@ if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
       exit 1
 fi
 
+echo "Using node 4.4.4 because 6 seems to break stuff: https://github.com/steelbrain/exec/issues/13"
+source /home/ubuntu/.nvm/nvm.sh
+nvm install 4.4.4
+nvm use 4.4.4
+
+sudo mkdir ${DROPBOX_PATH}
+sudo mkdir /home/ubuntu/Dropbox/QuantiModo
+sudo mkdir /home/ubuntu/Dropbox/QuantiModo/apps
+sudo mkdir /var/lib/jenkins/.android
+sudo usermod -a -G ubuntu jenkins
+
+sudo chmod -R 777 ${DROPBOX_PATH}
+sudo chmod -R 777 ${INTERMEDIATE_PATH}
+sudo chmod -R 777 ${IONIC_PATH}
+sudo chmod -R 777 /home/ubuntu/Dropbox/QuantiModo
+sudo chmod -R 777 /usr/lib/node_modules
+sudo chmod -R 777 /usr/local/lib
+sudo chmod -R 777 /var/lib/jenkins/.android
+sudo chmod 777 -R $PWD
+sudo ln -s /usr/bin/nodejs /usr/bin/node
+
+keytool -exportcert -list -v \
+-alias androiddebugkey -keystore ${ANDROID_DEBUG_KEYSTORE_PATH}
+
+ionic info
+sudo usermod -a -G ubuntu jenkins
+
+mkdir "$ANDROID_HOME/licenses" || true
+echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_SDK/licenses/android-sdk-license"
+echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_SDK/licenses/android-sdk-preview-license"
+
+
+
 #echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
 #rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
+
+rm -rf plugins
+echo "NPM INSTALL"
+npm install
 
 echo "ionic state reset"
 ionic state reset
@@ -135,10 +148,6 @@ echo "ionic browser add crosswalk@12.41.296.5"
 # ionic browser add crosswalk@12.41.296.5  # Pre Ionic CLI 2
 ionic plugin add cordova-plugin-crosswalk-webview --save
 
-#npm install -g bower
-bower install
-ionic config build
-
 if [ -f ${INTERMEDIATE_PATH}/www/lib/angular/angular.js ];
 then
    echo echo "Dependencies installed via bower"
@@ -162,7 +171,7 @@ if [ -z ${BUILD_QUANTIMODO} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else
-        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        gulp configureApp
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
@@ -188,7 +197,7 @@ if [ -z ${BUILD_MOODIMODO} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else
-        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        gulp configureApp
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
@@ -215,7 +224,7 @@ if [ -z ${BUILD_MINDFIRST} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else
-        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        gulp configureApp
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
@@ -242,7 +251,7 @@ if [ -z ${BUILD_ENERGYMODO} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else
-        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        gulp configureApp
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
@@ -268,7 +277,7 @@ if [ -z ${BUILD_MEDTLC} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else
-        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        gulp configureApp
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
@@ -294,7 +303,7 @@ if [ -z ${BUILD_EPHARMIX} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else
-        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        gulp configureApp
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh

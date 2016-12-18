@@ -390,13 +390,8 @@ gulp.task('deleteIOSApp', function () {
 
 gulp.task('setFallbackEnvs', function(){
     if(!process.env.LOWERCASE_APP_NAME){
-        process.env.LOWERCASE_APP_NAME = 'quantimodo';
-        console.warn('No LOWERCASE_APP_NAME set.  Falling back to ' + process.env.LOWERCASE_APP_NAME);
-    }
-
-    if(!process.env.APP_DISPLAY_NAME){
-        process.env.APP_DISPLAY_NAME = 'QuantiModo';
-        console.warn('No APP_DISPLAY_NAME found! Falling back to ' + process.env.APP_DISPLAY_NAME);
+        console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
+        setQuantiModoEnvs();
     }
 });
 
@@ -489,6 +484,12 @@ gulp.task('decryptPrivateConfig', ['setFallbackEnvs'], function(){
 	decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
+gulp.task('decryptPrivateConfigToDefault', ['setFallbackEnvs'], function(){
+    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
+    var decryptedFilePath = './www/private_configs/default.config.js';
+    decryptFile(fileToDecryptPath, decryptedFilePath);
+});
+
 gulp.task('deleteFacebookPlugin', function(callback){
     console.log("If this doesn't work, just use gulp cleanPlugins");
     executeCommand("cordova plugin rm phonegap-facebook-plugin", callback);
@@ -516,10 +517,12 @@ gulp.task('ionicStateReset', function(callback){
 });
 
 var fastlaneSupply = function(track, callback){
-    executeCommand('supply --apk_paths platforms/android/build/outputs/apk/android-armv7-release.apk,' +
-        'platforms/android/build/outputs/apk/android-x86-release.apk ' +
-        '--track ' + track +
-        ' --json_key supply_json_key_for_google_play.json', callback);
+	var pathToApks = 'dropbox/' + process.env.LOWERCASE_APP_NAME;
+    executeCommand('supply' +
+		' --apk_paths ' + pathToApks + '/android-armv7-release.apk,' + pathToApks +  '/android-x86-release.apk' +
+        ' --track ' + track +
+        ' --json_key supply_json_key_for_google_play.json',
+		callback);
 };
 
 gulp.task('fastlaneSupplyBeta', function(callback){
@@ -650,6 +653,14 @@ gulp.task('ionicUploadProductionForAllApps', function(callback){
     process.env.RELEASE_STAGE = 'production';
     runSequence(
         'ionicUploadAllApps',
+        callback);
+});
+
+gulp.task('fastlaneSupplyBetaQuantiModo', function(callback){
+    runSequence(
+    	'setQuantiModoEnvs',
+		'configureApp',
+        'fastlaneSupplyBeta',
         callback);
 });
 
@@ -1173,12 +1184,16 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 		callback);
 });
 
-gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.4.0';
+var setVersionNumberEnvsFromGulpFile = function () {
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.5.0';
     console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.5.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.6.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+};
+
+gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
+    setVersionNumberEnvsFromGulpFile();
     callback();
 });
 
@@ -1439,13 +1454,17 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
 	callback();
 });
 
-gulp.task('setQuantiModoEnvs', [], function(callback){
+function setQuantiModoEnvs() {
     process.env.APPLE_ID = "1115037661";
-	process.env.APP_DISPLAY_NAME = "QuantiModo";
-	process.env.LOWERCASE_APP_NAME = "quantimodo";
-	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
-	process.env.APP_DESCRIPTION = "Perfect your life!";
-	process.env.IONIC_APP_ID = "42fe48d4";
+    process.env.APP_DISPLAY_NAME = "QuantiModo";
+    process.env.LOWERCASE_APP_NAME = "quantimodo";
+    process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
+    process.env.APP_DESCRIPTION = "Perfect your life!";
+    process.env.IONIC_APP_ID = "42fe48d4";
+}
+
+gulp.task('setQuantiModoEnvs', [], function(callback){
+    setQuantiModoEnvs();
 	callback();
 });
 
@@ -1523,6 +1542,8 @@ gulp.task('copyAppConfigToDefault', ['setFallbackEnvs'], function () {
 });
 
 gulp.task('copyPrivateConfigToDefault', ['setFallbackEnvs'], function () {
+	console.log('Copying ./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js to ' +
+		'www/private_configs/default.config.js');
     return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js')
         .pipe(rename('default.config.js'))
         .pipe(gulp.dest('www/private_configs'));
@@ -1577,36 +1598,36 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 			if(process.env.APP_DISPLAY_NAME) {
 				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
 			} else {
-				console.error("Please set APP_DISPLAY_NAME env");
-				return;
+                console.warn("APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME");
+                setQuantiModoEnvs();
 			}
 
 			if(process.env.APP_DESCRIPTION) {
 				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
 			} else {
-                console.error("Please set APP_DESCRIPTION env");
-                return;
+                console.warn("APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION");
+                setQuantiModoEnvs();
             }
 
 			if(process.env.APP_IDENTIFIER) {
 				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
 			} else {
-                console.error("Please set APP_IDENTIFIER env");
-                return;
+                console.warn("APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER");
+                setQuantiModoEnvs();
             }
 
             if(process.env.IONIC_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
             } else {
-                console.error("Please set IONIC_APP_VERSION_NUMBER env");
-                return;
+                console.warn("IONIC_APP_VERSION_NUMBER env not set! Falling back to IONIC_APP_VERSION_NUMBER specified in gulpfile");
+                setVersionNumberEnvsFromGulpFile();
             }
 
             if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
             } else {
-                console.error("Please set IONIC_IOS_APP_VERSION_NUMBER env");
-                return;
+                console.warn("IONIC_IOS_APP_VERSION_NUMBER env not set! Falling back to IONIC_IOS_APP_VERSION_NUMBER specified in gulpfile");
+                setVersionNumberEnvsFromGulpFile();
             }
 
             var builder = new xml2js.Builder();
@@ -1702,14 +1723,15 @@ gulp.task('configureApp', [], function(callback){
     runSequence(
         'copyAppResources',
         'generatePrivateConfigFromEnvs',
-        'decryptPrivateConfig',
-        //'replaceVersionNumbersInFiles',  // I don't think we need this here
+        'decryptPrivateConfigToDefault',
+        //'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
+		// templates because of the git changes and weird stuff replacement does to config-template.xml
         'copyAppConfigToDefault',
-        'copyPrivateConfigToDefault',
         'setIonicAppId',
         'copyIonicCloudLibrary',
 		'resizeIcons',
 		'copyIconsToWwwImg',
+		'generateConfigXmlFromTemplate',
         callback);
 });
 
@@ -1877,9 +1899,15 @@ gulp.task('copyAndroidResources', [], function(){
 		.pipe(gulp.dest('platforms/android'));
 });
 
+
 gulp.task('copyAndroidBuild', ['setFallbackEnvs'], function(){
-    return gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
+    var copyApksToDropbox = gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
         .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
+
+    // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
+    var copyApksToBuildFolder = gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
+        .pipe(gulp.dest('build/apks/' + process.env.LOWERCASE_APP_NAME));
+    return es.concat(copyApksToDropbox, copyApksToBuildFolder);
 });
 
 gulp.task('prepareQuantiModoIos', function(callback){
@@ -1919,8 +1947,13 @@ gulp.task('ionicRunAndroid', [], function(callback){
 });
 
 function resizeIcon(callback, resolution) {
-    return execute('convert resources/icon.png -resize ' + resolution + 'x' + resolution +
-		' www/img/icons/icon_' + resolution + '.png', function (error) {
+	var command  = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution +
+        ' www/img/icons/icon_' + resolution + '.png';
+	console.log('Executing command: ' + command);
+    return execute(command, function (error) {
+    	if(error){
+    		console.log("ERROR: " + JSON.stringify(error));
+		}
         callback();
     });
 }

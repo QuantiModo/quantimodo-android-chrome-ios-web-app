@@ -4,6 +4,7 @@ angular.module('starter')
 										 localStorageService, $timeout) {
 
 		var reminderService = {};
+		var delayBeforePostingNotifications = 60 * 1000;
 
 		reminderService.postTrackingReminders = function(trackingRemindersArray){
 			var deferred = $q.defer();
@@ -57,7 +58,7 @@ angular.module('starter')
             $timeout(function() {
                 // Post notification queue in 5 minutes if it's still there
                 reminderService.postTrackingReminderNotifications();
-            }, 300000);
+            }, delayBeforePostingNotifications);
 /*
 			QuantiModo.skipTrackingReminderNotification(body, function(response){
 				if(response.success) {
@@ -101,7 +102,7 @@ angular.module('starter')
             $timeout(function() {
                 // Post notification queue in 5 minutes if it's still there
                 reminderService.postTrackingReminderNotifications();
-            }, 300000);
+            }, delayBeforePostingNotifications);
 /*
 			QuantiModo.trackTrackingReminderNotification(body, function(response){
 				if(response.success) {
@@ -127,7 +128,7 @@ angular.module('starter')
             $timeout(function() {
                 // Post notification queue in 5 minutes if it's still there
                 reminderService.postTrackingReminderNotifications();
-            }, 300000);
+            }, delayBeforePostingNotifications);
 
 /*
 			QuantiModo.snoozeTrackingReminderNotification(body, function(response){
@@ -184,7 +185,7 @@ angular.module('starter')
 						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
 						console.error('Set lastRefreshTrackingRemindersAndScheduleAlarmsPromise to null because ' + message);
 					}
-				}, 30000);
+				}, delayBeforePostingNotifications);
 
 				var params = {
 					limit: 200
