@@ -4,7 +4,7 @@ angular.module('starter')
 
 		var connectorsService = {};
 
-		connectorsService.getConnectors = function(){
+		connectorsService.getConnectorsDeferred = function(){
 			var deferred = $q.defer();
 			localStorageService.getItem('connectors', function(connectors){
 				if(connectors){
@@ -23,7 +23,7 @@ angular.module('starter')
 
 		connectorsService.refreshConnectors = function(){
 			var deferred = $q.defer();
-			quantimodoService.getConnectors(function(connectors){
+			quantimodoService.getConnectorsFromApi(function(connectors){
 				localStorageService.setItem('connectors', JSON.stringify(connectors));
 				connectors = connectorsService.hideBrokenConnectors(connectors);
 				deferred.resolve(connectors);
@@ -33,9 +33,9 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		connectorsService.disconnect = function(name){
+		connectorsService.disconnectConnectorDeferred = function(name){
 			var deferred = $q.defer();
-			quantimodoService.disconnectConnector(name, function(){
+			quantimodoService.disconnectConnectorToApi(name, function(){
 				connectorsService.refreshConnectors();
 			}, function(error){
 				deferred.reject(error);
@@ -43,9 +43,9 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		connectorsService.connectWithParams = function(params, lowercaseConnectorName){
+		connectorsService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
 			var deferred = $q.defer();
-			quantimodoService.connectConnectorWithParams(params, lowercaseConnectorName, function(){
+			quantimodoService.connectConnectorWithParamsToApi(params, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
 			}, function(error){
 				deferred.reject(error);
@@ -53,9 +53,9 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		connectorsService.connectWithToken = function(body){
+		connectorsService.connectConnectorWithTokenDeferred = function(body){
 			var deferred = $q.defer();
-			quantimodoService.connectConnectorWithToken(body, function(){
+			quantimodoService.connectConnectorWithTokenToApi(body, function(){
 				connectorsService.refreshConnectors();
 			}, function(error){
 				deferred.reject(error);
@@ -63,9 +63,9 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		connectorsService.connectWithAuthCode = function(code, lowercaseConnectorName){
+		connectorsService.connectConnectorWithAuthCodeDeferred = function(code, lowercaseConnectorName){
 			var deferred = $q.defer();
-			quantimodoService.connectWithAuthCode(code, lowercaseConnectorName, function(){
+			quantimodoService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
 			}, function(error){
 				deferred.reject(error);

@@ -558,7 +558,7 @@ angular.module('starter')
         };
 
         // get units
-        quantimodoService.getConnectors = function(successHandler, errorHandler){
+        quantimodoService.getConnectorsFromApi = function(successHandler, errorHandler){
             quantimodoService.get('api/connectors/list',
                 [],
                 {},
@@ -567,7 +567,7 @@ angular.module('starter')
         };
 
         // get units
-        quantimodoService.disconnectConnector = function(name, successHandler, errorHandler){
+        quantimodoService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
             quantimodoService.get('api/v1/connectors/' + name + '/disconnect',
                 [],
                 {},
@@ -576,7 +576,7 @@ angular.module('starter')
         };
 
 
-        quantimodoService.connectConnectorWithParams = function(params, lowercaseConnectorName, successHandler, errorHandler){
+        quantimodoService.connectConnectorWithParamsToApi = function(params, lowercaseConnectorName, successHandler, errorHandler){
             var allowedParams = [
                 'location',
                 'username',
@@ -592,7 +592,7 @@ angular.module('starter')
         };
 
 
-        quantimodoService.connectConnectorWithToken = function(body, lowercaseConnectorName, successHandler, errorHandler){
+        quantimodoService.connectConnectorWithTokenToApi = function(body, lowercaseConnectorName, successHandler, errorHandler){
             var requiredProperties = [
                 'connector',
                 'connectorCredentials'
@@ -605,7 +605,7 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.connectWithAuthCode = function(code, connectorLowercaseName, successHandler, errorHandler){
+        quantimodoService.connectWithAuthCodeToApi = function(code, connectorLowercaseName, successHandler, errorHandler){
             var allowedParams = [
                 'code',
                 'noRedirect'

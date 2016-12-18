@@ -82,7 +82,7 @@ angular.module('starter')
 
 		var loadNativeConnectorPage = function(){
 			console.debug('importCtrl: $rootScope.isMobile so using native connector page');
-			connectorsService.getConnectors()
+			connectorsService.getConnectorsDeferred()
 				.then(function(connectors){
 					$scope.connectors = connectors;
                     if(connectors) {
@@ -125,7 +125,7 @@ angular.module('starter')
 			connector.loadingText = 'Connecting...';
 
 			var connectWithParams = function(params, lowercaseConnectorName) {
-				connectorsService.connectWithParams(params, lowercaseConnectorName)
+				connectorsService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
 					.then(function(result){
 						console.debug(JSON.stringify(result));
 						$scope.refreshConnectors();
@@ -141,7 +141,7 @@ angular.module('starter')
 					connectorCredentials: {token: response},
 					connector: connector
 				};
-				connectorsService.connectWithToken(body).then(function(result){
+				connectorsService.connectConnectorWithTokenDeferred(body).then(function(result){
 					console.debug(JSON.stringify(result));
 					$scope.refreshConnectors();
 				}, function (error) {
@@ -152,7 +152,7 @@ angular.module('starter')
 
 			var connectWithAuthCode = function(authorizationCode, connector){
 				console.debug(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-				connectorsService.connectWithAuthCode(authorizationCode, connector.name).then(function (){
+				connectorsService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
 					$scope.refreshConnectors();
 				}, function() {
 					console.error("error on connectWithAuthCode for " + connector.name);
@@ -545,7 +545,7 @@ angular.module('starter')
 
 		$scope.disconnect = function (connector){
 			connector.loadingText = 'Disconnecting...';
-			connectorsService.disconnect(connector.name).then(function (){
+			connectorsService.disconnectConnectorDeferred(connector.name).then(function (){
 				$scope.refreshConnectors();
 			}, function() {
 				console.error("error disconnecting " + connector.name);
