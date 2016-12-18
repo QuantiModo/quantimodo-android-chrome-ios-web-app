@@ -1,8 +1,8 @@
 angular.module('starter')
 
-	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter,
-												 $ionicActionSheet,  quantimodoService,
-												localStorageService, reminderService) {
+	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout,
+												$ionicLoading, $filter, $ionicActionSheet,  quantimodoService,
+												localStorageService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
@@ -66,7 +66,7 @@ angular.module('starter')
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Syncing...');
-				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+				quantimodoService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
 					getTrackingReminders();
 				});
 			} else {
@@ -75,7 +75,7 @@ angular.module('starter')
 		};
 
 		var getTrackingReminders = function(){
-			reminderService.getTrackingRemindersDeferred($stateParams.variableCategoryName)
+			quantimodoService.getTrackingRemindersDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminders) {
 					$scope.state.trackingReminders = trackingReminders;
 					showAppropriateHelpInfoCards();
@@ -211,18 +211,18 @@ angular.module('starter')
 
 			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId)
 				.then(function(){
-					reminderService.getTrackingRemindersFromLocalStorage($stateParams.variableCategoryName)
+					quantimodoService.getTrackingRemindersFromLocalStorage($stateParams.variableCategoryName)
 						.then(function (trackingReminders) {
 							$scope.state.trackingReminders = trackingReminders;
 						});
 				});
 
-			reminderService.deleteTrackingReminderDeferred(reminder.trackingReminderId)
+			quantimodoService.deleteTrackingReminderDeferred(reminder.trackingReminderId)
 				.then(function(){
-					reminderService.refreshTrackingReminderNotifications().then(function(){
-						console.debug('reminderService.deleteTrackingReminderDeferred successfully refreshed notifications');
+					quantimodoService.refreshTrackingReminderNotifications().then(function(){
+						console.debug('quantimodoService.deleteTrackingReminderDeferred successfully refreshed notifications');
 					}, function (error) {
-						console.error('reminderService.deleteTrackingReminderDeferred: ' + error);
+						console.error('quantimodoService.deleteTrackingReminderDeferred: ' + error);
 					});
 					console.debug("Reminder deleted");
 				}, function(error){

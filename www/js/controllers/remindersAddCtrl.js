@@ -2,8 +2,8 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
-                                             $ionicActionSheet, $ionicHistory, quantimodoService, localStorageService,
-                                             reminderService, ionicTimePicker,
+                                             $ionicActionSheet, $ionicHistory, localStorageService,
+                                             quantimodoService, ionicTimePicker,
                                              variableService, timeService, $ionicPopup,
                                              ionicDatePicker) {
 
@@ -488,9 +488,9 @@ angular.module('starter')
             localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders',
                 remindersArray)
                 .then(function(){
-                    reminderService.postTrackingRemindersDeferred(remindersArray)
+                    quantimodoService.postTrackingRemindersDeferred(remindersArray)
                         .then(function(){
-                            reminderService.refreshTrackingReminderNotifications().then(function(){
+                            quantimodoService.refreshTrackingReminderNotifications().then(function(){
                                 console.debug('reminderAddCtrl.save successfully refreshed notifications');
                             }, function (error) {
                                 console.error(error);
@@ -626,7 +626,7 @@ angular.module('starter')
         }
 
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
-            reminderService.getTrackingReminderByIdDeferred(reminderIdUrlParameter)
+            quantimodoService.getTrackingReminderByIdDeferred(reminderIdUrlParameter)
                 .then(function (reminders) {
                     if (reminders.length !== 1) {
                         validationFailure("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
@@ -712,7 +712,7 @@ angular.module('starter')
                     $ionicHistory.goBack();
                 });
 
-            reminderService.deleteTrackingReminderDeferred($scope.state.trackingReminder.id)
+            quantimodoService.deleteTrackingReminderDeferred($scope.state.trackingReminder.id)
                 .then(function(){
                     $ionicLoading.hide();
                     $scope.loading = false;
@@ -721,7 +721,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                     $scope.loading = false;
 
-                    console.error('ERROR: reminderService.deleteTrackingReminderDeferred Failed to Delete Reminder with id ' +
+                    console.error('ERROR: quantimodoService.deleteTrackingReminderDeferred Failed to Delete Reminder with id ' +
                         $scope.state.trackingReminder.id);
                 });
         };

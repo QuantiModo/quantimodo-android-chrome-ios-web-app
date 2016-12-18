@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, notificationService, localStorageService,
-                                    reminderService, ratingService, migrationService, ionicDatePicker,
+                                    ratingService, migrationService, ionicDatePicker,
                                     variableService,
                                     correlationService, $ionicActionSheet, $ionicDeploy) {
 
@@ -408,7 +408,7 @@ angular.module('starter')
                                 fromUrl: window.location.href
                             }
                         );
-                        reminderService.postTrackingRemindersDeferred(trackingReminder)
+                        quantimodoService.postTrackingRemindersDeferred(trackingReminder)
                             .then(function () {
                                 $ionicLoading.hide();
                                 console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
@@ -820,7 +820,7 @@ angular.module('starter')
                 variableId: config.appSettings.primaryOutcomeVariableDetails.id,
                 defaultValue: 3
             };
-            reminderService.addToTrackingReminderSyncQueue(reminderToSchedule);
+            quantimodoService.addToTrackingReminderSyncQueue(reminderToSchedule);
             $scope.showIntervalCard = false;
         };
 
@@ -966,14 +966,14 @@ angular.module('starter')
                 //quantimodoService.syncPrimaryOutcomeVariableMeasurements();
                 if($rootScope.localNotificationsEnabled){
                     console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
-                    reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                    quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
                 }
                 variableService.getUserVariables();
                 variableService.getCommonVariables();
                 quantimodoService.getUnits();
                 $rootScope.syncedEverything = true;
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-                reminderService.syncTrackingReminderSyncQueueToServer();
+                quantimodoService.syncTrackingReminderSyncQueueToServer();
                 //quantimodoService.getConnectorsDeferred();
             }
         };
@@ -1254,7 +1254,7 @@ angular.module('starter')
                 destructiveButtonClicked: function() {
                     if(!bloodPressure){
                         $rootScope.favoritesArray.splice($index, 1);
-                        reminderService.deleteTrackingReminderDeferred(favorite.id)
+                        quantimodoService.deleteTrackingReminderDeferred(favorite.id)
                             .then(function(){
                                 console.debug('Favorite deleted: ' + JSON.stringify(favorite));
                             }, function(error){
@@ -1268,7 +1268,7 @@ angular.module('starter')
                     }
 
                     if(bloodPressure){
-                        reminderService.deleteTrackingReminderDeferred($rootScope.bloodPressureReminderId)
+                        quantimodoService.deleteTrackingReminderDeferred($rootScope.bloodPressureReminderId)
                             .then(function(){
                                 console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
                             }, function(error){

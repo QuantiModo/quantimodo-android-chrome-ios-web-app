@@ -2,9 +2,10 @@ angular.module('starter')
 	
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
-										  notificationService, quantimodoService, reminderService,
+										  notificationService, quantimodoService,
 										  ionicTimePicker, timeService, $stateParams, $ionicHistory,
 										  $ionicLoading, $ionicDeploy, $ionicPlatform) {
+
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
         $rootScope.showFilterBarSearchIcon = false;
@@ -158,7 +159,7 @@ angular.module('starter')
 						"frequency reminder");
                     if(!$rootScope.deviceToken){
                         console.warn("Could not find device token for push notifications so scheduling combined local notifications");
-                        reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                        quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
                     }
 				});
 
@@ -170,7 +171,7 @@ angular.module('starter')
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now " +
 						"refreshTrackingRemindersAndScheduleAlarms");
-					reminderService.refreshTrackingRemindersAndScheduleAlarms();
+					quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
 				});
 			}
 			
@@ -260,7 +261,7 @@ angular.module('starter')
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
 							quantimodoService.updateUserSettingsDeferred(params).then(function(){
-								reminderService.refreshTrackingRemindersAndScheduleAlarms();
+								quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
 							});
 							$ionicPopup.alert({
 								title: 'Earliest Notification Time Updated',
@@ -303,7 +304,7 @@ angular.module('starter')
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
 							params.latestReminderTime = $rootScope.user.latestReminderTime;
 							quantimodoService.updateUserSettingsDeferred(params).then(function(){
-								reminderService.refreshTrackingRemindersAndScheduleAlarms();
+								quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
 							});
 							$ionicPopup.alert({
 								title: 'Latest Notification Time Updated',

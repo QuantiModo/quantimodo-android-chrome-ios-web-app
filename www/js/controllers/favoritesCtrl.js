@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, quantimodoService,
+	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, quantimodoService,
 										  localStorageService, $rootScope,
 										  $stateParams) {
 
@@ -31,7 +31,7 @@ angular.module('starter')
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Syncing...');
-				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+				quantimodoService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
 					quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');

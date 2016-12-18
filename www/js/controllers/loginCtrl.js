@@ -2,8 +2,8 @@ angular.module('starter')
 
     // Handlers the Welcome Page
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector,
-                                      localStorageService, $timeout, quantimodoService, $stateParams,
-                                      reminderService) {
+                                      localStorageService, $timeout, $stateParams,
+                                      quantimodoService) {
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
@@ -67,7 +67,7 @@ angular.module('starter')
 
             if($rootScope.user){
                 $rootScope.hideNavigationMenu = false;
-                reminderService.createDefaultReminders();
+                quantimodoService.createDefaultReminders();
                 console.debug($scope.controller_name + ".login: Got user and going to default state");
                 $state.go(config.appSettings.defaultState);
             }

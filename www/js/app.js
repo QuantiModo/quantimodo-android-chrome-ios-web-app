@@ -22,7 +22,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, quantimodoService, reminderService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, quantimodoService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -81,7 +81,7 @@ angular.module('starter',
              push.on('notification', function(data) {
                  console.debug('Received push notification: ' + JSON.stringify(data));
                  quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-                 reminderService.refreshTrackingReminderNotifications().then(function(){
+                 quantimodoService.refreshTrackingReminderNotifications().then(function(){
                      console.debug('push.on.notification: successfully refreshed notifications');
                  }, function (error) {
                      console.error('push.on.notification: ' + error);
@@ -127,7 +127,7 @@ angular.module('starter',
                      modifiedValue: 1
                  };
 
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -139,7 +139,7 @@ angular.module('starter',
                      modifiedValue: 2
                  };
 
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -151,7 +151,7 @@ angular.module('starter',
                      modifiedValue: 3
                  };
 
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -163,7 +163,7 @@ angular.module('starter',
                      modifiedValue: 4
                  };
 
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -175,7 +175,7 @@ angular.module('starter',
                      modifiedValue: 5
                  };
 
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -186,7 +186,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
 
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -196,7 +196,7 @@ angular.module('starter',
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
-                 reminderService.snoozeReminderNotificationDeferred(body);
+                 quantimodoService.snoozeTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -207,7 +207,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.lastValue
                  };
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -218,7 +218,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.secondToLastValue
                  };
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -229,7 +229,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.thirdToLastValue
                  };
-                 reminderService.trackReminderNotificationDeferred(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
          }

@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService, reminderService,
+											   $ionicActionSheet, $timeout, quantimodoService,
 											   notificationService, localStorageService, $ionicLoading, chartService) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
@@ -335,7 +335,7 @@ angular.module('starter')
 			if(!$rootScope.showUndoButton){
 				$rootScope.showUndoButton = true;
 			}
-			reminderService.trackReminderNotificationDeferred(body)
+			quantimodoService.trackTrackingReminderNotificationDeferred(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
@@ -389,7 +389,7 @@ angular.module('starter')
 				trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
 			$scope.lastAction = 'Record ' + modifiedReminderValue + trackingReminderNotification.abbreviatedUnitName;
-	    	reminderService.trackReminderNotificationDeferred(body)
+	    	quantimodoService.trackTrackingReminderNotificationDeferred(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
@@ -410,7 +410,7 @@ angular.module('starter')
 			$scope.lastAction = 'Skip';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
-	    	reminderService.skipReminderNotificationDeferred(params)
+	    	quantimodoService.skipTrackingReminderNotificationDeferred(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
@@ -431,7 +431,7 @@ angular.module('starter')
 			$scope.lastAction = 'Snooze';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
-	    	reminderService.snoozeReminderNotificationDeferred(params)
+	    	quantimodoService.snoozeTrackingReminderNotificationDeferred(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
@@ -460,7 +460,7 @@ angular.module('starter')
 		};
 
 		var getFilteredTrackingReminderNotifications = function(){
-			reminderService.getTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
+			quantimodoService.getTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
 /*                    trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
                     	if(obj.variableName === 'Blood Pressure'){
@@ -470,7 +470,7 @@ angular.module('starter')
                     });*/
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications =
-						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+						quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 					getWeekdayChartIfNecessary();
 					$scope.hideLoader();
 				}, function(){
@@ -491,7 +491,7 @@ angular.module('starter')
             });*/
 			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 			$scope.filteredTrackingReminderNotifications =
-				reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+				quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
             $scope.hideLoader();
 		};
 
@@ -505,10 +505,10 @@ angular.module('starter')
 		};
 
 		var getFilteredTodayTrackingReminderNotifications = function(){
-			reminderService.getTodayTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
+			quantimodoService.getTodayTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-					$scope.filteredTrackingReminderNotifications = reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					$scope.filteredTrackingReminderNotifications = quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 					getWeekdayChartIfNecessary();
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
@@ -557,7 +557,7 @@ angular.module('starter')
 			if($stateParams.today){
 				getTrackingReminderNotifications();
 			} else {
-				reminderService.refreshTrackingReminderNotifications().then(function(){
+				quantimodoService.refreshTrackingReminderNotifications().then(function(){
 					getTrackingReminderNotifications();
 				}, function (error) {
 					console.error('$scope.refreshTrackingReminderNotifications: ' + error);
@@ -595,7 +595,7 @@ angular.module('starter')
 
 			if($rootScope.localNotificationsEnabled){
 				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
-				reminderService.refreshTrackingRemindersAndScheduleAlarms();
+				quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
 			}
 
 			quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
@@ -625,7 +625,7 @@ angular.module('starter')
 					},
 					destructiveButtonClicked: function() {
 						$scope.showLoader('Skipping all reminder notifications...');
-						reminderService.skipAllReminderNotificationsDeferred()
+						quantimodoService.skipAllTrackingReminderNotificationsDeferred()
 							.then(function(){
 								if($rootScope.localNotificationsEnabled){
 									notificationService.setNotificationBadge(0);
@@ -763,7 +763,7 @@ angular.module('starter')
 						trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId
 					};
 					$scope.showLoader('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
-					reminderService.skipAllReminderNotificationsDeferred(params)
+					quantimodoService.skipAllTrackingReminderNotificationsDeferred(params)
 						.then(function(){
 							$scope.hideLoader();
 							$scope.init();
