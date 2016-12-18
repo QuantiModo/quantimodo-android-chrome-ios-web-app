@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, quantimodoService, localStorageService,
-                                             reminderService, utilsService, ionicTimePicker,
+                                             reminderService, ionicTimePicker,
                                              variableService, timeService, bugsnagService, $ionicPopup,
                                              ionicDatePicker) {
 
@@ -318,7 +318,7 @@ angular.module('starter')
         };
 
         var validationFailure = function (message) {
-            utilsService.showAlert(message);
+            quantimodoService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
                 Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
@@ -681,8 +681,8 @@ angular.module('starter')
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             setTitle();
             quantimodoService.getUnits().then(function () {
-                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
+                var reminderIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'variableId');
                 if ($stateParams.variableObject) {
                     $rootScope.variableObject = $stateParams.variableObject;
                     setupByVariableObject($stateParams.variableObject);

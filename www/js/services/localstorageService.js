@@ -1,6 +1,6 @@
 angular.module('starter')
 
-    .factory('localStorageService',function($rootScope, $q, utilsService) {
+    .factory('localStorageService',function($rootScope, $q, quantimodoService) {
 
         var localStorageService = {
 
@@ -207,12 +207,12 @@ angular.module('starter')
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+key,function(val){
                         var item = val[keyIdentifier+key];
-                        item = utilsService.convertToObjectIfJsonString(item);
+                        item = quantimodoService.convertToObjectIfJsonString(item);
                         return item;
                     });
                 } else {
                     var item = localStorage.getItem(keyIdentifier+key);
-                    item = utilsService.convertToObjectIfJsonString(item);
+                    item = quantimodoService.convertToObjectIfJsonString(item);
                     return item;
                 }
             },

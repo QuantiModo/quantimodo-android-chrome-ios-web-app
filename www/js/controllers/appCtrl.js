@@ -6,7 +6,7 @@ angular.module('starter')
                                     quantimodoService, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker,
                                     variableService, qmLocationService, bugsnagService,
-                                    utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
+                                    correlationService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -441,7 +441,7 @@ angular.module('starter')
         $scope.loading = false;
         $ionicLoading.hide();
 
-        utilsService.setPlatformVariables();
+        quantimodoService.setPlatformVariables();
 
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
@@ -1049,7 +1049,7 @@ angular.module('starter')
         };
 
         $scope.favoriteValidationFailure = function (message) {
-            utilsService.showAlert(message);
+            quantimodoService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
         };

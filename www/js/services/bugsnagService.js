@@ -1,6 +1,6 @@
 angular.module('starter')
     // Measurement Service
-    .factory('bugsnagService', function(utilsService, $q, $rootScope) {
+    .factory('bugsnagService', function(quantimodoService, $q, $rootScope) {
 
 
         var bugsnagService = {
@@ -19,7 +19,7 @@ angular.module('starter')
                 }
                 console.error('ERROR: ' + stringifiedExceptionOrError);
                 if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.releaseStage = utilsService.getEnv();
+                    Bugsnag.releaseStage = quantimodoService.getEnv();
                     Bugsnag.notify(stringifiedExceptionOrError, stacktrace, {groupingHash: stringifiedExceptionOrError}, "error");
                     deferred.resolve();
                 } else {
@@ -34,7 +34,7 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") {
                 //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
                 //Bugsnag.notifyReleaseStages = ['Production','Staging'];
-                Bugsnag.releaseStage = utilsService.getEnv();
+                Bugsnag.releaseStage = quantimodoService.getEnv();
                 Bugsnag.appVersion = $rootScope.appVersion;
                 Bugsnag.metaData = {
                     platform: ionic.Platform.platform(),

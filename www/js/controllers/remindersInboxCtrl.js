@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService, reminderService, utilsService,
+											   $ionicActionSheet, $timeout, quantimodoService, reminderService,
 											   notificationService, localStorageService, $ionicLoading, chartService) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
@@ -636,7 +636,7 @@ angular.module('starter')
 									Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 								}
 								console.error(error);
-								utilsService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
+								quantimodoService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
 							});
 						return true;
 					}
@@ -773,7 +773,7 @@ angular.module('starter')
 								Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 							}
 							console.error(error);
-							utilsService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');
+							quantimodoService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');
 						});
 					return true;
 				}

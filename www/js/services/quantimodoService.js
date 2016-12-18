@@ -1,7 +1,7 @@
 angular.module('starter')
     // quantimodoService API implementation
     .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state,
-                                    localStorageService, bugsnagService, utilsService) {
+                                    localStorageService, bugsnagService, quantimodoService) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -37,7 +37,7 @@ angular.module('starter')
                         JSON.stringify(request));
                     localStorageService.setItem('afterLoginGoTo', window.location.href);
                     console.debug("set afterLoginGoTo to " + window.location.href);
-                    if (utilsService.getClientId() !== 'oAuthDisabled') {
+                    if (quantimodoService.getClientId() !== 'oAuthDisabled') {
                         $rootScope.sendToLogin();
                     } else {
                         var register = true;
@@ -147,12 +147,12 @@ angular.module('starter')
                 }
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
-                urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(utilsService.getClientId()));
+                urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
                 //We can't append access token to Ionic requests for some reason
                 //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
                 // configure request
-                var url = utilsService.getURL(baseURL);
+                var url = quantimodoService.getURL(baseURL);
                 var request = {
                     method: 'GET',
                     url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
@@ -228,9 +228,9 @@ angular.module('starter')
                 var urlParams = [];
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
-                items.clientId = utilsService.getClientId();
+                items.clientId = quantimodoService.getClientId();
 
-                var url = utilsService.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
+                var url = quantimodoService.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
                 // configure request
                 var request = {
@@ -243,7 +243,7 @@ angular.module('starter')
                     data : JSON.stringify(items)
                 };
 
-                if(utilsService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
+                if(quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
                     request.headers = {
                         "Authorization" : "Bearer " + accessToken,
                         'Content-Type': "application/json"
@@ -927,9 +927,9 @@ angular.module('starter')
         };
 
         quantimodoService.getAccessTokenFromUrlParameter = function () {
-            $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
+            $rootScope.accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'accessToken');
             if (!$rootScope.accessTokenInUrl) {
-                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
+                $rootScope.accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'access_token');
             }
             if($rootScope.accessTokenInUrl){
                 localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
@@ -980,10 +980,10 @@ angular.module('starter')
             if (accessToken && now < expiresAtMilliseconds) {
                 console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
                 deferred.resolve(accessToken);
-            } else if (refreshToken && expiresAtMilliseconds && utilsService.getClientId() !== 'oAuthDisabled') {
+            } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled') {
                 console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
                 quantimodoService.refreshAccessToken(refreshToken, deferred);
-            } else if(utilsService.getClientId() === 'oAuthDisabled') {
+            } else if(quantimodoService.getClientId() === 'oAuthDisabled') {
                     //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
                     return deferred.promise;
@@ -997,11 +997,11 @@ angular.module('starter')
 
         quantimodoService.refreshAccessToken = function(refreshToken, deferred) {
             console.debug('Refresh token will be used to fetch access token from ' +
-                utilsService.getURL("api/oauth2/token") + ' with client id ' + utilsService.getClientId());
-            var url = utilsService.getURL("api/oauth2/token");
+                quantimodoService.getURL("api/oauth2/token") + ' with client id ' + quantimodoService.getClientId());
+            var url = quantimodoService.getURL("api/oauth2/token");
             $http.post(url, {
-                client_id: utilsService.getClientId(),
-                client_secret: utilsService.getClientSecret(),
+                client_id: quantimodoService.getClientId(),
+                client_secret: quantimodoService.getClientSecret(),
                 refresh_token: refreshToken,
                 grant_type: 'refresh_token'
             }).success(function (data) {
@@ -1088,26 +1088,26 @@ angular.module('starter')
             var url = $rootScope.qmApiUrl + "/api/oauth2/authorize?";
             // add params
             url += "response_type=code";
-            url += "&client_id=" + utilsService.getClientId();
-            url += "&client_secret=" + utilsService.getClientSecret();
-            url += "&scope=" + utilsService.getPermissionString();
+            url += "&client_id=" + quantimodoService.getClientId();
+            url += "&client_secret=" + quantimodoService.getClientSecret();
+            url += "&scope=" + quantimodoService.getPermissionString();
             url += "&state=testabcd";
             if(register === true){
                 url += "&register=true";
             }
-            //url += "&redirect_uri=" + utilsService.getRedirectUri();
+            //url += "&redirect_uri=" + quantimodoService.getRedirectUri();
             return url;
         };
 
         quantimodoService.generateV2OAuthUrl= function(JWTToken) {
-            var url = utilsService.getURL("api/v2/bshaffer/oauth/authorize", true);
+            var url = quantimodoService.getURL("api/v2/bshaffer/oauth/authorize", true);
             url += "response_type=code";
-            url += "&client_id=" + utilsService.getClientId();
-            url += "&client_secret=" + utilsService.getClientSecret();
-            url += "&scope=" + utilsService.getPermissionString();
+            url += "&client_id=" + quantimodoService.getClientId();
+            url += "&client_secret=" + quantimodoService.getClientSecret();
+            url += "&scope=" + quantimodoService.getPermissionString();
             url += "&state=testabcd";
             url += "&token=" + JWTToken;
-            //url += "&redirect_uri=" + utilsService.getRedirectUri();
+            //url += "&redirect_uri=" + quantimodoService.getRedirectUri();
             return url;
         };
 
@@ -1118,10 +1118,10 @@ angular.module('starter')
                 authorizationUrl = event.data;
             }
 
-            var authorizationCode = utilsService.getUrlParameter(authorizationUrl, 'code');
+            var authorizationCode = quantimodoService.getUrlParameter(authorizationUrl, 'code');
 
             if(!authorizationCode) {
-                authorizationCode = utilsService.getUrlParameter(authorizationUrl, 'token');
+                authorizationCode = quantimodoService.getUrlParameter(authorizationUrl, 'token');
             }
             return authorizationCode;
         };
@@ -1132,7 +1132,7 @@ angular.module('starter')
 
             var deferred = $q.defer();
 
-            var url = utilsService.getURL("api/oauth2/token");
+            var url = quantimodoService.getURL("api/oauth2/token");
 
             // make request
             var request = {
@@ -1143,11 +1143,11 @@ angular.module('starter')
                     'Content-Type': "application/json"
                 },
                 data: {
-                    client_id: utilsService.getClientId(),
-                    client_secret: utilsService.getClientSecret(),
+                    client_id: quantimodoService.getClientId(),
+                    client_secret: quantimodoService.getClientSecret(),
                     grant_type: 'authorization_code',
                     code: authorizationCode,
-                    redirect_uri: utilsService.getRedirectUri()
+                    redirect_uri: quantimodoService.getRedirectUri()
                 }
             };
 
@@ -1181,11 +1181,11 @@ angular.module('starter')
                 bugsnagService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
                 deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
             }
-            var url = utilsService.getURL('api/v2/auth/social/authorizeToken');
+            var url = quantimodoService.getURL('api/v2/auth/social/authorizeToken');
 
             url += "provider=" + encodeURIComponent(provider);
             url += "&accessToken=" + encodeURIComponent(accessToken);
-            url += "&client_id=" + encodeURIComponent(utilsService.getClientId());
+            url += "&client_id=" + encodeURIComponent(quantimodoService.getClientId());
 
             console.debug('quantimodoService.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
 
@@ -1321,9 +1321,9 @@ angular.module('starter')
         };
 
         quantimodoService.sendToNonOAuthBrowserLoginUrl = function(register) {
-            var loginUrl = utilsService.getURL("api/v2/auth/login");
+            var loginUrl = quantimodoService.getURL("api/v2/auth/login");
             if (register === true) {
-                loginUrl = utilsService.getURL("api/v2/auth/register");
+                loginUrl = quantimodoService.getURL("api/v2/auth/register");
             }
             console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
             var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
@@ -2321,6 +2321,190 @@ angular.module('starter')
                 }
 
             };
+
+        quantimodoService.getEnv = function(){
+            var env = "production";
+
+            if(window.location.origin.indexOf('local') !== -1){
+                env = "development"; //On localhost
+            }
+
+            if(window.location.origin.indexOf('staging') !== -1){
+                env = "staging";
+            }
+
+            if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){
+                env = "staging";
+            }
+
+            return env;
+        };
+
+        quantimodoService.getClientId = function(){
+            if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                $rootScope.clientId = window.private_keys.client_ids.Chrome; //if chrome app
+            } else if ($rootScope.isIOS) {
+                $rootScope.clientId = window.private_keys.client_ids.iOS;
+            } else if ($rootScope.isAndroid) {
+                $rootScope.clientId = window.private_keys.client_ids.Android;
+            } else if ($rootScope.isChromeExtension) {
+                $rootScope.clientId = window.private_keys.client_ids.Chrome;
+            } else if ($rootScope.isWindows) {
+                $rootScope.clientId = window.private_keys.client_ids.Windows;
+            } else {
+                $rootScope.clientId = window.private_keys.client_ids.Web;
+            }
+            return $rootScope.clientId;
+        };
+
+        quantimodoService.setPlatformVariables = function () {
+            if (window.cordova) {
+                $rootScope.currentPlatformVersion = ionic.Platform.version();
+                if (ionic.Platform.isIOS()){
+                    $rootScope.isIOS = true;
+                    $rootScope.isMobile = true;
+                    $rootScope.currentPlatform = "iOS";
+                }
+                if (ionic.Platform.isAndroid()){
+                    $rootScope.isAndroid = true;
+                    $rootScope.isMobile = true;
+                    $rootScope.currentPlatform = "Android";
+                }
+            } else if (window.location.href.indexOf('ms-appx') > -1) {
+                $rootScope.isWindows = true;
+                $rootScope.currentPlatform = "Windows";
+            } else {
+                $rootScope.isChrome = window.chrome ? true : false;
+                $rootScope.currentPlatformVersion = null;
+                var currentUrl =  window.location.href;
+                if (currentUrl.indexOf('chrome-extension') !== -1) {
+                    $rootScope.isChromeExtension = true;
+                    $rootScope.isChromeApp = false;
+                    $rootScope.currentPlatform = "ChromeExtension";
+                } else if ($rootScope.isChrome && chrome.identity) {
+                    $rootScope.isChromeExtension = false;
+                    $rootScope.isChromeApp = true;
+                    $rootScope.currentPlatform = "ChromeApp";
+                } else {
+                    $rootScope.isWeb = true;
+                    $rootScope.currentPlatform = "Web";
+                }
+            }
+            if($rootScope.isChromeExtension){
+                $rootScope.localNotificationsEnabled = true;
+            }
+            $rootScope.qmApiUrl = quantimodoService.getApiUrl();
+        };
+
+        quantimodoService.getPermissionString = function(){
+            var str = "";
+            var permissions = ['readmeasurements', 'writemeasurements'];
+            for(var i=0; i < permissions.length; i++) {
+                str += permissions[i] + "%20";
+            }
+            return str.replace(/%20([^%20]*)$/,'$1');
+        };
+
+        quantimodoService.getClientSecret = function(){
+            if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                return window.private_keys.client_secrets.Chrome;
+            }
+            if ($rootScope.isIOS) { return window.private_keys.client_secrets.iOS; }
+            if ($rootScope.isAndroid) { return window.private_keys.client_secrets.Android; }
+            if ($rootScope.isChromeExtension) { return window.private_keys.client_secrets.Chrome; }
+            if ($rootScope.isWindows) { return window.private_keys.client_secrets.Windows; }
+            return window.private_keys.client_secrets.Web;
+        };
+
+        quantimodoService.getRedirectUri = function () {
+            return quantimodoService.getApiUrl() +  '/ionic/Modo/www/callback/';
+        };
+
+        quantimodoService.getProtocol = function () {
+            if (typeof ionic !== "undefined") {
+                var currentPlatform = ionic.Platform.platform();
+                if(currentPlatform.indexOf('win') > -1){
+                    return 'ms-appx-web';
+                }
+            }
+            return 'https';
+        };
+
+        quantimodoService.getApiUrl = function () {
+
+            if(!window.private_keys){
+                console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".config.js or it does " +
+                    "not contain window.private_keys");
+                return "https://app.quantimo.do";
+            }
+            if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled') {
+                return window.location.origin;
+            }
+            if(window.private_keys.apiUrl){
+                return window.private_keys.apiUrl;
+            }
+            return "https://app.quantimo.do";
+        };
+
+        quantimodoService.getURL = function (path) {
+            if(typeof path === "undefined") {
+                path = "";
+            } else {
+                path += "?";
+            }
+
+            return $rootScope.qmApiUrl + "/" + path;
+        };
+
+        quantimodoService.convertToObjectIfJsonString = function (stringOrObject) {
+            try {
+                stringOrObject = JSON.parse(stringOrObject);
+            } catch (e) {
+                return stringOrObject;
+            }
+            return stringOrObject;
+        };
+
+        quantimodoService.showAlert = function(title, template) {
+            var alertPopup = $ionicPopup.alert({
+                cssClass : 'positive',
+                okType : 'button-positive',
+                title: title,
+                template: template
+            });
+        };
+
+        // returns bool
+        // if a string starts with substring
+        quantimodoService.startsWith = function (fullString, search) {
+            return fullString.slice(0, search.length) === search;
+        };
+
+        // returns bool | string
+        // if search param is found: returns its value
+        // returns false if not found
+        quantimodoService.getUrlParameter = function (url, sParam, shouldDecode) {
+            if(url.split('?').length > 1){
+                var sPageURL = url.split('?')[1];
+                var sURLVariables = sPageURL.split('&');
+                for (var i = 0; i < sURLVariables.length; i++)
+                {
+                    var sParameterName = sURLVariables[i].split('=');
+                    if (sParameterName[0] === sParam)
+                    {
+                        if(typeof shouldDecode !== "undefined")  {
+                            return decodeURIComponent(sParameterName[1]);
+                        }
+                        else {
+                            return sParameterName[1];
+                        }
+                    }
+                }
+                return false;
+            } else {
+                return false;
+            }
+        };
 
         return quantimodoService;
     });

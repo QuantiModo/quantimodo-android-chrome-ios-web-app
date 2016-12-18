@@ -1,7 +1,7 @@
 angular.module('starter')
 	
 	// controls the Import Data page of the app
-	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, quantimodoService,
+	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService,
 									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams, localStorageService) {
 
 		$scope.controller_name = "ImportCtrl";
@@ -47,7 +47,7 @@ angular.module('starter')
 				if(ionic.Platform.platforms[0] === "browser"){
 					console.debug("Browser Detected");
 
-					var url = utilsService.getURL("api/v2/account/connectors", true);
+					var url = quantimodoService.getURL("api/v2/account/connectors", true);
 					if(accessToken){
 						url += "access_token=" + accessToken;
 					}
@@ -60,7 +60,7 @@ angular.module('starter')
 					//noinspection JSCheckFunctionSignatures
 					$state.go(config.appSettings.defaultState);
 				} else {
-					var targetUrl = utilsService.getURL("api/v1/connect/mobile", true);
+					var targetUrl = quantimodoService.getURL("api/v1/connect/mobile", true);
 					if(accessToken){
 						targetUrl += "access_token=" + accessToken;
 					}
@@ -196,7 +196,7 @@ angular.module('starter')
 					'weight'
 				];
 
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -207,7 +207,7 @@ angular.module('starter')
 
 			if(connector.name === 'runkeeper') {
 				scopes = [];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -218,7 +218,7 @@ angular.module('starter')
 
 			if(connector.name === 'rescuetime') {
 				scopes = ['time_data', 'category_data', 'productivity_data'];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -229,7 +229,7 @@ angular.module('starter')
 
 			if(connector.name === 'slice') {
 				scopes = [];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -256,7 +256,7 @@ angular.module('starter')
 					"https://www.googleapis.com/auth/fitness.location.read"
 				];
 
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -270,7 +270,7 @@ angular.module('starter')
 					"https://www.googleapis.com/auth/calendar",
 					"https://www.googleapis.com/auth/calendar.readonly"
 				];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);
@@ -283,7 +283,7 @@ angular.module('starter')
 				scopes = [
 					'https://www.googleapis.com/auth/userinfo.email'
 				];
-				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						connectWithAuthCode(authorizationCode, connector);

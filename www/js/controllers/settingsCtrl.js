@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, quantimodoService, reminderService, qmLocationService,
-										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory,
+										  ionicTimePicker, timeService, $stateParams, $ionicHistory,
 										  bugsnagService, $ionicLoading, $ionicDeploy, $ionicPlatform) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
@@ -59,7 +59,7 @@ angular.module('starter')
 		$scope.sendSharingInvitation= function() {
 			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
-			var fallbackUrl = utilsService.getURL("api/v2/account/applications", true);
+			var fallbackUrl = quantimodoService.getURL("api/v2/account/applications", true);
 			var emailAddress = null;
 			if($rootScope.isMobile){
 				$scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
@@ -73,7 +73,7 @@ angular.module('starter')
 			var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
 				"Additional Information: " + '\r\n';
 			//template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + '\r\n';
-			template = template + "quantimodoService Client Id: " + utilsService.getClientId();
+			template = template + "quantimodoService Client Id: " + quantimodoService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
@@ -180,7 +180,7 @@ angular.module('starter')
 
 			var template = "Please provide the following information when submitting a bug report: <br><br>";
 			template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + "<br><br>";
-			template = template + "quantimodoService Client Id: " + utilsService.getClientId();
+			template = template + "quantimodoService Client Id: " + quantimodoService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
@@ -349,8 +349,8 @@ angular.module('starter')
 				notificationService.cancelAllNotifications();
 				$ionicHistory.clearHistory();
 				$ionicHistory.clearCache();
-				if (utilsService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
-					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
+					window.open(quantimodoService.getURL("api/v2/auth/logout"),'_blank');
 				}
 				localStorageService.setItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
 				$state.go(config.appSettings.welcomeState, {}, {
@@ -363,8 +363,8 @@ angular.module('starter')
 				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
 				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
 				quantimodoService.clearTokensFromLocalStorage();
-				if (utilsService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
-					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
+					window.open(quantimodoService.getURL("api/v2/auth/logout"),'_blank');
 				}
 				localStorageService.setItem('isWelcomed', false);
 				localStorageService.setItem('deviceTokenToSync', $rootScope.deviceTokenToSync);

@@ -2,7 +2,7 @@ angular.module('starter')
 
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
                                                $ionicActionSheet, $ionicHistory, quantimodoService,
-                                               utilsService, localStorageService,
+                                               localStorageService,
                                                ionicTimePicker, ionicDatePicker) {
 
         $scope.controller_name = "MeasurementAddCtrl";
@@ -148,7 +148,7 @@ angular.module('starter')
         };
 
         var validationFailure = function (message) {
-            utilsService.showAlert(message);
+            quantimodoService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
                 Bugsnag.notify(message, "measurement is " + JSON.stringify($scope.state.measurement), {}, "error");
@@ -445,10 +445,10 @@ angular.module('starter')
 
         var setupFromUrlParameters = function() {
             console.debug($state.current.name + ": " + "setupFromUrlParameters");
-            var unit = utilsService.getUrlParameter(location.href, 'unit', true);
-            var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
-            var startTimeEpoch = utilsService.getUrlParameter(location.href, 'startTimeEpoch', true);
-            var value = utilsService.getUrlParameter(location.href, 'value', true);
+            var unit = quantimodoService.getUrlParameter(location.href, 'unit', true);
+            var variableName = quantimodoService.getUrlParameter(location.href, 'variableName', true);
+            var startTimeEpoch = quantimodoService.getUrlParameter(location.href, 'startTimeEpoch', true);
+            var value = quantimodoService.getUrlParameter(location.href, 'value', true);
 
             if (unit || variableName || startTimeEpoch || value) {
                 var measurementObject = {};
@@ -476,7 +476,7 @@ angular.module('starter')
 
         var setupFromReminderObjectInUrl = function(){
             if(!$stateParams.reminderNotification){
-                var reminderFromURL =  utilsService.getUrlParameter(window.location.href, 'trackingReminderObject', true);
+                var reminderFromURL =  quantimodoService.getUrlParameter(window.location.href, 'trackingReminderObject', true);
                 if(reminderFromURL){
                     $stateParams.reminderNotification = JSON.parse(reminderFromURL);
                     console.debug($state.current.name + ": " + "setupFromReminderObjectInUrl: ", $stateParams.reminderNotification);
@@ -487,7 +487,7 @@ angular.module('starter')
 
         var setupFromMeasurementObjectInUrl = function(){
             if(!$stateParams.measurement){
-                var measurementFromURL =  utilsService.getUrlParameter(window.location.href, 'measurementObject', true);
+                var measurementFromURL =  quantimodoService.getUrlParameter(window.location.href, 'measurementObject', true);
                 if(measurementFromURL){
                     measurementFromURL = JSON.parse(measurementFromURL);
                     console.debug($state.current.name + ": " + "setupFromMeasurementObjectInUrl: ", measurementFromURL);
@@ -539,7 +539,7 @@ angular.module('starter')
 
         var setMeasurementVariablesByMeasurementId = function(){
             var deferred = $q.defer();
-            var measurementId = utilsService.getUrlParameter(location.href, 'measurementId', true);
+            var measurementId = quantimodoService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
                 var measurementObject;
                 quantimodoService.getMeasurementById(measurementId).then(
