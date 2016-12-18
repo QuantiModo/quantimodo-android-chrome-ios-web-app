@@ -1367,19 +1367,37 @@ angular.module('starter',
             }
         })
 
-       .state('app.tab-detail', {
-            url: '/tabs/:tabId',
+       // .state('app.tab-detail', {
+       //      url: '/tabs/:tabId',
+       //      views: {
+       //          'menuContent': {
+       //              templateUrl: 'templates/tabs/tab-detail.html',
+       //              controller: 'TabDetailCtrl'
+       //          }
+       //      }
+       //  })
+        //  .state('app.settings', {
+        //     url: "/settings",
+        //     views: {
+        //         'menuContent': {
+        //             templateUrl: "templates/settings.html",
+        //             controller: 'SettingsCtrl'
+        //         }
+        //     }
+        // })
+       .state('app.tabSettings', {
+            url: '/tab-settings',
             views: {
                 'menuContent': {
-                    templateUrl: 'templates/tabs/tab-detail.html',
-                    controller: 'TabDetailCtrl'
+                    templateUrl: 'templates/tabs/tab-settings.html',
+                    controller: 'SettingsCtrl'
                 }
             }
         });
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-         $urlRouterProvider.otherwise('/app/tabs')
+         $urlRouterProvider.otherwise('/app/reminders-inbox')
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');

@@ -250,13 +250,13 @@ angular.module('starter')
 						console.debug('Selected epoch is : ', val, 'and the time is ',
 							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 						var newEarliestReminderTime = moment(a).format('HH:mm:ss');
-						if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
+						if(newEarliestReminderTime >=$rootScope.user.latestReminderTime){
 							$ionicPopup.alert({
 								title: 'Choose Another Time',
-								template: 'Earliest reminder time cannot be greater than latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
+								template: 'Earliest reminder time cannot be greater than or equal to the latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
 							});
 						}
-						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
+						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime&&newEarliestReminderTime<$rootScope.user.latestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
 							QuantiModo.updateUserSettingsDeferred(params).then(function(){

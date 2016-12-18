@@ -3,72 +3,56 @@
         <i class="button icon ion-ios-home-outline changeButtonBorder" ng-click="home()"></i>
      </ion-nav-buttons>
 
-	<ion-content style="padding-top: 45px">
-   <ion-list>
-         <ion-item>
-				  <p>Signed in as... </p>
-				  <h4 class="dark">&nbsp;Tap to sign out</h4>		  
-    	 </ion-item>
+	<ion-content>
 
-    </ion-list>
+     <div>
+      
+      	 <a href="" ng-show="!user" ng-click="sendToLogin()" class="item ">
+              Account
+              <p>Tap to sign in</p>
+            </a> 
+        	  <a id="userName" href="" ng-show="user" ng-click="logout()" class="item ">
+               
+                Signed in as {{user.displayName}}
+              <p>Tap to sign out</p>
+           </a>
+				 	  
+     </div>
      
      <div class="item item-divider">
          <span class="mini">Notification Settings</span>
       </div>
-       
-      <div class="list-item">
-         
-		  <li class="item item-toggle">
-		     <p>Combine Notifications</p>
-		     <label class="toggle toggle-royal">
-		       <input type="checkbox">
-		       <div class="track">
-		         <div class="handle"></div>
-		       </div>
-		     </label>
-		  </li>
-		   
-		  <li class="item item-icon-left" href="#">
-		    <i class="icon ion-ios-sunny-outline"></i>
-		    <p>Earliest Notification --tobe bind to selected time</p>
-		  </li>
-
-		  <li class="item item-icon-left" href="#">
-		    <i class="icon ion-ios-moon-outline"></i>
-		    <p>Latest Notification.</p>
-		  </li>
-		</div>
+       <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
 
 	      <div class="item item-divider">
 	         <span class="mini">Share your data</span>
 	      </div>
 	      <div class="button-bar">
-	        <button class="button icon dark ion-ios-email"></button>
+	        <button class="button icon dark ion-ios-email" ng-click="sendSharingInvitation()" ></button>
 	        <button class="button icon positive ion-social-facebook"></button>
 	        <button class="button icon calm ion-social-twitter"></button>
 	        <button class="button icon assertive ion-social-googleplus"></button>
-	        <!-- <button class="button balanced ion-social-whatsapp"></button> -->
 		  </div>
 
 	      <div class="item item-divider">
 	         <span class="mini">Export data as</span>
 	      </div>
 	      <div class="button-bar">
-			  <a class="button assertive historyCustom">PDF</a>
-			  <a class="button calm historyCustom">XLS</a>
-			  <a class="button royal historyCustom">CSV</a>
+			  <a class="button assertive historyCustom" ng-click="exportPdf()" >PDF</a>
+			  <a class="button calm historyCustom" ng-click="exportXls()">XLS</a>
+			  <a class="button royal historyCustom" ng-click="exportCsv()">CSV</a>
 			 
 		  </div>
 		  <div class="item item-divider  item-icon-right">
 
 		    <span class="mini"> Help & Feedback</span>
-		    <i class="icon ion-ios-arrow-right royal" ng-click="home()" ></i>
+		    <i class="icon ion-ios-arrow-right royal" ng-click="contactUs()" ></i>
 		  </div>
 
 
 	      <div class="item item-divider item-icon-right">
 	          <span class="mini">Report bug</span>
-	          <i class="icon ion-bug royal" ng-click="home()" ></i>
+	          <i class="icon ion-sad-outline royal" ng-click="sendBugReport()" ></i>
 	         
 	      </div>
 	 
