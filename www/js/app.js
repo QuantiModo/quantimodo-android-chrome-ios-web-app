@@ -1367,15 +1367,15 @@ angular.module('starter',
             }
         })
 
-       // .state('app.tab-detail', {
-       //      url: '/tabs/:tabId',
-       //      views: {
-       //          'menuContent': {
-       //              templateUrl: 'templates/tabs/tab-detail.html',
-       //              controller: 'TabDetailCtrl'
-       //          }
-       //      }
-       //  })
+       .state('app.tabDetail', {
+            url: '/tabs/:tabId',
+            views: {
+             'menuContent': {
+                  templateUrl: 'templates/tabs/tab-detail.html',
+                  controller: 'MeasurementAddCtrl'
+                 }
+             }
+        })
         //  .state('app.settings', {
         //     url: "/settings",
         //     views: {
