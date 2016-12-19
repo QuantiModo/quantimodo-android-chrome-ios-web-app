@@ -1732,6 +1732,7 @@ gulp.task('configureApp', [], function(callback){
 		'resizeIcons',
 		'copyIconsToWwwImg',
 		'generateConfigXmlFromTemplate',
+        'setVersionNumberInFiles',
         callback);
 });
 
