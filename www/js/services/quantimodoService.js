@@ -1,6 +1,7 @@
 angular.module('starter')
     // quantimodoService API implementation
-    .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform) {
+    .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform,
+                                           $cordovaGeolocation) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
