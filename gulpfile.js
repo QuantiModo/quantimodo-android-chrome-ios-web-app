@@ -37,6 +37,23 @@ var paths = {
 	sass: ['./scss/**/*.scss']
 };
 
+if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.5.0';
+    console.log('Falling back to OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
+    process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+}
+
+if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.6.0';
+    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+    console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
+}
+
+if(!process.env.LOWERCASE_APP_NAME){
+    console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
+    setQuantiModoEnvs();
+}
+
 gulp.task('default', ['sass']);
 
 gulp.task('unzipChromeExtension', function() {
@@ -388,13 +405,6 @@ gulp.task('deleteIOSApp', function () {
 	return deferred.promise;
 });
 
-gulp.task('setFallbackEnvs', function(){
-    if(!process.env.LOWERCASE_APP_NAME){
-        console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-        setQuantiModoEnvs();
-    }
-});
-
 var decryptFile = function (fileToDecryptPath, decryptedFilePath) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
         "https://code.google.com/archive/p/openssl-for-windows/downloads");
@@ -442,7 +452,7 @@ gulp.task('encryptAndroidKeystore', [], function(){
     encryptFile(fileToEncryptPath, encryptedFilePath);
 });
 
-gulp.task('decryptAndroidKeystore', ['setFallbackEnvs'], function(){
+gulp.task('decryptAndroidKeystore', [], function(){
     var fileToDecryptPath = 'quantimodo.keystore.enc';
     var decryptedFilePath = 'quantimodo.keystore';
     decryptFile(fileToDecryptPath, decryptedFilePath);
@@ -460,31 +470,31 @@ gulp.task('decryptSupplyJsonKeyForGooglePlay', [], function(){
     decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('encryptBuildJson', ['setFallbackEnvs'], function(){
+gulp.task('encryptBuildJson', [], function(){
     var fileToEncryptPath = 'build.json';
     var encryptedFilePath = 'build.json.enc';
     encryptFile(fileToEncryptPath, encryptedFilePath);
 });
 
-gulp.task('decryptBuildJson', ['setFallbackEnvs'], function(){
+gulp.task('decryptBuildJson', [], function(){
     var fileToDecryptPath = 'build.json.enc';
     var decryptedFilePath = 'build.json';
     decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('encryptPrivateConfig', ['setFallbackEnvs'], function(){
+gulp.task('encryptPrivateConfig', [], function(){
     var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
     encryptFile(fileToEncryptPath, encryptedFilePath);
 });
 
-gulp.task('decryptPrivateConfig', ['setFallbackEnvs'], function(){
+gulp.task('decryptPrivateConfig', [], function(){
 	var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
 	var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
 	decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('decryptPrivateConfigToDefault', ['setFallbackEnvs'], function(){
+gulp.task('decryptPrivateConfigToDefault', [], function(){
     var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var decryptedFilePath = './www/private_configs/default.config.js';
     decryptFile(fileToDecryptPath, decryptedFilePath);
@@ -1184,23 +1194,9 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 		callback);
 });
 
-var setVersionNumberEnvsFromGulpFile = function () {
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.5.0';
-    console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
-    process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.6.0';
-    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-};
-
-gulp.task('setVersionNumberEnvsFromGulpFile', function(callback){
-    setVersionNumberEnvsFromGulpFile();
-    callback();
-});
-
 gulp.task('replaceVersionNumbersInFiles', function(callback){
 	runSequence(
 		//'setVersionNumberInConfigXml',  Messes it up, I think. Replacing with shell script for now.
-		'setVersionNumberEnvsFromGulpFile',
 		'setVersionNumberInFiles',
 		'setVersionNumberInConfigXml',
         'setVersionNumberInIosConfigXml',
@@ -1257,13 +1253,14 @@ gulp.task('setVersionNumberInFiles', function(callback){
 		'resources/chrome_app/manifest.json'
 	];
 	
-	gulp.src(filesToUpdate, {base: "."}) // Every file allown.
+	return gulp.src(filesToUpdate, {base: "."}) // Every file allown.
 		.pipe(replace(process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER, process.env.IONIC_IOS_APP_VERSION_NUMBER))
 		.pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_IOS_APP_VERSION_NUMBER))
 		.pipe(replace(process.env.OLD_IONIC_APP_VERSION_NUMBER, process.env.IONIC_APP_VERSION_NUMBER))
 		.pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_APP_VERSION_NUMBER))
 		.pipe(gulp.dest('./'));
-	callback();
+	// Using callback results in the next task starting before this on is completed
+	//callback();
 
 });
 
@@ -1278,10 +1275,12 @@ gulp.task('setIonicAppId', function(callback){
 		'www/js/app.js'
 	];
 
-	gulp.src(filesToUpdate, {base: "."}) // Every file allown.
+	return gulp.src(filesToUpdate, {base: "."}) // Every file allown.
 		.pipe(replace('__IONIC_APP_ID__', process.env.IONIC_APP_ID))
 		.pipe(gulp.dest('./'));
-	callback();
+
+	// Returning instead of callback makes it complete before next task
+	//callback();
 
 });
 
@@ -1535,13 +1534,13 @@ gulp.task('copyPrivateConfig', [], function () {
 	}).pipe(gulp.dest('./www/private_configs/'));
 });
 
-gulp.task('copyAppConfigToDefault', ['setFallbackEnvs'], function () {
+gulp.task('copyAppConfigToDefault', [], function () {
     return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js')
         .pipe(rename('default.js'))
         .pipe(gulp.dest('www/configs'));
 });
 
-gulp.task('copyPrivateConfigToDefault', ['setFallbackEnvs'], function () {
+gulp.task('copyPrivateConfigToDefault', [], function () {
 	console.log('Copying ./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js to ' +
 		'www/private_configs/default.config.js');
     return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js')
@@ -1618,16 +1617,10 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 
             if(process.env.IONIC_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
-            } else {
-                console.warn("IONIC_APP_VERSION_NUMBER env not set! Falling back to IONIC_APP_VERSION_NUMBER specified in gulpfile");
-                setVersionNumberEnvsFromGulpFile();
             }
 
             if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
-            } else {
-                console.warn("IONIC_IOS_APP_VERSION_NUMBER env not set! Falling back to IONIC_IOS_APP_VERSION_NUMBER specified in gulpfile");
-                setVersionNumberEnvsFromGulpFile();
             }
 
             var builder = new xml2js.Builder();
@@ -1738,6 +1731,7 @@ gulp.task('configureApp', [], function(callback){
 
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
+        'cleanChromeBuildFolder',
 	    'configureApp',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
 		'copyManifestToChromeExtension',
@@ -1901,7 +1895,7 @@ gulp.task('copyAndroidResources', [], function(){
 });
 
 
-gulp.task('copyAndroidBuild', ['setFallbackEnvs'], function(){
+gulp.task('copyAndroidBuild', [], function(){
     var copyApksToDropbox = gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
         .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
 
@@ -1975,7 +1969,6 @@ gulp.task('resizeIcons', function(callback){
 gulp.task('prepareRepositoryForAndroid', function(callback){
     runSequence(
     	'setQuantiModoEnvs',
-        'setVersionNumberEnvsFromGulpFile',
         'setAndroidEnvs',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
@@ -1995,7 +1988,6 @@ gulp.task('prepareRepositoryForAndroid', function(callback){
 
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
-		'setVersionNumberEnvsFromGulpFile',
 		'configureApp',
         'setAndroidEnvs',
         'generateConfigXmlFromTemplate',
