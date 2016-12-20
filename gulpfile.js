@@ -1522,18 +1522,6 @@ gulp.task('copyIconsToWwwImg', [], function(){
         .pipe(gulp.dest('www/img/icons'));
 });
 
-gulp.task('copyPrivateConfig', [], function () {
-	if(!process.env.LOWERCASE_APP_NAME){
-		process.env.LOWERCASE_APP_NAME = 'mindfirst';
-	}
-	if(!process.env.pathToPrivateConfig){
-		process.env.pathToPrivateConfig = '../../../configs/ionic/private_configs/';
-	}
-	return gulp.src([process.env.pathToPrivateConfig + process.env.LOWERCASE_APP_NAME + '.config.js'], {
-		base: process.env.pathToPrivateConfig
-	}).pipe(gulp.dest('./www/private_configs/'));
-});
-
 gulp.task('copyAppConfigToDefault', [], function () {
     return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js')
         .pipe(rename('default.js'))
