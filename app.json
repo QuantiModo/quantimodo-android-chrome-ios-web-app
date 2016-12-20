@@ -1,26 +1,22 @@
 {
-	"name": "QuantiModo iOS Android Chrome Template App",
-	"description": "Track and optimize any variable on iOS, Android, or Chrome",
-	"repository": "https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App",
+	"name": "QuantiModo Template App",
+	"description": "Track any variable with Quantimodo Ionic App",
+	"repository": "https://github.com/heroku/node-js-sample",
 	"logo": "https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App",
 	"keywords": ["tracking", "health", "mood", "quantified self"],
 	"website": "https://quantimo.do/",
 	"env": {
-		"APP_DISPLAY_NAME": {
-			"description": "Should match the name you used in your config.xml",
-			"value": "YourAppDisplayNameHere"
+		"APPS": {
+			"description": "An uppercase csv of apps currently hosted",
+			"value": "MOODIMODO"
 		},
-		"LOWERCASE_APP_NAME": {
-			"description": "Should match the name you used as the defaultApp in www/js/apps.js",
-			"value": "yourlowercaseappnamehere"
+		"MOODIMODO_WEB_CLIENT_ID": {
+			"description": "The client ID generated from QuantiModo (for the app MOODIMODO)",
+			"value": "xyz"
 		},
-		"QUANTIMODO_CLIENT_ID": {
-			"description": "The QuantiModo client id generated at https://app.quantimo.do/api/v2/apps",
-			"value": "your_quantimodo_client_id_here"
-		},
-		"QUANTIMODO_CLIENT_SECRET": {
-			"description": "The QuantiModo client secret generated at https://app.quantimo.do/api/v2/apps",
-			"value": "your_quantimodo_client_secret_here"
+		"MOODIMODO_WEB_CLIENT_SECRET": {
+			"description": "The client Secret generated from QuantiModo (for the app MOODIMODO).",
+			"value": "xyz"
 		}
 	}
 

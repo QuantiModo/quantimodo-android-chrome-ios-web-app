@@ -21,7 +21,7 @@
 
              </div>
          </div>
-      <ion-list>
+      <ion-list show-delete="shouldShowDelete">
           <div collection-repeat="historyItem in history" data-measurementid="{{historyItem.id}}"  on-hold="showActionSheet(historyItem, $index)" divider-collection-repeat>
               <ion-item ng-click="editMeasurement(historyItem)" >
                   <div style="display:inline-block;float:left;margin-right:15px;">
@@ -37,6 +37,9 @@
                           {{line}}
                       </h2>
                       <h2 class="" >{{historyItem.note}}</h2>
+                      <ion-delete-button class="ion-minus-circled"
+                       ng-click="items.splice($index, 1)">
+                     </ion-delete-button>
                     <br/>
                   </div>
               </ion-item>

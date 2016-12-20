@@ -1,22 +1,24 @@
 angular.module('starter')
     // Parent Controller
     // This controller runs before every one else
-    .controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
+	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    quantimodoService, ionicDatePicker,
-                                    $ionicActionSheet, $ionicDeploy) {
+                                    measurementService, QuantiModo, notificationService, localStorageService,
+                                    reminderService, ratingService, migrationService, ionicDatePicker, unitService,
+                                    variableService, qmLocationService, variableCategoryService, bugsnagService,
+                                    utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.2.7.0";
+        $rootScope.appVersion = "2.2.5.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
-            quantimodoService.getLocalStorageItemWithCallback('trackLocation', function(trackLocation){
+            localStorageService.getItem('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
                 if($rootScope.user.trackLocation){
-                    quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+                    QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
                 }
             });
         }
@@ -37,7 +39,7 @@ angular.module('starter')
         $rootScope.appName = config.appSettings.appName;
 
         // Not used
-        //$scope.ratingInfo = quantimodoService.getRatingInfo();
+        //$scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function () {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
@@ -101,12 +103,15 @@ angular.module('starter')
         };
 
         $scope.goToState = function (state, stateParameters) {
-            if(!stateParameters){
-                stateParameters = {};
+            var variableCategoryName = null;
+            if (stateParameters && stateParameters.variableCategoryName) {
+                variableCategoryName = stateParameters.variableCategoryName;
             }
-            stateParameters.fromState = $state.current.name;
-            stateParameters.fromUrl = window.location.href;
-            $state.go(state, stateParameters);
+            $state.go(state, {
+                fromState: $state.current.name,
+                fromUrl: window.location.href,
+                variableCategoryName: variableCategoryName
+            });
         };
 
         $scope.openUrl = function(url){
@@ -145,7 +150,7 @@ angular.module('starter')
                         effectVariableId: correlationObject.effectVariableId,
                         shareUserMeasurements: true
                     };
-                    quantimodoService.postStudyDeferred(body).then(function () {
+                    QuantiModo.postStudyDeferred(body).then(function () {
                         if(url){
                             $scope.openUrl(url);
                         }
@@ -177,7 +182,7 @@ angular.module('starter')
                         effectVariableId: correlationObject.effectVariableId,
                         shareUserMeasurements: false
                     };
-                    quantimodoService.postStudyDeferred(body).then(function () {
+                    QuantiModo.postStudyDeferred(body).then(function () {
 
                     }, function (error) {
                         console.error(error);
@@ -201,7 +206,7 @@ angular.module('starter')
         $rootScope.setLocalStorageFlagTrue = function (flagName) {
             console.debug('Set ' + flagName + ' to true');
             $rootScope[flagName] = true;
-            quantimodoService.setLocalStorageItem(flagName, true);
+            localStorageService.setItem(flagName, true);
         };
 
         $rootScope.hideHelpCard = function (card) {
@@ -209,7 +214,7 @@ angular.module('starter')
             $rootScope.defaultHelpCards = $rootScope.defaultHelpCards.filter(function( obj ) {
                 return obj.id !== card.id;
             });
-            quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
+            localStorageService.deleteElementOfItemById('defaultHelpCards', card.id);
         };
 
         // open datepicker for "from" date
@@ -241,17 +246,17 @@ angular.module('starter')
         $scope.updateDatesLocalStorage = function () {
             var to = moment($scope.toDate).unix() * 1000;
             var from = moment($scope.fromDate).unix() * 1000;
-            console.debug("$scope.updateDatesLocalStorage is calling quantimodoService.setDates");
-            quantimodoService.setDates(to, from);
+            console.debug("$scope.updateDatesLocalStorage is calling measurementService.setDates");
+            measurementService.setDates(to, from);
         };
 
         // show main calendar popup (from and to)
         $scope.showCalendarPopup = function ($event) {
             $scope.popover.show($event);
-            quantimodoService.getToDate(function (endDate) {
+            measurementService.getToDate(function (endDate) {
                 $scope.toDate = new Date(endDate);
                 $scope.fromDatePickerObj.to = $scope.toDate;
-                quantimodoService.getFromDate(function (fromDate) {
+                measurementService.getFromDate(function (fromDate) {
                     $scope.fromDate = new Date(fromDate);
                     $scope.toDatePickerObj.from = $scope.fromDate;
                 });
@@ -271,7 +276,7 @@ angular.module('starter')
                         text: 'OK',
                         type: 'button-positive',
                         onTap: function () {
-                            quantimodoService.setLocalStorageItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
+                            localStorageService.setItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
                         }
                     }
                 ]
@@ -319,10 +324,10 @@ angular.module('starter')
         };
 
         $scope.showHelpInfoPopupIfNecessary = function (e) {
-            quantimodoService.getLocalStorageItemWithCallback('isWelcomed', function (isWelcomed) {
+            localStorageService.getItem('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {
                     if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
-                        quantimodoService.getLocalStorageItemWithCallback('notShowHelpPopup', function (val) {
+                        localStorageService.getItem('notShowHelpPopup', function (val) {
                             if (typeof val === "undefined" || val === "undefined") {
                                 $scope.notShowHelpPopup = false;
                             } else {
@@ -396,7 +401,7 @@ angular.module('starter')
                     template: '<ion-spinner></ion-spinner>'
                 });
                 //trackingReminder.defaultValue = 3;
-                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
                         $state.go('app.favorites',
@@ -406,7 +411,7 @@ angular.module('starter')
                                 fromUrl: window.location.href
                             }
                         );
-                        quantimodoService.postTrackingRemindersDeferred(trackingReminder)
+                        reminderService.postTrackingReminders(trackingReminder)
                             .then(function () {
                                 $ionicLoading.hide();
                                 console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
@@ -439,14 +444,14 @@ angular.module('starter')
         $scope.loading = false;
         $ionicLoading.hide();
 
-        quantimodoService.setPlatformVariables();
+        utilsService.setPlatformVariables();
 
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
         $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-        $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
-        $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
-        $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
+        $scope.positiveRatingOptions = ratingService.getPositiveRatingOptions();
+        $scope.negativeRatingOptions = ratingService.getNegativeRatingOptions();
+        $scope.numericRatingOptions = ratingService.getNumericRatingOptions();
         $scope.welcomeText = config.appSettings.welcomeText;
         $scope.primaryOutcomeVariableTrackingQuestion = config.appSettings.primaryOutcomeVariableTrackingQuestion;
         $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
@@ -483,13 +488,13 @@ angular.module('starter')
 
         // when view is changed
         $scope.$on('$ionicView.afterEnter', function (e) {
-            quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
+            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
         });
 
 
         $scope.highchartsReflow = function() {
-            // Fixes chart width
-            //$(window).resize(); This doesn't seem to do anything
+
+            //$(window).resize();
 
             if(!$rootScope.reflowScheduled){
                 $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
@@ -500,15 +505,15 @@ angular.module('starter')
                     $scope.$broadcast('highchartsng.reflow');
                     $rootScope.reflowScheduled = false;
                 }, seconds * 1000);
-
-                //$scope.$broadcast('highchartsng.reflow'); This doesn't seem to do anything
+                // Fixes chart width
+                //$scope.$broadcast('highchartsng.reflow');
             } else {
                 console.debug('broadcast(highchartsng.reflow) already scheduled');
             }
 
         };
 
-        $scope.autoUpdateApp = function () {
+        $scope.updateApp = function () {
 
             var appUpdatesDisabled = true;
             if(appUpdatesDisabled){
@@ -516,83 +521,60 @@ angular.module('starter')
                 return;
             }
 
+            var message;
             if(!$rootScope.isMobile){
                 console.debug("Cannot update app because platform is not mobile");
                 return;
             }
-
-            $scope.updateApp();
-        };
-
-        $scope.updateApp = function () {
-            var message;
-            var releaseTrack;
             $ionicPlatform.ready(function () {
                 if($rootScope.user && $rootScope.user.getPreviewBuilds){
                     $ionicDeploy.channel = 'staging';
-                    releaseTrack = "beta";
                 } else {
                     $ionicDeploy.channel = 'production';
-                    releaseTrack = "production";
                     message = 'Not updating because user is not signed up for preview builds';
                     console.debug(message);
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                     return;
                 }
-                message = 'Checking for ' + releaseTrack + ' updates...';
-                $scope.showLoader(message);
+                console.debug('Checking for new snapshot');
+                $scope.showLoader('Checking something...');
+                
+                $timeout(function () {
+                    $scope.hideLoader();
+                }, 60 * 1000);
                 $ionicDeploy.check().then(function(snapshotAvailable) {
                     if (snapshotAvailable) {
-                        message = 'Downloading ' + releaseTrack + ' update...';
+                        message = 'New snapshot available';
                         console.debug(message);
-                        if($rootScope.isAndroid){
-                            $scope.showLoader(message);
-                        }
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                         // When snapshotAvailable is true, you can apply the snapshot
+                        $scope.showLoader('Downloading...');
                         $ionicDeploy.download().then(function() {
-                            message = 'Downloaded new version.  Extracting...';
+                            message = 'Downloaded new version';
                             console.debug(message);
-                            if($rootScope.isAndroid){
-                                $scope.showLoader(message);
-                            }
                             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
-                            $ionicDeploy.extract().then(function() {
-                                if($rootScope.isAndroid){
-                                    $ionicPopup.show({
-                                        title: 'Update available',
-                                        subTitle: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
-                                        buttons: [
-                                            { text: 'Not now' },
-                                            {
-                                                text: 'Restart',
-                                                onTap: function(e) {
-                                                    $ionicDeploy.load();
-                                                }
-                                            }
-                                        ]
-                                    });
-                                }
-                            });
+                            /*$ionicPopup.alert({
+                                title: 'Registration Successful',
+                                //template: "Wait a few seconds for extract and restart app to update."
+                            });*/
+                            $scope.showLoader('Extracting...');
+                            return $ionicDeploy.extract();
                         });
                     } else {
-                        message = 'No updates available';
-                        if($rootScope.isAndroid){
-                            $scope.showLoader(message);
-                        }
+                        /*$ionicPopup.alert({
+                            title: 'Not Updating',
+                            template: "No new snapshot available"
+                        });*/
+                        $scope.showLoader('No new downloads');
+                        message = 'No new snapshot available';
                         console.debug(message);
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                     }
                 });
-                $timeout(function () {
-                    $scope.hideLoader();
-                }, 60 * 1000);
-
             });
-
         };
 
-        $scope.autoUpdateApp();
+        $scope.updateApp();
 
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
@@ -636,12 +618,12 @@ angular.module('starter')
             });
 
             // redraw everything according to updated appstate
-            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+            measurementService.syncPrimaryOutcomeVariableMeasurements();
         }
 
         $scope.goToDefaultStateIfWelcomed = function () {
             console.debug('appCtrl: user has seen the welcome screen before...');
-            quantimodoService.getLocalStorageItemWithCallback('isWelcomed', function (isWelcomed) {
+            localStorageService.getItem('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {
                     $rootScope.isWelcomed = true;
                     console.debug('goToDefaultStateIfWelcomed: Going to default state...');
@@ -683,7 +665,7 @@ angular.module('starter')
         };
 
         $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
-            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
+            QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
         });
 
         $scope.init = function () {
@@ -699,20 +681,20 @@ angular.module('starter')
             $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
             
             if($rootScope.urlParameters.refreshUser){
-                quantimodoService.clearLocalStorage();
+                localStorageService.clear();
                 window.localStorage.introSeen = true;
                 window.localStorage.isWelcomed = true;
                 $rootScope.user = null;
                 $rootScope.refreshUser = false;
             }
-            quantimodoService.setupBugsnag();
-            quantimodoService.getAccessTokenFromUrlParameter();
+            bugsnagService.setupBugsnag();
+            QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){
-                $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user'));
+                $rootScope.user = JSON.parse(localStorageService.getItemSync('user'));
             }
             if(!$rootScope.user){
-                quantimodoService.refreshUser().then(function(){
+                QuantiModo.refreshUser().then(function(){
                     $scope.syncEverything();
                 }, function(error){
                     console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
@@ -723,9 +705,9 @@ angular.module('starter')
                 console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function () {
                     console.debug("Setting on trigger and on click actions for notifications");
-                    quantimodoService.setOnTriggerActionForLocalNotifications();
-                    quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
-                    quantimodoService.setOnUpdateActionForLocalNotifications();
+                    notificationService.setOnTriggerAction();
+                    notificationService.setOnClickAction(QuantiModo);
+                    notificationService.setOnUpdateAction();
                 });
             } else {
                 //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
@@ -792,7 +774,7 @@ angular.module('starter')
 
         $rootScope.updateOrRecreateNotifications = function () {
             if($rootScope.localNotificationsEnabled){
-                quantimodoService.updateOrRecreateNotifications();
+                notificationService.updateOrRecreateNotifications();
             }
         };
 
@@ -818,7 +800,7 @@ angular.module('starter')
                 variableId: config.appSettings.primaryOutcomeVariableDetails.id,
                 defaultValue: 3
             };
-            quantimodoService.addToTrackingReminderSyncQueue(reminderToSchedule);
+            reminderService.addToTrackingReminderSyncQueue(reminderToSchedule);
             $scope.showIntervalCard = false;
         };
 
@@ -842,7 +824,7 @@ angular.module('starter')
                             onTap: function(){
                                 correlationObject.userVote = 0;
                                 correlationObject.vote = 0;
-                                quantimodoService.postVoteDeferred(correlationObject)
+                                correlationService.vote(correlationObject)
                                     .then(function () {
                                         console.debug('Down voted!');
                                     }, function () {
@@ -877,7 +859,7 @@ angular.module('starter')
                             onTap: function(){
                                 correlationObject.userVote = 1;
                                 correlationObject.vote = 1;
-                                quantimodoService.postVoteDeferred(correlationObject)
+                                correlationService.vote(correlationObject)
                                     .then(function () {
                                         console.debug('upVote');
                                     }, function () {
@@ -894,7 +876,7 @@ angular.module('starter')
 
         function deleteVote(correlationObject, $index) {
             correlationObject.userVote = null;
-            quantimodoService.deleteVoteDeferred(correlationObject, function(response){
+            correlationService.deleteVote(correlationObject, function(response){
                 console.debug("deleteVote response", response);
             }, function(response){
                 console.error("deleteVote response", response);
@@ -902,9 +884,9 @@ angular.module('starter')
         }
 
         $rootScope.sendToLogin = function(){
-            quantimodoService.deleteItemFromLocalStorage('user');
-            quantimodoService.deleteItemFromLocalStorage('accessToken');
-            quantimodoService.deleteItemFromLocalStorage('accessTokenInUrl');
+            localStorageService.deleteItem('user');
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('accessTokenInUrl');
             $rootScope.accessToken = null;
             console.debug('appCtrl.sendToLogin just set $rootScope.user to null');
             $rootScope.user = null;
@@ -961,18 +943,18 @@ angular.module('starter')
         $scope.syncEverything = function () {
             if(!$rootScope.syncedEverything && $rootScope.user){
                 console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
-                //quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+                //measurementService.syncPrimaryOutcomeVariableMeasurements();
                 if($rootScope.localNotificationsEnabled){
                     console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
-                    quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
+                    reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 }
-                quantimodoService.getUserVariablesDeferred();
-                quantimodoService.getCommonVariablesDeferred();
-                quantimodoService.getUnits();
+                variableService.getUserVariables();
+                variableService.getCommonVariables();
+                unitService.getUnits();
                 $rootScope.syncedEverything = true;
-                quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-                quantimodoService.syncTrackingReminderSyncQueueToServer();
-                //quantimodoService.getConnectorsDeferred();
+                qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                reminderService.syncTrackingReminderSyncQueueToServer();
+                //connectorsService.getConnectors();
             }
         };
 
@@ -999,7 +981,7 @@ angular.module('starter')
 
         $scope.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
             if(!cordova || !cordova.plugins.email){
-                quantimodoService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
+                bugsnagService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
                     ' Using $scope.sendWithMailTo instead.');
                 $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                 return;
@@ -1047,7 +1029,7 @@ angular.module('starter')
         };
 
         $scope.favoriteValidationFailure = function (message) {
-            quantimodoService.showAlert(message);
+            utilsService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
         };
@@ -1058,9 +1040,9 @@ angular.module('starter')
                 return;
             }
             $rootScope.favoritesArray[$index].displayTotal = "Recorded " + $rootScope.favoritesArray[$index].total + " " + $rootScope.favoritesArray[$index].abbreviatedUnitName;
-            quantimodoService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
+            measurementService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
                 .then(function () {
-                    console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     console.error(error);
@@ -1116,9 +1098,9 @@ angular.module('starter')
                     return;
                 }
                 if($rootScope.favoritesTally[trackingReminder.id].tally) {
-                    quantimodoService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
+                    measurementService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
                         .then(function () {
-                            console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                            console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function(error) {
                             if (typeof Bugsnag !== "undefined") {
                                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
@@ -1137,13 +1119,13 @@ angular.module('starter')
                 template: '<ion-spinner></ion-spinner>'
             });
             // Delete all measurements for a variable
-            quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
+            variableService.deleteAllMeasurementsForVariable($rootScope.variableObject.id).then(function() {
                 // If primaryOutcomeVariable, delete local storage measurements
                 if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
-                    quantimodoService.setLocalStorageItem('allMeasurements',[]);
-                    quantimodoService.setLocalStorageItem('measurementsQueue',[]);
-                    quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
-                    quantimodoService.setLocalStorageItem('lastSyncTime',0);
+                    localStorageService.setItem('allMeasurements',[]);
+                    localStorageService.setItem('measurementsQueue',[]);
+                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
+                    localStorageService.setItem('lastSyncTime',0);
                 }
                 $ionicLoading.hide();
                 $state.go(config.appSettings.defaultState);
@@ -1252,13 +1234,13 @@ angular.module('starter')
                 destructiveButtonClicked: function() {
                     if(!bloodPressure){
                         $rootScope.favoritesArray.splice($index, 1);
-                        quantimodoService.deleteTrackingReminderDeferred(favorite.id)
+                        reminderService.deleteReminder(favorite.id)
                             .then(function(){
                                 console.debug('Favorite deleted: ' + JSON.stringify(favorite));
                             }, function(error){
                                 console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify(favorite));
                             });
-                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', favorite.id)
+                        localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
                             .then(function(){
                                 //$scope.init();
                             });
@@ -1266,13 +1248,13 @@ angular.module('starter')
                     }
 
                     if(bloodPressure){
-                        quantimodoService.deleteTrackingReminderDeferred($rootScope.bloodPressureReminderId)
+                        reminderService.deleteReminder($rootScope.bloodPressureReminderId)
                             .then(function(){
                                 console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
                             }, function(error){
                                 console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($rootScope.bloodPressure));
                             });
-                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $rootScope.bloodPressureReminderId)
+                        localStorageService.deleteElementOfItemById('trackingReminders', $rootScope.bloodPressureReminderId)
                             .then(function(){
                                 //$scope.init();
                             });
@@ -1295,9 +1277,9 @@ angular.module('starter')
                 return;
             }
             $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
-            quantimodoService.postBloodPressureMeasurements($rootScope.bloodPressure)
+            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function () {
-                    console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     console.error('Failed to Track by favorite, Try again!');
@@ -1305,7 +1287,7 @@ angular.module('starter')
         };
 
         $scope.refreshVariables = function () {
-            quantimodoService.refreshCommonVariables().then(function () {
+            variableService.refreshCommonVariables().then(function () {
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
             }, function (error) {
@@ -1313,7 +1295,7 @@ angular.module('starter')
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
             });
-            quantimodoService.refreshUserVariables().then(function () {
+            variableService.refreshUserVariables().then(function () {
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
             }, function (error) {
@@ -1383,30 +1365,11 @@ angular.module('starter')
 
             console.debug('Saving variable settings ' + JSON.stringify(params));
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            quantimodoService.postUserVariableDeferred(params).then(function() {
-                quantimodoService.deleteItemFromLocalStorage('lastStudy');
-                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(params));
+            variableService.postUserVariable(params).then(function() {
+                localStorageService.deleteItem('lastStudy');
+                console.debug("variableService.postUserVariable: success: " + JSON.stringify(params));
                 $ionicLoading.hide();
-
-                var viewHistory = $ionicHistory.viewHistory();
-                var views = viewHistory.views;
-                var viewsArray = $.map(views, function(value, index) {
-                    return [value];
-                });
-
-                var numberToGoBack = 0;
-
-                for(var i = viewsArray.length - 1; i > 0; i--){
-                    if(viewsArray[i].stateName.toLowerCase().indexOf('tag') === -1 &&
-                        viewsArray[i].stateName.toLowerCase().indexOf('settings') === -1){
-                        $ionicHistory.goBack(numberToGoBack);
-                        return;
-                    }
-                    numberToGoBack--;
-                }
-
-                $state.go(config.appSettings.defaultState);
-
+                $ionicHistory.goBack();
             }, function(error) {
                 $ionicLoading.hide();
                 console.error(error);
@@ -1423,29 +1386,19 @@ angular.module('starter')
         };
 
         $scope.getVariableByName = function (variableName) {
-            if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){
-                $rootScope.variableObject = null;
-            }
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             var params = {includeTags : true};
-            quantimodoService.getVariablesByNameDeferred(variableName, params).then(function(variableObject){
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
+            variableService.getVariablesByName(variableName, params).then(function(variableObject){
                 $ionicLoading.hide();
                 $rootScope.variableObject = variableObject;
                 $scope.setupVariableByVariableObject(variableObject);
-            }, function (error) {
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                $ionicLoading.hide();
-                console.error(error);
             });
         };
 
         $scope.resetVariableToDefaultSettings = function(variableObject) {
             // Populate fields with original settings for variable
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-            quantimodoService.resetUserVariableDeferred(variableObject.id).then(function() {
+            variableService.resetUserVariable(variableObject.id).then(function() {
                 $scope.getVariableByName(variableObject.name);
             });
         };

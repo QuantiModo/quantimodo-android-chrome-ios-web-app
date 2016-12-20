@@ -100,6 +100,10 @@ angular.module('starter')
                 console.error($state.current.name + " $rootScope.variableObject: " + JSON.stringify($rootScope.variableObject));
                 return;
             }
+
+            if($rootScope.urlParameters.doNotProcess){
+                params.doNotProcess = true;
+            }
             //$scope.showLoader('Fetching measurements');
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
@@ -192,6 +196,12 @@ angular.module('starter')
         });
         
         $scope.init = function(){
+
+            $rootScope.getAllUrlParams();
+            if($rootScope.urlParameters.variableName){
+                $stateParams.variableName = $rootScope.urlParameters.variableName;
+            }
+
             $scope.stopGettingMeasurements = false;
             $ionicLoading.hide();
             //$scope.showLoader('Fetching measurements');

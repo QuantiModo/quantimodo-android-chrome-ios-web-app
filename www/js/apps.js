@@ -5,8 +5,7 @@ var appsManager = { // jshint ignore:line
 		"mindfirst" : "configs/mindfirst",
 		"medtlc" : "configs/medtlc",
 		"quantimodo" : "configs/quantimodo",
-		"tobenamed" : "configs/tobenamed",
-		"yourlowercaseappnamehere": "configs/yourlowercaseappnamehere"
+		"tobenamed":"configs/tobenamed"
 	},
 	defaultApp : "tobenamed",
 	getAppConfig : function(app){
