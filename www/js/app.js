@@ -1366,12 +1366,21 @@ angular.module('starter',
                 }
             }
         })
+        //  .state('app.variableButtonIcons', {
+        //     url: '/variable-button-icons',
+        //     views: {
+        //         'menuContent': {
+        //             templateUrl: 'templates/tabs/varaible-button-icons.html',
+        //             controller: 'TabCtrl'
+        //         }
+        //     }
+        // })
 
-       .state('app.tabDetail', {
-            url: '/tabs/:tabId',
+       .state('app.variableButtonIconDetails', {
+            url: '/tabs/:variableObject',
             views: {
              'menuContent': {
-                  templateUrl: 'templates/tabs/tab-detail.html',
+                  templateUrl: 'templates/tabs/variable-button-icon-details.html',
                   controller: 'MeasurementAddCtrl'
                  }
              }
