@@ -605,6 +605,7 @@ angular.module('starter',
                 }
             }
         })
+         
         .state('app.variableSettings', {
             url: "/variable-settings/:variableName",
             cache: false,

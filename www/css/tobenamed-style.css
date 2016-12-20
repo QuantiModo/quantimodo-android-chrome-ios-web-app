@@ -70,3 +70,12 @@
 .changeButtonBorder{
   border-color: #886aea;
 }
+.bar-positive{
+  background-color:green!important;
+}
+.ion-navicon{
+  display:none!important;
+}
+.ion-ios-help-outline{
+  display:none;
+}

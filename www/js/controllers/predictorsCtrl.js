@@ -162,16 +162,14 @@ angular.module('starter')
                 populateUserCorrelationList();
             }
         };
-        
-<<<<<<< HEAD
-=======
+
         $scope.refreshList = function () {
             $scope.state.requestParams.offset = 0;
             quantimodoService.clearCorrelationCache();
             $scope.init();
         };
 
->>>>>>> Abolitionist/develop
+
         function setupUserPredictors() {
             if($scope.state.requestParams.effectVariableName){
                 $scope.state.explanationHeader = "Your Top Predictors";

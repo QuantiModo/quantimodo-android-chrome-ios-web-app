@@ -468,6 +468,12 @@ angular.module('starter')
 			});
 		};
 
+		//YI add this test for tab-setting.html. when click home icon on that page, it goes to default measurement button page
+
+		$scope.home=function(){
+			$state.go('app.tabs');
+		};
+
 		// when view is changed
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.init();
