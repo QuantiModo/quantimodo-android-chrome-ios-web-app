@@ -7,7 +7,7 @@ var appsManager = { // jshint ignore:line
 		"quantimodo" : "configs/quantimodo",
 		"tobenamed":"configs/tobenamed"
 	},
-	defaultApp : "tobenamed",
+	defaultApp : "moodimodo",
 	getAppConfig : function(app){
 		if(appsManager.apps[app]){
 			return 'configs/' + app + '.js';
