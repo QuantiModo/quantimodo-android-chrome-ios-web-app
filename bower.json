@@ -2,7 +2,8 @@
   "name": "quantimodo-ionic",
   "private": false,
   "devDependencies": {
-    "ionic-platform-web-client": "^0.7.1"
+    "ionic-platform-web-client": "^0.7.1",
+    "platform.js": "platform#^1.3.1"
   },
   "dependencies": {
     "angular": "#1.3.13",

@@ -22,7 +22,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService, reminderService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -66,12 +66,12 @@ angular.module('starter',
                  // data.registrationId
                  var newDeviceToken = registerResponse.registrationId;
                  console.debug("Got device token for push notifications: " + registerResponse.registrationId);
-                 var deviceTokenOnServer = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
+                 var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
                  $rootScope.deviceToken = deviceTokenOnServer;
                  console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
                  if(deviceTokenOnServer !== registerResponse.registrationId) {
                      $rootScope.deviceToken = newDeviceToken;
-                     quantimodoService.setLocalStorageItem('deviceTokenToSync', newDeviceToken);
+                     localStorageService.setItem('deviceTokenToSync', newDeviceToken);
                      console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
                  }
              });
@@ -80,8 +80,8 @@ angular.module('starter',
 
              push.on('notification', function(data) {
                  console.debug('Received push notification: ' + JSON.stringify(data));
-                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-                 quantimodoService.refreshTrackingReminderNotifications().then(function(){
+                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                 reminderService.refreshTrackingReminderNotifications().then(function(){
                      console.debug('push.on.notification: successfully refreshed notifications');
                  }, function (error) {
                      console.error('push.on.notification: ' + error);
@@ -127,7 +127,7 @@ angular.module('starter',
                      modifiedValue: 1
                  };
 
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
 
@@ -139,7 +139,7 @@ angular.module('starter',
                      modifiedValue: 2
                  };
 
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
 
@@ -151,7 +151,7 @@ angular.module('starter',
                      modifiedValue: 3
                  };
 
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
 
@@ -163,7 +163,7 @@ angular.module('starter',
                      modifiedValue: 4
                  };
 
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
 
@@ -175,7 +175,7 @@ angular.module('starter',
                      modifiedValue: 5
                  };
 
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
 
@@ -186,7 +186,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
 
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
 
@@ -196,7 +196,7 @@ angular.module('starter',
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
-                 quantimodoService.snoozeTrackingReminderNotificationDeferred(body);
+                 reminderService.snoozeReminderNotification(body);
                  finishPush(data);
              };
 
@@ -207,7 +207,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.lastValue
                  };
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
 
@@ -218,7 +218,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.secondToLastValue
                  };
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
 
@@ -229,7 +229,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.thirdToLastValue
                  };
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 reminderService.trackReminderNotification(body);
                  finishPush(data);
              };
          }
@@ -244,7 +244,7 @@ angular.module('starter',
         
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
-        if (window.cordova && window.cordova.plugins.Keyboard) {
+        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
         }
         if (window.StatusBar) {
@@ -1356,57 +1356,11 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
-        })
-        .state('app.tabs', {
-            url: '/tabs',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/tabs/tabs.html',
-                    controller: 'TabCtrl'
-                }
-            }
-        })
-        //  .state('app.variableButtonIcons', {
-        //     url: '/variable-button-icons',
-        //     views: {
-        //         'menuContent': {
-        //             templateUrl: 'templates/tabs/varaible-button-icons.html',
-        //             controller: 'TabCtrl'
-        //         }
-        //     }
-        // })
-
-       .state('app.variableButtonIconDetails', {
-            url: '/tabs/:variableObject',
-            views: {
-             'menuContent': {
-                  templateUrl: 'templates/tabs/variable-button-icon-details.html',
-                  controller: 'MeasurementAddCtrl'
-                 }
-             }
-        })
-        //  .state('app.settings', {
-        //     url: "/settings",
-        //     views: {
-        //         'menuContent': {
-        //             templateUrl: "templates/settings.html",
-        //             controller: 'SettingsCtrl'
-        //         }
-        //     }
-        // })
-       .state('app.tabSettings', {
-            url: '/tab-settings',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/tabs/tab-settings.html',
-                    controller: 'SettingsCtrl'
-                }
-            }
         });
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-         $urlRouterProvider.otherwise('/app/reminders-inbox')
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');

@@ -12,7 +12,7 @@
 #ionic platform add ios
 #cd "${INTERMEDIATE_PATH}"
 #echo "Adding android platform for ${LOWERCASE_APP_NAME} at ${PWD}"
-#ionic platform add android
+#ionic platform add android@6.1.0
 echo "Generating images for ${LOWERCASE_APP_NAME} at ${PWD}..."
 ionic resources
 convert resources/icon.psd -flatten -background transparent resources/icon.png || true
