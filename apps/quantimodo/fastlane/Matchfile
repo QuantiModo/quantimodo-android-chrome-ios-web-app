@@ -1,0 +1,4 @@
+git_url "git@github.com:mikepsinn/ios-certificates.git"
+
+app_identifier "com.quantimodo.quantimodo"
+username "ios@quantimodo.com"

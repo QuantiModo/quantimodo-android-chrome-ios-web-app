@@ -213,7 +213,7 @@ function pushMeasurements(measurements, onDoneListener)
 			// If the request is completed
 			if (xhr.readyState === 4)
 			{
-				console.debug("QuantiModo responds:");
+				console.debug("quantimodoService responds:");
 				console.debug(xhr.responseText);
 
 				if(onDoneListener !== null)

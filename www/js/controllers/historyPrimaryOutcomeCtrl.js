@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
-													  $rootScope, measurementService, $stateParams) {
+													  $rootScope, quantimodoService, $stateParams) {
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 		$scope.state = {
@@ -25,12 +25,12 @@ angular.module('starter')
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			$scope.history = measurementService.getAllLocalMeasurements();
+			$scope.history = quantimodoService.getAllLocalMeasurements();
 			if($rootScope.user){
 				$scope.showLoader($scope.syncDisplayText);
-				measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+				quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
 					$scope.hideLoader();
-					$scope.history = measurementService.getAllLocalMeasurements();
+					$scope.history = quantimodoService.getAllLocalMeasurements();
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 				});
@@ -49,7 +49,7 @@ angular.module('starter')
 
 		$scope.$on('updatePrimaryOutcomeHistory', function(){
 			console.debug($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
-			$scope.history = measurementService.getAllLocalMeasurements();
+			$scope.history = quantimodoService.getAllLocalMeasurements();
 		});
 
 		$scope.showActionSheet = function(measurement) {

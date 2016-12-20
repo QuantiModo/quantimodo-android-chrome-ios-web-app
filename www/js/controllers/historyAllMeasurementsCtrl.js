@@ -2,9 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   QuantiModo, measurementService,
-													   variableCategoryService, ratingService, localStorageService,
-													   qmLocationService) {
+													   quantimodoService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -62,14 +60,14 @@ angular.module('starter')
 				params.variableName = $stateParams.variableObject.name;
 			}
 
-	    	measurementService.getHistoryMeasurements(params).then(function(history){
+	    	quantimodoService.getHistoryMeasurements(params).then(function(history){
 	    		if (concat) {
 					$scope.state.history = $scope.state.history.concat(history);
 				}
     			else {
 					$scope.state.history = history;
 				}
-				$scope.state.history = ratingService.addInfoAndImagesToMeasurements($scope.state.history);
+				$scope.state.history = quantimodoService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
 				if(history.length < $scope.state.limit){
 					$scope.state.hideLoadMoreButton = true;
@@ -99,9 +97,9 @@ angular.module('starter')
 
 			console.debug($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+			quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
-				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+				quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {
 				console.debug($state.current.name + ": " + "Do not track location");
 			}
@@ -131,7 +129,7 @@ angular.module('starter')
 				$scope.state.trackLocation = $rootScope.user.trackLocation;
 			}
 			$scope.showHelpInfoPopupIfNecessary();
-			variableCategoryService.getVariableCategories()
+			quantimodoService.getVariableCategories()
 				.then(function(variableCategories){
 					$scope.state.variableCategories = variableCategories;
 				}, function(error){
@@ -150,17 +148,17 @@ angular.module('starter')
 
 		// when view is changed
 		$scope.$on('$ionicView.beforeEnter', function(e) {
-			$rootScope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
+			$rootScope.hideHistoryPageInstructionsCard = quantimodoService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
 		});
 
 		$scope.deleteMeasurement = function(measurement){
 			measurement.hide = true;
 			if(measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
-				measurementService.deleteMeasurementFromLocalStorage(measurement).then(function (){
-					measurementService.deleteMeasurementFromServer(measurement).then(function (){});
+				quantimodoService.deleteMeasurementFromLocalStorage(measurement).then(function (){
+					quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});
 				});
 			} else {
-				measurementService.deleteMeasurementFromServer(measurement).then(function (){});
+				quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});
 			}
 		};
 

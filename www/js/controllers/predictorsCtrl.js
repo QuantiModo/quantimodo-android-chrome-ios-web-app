@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, correlationService,
+	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, quantimodoService,
                                            $rootScope, $ionicActionSheet) {
 
 		$scope.controller_name = "PredictorsCtrl";
@@ -69,7 +69,7 @@ angular.module('starter')
             });*/
             $scope.searching = true;
             setupAggregatedPredictors();
-            correlationService.getAggregatedCorrelations($scope.state.requestParams)
+            quantimodoService.getAggregatedCorrelationsDeferred($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         if($scope.state.requestParams.offset){
@@ -82,7 +82,7 @@ angular.module('starter')
                         $ionicLoading.hide();
                         $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
-                        correlationService.getUserCorrelations($scope.state.requestParams)
+                        quantimodoService.getUserCorrelationsDeferred($scope.state.requestParams)
                             .then(function (correlationObjects) {
                                 $ionicLoading.hide();
                                 $scope.searching = false;
@@ -126,7 +126,7 @@ angular.module('starter')
                 $scope.state.requestParams.fallbackToAggregatedCorrelations = true;
             }
 
-            correlationService.getUserCorrelations($scope.state.requestParams)
+            quantimodoService.getUserCorrelationsDeferred($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         if($scope.state.requestParams.offset){
@@ -163,6 +163,15 @@ angular.module('starter')
             }
         };
         
+<<<<<<< HEAD
+=======
+        $scope.refreshList = function () {
+            $scope.state.requestParams.offset = 0;
+            quantimodoService.clearCorrelationCache();
+            $scope.init();
+        };
+
+>>>>>>> Abolitionist/develop
         function setupUserPredictors() {
             if($scope.state.requestParams.effectVariableName){
                 $scope.state.explanationHeader = "Your Top Predictors";
@@ -180,7 +189,7 @@ angular.module('starter')
                 $scope.state.explanationHeader = "Common Predictors";
                 $scope.state.explanationIcon = "ion-ios-people";
                 $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
-                    ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
+                    ' ' + $rootScope.variableName + ' for the average quantimodoService user.  ' +
                 'Want PERSONALIZED results? Add some reminders and start tracking!';
             } else {
                 setupAggregatedOutcomes();
@@ -199,7 +208,7 @@ angular.module('starter')
             $scope.state.explanationHeader = "Common Outcomes";
             $scope.state.explanationIcon = "ion-ios-people";
             $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
-                ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
+                ' ' + $rootScope.variableName + ' for the average quantimodoService user.  ' +
                 'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
 

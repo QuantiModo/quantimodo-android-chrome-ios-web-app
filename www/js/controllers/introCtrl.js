@@ -1,6 +1,6 @@
 angular.module('starter')
-.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading,
-                                  $rootScope, $stateParams, QuantiModo) {
+.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
+                                  $rootScope, $stateParams, quantimodoService) {
 
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
@@ -53,7 +53,7 @@ angular.module('starter')
         if($scope.introSlides[0].textColor){
             $scope.myIntro.textColor = $scope.introSlides[0].textColor;
         }
-        if(QuantiModo.getAccessTokenFromUrlParameter()){
+        if(quantimodoService.getAccessTokenFromUrlParameter()){
             console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {
