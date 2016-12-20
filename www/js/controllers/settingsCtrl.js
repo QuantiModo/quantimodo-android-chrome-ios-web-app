@@ -196,42 +196,50 @@ angular.module('starter')
 			$scope.autoUpdateApp();
 		};
 
+		var sendReminderNotificationEmailsChange = function () {
+            var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
+            if($rootScope.urlParameters.userEmail){
+                params.userEmail = $rootScope.urlParameters.userEmail;
+            }
+            quantimodoService.updateUserSettingsDeferred(params);
+            if($rootScope.user.sendReminderNotificationEmails){
+                $ionicPopup.alert({
+                    title: 'Reminder Emails Enabled',
+                    template: "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email."
+                });
+            } else {
+                $ionicPopup.alert({
+                    title: 'Reminder Emails Disabled',
+                    template: "If you forget to record a measurement for a reminder you've created, I won't send you a daily reminder email."
+                });
+            }
+        };
+
 		$scope.sendReminderNotificationEmailsChange = function() {
-			var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
-			if($rootScope.urlParameters.userEmail){
-				params.userEmail = $rootScope.urlParameters.userEmail;
-			}
-			quantimodoService.updateUserSettingsDeferred(params);
-			if($rootScope.user.sendReminderNotificationEmails){
-				$ionicPopup.alert({
-					title: 'Reminder Emails Enabled',
-					template: "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email."
-				});
-			} else {
-				$ionicPopup.alert({
-					title: 'Reminder Emails Disabled',
-					template: "If you forget to record a measurement for a reminder you've created, I won't send you a daily reminder email."
-				});
-			}
+            verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);
 		};
 
-        $scope.sendPredictorEmailsChange = function() {
-			var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-			if($rootScope.urlParameters.userEmail){
-				params.userEmail = $rootScope.urlParameters.userEmail;
-			}
+		var sendPredictorEmailsChange = function () {
+            var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
+            if($rootScope.urlParameters.userEmail){
+                params.userEmail = $rootScope.urlParameters.userEmail;
+            }
             quantimodoService.updateUserSettingsDeferred(params);
-			if($rootScope.user.sendPredictorEmails){
-				$ionicPopup.alert({
-					title: 'Discovery Emails Enabled',
-					template: "I'll send you a weekly email with new discoveries from your data."
-				});
-			} else {
-				$ionicPopup.alert({
-					title: 'Discovery Emails Disabled',
-					template: "I won't send you a weekly email with new discoveries from your data."
-				});
-			}
+            if($rootScope.user.sendPredictorEmails){
+                $ionicPopup.alert({
+                    title: 'Discovery Emails Enabled',
+                    template: "I'll send you a weekly email with new discoveries from your data."
+                });
+            } else {
+                $ionicPopup.alert({
+                    title: 'Discovery Emails Disabled',
+                    template: "I won't send you a weekly email with new discoveries from your data."
+                });
+            }
+        };
+
+        $scope.sendPredictorEmailsChange = function() {
+        	verifyEmailAddressAndExecuteCallback(sendPredictorEmailsChange);
         };
 
 		$scope.openEarliestReminderTimePicker = function() {
@@ -418,52 +426,93 @@ angular.module('starter')
 	        return str;
 	    };
 
-		// When Export is tapped
+	    var verifyEmailAddressAndExecuteCallback = function (callback) {
+	    	if($rootScope.user.email){
+	    		callback();
+	    		return;
+			}
+
+			var myPopup = $ionicPopup.show({
+				template: '<label class="item item-input">' +
+				'<i class="icon ion-email placeholder-icon"></i>' +
+				'<input type="email" placeholder="Email" ng-model="data.email"></label>',
+				title: 'Update Email',
+				subTitle: 'Enter Your Email Address',
+				scope: $scope,
+				buttons: [
+					{ text: 'Cancel' },
+					{
+						text: '<b>Save</b>',
+						type: 'button-positive',
+						onTap: function(e) {
+							if (!$scope.data.email) {
+								//don't allow the user to close unless he enters wifi password
+								e.preventDefault();
+							} else {
+								return $scope.data;
+							}
+						}
+					}
+				]
+			});
+
+			myPopup.then(function(res) {
+				quantimodoService.updateUserSettingsDeferred({email: $scope.data.email});
+				callback();
+			});
+
+        };
+
+	    var exportRequestAlert = function () {
+            $ionicPopup.alert({
+                title: 'Export Request Sent!',
+                template: 'Your data will be emailed to you within the next 24 hours.  Enjoy your life! So do we!'
+            });
+        };
+
+	    var exportCsv = function () {
+            quantimodoService.postMeasurementsCsvExport(function(response){
+                if(!response.success) {
+                    quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
+                }
+            }, function(error){
+                quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
+            });
+            exportRequestAlert();
+        };
+
+        var exportPdf = function () {
+            exportRequestAlert();
+            quantimodoService.postMeasurementsPdfExport(function(response){
+                if(!response.success) {
+                    quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
+                }
+            }, function(error){
+                quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
+            });
+        };
+
+        var exportXls = function () {
+            exportRequestAlert();
+            quantimodoService.postMeasurementsXlsExport(function(response){
+                if(!response.success) {
+                    quantimodoService.reportError("Could not export measurements.");
+                }
+            }, function(error){
+                quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
+            });
+        };
+
 		$scope.exportCsv = function() {
-			$ionicPopup.alert({
-				title: 'Export Request Sent!',
-				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
-			});
-
-			quantimodoService.postMeasurementsCsvExport(function(response){
-				if(!response.success) {
-					quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
-				}
-			}, function(error){
-				quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
-			});
+            verifyEmailAddressAndExecuteCallback(exportCsv);
 		};
 
-		// When Export is tapped
 		$scope.exportPdf = function() {
-			$ionicPopup.alert({
-				title: 'Export Request Sent!',
-				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
-			});
-
-			quantimodoService.postMeasurementsPdfExport(function(response){
-				if(!response.success) {
-					quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
-				}
-			}, function(error){
-				quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
-			});
+            verifyEmailAddressAndExecuteCallback(exportPdf);
 		};
 
-		// When Export is tapped
 		$scope.exportXls = function(){
-			$ionicPopup.alert({
-				title: 'Export Request Sent!',
-				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
-			});
-			
-			quantimodoService.postMeasurementsXlsExport(function(response){
-				if(!response.success) {
-					quantimodoService.reportError("Could not export measurements.");
-				}
-			}, function(error){
-				quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
-			});
+            verifyEmailAddressAndExecuteCallback(exportXls);
 		};
 
 		// when view is changed
