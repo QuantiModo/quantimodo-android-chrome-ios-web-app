@@ -144,8 +144,8 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 
 	var privateConfigContent = 'window.private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
 	fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
+    fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
 	console.log('Created '+ './www/private_configs/default.config.js');
-
 });
 
 var answer = '';
@@ -1716,6 +1716,7 @@ gulp.task('configureApp', [], function(callback){
     runSequence(
         'copyAppResources',
         'generatePrivateConfigFromEnvs',
+        'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
         'decryptPrivateConfigToDefault',
         //'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
 		// templates because of the git changes and weird stuff replacement does to config-template.xml
