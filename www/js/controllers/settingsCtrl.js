@@ -269,11 +269,8 @@ angular.module('starter')
 						}
 					}
 				},
-<<<<<<< HEAD
-				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime),
-=======
+
 				inputTime: quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.earliestReminderTime),
->>>>>>> Abolitionist/develop
 				step: 15,
 				closeLabel: 'Cancel'
 			};
@@ -316,11 +313,8 @@ angular.module('starter')
 						}
 					}
 				},
-<<<<<<< HEAD
-				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.latestReminderTime),
-=======
+
 				inputTime: quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.latestReminderTime),
->>>>>>> Abolitionist/develop
 				step: 15,
 				closeLabel: 'Cancel'
 			};
