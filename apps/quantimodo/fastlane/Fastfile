@@ -42,7 +42,9 @@ platform :ios do
   lane :beta do
 
     match(git_url: "git@github.com:mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
-      type: "appstore")
+      app_identifier: "com.quantimodo.quantimodo",
+      type: "appstore",
+      readonly: true)
 
     pem
 
