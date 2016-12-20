@@ -100,6 +100,11 @@
                         ng-change="getPreviewBuildsChange()">
                 Request to Join
             </ion-toggle>
+            <a ng-if="isAndroid" class="item" ng-click="updateApp()">
+                <i class="icon ion-android-download"></i>
+                &nbsp;
+                Update App
+            </a>
         </div>
         <br>
     </ion-content>

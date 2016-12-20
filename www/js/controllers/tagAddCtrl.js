@@ -1,7 +1,7 @@
 angular.module('starter')
 
     .controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, variableService, $ionicLoading, QuantiModo) {
+                                               $ionicActionSheet, $ionicHistory, $ionicLoading, quantimodoService) {
 
         $scope.controller_name = "TagAddCtrl";
 
@@ -36,7 +36,7 @@ angular.module('starter')
                     });
             }
 
-            QuantiModo.deleteUserTagDeferred(userTagData).then(function () {
+            quantimodoService.deleteUserTagDeferred(userTagData).then(function () {
                 $ionicLoading.hide();
                 $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject});
             }, function (error) {
@@ -80,7 +80,7 @@ angular.module('starter')
                 template: '<ion-spinner></ion-spinner>'
             });
 
-            QuantiModo.postUserTagDeferred(userTagData).then(function () {
+            quantimodoService.postUserTagDeferred(userTagData).then(function () {
                 $ionicLoading.hide();
                 if($stateParams.fromState){
                     $state.go($stateParams.fromState, {variableObject: $stateParams.fromStateParams.variableObject});
@@ -108,7 +108,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                variableService.getVariablesByName('Anxiety').then(function (variable) {
+                quantimodoService.getVariablesByNameDeferred('Anxiety').then(function (variable) {
                     $rootScope.stateParams.tagVariableObject = variable;
                     $ionicLoading.hide();
                 });
@@ -118,7 +118,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                variableService.getVariablesByName('Overall Mood').then(function (variable) {
+                quantimodoService.getVariablesByNameDeferred('Overall Mood').then(function (variable) {
                     $rootScope.stateParams.taggedVariableObject = variable;
                     $ionicLoading.hide();
                 });

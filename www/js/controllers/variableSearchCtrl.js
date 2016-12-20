@@ -1,6 +1,6 @@
 angular.module('starter')
-    .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
-                                               QuantiModo,  variableCategoryService, variableService, $timeout, $ionicLoading) {
+    .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter,
+                                               quantimodoService, $timeout, $ionicLoading) {
 
         $scope.controller_name = "VariableSearchCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -25,9 +25,9 @@ angular.module('starter')
         $scope.selectVariable = function(variableObject) {
             console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject));
             if(variableObject.lastValue !== null){
-                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('userVariables', variableObject);
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);
             }
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('commonVariables', variableObject);
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variableObject);
 
             var userTagData;
             if($state.current.name === 'app.favoriteSearch') {
@@ -54,7 +54,7 @@ angular.module('starter')
                         template: '<ion-spinner></ion-spinner>'
                     });
 
-                    QuantiModo.postUserTagDeferred(userTagData).then(function () {
+                    quantimodoService.postUserTagDeferred(userTagData).then(function () {
                         $ionicLoading.hide();
                         if ($stateParams.fromState) {
                             $state.go($stateParams.fromState, {
@@ -85,7 +85,7 @@ angular.module('starter')
                         template: '<ion-spinner></ion-spinner>'
                     });
 
-                    QuantiModo.postUserTagDeferred(userTagData).then(function () {
+                    quantimodoService.postUserTagDeferred(userTagData).then(function () {
                         $ionicLoading.hide();
                         if ($stateParams.fromState) {
                             $state.go($stateParams.fromState, {
@@ -141,14 +141,9 @@ angular.module('starter')
             }
             // If no results or no exact match, show "+ Add [variable]" button for query
             if ((variables.length < 1 || !found)) {
-                $scope.showSearchLoader = true;
-                $timeout(function () {
-                    if (!$scope.state.searching) {
-                        $scope.showSearchLoader = false;
-                        console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
-                        $scope.state.showAddVariableButton = true;
-                    }
-                }, 1000);
+                $scope.showSearchLoader = false;
+                console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
+                $scope.state.showAddVariableButton = true;
                 if ($stateParams.nextState === "app.reminderAdd") {
                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
                         ' reminder';
@@ -190,7 +185,7 @@ angular.module('starter')
             console.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
-                variableService.searchUserVariables($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
+                quantimodoService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
                     .then(function(variables){
                         $scope.state.noVariablesFoundCard.show = false;
                         $scope.state.showAddVariableButton = false;
@@ -233,7 +228,7 @@ angular.module('starter')
             if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
                 $scope.state.searching = true;
             }
-            variableService.getCommonVariables($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
+            quantimodoService.getCommonVariablesDeferred($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
                 if(commonVariables && commonVariables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3) {
                         $scope.state.variableSearchResults = arrayUniqueId($scope.state.variableSearchResults.concat(commonVariables));
@@ -267,7 +262,7 @@ angular.module('starter')
                 $scope.state.searching = true;
             }
 
-            variableService.getUserVariables($stateParams.variableSearchParameters).then(function (userVariables) {
+            quantimodoService.getUserVariablesDeferred($stateParams.variableSearchParameters).then(function (userVariables) {
                 if(userVariables && userVariables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3) {
                         // Put user variables at top of list
