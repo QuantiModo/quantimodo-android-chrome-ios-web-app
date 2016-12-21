@@ -1554,7 +1554,7 @@ gulp.task('useWhiteIcon', [], function () {
 		.pipe(gulp.dest('resources'));
 });
 
-gulp.task('generateIosResources', [], function(callback){
+gulp.task('ionicResourcesIos', [], function(callback){
 	return execute("ionic resources ios", function(error){
 		if(error !== null){
 			console.log("ERROR GENERATING iOS RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
@@ -1679,7 +1679,7 @@ gulp.task('prepareIosApp', function(callback){
         'removeTransparentPng',
         'removeTransparentPsd',
         'useWhiteIcon',
-		'generateIosResources',
+		'ionicResourcesIos',
 		'bumpIosVersion',
 		'generateConfigXmlFromTemplate',
 		callback);
