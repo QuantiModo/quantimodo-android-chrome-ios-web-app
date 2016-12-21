@@ -1723,8 +1723,8 @@ gulp.task('configureApp', [], function(callback){
 		// templates because of the git changes and weird stuff replacement does to config-template.xml
         'copyAppConfigToDefault',
         'setIonicAppId',
-        'copyIonicCloudLibrary',
-		'resizeIcons',
+        //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
+		//'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
 		'copyIconsToWwwImg',
 		'generateConfigXmlFromTemplate',
         'setVersionNumberInFiles',
@@ -1736,6 +1736,8 @@ gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
         'cleanChromeBuildFolder',
 	    'configureApp',
+        'resizeIcons',
+        'copyIconsToWwwImg',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
