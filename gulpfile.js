@@ -1847,6 +1847,37 @@ gulp.task('buildQuantiModoChromeExtension', function(callback){
         callback);
 });
 
+gulp.task('buildAndReleaseIosApp', function(callback){
+    runSequence(
+        'xcodeProjectFix',
+        'fastlaneBetaIos',
+        callback);
+});
+
+gulp.task('fastlaneBetaIos', function(callback){
+	var command = "fastlane beta";
+    return execute(command, function(error){
+        if(error !== null){
+            console.log("ERROR for " + command + 'for ' + process.env.LOWERCASE_APP_NAME + ": " + error);
+        } else {
+            console.log("\n***" + command + ' for ' + process.env.LOWERCASE_APP_NAME);
+            callback();
+        }
+    });
+});
+
+gulp.task('xcodeProjectFix', function(callback){
+    var command = "ruby hooks/after_platform_add.bak/xcodeprojectfix.rb";
+    return execute(command, function(error){
+        if(error !== null){
+            console.log("ERROR for " + command + 'for ' + process.env.LOWERCASE_APP_NAME + ": " + error);
+        } else {
+            console.log("\n***" + command + ' for ' + process.env.LOWERCASE_APP_NAME);
+            callback();
+        }
+    });
+});
+
 gulp.task('ionicPlatformAddAndroid', function(callback){
 	return execute("ionic platform add android@6.1.0", function(error){
 			if(error !== null){
