@@ -1635,6 +1635,8 @@ gulp.task('bumpIosVersion', function(callback){
 			var numberToBumpArr = result.widget.$["ios-CFBundleVersion"].split('.');
 			var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
 			numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
+			// Lets just use the timestamp to simplify matters
+            numberToBumpArr[numberToBumpArr.length-1] = Math.floor(Date.now() / 1000);
 			result.widget.$["ios-CFBundleVersion"] = numberToBumpArr.join('.');
 			var builder = new xml2js.Builder();
 			var updatedXml = builder.buildObject(result);
@@ -1655,6 +1657,16 @@ gulp.task('bumpIosVersion', function(callback){
 			});
 		}
 	});
+});
+
+gulp.task('prepareIosAppIfEnvIsSet', function(callback){
+	if(!process.env.PREPARE_IOS_APP){
+		callback();
+		return;
+	}
+    runSequence(
+        'prepareIosApp',
+        callback);
 });
 
 gulp.task('prepareIosApp', function(callback){
@@ -1715,6 +1727,7 @@ gulp.task('configureApp', [], function(callback){
 		'copyIconsToWwwImg',
 		'generateConfigXmlFromTemplate',
         'setVersionNumberInFiles',
+		'prepareIosAppIfEnvIsSet',
         callback);
 });
 

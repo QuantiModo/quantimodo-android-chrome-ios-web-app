@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-npm install -g gulp bower ionic cordova
-brew install imagemagick
+sudo npm install -g gulp bower ionic cordova
+sudo brew install imagemagick
 npm install
 gulp prepareQuantiModoIos
