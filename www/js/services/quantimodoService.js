@@ -1,6 +1,7 @@
 angular.module('starter')
     // quantimodoService API implementation
-    .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform) {
+    .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform,
+                                           $cordovaGeolocation) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -75,7 +76,10 @@ angular.module('starter')
             }
 
             if (typeof Bugsnag !== "undefined") {
-                groupingHash = request.url + ' error';
+                groupingHash = "There was an error and the request object was not provided to the quantimodoService.errorHandler";
+                if(request){
+                    groupingHash = request.url + ' error';
+                }
                 if(data.error){
                     groupingHash = JSON.stringify(data.error);
                     if(data.error.message){
