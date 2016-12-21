@@ -1360,6 +1360,7 @@ angular.module('starter',
         })
         .state('app.tabs', {
             url: '/tabs',
+            abstract:true,
             views: {
                 'menuContent': {
                     templateUrl: 'templates/tabs/tabs.html',
@@ -1368,6 +1369,18 @@ angular.module('starter',
             }
         })
 
+        //tested--passed--//
+
+        .state('app.variableButtonIcons', {
+            url: '/variable-button-icons',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/tabs/variable-button-icons.html',
+                    controller: 'VariableButtonIconsCtrl'
+                }
+            }
+        })
+        //not passed yet--//
        .state('app.tabDetail', {
             url: '/tabs/:tabId',
             views: {
@@ -1377,15 +1390,18 @@ angular.module('starter',
                  }
              }
         })
-        //  .state('app.settings', {
-        //     url: "/settings",
-        //     views: {
-        //         'menuContent': {
-        //             templateUrl: "templates/settings.html",
-        //             controller: 'SettingsCtrl'
-        //         }
-        //     }
-        // })
+        //tested--passed--//
+        .state('app.tabReminder', {
+            url: '/tab-reminder',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/tabs/tab-reminder.html',
+                    controller: 'RemindersAddCtrl'
+                }
+            }
+        })
+      
+        //tested---passed--//
        .state('app.tabSettings', {
             url: '/tab-settings',
             views: {

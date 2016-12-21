@@ -20,6 +20,8 @@ angular.module('starter')
 
         $scope.goToMeasurementsTab = function () {
             $scope.state.title = 'Measurements';
+        
         };
+
 
     });
