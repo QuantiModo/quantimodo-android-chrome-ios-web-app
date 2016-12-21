@@ -1665,6 +1665,7 @@ gulp.task('prepareIosAppIfEnvIsSet', function(callback){
 		callback();
 		return;
 	}
+    console.log("process.env.PREPARE_IOS_APP is true, so going to prepareIosApp");
     runSequence(
         'prepareIosApp',
         callback);
@@ -1728,7 +1729,7 @@ gulp.task('configureApp', [], function(callback){
 		'copyIconsToWwwImg',
 		'generateConfigXmlFromTemplate',
         'setVersionNumberInFiles',
-		'prepareIosAppIfEnvIsSet',
+		//'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
         callback);
 });
 
