@@ -19,16 +19,7 @@ platform :ios do
   before_all do
     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
 
-    match(git_url: "git@github.com:mikepsinn/ios-certificates.git",
-          type: "development")
-
     sigh
-    
-    # update_project_provisioning(
-    #     xcodeproj: "platforms/ios/MoodiModo.xcodeproj",
-    #     profile: "./match_AppStore_comquantimodomoodimodoapp.mobileprovision"
-    # )
-
 
   end
 
