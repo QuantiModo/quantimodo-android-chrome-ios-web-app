@@ -1661,6 +1661,7 @@ gulp.task('bumpIosVersion', function(callback){
 
 gulp.task('prepareIosAppIfEnvIsSet', function(callback){
 	if(!process.env.PREPARE_IOS_APP){
+		console.log("process.env.PREPARE_IOS_APP not true, so not preparing iOS app");
 		callback();
 		return;
 	}
