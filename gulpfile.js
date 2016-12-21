@@ -1847,6 +1847,7 @@ gulp.task('buildQuantiModoChromeExtension', function(callback){
         callback);
 });
 
+// This is a hook so we really shouldn't need it
 gulp.task('buildAndReleaseIosApp', function(callback){
     runSequence(
         'xcodeProjectFix',
