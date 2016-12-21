@@ -1673,7 +1673,7 @@ gulp.task('prepareIosAppIfEnvIsSet', function(callback){
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
         'setIosEnvs',
-		'gitPull',
+		//'gitPull',  Not sure why we needed this
 		'cleanPlugins',
         'configureApp',
         'removeTransparentPng',
