@@ -261,10 +261,11 @@ angular.module('starter')
 						if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
 							$ionicPopup.alert({
 								title: 'Choose Another Time',
-								template: 'Earliest reminder time cannot be greater than latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
+								template: 'Earliest reminder time cannot be greater than latest reminder time.  ' +
+									'Please change the latest reminder time and try again or select a different ' +
+									'earliest reminder time.'
 							});
-						}
-						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
+						} else if (newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
 							quantimodoService.updateUserSettingsDeferred(params).then(function(){
@@ -304,10 +305,11 @@ angular.module('starter')
 						if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
 							$ionicPopup.alert({
 								title: 'Choose Another Time',
-								template: 'Latest reminder time cannot be less than earliest reminder time.  Please change the earliest reminder time and try again or select a different latest reminder time.'
+								template: 'Latest reminder time cannot be less than earliest reminder time.  Please ' +
+									'change the earliest reminder time and try again or select a different latest ' +
+									'reminder time.'
 							});
-						}
-						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
+						} else if (newLatestReminderTime !== $rootScope.user.latestReminderTime){
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
 							params.latestReminderTime = $rootScope.user.latestReminderTime;
 							quantimodoService.updateUserSettingsDeferred(params).then(function(){
