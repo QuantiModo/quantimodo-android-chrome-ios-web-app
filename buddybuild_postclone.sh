@@ -32,11 +32,11 @@ if [ -z ${BUILD_ANDROID} ];
     then
         echo "NOT BUILDING ANDROID APP"
     else
-        echo "Running npm install -g gulp bower"
+        echo "Running npm install -g gulp bower ionic cordova"
         npm install -g gulp bower ionic cordova
 
         echo "Running apt-get install imagemagick"
-        sudo apt-get install imagemagick
+        echo password | sudo -S apt-get install imagemagick
 
         echo "gulp prepareQuantiModoIos"
         gulp buildQuantiModoAndroid
