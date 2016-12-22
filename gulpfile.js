@@ -1244,7 +1244,6 @@ gulp.task('setVersionNumberInFiles', function(callback){
 		'www/js/controllers/appCtrl.js',
 		'www/js/app.js',
 		'gulp.js',
-		'scripts/build_all_apps.sh',
 		'.travis.yml',
 		//'config.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
 		//'config-template.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
