@@ -2835,7 +2835,7 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        var delayBeforePostingNotifications = 60 * 1000;
+        var delayBeforePostingNotifications = 3 * 60 * 1000;
 
         quantimodoService.postTrackingRemindersDeferred = function(trackingRemindersArray){
             var deferred = $q.defer();
