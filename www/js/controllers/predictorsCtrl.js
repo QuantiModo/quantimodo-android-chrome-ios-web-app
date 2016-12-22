@@ -106,6 +106,8 @@ angular.module('starter')
 
                 }, function (error) {
                     $ionicLoading.hide();
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                     $scope.searching = false;
                     console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
@@ -148,6 +150,8 @@ angular.module('starter')
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                 }, function (error) {
                     $ionicLoading.hide();
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                     $scope.searching = false;
                     console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
@@ -162,13 +166,12 @@ angular.module('starter')
                 populateUserCorrelationList();
             }
         };
-
+        
         $scope.refreshList = function () {
             $scope.state.requestParams.offset = 0;
             quantimodoService.clearCorrelationCache();
             $scope.init();
         };
-
 
         function setupUserPredictors() {
             if($scope.state.requestParams.effectVariableName){

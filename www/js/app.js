@@ -244,7 +244,7 @@ angular.module('starter',
         
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
-        if (window.cordova && window.cordova.plugins.Keyboard) {
+        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
         }
         if (window.StatusBar) {
@@ -605,7 +605,6 @@ angular.module('starter',
                 }
             }
         })
-         
         .state('app.variableSettings', {
             url: "/variable-settings/:variableName",
             cache: false,
@@ -1357,64 +1356,11 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
-        })
-        .state('app.tabs', {
-            url: '/tabs',
-            abstract:true,
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/tabs/tabs.html',
-                    controller: 'TabCtrl'
-                }
-            }
-        })
-
-        //tested--passed--//
-
-        .state('app.variableButtonIcons', {
-            url: '/variable-button-icons',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/tabs/variable-button-icons.html',
-                    controller: 'VariableButtonIconsCtrl'
-                }
-            }
-        })
-        //not passed yet--//
-       .state('app.tabDetail', {
-            url: '/tabs/:tabId',
-            views: {
-             'menuContent': {
-                  templateUrl: 'templates/tabs/tab-detail.html',
-                  controller: 'MeasurementAddCtrl'
-                 }
-             }
-        })
-        //tested--passed--//
-        .state('app.tabReminder', {
-            url: '/tab-reminder',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/tabs/tab-reminder.html',
-                    controller: 'RemindersAddCtrl'
-                }
-            }
-        })
-      
-        //tested---passed--//
-       .state('app.tabSettings', {
-            url: '/tab-settings',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/tabs/tab-settings.html',
-                    controller: 'SettingsCtrl'
-                }
-            }
         });
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-         $urlRouterProvider.otherwise('/app/reminders-inbox')
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');

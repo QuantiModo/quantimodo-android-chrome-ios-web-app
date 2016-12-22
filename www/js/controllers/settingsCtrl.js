@@ -250,13 +250,13 @@ angular.module('starter')
 						console.debug('Selected epoch is : ', val, 'and the time is ',
 							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 						var newEarliestReminderTime = moment(a).format('HH:mm:ss');
-						if(newEarliestReminderTime >=$rootScope.user.latestReminderTime){
+						if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
 							$ionicPopup.alert({
 								title: 'Choose Another Time',
-								template: 'Earliest reminder time cannot be greater than or equal to the latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
+								template: 'Earliest reminder time cannot be greater than latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
 							});
 						}
-						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime&&newEarliestReminderTime<$rootScope.user.latestReminderTime){
+						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
 							quantimodoService.updateUserSettingsDeferred(params).then(function(){
@@ -264,12 +264,11 @@ angular.module('starter')
 							});
 							$ionicPopup.alert({
 								title: 'Earliest Notification Time Updated',
-								template: 'You should not receive device notifications or tracking reminder notifications in your inbox before ' + moment(a).format('h:mm A') + '.'
+								template: 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.'
 							});
 						}
 					}
 				},
-
 				inputTime: quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.earliestReminderTime),
 				step: 15,
 				closeLabel: 'Cancel'
@@ -308,12 +307,11 @@ angular.module('starter')
 							});
 							$ionicPopup.alert({
 								title: 'Latest Notification Time Updated',
-								template: 'You should not receive device notifications or tracking reminder notifications in your inbox after ' + moment(a).format('h:mm A') + '.'
+								template: 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.'
 							});
 						}
 					}
 				},
-
 				inputTime: quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.latestReminderTime),
 				step: 15,
 				closeLabel: 'Cancel'
@@ -466,12 +464,6 @@ angular.module('starter')
 			}, function(error){
 				quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
 			});
-		};
-
-		//YI add this test for tab-setting.html. when click home icon on that page, it goes to default measurement button page
-
-		$scope.home=function(){
-			$state.go('app.variableButtonIcons');
 		};
 
 		// when view is changed

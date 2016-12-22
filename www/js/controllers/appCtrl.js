@@ -1,7 +1,7 @@
 angular.module('starter')
     // Parent Controller
     // This controller runs before every one else
-    .controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
+	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     quantimodoService, ionicDatePicker,
                                     $ionicActionSheet, $ionicDeploy) {
