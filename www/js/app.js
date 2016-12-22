@@ -33,7 +33,9 @@ angular.module('starter',
         
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
-                alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+                errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
+                alert(errorMsg);
+                quantimodoService.reportError(errorMsg);
             };
         }
 
