@@ -1148,14 +1148,15 @@ gulp.task('makeIosAppSimplified', function(callback){
 
 var setVersionNumberInConfigXml = function(configFilePath, callback){
 	var xml = fs.readFileSync(configFilePath, 'utf8');
-	parseString(xml, function (err, result) {
-		if(err || !result){
+	parseString(xml, function (err, parsedXmlFile) {
+		if(err || !parsedXmlFile){
 			console.log("failed to read xml file or it is empty", err);
 		} else {
-			result.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
-			result.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+			parsedXmlFile.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
+			parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+            parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
 			var builder = new xml2js.Builder();
-			var updatedXml = builder.buildObject(result);
+			var updatedXml = builder.buildObject(parsedXmlFile);
 			fs.writeFile(configFilePath, updatedXml, 'utf8', function (err) {
 				if (err) {
 					console.log("error writing to xml file", err);
@@ -1554,7 +1555,7 @@ gulp.task('useWhiteIcon', [], function () {
 		.pipe(gulp.dest('resources'));
 });
 
-gulp.task('generateIosResources', [], function(callback){
+gulp.task('ionicResourcesIos', [], function(callback){
 	return execute("ionic resources ios", function(error){
 		if(error !== null){
 			console.log("ERROR GENERATING iOS RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
@@ -1564,6 +1565,16 @@ gulp.task('generateIosResources', [], function(callback){
 		}
 	});
 });
+
+var getIsoString = function () {
+    var rightNow = new Date();
+    var nowString = rightNow.toISOString();
+    nowString = nowString.replace(/-/g,"");
+    nowString = nowString.replace(/T/g,"");
+    nowString = nowString.replace(/:/g,"");
+    nowString = nowString.slice(0,14);
+    return nowString;
+};
 
 gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 	//console.log('gulp generateConfigXmlFromTemplate was called');
@@ -1609,6 +1620,7 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 
             if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+                parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
             }
 
             var builder = new xml2js.Builder();
@@ -1628,16 +1640,19 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 
 gulp.task('bumpIosVersion', function(callback){
 	var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
-	parseString(xml, function (err, result) {
+	parseString(xml, function (err, parsedXmlFile) {
 		if(err){
 			console.log("failed to read xml file", err);
 		} else {
-			var numberToBumpArr = result.widget.$["ios-CFBundleVersion"].split('.');
+			var numberToBumpArr = parsedXmlFile.widget.$["ios-CFBundleVersion"].split('.');
 			var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
 			numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
-			result.widget.$["ios-CFBundleVersion"] = numberToBumpArr.join('.');
+			// Lets just use the timestamp to simplify matters
+            numberToBumpArr[numberToBumpArr.length-1] = Math.floor(Date.now() / 1000);
+			parsedXmlFile.widget.$["ios-CFBundleVersion"] = numberToBumpArr.join('.');
+            parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
 			var builder = new xml2js.Builder();
-			var updatedXml = builder.buildObject(result);
+			var updatedXml = builder.buildObject(parsedXmlFile);
 			fs.writeFile('./config.xml', updatedXml, 'utf8', function (err) {
 				if (err) {
 					console.log("error writing to xml file", err);
@@ -1657,16 +1672,28 @@ gulp.task('bumpIosVersion', function(callback){
 	});
 });
 
+gulp.task('prepareIosAppIfEnvIsSet', function(callback){
+	if(!process.env.PREPARE_IOS_APP){
+		console.log("process.env.PREPARE_IOS_APP not true, so not preparing iOS app");
+		callback();
+		return;
+	}
+    console.log("process.env.PREPARE_IOS_APP is true, so going to prepareIosApp");
+    runSequence(
+        'prepareIosApp',
+        callback);
+});
+
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
         'setIosEnvs',
-		'gitPull',
+		//'gitPull',  Not sure why we needed this
 		'cleanPlugins',
         'configureApp',
         'removeTransparentPng',
         'removeTransparentPsd',
         'useWhiteIcon',
-		'generateIosResources',
+		'ionicResourcesIos',
 		'bumpIosVersion',
 		'generateConfigXmlFromTemplate',
 		callback);
@@ -1710,11 +1737,12 @@ gulp.task('configureApp', [], function(callback){
 		// templates because of the git changes and weird stuff replacement does to config-template.xml
         'copyAppConfigToDefault',
         'setIonicAppId',
-        'copyIonicCloudLibrary',
-		'resizeIcons',
+        //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
+		//'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
 		'copyIconsToWwwImg',
 		'generateConfigXmlFromTemplate',
         'setVersionNumberInFiles',
+		//'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
         callback);
 });
 
@@ -1722,6 +1750,8 @@ gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
         'cleanChromeBuildFolder',
 	    'configureApp',
+        'resizeIcons',
+        'copyIconsToWwwImg',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
@@ -1832,6 +1862,38 @@ gulp.task('buildQuantiModoChromeExtension', function(callback){
         'setQuantiModoEnvs',
         'buildChromeExtension',
         callback);
+});
+
+// This is a hook so we really shouldn't need it
+gulp.task('buildAndReleaseIosApp', function(callback){
+    runSequence(
+        'xcodeProjectFix',
+        'fastlaneBetaIos',
+        callback);
+});
+
+gulp.task('fastlaneBetaIos', function(callback){
+	var command = "fastlane beta";
+    return execute(command, function(error){
+        if(error !== null){
+            console.log("ERROR for " + command + 'for ' + process.env.LOWERCASE_APP_NAME + ": " + error);
+        } else {
+            console.log("\n***" + command + ' for ' + process.env.LOWERCASE_APP_NAME);
+            callback();
+        }
+    });
+});
+
+gulp.task('xcodeProjectFix', function(callback){
+    var command = "ruby hooks/after_platform_add.bak/xcodeprojectfix.rb";
+    return execute(command, function(error){
+        if(error !== null){
+            console.log("ERROR for " + command + 'for ' + process.env.LOWERCASE_APP_NAME + ": " + error);
+        } else {
+            console.log("\n***" + command + ' for ' + process.env.LOWERCASE_APP_NAME);
+            callback();
+        }
+    });
 });
 
 gulp.task('ionicPlatformAddAndroid', function(callback){
@@ -2014,11 +2076,11 @@ gulp.task('prepareQuantiModoAndroid', function(callback){
 gulp.task('setVersionNumberEnvsFromIosConfig', [], function(callback){
 	var configFilePath = './config-template-ios.xml';
 	var xml = fs.readFileSync(configFilePath, 'utf8');
-	parseString(xml, function (err, result) {
-		if(err || !result){
+	parseString(xml, function (err, parsedXmlFile) {
+		if(err || !parsedXmlFile){
 			console.log("failed to read xml file or it is empty", err);
 		} else {
-			process.env.IONIC_IOS_APP_VERSION_NUMBER = result.widget.$["ios-CFBundleVersion"];
+			process.env.IONIC_IOS_APP_VERSION_NUMBER = parsedXmlFile.widget.$["ios-CFBundleVersion"];
 			process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 			callback();
 		}

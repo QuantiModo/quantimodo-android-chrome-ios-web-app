@@ -158,7 +158,12 @@ angular.module('starter')
         function getStudy() {
             $scope.loadingCharts = true;
             quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
-                $scope.correlationObject = data.userStudy;
+                if(data.userStudy){
+                    $scope.correlationObject = data.userStudy;
+                }
+                if(data.publicStudy){
+                    $scope.correlationObject = data.publicStudy;
+                }
                 quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($scope.correlationObject));
                 $scope.createUserCharts();
             }, function (error) {

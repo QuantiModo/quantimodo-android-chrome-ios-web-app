@@ -41,3 +41,8 @@ www/configs/default.js
 ionic.config.json
 supply_json_key_for_google_play.json
 www/img/icons/
+!/fastlane/Fastfile
+resources-shared/screenshots/5.5/
+resources-shared/screenshots/4.7/
+resources-shared/screenshots/3.5/
+resources-shared/screenshots/4.0/
