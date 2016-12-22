@@ -17,7 +17,9 @@ default_platform :ios
 
 platform :ios do
   app_display_name = ENV["APP_DISPLAY_NAME"]
+  puts "Fastfile app_display_name is set to #{app_display_name}"
   xcodeproj = "./platforms/ios/#{app_display_name}.xcodeproj"
+  puts "Fastfile xcodeproj is set to #{xcodeproj}"
 
   before_all do
     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
