@@ -1749,7 +1749,7 @@ gulp.task('configureApp', [], function(callback){
 		//'copyIonicCloudLibrary', I think we just keep it in custom-lib now
 		//'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
 		'copyIconsToWwwImg',
-		'generateConfigXmlFromTemplate',
+		//'generateConfigXmlFromTemplate',  Can't do this here because it will overwrite iOS config on BuildBuddy
 		'setVersionNumberInFiles',
 		//'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
 		callback);

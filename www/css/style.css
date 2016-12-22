@@ -663,3 +663,8 @@ img.intro-primary-outcome-variable-rating-buttons {
 .isBrowserView {
     overflow-y: auto !important;
 }
+
+#navBarAvatar {
+    height: 30px;
+    border-radius: 50%;
+}
