@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-echo "Running buddybuild_postclone.sh. Current folder is $PWD and folder contents are:"
-ls
+echo "Running buddybuild_postclone.sh. Current folder is $PWD..."
+#echo "folder contents are:"
+#ls
 
 echo "PREPARE_IOS_APP env is ${PREPARE_IOS_APP}"
 
