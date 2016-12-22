@@ -1572,7 +1572,7 @@ var getIsoString = function () {
     nowString = nowString.replace(/-/g,"");
     nowString = nowString.replace(/T/g,"");
     nowString = nowString.replace(/:/g,"");
-    nowString = nowString.slice(0,12);
+    nowString = nowString.slice(0,14);
     return nowString;
 };
 
