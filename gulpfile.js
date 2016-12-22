@@ -2035,7 +2035,8 @@ gulp.task('prepareRepositoryForAndroid', function(callback){
         'cleanPlatforms',
         'cleanPlugins',
         //'ionicPlatformRemoveAndroid',
-        'ionicStateReset',  // Need this to install plugins from package.json
+        //'ionicStateReset',  // Need this to install plugins from package.json
+		'ionicPlatformAddAndroid',
         'decryptBuildJson',
         'decryptAndroidKeystore',
 		//'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
