@@ -1148,14 +1148,15 @@ gulp.task('makeIosAppSimplified', function(callback){
 
 var setVersionNumberInConfigXml = function(configFilePath, callback){
 	var xml = fs.readFileSync(configFilePath, 'utf8');
-	parseString(xml, function (err, result) {
-		if(err || !result){
+	parseString(xml, function (err, parsedXmlFile) {
+		if(err || !parsedXmlFile){
 			console.log("failed to read xml file or it is empty", err);
 		} else {
-			result.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
-			result.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+			parsedXmlFile.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
+			parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+            parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
 			var builder = new xml2js.Builder();
-			var updatedXml = builder.buildObject(result);
+			var updatedXml = builder.buildObject(parsedXmlFile);
 			fs.writeFile(configFilePath, updatedXml, 'utf8', function (err) {
 				if (err) {
 					console.log("error writing to xml file", err);
@@ -1565,6 +1566,16 @@ gulp.task('ionicResourcesIos', [], function(callback){
 	});
 });
 
+var getIsoString = function () {
+    var rightNow = new Date();
+    var nowString = rightNow.toISOString();
+    nowString = nowString.replace(/-/g,"");
+    nowString = nowString.replace(/T/g,"");
+    nowString = nowString.replace(/:/g,"");
+    nowString = nowString.slice(0,12);
+    return nowString;
+};
+
 gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 	//console.log('gulp generateConfigXmlFromTemplate was called');
 	if(!process.env.CONFIG_XML_TEMPLATE_PATH){
@@ -1609,6 +1620,7 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 
             if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+                parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
             }
 
             var builder = new xml2js.Builder();
@@ -1628,18 +1640,19 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 
 gulp.task('bumpIosVersion', function(callback){
 	var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
-	parseString(xml, function (err, result) {
+	parseString(xml, function (err, parsedXmlFile) {
 		if(err){
 			console.log("failed to read xml file", err);
 		} else {
-			var numberToBumpArr = result.widget.$["ios-CFBundleVersion"].split('.');
+			var numberToBumpArr = parsedXmlFile.widget.$["ios-CFBundleVersion"].split('.');
 			var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
 			numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
 			// Lets just use the timestamp to simplify matters
             numberToBumpArr[numberToBumpArr.length-1] = Math.floor(Date.now() / 1000);
-			result.widget.$["ios-CFBundleVersion"] = numberToBumpArr.join('.');
+			parsedXmlFile.widget.$["ios-CFBundleVersion"] = numberToBumpArr.join('.');
+            parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
 			var builder = new xml2js.Builder();
-			var updatedXml = builder.buildObject(result);
+			var updatedXml = builder.buildObject(parsedXmlFile);
 			fs.writeFile('./config.xml', updatedXml, 'utf8', function (err) {
 				if (err) {
 					console.log("error writing to xml file", err);
@@ -2063,11 +2076,11 @@ gulp.task('prepareQuantiModoAndroid', function(callback){
 gulp.task('setVersionNumberEnvsFromIosConfig', [], function(callback){
 	var configFilePath = './config-template-ios.xml';
 	var xml = fs.readFileSync(configFilePath, 'utf8');
-	parseString(xml, function (err, result) {
-		if(err || !result){
+	parseString(xml, function (err, parsedXmlFile) {
+		if(err || !parsedXmlFile){
 			console.log("failed to read xml file or it is empty", err);
 		} else {
-			process.env.IONIC_IOS_APP_VERSION_NUMBER = result.widget.$["ios-CFBundleVersion"];
+			process.env.IONIC_IOS_APP_VERSION_NUMBER = parsedXmlFile.widget.$["ios-CFBundleVersion"];
 			process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 			callback();
 		}
