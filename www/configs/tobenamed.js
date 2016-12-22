@@ -383,16 +383,7 @@ config.appSettings  = {
             href : '#/app/favorites',
             icon : 'ion-ios-star'
         },
-           {
-            title : 'Measurements Variable Icons',
-            href : '#/app/measurements-variable-button-icons',
-            icon : 'ion-speedometer'
-        },
-            {
-            title : 'Measurement Variable Button Details',
-            href : '#/app/measurement-variable-button-details/:measurementId',
-            icon : 'ion-info'
-        },
+          
         {
             title : 'Overall Mood',
             click : 'togglePrimaryOutcomeSubMenu',
