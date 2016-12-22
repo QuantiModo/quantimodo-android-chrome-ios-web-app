@@ -115,6 +115,7 @@ cd ${INTERMEDIATE_PATH}
 rm -rf plugins
 echo "NPM INSTALL"
 npm install
+gulp configureApp
 
 echo "ionic state reset"
 ionic state reset
