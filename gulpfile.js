@@ -1581,6 +1581,8 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 	if(!process.env.CONFIG_XML_TEMPLATE_PATH){
         process.env.CONFIG_XML_TEMPLATE_PATH = "./config-template.xml";
 		console.warn("CONFIG_XML_TEMPLATE_PATH not set!  Falling back to " + process.env.CONFIG_XML_TEMPLATE_PATH);
+	} else {
+        console.log("generateConfigXmlFromTemplate using " + process.env.CONFIG_XML_TEMPLATE_PATH);
 	}
 	
 	var xml = fs.readFileSync(process.env.CONFIG_XML_TEMPLATE_PATH, 'utf8');
