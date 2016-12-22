@@ -63,9 +63,7 @@
       "id": "phonegap-plugin-push"
     }
   ],
-  "cordovaPlatforms": [
-    "android@6.1.0"
-  ],
+  "cordovaPlatforms": [],
   "engines": {
     "node": "0.10.x"
   }
