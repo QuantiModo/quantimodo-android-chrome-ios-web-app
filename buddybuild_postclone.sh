@@ -20,5 +20,18 @@ sudo npm install -g gulp bower
 echo "Running npm install"
 npm install
 
-echo "gulp prepareQuantiModoIos"
-gulp prepareQuantiModoIos
+if [ -z ${PREPARE_IOS_APP} ];
+    then
+        echo "NOT BUILDING IOS APP"
+    else
+        echo "gulp prepareQuantiModoIos"
+        gulp prepareQuantiModoIos
+fi
+
+if [ -z ${BUILD_ANDROID} ];
+    then
+        echo "NOT BUILDING ANDROID APP"
+    else
+        echo "gulp prepareQuantiModoIos"
+        gulp prepareQuantiModoAndroid
+fi
