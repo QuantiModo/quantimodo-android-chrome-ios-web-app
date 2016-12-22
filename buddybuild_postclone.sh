@@ -22,3 +22,6 @@ npm install
 
 echo "gulp prepareQuantiModoIos"
 gulp prepareQuantiModoIos
+
+ionic platform remove android
+ionic platform add ios
