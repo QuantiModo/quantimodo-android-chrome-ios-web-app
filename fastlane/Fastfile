@@ -39,8 +39,10 @@ platform :ios do
 
     pem
 
+    recreate_schemes(project: ENV["GYM_PROJECT"])
+
     gym(scheme: ENV["APP_DISPLAY_NAME"],
-        project: "platforms/ios/QuantiModo.xcodeproj") # Build your app - more options available # Build your app - more options available
+        project: ENV["GYM_PROJECT"]) # Build your app - more options available # Build your app - more options available
         
     pilot(
        skip_submission: true,
