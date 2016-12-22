@@ -3,9 +3,9 @@
 echo "Current folder is $PWD"
 echo "Folder contents are:"
 ls
-chmod -R a+x hooks
-chmod -R a+x package-hooks
-chmod -R a+x scripts
+chmod -R a+x ../../hooks
+chmod -R a+x ../../package-hooks
+chmod -R a+x ../../scripts
 
 sudo npm install -g gulp bower ionic cordova
 echo "Running sudo npm install -g gulp bower ionic cordova"
