@@ -659,3 +659,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     border: none;
     outline:none;
 }
+
+.isBrowserView {
+    overflow-y: auto !important;
+}
