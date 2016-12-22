@@ -1691,12 +1691,12 @@ gulp.task('prepareIosApp', function(callback){
 		//'gitPull',  Not sure why we needed this
 		'cleanPlugins',
         'configureApp',
+        'bumpIosVersion',
+        'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
         'removeTransparentPng',
         'removeTransparentPsd',
         'useWhiteIcon',
 		'ionicResourcesIos',
-		'bumpIosVersion',
-		'generateConfigXmlFromTemplate',
 		callback);
 });
 
