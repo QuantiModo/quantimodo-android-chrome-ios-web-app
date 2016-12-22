@@ -13,5 +13,5 @@ chmod -R a+x ./scripts
 echo "Running sudo brew install imagemagick"
 brew install imagemagick
 
-echo "Running sudo npm install -g gulp bower ionic cordova"
+echo "Running sudo npm install -g gulp bower"
 sudo npm install -g gulp bower
