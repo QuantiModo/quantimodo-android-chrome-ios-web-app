@@ -33,5 +33,5 @@ if [ -z ${BUILD_ANDROID} ];
         echo "NOT BUILDING ANDROID APP"
     else
         echo "gulp prepareQuantiModoIos"
-        gulp prepareQuantiModoAndroid
+        gulp buildQuantiModoAndroid
 fi
