@@ -1729,30 +1729,31 @@ gulp.task('zipChromeExtension', [], function(){
 });
 
 gulp.task('configureApp', [], function(callback){
-    if(process.env.PREPARE_IOS_APP){
-    	console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
-        runSequence(
-            'prepareIosApp',
-            callback);
-    } else {
-        console.log("process.env.PREPARE_IOS_APP is not true so going to do standard configureApp");
-        runSequence(
-            'copyAppResources',
-            'generatePrivateConfigFromEnvs',
-            'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
-            'decryptPrivateConfigToDefault',
-            //'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
-            // templates because of the git changes and weird stuff replacement does to config-template.xml
-            'copyAppConfigToDefault',
-            'setIonicAppId',
-            //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
-            //'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
-            'copyIconsToWwwImg',
-            'generateConfigXmlFromTemplate',
-            'setVersionNumberInFiles',
-            //'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
-            callback);
-	}
+
+    // if(false && process.env.PREPARE_IOS_APP){  // Results in infinite loop
+    // 	console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
+    //     runSequence(
+    //         'prepareIosApp',
+    //         callback);
+    // }
+
+	runSequence(
+		'copyAppResources',
+		'generatePrivateConfigFromEnvs',
+		'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
+		'decryptPrivateConfigToDefault',
+		//'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
+		// templates because of the git changes and weird stuff replacement does to config-template.xml
+		'copyAppConfigToDefault',
+		'setIonicAppId',
+		//'copyIonicCloudLibrary', I think we just keep it in custom-lib now
+		//'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
+		'copyIconsToWwwImg',
+		'generateConfigXmlFromTemplate',
+		'setVersionNumberInFiles',
+		//'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
+		callback);
+
 });
 
 gulp.task('buildChromeExtension', [], function(callback){
