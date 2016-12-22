@@ -11,12 +11,6 @@ chmod -R a+x ./hooks
 chmod -R a+x ./package-hooks
 chmod -R a+x ./scripts
 
-echo "Running sudo brew install imagemagick"
-brew install imagemagick
-
-echo "Running sudo npm install -g gulp bower"
-sudo npm install -g gulp bower
-
 echo "Running npm install"
 npm install
 
@@ -24,6 +18,12 @@ if [ -z ${PREPARE_IOS_APP} ];
     then
         echo "NOT BUILDING IOS APP"
     else
+        echo "Running sudo brew install imagemagick"
+        brew install imagemagick
+
+        echo "Running sudo npm install -g gulp bower"
+        sudo npm install -g gulp bower
+
         echo "gulp prepareQuantiModoIos"
         gulp prepareQuantiModoIos
 fi
@@ -32,6 +32,12 @@ if [ -z ${BUILD_ANDROID} ];
     then
         echo "NOT BUILDING ANDROID APP"
     else
+        echo "Running npm install -g gulp bower"
+        npm install -g gulp bower
+
+        echo "Running apt-get install imagemagick"
+        apt-get install imagemagick
+
         echo "gulp prepareQuantiModoIos"
         gulp buildQuantiModoAndroid
 fi
