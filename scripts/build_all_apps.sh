@@ -114,8 +114,7 @@ cd ${INTERMEDIATE_PATH}
 
 rm -rf plugins
 echo "NPM INSTALL"
-npm install
-gulp configureApp
+npm install && gulp configureApp
 
 echo "ionic state reset"
 ionic state reset
@@ -213,7 +212,7 @@ if [ -z ${BUILD_MOODIMODO} ];
         fi
 fi
 
-export APPLE_ID="1024924226"
+export APPLE_ID="102492.2.7"
 export APP_IDENTIFIER="com.quantimodo.mindfirst"
 export APP_DISPLAY_NAME=MindFirst
 echo "Replace doesn't work if there's a space"
