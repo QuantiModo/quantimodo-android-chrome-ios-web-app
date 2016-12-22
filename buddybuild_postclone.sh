@@ -15,3 +15,9 @@ brew install imagemagick
 
 echo "Running sudo npm install -g gulp bower"
 sudo npm install -g gulp bower
+
+echo "Running npm install"
+npm install
+
+echo "gulp prepareQuantiModoIos"
+gulp prepareQuantiModoIos
