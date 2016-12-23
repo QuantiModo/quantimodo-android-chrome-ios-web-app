@@ -94,8 +94,18 @@ if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
 
 if(!process.env.LOWERCASE_APP_NAME){
     console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-    setQuantiModoEnvs();
+    var config = JSON.parse(fs.readFileSync('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js'));
 }
+
+var privateConfig;
+
+function loadConfigs() {
+    decryptPrivateConfig();
+    config = JSON.parse(fs.readFileSync('./www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js'));
+    privateConfig = JSON.parse(fs.readFileSync('./www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js'));
+}
+
+loadConfigs();
 
 gulp.task('default', ['sass']);
 
@@ -530,10 +540,14 @@ gulp.task('encryptPrivateConfig', [], function(){
     encryptFile(fileToEncryptPath, encryptedFilePath);
 });
 
+var decryptPrivateConfig = function () {
+    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
+    var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
+    decryptFile(fileToDecryptPath, decryptedFilePath);
+};
+
 gulp.task('decryptPrivateConfig', [], function(){
-	var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
-	var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
-	decryptFile(fileToDecryptPath, decryptedFilePath);
+	decryptPrivateConfig();
 });
 
 gulp.task('decryptPrivateConfigToDefault', [], function(){
@@ -1495,7 +1509,9 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
 	callback();
 });
 
+
 function setQuantiModoEnvs() {
+    config = JSON.parse(fs.readFileSync('./www/configs/quantimodo.js'));
     process.env.APPLE_ID = "1115037661";
     process.env.APP_DISPLAY_NAME = "QuantiModo";
     process.env.LOWERCASE_APP_NAME = "quantimodo";

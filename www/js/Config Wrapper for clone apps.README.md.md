@@ -4,18 +4,16 @@ A configuration object "appSettings" is available in /js/config.js for changing 
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436306460/header_lcaxwn.png)
 
-2. "primaryOutcomeVariable" : Tracking factor that the app will track, changing this will  replace the word mood with provided value.
+1. "primaryOutcomeVariableRatingOptionLabels" : array of primary outcome variable options, the elements of this array will be displayed on the x-axis of the graph
 
-3. "primaryOutcomeVariableRatingOptionLabels" : array of primary outcome variable options, the elements of this array will be displayed on the x-axis of the graph
+1. "positiveRatingOptions" : Array of objects, this will dynamically generate the reporting card with provided options and images.
 
-4. "positiveRatingOptions" : Array of objects, this will dynamically generate the reporting card with provided options and images.
+1. "welcomeText" : This text will be displayed on first line of welcome card on welcome screen
 
-5. "welcomeText" : This text will be displayed on first line of welcome card on welcome screen
-
-6. "primaryOutcomeVariableTrackingQuestion" : will be displayed above primary outcome variable reporting card
+1. "primaryOutcomeVariableTrackingQuestion" : will be displayed above primary outcome variable reporting card
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436307683/welcome_card_i8dvgr.png)
 
-7. "primaryOutcomeVariableAverageText" : "indicating average value of the primary outcome variable.
+1. "primaryOutcomeVariableAverageText" : "indicating average value of the primary outcome variable.
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436308086/average_rqvqb7.png)

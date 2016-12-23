@@ -443,7 +443,7 @@ angular.module('starter')
 
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appDisplayName;
-        $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
+        $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
         $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
         $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
         $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
@@ -1138,7 +1138,7 @@ angular.module('starter')
             });
             // Delete all measurements for a variable
             quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
-                // If primaryOutcomeVariable, delete local storage measurements
+                // If primaryOutcomeVariableName, delete local storage measurements
                 if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
                     quantimodoService.setLocalStorageItem('allMeasurements',[]);
                     quantimodoService.setLocalStorageItem('measurementsQueue',[]);

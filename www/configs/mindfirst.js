@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appDisplayName : 'Mind First Mood Tracker',
+    lowercaseAppName : 'mindfirst',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",
     allowOffline : true,
@@ -9,8 +10,6 @@ config.appSettings  = {
     defaultState : 'app.remindersInbox',
     qmApiHostName: 'app.quantimo.do',
     welcomeState : 'app.welcome',
-
-    primaryOutcomeVariable : 'Mood',
 
     settingsPageOptions :
     {

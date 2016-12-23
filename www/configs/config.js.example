@@ -5,8 +5,6 @@ config.appSettings  = {
 
     defaultState : 'app.track',
 
-    primaryOutcomeVariable : 'Mood',
-
     appStorageIdentifier: 'MoodiModoData*',
 
     headline : 'Sync and Analyze Your Data',

@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appDisplayName : 'EnergyModo',
+    lowercaseAppName : 'energymodo',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
     allowOffline : true,
@@ -9,7 +10,6 @@ config.appSettings  = {
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
     shoppingCartEnabled : true,
-    primaryOutcomeVariable : 'Energy',
     qmApiHostName: 'app.quantimo.do',
     appStorageIdentifier: 'EnergyModoData*',
 

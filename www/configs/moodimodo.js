@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appDisplayName : 'MoodiModo',
+    lowercaseAppName : 'moodimodo',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     allowOffline : true,
@@ -14,7 +15,6 @@ config.appSettings  = {
     },
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
-    primaryOutcomeVariable : 'Mood',
     appStorageIdentifier: 'MoodiModoData*',
     headline : 'Sync and Analyze Your Data',
     features: [

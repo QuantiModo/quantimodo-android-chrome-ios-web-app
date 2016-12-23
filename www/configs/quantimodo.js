@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appDisplayName : 'QuantiModo',
+    lowercaseAppName : 'quantimodo',
     ionNavBarClass : "bar-positive",
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
@@ -15,8 +16,6 @@ config.appSettings  = {
 
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
-
-    primaryOutcomeVariable : 'Mood',
 
     appStorageIdentifier: 'QuantiModoData*',
 

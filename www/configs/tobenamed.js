@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appDisplayName : 'ToBeNamed',
+    lowercaseAppName : 'tobenamed',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     allowOffline : true,
@@ -15,7 +16,6 @@ config.appSettings  = {
         },
     defaultState : 'app.measurements-variable-button-icons',
     welcomeState : 'app.welcome',
-    primaryOutcomeVariable : 'Mood',
     appStorageIdentifier: 'MoodiModoData*',
     headline : 'Sync and Analyze Your Data',
     features: [
