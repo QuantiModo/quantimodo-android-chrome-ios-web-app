@@ -7,7 +7,13 @@
             </ion-nav-buttons>
 
             <ion-nav-buttons side="right">
+
                 <div class="buttons">
+                    <a href="#/app/settings"
+                       ng-if="user && user.avatar"
+                       class="button button-clear" >
+                        <img id="navBarAvatar" ng-src="{{user.avatar}}">
+                    </a>
                     <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="toggleFilterBar($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText" ng-click="onGenericHelpButtonPress()"></button>

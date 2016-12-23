@@ -20,7 +20,7 @@ before_script:
 - ./scripts/add-key.sh
 script:
 - ionic state reset
-- npm install
+- npm install && gulp configureApp
 - echo "npm has installed"
 - gulp -v
 - echo "ran through gulp"

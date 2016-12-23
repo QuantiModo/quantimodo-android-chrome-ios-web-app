@@ -7,7 +7,9 @@ var xcode = require('xcode');
 var fs = require('fs');
 
 module.exports = function(ctx) {
+  console.log("Called ios_disable_bitcode.js");
   if (ctx.opts.platforms.indexOf('ios') < 0) {
+      console.log("Not running ios_disable_bitcode.js because ctx.opts.platforms.indexOf('ios') is not < 0");
     return;
   }
 

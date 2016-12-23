@@ -48,7 +48,7 @@
     "xml2js": "^0.4.15"
   },
   "scripts": {
-    "postinstall": "bower install && ionic config build && gulp configureApp"
+    "postinstall": "bower install && npm rebuild node-sass && ionic config build && gulp configureApp"
   },
   "cordovaPlugins": [
     "cordova-plugin-file-opener2",
@@ -63,9 +63,7 @@
       "id": "phonegap-plugin-push"
     }
   ],
-  "cordovaPlatforms": [
-    "android@6.1.0"
-  ],
+  "cordovaPlatforms": [],
   "engines": {
     "node": "0.10.x"
   }

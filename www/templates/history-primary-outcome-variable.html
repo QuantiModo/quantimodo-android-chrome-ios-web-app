@@ -1,5 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
-     <ion-content>
+     <ion-content ng-class="{ isBrowserView : isWeb == true }">
          <ion-refresher on-refresh="init()"></ion-refresher>
          <div class="list card"  ng-hide="hideHistoryPageInstructionsCard">
              <div class="item" >

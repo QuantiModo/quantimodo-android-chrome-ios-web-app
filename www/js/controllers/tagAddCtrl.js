@@ -12,15 +12,22 @@ angular.module('starter')
             $ionicHistory.goBack();
         };
 
+        var goBack = function () {
+            $ionicLoading.hide();
+            if($stateParams.fromState){
+                $state.go($stateParams.fromState, {variableObject: $stateParams.fromStateParams.variableObject});
+            } else {
+                $state.go(config.appSettings.defaultState);
+            }
+        };
+
         // delete measurement
         $scope.deleteTag = function(){
             var userTagData = {
                 tagVariableId: $rootScope.stateParams.tagVariableObject.id,
                 taggedVariableId: $rootScope.stateParams.taggedVariableObject.id
             };
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
 
             if($stateParams.taggedVariableObject.userTagVariables){
                 $rootScope.variableObject.userTagVariables =
@@ -37,11 +44,10 @@ angular.module('starter')
             }
 
             quantimodoService.deleteUserTagDeferred(userTagData).then(function () {
-                $ionicLoading.hide();
-                $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject});
+                goBack();
             }, function (error) {
-                $ionicLoading.hide();
                 console.error(error);
+                goBack();
             });
         };
 
@@ -63,6 +69,9 @@ angular.module('starter')
                     $rootScope.stateParams.tagVariableObject.name + ' per ' +
                     $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.taggedVariableObject.name;
+                if(!$stateParams.fromStateParams.variableObject.userTaggedVariables){
+                    $stateParams.fromStateParams.variableObject.userTaggedVariables = [];
+                }
                 $stateParams.fromStateParams.variableObject.userTaggedVariables.push($rootScope.stateParams.taggedVariableObject);
             }
 
@@ -73,24 +82,19 @@ angular.module('starter')
                     $rootScope.stateParams.tagVariableObject.name + ' per ' +
                     $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.taggedVariableObject.name;
+                if(!$stateParams.fromStateParams.variableObject.userTagVariables){
+                    $stateParams.fromStateParams.variableObject.userTagVariables = [];
+                }
                 $stateParams.fromStateParams.variableObject.userTagVariables.push($rootScope.stateParams.tagVariableObject);
             }
 
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
 
             quantimodoService.postUserTagDeferred(userTagData).then(function () {
-                $ionicLoading.hide();
-                if($stateParams.fromState){
-                    $state.go($stateParams.fromState, {variableObject: $stateParams.fromStateParams.variableObject});
-                } else {
-                    $state.go(config.appSettings.defaultState);
-                }
-
+                goBack();
             }, function (error) {
-                $ionicLoading.hide();
                 console.error(error);
+                goBack();
             });
         };
 

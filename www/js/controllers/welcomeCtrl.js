@@ -14,7 +14,7 @@ angular.module('starter')
         $rootScope.showFilterBarSearchIcon = false;
 
 
-        quantimodoService.getLocalStorageItemWithCallback('primaryOutcomeRatingFrequencyDescription',
+        quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
             function(primaryOutcomeRatingFrequencyDescription) {
                 if (primaryOutcomeRatingFrequencyDescription) {
                     $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;

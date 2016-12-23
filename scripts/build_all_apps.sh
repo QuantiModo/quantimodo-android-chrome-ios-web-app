@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export IONIC_IOS_APP_VERSION_NUMBER="2.2.7.0"
-export IONIC_APP_VERSION_NUMBER=${IONIC_IOS_APP_VERSION_NUMBER:0:5}
-
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
 export NC='\033[0m' # No Color
@@ -114,10 +111,11 @@ cd ${INTERMEDIATE_PATH}
 
 rm -rf plugins
 echo "NPM INSTALL"
-npm install
+npm install && gulp configureApp
+gulp prepareRepositoryForAndroid
 
-echo "ionic state reset"
-ionic state reset
+#echo "ionic state reset"
+#ionic state reset
 
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
 cordova plugin rm phonegap-facebook-plugin || true
@@ -212,7 +210,7 @@ if [ -z ${BUILD_MOODIMODO} ];
         fi
 fi
 
-export APPLE_ID="1024924226"
+export APPLE_ID="102492.2.7"
 export APP_IDENTIFIER="com.quantimodo.mindfirst"
 export APP_DISPLAY_NAME=MindFirst
 echo "Replace doesn't work if there's a space"

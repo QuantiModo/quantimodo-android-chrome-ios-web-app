@@ -33,6 +33,49 @@ var appIds = {
     'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob'
 };
 
+var apps = {
+	mindfirst : {
+        APP_DISPLAY_NAME : "MindFirst",
+		LOWERCASE_APP_NAME : "mindfirst",
+		APP_IDENTIFIER : "com.quantimodo.mindfirst",
+		APP_DESCRIPTION : "Empowering a new approach to mind research",
+		IONIC_APP_ID : "6d8e312f",
+	},
+	quantimodo : {
+		APPLE_ID : "1115037661",
+		APP_DISPLAY_NAME : "QuantiModo",
+		LOWERCASE_APP_NAME : "quantimodo",
+		APP_IDENTIFIER : "com.quantimodo.quantimodo",
+		APP_DESCRIPTION : "Perfect your life!",
+		IONIC_APP_ID : "42fe48d4",
+	},
+	moodimodo : {
+		APPLE_ID : "1115037661",
+		APP_DISPLAY_NAME : "MoodiModo",
+		LOWERCASE_APP_NAME : "moodimodo",
+		APP_IDENTIFIER : "com.quantimodo.moodimodoapp",
+		APP_DESCRIPTION : "Perfect your life!",
+		IONIC_APP_ID : "470c1f1b",
+	},
+	medtlc : {
+		APPLE_ID : "1115037661",
+		APP_DISPLAY_NAME : "MedTLC",
+		LOWERCASE_APP_NAME : "medtlc",
+		APP_IDENTIFIER : "com.quantimodo.medtlcapp",
+		APP_DESCRIPTION : "Medication. Track. Learn. Connect.",
+		IONIC_APP_ID : "e85b92b4",
+	},
+	energymodo : {
+		APPLE_ID : "1115037652",
+		APP_DISPLAY_NAME : "EnergyModo",
+		LOWERCASE_APP_NAME : "energymodo",
+		APP_IDENTIFIER : "com.quantimodo.energymodo",
+		APP_DESCRIPTION : "Track and find out what affects your energy levels",
+		IONIC_APP_ID : "f837bb35",
+	}
+};
+
+
 var paths = {
 	sass: ['./scss/**/*.scss']
 };
@@ -326,7 +369,6 @@ gulp.task('shouldPublish', ['uploadChromeApp'], function(){
 
 gulp.task('publishToGoogleAppStore', ['shouldPublish'], function(){
 	var deferred = q.defer();
-	var appIds = getAppIds();
 
 	// upload the package
 	var options = {
@@ -1244,7 +1286,6 @@ gulp.task('setVersionNumberInFiles', function(callback){
 		'www/js/controllers/appCtrl.js',
 		'www/js/app.js',
 		'gulp.js',
-		'scripts/build_all_apps.sh',
 		'.travis.yml',
 		//'config.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
 		//'config-template.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
@@ -1581,6 +1622,8 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 	if(!process.env.CONFIG_XML_TEMPLATE_PATH){
         process.env.CONFIG_XML_TEMPLATE_PATH = "./config-template.xml";
 		console.warn("CONFIG_XML_TEMPLATE_PATH not set!  Falling back to " + process.env.CONFIG_XML_TEMPLATE_PATH);
+	} else {
+        console.log("generateConfigXmlFromTemplate using " + process.env.CONFIG_XML_TEMPLATE_PATH);
 	}
 	
 	var xml = fs.readFileSync(process.env.CONFIG_XML_TEMPLATE_PATH, 'utf8');
@@ -1690,12 +1733,12 @@ gulp.task('prepareIosApp', function(callback){
 		//'gitPull',  Not sure why we needed this
 		'cleanPlugins',
         'configureApp',
+        'bumpIosVersion',
+        'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
         'removeTransparentPng',
         'removeTransparentPsd',
         'useWhiteIcon',
 		'ionicResourcesIos',
-		'bumpIosVersion',
-		'generateConfigXmlFromTemplate',
 		callback);
 });
 
@@ -1728,22 +1771,31 @@ gulp.task('zipChromeExtension', [], function(){
 });
 
 gulp.task('configureApp', [], function(callback){
-    runSequence(
-        'copyAppResources',
-        'generatePrivateConfigFromEnvs',
-        'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
-        'decryptPrivateConfigToDefault',
-        //'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
+
+    // if(false && process.env.PREPARE_IOS_APP){  // Results in infinite loop
+    // 	console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
+    //     runSequence(
+    //         'prepareIosApp',
+    //         callback);
+    // }
+
+	runSequence(
+		'copyAppResources',
+		'generatePrivateConfigFromEnvs',
+		'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
+		'decryptPrivateConfigToDefault',
+		//'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
 		// templates because of the git changes and weird stuff replacement does to config-template.xml
-        'copyAppConfigToDefault',
-        'setIonicAppId',
-        //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
+		'copyAppConfigToDefault',
+		'setIonicAppId',
+		//'copyIonicCloudLibrary', I think we just keep it in custom-lib now
 		//'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
 		'copyIconsToWwwImg',
-		'generateConfigXmlFromTemplate',
-        'setVersionNumberInFiles',
+		//'generateConfigXmlFromTemplate',  Can't do this here because it will overwrite iOS config on BuildBuddy
+		'setVersionNumberInFiles',
 		//'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
-        callback);
+		callback);
+
 });
 
 gulp.task('buildChromeExtension', [], function(callback){
@@ -2025,7 +2077,8 @@ gulp.task('prepareRepositoryForAndroid', function(callback){
         'cleanPlatforms',
         'cleanPlugins',
         //'ionicPlatformRemoveAndroid',
-        'ionicStateReset',  // Need this to install plugins from package.json
+        //'ionicStateReset',  // Need this to install plugins from package.json
+		'ionicPlatformAddAndroid',
         'decryptBuildJson',
         'decryptAndroidKeystore',
 		//'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this

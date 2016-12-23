@@ -1,12 +1,5 @@
 #!/bin/bash
 
-if [ -z "$IONIC_APP_VERSION_NUMBER" ]
-  then
-    echo "${GREEN}IONIC_APP_VERSION_NUMBER not set!${NC}"
-    exit
-else
-    echo -e "IONIC_APP_VERSION_NUMBER is $IONIC_APP_VERSION_NUMBER...${NC}"
-fi
 
 if [ -z "$BUILD_PATH" ]
   then
