@@ -1,4 +1,4 @@
-config = {};
+var config = {};
 
 config.appSettings  = {
     appDisplayName : 'EnergyModo',
@@ -511,3 +511,9 @@ config.appSettings  = {
         }
     ]
 };
+
+if(!module){
+    var module = {};
+}
+
+module.exports = config.appSettings;

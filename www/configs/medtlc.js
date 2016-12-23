@@ -1,4 +1,4 @@
-config = {};
+var config = {};
 
 config.appSettings  = {
     appDisplayName : 'MedTLC',
@@ -1066,3 +1066,9 @@ config.appSettings  = {
     ]
 
 };
+
+if(!module){
+    var module = {};
+}
+
+module.exports = config.appSettings;

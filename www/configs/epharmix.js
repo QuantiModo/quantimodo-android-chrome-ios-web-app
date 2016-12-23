@@ -1,4 +1,4 @@
-config = {};
+var config = {};
 
 config.appSettings  = {
     appDisplayName : 'Epharmix',
@@ -1034,3 +1034,9 @@ config.appSettings  = {
     ]
 
 };
+
+if(!module){
+    var module = {};
+}
+
+module.exports = config.appSettings;
