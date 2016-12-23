@@ -5,6 +5,7 @@ config.appSettings  = {
     lowercaseAppName : 'mindfirst',
     appDescription : "Empowering a new approach to mind research",
     appleId: "1024924226",
+    "appIdentifier": "com.quantimodo.mindfirst",
     ionicAppId: '6d8e312f',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",

@@ -5,6 +5,7 @@ config.appSettings  = {
     lowercaseAppName : 'epharmix',
     appDescription : "Medication. Track. Learn. Connect.",
     appleId: null,
+    "appIdentifier": "com.quantimodo.epharmix",
     ionicAppId: 'f837bb35',
     apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
