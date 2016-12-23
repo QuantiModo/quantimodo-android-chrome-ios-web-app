@@ -152,12 +152,12 @@ function loadConfigs(callback) {
                 });
             });*/
 
-			var appConfig = require(pathToConfig);
-            process.env.APPLE_ID = appConfig.appSettings.appleId;
-            process.env.APP_DISPLAY_NAME = appConfig.appSettings.appDisplayName;
-            process.env.APP_IDENTIFIER = appConfig.appSettings.appIdentifier;
-            process.env.APP_DESCRIPTION = appConfig.appSettings.appDescription;
-            process.env.IONIC_APP_ID = appConfig.appSettings.ionicAppId;
+			var appSettings = require(pathToConfig);
+            process.env.APPLE_ID = appSettings.appleId;
+            process.env.APP_DISPLAY_NAME = appSettings.appDisplayName;
+            process.env.APP_IDENTIFIER = appSettings.appIdentifier;
+            process.env.APP_DESCRIPTION = appSettings.appDescription;
+            process.env.IONIC_APP_ID = appSettings.ionicAppId;
 
             process.env.privateConfig = require(pathToPrivateConfig);
 
