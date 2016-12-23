@@ -23,7 +23,7 @@ angular.module('starter')
 		//quantimodoService.updateUserTimeZoneIfNecessary();
 
 		// populate ratings interval
-		quantimodoService.getLocalStorageItemWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+		quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 			if($rootScope.isIOS){
 				if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
