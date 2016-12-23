@@ -1,3 +1,3 @@
 window.config = {};
 
-config.appSettings  = require('./quantimodo-qm-config.json'); //with path;
+config.appSettings = require('./quantimodo-qm-config.json'); //with path;

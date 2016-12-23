@@ -5,6 +5,7 @@ config.appSettings  = {
     lowercaseAppName : 'energymodo',
     appDescription : "Track and find out what affects your energy levels",
     appleId: null,
+    "appIdentifier": "com.quantimodo.energymodo",
     ionicAppId: 'f837bb35',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",

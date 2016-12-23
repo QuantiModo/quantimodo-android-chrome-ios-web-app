@@ -5,6 +5,7 @@ config.appSettings  = {
     lowercaseAppName : 'medtlc',
     appDescription : "Medication. Track. Learn. Connect.",
     appleId: "1115037661",
+    "appIdentifier": "com.quantimodo.medtlcapp",
     ionicAppId: 'e85b92b4',
     apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,

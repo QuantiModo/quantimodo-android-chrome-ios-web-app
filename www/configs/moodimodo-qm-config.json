@@ -1,26 +1,24 @@
 {
     "appSettings"  : {
-        "appDisplayName" : "QuantiModo",
-        "lowercaseAppName" : "quantimodo",
+        "appDisplayName" : "MoodiModo",
+        "lowercaseAppName" : "moodimodo",
         "appDescription" : "Perfect your life!",
-        "appleId": "1115037060",
-        "appIdentifier": "com.quantimodo.quantimodo",
-        "ionicAppId": "42fe48d4",
-        "ionNavBarClass" : "bar-positive",
+        "appleId": "1046797567",
+        "appIdentifier": "com.quantimodo.moodimodoapp",
+        "ionicAppId": "470c1f1b",
         "cordovaLocalNotificationsEnabled" : false,
-        "linkToChromeExtension" : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
+        "linkToChromeExtension" : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
         "allowOffline" : true,
-        "loaderImagePath" : "img/pop_tart_cat.gif",
+        "loaderImagePath": "img/pop_tart_cat.gif",
+        "shoppingCartEnabled" : true,
         "qmApiHostName": "app.quantimo.do",
         "settingsPageOptions" :
         {
             "showReminderFrequencySelector" : true
         },
-
         "defaultState" : "app.remindersInbox",
         "welcomeState" : "app.welcome",
-        "appStorageIdentifier": "QuantiModoData*",
-
+        "appStorageIdentifier": "MoodiModoData*",
         "headline" : "Sync and Analyze Your Data",
         "features": [
             " - Automatically backup and sync your data across devices",
@@ -246,7 +244,7 @@
                 "title" : "Manage Scheduled",
                 "isSubMenuChild" : true,
                 "showSubMenuVariable" : "showTreatmentsSubMenu",
-                "href": "#/app/manage-scheduled-meds",
+                "href" : "#/app/manage-scheduled-meds",
                 "icon" : "ion-android-notifications-none"
             },
             {
@@ -267,7 +265,7 @@
                 "title" : "History",
                 "isSubMenuChild" : true,
                 "showSubMenuVariable" : "showTreatmentsSubMenu",
-                "href": "#/app/history-all/Treatments",
+                "href" : "#/app/history-all/Treatments",
                 "icon" : "ion-ios-paper-outline"
             },
             {
@@ -332,7 +330,7 @@
             {
                 "title" : "Physical Activity",
                 "click" : "togglePhysicalActivitySubMenu",
-                "showSubMenuVariable": "showPhysicalActivitySubMenu",
+                "showSubMenuVariable" : "showPhysicalActivitySubMenu",
                 "isSubMenuParent" : true,
                 "collapsedIcon" : "ion-ios-body-outline",
                 "expandedIcon" : "ion-chevron-down"
@@ -340,21 +338,21 @@
             {
                 "title" : "Manage Reminders",
                 "isSubMenuChild" : true,
-                "showSubMenuVariable": "showPhysicalActivitySubMenu",
+                "showSubMenuVariable" : "showPhysicalActivitySubMenu",
                 "href" : "#/app/reminders-manage/Physical Activity",
                 "icon" : "ion-android-notifications-none"
             },
             {
                 "title" : "Record Activity",
                 "isSubMenuChild" : true,
-                "showSubMenuVariable": "showPhysicalActivitySubMenu",
+                "showSubMenuVariable" : "showPhysicalActivitySubMenu",
                 "href" : "#/app/measurement-add-search-category/Physical Activity",
                 "icon" : "ion-edit"
             },
             {
                 "title" : "History",
                 "isSubMenuChild" : true,
-                "showSubMenuVariable": "showPhysicalActivitySubMenu",
+                "showSubMenuVariable" : "showPhysicalActivitySubMenu",
                 "href" : "#/app/history-all/Physical Activity",
                 "icon" : "ion-ios-paper-outline"
             },
@@ -399,7 +397,7 @@
                 "title" : "Manage Reminders",
                 "isSubMenuChild" : true,
                 "showSubMenuVariable" : "showDietSubMenu",
-                "href": "#/app/reminders-manage/Foods",
+                "href" : "#/app/reminders-manage/Foods",
                 "icon" : "ion-android-notifications-none"
             },
             {
@@ -436,7 +434,7 @@
             },
             {
                 "title" : "Overall Mood",
-                "click": "togglePrimaryOutcomeSubMenu",
+                "click" : "togglePrimaryOutcomeSubMenu",
                 "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
                 "isSubMenuParent" : true,
                 "collapsedIcon" : "ion-happy-outline",
@@ -496,7 +494,7 @@
                 "title" : "Foods",
                 "isSubMenuChild" : true,
                 "showSubMenuVariable" : "showReminderSubMenu",
-                "href": "#/app/reminders-manage/Foods",
+                "href" : "#/app/reminders-manage/Foods",
                 "icon" : "ion-ios-nutrition-outline"
             },
             {
@@ -539,7 +537,7 @@
                 "title" : "Track Anything",
                 "isSubMenuChild" : true,
                 "showSubMenuVariable" : "showTrackingSubMenu",
-                "href": "#/app/measurement-add-search",
+                "href" : "#/app/measurement-add-search",
                 "icon" : "ion-android-globe"
             },
             {
@@ -624,7 +622,7 @@
                 "title" : "Treatments",
                 "isSubMenuChild" : true,
                 "showSubMenuVariable" : "showHistorySubMenu",
-                "href": "#/app/history-all/Treatments",
+                "href" : "#/app/history-all/Treatments",
                 "icon" : "ion-ios-medkit-outline"
             },
             {
@@ -660,7 +658,7 @@
             },
             {
                 "title" : "Relationships",
-                "click": "togglePredictorSearchSubMenu",
+                "click" : "togglePredictorSearchSubMenu",
                 "showSubMenuVariable" : "showPredictorSearchSubMenu",
                 "isSubMenuParent" : true,
                 "collapsedIcon" : "ion-ios-analytics",
