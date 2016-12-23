@@ -30,8 +30,10 @@ fi
 
 if [ -z ${BUILD_ANDROID} ];
     then
-        echo "NOT BUILDING ANDROID APP"
+        echo "NOT BUILDING ANDROID APP because BUILD_ANDROID env is not true"
     else
+        echo "BUILDING ANDROID APP because BUILD_ANDROID is true"
+
         echo "Running npm install -g gulp bower ionic cordova"
         npm install -g gulp bower ionic cordova
 
