@@ -295,7 +295,7 @@ angular.module('starter')
                 if (response.length === 0 || typeof response === "string" || params.offset >= 2000) {
                     defer.resolve(response_array);
                 } else {
-                    quantimodoService.getLocalStorageItemWithCallback('user', function(user){
+                    quantimodoService.getLocalStorageItemAsStringWithCallback('user', function(user){
                         if(!user){
                             defer.reject('No user in local storage!');
                         } else {
@@ -1677,7 +1677,7 @@ angular.module('starter')
                 offset:0
             };
 
-            quantimodoService.getLocalStorageItemWithCallback('user', function(user){
+            quantimodoService.getLocalStorageItemAsStringWithCallback('user', function(user){
                 if(!user){
                     deferred.resolve();
                 }
@@ -1689,7 +1689,7 @@ angular.module('starter')
                     if (response.length > 0 && response.length <= 200) {
                         // Update local data
                         var allMeasurements;
-                        quantimodoService.getLocalStorageItemWithCallback('allMeasurements',function(allMeasurements){
+                        quantimodoService.getLocalStorageItemAsStringWithCallback('allMeasurements',function(allMeasurements){
                             allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
 
                             var filteredStoredMeasurements = [];
@@ -1774,7 +1774,7 @@ angular.module('starter')
                 return defer.promise;
             }
 
-            quantimodoService.getLocalStorageItemWithCallback('measurementsQueue',function(measurementsQueue) {
+            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue',function(measurementsQueue) {
 
                 var measurementObjects = JSON.parse(measurementsQueue);
 
@@ -1830,7 +1830,7 @@ angular.module('starter')
 
         // retrieve date to end on
         quantimodoService.getToDate = function(callback){
-            quantimodoService.getLocalStorageItemWithCallback('toDate',function(toDate){
+            quantimodoService.getLocalStorageItemAsStringWithCallback('toDate',function(toDate){
                 if(toDate){
                     callback(parseInt(toDate));
                 }else{
@@ -1842,7 +1842,7 @@ angular.module('starter')
 
         // retrieve date to start from
         quantimodoService.getFromDate = function(callback){
-            quantimodoService.getLocalStorageItemWithCallback('fromDate',function(fromDate){
+            quantimodoService.getLocalStorageItemAsStringWithCallback('fromDate',function(fromDate){
                 if(fromDate){
                     callback(parseInt(fromDate));
                 }else{
@@ -1886,7 +1886,7 @@ angular.module('starter')
             console.debug("added to measurementsQueue: id = " + measurementObject.id);
             var deferred = $q.defer();
 
-            quantimodoService.getLocalStorageItemWithCallback('measurementsQueue',function(measurementsQueue) {
+            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue',function(measurementsQueue) {
                 measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
                 // add to queue
                 measurementsQueue.push({
@@ -1941,7 +1941,7 @@ angular.module('starter')
 
                 } else if(measurementInfo.id) {
                     var newAllMeasurements = [];
-                    quantimodoService.getLocalStorageItemWithCallback('allMeasurements',function(oldAllMeasurements) {
+                    quantimodoService.getLocalStorageItemAsStringWithCallback('allMeasurements',function(oldAllMeasurements) {
                         oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
                         oldAllMeasurements.forEach(function (storedMeasurement) {
                             // look for edited measurement based on IDs
@@ -2251,7 +2251,7 @@ angular.module('starter')
         quantimodoService.getUnits = function(){
             var deferred = $q.defer();
 
-            quantimodoService.getLocalStorageItemWithCallback('units', function(unitsString){
+            quantimodoService.getLocalStorageItemAsStringWithCallback('units', function(unitsString){
                 if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
                     $rootScope.abbreviatedUnitNames = [];
                 }
@@ -2303,7 +2303,7 @@ angular.module('starter')
         quantimodoService.getVariableCategories = function(){
             var deferred = $q.defer();
 
-            quantimodoService.getLocalStorageItemWithCallback('variableCategories',function(variableCategories){
+            quantimodoService.getLocalStorageItemAsStringWithCallback('variableCategories',function(variableCategories){
                 if(variableCategories){
                     deferred.resolve(JSON.parse(variableCategories));
                 } else {
@@ -2516,7 +2516,7 @@ angular.module('starter')
 
         quantimodoService.getConnectorsDeferred = function(){
             var deferred = $q.defer();
-            quantimodoService.getLocalStorageItemWithCallback('connectors', function(connectors){
+            quantimodoService.getLocalStorageItemAsStringWithCallback('connectors', function(connectors){
                 if(connectors){
                     connectors = JSON.parse(connectors);
                     connectors = quantimodoService.hideBrokenConnectors(connectors);
@@ -3352,7 +3352,7 @@ angular.module('starter')
 
         quantimodoService.syncTrackingReminderSyncQueueToServer = function() {
             quantimodoService.createDefaultReminders();
-            quantimodoService.getLocalStorageItemWithCallback('trackingReminderSyncQueue', function (trackingReminders) {
+            quantimodoService.getLocalStorageItemAsStringWithCallback('trackingReminderSyncQueue', function (trackingReminders) {
                 if(trackingReminders){
                     quantimodoService.postTrackingRemindersDeferred(JSON.parse(trackingReminders)).then(function () {
                         console.debug('reminder queue synced' + trackingReminders);
@@ -3480,7 +3480,7 @@ angular.module('starter')
         quantimodoService.createDefaultReminders = function () {
             var deferred = $q.defer();
 
-            quantimodoService.getLocalStorageItemWithCallback('defaultRemindersCreated', function (defaultRemindersCreated) {
+            quantimodoService.getLocalStorageItemAsStringWithCallback('defaultRemindersCreated', function (defaultRemindersCreated) {
                 if(JSON.parse(defaultRemindersCreated) !== true) {
                     var defaultReminders = config.appSettings.defaultReminders;
                     if(defaultReminders && defaultReminders.length){
@@ -6494,7 +6494,7 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getLocalStorageItemWithCallback = function(key, callback){
+        quantimodoService.getLocalStorageItemAsStringWithCallback = function(key, callback){
             var keyIdentifier = config.appSettings.appStorageIdentifier;
             if ($rootScope.isChromeApp) {
                 // Code running in a Chrome extension (content script, background page, etc.)

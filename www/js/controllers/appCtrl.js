@@ -13,7 +13,7 @@ angular.module('starter')
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
-            quantimodoService.getLocalStorageItemWithCallback('trackLocation', function(trackLocation){
+            quantimodoService.getLocalStorageItemAsStringWithCallback('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
                 if($rootScope.user.trackLocation){
                     quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
@@ -319,10 +319,10 @@ angular.module('starter')
         };
 
         $scope.showHelpInfoPopupIfNecessary = function (e) {
-            quantimodoService.getLocalStorageItemWithCallback('isWelcomed', function (isWelcomed) {
+            quantimodoService.getLocalStorageItemAsStringWithCallback('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {
                     if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
-                        quantimodoService.getLocalStorageItemWithCallback('notShowHelpPopup', function (val) {
+                        quantimodoService.getLocalStorageItemAsStringWithCallback('notShowHelpPopup', function (val) {
                             if (typeof val === "undefined" || val === "undefined") {
                                 $scope.notShowHelpPopup = false;
                             } else {
@@ -641,7 +641,7 @@ angular.module('starter')
 
         $scope.goToDefaultStateIfWelcomed = function () {
             console.debug('appCtrl: user has seen the welcome screen before...');
-            quantimodoService.getLocalStorageItemWithCallback('isWelcomed', function (isWelcomed) {
+            quantimodoService.getLocalStorageItemAsStringWithCallback('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {
                     $rootScope.isWelcomed = true;
                     console.debug('goToDefaultStateIfWelcomed: Going to default state...');
