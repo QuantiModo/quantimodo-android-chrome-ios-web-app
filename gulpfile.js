@@ -99,6 +99,12 @@ if(!process.env.LOWERCASE_APP_NAME){
 
 var privateConfig;
 
+function decryptPrivateConfig() {
+    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
+    var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
+    decryptFile(fileToDecryptPath, decryptedFilePath);
+}
+
 function loadConfigs() {
     decryptPrivateConfig();
     config = JSON.parse(fs.readFileSync('./www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js'));
@@ -540,11 +546,6 @@ gulp.task('encryptPrivateConfig', [], function(){
     encryptFile(fileToEncryptPath, encryptedFilePath);
 });
 
-var decryptPrivateConfig = function () {
-    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
-    var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
-    decryptFile(fileToDecryptPath, decryptedFilePath);
-};
 
 gulp.task('decryptPrivateConfig', [], function(){
 	decryptPrivateConfig();
