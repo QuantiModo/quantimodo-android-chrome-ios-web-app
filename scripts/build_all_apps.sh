@@ -112,9 +112,10 @@ cd ${INTERMEDIATE_PATH}
 rm -rf plugins
 echo "NPM INSTALL"
 npm install && gulp configureApp
+gulp prepareRepositoryForAndroid
 
-echo "ionic state reset"
-ionic state reset
+#echo "ionic state reset"
+#ionic state reset
 
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
 cordova plugin rm phonegap-facebook-plugin || true
