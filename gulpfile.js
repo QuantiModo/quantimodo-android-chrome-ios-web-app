@@ -94,7 +94,20 @@ if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
 
 if(!process.env.LOWERCASE_APP_NAME){
     console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-    var config = JSON.parse(fs.readFileSync('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js'));
+    process.env.LOWERCASE_APP_NAME = 'quantimodo';
+}
+
+var exec = require('child_process').exec;
+function execute(command, callback){
+    var my_child_process = exec(command, function(error, stdout, stderr){
+        if (error !== null) {
+            console.log('exec ERROR: ' + error);
+        }
+        callback(error, stdout);
+    });
+
+    my_child_process.stdout.pipe(process.stdout);
+    my_child_process.stderr.pipe(process.stderr);
 }
 
 var privateConfig;
@@ -132,6 +145,28 @@ function generatePrivateConfigFromEnvs() {
     console.log('Created '+ './www/private_configs/default.config.js');
 }
 
+
+var decryptFile = function (fileToDecryptPath, decryptedFilePath) {
+    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
+        "https://code.google.com/archive/p/openssl-for-windows/downloads");
+
+    if(!process.env.ENCRYPTION_SECRET){
+        console.error('Please set ENCRYPTION_SECRET environmental variable!');
+        return;
+    }
+
+    console.log("DECRYPTING " + fileToDecryptPath);
+    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath +
+        '" -d -a -out "' + decryptedFilePath + '"';
+
+    //console.log('executing ' + cmd);
+    execute(cmd, function(error){
+        if(error !== null){
+            console.log("ERROR DECRYPTING: " + error);
+        }
+    });
+};
+
 function decryptPrivateConfig() {
 	if(process.env.QUANTIMODO_CLIENT_SECRET){
 		console.log("Not decrypting private config because we should generate it from envs instead");
@@ -149,12 +184,13 @@ function loadConfigs() {
     fs.stat(pathToConfig, function(err, stat) {
         if(err == null) {
             console.log("Using this config file: " + pathToConfig);
+            config = JSON.parse(fs.readFileSync(pathToConfig));
+            privateConfig = JSON.parse(fs.readFileSync('./www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js'));
         } else {
             console.error(pathToConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);
         }
     });
-    config = JSON.parse(fs.readFileSync(pathToConfig));
-    privateConfig = JSON.parse(fs.readFileSync('./www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js'));
+
 }
 
 loadConfigs();
@@ -453,18 +489,7 @@ gulp.task('git-check', function(done) {
 	done();
 });
 
-var exec = require('child_process').exec;
-function execute(command, callback){
-    var my_child_process = exec(command, function(error, stdout, stderr){
-    	if (error !== null) {
-	      console.log('exec ERROR: ' + error);
-	    }
-    	callback(error, stdout);
-    });
 
-    my_child_process.stdout.pipe(process.stdout);
-    my_child_process.stderr.pipe(process.stderr);
-}
 gulp.task('deleteIOSApp', function () {
 	var deferred = q.defer();
 
@@ -480,27 +505,6 @@ gulp.task('deleteIOSApp', function () {
 
 	return deferred.promise;
 });
-
-var decryptFile = function (fileToDecryptPath, decryptedFilePath) {
-    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
-        "https://code.google.com/archive/p/openssl-for-windows/downloads");
-
-    if(!process.env.ENCRYPTION_SECRET){
-        console.error('Please set ENCRYPTION_SECRET environmental variable!');
-        return;
-    }
-
-    console.log("DECRYPTING " + fileToDecryptPath);
-    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath +
-        '" -d -a -out "' + decryptedFilePath + '"';
-
-    //console.log('executing ' + cmd);
-    execute(cmd, function(error){
-        if(error !== null){
-            console.log("ERROR DECRYPTING: " + error);
-        }
-    });
-};
 
 var encryptFile = function (fileToEncryptPath, encryptedFilePath) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
