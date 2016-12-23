@@ -1,7 +1,7 @@
 window.config = {};
 
 config.appSettings  = {
-    appName : 'Epharmix',
+    appDisplayName : 'Epharmix',
     apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",

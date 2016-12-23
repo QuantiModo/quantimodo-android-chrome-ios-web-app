@@ -34,7 +34,7 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
-        $rootScope.appName = config.appSettings.appName;
+        $rootScope.appDisplayName = config.appSettings.appDisplayName;
 
         // Not used
         //$scope.ratingInfo = quantimodoService.getRatingInfo();
@@ -442,7 +442,7 @@ angular.module('starter')
         quantimodoService.setPlatformVariables();
 
         /*Wrapper Config*/
-        $scope.viewTitle = config.appSettings.appName;
+        $scope.viewTitle = config.appSettings.appDisplayName;
         $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
         $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
         $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();

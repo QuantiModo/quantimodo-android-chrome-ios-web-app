@@ -361,8 +361,8 @@ angular.module('starter',
             return false;
         };
 
-        var appName = getAppNameFromUrl();
-        return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
+        var lowercaseAppName = getAppNameFromUrl();
+        return $ocLazyLoad.load([appsManager.getAppConfig(lowercaseAppName), appsManager.getPrivateConfig(lowercaseAppName)]);
       }]
     };
 

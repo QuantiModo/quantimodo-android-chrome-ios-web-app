@@ -1,6 +1,6 @@
 A configuration object "appSettings" is available in /js/config.js for changing the wrapper of the app. Following are the variables that can be configured for a new app:    
 
-1. "appName" : This will change the name of the app on Top header & on welcome card.
+1. "appDisplayName" : This will change the name of the app on Top header & on welcome card.
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436306460/header_lcaxwn.png)
 

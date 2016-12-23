@@ -1,7 +1,7 @@
 window.config = {};
 
 config.appSettings  = {
-    appName : 'QuantiModo',
+    appDisplayName : 'QuantiModo',
     ionNavBarClass : "bar-positive",
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
