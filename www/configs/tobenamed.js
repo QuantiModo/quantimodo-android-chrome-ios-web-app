@@ -1,4 +1,4 @@
-config = {};
+var config = {};
 
 config.appSettings  = {
     appDisplayName : 'ToBeNamed',
@@ -676,3 +676,9 @@ config.appSettings  = {
         }
     ]
 };
+
+if(!module){
+    var module = {};
+}
+
+module.exports = config.appSettings;

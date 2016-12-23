@@ -1,4 +1,4 @@
-config = {};
+var config = {};
 
 config.appSettings  = {
     appDisplayName : 'Mind First Mood Tracker',
@@ -516,3 +516,9 @@ config.appSettings  = {
         }
     ]
 };
+
+if(!module){
+    var module = {};
+}
+
+module.exports = config.appSettings;
