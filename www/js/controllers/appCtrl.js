@@ -3,7 +3,7 @@ angular.module('starter')
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    quantimodoService, ionicDatePicker,
+                                    quantimodoService, ionicDatePicker, $ionicCloudProvider,
                                     $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
@@ -528,6 +528,17 @@ angular.module('starter')
             var message;
             var releaseTrack;
             $ionicPlatform.ready(function () {
+                // We might need to move this back to app.js if it doesn't work
+                if(config.appSettings.ionicAppId){
+                    $ionicCloudProvider.init({
+                            "core": {
+                                "app_id": config.appSettings.ionicAppId
+                            }
+                    });
+                } else {
+                    console.warn('Cannot initialize $ionicCloudProvider because appSettings.ionicAppId is not set');
+                    return;
+                }
                 if($rootScope.user && $rootScope.user.getPreviewBuilds){
                     $ionicDeploy.channel = 'staging';
                     releaseTrack = "beta";
