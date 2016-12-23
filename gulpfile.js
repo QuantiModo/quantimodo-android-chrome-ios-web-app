@@ -146,7 +146,13 @@ function decryptPrivateConfig() {
 function loadConfigs() {
     decryptPrivateConfig();
     var pathToConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js';
-    console.log("Using this config file: " + pathToConfig);
+    fs.stat(pathToConfig, function(err, stat) {
+        if(err == null) {
+            console.log("Using this config file: " + pathToConfig);
+        } else {
+            console.error(pathToConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);
+        }
+    });
     config = JSON.parse(fs.readFileSync(pathToConfig));
     privateConfig = JSON.parse(fs.readFileSync('./www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js'));
 }
