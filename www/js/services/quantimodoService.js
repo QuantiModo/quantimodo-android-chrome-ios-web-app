@@ -12,7 +12,7 @@ angular.module('starter')
                 $rootScope.offlineConnectionErrorShowing = false;
             }
             if(!data.success){
-                console.warn('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
+                console.debug('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
             }
             if(data.message){
                 console.warn(data.message);
