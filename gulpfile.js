@@ -33,6 +33,49 @@ var appIds = {
     'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob'
 };
 
+var apps = {
+	mindfirst : {
+        APP_DISPLAY_NAME : "MindFirst",
+		LOWERCASE_APP_NAME : "mindfirst",
+		APP_IDENTIFIER : "com.quantimodo.mindfirst",
+		APP_DESCRIPTION : "Empowering a new approach to mind research",
+		IONIC_APP_ID : "6d8e312f",
+	},
+	quantimodo : {
+		APPLE_ID : "1115037661",
+		APP_DISPLAY_NAME : "QuantiModo",
+		LOWERCASE_APP_NAME : "quantimodo",
+		APP_IDENTIFIER : "com.quantimodo.quantimodo",
+		APP_DESCRIPTION : "Perfect your life!",
+		IONIC_APP_ID : "42fe48d4",
+	},
+	moodimodo : {
+		APPLE_ID : "1115037661",
+		APP_DISPLAY_NAME : "MoodiModo",
+		LOWERCASE_APP_NAME : "moodimodo",
+		APP_IDENTIFIER : "com.quantimodo.moodimodoapp",
+		APP_DESCRIPTION : "Perfect your life!",
+		IONIC_APP_ID : "470c1f1b",
+	},
+	medtlc : {
+		APPLE_ID : "1115037661",
+		APP_DISPLAY_NAME : "MedTLC",
+		LOWERCASE_APP_NAME : "medtlc",
+		APP_IDENTIFIER : "com.quantimodo.medtlcapp",
+		APP_DESCRIPTION : "Medication. Track. Learn. Connect.",
+		IONIC_APP_ID : "e85b92b4",
+	},
+	energymodo : {
+		APPLE_ID : "1115037652",
+		APP_DISPLAY_NAME : "EnergyModo",
+		LOWERCASE_APP_NAME : "energymodo",
+		APP_IDENTIFIER : "com.quantimodo.energymodo",
+		APP_DESCRIPTION : "Track and find out what affects your energy levels",
+		IONIC_APP_ID : "f837bb35",
+	}
+};
+
+
 var paths = {
 	sass: ['./scss/**/*.scss']
 };
@@ -326,7 +369,6 @@ gulp.task('shouldPublish', ['uploadChromeApp'], function(){
 
 gulp.task('publishToGoogleAppStore', ['shouldPublish'], function(){
 	var deferred = q.defer();
-	var appIds = getAppIds();
 
 	// upload the package
 	var options = {
