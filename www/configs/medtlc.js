@@ -3,6 +3,8 @@ window.config = {};
 config.appSettings  = {
     appDisplayName : 'MedTLC',
     lowercaseAppName : 'medtlc',
+    appDescription : "Medication. Track. Learn. Connect.",
+    appleId: "1115037661",
     ionicAppId: 'e85b92b4',
     apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,

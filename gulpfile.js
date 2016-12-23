@@ -145,7 +145,9 @@ function decryptPrivateConfig() {
 
 function loadConfigs() {
     decryptPrivateConfig();
-    config = JSON.parse(fs.readFileSync('./www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js'));
+    var pathToConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js';
+    console.log("Using this config file: " + pathToConfig);
+    config = JSON.parse(fs.readFileSync(pathToConfig));
     privateConfig = JSON.parse(fs.readFileSync('./www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js'));
 }
 

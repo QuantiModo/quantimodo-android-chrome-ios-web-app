@@ -3,6 +3,8 @@ window.config = {};
 config.appSettings  = {
     appDisplayName : 'QuantiModo',
     lowercaseAppName : 'quantimodo',
+    appDescription : "Perfect your life!",
+    appleId: "1115037060",
     ionicAppId: '42fe48d4',
     ionNavBarClass : "bar-positive",
     cordovaLocalNotificationsEnabled : false,
