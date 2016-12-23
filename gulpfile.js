@@ -72,7 +72,7 @@ var privateConfig;
 function generatePrivateConfigFromEnvs() {
     //process.env.QUANTIMODO_CLIENT_ID = 'abc';
     if(!process.env.QUANTIMODO_CLIENT_ID){
-        console.error('Please set QUANTIMODO_CLIENT_ID environmental variable!');
+        console.warn('Not going to generatePrivateConfigFromEnvs because QUANTIMODO_CLIENT_ID env is not set');
         return;
     }
 
