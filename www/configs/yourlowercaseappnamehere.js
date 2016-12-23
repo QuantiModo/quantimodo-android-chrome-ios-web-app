@@ -3,6 +3,7 @@ window.config = {};
 config.appSettings  = {
     appDisplayName : 'YourAppDisplayNameHere',
     lowercaseAppName : 'yourlowercaseappnamehere',
+    ionicAppId: null,
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
     allowOffline : true,

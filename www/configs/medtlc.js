@@ -3,6 +3,7 @@ window.config = {};
 config.appSettings  = {
     appDisplayName : 'MedTLC',
     lowercaseAppName : 'medtlc',
+    ionicAppId: 'e85b92b4',
     apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",

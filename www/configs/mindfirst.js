@@ -3,6 +3,7 @@ window.config = {};
 config.appSettings  = {
     appDisplayName : 'Mind First Mood Tracker',
     lowercaseAppName : 'mindfirst',
+    ionicAppId: '6d8e312f',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",
     allowOffline : true,

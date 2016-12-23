@@ -3,6 +3,7 @@ window.config = {};
 config.appSettings  = {
     appDisplayName : 'MoodiModo',
     lowercaseAppName : 'moodimodo',
+    ionicAppId: '470c1f1b',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     allowOffline : true,

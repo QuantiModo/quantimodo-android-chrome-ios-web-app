@@ -3,6 +3,7 @@ window.config = {};
 config.appSettings  = {
     appDisplayName : 'EnergyModo',
     lowercaseAppName : 'energymodo',
+    ionicAppId: 'f837bb35',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
     allowOffline : true,
