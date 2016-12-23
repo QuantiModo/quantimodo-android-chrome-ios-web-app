@@ -33,49 +33,6 @@ var appIds = {
     'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob'
 };
 
-var apps = {
-	mindfirst : {
-        APP_DISPLAY_NAME : "MindFirst",
-		LOWERCASE_APP_NAME : "mindfirst",
-		APP_IDENTIFIER : "com.quantimodo.mindfirst",
-		APP_DESCRIPTION : "Empowering a new approach to mind research",
-		IONIC_APP_ID : "6d8e312f",
-	},
-	quantimodo : {
-		APPLE_ID : "1115037661",
-		APP_DISPLAY_NAME : "QuantiModo",
-		LOWERCASE_APP_NAME : "quantimodo",
-		APP_IDENTIFIER : "com.quantimodo.quantimodo",
-		APP_DESCRIPTION : "Perfect your life!",
-		IONIC_APP_ID : "42fe48d4",
-	},
-	moodimodo : {
-		APPLE_ID : "1115037661",
-		APP_DISPLAY_NAME : "MoodiModo",
-		LOWERCASE_APP_NAME : "moodimodo",
-		APP_IDENTIFIER : "com.quantimodo.moodimodoapp",
-		APP_DESCRIPTION : "Perfect your life!",
-		IONIC_APP_ID : "470c1f1b",
-	},
-	medtlc : {
-		APPLE_ID : "1115037661",
-		APP_DISPLAY_NAME : "MedTLC",
-		LOWERCASE_APP_NAME : "medtlc",
-		APP_IDENTIFIER : "com.quantimodo.medtlcapp",
-		APP_DESCRIPTION : "Medication. Track. Learn. Connect.",
-		IONIC_APP_ID : "e85b92b4",
-	},
-	energymodo : {
-		APPLE_ID : "1115037652",
-		APP_DISPLAY_NAME : "EnergyModo",
-		LOWERCASE_APP_NAME : "energymodo",
-		APP_IDENTIFIER : "com.quantimodo.energymodo",
-		APP_DESCRIPTION : "Track and find out what affects your energy levels",
-		IONIC_APP_ID : "f837bb35",
-	}
-};
-
-
 var paths = {
 	sass: ['./scss/**/*.scss']
 };
@@ -94,8 +51,126 @@ if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
 
 if(!process.env.LOWERCASE_APP_NAME){
     console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-    setQuantiModoEnvs();
+    process.env.LOWERCASE_APP_NAME = 'quantimodo';
 }
+
+var exec = require('child_process').exec;
+function execute(command, callback){
+    var my_child_process = exec(command, function(error, stdout, stderr){
+        if (error !== null) {
+            console.log('exec ERROR: ' + error);
+        }
+        callback(error, stdout);
+    });
+
+    my_child_process.stdout.pipe(process.stdout);
+    my_child_process.stderr.pipe(process.stderr);
+}
+
+var privateConfig;
+
+function generatePrivateConfigFromEnvs() {
+    //process.env.QUANTIMODO_CLIENT_ID = 'abc';
+    if(!process.env.QUANTIMODO_CLIENT_ID){
+        console.error('Please set QUANTIMODO_CLIENT_ID environmental variable!');
+        return;
+    }
+
+    //process.env.QUANTIMODO_CLIENT_SECRET = 'abc';
+    if(!process.env.QUANTIMODO_CLIENT_SECRET){
+        console.error('Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
+        return;
+    }
+
+    var privateConfigKeys = {
+        client_ids : {},
+        client_secrets : {}
+    };
+
+    privateConfigKeys.client_ids.Web = process.env.QUANTIMODO_CLIENT_ID;
+    console.log('Detected ' + process.env.QUANTIMODO_CLIENT_ID + ' QUANTIMODO_CLIENT_ID');
+    privateConfigKeys.client_secrets.Web = process.env.QUANTIMODO_CLIENT_SECRET;
+
+    if(typeof process.env.IONIC_BUGSNAG_KEY !== "undefined"){
+        privateConfigKeys.bugsnag_key = process.env.IONIC_BUGSNAG_KEY;
+        console.log('IONIC_BUGSNAG_KEY' +' Detected');
+    }
+
+    var privateConfigContent = 'private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
+    fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
+    fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
+    console.log('Created '+ './www/private_configs/default.config.js');
+}
+
+
+var decryptFile = function (fileToDecryptPath, decryptedFilePath) {
+    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
+        "https://code.google.com/archive/p/openssl-for-windows/downloads");
+
+    if(!process.env.ENCRYPTION_SECRET){
+        console.error('Please set ENCRYPTION_SECRET environmental variable!');
+        return;
+    }
+
+    console.log("DECRYPTING " + fileToDecryptPath);
+    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath +
+        '" -d -a -out "' + decryptedFilePath + '"';
+
+    //console.log('executing ' + cmd);
+    execute(cmd, function(error){
+        if(error !== null){
+            console.log("ERROR DECRYPTING: " + error);
+        }
+    });
+};
+
+function decryptPrivateConfig() {
+	if(process.env.QUANTIMODO_CLIENT_SECRET){
+		console.log("Not decrypting private config because we should generate it from envs instead");
+        generatePrivateConfigFromEnvs();
+        return;
+	}
+    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
+    var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
+    decryptFile(fileToDecryptPath, decryptedFilePath);
+}
+
+function loadConfigs(callback) {
+    decryptPrivateConfig();
+    var pathToConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js';
+    var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
+    fs.stat(pathToConfig, function(err, stat) {
+        if(err == null) {
+            console.log("Using this config file: " + pathToConfig);
+/*            fs.readFile(pathToConfig, function (err, data) {
+                config = JSON.parse(data);
+                fs.readFile(pathToPrivateConfig, function (err, data) {
+                    privateConfig = JSON.parse(data);
+                    if(callback){
+                        callback();
+					}
+                });
+            });*/
+
+			var appConfig = require(pathToConfig);
+            process.env.APPLE_ID = appConfig.appSettings.appleId;
+            process.env.APP_DISPLAY_NAME = appConfig.appSettings.appDisplayName;
+            process.env.APP_IDENTIFIER = appConfig.appSettings.appIdentifier;
+            process.env.APP_DESCRIPTION = appConfig.appSettings.appDescription;
+            process.env.IONIC_APP_ID = appConfig.appSettings.ionicAppId;
+
+            process.env.privateConfig = require(pathToPrivateConfig);
+
+            if(callback){
+                callback();
+            }
+        } else {
+            throw(pathToConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);
+        }
+    });
+}
+
+//loadConfigs();
 
 gulp.task('default', ['sass']);
 
@@ -157,38 +232,10 @@ gulp.task('swagger', function(){
 	return deferred.promise;
 });
 
+
+
 gulp.task('generatePrivateConfigFromEnvs', function(){
-
-    //process.env.QUANTIMODO_CLIENT_ID = 'abc';
-    if(!process.env.QUANTIMODO_CLIENT_ID){
-        console.error('Please set QUANTIMODO_CLIENT_ID environmental variable!');
-        return;
-    }
-
-    //process.env.QUANTIMODO_CLIENT_SECRET = 'abc';
-    if(!process.env.QUANTIMODO_CLIENT_SECRET){
-        console.error('Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
-        return;
-    }
-
-	var privateConfigKeys = {
-		client_ids : {},
-		client_secrets : {}
-	};
-
-	privateConfigKeys.client_ids.Web = process.env.QUANTIMODO_CLIENT_ID;
-	console.log('Detected ' + process.env.QUANTIMODO_CLIENT_ID + ' QUANTIMODO_CLIENT_ID');
-	privateConfigKeys.client_secrets.Web = process.env.QUANTIMODO_CLIENT_SECRET;
-
-	if(typeof process.env.IONIC_BUGSNAG_KEY !== "undefined"){
-		privateConfigKeys.bugsnag_key = process.env.IONIC_BUGSNAG_KEY;
-		console.log('IONIC_BUGSNAG_KEY' +' Detected');
-	}
-
-	var privateConfigContent = 'window.private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
-	fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
-    fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
-	console.log('Created '+ './www/private_configs/default.config.js');
+	generatePrivateConfigFromEnvs();
 });
 
 var answer = '';
@@ -419,18 +466,7 @@ gulp.task('git-check', function(done) {
 	done();
 });
 
-var exec = require('child_process').exec;
-function execute(command, callback){
-    var my_child_process = exec(command, function(error, stdout, stderr){
-    	if (error !== null) {
-	      console.log('exec ERROR: ' + error);
-	    }
-    	callback(error, stdout);
-    });
 
-    my_child_process.stdout.pipe(process.stdout);
-    my_child_process.stderr.pipe(process.stderr);
-}
 gulp.task('deleteIOSApp', function () {
 	var deferred = q.defer();
 
@@ -446,27 +482,6 @@ gulp.task('deleteIOSApp', function () {
 
 	return deferred.promise;
 });
-
-var decryptFile = function (fileToDecryptPath, decryptedFilePath) {
-    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
-        "https://code.google.com/archive/p/openssl-for-windows/downloads");
-
-    if(!process.env.ENCRYPTION_SECRET){
-        console.error('Please set ENCRYPTION_SECRET environmental variable!');
-        return;
-    }
-
-    console.log("DECRYPTING " + fileToDecryptPath);
-    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath +
-        '" -d -a -out "' + decryptedFilePath + '"';
-
-    //console.log('executing ' + cmd);
-    execute(cmd, function(error){
-        if(error !== null){
-            console.log("ERROR DECRYPTING: " + error);
-        }
-    });
-};
 
 var encryptFile = function (fileToEncryptPath, encryptedFilePath) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
@@ -524,16 +539,31 @@ gulp.task('decryptBuildJson', [], function(){
     decryptFile(fileToDecryptPath, decryptedFilePath);
 });
 
-gulp.task('encryptPrivateConfig', [], function(){
+function encryptPrivateConfig() {
     var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
     encryptFile(fileToEncryptPath, encryptedFilePath);
+}
+
+gulp.task('encryptPrivateConfig', [], function(){
+    encryptPrivateConfig();
+});
+
+gulp.task('encryptAllPrivateConfigs', [], function(callback){
+	process.env.LOWERCASE_APP_NAME = 'energymodo';
+    encryptPrivateConfig();
+    process.env.LOWERCASE_APP_NAME = 'medtlc';
+    encryptPrivateConfig();
+    process.env.LOWERCASE_APP_NAME = 'mindfirst';
+    encryptPrivateConfig();
+    process.env.LOWERCASE_APP_NAME = 'moodimodo';
+    encryptPrivateConfig();
+    process.env.LOWERCASE_APP_NAME = 'quantimodo';
+    encryptPrivateConfig();
 });
 
 gulp.task('decryptPrivateConfig', [], function(){
-	var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
-	var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
-	decryptFile(fileToDecryptPath, decryptedFilePath);
+	decryptPrivateConfig();
 });
 
 gulp.task('decryptPrivateConfigToDefault', [], function(){
@@ -1456,66 +1486,33 @@ gulp.task('template', function(done){
 });
 
 gulp.task('setEnergyModoEnvs', [], function(callback){
-    process.env.APPLE_ID = "1115037652";
-    process.env.APP_DISPLAY_NAME = "EnergyModo";
     process.env.LOWERCASE_APP_NAME = "energymodo";
-    process.env.APP_IDENTIFIER = "com.quantimodo.energymodo";
-    process.env.APP_DESCRIPTION = "Track and find out what affects your energy levels";
-    process.env.IONIC_APP_ID = "f837bb35";
-    callback();
+    loadConfigs(callback);
 });
 
 gulp.task('setMedTlcEnvs', [], function(callback){
-    process.env.APPLE_ID = "1115037661";
-    process.env.APP_DISPLAY_NAME = "MedTLC";
     process.env.LOWERCASE_APP_NAME = "medtlc";
-    process.env.APP_IDENTIFIER = "com.quantimodo.medtlcapp";
-    process.env.APP_DESCRIPTION = "Medication. Track. Learn. Connect.";
-    process.env.IONIC_APP_ID = "e85b92b4";
-    callback();
+    loadConfigs(callback);
 });
 
 gulp.task('setMindFirstEnvs', [], function(callback){
-    process.env.APPLE_ID = "1115037661";
-    process.env.APP_DISPLAY_NAME = "MindFirst";
     process.env.LOWERCASE_APP_NAME = "mindfirst";
-    process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
-    process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
-    process.env.IONIC_APP_ID = "6d8e312f";
-    callback();
+    loadConfigs(callback);
 });
 
 gulp.task('setMoodiModoEnvs', [], function(callback){
-    process.env.APPLE_ID = "1115037661";
-	process.env.APP_DISPLAY_NAME = "MoodiModo";
 	process.env.LOWERCASE_APP_NAME = "moodimodo";
-	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodoapp";
-	process.env.APP_DESCRIPTION = "Perfect your life!";
-	process.env.IONIC_APP_ID = "470c1f1b";
-	callback();
+    loadConfigs(callback);
 });
 
-function setQuantiModoEnvs() {
-    process.env.APPLE_ID = "1115037661";
-    process.env.APP_DISPLAY_NAME = "QuantiModo";
-    process.env.LOWERCASE_APP_NAME = "quantimodo";
-    process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
-    process.env.APP_DESCRIPTION = "Perfect your life!";
-    process.env.IONIC_APP_ID = "42fe48d4";
-}
-
 gulp.task('setQuantiModoEnvs', [], function(callback){
-    setQuantiModoEnvs();
-	callback();
+    process.env.LOWERCASE_APP_NAME = "quantimodo";
+    loadConfigs(callback);
 });
 
 gulp.task('setMindFirstEnvs', [], function(callback){
-	process.env.APP_DISPLAY_NAME = "MindFirst";
 	process.env.LOWERCASE_APP_NAME = "mindfirst";
-	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
-	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
-	process.env.IONIC_APP_ID = "6d8e312f";
-	callback();
+    loadConfigs(callback);
 });
 
 gulp.task('setAndroidEnvs', [], function(callback){
@@ -1639,22 +1636,19 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 			if(process.env.APP_DISPLAY_NAME) {
 				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
 			} else {
-                console.warn("APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME");
-                setQuantiModoEnvs();
+                throw("APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME");
 			}
 
 			if(process.env.APP_DESCRIPTION) {
 				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
 			} else {
-                console.warn("APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION");
-                setQuantiModoEnvs();
+                throw("APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION");
             }
 
 			if(process.env.APP_IDENTIFIER) {
 				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
 			} else {
-                console.warn("APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER");
-                setQuantiModoEnvs();
+                throw("APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER");
             }
 
             if(process.env.IONIC_APP_VERSION_NUMBER) {

@@ -40,6 +40,6 @@ if [ -z ${BUILD_ANDROID} ];
         echo "Running apt-get install imagemagick"
         echo password | sudo -S apt-get install imagemagick
 
-        echo "gulp prepareQuantiModoIos"
+        echo "gulp buildQuantiModoAndroid"
         gulp buildQuantiModoAndroid
 fi

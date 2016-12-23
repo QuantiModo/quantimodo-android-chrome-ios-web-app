@@ -148,7 +148,7 @@ angular.module('starter')
                         }
                     }
                 }
-                urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
+                urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
                 urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
                 //We can't append access token to Ionic requests for some reason
@@ -229,7 +229,7 @@ angular.module('starter')
                     }
                 }
                 var urlParams = [];
-                urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
+                urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
                 items.clientId = quantimodoService.getClientId();
 
@@ -1270,10 +1270,10 @@ angular.module('starter')
                     name: user.displayName, // User’s real name
                     created_at: userRegistered, // Unix timestamp for the date the user signed up
                     id: user.id, // Optional: Unique id of the user (if set, this should not change)
-                    type: config.appSettings.appName + ' for ' + $rootScope.currentPlatform + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
+                    type: config.appSettings.appDisplayName + ' for ' + $rootScope.currentPlatform + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
                     account: {
                         //id: 123, // Optional: associate multiple users with a single account
-                        name: config.appSettings.appName + ' for ' + $rootScope.currentPlatform + ' v' + $rootScope.appVersion, // Account name
+                        name: config.appSettings.appDisplayName + ' for ' + $rootScope.currentPlatform + ' v' + $rootScope.appVersion, // Account name
                         //created_at: 1364406966, // Unix timestamp for the date the account was created
                         //monthly_rate: 9.99, // Decimal; monthly rate of the account
                         //ltv: 1495.00, // Decimal; lifetime value of the account
@@ -1288,7 +1288,7 @@ angular.module('starter')
                 name: user.displayName,
                 email: user.email,
                 user_id: user.id,
-                app_name: config.appSettings.appName,
+                app_name: config.appSettings.appDisplayName,
                 app_version: $rootScope.appVersion,
                 platform: $rootScope.currentPlatform,
                 platform_version: $rootScope.currentPlatformVersion
@@ -1787,7 +1787,7 @@ angular.module('starter')
                     var measurements = [
                         {
                             variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                            source: config.appSettings.appName + " " + $rootScope.currentPlatform,
+                            source: config.appSettings.appDisplayName + " " + $rootScope.currentPlatform,
                             variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
                             combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
                             abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
@@ -1962,7 +1962,7 @@ angular.module('starter')
                     var editedMeasurement = {
                         id: measurementInfo.id,
                         variableName: measurementInfo.variableName,
-                        source: config.appSettings.appName + $rootScope.currentPlatform,
+                        source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
                         abbreviatedUnitName: measurementInfo.unit,
                         startTimeEpoch:  measurementInfo.startTimeEpoch,
                         value: measurementInfo.value,
@@ -1980,7 +1980,7 @@ angular.module('starter')
                     var newMeasurement = {
                         id: null,
                         variableName: measurementInfo.variableName,
-                        source: config.appSettings.appName + $rootScope.currentPlatform,
+                        source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
                         abbreviatedUnitName: measurementInfo.unit,
                         startTimeEpoch:  measurementInfo.startTimeEpoch,
                         value: measurementInfo.value,
@@ -2003,7 +2003,7 @@ angular.module('starter')
             }
             else {
                 // Non primary outcome variable, post immediately
-                var measurementSourceName = config.appSettings.appName;
+                var measurementSourceName = config.appSettings.appDisplayName;
                 if(measurementInfo.sourceName){
                     measurementSourceName = measurementInfo.sourceName;
                 }
@@ -2032,7 +2032,7 @@ angular.module('starter')
                 // for local
                 var measurement = {
                     variableName: measurementInfo.variableName,
-                    source: config.appSettings.appName + $rootScope.currentPlatform,
+                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
                     abbreviatedUnitName: measurementInfo.unit,
                     startTimeEpoch:  measurementInfo.startTimeEpoch,
                     value: measurementInfo.value,
@@ -2083,7 +2083,7 @@ angular.module('starter')
             var measurementSet = [
                 {
                     variableName: trackingReminder.variableName,
-                    source: config.appSettings.appName + $rootScope.currentPlatform,
+                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
                     variableCategoryName: trackingReminder.variableCategoryName,
                     abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
                     measurements : [
@@ -2188,7 +2188,7 @@ angular.module('starter')
             var measurementSets = [
                 {
                     variableId: 1874,
-                    source: config.appSettings.appName + $rootScope.currentPlatform,
+                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
                     startTimeEpoch:  startTimeEpochSeconds,
                     value: parameters.systolicValue,
                     note: parameters.note,
@@ -2198,7 +2198,7 @@ angular.module('starter')
                 },
                 {
                     variableId: 5554981,
-                    source: config.appSettings.appName + $rootScope.currentPlatform,
+                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
                     startTimeEpoch:  startTimeEpochSeconds,
                     value: parameters.diastolicValue,
                     note: parameters.note,
@@ -2625,7 +2625,7 @@ angular.module('starter')
                 Bugsnag.metaData = {
                     platform: ionic.Platform.platform(),
                     platformVersion: ionic.Platform.version(),
-                    appName: config.appSettings.appName
+                    appDisplayName: config.appSettings.appDisplayName
                 };
                 deferred.resolve();
             } else {
@@ -2749,7 +2749,7 @@ angular.module('starter')
                     variableName: variableName,
                     abbreviatedUnitName: 'h',
                     startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
-                    sourceName: $rootScope.lastLocationResultType + ' on ' + $rootScope.appName + ' for ' + $rootScope.currentPlatform,
+                    sourceName: $rootScope.lastLocationResultType + ' on ' + $rootScope.appDisplayName + ' for ' + $rootScope.currentPlatform,
                     value: hoursAtLocation,
                     variableCategoryName: 'Location',
                     note: $rootScope.lastLocationAddress,
