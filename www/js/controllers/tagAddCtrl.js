@@ -1,7 +1,7 @@
 angular.module('starter')
 
     .controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, variableService, $ionicLoading, QuantiModo) {
+                                               $ionicActionSheet, $ionicHistory, $ionicLoading, quantimodoService) {
 
         $scope.controller_name = "TagAddCtrl";
 
@@ -12,15 +12,22 @@ angular.module('starter')
             $ionicHistory.goBack();
         };
 
+        var goBack = function () {
+            $ionicLoading.hide();
+            if($stateParams.fromState){
+                $state.go($stateParams.fromState, {variableObject: $stateParams.fromStateParams.variableObject});
+            } else {
+                $state.go(config.appSettings.defaultState);
+            }
+        };
+
         // delete measurement
         $scope.deleteTag = function(){
             var userTagData = {
                 tagVariableId: $rootScope.stateParams.tagVariableObject.id,
                 taggedVariableId: $rootScope.stateParams.taggedVariableObject.id
             };
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
 
             if($stateParams.taggedVariableObject.userTagVariables){
                 $rootScope.variableObject.userTagVariables =
@@ -36,12 +43,11 @@ angular.module('starter')
                     });
             }
 
-            QuantiModo.deleteUserTagDeferred(userTagData).then(function () {
-                $ionicLoading.hide();
-                $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject});
+            quantimodoService.deleteUserTagDeferred(userTagData).then(function () {
+                goBack();
             }, function (error) {
-                $ionicLoading.hide();
                 console.error(error);
+                goBack();
             });
         };
 
@@ -63,6 +69,9 @@ angular.module('starter')
                     $rootScope.stateParams.tagVariableObject.name + ' per ' +
                     $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.taggedVariableObject.name;
+                if(!$stateParams.fromStateParams.variableObject.userTaggedVariables){
+                    $stateParams.fromStateParams.variableObject.userTaggedVariables = [];
+                }
                 $stateParams.fromStateParams.variableObject.userTaggedVariables.push($rootScope.stateParams.taggedVariableObject);
             }
 
@@ -73,24 +82,19 @@ angular.module('starter')
                     $rootScope.stateParams.tagVariableObject.name + ' per ' +
                     $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.taggedVariableObject.name;
+                if(!$stateParams.fromStateParams.variableObject.userTagVariables){
+                    $stateParams.fromStateParams.variableObject.userTagVariables = [];
+                }
                 $stateParams.fromStateParams.variableObject.userTagVariables.push($rootScope.stateParams.tagVariableObject);
             }
 
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
 
-            QuantiModo.postUserTagDeferred(userTagData).then(function () {
-                $ionicLoading.hide();
-                if($stateParams.fromState){
-                    $state.go($stateParams.fromState, {variableObject: $stateParams.fromStateParams.variableObject});
-                } else {
-                    $state.go(config.appSettings.defaultState);
-                }
-
+            quantimodoService.postUserTagDeferred(userTagData).then(function () {
+                goBack();
             }, function (error) {
-                $ionicLoading.hide();
                 console.error(error);
+                goBack();
             });
         };
 
@@ -108,7 +112,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                variableService.getVariablesByName('Anxiety').then(function (variable) {
+                quantimodoService.getVariablesByNameDeferred('Anxiety').then(function (variable) {
                     $rootScope.stateParams.tagVariableObject = variable;
                     $ionicLoading.hide();
                 });
@@ -118,7 +122,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                variableService.getVariablesByName('Overall Mood').then(function (variable) {
+                quantimodoService.getVariablesByNameDeferred('Overall Mood').then(function (variable) {
                     $rootScope.stateParams.taggedVariableObject = variable;
                     $ionicLoading.hide();
                 });

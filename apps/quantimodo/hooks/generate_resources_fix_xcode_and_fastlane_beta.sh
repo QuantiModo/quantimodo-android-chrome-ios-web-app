@@ -13,7 +13,7 @@ if [ -z "${LOWERCASE_APP_NAME}" ]
 fi
 ruby hooks/after_platform_add.bak/xcodeprojectfix.rb
 # Commented due to podfile.lock error
-#npm install
+#npm install && gulp configureApp
 #gulp addBugsnagInObjC
 #gulp enableBitCode
 #gulp addDeploymentTarget

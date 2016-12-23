@@ -22,7 +22,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService, reminderService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -30,13 +30,15 @@ angular.module('starter',
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
-        /*
+        
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
-                alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+                errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
+                alert(errorMsg);
+                quantimodoService.reportError(errorMsg);
             };
         }
-        */
+
 
          if (typeof PushNotification !== "undefined") {
              console.debug("Going to try to register push");
@@ -66,12 +68,12 @@ angular.module('starter',
                  // data.registrationId
                  var newDeviceToken = registerResponse.registrationId;
                  console.debug("Got device token for push notifications: " + registerResponse.registrationId);
-                 var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+                 var deviceTokenOnServer = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
                  $rootScope.deviceToken = deviceTokenOnServer;
                  console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
                  if(deviceTokenOnServer !== registerResponse.registrationId) {
                      $rootScope.deviceToken = newDeviceToken;
-                     localStorageService.setItem('deviceTokenToSync', newDeviceToken);
+                     quantimodoService.setLocalStorageItem('deviceTokenToSync', newDeviceToken);
                      console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
                  }
              });
@@ -80,8 +82,8 @@ angular.module('starter',
 
              push.on('notification', function(data) {
                  console.debug('Received push notification: ' + JSON.stringify(data));
-                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
-                 reminderService.refreshTrackingReminderNotifications().then(function(){
+                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
+                 quantimodoService.refreshTrackingReminderNotifications().then(function(){
                      console.debug('push.on.notification: successfully refreshed notifications');
                  }, function (error) {
                      console.error('push.on.notification: ' + error);
@@ -127,7 +129,7 @@ angular.module('starter',
                      modifiedValue: 1
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -139,7 +141,7 @@ angular.module('starter',
                      modifiedValue: 2
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -151,7 +153,7 @@ angular.module('starter',
                      modifiedValue: 3
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -163,7 +165,7 @@ angular.module('starter',
                      modifiedValue: 4
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -175,7 +177,7 @@ angular.module('starter',
                      modifiedValue: 5
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -186,7 +188,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
 
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -196,7 +198,7 @@ angular.module('starter',
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
-                 reminderService.snoozeReminderNotification(body);
+                 quantimodoService.snoozeTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -207,7 +209,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.lastValue
                  };
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -218,7 +220,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.secondToLastValue
                  };
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
 
@@ -229,7 +231,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.thirdToLastValue
                  };
-                 reminderService.trackReminderNotification(body);
+                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
          }

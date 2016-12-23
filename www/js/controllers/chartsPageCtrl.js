@@ -2,8 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
-                                             $stateParams, chartService, localStorageService, QuantiModo, 
-                                             variableService) {
+                                             $stateParams, quantimodoService) {
         $scope.controller_name = "ChartsPageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -46,8 +45,8 @@ angular.module('starter')
 
             if ($scope.state.dailyHistory.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
-                /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
-                 var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                /*var fromDate = parseInt(quantimodoService.getLocalStorageItemAsString('fromDate'));
+                 var toDate = parseInt(quantimodoService.getLocalStorageItemAsString('toDate'));
                  if (!fromDate) {
                  fromDate = 0;
                  }
@@ -56,11 +55,11 @@ angular.module('starter')
                  }*/
                 if($rootScope.variableObject.fillingValue !== null && $rootScope.variableObject.fillingValue !== -1){
                     $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
+                        quantimodoService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
                 }
-                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
+                $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
+                    quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.highchartsReflow();
             }
         };
@@ -69,8 +68,8 @@ angular.module('starter')
 
             if ($scope.state.history.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
-                /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
-                var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                /*var fromDate = parseInt(quantimodoService.getLocalStorageItemAsString('fromDate'));
+                var toDate = parseInt(quantimodoService.getLocalStorageItemAsString('toDate'));
                 if (!fromDate) {
                     fromDate = 0;
                 }
@@ -79,10 +78,10 @@ angular.module('starter')
                 }*/
                 if($rootScope.variableObject.fillingValue === null || $rootScope.variableObject.fillingValue === -1){
                     $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
+                        quantimodoService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
                 }
                 $scope.hourlyChartConfig =
-                    chartService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
+                    quantimodoService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
                 $scope.highchartsReflow();
             }
         };
@@ -100,8 +99,12 @@ angular.module('starter')
                 console.error($state.current.name + " $rootScope.variableObject: " + JSON.stringify($rootScope.variableObject));
                 return;
             }
+
+            if($rootScope.urlParameters.doNotProcess){
+                params.doNotProcess = true;
+            }
             //$scope.showLoader('Fetching measurements');
-            QuantiModo.getV1Measurements(params, function(history){
+            quantimodoService.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
                 if(history.length > 0 && $scope.state.history.length < 1000){
@@ -147,7 +150,7 @@ angular.module('starter')
                 return;
             }
             //$scope.showLoader('Fetching measurements');
-            QuantiModo.getV1MeasurementsDaily(params, function(dailyHistory){
+            quantimodoService.getMeasurementsDailyFromApiDeferred(params).then(function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
                 if(dailyHistory.length > 0 && $scope.state.dailyHistory.length < 1000){
@@ -181,7 +184,7 @@ angular.module('starter')
                 name:  variableName
             };
             $rootScope.variableName = variableName;
-            variableService.getVariablesByName(variableName).then(function(variableObject){
+            quantimodoService.getVariablesByNameDeferred(variableName).then(function(variableObject){
                 $rootScope.variableObject = variableObject;
             });
         };
@@ -192,6 +195,12 @@ angular.module('starter')
         });
         
         $scope.init = function(){
+
+            $rootScope.getAllUrlParams();
+            if($rootScope.urlParameters.variableName){
+                $stateParams.variableName = $rootScope.urlParameters.variableName;
+            }
+
             $scope.stopGettingMeasurements = false;
             $ionicLoading.hide();
             //$scope.showLoader('Fetching measurements');
