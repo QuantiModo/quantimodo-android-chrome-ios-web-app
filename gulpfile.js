@@ -99,7 +99,45 @@ if(!process.env.LOWERCASE_APP_NAME){
 
 var privateConfig;
 
+function generatePrivateConfigFromEnvs() {
+    //process.env.QUANTIMODO_CLIENT_ID = 'abc';
+    if(!process.env.QUANTIMODO_CLIENT_ID){
+        console.error('Please set QUANTIMODO_CLIENT_ID environmental variable!');
+        return;
+    }
+
+    //process.env.QUANTIMODO_CLIENT_SECRET = 'abc';
+    if(!process.env.QUANTIMODO_CLIENT_SECRET){
+        console.error('Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
+        return;
+    }
+
+    var privateConfigKeys = {
+        client_ids : {},
+        client_secrets : {}
+    };
+
+    privateConfigKeys.client_ids.Web = process.env.QUANTIMODO_CLIENT_ID;
+    console.log('Detected ' + process.env.QUANTIMODO_CLIENT_ID + ' QUANTIMODO_CLIENT_ID');
+    privateConfigKeys.client_secrets.Web = process.env.QUANTIMODO_CLIENT_SECRET;
+
+    if(typeof process.env.IONIC_BUGSNAG_KEY !== "undefined"){
+        privateConfigKeys.bugsnag_key = process.env.IONIC_BUGSNAG_KEY;
+        console.log('IONIC_BUGSNAG_KEY' +' Detected');
+    }
+
+    var privateConfigContent = 'window.private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
+    fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
+    fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
+    console.log('Created '+ './www/private_configs/default.config.js');
+}
+
 function decryptPrivateConfig() {
+	if(process.env.QUANTIMODO_CLIENT_SECRET){
+		console.log("Not decrypting private config because we should generate it from envs instead");
+        generatePrivateConfigFromEnvs();
+        return;
+	}
     var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
     decryptFile(fileToDecryptPath, decryptedFilePath);
@@ -173,38 +211,10 @@ gulp.task('swagger', function(){
 	return deferred.promise;
 });
 
+
+
 gulp.task('generatePrivateConfigFromEnvs', function(){
-
-    //process.env.QUANTIMODO_CLIENT_ID = 'abc';
-    if(!process.env.QUANTIMODO_CLIENT_ID){
-        console.error('Please set QUANTIMODO_CLIENT_ID environmental variable!');
-        return;
-    }
-
-    //process.env.QUANTIMODO_CLIENT_SECRET = 'abc';
-    if(!process.env.QUANTIMODO_CLIENT_SECRET){
-        console.error('Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
-        return;
-    }
-
-	var privateConfigKeys = {
-		client_ids : {},
-		client_secrets : {}
-	};
-
-	privateConfigKeys.client_ids.Web = process.env.QUANTIMODO_CLIENT_ID;
-	console.log('Detected ' + process.env.QUANTIMODO_CLIENT_ID + ' QUANTIMODO_CLIENT_ID');
-	privateConfigKeys.client_secrets.Web = process.env.QUANTIMODO_CLIENT_SECRET;
-
-	if(typeof process.env.IONIC_BUGSNAG_KEY !== "undefined"){
-		privateConfigKeys.bugsnag_key = process.env.IONIC_BUGSNAG_KEY;
-		console.log('IONIC_BUGSNAG_KEY' +' Detected');
-	}
-
-	var privateConfigContent = 'window.private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
-	fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
-    fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
-	console.log('Created '+ './www/private_configs/default.config.js');
+	generatePrivateConfigFromEnvs();
 });
 
 var answer = '';
