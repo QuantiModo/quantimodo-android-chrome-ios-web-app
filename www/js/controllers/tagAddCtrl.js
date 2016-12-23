@@ -63,6 +63,9 @@ angular.module('starter')
                     $rootScope.stateParams.tagVariableObject.name + ' per ' +
                     $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.taggedVariableObject.name;
+                if(!$stateParams.fromStateParams.variableObject.userTaggedVariables){
+                    $stateParams.fromStateParams.variableObject.userTaggedVariables = [];
+                }
                 $stateParams.fromStateParams.variableObject.userTaggedVariables.push($rootScope.stateParams.taggedVariableObject);
             }
 
@@ -73,6 +76,9 @@ angular.module('starter')
                     $rootScope.stateParams.tagVariableObject.name + ' per ' +
                     $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.taggedVariableObject.name;
+                if(!$stateParams.fromStateParams.variableObject.userTagVariables){
+                    $stateParams.fromStateParams.variableObject.userTagVariables = [];
+                }
                 $stateParams.fromStateParams.variableObject.userTagVariables.push($rootScope.stateParams.tagVariableObject);
             }
 
