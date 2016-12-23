@@ -52,7 +52,12 @@ angular.module('starter')
             }
 
             if(!$scope.state.requestParams.effectVariableName){
-                $scope.correlationObject = quantimodoService.getLocalStorageItemAsObject('lastStudy');
+                quantimodoService.getLocalStorageItemAsStringWithCallback('lastStudy', function (lastStudy) {
+                    if(lastStudy){
+                        $scope.correlationObject = JSON.parse(lastStudy);
+                        $scope.highchartsReflow();  //Need callback to make sure we get the study before we reflow
+                    }
+                });
                 $scope.state.loading = false;
                 $scope.state.requestParams = {
                     causeVariableName: $scope.correlationObject.causeVariableName,

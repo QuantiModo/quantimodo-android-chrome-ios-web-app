@@ -225,7 +225,7 @@ angular.module('starter')
 			];
 
 			if(typeof $rootScope.defaultHelpCards === "undefined"){
-				quantimodoService.getLocalStorageItemWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
+				quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
 					if(defaultHelpCardsFromLocalStorage === null){
 						$rootScope.defaultHelpCards = defaultHelpCards;
 						quantimodoService.setLocalStorageItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
