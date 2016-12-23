@@ -1,4 +1,4 @@
-window.config = {};
+config = {};
 
 config.appSettings  = {
     appDisplayName : 'Mind First Mood Tracker',
