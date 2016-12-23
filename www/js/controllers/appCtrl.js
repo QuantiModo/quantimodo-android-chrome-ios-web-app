@@ -3,15 +3,12 @@ angular.module('starter')
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    quantimodoService, ionicDatePicker, $ionicCloudProvider,
+                                    quantimodoService, ionicDatePicker,
                                     $ionicActionSheet, $ionicDeploy) {
 
-        $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
         $rootScope.appVersion = "2.2.7.0";
-        if (!$rootScope.loaderImagePath) {
-            $rootScope.loaderImagePath = 'img/circular_loader.gif';
-        }
+
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
             quantimodoService.getLocalStorageItemAsStringWithCallback('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
@@ -26,6 +23,9 @@ angular.module('starter')
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $rootScope.appSettings = config.appSettings;
+        if (!$rootScope.appSettings.loaderImagePath) {
+            $rootScope.appSettings.loaderImagePath = 'img/circular_loader.gif';
+        }
         if(!$rootScope.appSettings.ionNavBarClass){
             $rootScope.appSettings.ionNavBarClass = "bar-positive";
         }
@@ -34,7 +34,7 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
-        $rootScope.appName = config.appSettings.appName;
+        $rootScope.appDisplayName = config.appSettings.appDisplayName;
 
         // Not used
         //$scope.ratingInfo = quantimodoService.getRatingInfo();
@@ -442,8 +442,8 @@ angular.module('starter')
         quantimodoService.setPlatformVariables();
 
         /*Wrapper Config*/
-        $scope.viewTitle = config.appSettings.appName;
-        $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
+        $scope.viewTitle = config.appSettings.appDisplayName;
+        $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
         $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
         $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
         $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
@@ -528,6 +528,11 @@ angular.module('starter')
             var message;
             var releaseTrack;
             $ionicPlatform.ready(function () {
+
+                if(typeof $ionicCloudProvider == "undefined"){
+                    console.warn('$ionicCloudProvider is not defined so we cannot use ionic deploy');
+                    return;
+                }
                 // We might need to move this back to app.js if it doesn't work
                 if(config.appSettings.ionicAppId){
                     $ionicCloudProvider.init({
@@ -942,7 +947,7 @@ angular.module('starter')
             }
             $scope.loading = true;
 /*            $ionicLoading.show({
-                template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
+                template: loadingText+ '<br><br><img src={{appSettings.loaderImagePath}}>',
                 content: 'Loading',
                 animation: 'fade-in',
                 showBackdrop: false,
@@ -1149,7 +1154,7 @@ angular.module('starter')
             });
             // Delete all measurements for a variable
             quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
-                // If primaryOutcomeVariable, delete local storage measurements
+                // If primaryOutcomeVariableName, delete local storage measurements
                 if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
                     quantimodoService.setLocalStorageItem('allMeasurements',[]);
                     quantimodoService.setLocalStorageItem('measurementsQueue',[]);

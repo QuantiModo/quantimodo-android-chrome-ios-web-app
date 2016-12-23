@@ -1,5 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
-    <ion-nav-title>Track your {{primaryOutcomeVariable}}</ion-nav-title>
+    <ion-nav-title>Track your {{primaryOutcomeVariableName}}</ion-nav-title>
     <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
     	<div class="card primary-outcome-variable-reporting">
     		<div class="item item-text-wrap">
@@ -13,8 +13,8 @@
                 <div ng-show="timeRemaining">
                     <br/>
                     <ul>
-                        <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable | lowercase }}!</li>
-                        <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
+                        <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariableName | lowercase }}!</li>
+                        <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariableName}} back in {{secondsLeft}} seconds</li>
                     </ul>
                 </div>
     		</div>
