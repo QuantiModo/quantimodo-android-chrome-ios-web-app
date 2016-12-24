@@ -336,7 +336,7 @@ angular.module('starter')
             }
             $scope.loading = true;
             $ionicLoading.show({
-                template: loadingText + '<br><br><img src={{loaderImagePath}}>',
+                template: loadingText + '<br><br><img src={{appSettings.loaderImagePath}}>',
                 content: 'Loading',
                 animation: 'fade-in',
                 showBackdrop: false,

@@ -236,6 +236,52 @@ angular.module('starter',
              };
          }
 
+        window.notification_callback = function(reportedVariable, reportingTime){
+            var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            var val = false;
+
+            // convert values
+            if(reportedVariable === "repeat_rating"){
+                val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
+                    JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
+            } else {
+                val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+                    config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
+            }
+
+            // report
+            if(val){
+                // update localstorage
+                localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
+
+                var allMeasurementsObject = {
+                    storedValue : val,
+                    value : val,
+                    startTime : startTime,
+                    humanTime : {
+                        date : new Date().toISOString()
+                    }
+                };
+
+                // update full data
+                if(localStorage[keyIdentifier+'allMeasurements']){
+                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
+                    allMeasurements.push(allMeasurementsObject);
+                    localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
+                }
+
+                //update measurementsQueue
+                if(!localStorage[keyIdentifier+'measurementsQueue']){
+                    localStorage[keyIdentifier+'measurementsQueue'] = '[]';
+                } else {
+                    var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
+                    measurementsQueue.push(allMeasurementsObject);
+                    localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
+                }
+            }
+        };
+
         if(typeof analytics !== "undefined") {
             console.debug("Configuring Google Analytics");
             //noinspection JSUnresolvedFunction
@@ -328,13 +374,15 @@ angular.module('starter',
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider, $ionicConfigProvider, $ionicCloudProvider) {
+                 ionicDatePickerProvider, $ionicConfigProvider) {
 
+    /*  Trying to move to appCtrl
     $ionicCloudProvider.init({
         "core": {
             "app_id": "__IONIC_APP_ID__"
         }
     });
+    */
 
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
@@ -361,8 +409,8 @@ angular.module('starter',
             return false;
         };
 
-        var appName = getAppNameFromUrl();
-        return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
+        var lowercaseAppName = getAppNameFromUrl();
+        return $ocLazyLoad.load([appsManager.getAppConfig(lowercaseAppName), appsManager.getPrivateConfig(lowercaseAppName)]);
       }]
     };
 

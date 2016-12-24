@@ -1,7 +1,11 @@
-window.config = {};
+var config = {};
 
 config.appSettings  = {
-    appName : 'ToBeNamed',
+    appDisplayName : 'ToBeNamed',
+    lowercaseAppName : 'tobenamed',
+    appDescription : "yourAppDescriptionHere",
+    appleId: null,
+    ionicAppId: null,
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     allowOffline : true,
@@ -10,12 +14,11 @@ config.appSettings  = {
     qmApiHostName: 'app.quantimo.do',
     ionNavBarClass:'bar-positive',
     settingsPageOptions :
-    {
-        showReminderFrequencySelector : true
-    },
+        {
+            showReminderFrequencySelector : true
+        },
     defaultState : 'app.measurements-variable-button-icons',
     welcomeState : 'app.welcome',
-    primaryOutcomeVariable : 'Mood',
     appStorageIdentifier: 'MoodiModoData*',
     headline : 'Sync and Analyze Your Data',
     features: [
@@ -111,7 +114,7 @@ config.appSettings  = {
                     visible : true,
                     content : 'Welcome to SuperCell',
                     classes : 'intro-header positive'
-                }, 
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
@@ -120,7 +123,7 @@ config.appSettings  = {
                     visible : true,
                     content : 'SuperCell allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
-                    buttonBarVisible : true   
+                    buttonBarVisible : true
                 }
             }
         },
@@ -136,8 +139,8 @@ config.appSettings  = {
                     visible : true,
                     content : 'Thank you for helping us derive a mathematical equation for happiness!',
                     classes : 'intro-paragraph positive'
-                }, 
-                
+                },
+
                 logoDiv : {
                     visible : true,
                     id : 'logo'
@@ -161,7 +164,7 @@ config.appSettings  = {
     },
 
     wordAliases : {
-        
+
     },
 
     floatingMaterialButton : {
@@ -187,9 +190,9 @@ config.appSettings  = {
         }
     },
 
-   //****modified default reminders
+    //****modified default reminders
 
-     defaultVariables : [
+    defaultVariables : [
         {   id:0,
             variableName : "Pulse",
             shortName :"Pulse",
@@ -202,7 +205,7 @@ config.appSettings  = {
             img:"https://maxcdn.icons8.com/windows10/PNG/96/Programming/system_task-100.png",
             localImage:"img/iconImg/pulse.png",
             show:true
-            
+
         },
         {
             id:12,
@@ -270,7 +273,7 @@ config.appSettings  = {
             localImage:"img/iconImg/Oxygen.png",
             show:true
         },
-          {
+        {
             id:5,
             variableName: "Height",
             shortName: "Height",
@@ -284,7 +287,7 @@ config.appSettings  = {
             localImage:"img/iconImg/Height.png",
             show:true
         },
-        {  
+        {
             id:6,
             variableName: "Weight",
             shortName:"Weight",
@@ -312,7 +315,7 @@ config.appSettings  = {
             localImage:"img/iconImg/Poo.png",
             show:true
         },
-         {
+        {
             id:8,
             variableName: "Respiratory Rate",
             shortName:"Respiratory Rate",
@@ -354,7 +357,7 @@ config.appSettings  = {
             localImage:"img/iconImg/mood.png",
             show:true
         },
-         {
+        {
             id:11,
             variableName: "Symptoms",
             shortName: "Symptoms",
@@ -383,7 +386,16 @@ config.appSettings  = {
             href : '#/app/favorites',
             icon : 'ion-ios-star'
         },
-          
+        {
+            title : 'Measurements Variable Icons',
+            href : '#/app/measurements-variable-button-icons',
+            icon : 'ion-speedometer'
+        },
+        {
+            title : 'Measurement Variable Button Details',
+            href : '#/app/measurement-variable-button-details/:measurementId',
+            icon : 'ion-info'
+        },
         {
             title : 'Overall Mood',
             click : 'togglePrimaryOutcomeSubMenu',
@@ -624,20 +636,20 @@ config.appSettings  = {
             href : '#/app/predictor-search',
             icon : 'ion-search'
         },
-/*        {
-            title : 'For Everyone',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-common-relationships',
-            icon : 'ion-ios-people'
-        },
-        {
-            title : 'For You',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-user-relationships',
-            icon : 'ion-person'
-        },*/
+        /*        {
+         title : 'For Everyone',
+         isSubMenuChild : true,
+         showSubMenuVariable : 'showPredictorSearchSubMenu',
+         href : '#/app/search-common-relationships',
+         icon : 'ion-ios-people'
+         },
+         {
+         title : 'For You',
+         isSubMenuChild : true,
+         showSubMenuVariable : 'showPredictorSearchSubMenu',
+         href : '#/app/search-user-relationships',
+         icon : 'ion-person'
+         },*/
         {
             title : 'Positive Mood',
             isSubMenuChild : true,
@@ -665,49 +677,8 @@ config.appSettings  = {
     ]
 };
 
+if(!module){
+    var module = {};
+}
 
-window.notification_callback = function(reportedVariable, reportingTime){
-    var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
-    var keyIdentifier = config.appSettings.appStorageIdentifier;
-    var val = false;
-
-    // convert values
-    if(reportedVariable === "repeat_rating"){
-        val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
-        JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
-    } else {
-        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
-        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
-    }
-
-    // report
-    if(val){
-        // update localstorage
-        localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
-
-        var allMeasurementsObject = {
-            storedValue : val,
-            value : val,
-            startTime : startTime,
-            humanTime : {
-                date : new Date().toISOString()
-            }
-        };
-
-        // update full data
-        if(localStorage[keyIdentifier+'allMeasurements']){
-            var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
-            allMeasurements.push(allMeasurementsObject);
-            localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
-        }
-        
-        //update measurementsQueue
-        if(!localStorage[keyIdentifier+'measurementsQueue']){
-            localStorage[keyIdentifier+'measurementsQueue'] = '[]';
-        } else {
-            var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
-            measurementsQueue.push(allMeasurementsObject);
-            localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
-        }
-    }
-};
+module.exports = config.appSettings;

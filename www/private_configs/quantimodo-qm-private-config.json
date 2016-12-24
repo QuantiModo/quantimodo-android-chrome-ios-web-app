@@ -1,0 +1,36 @@
+{
+    "bugsnag_key" : "ae7bc49d1285848342342bb5c321a2cf",
+    "client_ids": {
+        "iOS": "Vv7HymHq6PkTrZfM",
+        "Android": "Vv7HymHq6PkTrZfM",
+        "Web": "oAuthDisabled",
+        "Chrome": "Vv7HymHq6PkTrZfM",
+        "Windows": "Vv7HymHq6PkTrZfM"
+    },
+    "client_secrets": {
+        "iOS": "tPzSilx88psGraI1Q6Mtl5dJFmjJAitC",
+        "Android": "tPzSilx88psGraI1Q6Mtl5dJFmjJAitC",
+        "Web": "ionic_secret",
+        "Chrome": "tPzSilx88psGraI1Q6Mtl5dJFmjJAitC",
+        "Windows": "tPzSilx88psGraI1Q6Mtl5dJFmjJAitC"
+    },
+    "FACEBOOK_APP_ID" : "225078261031461",
+    "FACEBOOK_APP_NAME" : "QuantiModo",
+    "REVERSED_CLIENT_ID" : "com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d",
+    "FOURSQUARE_CLIENT_ID" : "JTFGDAKRU5T0WHEUT0K0JFAKYUDJRM22M1IVE3HI04EGMECU",
+    "FOURSQUARE_CLIENT_SECRET" : "VUPPYPJYJQO04XYNG5DSDJZR2BQ0XWW5OWCEEYTFOOKOY1PY",
+    "GOOGLE_MAPS_API_KEY" : "AIzaSyCKicUHwJwH56bXjaKXkVVh2AqrOFE2Ogk",
+    "IONIC_API_TOKEN" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3OGFiODQ1NC05MjJmLTQzNmItODBhOS1iYjExYzkwNGRmY2MifQ.Xf6_6MbXDjFhJDPnGt0TR1P-9Kjo8wPZNOr3f-9rChw",
+    "GCM_SENDER_ID" : "1052648855194",
+    "GITHUB_CLIENT_ID" : "f14dadca5a8c3bf301bf",
+    "GITHUB_CLIENT_SECRET" : "3f11a8f4ed0c16ff251090dbcb280759fff7f717",
+    "WITHINGS_CLIENT_ID" : "e4d28f45e14b8cc97e8c585127db3f2132e61ef0ed20be490e7b5f7417d",
+    "WITHINGS_CLIENT_SECRET" : "f3f6322956e995f9988eb4e58bff81c9e816f01b30e48c26f3f3ed42118037",
+    "GOOGLE_CLIENT_ID" : "1052648855194.apps.googleusercontent.com",
+    "JAWBONE_CLIENT_ID" : "10RfjEgKr8U",
+    "JAWBONE_CLIENT_SECRET" : "e17fd34e4bc4642f0c4c99d7acb6e661",
+    "RESCUETIME_CLIENT_ID" : "b7961429bf2ca6fab2de92681e347ef6c253bf77c1a4c069d964110e43c1de24",
+    "SLICE_CLIENT_ID" : "0d243e17",
+    "FITBIT_CLIENT_ID" : "2298DS",
+    "RUNKEEPER_CLIENT_ID" : "aa7233e520fa4b34aa5f9c3f27b22803"
+}

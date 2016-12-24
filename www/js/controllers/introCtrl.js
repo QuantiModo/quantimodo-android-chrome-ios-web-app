@@ -2,8 +2,8 @@ angular.module('starter')
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                   $rootScope, $stateParams, quantimodoService) {
 
-    $scope.viewTitle = config.appSettings.appName;
-    $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
+    $scope.viewTitle = config.appSettings.appDisplayName;
+    $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
     $scope.introSlides = config.appSettings.intro;
 
     $rootScope.showFilterBarSearchIcon = false;

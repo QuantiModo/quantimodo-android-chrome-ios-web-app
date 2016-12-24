@@ -264,7 +264,7 @@ angular.module('starter')
         $scope.init();
 
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-            if($rootScope.appName !== "MoodiModo"){
+            if($rootScope.appDisplayName !== "MoodiModo"){
                 $scope.hideFacebookButton = true;
             }
         });
