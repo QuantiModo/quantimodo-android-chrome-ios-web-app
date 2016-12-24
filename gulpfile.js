@@ -1891,6 +1891,15 @@ gulp.task('buildMedTlc', function(callback){
 });
 
 
+gulp.task('buildQuantiModoAndroid', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+        'prepareRepositoryForAndroid',
+        'buildAndroidApp',
+        callback);
+});
+
+
 gulp.task('buildEnergyModoAndroid', function(callback){
     runSequence(
         'setEnergyModoEnvs',
