@@ -27,7 +27,7 @@ changeList.json
 gradle-2.14.1-bin.zip
 /config.xml
 /build/
-/fastlane/
+
 /hooks/generate_resources_fix_xcode_and_fastlane_beta.sh
 /ionic.project
 /resources/
@@ -41,6 +41,8 @@ www/configs/default.js
 ionic.config.json
 supply_json_key_for_google_play.json
 www/img/icons/
+!/fastlane/
+/fastlane/*
 !/fastlane/Fastfile
 resources-shared/screenshots/5.5/
 resources-shared/screenshots/4.7/
