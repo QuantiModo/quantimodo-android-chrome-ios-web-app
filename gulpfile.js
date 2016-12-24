@@ -115,6 +115,9 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
 
     if(!process.env.ENCRYPTION_SECRET){
         console.error('ERROR: Please set ENCRYPTION_SECRET environmental variable!');
+        if(callback){
+            callback();
+        }
         return;
     }
 
@@ -126,6 +129,9 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
     execute(cmd, function(error){
         if(error !== null){
             console.error("ERROR: DECRYPTING: " + error);
+            if(callback){
+                callback();
+            }
         } else {
             console.log("DECRYPTED to " + decryptedFilePath);
             if(callback){
@@ -169,7 +175,7 @@ function loadConfigs(callback) {
             process.env.APP_DESCRIPTION = appSettings.appDescription;
             process.env.IONIC_APP_ID = appSettings.ionicAppId;
 
-            process.env.privateConfig = require(pathToPrivateConfig);
+            //process.env.privateConfig = require(pathToPrivateConfig);
 
             if(callback){
                 callback();
@@ -581,10 +587,10 @@ gulp.task('decryptPrivateConfig', [], function(callback){
 	decryptPrivateConfig(callback);
 });
 
-gulp.task('decryptPrivateConfigToDefault', [], function(){
+gulp.task('decryptPrivateConfigToDefault', [], function(callback){
     var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var decryptedFilePath = './www/private_configs/default.config.js';
-    decryptFile(fileToDecryptPath, decryptedFilePath);
+    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 
 gulp.task('deleteFacebookPlugin', function(callback){
@@ -1815,6 +1821,7 @@ gulp.task('configureApp', [], function(callback){
 		'generatePrivateConfigFromEnvs',
 		'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
 		'decryptPrivateConfigToDefault',
+        'loadConfigs',
 		//'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
 		// templates because of the git changes and weird stuff replacement does to config-template.xml
 		'copyAppConfigToDefault',
