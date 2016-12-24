@@ -67,8 +67,6 @@ function execute(command, callback){
     my_child_process.stderr.pipe(process.stderr);
 }
 
-
-
 function generatePrivateConfigFromEnvs(callback) {
 
     if(!process.env.QUANTIMODO_CLIENT_ID){
@@ -241,8 +239,8 @@ gulp.task('swagger', function(){
 
 
 
-gulp.task('generatePrivateConfigFromEnvs', function(){
-	generatePrivateConfigFromEnvs();
+gulp.task('generatePrivateConfigFromEnvs', function(callback){
+	generatePrivateConfigFromEnvs(callback);
 });
 
 var answer = '';
