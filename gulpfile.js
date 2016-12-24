@@ -38,13 +38,13 @@ var paths = {
 };
 
 if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.6.0';
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.7.0';
     console.log('Falling back to OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 }
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.7.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.8.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
@@ -1292,8 +1292,7 @@ gulp.task('replaceVersionNumbersInFiles', function(callback){
 	runSequence(
 		//'setVersionNumberInConfigXml',  Messes it up, I think. Replacing with shell script for now.
 		'setVersionNumberInFiles',
-		'setVersionNumberInConfigXml',
-        'setVersionNumberInIosConfigXml',
+        //'setVersionNumberInIosConfigXml',
 		callback);
 });
 

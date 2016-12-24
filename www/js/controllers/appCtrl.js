@@ -7,7 +7,7 @@ angular.module('starter')
                                     $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.2.7.0";
+        $rootScope.appVersion = "2.2.8.0";
 
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
             quantimodoService.getLocalStorageItemAsStringWithCallback('trackLocation', function(trackLocation){
