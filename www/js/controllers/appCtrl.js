@@ -145,13 +145,15 @@ angular.module('starter')
                         effectVariableId: correlationObject.effectVariableId,
                         shareUserMeasurements: true
                     };
+                    $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                     quantimodoService.postStudyDeferred(body).then(function () {
+                        $ionicLoading.hide();
                         if(url){
                             $scope.openUrl(url);
                         }
                     }, function (error) {
+                        $ionicLoading.hide();
                         console.error(error);
-
                     });
                 } else {
                     correlationObject.shareUserMeasurements = false;
@@ -1149,9 +1151,7 @@ angular.module('starter')
         };
 
         $scope.deleteAllMeasurementsForVariable = function() {
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
             // Delete all measurements for a variable
             quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
                 // If primaryOutcomeVariableName, delete local storage measurements
