@@ -74,7 +74,6 @@ function generatePrivateConfigFromEnvs(callback) {
         return;
     }
 
-    //process.env.QUANTIMODO_CLIENT_SECRET = 'abc';
     if(!process.env.QUANTIMODO_CLIENT_SECRET){
         console.error('ERROR: Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
         return;
@@ -133,7 +132,7 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
 function decryptPrivateConfig(callback) {
 	if(process.env.QUANTIMODO_CLIENT_SECRET){
 		console.log("Not decrypting private config because we should generate it from envs instead");
-        generatePrivateConfigFromEnvs();
+        generatePrivateConfigFromEnvs(callback);
         return;
 	}
     var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
