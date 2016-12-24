@@ -69,7 +69,7 @@ function execute(command, callback){
 
 
 
-function generatePrivateConfigFromEnvs() {
+function generatePrivateConfigFromEnvs(callback) {
 
     if(!process.env.QUANTIMODO_CLIENT_ID){
         console.warn('Not going to generatePrivateConfigFromEnvs because QUANTIMODO_CLIENT_ID env is not set');
@@ -100,10 +100,13 @@ function generatePrivateConfigFromEnvs() {
     fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
     fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
     console.log('Created '+ './www/private_configs/default.config.js');
+    if(callback){
+        callback();
+    }
 }
 
 
-var decryptFile = function (fileToDecryptPath, decryptedFilePath) {
+var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
         "https://code.google.com/archive/p/openssl-for-windows/downloads");
 
@@ -120,11 +123,16 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath) {
     execute(cmd, function(error){
         if(error !== null){
             console.error("ERROR: DECRYPTING: " + error);
+        } else {
+            console.log("DECRYPTED to " + decryptedFilePath);
+            if(callback){
+                callback();
+            }
         }
     });
 };
 
-function decryptPrivateConfig() {
+function decryptPrivateConfig(callback) {
 	if(process.env.QUANTIMODO_CLIENT_SECRET){
 		console.log("Not decrypting private config because we should generate it from envs instead");
         generatePrivateConfigFromEnvs();
@@ -132,15 +140,14 @@ function decryptPrivateConfig() {
 	}
     var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
-    decryptFile(fileToDecryptPath, decryptedFilePath);
+    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 }
 
 function loadConfigs(callback) {
-    decryptPrivateConfig();
     var pathToConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js';
     var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
     fs.stat(pathToConfig, function(err, stat) {
-        if(err == null) {
+        if(err === null) {
             console.log("Using this config file: " + pathToConfig);
 /*            fs.readFile(pathToConfig, function (err, data) {
                 config = JSON.parse(data);
@@ -483,7 +490,7 @@ gulp.task('deleteIOSApp', function () {
 	return deferred.promise;
 });
 
-var encryptFile = function (fileToEncryptPath, encryptedFilePath) {
+var encryptFile = function (fileToEncryptPath, encryptedFilePath, callback) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
         "https://code.google.com/archive/p/openssl-for-windows/downloads");
 
@@ -499,50 +506,55 @@ var encryptFile = function (fileToEncryptPath, encryptedFilePath) {
     execute(cmd, function(error){
         if(error !== null){
             console.error("ERROR: ENCRYPTING: " + error);
+        } else {
+            console.log("Encrypted " + encryptedFilePath);
+            if(callback){
+                callback();
+            }
         }
     });
 };
 
-gulp.task('encryptAndroidKeystore', [], function(){
+gulp.task('encryptAndroidKeystore', [], function(callback){
     var fileToEncryptPath = 'quantimodo.keystore';
     var encryptedFilePath = 'quantimodo.keystore.enc';
-    encryptFile(fileToEncryptPath, encryptedFilePath);
+    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 });
 
-gulp.task('decryptAndroidKeystore', [], function(){
+gulp.task('decryptAndroidKeystore', [], function(callback){
     var fileToDecryptPath = 'quantimodo.keystore.enc';
     var decryptedFilePath = 'quantimodo.keystore';
-    decryptFile(fileToDecryptPath, decryptedFilePath);
+    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 
-gulp.task('encryptSupplyJsonKeyForGooglePlay', [], function(){
+gulp.task('encryptSupplyJsonKeyForGooglePlay', [], function(callback){
     var fileToEncryptPath = 'supply_json_key_for_google_play.json';
     var encryptedFilePath = 'supply_json_key_for_google_play.json.enc';
-    encryptFile(fileToEncryptPath, encryptedFilePath);
+    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 });
 
-gulp.task('decryptSupplyJsonKeyForGooglePlay', [], function(){
+gulp.task('decryptSupplyJsonKeyForGooglePlay', [], function(callback){
     var fileToDecryptPath = 'supply_json_key_for_google_play.json.enc';
     var decryptedFilePath = 'supply_json_key_for_google_play.json';
-    decryptFile(fileToDecryptPath, decryptedFilePath);
+    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 
-gulp.task('encryptBuildJson', [], function(){
+gulp.task('encryptBuildJson', [], function(callback){
     var fileToEncryptPath = 'build.json';
     var encryptedFilePath = 'build.json.enc';
-    encryptFile(fileToEncryptPath, encryptedFilePath);
+    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 });
 
-gulp.task('decryptBuildJson', [], function(){
+gulp.task('decryptBuildJson', [], function(callback){
     var fileToDecryptPath = 'build.json.enc';
     var decryptedFilePath = 'build.json';
-    decryptFile(fileToDecryptPath, decryptedFilePath);
+    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 
-function encryptPrivateConfig() {
+function encryptPrivateConfig(callback) {
     var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
-    encryptFile(fileToEncryptPath, encryptedFilePath);
+    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 }
 
 gulp.task('encryptPrivateConfig', [], function(){
@@ -562,8 +574,8 @@ gulp.task('encryptAllPrivateConfigs', [], function(callback){
     encryptPrivateConfig();
 });
 
-gulp.task('decryptPrivateConfig', [], function(){
-	decryptPrivateConfig();
+gulp.task('decryptPrivateConfig', [], function(callback){
+	decryptPrivateConfig(callback);
 });
 
 gulp.task('decryptPrivateConfigToDefault', [], function(){
@@ -1485,34 +1497,56 @@ gulp.task('template', function(done){
 		.on('end', done);
 });
 
+gulp.task('loadConfigs', [], function(callback){
+    loadConfigs(callback);
+});
+
 gulp.task('setEnergyModoEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "energymodo";
-    loadConfigs(callback);
+    runSequence(
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
 });
 
 gulp.task('setMedTlcEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "medtlc";
-    loadConfigs(callback);
+    runSequence(
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
 });
 
 gulp.task('setMindFirstEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "mindfirst";
-    loadConfigs(callback);
+    runSequence(
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
 });
 
 gulp.task('setMoodiModoEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "moodimodo";
-    loadConfigs(callback);
+    runSequence(
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
 });
 
 gulp.task('setQuantiModoEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "quantimodo";
-    loadConfigs(callback);
+    runSequence(
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
 });
 
 gulp.task('setMindFirstEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "mindfirst";
-    loadConfigs(callback);
+    runSequence(
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
 });
 
 gulp.task('setAndroidEnvs', [], function(callback){
@@ -1857,9 +1891,9 @@ gulp.task('buildMedTlc', function(callback){
 });
 
 
-gulp.task('buildQuantiModoAndroid', function(callback){
+gulp.task('buildEnergyModoAndroid', function(callback){
     runSequence(
-        'setQuantiModoEnvs',
+        'setEnergyModoEnvs',
 		'prepareRepositoryForAndroid',
         'buildAndroidApp',
         callback);
