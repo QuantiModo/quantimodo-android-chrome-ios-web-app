@@ -11,6 +11,7 @@ angular.module('starter')
         };
 
         $scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
             $scope.state = {
                 title: 'Loading study...',
                 requestParams: {},
