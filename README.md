@@ -98,3 +98,16 @@ We love pull requests and would be very grateful if you'd help us abolish suffer
 I recommend using 
 [SourceTree and the Gitflow model] (https://github.com/GSoft-SharePoint/Dynamite/wiki/Getting-started-with-SourceTree,-Git-and-git-flow) 
 for development.
+
+## Screenshots 
+
+
+![](https://raw.githubusercontent.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206%2B)%20-%20History%20Screenshot%201.jpg)
+
+![](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20bar%20chart%20Screenshot%201.jpg?raw=true)
+
+![](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20import%20data%20Screenshot%201.jpg?raw=true)
+
+![](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20predictors%20Screenshot%201.jpg?raw=true)
+
+![](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20reminder%20inbox%20Screenshot%201.jpg?raw=true)
