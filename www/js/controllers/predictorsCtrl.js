@@ -330,21 +330,6 @@ angular.module('starter')
             $scope.openUrl(url);
 	    };
 
-        $scope.showLoader = function (loadingText) {
-            if(!loadingText){
-                loadingText = '';
-            }
-            $scope.loading = true;
-            $ionicLoading.show({
-                template: loadingText + '<br><br><img src={{appSettings.loaderImagePath}}>',
-                content: 'Loading',
-                animation: 'fade-in',
-                showBackdrop: false,
-                maxWidth: 1000,
-                showDelay: 0
-            });
-        };
-
         $scope.goToStudyPage = function(correlationObject) {
             //console.debug('Going to study page for ' + JSON.stringify(correlationObject));
             $state.go('app.study', {
