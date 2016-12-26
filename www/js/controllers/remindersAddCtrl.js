@@ -443,7 +443,6 @@ angular.module('starter')
                 return false;
             }
 
-            $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
             var dateFormat = 'YYYY-MM-DD';
@@ -483,11 +482,14 @@ angular.module('starter')
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
+
+            $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders',
                 remindersArray)
                 .then(function(){
                     quantimodoService.postTrackingRemindersDeferred(remindersArray)
                         .then(function(){
+                            $scope.hideLoader();
                             quantimodoService.refreshTrackingReminderNotifications().then(function(){
                                 console.debug('reminderAddCtrl.save successfully refreshed notifications');
                             }, function (error) {
@@ -499,6 +501,7 @@ angular.module('starter')
                             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
                             goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         }, function(error){
+                            $scope.hideLoader();
                             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
                             // We need to do this again in case a reminder sync replaced our updated one before posting finished
                             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
