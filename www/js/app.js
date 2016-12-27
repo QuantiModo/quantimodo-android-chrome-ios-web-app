@@ -1023,7 +1023,27 @@ angular.module('starter',
             }
         })
         .state('app.predictorsPositive', {
-            url: "/predictors-positive/:effectVariableName",
+            url: "/predictors-positive",
+            params: {
+                aggregated: false,
+                valence: 'positive',
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: '(gt)0'
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsPositiveVariable', {
+            url: "/predictors-positive-variable/:effectVariableName",
             params: {
                 aggregated: false,
                 valence: 'positive',
@@ -1043,7 +1063,27 @@ angular.module('starter',
             }
         })
         .state('app.predictorsNegative', {
-            url: "/predictors-negative/:effectVariableName",
+            url: "/predictors-negative",
+            params: {
+                aggregated: false,
+                valence: 'negative',
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: '(lt)0'
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsNegativeVariable', {
+            url: "/predictors-negative-variable/:effectVariableName",
             params: {
                 aggregated: false,
                 valence: 'negative',
