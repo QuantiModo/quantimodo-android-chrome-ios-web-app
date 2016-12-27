@@ -1023,7 +1023,7 @@ angular.module('starter',
             }
         })
         .state('app.predictorsPositive', {
-            url: "/predictors-valence/positive/:effectVariableName",
+            url: "/predictors-positive/:effectVariableName",
             params: {
                 aggregated: false,
                 valence: 'positive',
@@ -1043,7 +1043,7 @@ angular.module('starter',
             }
         })
         .state('app.predictorsNegative', {
-            url: "/predictors-valence/negative/:effectVariableName",
+            url: "/predictors-negative/:effectVariableName",
             params: {
                 aggregated: false,
                 valence: 'negative',
