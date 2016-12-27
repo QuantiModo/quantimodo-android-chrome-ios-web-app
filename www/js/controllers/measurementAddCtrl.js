@@ -280,7 +280,7 @@ angular.module('starter')
                 JSON.stringify(measurementInfo));
 
             // Measurement only - post measurement. This is for adding or editing
-            quantimodoService.postTrackingMeasurement(measurementInfo, true);
+            quantimodoService.postMeasurementDeferred(measurementInfo, true);
             var backView = $ionicHistory.backView();
             if(backView.stateName.toLowerCase().indexOf('search') > -1){
                 $state.go(config.appSettings.defaultState);
