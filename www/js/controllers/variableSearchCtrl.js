@@ -100,6 +100,7 @@ angular.module('starter')
                 }
 
             } else {
+                $rootScope.stateParams.variableName = variableObject.name;
                 $rootScope.stateParams.variableObject = variableObject;
                 $state.go($stateParams.nextState, $rootScope.stateParams);
             }
