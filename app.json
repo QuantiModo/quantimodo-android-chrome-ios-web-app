@@ -1,8 +1,8 @@
 {
 	"name": "QuantiModo iOS Android Chrome Template App",
 	"description": "Track and optimize any variable on iOS, Android, or Chrome",
-	"repository": "https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App",
-	"logo": "https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App",
+	"repository": "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app",
+	"logo": "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app",
 	"keywords": ["tracking", "health", "mood", "quantified self"],
 	"website": "https://quantimo.do/",
 	"env": {
