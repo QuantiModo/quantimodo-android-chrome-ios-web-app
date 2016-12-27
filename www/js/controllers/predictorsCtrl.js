@@ -89,8 +89,6 @@ angular.module('starter')
                                 $scope.$broadcast('scroll.infiniteScrollComplete');
                                 if(correlationObjects.length) {
                                     setupUserPredictors();
-                                    $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
-                                        " predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                                     if($scope.state.requestParams.offset){
                                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                                     } else {
@@ -138,8 +136,6 @@ angular.module('starter')
                         }
                         if(!$scope.state.correlationObjects[0].userId){
                             setupAggregatedPredictors();
-                            $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
-                                "your personal predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                         }
                         showLoadMoreButtonIfNecessary();
                     } else {
