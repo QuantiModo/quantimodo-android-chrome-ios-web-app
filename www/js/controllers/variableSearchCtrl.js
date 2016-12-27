@@ -33,9 +33,9 @@ angular.module('starter')
             if($state.current.name === 'app.favoriteSearch') {
                 $scope.addToFavoritesUsingVariableObject(variableObject);
             } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
-                $state.go($stateParams.nextState, {requestParams: {effectVariableName: variableObject.name}});
+                $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
-                $state.go($stateParams.nextState, {requestParams: {causeVariableName: variableObject.name}});
+                $state.go($stateParams.nextState, {causeVariableName: variableObject.name});
             } else if ($stateParams.taggedVariableObject) {
                 if($stateParams.taggedVariableObject.abbreviatedUnitName !== '/5'){
                     $state.go($stateParams.nextState, {
