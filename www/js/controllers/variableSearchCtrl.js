@@ -110,6 +110,7 @@ angular.module('starter')
         };
 
         $scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
             console.debug($state.current.name + ' initializing...');
 
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }

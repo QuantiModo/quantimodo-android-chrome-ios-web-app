@@ -1202,9 +1202,10 @@ angular.module('starter',
             }
         })
         .state('app.historyAllVariable', {
-            url: "/history-all/:variableName",
+            url: "/history-all-variable/:variableName",
             cache: false,
             params: {
+                variableName: null,
                 variableObject : null
             },
             views: {

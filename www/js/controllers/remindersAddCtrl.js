@@ -479,9 +479,7 @@ angular.module('starter')
                     $scope.state.thirdReminderStartTimeLocal, $scope.state.thirdReminderStartTimeEpochTime);
             }
 
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
 
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders',
