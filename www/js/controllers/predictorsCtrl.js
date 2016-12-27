@@ -45,9 +45,9 @@ angular.module('starter')
             }
 
             if($scope.outcomeList) {
-                $scope.state.requestParams.effectVariableName = '**' + $scope.data.search + '**';
+                $stateParams.effectVariableName = '**' + $scope.data.search + '**';
             } else {
-                $scope.state.requestParams.causeVariableName = '**' + $scope.data.search + '**';
+                $stateParams.causeVariableName = '**' + $scope.data.search + '**';
             }
             $scope.state.requestParams.offset = null;
             populateUserCorrelationList();
@@ -174,8 +174,8 @@ angular.module('starter')
         };
 
         function setupUserPredictors() {
-            if($scope.state.requestParams.effectVariableName){
-                $scope.state.explanationHeader = "Your Top Predictors";
+            if($stateParams.effectVariableName){
+                $scope.state.explanationHeader = $stateParams.effectVariableName + " Predictors";
                 $scope.state.explanationIcon = "ion-ios-person";
                 $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
                     ' your ' + $rootScope.variableName + ' based on your own data.  ' +
@@ -186,8 +186,8 @@ angular.module('starter')
         }
 
         function setupAggregatedPredictors() {
-            if($scope.state.requestParams.effectVariableName){
-                $scope.state.explanationHeader = "Common Predictors";
+            if($stateParams.effectVariableName){
+                $scope.state.explanationHeader = $stateParams.effectVariableName + " Predictors";
                 $scope.state.explanationIcon = "ion-ios-people";
                 $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
                     ' ' + $rootScope.variableName + ' for the average user.  ' +
@@ -198,7 +198,7 @@ angular.module('starter')
         }
 
         function setupUserOutcomes() {
-            $scope.state.explanationHeader = "Your Top Outcomes";
+            $scope.state.explanationHeader = $stateParams.causeVariableName + " Outcomes";
             $scope.state.explanationIcon = "ion-ios-person";
             $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
                 ' your ' + $rootScope.variableName + ' based on your own data.  ' +
@@ -206,7 +206,7 @@ angular.module('starter')
         }
 
         function setupAggregatedOutcomes() {
-            $scope.state.explanationHeader = "Common Outcomes";
+            $scope.state.explanationHeader = $stateParams.causeVariableName + " Outcomes";
             $scope.state.explanationIcon = "ion-ios-people";
             $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
                 ' ' + $rootScope.variableName + ' for the average user.  ' +
@@ -272,33 +272,36 @@ angular.module('starter')
             }
             
             if($rootScope.urlParameters.causeVariableName){
-                $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
+                $stateParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
             }
 
             if($rootScope.urlParameters.effectVariableName){
-                $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
+                $stateParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
-            if(!$scope.state.requestParams.causeVariableName && ! $scope.state.requestParams.effectVariableName) {
-                $scope.state.requestParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
+            if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) {
+                $stateParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
             }
 
             $scope.state.requestParams.offset = 0;
             $scope.state.requestParams.limit = 10;
 
-            if ($scope.state.requestParams.causeVariableName){
-                $rootScope.variableName = $scope.state.requestParams.causeVariableName;
+            if ($stateParams.causeVariableName){
+                $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
+                $rootScope.variableName = $stateParams.causeVariableName;
+
                 $scope.outcomeList = true;
                 $scope.searchFilterBoxPlaceholderText = "Filter by specific outcome";
             }
 
-            if ($scope.state.requestParams.effectVariableName) {
-                $rootScope.variableName = $scope.state.requestParams.effectVariableName;
+            if ($stateParams.effectVariableName) {
+                $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
+                $rootScope.variableName = $stateParams.effectVariableName;
                 $scope.predictorList = true;
                 $scope.searchFilterBoxPlaceholderText = "Filter by specific predictor";
             }
 
-            if($scope.state.requestParams.effectVariableName){
+            if($stateParams.effectVariableName){
                 $scope.state.title = "Predictors";
                 if($stateParams.valence === 'positive'){
                     $scope.state.increasingDecreasing = 'INCREASING';
