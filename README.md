@@ -94,13 +94,7 @@ The main contents of the App are in the `www` folder. The structure is:
 2. www/configs/{{appname}}.js
 3. www/private_configs/{{appname}}.config.js
 
-## Contribute
-
-We love pull requests and would be very grateful if you'd help us abolish suffering with data!  
-
-I recommend using 
-[SourceTree and the Gitflow model] (https://github.com/GSoft-SharePoint/Dynamite/wiki/Getting-started-with-SourceTree,-Git-and-git-flow) 
-for development.
+## [Contribute](docs/contributing.md)
 
 ## Screenshots 
 
