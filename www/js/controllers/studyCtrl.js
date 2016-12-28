@@ -21,6 +21,10 @@ angular.module('starter')
 
             $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
+            if($rootScope.urlParameters.userId && !$rootScope.user){
+                $rootScope.sendToLogin();
+                return;
+            }
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
