@@ -24,8 +24,8 @@ if [ -z ${PREPARE_IOS_APP} ];
         echo "Running npm install"
         npm install
 
-        echo "gulp prepareQuantiModoIos"
-        gulp prepareQuantiModoIos
+        echo "gulp prepareIosApp"
+        gulp prepareIosApp
 fi
 
 if [ -z ${BUILD_ANDROID} ];
