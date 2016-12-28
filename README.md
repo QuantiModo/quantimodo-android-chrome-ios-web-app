@@ -16,7 +16,7 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Choose a name for your app.  
 1. Create your free account and app in the [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps) to get a 
 `client id` and `client secret`.
-1. Open [www/js/apps.js](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/www/js/apps.js#L10) 
+1. Open [www/js/apps.js](www/js/apps.js#L10) 
 and replace `default` with your app's name as the `defaultApp`.  (For instance, if your app 
 display name is `QuantiModo`, your lowercase app name would be `quantimodo`.)
 1. Copy and rename `www/configs/yourlowercaseappnamehere.js` with your app name. Replace `yourlowercaseappnamehere` 
@@ -41,10 +41,13 @@ and many other features.)
 or contact us at [help.quantimo.do](http://help.quantimo.do). 
 
 ## QuantiModo API
-For more info about the types of data you can store and get from the QuantiModo API, try out our [Interactive API Explorer](https://app.quantimo.do/api/v2/account/api-explorer)
+For more info about the types of data you can store and get from the QuantiModo API, try out our 
+[Interactive API Explorer](https://app.quantimo.do/api/v2/account/api-explorer)
 
 ## One Click Deploy
-When you're ready to share your app with the world, you can instantly deploy your app to Heroku. 
+When you're ready to share your app with the world, you can deploy your app to Heroku. If you'd like to deploy from your
+fork, replace the repository url in [app.json](app.json) in the root of the repository with the git url of your forked repository. 
+Then, the button will deploy from the master branch of your repository. 
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/)
 
