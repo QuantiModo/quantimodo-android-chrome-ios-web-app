@@ -1677,29 +1677,34 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 		} else {
 			if(process.env.APP_DISPLAY_NAME) {
 				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
+				console.log("Setting config.xml name to " + parsedXmlFile.widget.name[0]);
 			} else {
                 throw("APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME");
 			}
 
 			if(process.env.APP_DESCRIPTION) {
 				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
+                console.log("Setting config.xml description to " + parsedXmlFile.widget.description[0]);
 			} else {
                 throw("APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION");
             }
 
 			if(process.env.APP_IDENTIFIER) {
 				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
+                console.log("Setting config.xml id to " + parsedXmlFile.widget.$["id"]);
 			} else {
                 throw("APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER");
             }
 
             if(process.env.IONIC_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
+                console.log("Setting config.xml version to " + parsedXmlFile.widget.$["version"]);
             }
 
             if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
+                console.log("Setting config.xml version to " + parsedXmlFile.widget.$["ios-CFBundleVersion"]);
             }
 
             var builder = new xml2js.Builder();
