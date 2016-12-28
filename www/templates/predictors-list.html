@@ -13,7 +13,8 @@
             Cancel
         </button>
     </ion-header-bar>
-    <ion-content>
+    <ion-content  style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
+        <ion-refresher on-refresh="refreshList()"></ion-refresher>
         <div class="card" ng-show="state.correlationObjects.length">
             <div class="item item-avatar">
                 <i class="icon positive {{state.explanationIcon}}"
@@ -37,6 +38,26 @@
             </div>
             <div class="item item-body" style="text-align: center;">
                 {{state.explanationText}}
+            </div>
+            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
+                 class="item item-body"
+                 style="text-align: center;">
+                Results in order of descending statistical significance.
+            </div>
+            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-qmScore'"
+                 class="item item-body"
+                 style="text-align: center;">
+                Results in order of descending QM Score which is a combination of effect size and statistical significance.
+            </div>
+            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-correlationCoefficient'"
+                 class="item item-body"
+                 style="text-align: center;">
+                Results in order of descending predictive correlation.  (So you'll probably just see positive correlations.)
+            </div>
+            <div ng-if="state.requestParams.sort && state.requestParams.sort === 'correlationCoefficient'"
+                 class="item item-body"
+                 style="text-align: center;">
+                Results in order of ascending predictive correlation.  (So you'll probably just see negative correlations.)
             </div>
         </div>
         <div ng-show="searching" style="text-align: center">
@@ -88,10 +109,9 @@
                     </p>
                 </div>
                 <div class="item item-body">
-                    <img ng-src="{{correlationObject.gaugeImage}}">
+                    <img ng-src="{{correlationObject.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
                     <p>{{correlationObject.predictorExplanation}}</p>
-                    <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
-                    <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                    <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
                     <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
                 </div>
 <!--                <div class="item tabs tabs-secondary tabs-icon-left">
@@ -150,7 +170,7 @@
                 </div>
             </div>
         </div>
-        <div class="button-bar" ng-show="!state.noCorrelations && state.showLoadMoreButton">
+        <div class="button-bar" ng-show="!state.noCorrelations && state.showLoadMoreButton && !searching">
             <a class="button button-clear button-calm" ng-click="loadMore()" style="text-overflow: clip;">
                 <i class="ion-refresh">
                     Load More

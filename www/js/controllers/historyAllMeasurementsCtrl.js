@@ -2,15 +2,13 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   QuantiModo, measurementService,
-													   variableCategoryService, ratingService, localStorageService,
-													   qmLocationService) {
+													   quantimodoService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
 	    $scope.state = {
 	    	offset : 0,
-	    	limit : 200,
+	    	limit : 50,
 	    	history : [],
 			units : [],
 			variableCategories : [],
@@ -62,16 +60,20 @@ angular.module('starter')
 				params.variableName = $stateParams.variableObject.name;
 			}
 
-	    	measurementService.getHistoryMeasurements(params).then(function(history){
+            if($stateParams.variableName){
+                params.variableName = $stateParams.variableName;
+            }
+
+	    	quantimodoService.getHistoryMeasurements(params).then(function(history){
 	    		if (concat) {
 					$scope.state.history = $scope.state.history.concat(history);
 				}
     			else {
 					$scope.state.history = history;
 				}
-				$scope.state.history = ratingService.addInfoAndImagesToMeasurements($scope.state.history);
+				$scope.state.history = quantimodoService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
-				if(history.length < 200){
+				if(history.length < $scope.state.limit){
 					$scope.state.hideLoadMoreButton = true;
 					$scope.state.noHistory = history.length === 0;
 				} else {
@@ -99,9 +101,9 @@ angular.module('starter')
 
 			console.debug($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+			quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
-				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+				quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {
 				console.debug($state.current.name + ": " + "Do not track location");
 			}
@@ -115,7 +117,6 @@ angular.module('starter')
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
 
 			if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
 				$scope.state.title = $stateParams.variableCategoryName + ' History';
@@ -131,7 +132,7 @@ angular.module('starter')
 				$scope.state.trackLocation = $rootScope.user.trackLocation;
 			}
 			$scope.showHelpInfoPopupIfNecessary();
-			variableCategoryService.getVariableCategories()
+			quantimodoService.getVariableCategories()
 				.then(function(variableCategories){
 					$scope.state.variableCategories = variableCategories;
 				}, function(error){
@@ -150,17 +151,17 @@ angular.module('starter')
 
 		// when view is changed
 		$scope.$on('$ionicView.beforeEnter', function(e) {
-			$rootScope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
+			$rootScope.hideHistoryPageInstructionsCard = quantimodoService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
 		});
 
 		$scope.deleteMeasurement = function(measurement){
 			measurement.hide = true;
 			if(measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
-				measurementService.deleteMeasurementFromLocalStorage(measurement).then(function (){
-					measurementService.deleteMeasurementFromServer(measurement).then(function (){});
+				quantimodoService.deleteMeasurementFromLocalStorage(measurement).then(function (){
+					quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});
 				});
 			} else {
-				measurementService.deleteMeasurementFromServer(measurement).then(function (){});
+				quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});
 			}
 		};
 

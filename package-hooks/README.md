@@ -39,7 +39,7 @@ Cordova will pick up your `<hook />` tags within `config.xml` automatically.
 ```bash
 $ git clone https://github.com/driftyco/ionic-package-hooks.git ./package-hooks
 $ cd package-hooks
-$ npm install
+$ npm install && gulp configureApp
 ```
 
 ### Hooks

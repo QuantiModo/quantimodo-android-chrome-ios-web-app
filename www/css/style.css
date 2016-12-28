@@ -647,3 +647,24 @@ img.intro-primary-outcome-variable-rating-buttons {
 #statisticsCard label {
     padding: 6px 10px 5px 16px;
 }
+
+#skipButtonIntro:hover, #nextButtonIntro:hover, #goButtonIntro:hover
+{
+    border: none;
+    outline:none;
+}
+
+#skipButtonIntro, #nextButtonIntro, #goButtonIntro
+{
+    border: none;
+    outline:none;
+}
+
+.isBrowserView {
+    overflow-y: auto !important;
+}
+
+#navBarAvatar {
+    height: 30px;
+    border-radius: 50%;
+}

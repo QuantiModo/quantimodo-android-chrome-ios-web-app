@@ -1,0 +1,23 @@
+<div class="card variable-settings" >
+    <div ng-show="variableObject.userTagVariables" class="item item-divider ng-binding">{{variableName}} Tags</div>
+    <ion-list >
+        <ion-item ng-show="variableObject.userTagVariables && variableObject.userTagVariables.length" ng-click="editTag(item)"
+                  class="item item-text-wrap"
+                  ng-repeat="item in variableObject.userTagVariables">
+            <p>{{item.tagDisplayText}}</p>
+        </ion-item>
+        <div class="row">
+            <div class="col">
+                <button class="button button-block icon-left ion-pricetag button-positive" ng-click="addTag()">Tag {{variableName}}</button>
+            </div>
+        </div>
+    </ion-list>
+    <div ng-show="variableObject.commonTagVariables && variableObject.commonTagVariables.length" class="item item-divider ng-binding">Common Tags</div>
+    <ion-list ng-show="variableObject.commonTagVariables && variableObject.commonTagVariables.length">
+        <ion-item ng-click="editTag(item)"
+                  class="item item-text-wrap"
+                  ng-repeat="item in variableObject.commonTagVariables">
+            <p >{{item.tagDisplayText}}</p>
+        </ion-item>
+    </ion-list>
+</div>

@@ -1,0 +1,85 @@
+# Customise this file, documentation can be found here:
+# https://github.com/fastlane/fastlane/tree/master/fastlane/docs
+# All available actions: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Actions.md
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "1.101.0"
+
+default_platform :ios
+
+platform :ios do
+  app_display_name = ENV["APP_DISPLAY_NAME"]
+  puts "Fastfile app_display_name is set to #{app_display_name}"
+  xcodeproj = "./platforms/ios/#{app_display_name}.xcodeproj"
+  puts "Fastfile xcodeproj is set to #{xcodeproj}"
+
+  before_all do
+    # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    scan
+  end
+
+  desc "Submit a new Beta Build to Apple TestFlight"
+  desc "This will also make sure the profile is up to date"
+  lane :beta do
+
+    ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
+    #sh "cd .. && ruby hooks/after_platform_add.bak/xcodeprojectfix.rb"
+
+    match(git_url: "git@github.com:mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
+      app_identifier: ENV["APP_IDENTIFIER"],
+      type: "appstore",
+      readonly: true)
+
+    pem
+
+    recreate_schemes(project: xcodeproj)
+
+    gym(scheme: app_display_name,
+        project: xcodeproj) # Build your app - more options available # Build your app - more options available
+        
+    pilot(
+       skip_submission: true,
+       distribute_external: false,
+       skip_waiting_for_build_processing: true
+     )
+
+    # sh "your_script.sh"
+    # You can also use other beta testing services here (run `fastlane actions`)
+  end
+
+  # You can define as many lanes as you want
+
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+
+    # slack(
+    #   message: "Successfully deployed new App Update."
+    # )
+  end
+
+  error do |lane, exception|
+    # slack(
+    #   message: exception.message,
+    #   success: false
+    # )
+  end
+end
+
+
+# More information about multiple platforms in fastlane: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Platforms.md
+# All available actions: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Actions.md
+
+# fastlane reports which actions are used
+# No personal data is recorded. Learn more at https://github.com/fastlane/enhancer

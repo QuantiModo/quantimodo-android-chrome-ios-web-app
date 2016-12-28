@@ -2,8 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
-                                             $stateParams, chartService, localStorageService, QuantiModo, 
-                                             variableService) {
+                                             $stateParams, quantimodoService) {
         $scope.controller_name = "ChartsPageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -46,8 +45,8 @@ angular.module('starter')
 
             if ($scope.state.dailyHistory.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
-                /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
-                 var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                /*var fromDate = parseInt(quantimodoService.getLocalStorageItemAsString('fromDate'));
+                 var toDate = parseInt(quantimodoService.getLocalStorageItemAsString('toDate'));
                  if (!fromDate) {
                  fromDate = 0;
                  }
@@ -56,11 +55,11 @@ angular.module('starter')
                  }*/
                 if($rootScope.variableObject.fillingValue !== null && $rootScope.variableObject.fillingValue !== -1){
                     $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
+                        quantimodoService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
                 }
-                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
+                $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
+                    quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.highchartsReflow();
             }
         };
@@ -69,8 +68,8 @@ angular.module('starter')
 
             if ($scope.state.history.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
-                /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
-                var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                /*var fromDate = parseInt(quantimodoService.getLocalStorageItemAsString('fromDate'));
+                var toDate = parseInt(quantimodoService.getLocalStorageItemAsString('toDate'));
                 if (!fromDate) {
                     fromDate = 0;
                 }
@@ -79,23 +78,33 @@ angular.module('starter')
                 }*/
                 if($rootScope.variableObject.fillingValue === null || $rootScope.variableObject.fillingValue === -1){
                     $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
+                        quantimodoService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
                 }
                 $scope.hourlyChartConfig =
-                    chartService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
+                    quantimodoService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
                 $scope.highchartsReflow();
             }
         };
 
         var getHistoryForVariable = function(params){
+
+            if($scope.stopGettingMeasurements){
+                console.debug('Stopping getting of measurements');
+                return;
+            }
+
             if(!params.variableName){
                 console.error("ERROR: params.variableName not provided to getHistoryForVariable");
                 console.error($state.current.name + " params: " + JSON.stringify(params));
                 console.error($state.current.name + " $rootScope.variableObject: " + JSON.stringify($rootScope.variableObject));
                 return;
             }
+
+            if($rootScope.urlParameters.doNotProcess){
+                params.doNotProcess = true;
+            }
             //$scope.showLoader('Fetching measurements');
-            QuantiModo.getV1Measurements(params, function(history){
+            quantimodoService.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
                 if(history.length > 0 && $scope.state.history.length < 1000){
@@ -128,6 +137,12 @@ angular.module('starter')
         };
 
         var getDailyHistoryForVariable = function(params){
+
+            if($scope.stopGettingMeasurements){
+                console.debug('Stopping getting of measurements');
+                return;
+            }
+
             if(!params.variableName){
                 console.error("ERROR: params.variableName not provided to getHistoryForVariable");
                 console.error("params: " + JSON.stringify(params));
@@ -135,7 +150,7 @@ angular.module('starter')
                 return;
             }
             //$scope.showLoader('Fetching measurements');
-            QuantiModo.getV1MeasurementsDaily(params, function(dailyHistory){
+            quantimodoService.getMeasurementsDailyFromApiDeferred(params).then(function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
                 if(dailyHistory.length > 0 && $scope.state.dailyHistory.length < 1000){
@@ -169,12 +184,25 @@ angular.module('starter')
                 name:  variableName
             };
             $rootScope.variableName = variableName;
-            variableService.getVariablesByName(variableName).then(function(variableObject){
+            quantimodoService.getVariablesByNameDeferred(variableName).then(function(variableObject){
                 $rootScope.variableObject = variableObject;
             });
         };
+
+        $scope.$on('$ionicView.beforeLeave', function(){
+            console.debug('Leaving so setting $scope.stopGettingMeasurements to true');
+            $scope.stopGettingMeasurements = true;
+        });
         
         $scope.init = function(){
+
+            $rootScope.getAllUrlParams();
+            if($rootScope.urlParameters.variableName){
+                $stateParams.variableName = $rootScope.urlParameters.variableName;
+            }
+
+            $scope.stopGettingMeasurements = false;
+            $ionicLoading.hide();
             //$scope.showLoader('Fetching measurements');
             $scope.state.loading = true;
             console.debug("variablePageCtrl: init");
@@ -219,7 +247,9 @@ angular.module('starter')
                         { text: '<i class="icon ion-compose"></i>Record Measurement'},
                         { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                         { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                        { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+                        { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                        { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
+                        { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
                     ],
                     destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -243,6 +273,13 @@ angular.module('starter')
                         if (index === 4) {
                             $state.go('app.variableSettings',
                                 {variableObject: $rootScope.variableObject});
+                        }
+                        if (index === 5) {
+                            $scope.addTag($rootScope.variableObject);
+                        }
+                        if(index === 6) {
+                            console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
+                            $scope.tagAnotherVariable($rootScope.variableObject);
                         }
 
                         return true;

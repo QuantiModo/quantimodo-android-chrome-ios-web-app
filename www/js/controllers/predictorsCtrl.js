@@ -1,7 +1,7 @@
 angular.module('starter')
 
-	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, correlationService,
-                                           $rootScope) {
+	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, quantimodoService,
+                                           $rootScope, $ionicActionSheet) {
 
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
@@ -45,9 +45,9 @@ angular.module('starter')
             }
 
             if($scope.outcomeList) {
-                $scope.state.requestParams.effectVariableName = '**' + $scope.data.search + '**';
+                $stateParams.effectVariableName = '**' + $scope.data.search + '**';
             } else {
-                $scope.state.requestParams.causeVariableName = '**' + $scope.data.search + '**';
+                $stateParams.causeVariableName = '**' + $scope.data.search + '**';
             }
             $scope.state.requestParams.offset = null;
             populateUserCorrelationList();
@@ -69,7 +69,7 @@ angular.module('starter')
             });*/
             $scope.searching = true;
             setupAggregatedPredictors();
-            correlationService.getAggregatedCorrelations($scope.state.requestParams)
+            quantimodoService.getAggregatedCorrelationsDeferred($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         if($scope.state.requestParams.offset){
@@ -82,15 +82,13 @@ angular.module('starter')
                         $ionicLoading.hide();
                         $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
-                        correlationService.getUserCorrelations($scope.state.requestParams)
+                        quantimodoService.getUserCorrelationsDeferred($scope.state.requestParams)
                             .then(function (correlationObjects) {
                                 $ionicLoading.hide();
                                 $scope.searching = false;
                                 $scope.$broadcast('scroll.infiniteScrollComplete');
                                 if(correlationObjects.length) {
                                     setupUserPredictors();
-                                    $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
-                                        " predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                                     if($scope.state.requestParams.offset){
                                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                                     } else {
@@ -106,6 +104,8 @@ angular.module('starter')
 
                 }, function (error) {
                     $ionicLoading.hide();
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                     $scope.searching = false;
                     console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
@@ -120,16 +120,13 @@ angular.module('starter')
 
 
         function populateUserCorrelationList() {
-/*            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });*/
             $scope.searching = true;
             setupUserPredictors();
             if(typeof $scope.state.requestParams.fallbackToAggregatedCorrelations === "undefined"){
                 $scope.state.requestParams.fallbackToAggregatedCorrelations = true;
             }
 
-            correlationService.getUserCorrelations($scope.state.requestParams)
+            quantimodoService.getUserCorrelationsDeferred($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         if($scope.state.requestParams.offset){
@@ -139,8 +136,6 @@ angular.module('starter')
                         }
                         if(!$scope.state.correlationObjects[0].userId){
                             setupAggregatedPredictors();
-                            $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
-                                "your personal predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                         }
                         showLoadMoreButtonIfNecessary();
                     } else {
@@ -151,21 +146,32 @@ angular.module('starter')
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                 }, function (error) {
                     $ionicLoading.hide();
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                     $scope.searching = false;
                     console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
         }
 
         $scope.loadMore = function () {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
             if($scope.state.correlationObjects.length){
                 $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
                 populateUserCorrelationList();
             }
         };
         
+        $scope.refreshList = function () {
+            $scope.state.requestParams.offset = 0;
+            quantimodoService.clearCorrelationCache();
+            $scope.init();
+        };
+
         function setupUserPredictors() {
-            if($scope.state.requestParams.effectVariableName){
-                $scope.state.explanationHeader = "Your Top Predictors";
+            if($stateParams.effectVariableName){
+                $scope.state.explanationHeader = $stateParams.effectVariableName + " Predictors";
                 $scope.state.explanationIcon = "ion-ios-person";
                 $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
                     ' your ' + $rootScope.variableName + ' based on your own data.  ' +
@@ -176,11 +182,11 @@ angular.module('starter')
         }
 
         function setupAggregatedPredictors() {
-            if($scope.state.requestParams.effectVariableName){
-                $scope.state.explanationHeader = "Common Predictors";
+            if($stateParams.effectVariableName){
+                $scope.state.explanationHeader = $stateParams.effectVariableName + " Predictors";
                 $scope.state.explanationIcon = "ion-ios-people";
                 $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
-                    ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
+                    ' ' + $rootScope.variableName + ' for the average user.  ' +
                 'Want PERSONALIZED results? Add some reminders and start tracking!';
             } else {
                 setupAggregatedOutcomes();
@@ -188,7 +194,7 @@ angular.module('starter')
         }
 
         function setupUserOutcomes() {
-            $scope.state.explanationHeader = "Your Top Outcomes";
+            $scope.state.explanationHeader = $stateParams.causeVariableName + " Outcomes";
             $scope.state.explanationIcon = "ion-ios-person";
             $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
                 ' your ' + $rootScope.variableName + ' based on your own data.  ' +
@@ -196,12 +202,56 @@ angular.module('starter')
         }
 
         function setupAggregatedOutcomes() {
-            $scope.state.explanationHeader = "Common Outcomes";
+            $scope.state.explanationHeader = $stateParams.causeVariableName + " Outcomes";
             $scope.state.explanationIcon = "ion-ios-people";
             $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
-                ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
+                ' ' + $rootScope.variableName + ' for the average user.  ' +
                 'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
+
+
+        // Triggered on a button click, or some other target
+        $rootScope.showActionSheetMenu = function() {
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-arrow-down-c"></i>Sort by Statistical Significance'},
+                    { text: '<i class="icon ion-arrow-down-c"></i>Sort by QM Score' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Ascending Predictive Correlation' },
+                    { text: '<i class="icon ion-arrow-up-c"></i>Descending Predictive Correlation' }
+                ],
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.debug('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.debug('BUTTON CLICKED', index);
+                    if(index === 0){
+                        console.debug("Sort by Statistical Significance");
+                        $scope.state.requestParams.sort = '-statisticalSignificance';
+                        populateUserCorrelationList();
+                    }
+                    if(index === 1){
+                        console.debug("Sort by QM Score");
+                        $scope.state.requestParams.sort = '-qmScore';
+                        populateUserCorrelationList();
+                    }
+                    if(index === 2){
+                        console.debug("Ascending Predictive Correlation");
+                        $scope.state.requestParams.sort = 'correlationCoefficient';
+                        populateUserCorrelationList();
+                    }
+                    if(index === 3){
+                        console.debug("Descending Predictive Correlation");
+                        $scope.state.requestParams.sort = '-correlationCoefficient';
+                        populateUserCorrelationList();
+                    }
+
+                    return true;
+                }
+            });
+
+        };
 
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
@@ -218,44 +268,44 @@ angular.module('starter')
             }
             
             if($rootScope.urlParameters.causeVariableName){
-                $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
+                $stateParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
             }
 
             if($rootScope.urlParameters.effectVariableName){
-                $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
+                $stateParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
-            if(!$scope.state.requestParams.causeVariableName && ! $scope.state.requestParams.effectVariableName) {
-                $scope.state.requestParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
+            if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) {
+                $stateParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
             }
 
             $scope.state.requestParams.offset = 0;
             $scope.state.requestParams.limit = 10;
 
-            if ($scope.state.requestParams.causeVariableName){
-                $rootScope.variableName = $scope.state.requestParams.causeVariableName;
+            if ($stateParams.causeVariableName){
+                $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
+                $rootScope.variableName = $stateParams.causeVariableName;
+
                 $scope.outcomeList = true;
                 $scope.searchFilterBoxPlaceholderText = "Filter by specific outcome";
             }
 
-            if ($scope.state.requestParams.effectVariableName) {
-                $rootScope.variableName = $scope.state.requestParams.effectVariableName;
+            if ($stateParams.effectVariableName) {
+                $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
+                $rootScope.variableName = $stateParams.effectVariableName;
                 $scope.predictorList = true;
                 $scope.searchFilterBoxPlaceholderText = "Filter by specific predictor";
             }
 
-            if($scope.state.requestParams.effectVariableName){
+            if($stateParams.effectVariableName){
+                $scope.state.title = "Predictors";
                 if($stateParams.valence === 'positive'){
                     $scope.state.increasingDecreasing = 'INCREASING';
                     $scope.state.requestParams.correlationCoefficient = "(gt)0";
-                    $scope.state.title = "Positive Predictors";
                 } else if($stateParams.valence === 'negative'){
                     $scope.state.increasingDecreasing = 'DECREASING';
                     $scope.state.requestParams.correlationCoefficient = "(lt)0";
-                    $scope.state.title = "Negative Predictors";
-                } else {
-                    $scope.state.title = "Predictors";
-                }
+                } 
             } else {
                 $scope.state.title = "Outcomes";
             }
@@ -274,23 +324,10 @@ angular.module('starter')
 	    	// make url
 	    	name = name.split(' ').join('+');
             // launch inAppBrowser
-            window.open('http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k='+name, '_blank', 'location=no');
-	    };
 
-        $scope.showLoader = function (loadingText) {
-            if(!loadingText){
-                loadingText = '';
-            }
-            $scope.loading = true;
-            $ionicLoading.show({
-                template: loadingText + '<br><br><img src={{loaderImagePath}}>',
-                content: 'Loading',
-                animation: 'fade-in',
-                showBackdrop: false,
-                maxWidth: 1000,
-                showDelay: 0
-            });
-        };
+            var url  = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
+            $scope.openUrl(url);
+	    };
 
         $scope.goToStudyPage = function(correlationObject) {
             //console.debug('Going to study page for ' + JSON.stringify(correlationObject));

@@ -1,27 +1,35 @@
 angular.module('starter')
-	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
-                                      correlationService, chartService, $timeout, $ionicLoading, localStorageService,
-                                      wikipediaFactory) {
+	.controller('StudyCtrl', function($scope, $state, quantimodoService, $stateParams, $ionicHistory, $rootScope,
+                                      $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet) {
 
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
 
+        $scope.refreshStudy = function() {
+            quantimodoService.clearCorrelationCache();
+            getStudy();
+        };
+
         $scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
+            $scope.state = {
+                title: 'Loading study...',
+                requestParams: {},
+                hideStudyButton: true,
+                loading: true
+            };
 
             $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.state = {
-                title: 'Loading study...',
-                requestParams: {},
-                hideStudyButton: true
-            };
 
             if($stateParams.correlationObject){
                 $scope.correlationObject = $stateParams.correlationObject;
-                localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
+                $scope.state.loading = false;
+                quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($scope.correlationObject));
+                $ionicLoading.hide();
             }
             
             if($scope.correlationObject){
@@ -29,10 +37,9 @@ angular.module('starter')
                     causeVariableName: $scope.correlationObject.causeVariableName,
                     effectVariableName: $scope.correlationObject.effectVariableName
                 };
-                $scope.state.title = $scope.correlationObject.predictorExplanation;
-                addWikipediaInfo();
-                if($scope.correlationObject.userId){
-                    createUserCharts($scope.state.requestParams);
+                //addWikipediaInfo();
+                if($scope.correlationObject.userId && !$scope.correlationObject.scatterPlotConfig){
+                    getStudy($scope.state.requestParams);
                 }
                 return;
             }
@@ -45,20 +52,26 @@ angular.module('starter')
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
-            if ($rootScope.urlParameters.aggregated) {
-                var fallbackToUserStudy = false;
-                if($rootScope.user){
-                    fallbackToUserStudy = true;
-                }
-                getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
-                addWikipediaInfo();
-            } else {
-                var fallbackToAggregateStudy = true;
-                getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
-                addWikipediaInfo();
-            }
+            if(!$scope.state.requestParams.effectVariableName){
+                quantimodoService.getLocalStorageItemAsStringWithCallback('lastStudy', function (lastStudy) {
+                    if(lastStudy){
+                        $scope.correlationObject = JSON.parse(lastStudy);
+                        $scope.highchartsReflow();  //Need callback to make sure we get the study before we reflow
+                    }
+                });
+                $scope.state.loading = false;
+                $scope.state.requestParams = {
+                    causeVariableName: $scope.correlationObject.causeVariableName,
+                    effectVariableName: $scope.correlationObject.effectVariableName
+                };
 
-            //chartCorrelationsOverTime();
+                //addWikipediaInfo();
+                if($scope.correlationObject.userId && !$scope.correlationObject.scatterPlotConfig){
+                    getStudy($scope.state.requestParams);
+                }
+            } else {
+                getStudy();
+            }
         };
 
         function addWikipediaInfo() {
@@ -132,112 +145,81 @@ angular.module('starter')
             });
         }
 
-        function createUserCharts(params) {
+        $scope.weightedPeriod = 5;
+
+        $scope.createUserCharts = function() {
+            $scope.loadingCharts = false;
+            $scope.state.loading = false;
+            $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
+                $scope.correlationObject.causeProcessedDailyMeasurements,
+                {variableName: $scope.state.requestParams.causeVariableName});
+            $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
+                $scope.correlationObject.effectProcessedDailyMeasurements,
+                {variableName: $scope.state.requestParams.effectVariableName});
+
+            $scope.highchartsReflow();
+            $ionicLoading.hide();
+        };
+
+        function getStudy() {
             $scope.loadingCharts = true;
-            params.includeProcessedMeasurements = true;
-            QuantiModo.getPairsDeferred(params).then(function (data) {
+            quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
+                if(data.userStudy){
+                    $scope.correlationObject = data.userStudy;
+                }
+                if(data.publicStudy){
+                    $scope.correlationObject = data.publicStudy;
+                }
+                quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($scope.correlationObject));
+                $scope.createUserCharts();
+            }, function (error) {
+                console.error(error);
                 $scope.loadingCharts = false;
-                $scope.scatterplotChartConfig = chartService.createScatterPlot(params, data.pairs);
-                //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-                //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-                $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                    data.causeProcessedMeasurements, {variableName: params.causeVariableName});
-                $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
-                    data.effectProcessedMeasurements, {variableName: params.effectVariableName});
-                $scope.highchartsReflow();
+                $scope.state.loading = false;
+                $scope.state.studyNotFound = true;
+                $scope.state.title = 'Study Not Found';
             });
         }
 
-        var getUserStudy = function (params, fallbackToAggregateStudy) {
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
-            
-            correlationService.getUserCorrelations(params).then(function (correlations) {
-                $ionicLoading.hide();
-                if (correlations[0]) {
-                    $scope.correlationObject = correlations[0];
-                    localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
-                    $scope.state.title = $scope.correlationObject.predictorExplanation;
-                    createUserCharts(params);
-                } else {
-                    if(!fallbackToAggregateStudy){
-                        $scope.state.studyNotFound = true;
-                        $scope.state.title = 'Study Not Found';
-                    } else {
-                        getAggregateStudy(params);
-                    }
-                }
-            }, function (error) {
-                console.error(error);
-                $ionicLoading.hide();
-                if(!fallbackToAggregateStudy){
-                    $scope.state.studyNotFound = true;
-                    $scope.state.title = 'Study Not Found';
-                } else {
-                    getAggregateStudy(params);
-                }
-            });
-        };
+        $rootScope.showActionSheetMenu = function() {
 
-        var getAggregateStudy = function (params, fallbackToUserStudy) {
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
-            correlationService.getAggregatedCorrelations(params).then(function (correlations) {
-                $ionicLoading.hide();
-                if (correlations[0]) {
-                    $scope.correlationObject = correlations[0];
-                    localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
-                    $scope.state.title = $scope.correlationObject.predictorExplanation;
-                } else {
-                    if(!fallbackToUserStudy){
-                        $scope.state.studyNotFound = true;
-                        $scope.state.title = 'Study Not Found';
-                    } else {
-                        getUserStudy(params);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-log-in"></i>' + $scope.correlationObject.causeVariableName + ' Settings' },
+                    { text: '<i class="icon ion-log-out"></i>' + $scope.correlationObject.effectVariableName + ' Settings' },
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Seems Wrong',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.debug($state.current.name + ": " + 'CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
+                    if(index === 0){
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.correlationObject.causeVariableName});
                     }
-                }
-            }, function (error) {
-                $ionicLoading.hide();
-                if(!fallbackToUserStudy){
-                    $scope.state.studyNotFound = true;
-                    $scope.state.title = 'Study Not Found';
-                } else {
-                    getUserStudy(params);
-                }
-            });
-        };
+                    if(index === 1){
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.correlationObject.effectVariableName});
+                    }
 
-        var chartCorrelationsOverTime = function () {
-            var params = {
-                effectVariableName: $scope.correlationObject.effectVariableName,
-                causeVariableName: $scope.correlationObject.causeVariableName,
-                durationOfAction: 86400,
-                doNotGroup: true
-            };
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.downVote();
+                    return true;
+                }
+            });
 
-            if($scope.correlationObject.userId){
-                correlationService.getUserCorrelations(params).then(function(userCorrelations){
-                    if(userCorrelations.length > 2){
-                        $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(userCorrelations);
-                        console.debug($scope.lineChartConfig);
-                        $scope.highchartsReflow();
-                    }
-                });
-            } else {
-                correlationService.getAggregatedCorrelations(params).then(function(aggregatedCorrelations){
-                    if(aggregatedCorrelations.length > 2){
-                        $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(aggregatedCorrelations);
-                        console.debug($scope.lineChartConfig);
-                        $scope.highchartsReflow();
-                    }
-                });
-            }
+            console.debug('Setting hideSheet timeout');
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
         };
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            $scope.hideLoader();
             $scope.init();
         });
 	});

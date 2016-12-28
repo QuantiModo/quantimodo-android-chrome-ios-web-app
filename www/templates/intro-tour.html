@@ -30,8 +30,23 @@
                     <br>
                 </p>
                 <div class="button-bar">
+                    <a id="skipButtonIntro"
+                       class="button"
+                       ng-show="myIntro.slideIndex != introSlides.length-1 "
+                       style="background-color: {{introSlide.backgroundColor}}; color: {{introSlide.textColor}}; text-align: center"
+                       ng-click="myIntro.startApp()">
+                        SKIP
+                    </a>
+                    <a id="nextButtonIntro"
+                       class="button"
+                       style="background-color: {{introSlide.backgroundColor}}; color: {{introSlide.textColor}}; text-align: center"
+                       ng-show="myIntro.slideIndex != introSlides.length-1 && myIntro.slideIndex != introSlides.length-1"
+                       ng-click="myIntro.next()">
+                        NEXT
+                    </a>
+                </div>
                     <!--Don't put at bottom because they conflict with the dots-->
-                <!--<div class="button-bar" style="position: absolute; bottom: 0;" ng-hide="isIOS">-->
+                <!--<div class="button-bar" style="position: absolute; bottom: 0;">
                     <a id="skipButtonIntro"
                        class="button"
                        ng-show="myIntro.slideIndex != introSlides.length-1 "
@@ -46,7 +61,9 @@
                        ng-click="myIntro.next()">
                         NEXT
                     </a>
-                </div>
+                    </div>
+                    -->
+
             </div>
         </ion-slide>
     </ion-slide-box>

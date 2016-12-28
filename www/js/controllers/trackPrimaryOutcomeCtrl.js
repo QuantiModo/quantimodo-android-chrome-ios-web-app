@@ -1,8 +1,8 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, measurementService,
-                                                    chartService, localStorageService, ratingService, $stateParams) {
+    .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, quantimodoService,
+                                                    $stateParams) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
         $rootScope.showFilterBarSearchIcon = false;
@@ -13,7 +13,7 @@ angular.module('starter')
         $scope.averagePrimaryOutcomeVariableImage = false;
         $scope.averagePrimaryOutcomeVariableValue = false;
         $scope.showRatingFaces = true;
-        $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
+        var syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -28,13 +28,13 @@ angular.module('starter')
             }
 
             //  add to measurementsQueue
-            var primaryOutcomeMeasurement = measurementService.createPrimaryOutcomeMeasurement(numericRatingValue);
-            measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
+            var primaryOutcomeMeasurement = quantimodoService.createPrimaryOutcomeMeasurement(numericRatingValue);
+            quantimodoService.addToMeasurementsQueue(primaryOutcomeMeasurement);
             updateCharts();
 
             if(!$rootScope.isSyncing && $rootScope.user){
-                $scope.showLoader($scope.syncDisplayText);
-                measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+                $scope.showLoader(syncDisplayText);
+                quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();
                 });
@@ -52,14 +52,14 @@ angular.module('starter')
             $scope.averagePrimaryOutcomeVariableText =
                 config.appSettings.ratingValueToTextConversionDataSet[$scope.averagePrimaryOutcomeVariableValue ];
             if($scope.averagePrimaryOutcomeVariableText){
-                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
+                $scope.averagePrimaryOutcomeVariableImage = quantimodoService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
             }
             $scope.highchartsReflow();
         };
 
         var updateCharts = function(){
-            $scope.state.primaryOutcomeMeasurements = localStorageService.getItemAsObject('allMeasurements');
-            var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
+            $scope.state.primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('allMeasurements');
+            var measurementsQueue = quantimodoService.getLocalStorageItemAsObject('measurementsQueue');
             if(!$scope.state.primaryOutcomeMeasurements){
                 $scope.state.primaryOutcomeMeasurements = [];
             }
@@ -68,17 +68,17 @@ angular.module('starter')
             }
             if( $scope.state.primaryOutcomeMeasurements) {
                 $scope.hourlyChartConfig =
-                    chartService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
+                    quantimodoService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements,
+                    quantimodoService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 $scope.distributionChartConfig =
-                    chartService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
+                    quantimodoService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 updateAveragePrimaryOutcomeRatingView();
                 $scope.lineChartConfig =
-                    chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
+                    quantimodoService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
             }
             $scope.highchartsReflow();
@@ -96,9 +96,9 @@ angular.module('starter')
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
             if($rootScope.user || $rootScope.accessToken){
-                $scope.showLoader($scope.syncDisplayText);
+                $scope.showLoader(syncDisplayText);
                 console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
-                measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+                quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();
                 });

@@ -38,13 +38,13 @@ var onFaceButtonClicked = function() {
         startTimeEpoch: Math.floor(Date.now() / 1000),
         value: ratingValue
     }];
-    // Add it to a request, payload is what we'll send to QuantiModo
+    // Add it to a request, payload is what we'll send to quantimodoService
     var request = {
         message: "uploadMeasurements",
         payload: [{
             measurements: measurements,
             variableName: "Overall Mood",
-            source: "MoodiModo",
+            sourceName: "MoodiModo Chrome",
             category: "Mood",
             combinationOperation: "MEAN",
             unit: "/5"

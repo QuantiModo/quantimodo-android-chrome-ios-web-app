@@ -1,30 +1,36 @@
 <ion-side-menus enable-menu-with-back-views="true" >
     <ion-side-menu-content>
-        <ion-nav-bar class="bar-positive">
+        <ion-nav-bar class="{{appSettings.ionNavBarClass}}" ng-hide="hideNavigationMenu" >
             <ion-nav-buttons side="left">
-                <button ng-hide="hideNavigationMenu" class="button button-icon button-clear ion-navicon" menu-toggle="left">
+                <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
                 </button>
             </ion-nav-buttons>
 
             <ion-nav-buttons side="right">
+
                 <div class="buttons">
+                    <a href="#/app/settings"
+                       ng-if="user && user.avatar"
+                       class="button button-clear" >
+                        <img id="navBarAvatar" ng-src="{{user.avatar}}">
+                    </a>
                     <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="toggleFilterBar($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText" ng-click="onGenericHelpButtonPress()"></button>
-                    <button class="button button-icon ion-help-circled" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
+                    <button class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
                     <button class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
         <div class="col"
-             ng-show="hideNavigationMenu && connectionErrorShowing;"
+             ng-show="hideNavigationMenu && offlineConnectionErrorShowing;"
              style="top:0px!important;"
-             ng-class="{'connection-error-indicator':connectionErrorShowing}">
+             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
             <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
         </div>
         <div class="col"
-             ng-show="!hideNavigationMenu && connectionErrorShowing;"
-             ng-class="{'connection-error-indicator':connectionErrorShowing}">
+             ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
+             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
             <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
         </div>
         <div class="col"
