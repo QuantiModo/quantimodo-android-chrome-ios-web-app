@@ -2,7 +2,7 @@
 	"name": "QuantiModo",
 	"description": "Track and optimize any variable on the web, iOS, Android, or Chrome",
 	"repository": "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app",
-	"logo": "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app",
+	"logo": "https://www.challenge.gov/wp-content/uploads/2016/05/quantimodo-logo-qm-rainbow-768x768.jpg",
 	"keywords": ["tracking", "health", "mood", "quantified self"],
 	"website": "https://quantimo.do/",
 	"env": {
