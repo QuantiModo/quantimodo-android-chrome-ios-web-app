@@ -45,11 +45,13 @@ For more info about the types of data you can store and get from the QuantiModo 
 [Interactive API Explorer](https://app.quantimo.do/api/v2/account/api-explorer)
 
 ## One Click Deploy
-When you're ready to share your app with the world, you can deploy your app to Heroku. If you'd like to deploy from your
-fork, replace the repository url in [app.json](app.json) in the root of the repository with the git url of your forked repository. 
-Then, the button will deploy from the master branch of your repository. 
+When you're ready to share your app with the world, you can deploy your app to Heroku. 
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/)
+
+After creating your Heroku app with the above button, go to the "Deploy" section for your app in the Heroku dashboard.
+There, you can link the Heroku app to your Github repository.  Then, it will automatically update when you push changes
+to Github.
 
 ## Chrome Development Tips
 1. Install [Chrome Apps & Extensions Developer Tool](https://Chrome.google.com/webstore/detail/Chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc?utm_source=Chrome-ntp-icon)
