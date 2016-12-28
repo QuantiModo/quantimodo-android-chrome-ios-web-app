@@ -102,12 +102,8 @@ for development.
 ## Screenshots 
 
 
-![](https://raw.githubusercontent.com/QuantiModo/quantimodo-android-chrome-ios-web-app/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206%2B)%20-%20History%20Screenshot%201.jpg)
-
-![](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20bar%20chart%20Screenshot%201.jpg?raw=true)
-
-![](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20import%20data%20Screenshot%201.jpg?raw=true)
-
-![](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20predictors%20Screenshot%201.jpg?raw=true)
-
-![](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20reminder%20inbox%20Screenshot%201.jpg?raw=true)
+<img src="https://raw.githubusercontent.com/QuantiModo/quantimodo-android-chrome-ios-web-app/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206%2B)%20-%20History%20Screenshot%201.jpg" width="172">
+<img src="https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20import%20data%20Screenshot%201.jpg" width="172">
+<img src="https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20bar%20chart%20Screenshot%201.jpg" width="172">
+<img src="https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20predictors%20Screenshot%201.jpg" width="172">
+<img src="https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20reminder%20inbox%20Screenshot%201.jpg?" width="172">
