@@ -1910,7 +1910,7 @@ angular.module('starter')
         };
 
         // post a single measurement
-        quantimodoService.postTrackingMeasurement = function(measurementInfo, usePromise){
+        quantimodoService.postMeasurementDeferred = function(measurementInfo, usePromise){
 
             var deferred = $q.defer();
 
@@ -2755,7 +2755,7 @@ angular.module('starter')
                     note: $rootScope.lastLocationAddress,
                     combinationOperation: "SUM"
                 };
-                quantimodoService.postTrackingMeasurement(newMeasurement);
+                quantimodoService.postMeasurementDeferred(newMeasurement);
                 quantimodoService.setLocationVariables(result, currentTimeEpochSeconds);
             }
         };

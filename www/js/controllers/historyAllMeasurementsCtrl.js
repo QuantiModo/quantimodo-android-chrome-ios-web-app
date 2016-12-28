@@ -60,6 +60,10 @@ angular.module('starter')
 				params.variableName = $stateParams.variableObject.name;
 			}
 
+            if($stateParams.variableName){
+                params.variableName = $stateParams.variableName;
+            }
+
 	    	quantimodoService.getHistoryMeasurements(params).then(function(history){
 	    		if (concat) {
 					$scope.state.history = $scope.state.history.concat(history);
@@ -113,7 +117,6 @@ angular.module('starter')
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
 
 			if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
 				$scope.state.title = $stateParams.variableCategoryName + ' History';

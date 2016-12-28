@@ -985,13 +985,13 @@ angular.module('starter',
             }
         })
         .state('app.predictorsAll', {
-            url: "/predictors",
+            url: "/predictors/:effectVariableName",
             params: {
                 aggregated: false,
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
                     correlationCoefficient: null
                 }
             },
@@ -1004,13 +1004,13 @@ angular.module('starter',
             }
         })
         .state('app.outcomesAll', {
-            url: "/outcomes",
+            url: "/outcomes/:causeVariableName",
             params: {
                 aggregated: false,
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
                     correlationCoefficient: null
                 }
             },
@@ -1023,15 +1023,35 @@ angular.module('starter',
             }
         })
         .state('app.predictorsPositive', {
-            url: "/predictors/positive",
+            url: "/predictors-positive",
             params: {
                 aggregated: false,
                 valence: 'positive',
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
-                    correlationCoefficient: null
+                    correlationCoefficient: '(gt)0'
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsPositiveVariable', {
+            url: "/predictors-positive-variable/:effectVariableName",
+            params: {
+                aggregated: false,
+                valence: 'positive',
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: '(gt)0'
                 }
             },
             cache: false,
@@ -1043,15 +1063,35 @@ angular.module('starter',
             }
         })
         .state('app.predictorsNegative', {
-            url: "/predictors/negative",
+            url: "/predictors-negative",
             params: {
                 aggregated: false,
                 valence: 'negative',
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
-                    correlationCoefficient: null
+                    correlationCoefficient: '(lt)0'
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsNegativeVariable', {
+            url: "/predictors-negative-variable/:effectVariableName",
+            params: {
+                aggregated: false,
+                valence: 'negative',
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: '(lt)0'
                 }
             },
             cache: false,
@@ -1063,13 +1103,13 @@ angular.module('starter',
             }
         })
         .state('app.predictorsUser', {
-            url: "/predictors/user",
+            url: "/predictors/user/:effectVariableName",
             params: {
                 aggregated: false,
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
                     correlationCoefficient: null
                 }
             },
@@ -1082,7 +1122,7 @@ angular.module('starter',
             }
         })
         .state('app.predictorsAggregated', {
-            url: "/predictors/aggregated",
+            url: "/predictors/aggregated/:effectVariableName",
             params: {
                 aggregated: true,
                 variableObject : null,
@@ -1202,9 +1242,10 @@ angular.module('starter',
             }
         })
         .state('app.historyAllVariable', {
-            url: "/history-all/:variableName",
+            url: "/history-all-variable/:variableName",
             cache: false,
             params: {
+                variableName: null,
                 variableObject : null
             },
             views: {

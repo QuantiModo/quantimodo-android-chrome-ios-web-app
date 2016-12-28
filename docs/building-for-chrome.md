@@ -15,7 +15,7 @@ upload it to the developer dashboard.
 ### Automated Chrome Web Store Upload
 You can use gulp task to simplify the process of building and publishing Chrome app. To use the gulp task you must 
 publish it once manually and copy its app id in gulpfile.js like this 
-https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/gulpfile.js. 
+https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/gulpfile.js. 
 
 Once you have done that, follow these steps to build, upload, and publish the Chrome app to Webstore.
 

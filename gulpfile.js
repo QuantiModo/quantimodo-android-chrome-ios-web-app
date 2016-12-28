@@ -38,13 +38,13 @@ var paths = {
 };
 
 if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.6.0';
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.7.0';
     console.log('Falling back to OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 }
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.7.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.8.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
@@ -67,18 +67,21 @@ function execute(command, callback){
     my_child_process.stderr.pipe(process.stderr);
 }
 
-
-
 function generatePrivateConfigFromEnvs(callback) {
 
     if(!process.env.QUANTIMODO_CLIENT_ID){
         console.warn('Not going to generatePrivateConfigFromEnvs because QUANTIMODO_CLIENT_ID env is not set');
+        if(callback){
+            callback();
+        }
         return;
     }
 
-    //process.env.QUANTIMODO_CLIENT_SECRET = 'abc';
     if(!process.env.QUANTIMODO_CLIENT_SECRET){
         console.error('ERROR: Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
+        if(callback){
+            callback();
+        }
         return;
     }
 
@@ -112,6 +115,9 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
 
     if(!process.env.ENCRYPTION_SECRET){
         console.error('ERROR: Please set ENCRYPTION_SECRET environmental variable!');
+        if(callback){
+            callback();
+        }
         return;
     }
 
@@ -123,6 +129,9 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
     execute(cmd, function(error){
         if(error !== null){
             console.error("ERROR: DECRYPTING: " + error);
+            if(callback){
+                callback();
+            }
         } else {
             console.log("DECRYPTED to " + decryptedFilePath);
             if(callback){
@@ -135,7 +144,7 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
 function decryptPrivateConfig(callback) {
 	if(process.env.QUANTIMODO_CLIENT_SECRET){
 		console.log("Not decrypting private config because we should generate it from envs instead");
-        generatePrivateConfigFromEnvs();
+        generatePrivateConfigFromEnvs(callback);
         return;
 	}
     var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
@@ -166,7 +175,7 @@ function loadConfigs(callback) {
             process.env.APP_DESCRIPTION = appSettings.appDescription;
             process.env.IONIC_APP_ID = appSettings.ionicAppId;
 
-            process.env.privateConfig = require(pathToPrivateConfig);
+            //process.env.privateConfig = require(pathToPrivateConfig);
 
             if(callback){
                 callback();
@@ -241,8 +250,8 @@ gulp.task('swagger', function(){
 
 
 
-gulp.task('generatePrivateConfigFromEnvs', function(){
-	generatePrivateConfigFromEnvs();
+gulp.task('generatePrivateConfigFromEnvs', function(callback){
+	generatePrivateConfigFromEnvs(callback);
 });
 
 var answer = '';
@@ -578,10 +587,10 @@ gulp.task('decryptPrivateConfig', [], function(callback){
 	decryptPrivateConfig(callback);
 });
 
-gulp.task('decryptPrivateConfigToDefault', [], function(){
+gulp.task('decryptPrivateConfigToDefault', [], function(callback){
     var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
     var decryptedFilePath = './www/private_configs/default.config.js';
-    decryptFile(fileToDecryptPath, decryptedFilePath);
+    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 
 gulp.task('deleteFacebookPlugin', function(callback){
@@ -1283,8 +1292,7 @@ gulp.task('replaceVersionNumbersInFiles', function(callback){
 	runSequence(
 		//'setVersionNumberInConfigXml',  Messes it up, I think. Replacing with shell script for now.
 		'setVersionNumberInFiles',
-		'setVersionNumberInConfigXml',
-        'setVersionNumberInIosConfigXml',
+        //'setVersionNumberInIosConfigXml',
 		callback);
 });
 
@@ -1812,6 +1820,7 @@ gulp.task('configureApp', [], function(callback){
 		'generatePrivateConfigFromEnvs',
 		'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
 		'decryptPrivateConfigToDefault',
+        'loadConfigs',
 		//'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
 		// templates because of the git changes and weird stuff replacement does to config-template.xml
 		'copyAppConfigToDefault',

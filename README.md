@@ -16,7 +16,7 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Choose a name for your app.  
 1. Create your free account and app in the [QuantiModo Developer Portal](https://app.quantimo.do/api/v2/apps) to get a 
 `client id` and `client secret`.
-1. Open [www/js/apps.js](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/www/js/apps.js#L10) 
+1. Open [www/js/apps.js](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/www/js/apps.js#L10) 
 and replace `default` with your app's name as the `defaultApp`.  (For instance, if your app 
 display name is `QuantiModo`, your lowercase app name would be `quantimodo`.)
 1. Copy and rename `www/configs/yourlowercaseappnamehere.js` with your app name. Replace `yourlowercaseappnamehere` 
@@ -37,7 +37,7 @@ and many other features.)
 [http://localhost:8100/#/](http://localhost:8100/#/).
 1. Great job!  :D  Now you can start configuring your app by changing settings in 
 `www/configs/yourlowercaseappnamehere.js` and modifying the code as needed!
-1. Need help?  Please [create an issue](https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/issues) 
+1. Need help?  Please [create an issue](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/issues) 
 or contact us at [help.quantimo.do](http://help.quantimo.do). 
 
 ## QuantiModo API
@@ -46,7 +46,7 @@ For more info about the types of data you can store and get from the QuantiModo 
 ## One Click Deploy
 When you're ready to share your app with the world, you can instantly deploy your app to Heroku. 
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/)
 
 ## Chrome Development Tips
 1. Install [Chrome Apps & Extensions Developer Tool](https://Chrome.google.com/webstore/detail/Chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc?utm_source=Chrome-ntp-icon)
@@ -98,3 +98,16 @@ We love pull requests and would be very grateful if you'd help us abolish suffer
 I recommend using 
 [SourceTree and the Gitflow model] (https://github.com/GSoft-SharePoint/Dynamite/wiki/Getting-started-with-SourceTree,-Git-and-git-flow) 
 for development.
+
+## Screenshots 
+
+
+![](https://raw.githubusercontent.com/QuantiModo/quantimodo-android-chrome-ios-web-app/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206%2B)%20-%20History%20Screenshot%201.jpg)
+
+![](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20bar%20chart%20Screenshot%201.jpg?raw=true)
+
+![](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20import%20data%20Screenshot%201.jpg?raw=true)
+
+![](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20predictors%20Screenshot%201.jpg?raw=true)
+
+![](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/blob/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20reminder%20inbox%20Screenshot%201.jpg?raw=true)

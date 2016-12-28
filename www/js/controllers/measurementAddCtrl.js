@@ -2,7 +2,7 @@ angular.module('starter')
 
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
                                                $ionicActionSheet, $ionicHistory, quantimodoService,
-                                               ionicTimePicker, ionicDatePicker) {
+                                               ionicTimePicker, ionicDatePicker, $ionicLoading) {
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -228,7 +228,6 @@ angular.module('starter')
             return true;
         };
 
-
         $scope.done = function(){
 
             if($rootScope.bloodPressure.show){
@@ -279,8 +278,12 @@ angular.module('starter')
             console.debug($state.current.name + ": " + 'measurementAddCtrl.done is posting this measurement: ' +
                 JSON.stringify(measurementInfo));
 
+            // Uncomment if you want to go to variable measurement history instead of default state
+            //postMeasurementAndGoToHistory(measurementInfo);
+            //return;
+
             // Measurement only - post measurement. This is for adding or editing
-            quantimodoService.postTrackingMeasurement(measurementInfo, true);
+            quantimodoService.postMeasurementDeferred(measurementInfo, true);
             var backView = $ionicHistory.backView();
             if(backView.stateName.toLowerCase().indexOf('search') > -1){
                 $state.go(config.appSettings.defaultState);
@@ -289,6 +292,18 @@ angular.module('starter')
             } else {
                 $ionicHistory.goBack();
             }
+        };
+
+        var postMeasurementAndGoToHistory = function (measurementInfo) {
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+            quantimodoService.postMeasurementDeferred(measurementInfo, true).then(function () {
+                $ionicLoading.hide();
+                $state.go('app.historyAllVariable', { variableName: $scope.state.measurement.variableName });
+            }, function (error){
+                $ionicLoading.hide();
+                console.error("postMeasurementAndGoToHistory error: " + error);
+                $state.go('app.historyAllVariable', { variableName: $scope.state.measurement.variableName });
+            });
         };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
@@ -573,7 +588,6 @@ angular.module('starter')
                 $scope.state.showMoreUnits = true;
             }
         };
-
 
         function setupValueFieldType(abbreviatedUnitName, variableDescription) {
             
