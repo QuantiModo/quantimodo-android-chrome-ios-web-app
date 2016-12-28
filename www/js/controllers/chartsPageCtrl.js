@@ -18,6 +18,8 @@ angular.module('starter')
             dailyHistoryOffset: 0
         };
 
+        var maximumMeasurements = 2000;
+
         $rootScope.showFilterBarSearchIcon = false;
 
         $scope.addNewReminderButtonClick = function() {
@@ -107,7 +109,7 @@ angular.module('starter')
             quantimodoService.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
-                if(history.length > 0 && $scope.state.history.length < 1000){
+                if(history.length > 0 && $scope.state.history.length < maximumMeasurements){
                     $scope.state.offset = $scope.state.offset + 200;
                     params = {
                         offset: $scope.state.offset,
@@ -153,7 +155,7 @@ angular.module('starter')
             quantimodoService.getMeasurementsDailyFromApiDeferred(params).then(function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
-                if(dailyHistory.length > 0 && $scope.state.dailyHistory.length < 1000){
+                if(dailyHistory.length > 0 && $scope.state.dailyHistory.length < maximumMeasurements){
                     $scope.state.dailyHistoryOffset = $scope.state.dailyHistoryOffset + 200;
                     params = {
                         offset: $scope.state.dailyHistoryOffset,

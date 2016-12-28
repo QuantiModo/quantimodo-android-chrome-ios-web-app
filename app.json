@@ -22,6 +22,10 @@
 			"description": "The QuantiModo client secret generated at https://app.quantimo.do/api/v2/apps",
 			"value": "your_quantimodo_client_secret_here"
 		}
-	}
-
+	},
+	"buildpacks": [
+		{
+			"url": "https://github.com/heroku/heroku-buildpack-nodejs"
+		}
+	]
 }
