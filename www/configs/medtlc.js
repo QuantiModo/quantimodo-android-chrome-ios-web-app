@@ -117,7 +117,7 @@ config.appSettings  = {
             backgroundColor: '#3467d6',
             content : {
 
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Welcome to MedTLC',
                     classes : 'intro-header positive'
@@ -126,7 +126,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph : {
+                finalP : {
                     visible : true,
                     content : 'Medication - Track. Learn. Connect.',
                     classes : 'intro-paragraph',
@@ -143,7 +143,7 @@ config.appSettings  = {
             textColor: 'white',
             backgroundColor: '#0f9d58',
             content : {
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Medications',
                     classes : 'intro-header positive'
@@ -152,7 +152,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Add medications reminders and record your intake.',
                     classes : 'intro-paragraph-small',
@@ -171,7 +171,7 @@ config.appSettings  = {
             backgroundColor: '#f09402',
             content : {
 
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Record How You Feel',
                     classes : 'intro-header positive'
@@ -182,7 +182,7 @@ config.appSettings  = {
                     id : 'logo'
                 },
 
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Record "How I Feel" responses to provide critical feedback to your doctor. This gives your doctor the data needed to change medications and adjust dosages when necessary.',
                     classes : 'intro-paragraph-small',
@@ -199,7 +199,7 @@ config.appSettings  = {
             textColor: 'white',
             backgroundColor: '#3467d6',
             content : {
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Connect with Your Physician',
                     classes : 'intro-header positive'
@@ -210,7 +210,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Print or send reports of your treatments and responses to your doctors.',
                     classes : 'intro-paragraph',

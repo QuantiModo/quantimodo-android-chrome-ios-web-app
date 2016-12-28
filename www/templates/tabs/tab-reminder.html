@@ -1,0 +1,26 @@
+<ion-nav-view name="tab-reminder"></ion-nav-view>
+<div >
+    <button class="button button-icon icon ion-ios-minus-outline royal" ng-click="data.showDelete = !data.showDelete">
+    </button>
+</div>
+<ion-list show-delete="data.showDelete" >
+
+
+    <ion-item  ng-repeat="item in items"
+               item="item"
+               ng-click="clickItem()"
+               class="item-remove-animate"
+    >
+
+        <ion-delete-button class="ion-minus-circled"
+                           ng-click="onItemDelete(item)">
+        </ion-delete-button>
+
+        Item {{ item.id }}
+        <div class="item-icon-right">
+            <i class="icon ion-ios-information-outline royal"></i>
+        </div>
+    </ion-item>
+</ion-list>
+<button class="button button-icon icon ion-ios-plus-outline royal hide-on-keyboard-open" ></button><span id="open_keyb">Add More</span>
+<ion-list>

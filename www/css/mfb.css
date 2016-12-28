@@ -119,18 +119,18 @@
     #BUTTONS | Base
 \*------------------------------------*/
 .mfb-component__button--main, .mfb-component__button--child {
-  background-color: #E40A5D;
+  background-color:#33cd5f;
   display: inline-block;
   position: relative;
   border: none;
   border-radius: 50%;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
   cursor: pointer;
-  outline: none;
+  outline:none;
   padding: 0;
   position: relative;
   -webkit-user-drag: none;
-  color: #f1f1f1; }
+  color: white; }
 
 /**
  * This is the unordered list for the list items that contain
@@ -612,10 +612,10 @@
   content: attr(data-mfb-label);
   opacity: 0;
   transition: all 0.5s;
-  background: rgba(0, 0, 0, 0.9);
+  background:#8153df;
   padding: 4px 10px;
   border-radius: 3px;
-  color: rgba(255, 255, 255, 0.8);
+  color: white;
   font-size: 14px;
   font-weight: normal;
   pointer-events: none;
