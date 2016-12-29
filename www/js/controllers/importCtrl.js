@@ -102,11 +102,9 @@ angular.module('starter')
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			$ionicLoading.show({
-				template: '<ion-spinner></ion-spinner>'
-			});
+			$ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
 
-			if($rootScope.isMobile || $stateParams.native){
+			if(true || $rootScope.isMobile || $stateParams.native){
 				loadNativeConnectorPage();
 			} else {
 				goToWebImportDataPage();
@@ -165,6 +163,12 @@ angular.module('starter')
             };
 
 			if(connector.name === 'github') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = ['user', 'repo'];
 				$cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
 					scopes).then(function(result) {
@@ -175,6 +179,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'withings') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				$cordovaOauth.withings(window.private_keys.WITHINGS_CLIENT_ID, window.private_keys.WITHINGS_CLIENT_SECRET)
 					.then(function(result) {
 						connectWithToken(result);
@@ -184,6 +194,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'fitbit') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = [
 					'activity',
 					'heartrate',
@@ -206,6 +222,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'runkeeper') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = [];
 				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
@@ -217,6 +239,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'rescuetime') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = ['time_data', 'category_data', 'productivity_data'];
 				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
@@ -228,6 +256,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'slice') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = [];
 				options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
@@ -240,6 +274,12 @@ angular.module('starter')
 
 
 			if(connector.name === 'facebook') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = ['user_likes', 'user_posts'];
 				$cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
 					.then(function(result) {
@@ -250,6 +290,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'googlefit') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = [
 					"https://www.googleapis.com/auth/fitness.activity.read",
 					"https://www.googleapis.com/auth/fitness.body.read",
@@ -266,6 +312,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'googlecalendar') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = [
 					"https://www.googleapis.com/auth/calendar",
 					"https://www.googleapis.com/auth/calendar.readonly"
@@ -280,6 +332,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'sleepcloud') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = [
 					'https://www.googleapis.com/auth/userinfo.email'
 				];
@@ -293,6 +351,12 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'up') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
 				scopes = [
 					'basic_read',
 					'extended_read',
@@ -555,5 +619,13 @@ angular.module('starter')
 		$scope.getItHere = function (connector){
 			window.open(connector.getItUrl, '_blank');
 		};
+
+
+		var webConnect = function (connector) {
+			var url = connector.connectInstructions.url;
+            console.debug('targetUrl is ',  url);
+            var ref = window.open(url,'', "width=600,height=800");
+            console.debug('Opened ' + url);
+        };
 
 	});
