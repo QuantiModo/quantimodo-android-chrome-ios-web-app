@@ -3015,7 +3015,7 @@ angular.module('starter')
 
             quantimodoService.getTrackingRemindersFromApi(params, function(remindersResponse){
                 if(remindersResponse && remindersResponse.data) {
-                    quantimodoService.setItem('trackingReminders', JSON.stringify(remindersResponse.data));
+                    quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(remindersResponse.data));
                     $rootScope.syncingReminders = false;
                     deferred.resolve(remindersResponse.data);
                 } else {
@@ -3836,6 +3836,23 @@ angular.module('starter')
             return weekdayMeasurementArrays;
         };
 
+        quantimodoService.generateMonthlyMeasurementArray = function(allMeasurements){
+            if(!allMeasurements){
+                console.error('No measurements provided to generateMonthlyMeasurementArray');
+                return false;
+            }
+            var monthlyMeasurementArrays = [];
+            var startTimeMilliseconds = null;
+            for (var i = 0; i < allMeasurements.length; i++) {
+                startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
+                if(typeof monthlyMeasurementArrays[moment(startTimeMilliseconds).month()] === "undefined"){
+                    monthlyMeasurementArrays[moment(startTimeMilliseconds).month()] = [];
+                }
+                monthlyMeasurementArrays[moment(startTimeMilliseconds).month()].push(allMeasurements[i]);
+            }
+            return monthlyMeasurementArrays;
+        };
+
         quantimodoService.generateHourlyMeasurementArray = function(allMeasurements){
             var hourlyMeasurementArrays = [];
             for (var i = 0; i < allMeasurements.length; i++) {
@@ -3886,6 +3903,27 @@ angular.module('starter')
                 }
             }
             return averageValueByWeekdayArray;
+        };
+
+
+        quantimodoService.calculateAverageValueByMonthly = function(monthlyMeasurementArrays) {
+            var sumByMonthly = [];
+            var averageValueByMonthlyArray = [];
+            for (var k = 0; k < 12; k++) {
+                if (typeof monthlyMeasurementArrays[k] !== "undefined") {
+                    for (var j = 0; j < monthlyMeasurementArrays[k].length; j++) {
+                        if (typeof sumByMonthly[k] === "undefined") {
+                            sumByMonthly[k] = 0;
+                        }
+                        sumByMonthly[k] = sumByMonthly[k] + monthlyMeasurementArrays[k][j].value;
+                    }
+                    averageValueByMonthlyArray[k] = sumByMonthly[k] / (monthlyMeasurementArrays[k].length);
+                } else {
+                    averageValueByMonthlyArray[k] = null;
+                    //console.debug("No data for day " + k);
+                }
+            }
+            return averageValueByMonthlyArray;
         };
 
         quantimodoService.configureDistributionChart = function(dataAndLabels, variableObject){
@@ -4016,6 +4054,29 @@ angular.module('starter')
             return this.configureWeekdayChart(averageValueByWeekdayArray, variableObject);
         };
 
+
+        quantimodoService.processDataAndConfigureMonthlyChart = function(measurements, variableObject) {
+            if(!measurements){
+                console.error('No measurements provided to processDataAndConfigureMonthlyChart');
+                return false;
+            }
+            if(!variableObject.name){
+                console.error("ERROR: No variable name provided to processDataAndConfigureMonthlyChart");
+                return;
+            }
+            if(!variableObject.unitName){
+                variableObject.unitName = measurements[0].unitName;
+                console.error("Please provide unit name with variable object!");
+            }
+            if(!variableObject.unitName){
+                variableObject.unitName = measurements[0].abbreviatedUnitName;
+                console.error("Please provide unit name with variable object!");
+            }
+            var monthlyMeasurementArray = this.generateMonthlyMeasurementArray(measurements);
+            var averageValueByMonthlyArray = this.calculateAverageValueByMonthly(monthlyMeasurementArray);
+            return this.configureMonthlyChart(averageValueByMonthlyArray, variableObject);
+        };
+
         quantimodoService.processDataAndConfigureHourlyChart = function(measurements, variableObject) {
             if(!variableObject.name){
                 console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
@@ -4137,6 +4198,84 @@ angular.module('starter')
                 series: [{
                     name : 'Average  ' + variableObject.name + ' by Day of Week',
                     data: averageValueByWeekdayArray
+                }]
+            };
+        };
+
+
+        quantimodoService.configureMonthlyChart = function(averageValueByMonthlyArray, variableObject){
+
+            if(!variableObject.name){
+                console.error("ERROR: No variable name provided to configureMonthlyChart");
+                return;
+            }
+
+            var maximum = 0;
+            var minimum = 99999999999999999999999999999999;
+            var xAxisLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            for(var i = 0; i < averageValueByMonthlyArray.length; i++){
+                if(averageValueByMonthlyArray[i] > maximum){
+                    maximum = averageValueByMonthlyArray[i];
+                }
+                if(averageValueByMonthlyArray[i] < minimum){
+                    minimum = averageValueByMonthlyArray[i];
+                }
+            }
+            return {
+                options: {
+                    chart: {
+                        height : 300,
+                        type : 'column',
+                        renderTo : 'BarContainer',
+                        animation: {
+                            duration: 1000
+                        }
+                    },
+                    title : {
+                        text : 'Average  ' + variableObject.name + ' by Month'
+                    },
+                    xAxis : {
+                        categories : xAxisLabels
+                    },
+                    yAxis : {
+                        title : {
+                            text : 'Average Value (' + variableObject.unitName + ')'
+                        },
+                        min : minimum,
+                        max : maximum
+                    },
+                    lang: {
+                        loading: ''
+                    },
+                    loading: {
+                        style: {
+                            background: 'url(/res/loading3.gif) no-repeat center'
+                        },
+                        hideDuration: 10,
+                        showDuration: 10
+                    },
+                    legend : {
+                        enabled : false
+                    },
+
+                    plotOptions : {
+                        column : {
+                            pointPadding : 0.2,
+                            borderWidth : 0,
+                            pointWidth : 40 * 5 / xAxisLabels.length,
+                            enableMouseTracking : true,
+                            colorByPoint : true
+                        }
+                    },
+                    credits: {
+                        enabled: false
+                    },
+
+                    colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
+                },
+                series: [{
+                    name : 'Average  ' + variableObject.name + ' by Month',
+                    data: averageValueByMonthlyArray
                 }]
             };
         };

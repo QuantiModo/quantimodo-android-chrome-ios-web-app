@@ -62,6 +62,8 @@ angular.module('starter')
                 $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.weekdayChartConfig =
                     quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
+                $scope.monthlyChartConfig =
+                    quantimodoService.processDataAndConfigureMonthlyChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.highchartsReflow();
             }
         };
