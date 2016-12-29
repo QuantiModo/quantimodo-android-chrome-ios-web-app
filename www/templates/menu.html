@@ -10,7 +10,7 @@
 
                 <div class="buttons">
                     <a href="#/app/settings"
-                       ng-if="user && user.avatar"
+                       ng-if="user && user.avatar && !isMobile"
                        class="button button-clear" >
                         <img id="navBarAvatar" ng-src="{{user.avatar}}">
                     </a>
