@@ -2996,85 +2996,40 @@ angular.module('starter')
         };
 
         quantimodoService.refreshTrackingRemindersAndScheduleAlarms = function(){
+            var deferred = $q.defer();
 
-            if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
-                var deferred = $q.defer();
-                console.warn('Already refreshTrackingRemindersAndScheduleAlarms within last 10 seconds! Rejecting promise!');
-                deferred.reject('Already refreshTrackingRemindersAndScheduleAlarms within last 10 seconds! Rejecting promise!');
+            if($rootScope.syncingReminders) {
+                deferred.reject("Already syncing reminders");
                 return deferred.promise;
             }
 
-            $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = $q.defer();
-
-            console.debug('Setting lastRefreshTrackingRemindersAndScheduleAlarmsPromise timeout');
-            $timeout(function() {
-                // Set to false after 30 seconds because it seems to get stuck on true sometimes for some reason
-                var  message = '30 seconds elapsed before lastRefreshTrackingRemindersAndScheduleAlarmsPromise resolving';
-                if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
-                    $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject(message);
-                    $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
-                    console.error('Set lastRefreshTrackingRemindersAndScheduleAlarmsPromise to null because ' + message);
-                }
-            }, delayBeforePostingNotifications);
-
+            $rootScope.syncingReminders = true;
             var params = {
                 limit: 200
             };
 
-            quantimodoService.getTrackingRemindersFromApi(params, function(remindersResponse){
-                var trackingReminders = remindersResponse.data;
-                if(remindersResponse.success) {
-                    if($rootScope.user){
-                        if($rootScope.user.combineNotifications !== true){
-                            try {
-                                if($rootScope.localNotificationsEnabled){
-                                    quantimodoService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
-                                }
-                            } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-                                console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ');
-                            }
-                            //quantimodoService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
-                        } else {
-                            try {
-                                if($rootScope.localNotificationsEnabled){
-                                    quantimodoService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
-                                }
-                            } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-                                console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error');
-                            }
-                        }
-                    } else {
-                        var error = 'No $rootScope.user in successful quantimodoService.getTrackingRemindersFromApi callback! How did this happen?';
-                        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                    }
+            $timeout(function() {
+                // Set to false after 30 seconds because it seems to get stuck on true sometimes for some reason
+                $rootScope.syncingReminders = false;
+            }, 30000);
 
-                    quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(trackingReminders));
-                    $rootScope.$broadcast('getFavoriteTrackingRemindersFromLocalStorage');
+            quantimodoService.getTrackingRemindersFromApi(params, function(remindersResponse){
+                if(remindersResponse && remindersResponse.data) {
+                    quantimodoService.setItem('trackingReminders', JSON.stringify(remindersResponse.data));
                     $rootScope.syncingReminders = false;
-                    if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
-                        $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.resolve(trackingReminders);
-                        $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
-                        console.debug('Resolved and set lastRefreshTrackingRemindersAndScheduleAlarmsPromise to null');
-                    } else {
-                        console.error('lastRefreshTrackingRemindersAndScheduleAlarmsPromise was deleted before we could resolve it!');
-                    }
-                }
-                else {
+                    deferred.resolve(remindersResponse.data);
+                } else {
                     $rootScope.syncingReminders = false;
-                    $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject(
-                        'No success from getTrackingReminders request');
-                    $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
-                    console.error('Set lastRefreshTrackingRemindersAndScheduleAlarmsPromise to null');
+                    deferred.reject("error in getTrackingRemindersFromApi");
                 }
             }, function(error){
                 $rootScope.syncingReminders = false;
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject(error);
-                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
-                console.error('Set lastRefreshTrackingRemindersAndScheduleAlarmsPromise to null: ' + JSON.stringify(error));
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); }
+                deferred.reject(error);
             });
 
-            return $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.promise;
+            return deferred.promise;
+
         };
 
         quantimodoService.getTodayTrackingReminderNotificationsDeferred = function(variableCategoryName){
