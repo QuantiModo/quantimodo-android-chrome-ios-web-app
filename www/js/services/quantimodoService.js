@@ -2546,7 +2546,7 @@ angular.module('starter')
         quantimodoService.disconnectConnectorDeferred = function(name){
             var deferred = $q.defer();
             quantimodoService.disconnectConnectorToApi(name, function(){
-                quantimodoService.refreshConnectors();
+                deferred.resolve();
             }, function(error){
                 deferred.reject(error);
             });
