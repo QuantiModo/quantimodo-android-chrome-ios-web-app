@@ -3015,7 +3015,7 @@ angular.module('starter')
 
             quantimodoService.getTrackingRemindersFromApi(params, function(remindersResponse){
                 if(remindersResponse && remindersResponse.data) {
-                    quantimodoService.setItem('trackingReminders', JSON.stringify(remindersResponse.data));
+                    quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(remindersResponse.data));
                     $rootScope.syncingReminders = false;
                     deferred.resolve(remindersResponse.data);
                 } else {
