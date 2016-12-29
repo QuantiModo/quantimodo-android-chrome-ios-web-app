@@ -2796,6 +2796,8 @@ angular.module('starter')
                     $rootScope.lastLongitude = position.coords.longitude;
                     quantimodoService.setLocalStorageItem('lastLongitude', position.coords.longitude);
 
+                    quantimodoService.forecastioWeather();
+
                     quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps($rootScope.lastLongitude,
                         $rootScope.lastLatitude).then(function(result) {
                         //console.debug('Result was '+JSON.stringify(result));
@@ -6958,6 +6960,85 @@ angular.module('starter')
                 window.addEventListener("message", window.onMessageReceived, false);
             }
         };
+
+
+        quantimodoService.forecastioWeather = function() {
+
+            var now = Math.floor(Date.now() / 1000);
+            var lastPostedWeatherAt = Number(quantimodoService.getLocalStorageItemAsString('lastPostedWeatherAt'));
+
+            if(lastPostedWeatherAt && lastPostedWeatherAt > now - 8 * 3600){
+                console.debug("recently posted weather already");
+                //return;
+            }
+
+            var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
+            var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
+            url = url + $rootScope.lastLatitude + ',' + $rootScope.lastLongitude + '?callback=JSON_CALLBACK';
+
+            console.debug('Checking weather forecast at ' + url);
+            var measurementSets = [];
+            $http.jsonp(url).
+            success(function(data) {
+                console.log(data);
+                measurementSets.push({
+                    variableCategoryName: "Environment",
+                    variableName: "Outdoor Temperature",
+                    combinationOperation: "MEAN",
+                    sourceName: $rootScope.appSettings.appDisplayName,
+                    abbreviatedUnitName: "F",
+                    measurements: [{
+                        value: data.currently.temperature,
+                        startTimeEpoch: now
+                    }]}
+                );
+                measurementSets.push({
+                    variableCategoryName: "Environment",
+                    variableName: "Barometric Pressure",
+                    combinationOperation: "MEAN",
+                    sourceName: $rootScope.appSettings.appDisplayName,
+                    abbreviatedUnitName: "Pa",
+                    measurements: [{
+                        value: data.currently.pressure,
+                        startTimeEpoch: now
+                    }]}
+                );
+                measurementSets.push({
+                    variableCategoryName: "Environment",
+                    variableName: "Outdoor Humidity",
+                    combinationOperation: "MEAN",
+                    sourceName: $rootScope.appSettings.appDisplayName,
+                    abbreviatedUnitName: "%",
+                    measurements: [{
+                        value: data.currently.humidity,
+                        startTimeEpoch: now
+                    }]}
+                );
+                measurementSets.push({
+                    variableCategoryName: "Environment",
+                    variableName: "Outdoor Visibility",
+                    combinationOperation: "MEAN",
+                    sourceName: $rootScope.appSettings.appDisplayName,
+                    abbreviatedUnitName: "km",
+                    measurements: [{
+                        value: data.currently.visibility,
+                        startTimeEpoch: now
+                    }]}
+                );
+                quantimodoService.postMeasurementsToApi(measurementSets, function () {
+                    console.debug("posted weather measurements");
+                    if(!lastPostedWeatherAt){
+                        quantimodoService.setLocalStorageItem('lastPostedWeatherAt', now);
+                    }
+                }, function (error) {
+                    console.debug("could not post weather measurements: " + error);
+                });
+            }).
+            error(function (data) {
+                console.debug("Request failed");
+            });
+        };
+
 
         return quantimodoService;
     });
