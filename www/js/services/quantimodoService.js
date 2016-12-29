@@ -56,6 +56,7 @@ angular.module('starter')
                         "error");
                 }
                 if (!$rootScope.offlineConnectionErrorShowing) {
+                    console.error("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
                     $rootScope.offlineConnectionErrorShowing = true;
                     if($rootScope.isIOS){
                         $ionicPopup.show({
@@ -2546,7 +2547,7 @@ angular.module('starter')
         quantimodoService.disconnectConnectorDeferred = function(name){
             var deferred = $q.defer();
             quantimodoService.disconnectConnectorToApi(name, function(){
-                quantimodoService.refreshConnectors();
+                deferred.resolve();
             }, function(error){
                 deferred.reject(error);
             });
