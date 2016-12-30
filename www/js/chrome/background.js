@@ -69,7 +69,8 @@ function openOrFocusPopupWindow(windowParams) {
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
-                chrome.windows.update(vid, {focused: true});
+                // Commenting existing window focus so we don't irritate users
+                //chrome.windows.update(vid, {focused: true});
                 return;
             }
             chrome.windows.create(
@@ -334,7 +335,8 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
-                chrome.windows.update(vid, {focused: true});
+            	// Commenting window focus so we don't irritate users
+                //chrome.windows.update(vid, {focused: true});
                 return;
             }
             checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);
