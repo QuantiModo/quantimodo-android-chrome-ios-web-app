@@ -388,6 +388,12 @@ angular.module('starter',
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
 
+    if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+        // Prevents back swipe white screen on iOS when caching is disabled
+        // https://github.com/driftyco/ionic/issues/3216
+        $ionicConfigProvider.views.swipeBackEnabled(false);
+    }
+
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
         var getAppNameFromUrl = function () {
