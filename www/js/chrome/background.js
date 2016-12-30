@@ -41,7 +41,7 @@ function isUserLoggedIn(resultListener)
 */
 chrome.runtime.onInstalled.addListener(function()
 {
-	var notificationInterval = parseInt(localStorage.notificationInterval || "60");
+	var notificationInterval = parseInt(localStorage.notificationInterval || "240");
 
 	if(notificationInterval === -1)
 	{
