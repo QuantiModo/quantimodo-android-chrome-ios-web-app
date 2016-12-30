@@ -459,14 +459,14 @@ config.appSettings  = {
             "title" : "Positive Predictors",
             "isSubMenuChild" : true,
             "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-            "href" : "#/app/predictors/positive",
+            "href" : "#/app/predictors-positive",
             "icon" : "ion-happy-outline"
         },
         {
             "title" : "Negative Predictors",
             "isSubMenuChild" : true,
             "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-            "href" : "#/app/predictors/negative",
+            "href" : "#/app/predictors-negative",
             "icon" : "ion-sad-outline"
         },
         {
@@ -683,14 +683,14 @@ config.appSettings  = {
             "title" : "Positive Mood",
             "isSubMenuChild" : true,
             "showSubMenuVariable" : "showPredictorSearchSubMenu",
-            "href" : "#/app/predictors/positive",
+            "href" : "#/app/predictors-positive",
             "icon" : "ion-happy-outline"
         },
         {
             "title" : "Negative Mood",
             "isSubMenuChild" : true,
             "showSubMenuVariable" : "showPredictorSearchSubMenu",
-            "href" : "#/app/predictors/negative",
+            "href" : "#/app/predictors-negative",
             "icon" : "ion-sad-outline"
         },
         {
