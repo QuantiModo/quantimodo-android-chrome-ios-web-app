@@ -3810,6 +3810,9 @@ angular.module('starter')
             var distributionArray = [];
             var valueLabel;
             for (var i = 0; i < allMeasurements.length; i++) {
+                if(!allMeasurements[i]){
+                    return distributionArray;
+                }
                 valueLabel = String(allMeasurements[i].value);
                 if(valueLabel.length > 1) {
                     valueLabel = String(Number(allMeasurements[i].value.toPrecision(1)));
