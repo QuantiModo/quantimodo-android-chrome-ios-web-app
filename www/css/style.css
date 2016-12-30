@@ -24,6 +24,11 @@ ul > li {
 	width: 18%;
 	padding:5px;
     max-width: 100px;
+    cursor:pointer;
+}
+
+.primary-outcome-variable-rating-buttons > img:hover {
+    -webkit-filter: brightness(110%) saturate(200%);
 }
 
 .primary-outcome-variable-history > img{

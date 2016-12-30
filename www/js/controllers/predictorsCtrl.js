@@ -215,10 +215,10 @@ angular.module('starter')
             // Show the action sheet
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    { text: '<i class="icon ion-arrow-down-c"></i>Sort by Statistical Significance'},
-                    { text: '<i class="icon ion-arrow-down-c"></i>Sort by QM Score' },
-                    { text: '<i class="icon ion-arrow-down-c"></i>Ascending Predictive Correlation' },
-                    { text: '<i class="icon ion-arrow-up-c"></i>Descending Predictive Correlation' }
+                    { text: '<i class="icon ion-arrow-down-c"></i>Descending Significance'},
+                    { text: '<i class="icon ion-arrow-down-c"></i>Descending QM Score' },
+                    { text: '<i class="icon ion-arrow-down-c"></i>Ascending Correlation' },
+                    { text: '<i class="icon ion-arrow-up-c"></i>Descending Correlation' }
                 ],
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {
