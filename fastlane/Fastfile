@@ -16,6 +16,11 @@ fastlane_version "1.101.0"
 default_platform :ios
 
 platform :ios do
+  app_display_name = ENV["APP_DISPLAY_NAME"]
+  puts "Fastfile app_display_name is set to #{app_display_name}"
+  xcodeproj = "./platforms/ios/#{app_display_name}.xcodeproj"
+  puts "Fastfile xcodeproj is set to #{xcodeproj}"
+
   before_all do
     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
   end
@@ -29,13 +34,20 @@ platform :ios do
   desc "This will also make sure the profile is up to date"
   lane :beta do
 
+    ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
+    #sh "cd .. && ruby hooks/after_platform_add.bak/xcodeprojectfix.rb"
+
     match(git_url: "git@github.com:mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
-      type: "appstore")
+      app_identifier: ENV["APP_IDENTIFIER"],
+      type: "appstore",
+      readonly: true)
 
     pem
 
-    gym(scheme: "Epharmix",
-        project: "platforms/ios/Epharmix.xcodeproj") # Build your app - more options available # Build your app - more options available
+    recreate_schemes(project: xcodeproj)
+
+    gym(scheme: app_display_name,
+        project: xcodeproj) # Build your app - more options available # Build your app - more options available
         
     pilot(
        skip_submission: true,
@@ -45,15 +57,6 @@ platform :ios do
 
     # sh "your_script.sh"
     # You can also use other beta testing services here (run `fastlane actions`)
-  end
-
-  desc "Deploy a new version to the App Store"
-  lane :appstore do
-    # match(type: "appstore")
-    # snapshot
-    gym # Build your app - more options available
-    deliver(force: true)
-    # frameit
   end
 
   # You can define as many lanes as you want

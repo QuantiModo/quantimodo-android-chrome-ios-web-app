@@ -11,6 +11,7 @@ angular.module('starter')
         };
 
         $scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
             $scope.state = {
                 title: 'Loading study...',
                 requestParams: {},
@@ -20,6 +21,10 @@ angular.module('starter')
 
             $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
+            if($rootScope.urlParameters.userId && !$rootScope.user){
+                $rootScope.sendToLogin();
+                return;
+            }
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
@@ -52,7 +57,12 @@ angular.module('starter')
             }
 
             if(!$scope.state.requestParams.effectVariableName){
-                $scope.correlationObject = quantimodoService.getLocalStorageItemAsObject('lastStudy');
+                quantimodoService.getLocalStorageItemAsStringWithCallback('lastStudy', function (lastStudy) {
+                    if(lastStudy){
+                        $scope.correlationObject = JSON.parse(lastStudy);
+                        $scope.highchartsReflow();  //Need callback to make sure we get the study before we reflow
+                    }
+                });
                 $scope.state.loading = false;
                 $scope.state.requestParams = {
                     causeVariableName: $scope.correlationObject.causeVariableName,

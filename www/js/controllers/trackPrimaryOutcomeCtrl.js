@@ -13,7 +13,7 @@ angular.module('starter')
         $scope.averagePrimaryOutcomeVariableImage = false;
         $scope.averagePrimaryOutcomeVariableValue = false;
         $scope.showRatingFaces = true;
-        $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
+        var syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -33,7 +33,7 @@ angular.module('starter')
             updateCharts();
 
             if(!$rootScope.isSyncing && $rootScope.user){
-                $scope.showLoader($scope.syncDisplayText);
+                $scope.showLoader(syncDisplayText);
                 quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();
@@ -96,7 +96,7 @@ angular.module('starter')
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
             if($rootScope.user || $rootScope.accessToken){
-                $scope.showLoader($scope.syncDisplayText);
+                $scope.showLoader(syncDisplayText);
                 console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
                 quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();

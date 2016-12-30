@@ -69,7 +69,8 @@ function openOrFocusPopupWindow(windowParams) {
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
-                chrome.windows.update(vid, {focused: true});
+                // Commenting existing window focus so we don't irritate users
+                //chrome.windows.update(vid, {focused: true});
                 return;
             }
             chrome.windows.create(
@@ -115,8 +116,8 @@ function openPopup(notificationId) {
 	var windowParams = {
 		url: "/www/index.html#/app/reminders-inbox",
 		type: 'panel',
-		top: 0.2 * screen.height,
-		left: 0.4 * screen.width,
+        top: screen.height + 755,
+        left: screen.width + 455,
 		width: 450,
 		height: 750
 	};
@@ -334,7 +335,8 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
-                chrome.windows.update(vid, {focused: true});
+            	// Commenting window focus so we don't irritate users
+                //chrome.windows.update(vid, {focused: true});
                 return;
             }
             checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);

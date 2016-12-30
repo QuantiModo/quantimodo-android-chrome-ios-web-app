@@ -1,11 +1,9 @@
-window.config = {};
+config = {};
 
 config.appSettings  = {
-    appName : 'MoodiModo',
+    appDisplayName : 'MoodiModo',
 
     defaultState : 'app.track',
-
-    primaryOutcomeVariable : 'Mood',
 
     appStorageIdentifier: 'MoodiModoData*',
 

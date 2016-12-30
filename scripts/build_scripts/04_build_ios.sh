@@ -48,7 +48,7 @@ chmod a+x ./scripts/add-key.sh
 
 cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
 ionic state reset
-npm install
+npm install && gulp configureApp
 echo "npm has installed"
 gulp -v
 echo "ran through gulp"

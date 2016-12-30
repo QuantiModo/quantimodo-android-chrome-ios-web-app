@@ -23,7 +23,7 @@ angular.module('starter')
 		//quantimodoService.updateUserTimeZoneIfNecessary();
 
 		// populate ratings interval
-		quantimodoService.getLocalStorageItemWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+		quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 			if($rootScope.isIOS){
 				if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
@@ -69,10 +69,10 @@ angular.module('starter')
 		};
 
 		$scope.sendBugReport = function() {
-			var subjectLine = encodeURIComponent( $rootScope.appName + ' ' + $rootScope.appVersion + ' Bug Report');
+			var subjectLine = encodeURIComponent( $rootScope.appDisplayName + ' ' + $rootScope.appVersion + ' Bug Report');
 			var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
 				"Additional Information: " + '\r\n';
-			//template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + '\r\n';
+			//template =  template + $rootScope.appSettings.appDisplayName + ' ' + $rootScope.appVersion + '\r\n';
 			template = template + "quantimodoService Client Id: " + quantimodoService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
@@ -179,7 +179,7 @@ angular.module('starter')
 		$scope.showAppInfoPopup = function () {
 
 			var template = "Please provide the following information when submitting a bug report: <br><br>";
-			template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + "<br><br>";
+			template =  template + $rootScope.appSettings.appDisplayName + ' ' + $rootScope.appVersion + "<br><br>";
 			template = template + "quantimodoService Client Id: " + quantimodoService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
@@ -261,10 +261,11 @@ angular.module('starter')
 						if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
 							$ionicPopup.alert({
 								title: 'Choose Another Time',
-								template: 'Earliest reminder time cannot be greater than latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
+								template: 'Earliest reminder time cannot be greater than latest reminder time.  ' +
+									'Please change the latest reminder time and try again or select a different ' +
+									'earliest reminder time.'
 							});
-						}
-						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
+						} else if (newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
 							quantimodoService.updateUserSettingsDeferred(params).then(function(){
@@ -304,10 +305,11 @@ angular.module('starter')
 						if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
 							$ionicPopup.alert({
 								title: 'Choose Another Time',
-								template: 'Latest reminder time cannot be less than earliest reminder time.  Please change the earliest reminder time and try again or select a different latest reminder time.'
+								template: 'Latest reminder time cannot be less than earliest reminder time.  Please ' +
+									'change the earliest reminder time and try again or select a different latest ' +
+									'reminder time.'
 							});
-						}
-						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
+						} else if (newLatestReminderTime !== $rootScope.user.latestReminderTime){
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
 							params.latestReminderTime = $rootScope.user.latestReminderTime;
 							quantimodoService.updateUserSettingsDeferred(params).then(function(){

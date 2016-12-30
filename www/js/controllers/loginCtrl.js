@@ -138,21 +138,6 @@ angular.module('starter')
                 });
         };
 
-        $scope.hideLoader = function () {
-            $scope.state.loading = false;
-            $ionicLoading.hide();
-        };
-
-        $scope.showLoader = function () {
-            //$scope.state.loading = true;
-            var seconds  = 15;
-            $rootScope.syncDisplayText = 'Logging you in...';
-            console.debug('Setting showLoader timeout for ' + seconds + ' seconds');
-            $timeout(function () {
-                $scope.hideLoader();
-            }, seconds * 1000);
-        };
-
         $scope.googleLogin = function(register){
             // For debugging Google login
             // var tokenForApi = 'ya29.CjF7A0faph6-8m91vuLDZVnKZqXeC4JjGWfubyV6PmgTqZmjkPohGx2tXVNpSjn4euhV';
@@ -263,7 +248,7 @@ angular.module('starter')
         $scope.init();
 
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-            if($rootScope.appName !== "MoodiModo"){
+            if($rootScope.appDisplayName !== "MoodiModo"){
                 $scope.hideFacebookButton = true;
             }
         });

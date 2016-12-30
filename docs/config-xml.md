@@ -3,7 +3,7 @@
 
 1. App Name
   ```
-  <name>{{appName}}</name>
+  <name>{{appDisplayName}}</name>
   ```
 This will be the name for your App, and will be the name of the .xcodeproj file, So remember to name your app here.
 

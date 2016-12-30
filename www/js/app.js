@@ -30,13 +30,15 @@ angular.module('starter',
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
-        /*
+        
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
-                alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+                errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
+                alert(errorMsg);
+                quantimodoService.reportError(errorMsg);
             };
         }
-        */
+
 
          if (typeof PushNotification !== "undefined") {
              console.debug("Going to try to register push");
@@ -234,6 +236,52 @@ angular.module('starter',
              };
          }
 
+        window.notification_callback = function(reportedVariable, reportingTime){
+            var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            var val = false;
+
+            // convert values
+            if(reportedVariable === "repeat_rating"){
+                val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
+                    JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
+            } else {
+                val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+                    config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
+            }
+
+            // report
+            if(val){
+                // update localstorage
+                localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
+
+                var allMeasurementsObject = {
+                    storedValue : val,
+                    value : val,
+                    startTime : startTime,
+                    humanTime : {
+                        date : new Date().toISOString()
+                    }
+                };
+
+                // update full data
+                if(localStorage[keyIdentifier+'allMeasurements']){
+                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
+                    allMeasurements.push(allMeasurementsObject);
+                    localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
+                }
+
+                //update measurementsQueue
+                if(!localStorage[keyIdentifier+'measurementsQueue']){
+                    localStorage[keyIdentifier+'measurementsQueue'] = '[]';
+                } else {
+                    var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
+                    measurementsQueue.push(allMeasurementsObject);
+                    localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
+                }
+            }
+        };
+
         if(typeof analytics !== "undefined") {
             console.debug("Configuring Google Analytics");
             //noinspection JSUnresolvedFunction
@@ -326,17 +374,25 @@ angular.module('starter',
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider, $ionicConfigProvider, $ionicCloudProvider) {
+                 ionicDatePickerProvider, $ionicConfigProvider) {
 
+    /*  Trying to move to appCtrl
     $ionicCloudProvider.init({
         "core": {
             "app_id": "__IONIC_APP_ID__"
         }
     });
+    */
 
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
+
+    if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+        // Prevents back swipe white screen on iOS when caching is disabled
+        // https://github.com/driftyco/ionic/issues/3216
+        $ionicConfigProvider.views.swipeBackEnabled(false);
+    }
 
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
@@ -359,8 +415,8 @@ angular.module('starter',
             return false;
         };
 
-        var appName = getAppNameFromUrl();
-        return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
+        var lowercaseAppName = getAppNameFromUrl();
+        return $ocLazyLoad.load([appsManager.getAppConfig(lowercaseAppName), appsManager.getPrivateConfig(lowercaseAppName)]);
       }]
     };
 
@@ -947,13 +1003,13 @@ angular.module('starter',
             }
         })
         .state('app.predictorsAll', {
-            url: "/predictors",
+            url: "/predictors/:effectVariableName",
             params: {
                 aggregated: false,
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
                     correlationCoefficient: null
                 }
             },
@@ -966,13 +1022,13 @@ angular.module('starter',
             }
         })
         .state('app.outcomesAll', {
-            url: "/outcomes",
+            url: "/outcomes/:causeVariableName",
             params: {
                 aggregated: false,
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
                     correlationCoefficient: null
                 }
             },
@@ -985,15 +1041,35 @@ angular.module('starter',
             }
         })
         .state('app.predictorsPositive', {
-            url: "/predictors/positive",
+            url: "/predictors-positive",
             params: {
                 aggregated: false,
                 valence: 'positive',
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
-                    correlationCoefficient: null
+                    correlationCoefficient: '(gt)0'
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsPositiveVariable', {
+            url: "/predictors-positive-variable/:effectVariableName",
+            params: {
+                aggregated: false,
+                valence: 'positive',
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: '(gt)0'
                 }
             },
             cache: false,
@@ -1005,15 +1081,35 @@ angular.module('starter',
             }
         })
         .state('app.predictorsNegative', {
-            url: "/predictors/negative",
+            url: "/predictors-negative",
             params: {
                 aggregated: false,
                 valence: 'negative',
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
-                    correlationCoefficient: null
+                    correlationCoefficient: '(lt)0'
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsNegativeVariable', {
+            url: "/predictors-negative-variable/:effectVariableName",
+            params: {
+                aggregated: false,
+                valence: 'negative',
+                variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
+                requestParams : {
+                    correlationCoefficient: '(lt)0'
                 }
             },
             cache: false,
@@ -1025,13 +1121,13 @@ angular.module('starter',
             }
         })
         .state('app.predictorsUser', {
-            url: "/predictors/user",
+            url: "/predictors/user/:effectVariableName",
             params: {
                 aggregated: false,
                 variableObject : null,
+                causeVariableName: null,
+                effectVariableName: null,
                 requestParams : {
-                    causeVariableName: null,
-                    effectVariableName: null,
                     correlationCoefficient: null
                 }
             },
@@ -1044,7 +1140,7 @@ angular.module('starter',
             }
         })
         .state('app.predictorsAggregated', {
-            url: "/predictors/aggregated",
+            url: "/predictors/aggregated/:effectVariableName",
             params: {
                 aggregated: true,
                 variableObject : null,
@@ -1164,9 +1260,10 @@ angular.module('starter',
             }
         })
         .state('app.historyAllVariable', {
-            url: "/history-all/:variableName",
+            url: "/history-all-variable/:variableName",
             cache: false,
             params: {
+                variableName: null,
                 variableObject : null
             },
             views: {

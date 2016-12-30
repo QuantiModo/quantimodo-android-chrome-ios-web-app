@@ -1,4 +1,4 @@
-window.private_keys = {
+private_keys = {
     "bugsnag_key" : "xyz",
     "client_ids": {
         "iOS": "your_quantimodo_client_id_here",
@@ -18,3 +18,9 @@ window.private_keys = {
     "FACEBOOK_APP_NAME" : "SOMEAPPNAME",
     "REVERSED_CLIENT_ID" : "com.google.someappname123345667"
 };
+
+if(!module){
+    var module = {};
+}
+
+module.exports = private_keys;

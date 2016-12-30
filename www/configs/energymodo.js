@@ -1,7 +1,12 @@
-window.config = {};
+var config = {};
 
 config.appSettings  = {
-    appName : 'EnergyModo',
+    appDisplayName : 'EnergyModo',
+    lowercaseAppName : 'energymodo',
+    appDescription : "Track and find out what affects your energy levels",
+    appleId: null,
+    "appIdentifier": "com.quantimodo.energymodo",
+    ionicAppId: 'f837bb35',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
     allowOffline : true,
@@ -9,7 +14,6 @@ config.appSettings  = {
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
     shoppingCartEnabled : true,
-    primaryOutcomeVariable : 'Energy',
     qmApiHostName: 'app.quantimo.do',
     appStorageIdentifier: 'EnergyModoData*',
 
@@ -247,14 +251,14 @@ config.appSettings  = {
             title : 'Positive Predictors',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/predictors/positive',
+            href : '#/app/predictors-positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Negative Predictors',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/predictors/negative',
+            href : '#/app/predictors-negative',
             icon : 'ion-sad-outline'
         },
         {
@@ -485,14 +489,14 @@ config.appSettings  = {
             title : 'High Energy',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/predictors/positive',
+            href : '#/app/predictors-positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Low Energy',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/predictors/negative',
+            href : '#/app/predictors-negative',
             icon : 'ion-sad-outline'
         },
         {
@@ -508,48 +512,8 @@ config.appSettings  = {
     ]
 };
 
-window.notification_callback = function(reportedVariable, reportingTime){
-    var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
-    var keyIdentifier = config.appSettings.appStorageIdentifier;
-    var val = false;
+if(!module){
+    var module = {};
+}
 
-    // convert values
-    if(reportedVariable === "repeat_rating"){
-        val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
-        JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
-    } else {
-        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
-        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
-    }
-    
-    // report
-    if(val){
-        // update localstorage
-        localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
-        
-        var allMeasurementsObject = {
-            storedValue : val,
-            value : val,
-            startTime : startTime,
-            humanTime : {
-                date : new Date().toISOString()
-            }
-        };
-
-        // update full data
-        if(localStorage[keyIdentifier+'allMeasurements']){
-            var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
-            allMeasurements.push(allMeasurementsObject);
-            localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
-        }
-
-        //update measurementsQueue
-        if(!localStorage[keyIdentifier+'measurementsQueue']){
-            localStorage[keyIdentifier+'measurementsQueue'] = '[]';
-        } else {
-            var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
-            measurementsQueue.push(allMeasurementsObject);
-            localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
-        }
-    }
-};
+module.exports = config.appSettings;

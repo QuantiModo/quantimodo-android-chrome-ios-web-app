@@ -10,10 +10,10 @@
                             <img ng-src="{{connector.image}}" alt="Connector Image" style="width:40px;height:40px;">
                         </div>
                         <div ng-click="showActionSheetForConnector(connector, $event)" class="col col-70">
-                            <h1 style="white-space: normal;
+                            <h2 style="white-space: normal;
 									line-height: normal; ">
                                 {{connector.displayName}}
-                            </h1>
+                            </h2>
                             <p ng-if="connector.lastUpdate" style="white-space: normal;">
                                 Last updated {{ connector.lastUpdate * 1000 | date : "longDate"}}
                             </p>

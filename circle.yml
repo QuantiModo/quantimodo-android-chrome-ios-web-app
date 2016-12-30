@@ -72,6 +72,8 @@ deployment:
     commands:
       - ./scripts/circleci_install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - chmod +x do-exclusively
+      - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
       - gulp ionicUploadStagingForAllApps
   production:
     branch: master

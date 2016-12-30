@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Inbox">
 	<ion-nav-title>{{state.title}}</ion-nav-title>
-	<ion-content style="background-color: #f2f2f2">
+	<ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true } ">
 		<!--<ion-content scroll="true" overflow-scroll="true">-->
 		<ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
 		<div ng-if="stateParams.showHelpCards === true"
@@ -208,13 +208,6 @@
 		<div ng-if="weekdayChartConfig">
 			<highchart id="chart3" config="weekdayChartConfig"></highchart>
 		</div>
-<!--
-		<div ng-if="!isSyncing && numberOfPendingNotifications !== null" class="button-bar">
-			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;">
-				<i class="ion-refresh">  Refresh</i>
-			</a>
-		</div>
--->
 		<div class="card"  ng-show="state.loading">
 			<div class="item" >
 				<div class="row">

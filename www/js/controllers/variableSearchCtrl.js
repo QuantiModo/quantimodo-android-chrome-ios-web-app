@@ -33,9 +33,9 @@ angular.module('starter')
             if($state.current.name === 'app.favoriteSearch') {
                 $scope.addToFavoritesUsingVariableObject(variableObject);
             } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
-                $state.go($stateParams.nextState, {requestParams: {effectVariableName: variableObject.name}});
+                $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
-                $state.go($stateParams.nextState, {requestParams: {causeVariableName: variableObject.name}});
+                $state.go($stateParams.nextState, {causeVariableName: variableObject.name});
             } else if ($stateParams.taggedVariableObject) {
                 if($stateParams.taggedVariableObject.abbreviatedUnitName !== '/5'){
                     $state.go($stateParams.nextState, {
@@ -100,6 +100,7 @@ angular.module('starter')
                 }
 
             } else {
+                $rootScope.stateParams.variableName = variableObject.name;
                 $rootScope.stateParams.variableObject = variableObject;
                 $state.go($stateParams.nextState, $rootScope.stateParams);
             }
@@ -110,6 +111,7 @@ angular.module('starter')
         };
 
         $scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
             console.debug($state.current.name + ' initializing...');
 
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -247,8 +249,9 @@ angular.module('starter')
             var a = array.concat();
             for(var i=0; i<a.length; ++i) {
                 for(var j=i+1; j<a.length; ++j) {
-                    if(a[i].id === a[j].id)
+                    if(a[i].id === a[j].id) {
                         a.splice(j--, 1);
+                    }
                 }
             }
 
