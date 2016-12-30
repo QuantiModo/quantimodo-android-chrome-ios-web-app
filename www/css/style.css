@@ -27,6 +27,10 @@ ul > li {
     cursor:pointer;
 }
 
+.primary-outcome-variable-rating-buttons > img:hover {
+    -webkit-filter: brightness(110%) saturate(200%);
+}
+
 .primary-outcome-variable-history > img{
     opacity: 0.5;
 }
