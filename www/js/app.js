@@ -1434,6 +1434,27 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.questionOne', {
+            url: "/question-one",
+            cache: true,
+            params: {
+                question : {
+                    text: "What would you like to improve?",
+                    verticalAnswerButtons: [
+                        {
+                            text: "Overall Mood",
+                            functionName: "add"
+                        }
+                    ]
+                }
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminder-add.html",
+                    controller: 'RemindersAddCtrl'
+                }
+            }
+        })
         .state('app.favoriteAdd', {
             url: "/favorite-add",
             cache: false,
