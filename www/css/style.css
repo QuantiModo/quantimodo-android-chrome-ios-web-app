@@ -24,6 +24,7 @@ ul > li {
 	width: 18%;
 	padding:5px;
     max-width: 100px;
+    cursor:pointer;
 }
 
 .primary-outcome-variable-history > img{
