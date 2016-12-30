@@ -689,6 +689,18 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.spreadsheetImport', {
+            url: "/spreadsheet-import",
+            cache: false,
+            params: {
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/spreadsheet-import.html",
+                    controller: 'SpreadsheetImportCtrl'
+                }
+            }
+        })
         .state('app.importNative', {
             url: "/import-native",
             cache: false,
