@@ -202,12 +202,18 @@ angular.module('starter')
             quantimodoService.setLocalStorageItem(flagName, true);
         };
 
-        $rootScope.hideHelpCard = function (card) {
+        $rootScope.hideHelpCard = function () {
+            var card = $rootScope.defaultHelpCards[0];
             card.hide = true;
             $rootScope.defaultHelpCards = $rootScope.defaultHelpCards.filter(function( obj ) {
                 return obj.id !== card.id;
             });
             quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
+            if(!$rootScope.defaultHelpCards || $rootScope.defaultHelpCards.length == 0){
+                $rootScope.hideNavigationMenu = false;
+            } else {
+                $rootScope.hideNavigationMenu = true;
+            }
         };
 
         // open datepicker for "from" date
