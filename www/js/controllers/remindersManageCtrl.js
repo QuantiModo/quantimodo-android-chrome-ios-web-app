@@ -153,7 +153,8 @@ angular.module('starter')
 				title: "Individual Notifications Disabled",
 				subTitle: 'Currently, you will only get one non-specific repeating device notification at a time.',
 				scope: $scope,
-				template: "It is possible to instead get a separate device notification for each tracking reminder that you create.  You can change this setting or update the notification frequency on the settings page.",
+				template: "It is possible to instead get a separate device notification for each tracking reminder that " +
+					"you create.  You can change this setting or update the notification frequency on the settings page.",
 				buttons:[
 					{
 						text: 'Settings',

@@ -240,11 +240,6 @@ label.item.item-input.item-text > input[type="text"] {
     padding-left: 25px;
 }
 
-.alert-popup .popup {
-    width: 285px;
-    text-align: center;
-}
-
 
 @keyframes fadein {
     0% { opacity: 0; }
@@ -396,17 +391,6 @@ img.intro-primary-outcome-variable-rating-buttons {
   margin-top: -8px;
 }
 
-.popup-container {
-    top: 125px;
-    align-items: flex-start;
-    -webkit-align-items: flex-start;
-}
-
-.popup {
-  border: 1px solid gray !important;
-  background-color: white!important;
-    text-align: center;
-}
 
  #qm-loader {
   position: absolute !important;
@@ -676,4 +660,85 @@ img.intro-primary-outcome-variable-rating-buttons {
 #navBarAvatar {
     height: 30px;
     border-radius: 50%;
+}
+
+/*
+.alert-popup .popup {
+    width: 285px;
+    text-align: center;
+}
+
+.popup-container {
+    top: 125px;
+    align-items: flex-start;
+    -webkit-align-items: flex-start;
+}
+
+.popup {
+    border: 1px solid gray !important;
+    background-color: white!important;
+    text-align: center;
+}
+*/
+
+
+/*popup override*/
+.popup-container
+{
+
+}
+
+.popup
+{
+    padding: 12px;
+    border-radius: 10px !important;
+    border: 1px solid #ccc ;
+}
+
+.popup-head
+{
+
+}
+
+.popup-title
+{
+    color: #575757;
+    font-size: 30px !important;
+    text-align: center;
+    font-weight: 600;
+    margin: 25px 0;
+    padding: 0;
+    line-height: 40px;
+}
+
+.popup-body
+{
+    overflow: hidden;
+    color: #797979;
+    font-size: 16px;
+    font-weight: 300;
+    text-align: inherit;
+    float: none;
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+}
+
+.popup-buttons .button
+{
+    background-color: #5dc2f1;
+    color: white;
+    border: none;
+    box-shadow: none;
+    font-size: 14px;
+    font-weight: 500;
+    -webkit-border-radius: 4px;
+    border-radius: 5px !important;
+    margin: 26px 5px 0 5px;
+    cursor: pointer;
+}
+
+.popup-buttons .button.activated
+{
+    background-color: #007aff;
 }

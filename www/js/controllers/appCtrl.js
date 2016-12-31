@@ -261,7 +261,7 @@ angular.module('starter')
         $scope.showHelpInfoPopup = function () {
             $rootScope.helpPopup = $ionicPopup.show({
                 title: helpPopupMessages[location.hash],
-                subTitle: '',
+                //subTitle: '',
                 scope: $scope,
                 template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
                 buttons: [
@@ -283,9 +283,9 @@ angular.module('starter')
         $scope.onHelpButtonPress = function () {
             $rootScope.helpButtonPopup = $ionicPopup.show({
                 title: $rootScope.stateParams.title,
-                subTitle: $rootScope.stateParams.helpText,
+                //subTitle: '',
                 scope: $scope,
-                template: '',
+                template: $rootScope.stateParams.helpText,
                 buttons: [
                     {
                         text: 'OK',
@@ -575,7 +575,8 @@ angular.module('starter')
                                 if($rootScope.isAndroid){
                                     $ionicPopup.show({
                                         title: 'Update available',
-                                        subTitle: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
+                                        //subTitle: '',
+                                        template: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
                                         buttons: [
                                             { text: 'Not now' },
                                             {
@@ -846,9 +847,9 @@ angular.module('starter')
             if (correlationObject.userVote !== 0) {
                 $ionicPopup.show({
                     title:'Implausible relationship?',
-                    subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    //subTitle: '',
                     scope: $scope,
-                    template: $scope.templateConfirmationDown,
+                    template: 'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
                     buttons:[
                         {text: 'No'},
                         {text: 'Yes',
@@ -881,9 +882,9 @@ angular.module('starter')
             if (correlationObject.userVote !== 1) {
                 $ionicPopup.show({
                     title:'Plausible relationship?',
-                    subTitle: 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    //subTitle: '',
                     scope: $scope,
-                    template: $scope.templateConfirmationUp,
+                    template: 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
                     buttons:[
                         {text: 'No'},
                         {text: 'Yes',
@@ -1169,7 +1170,8 @@ angular.module('starter')
         $scope.showDeleteAllMeasurementsForVariablePopup = function(){
             $ionicPopup.show({
                 title:'Delete all ' + $rootScope.variableName + " measurements?",
-                subTitle: 'This cannot be undone!',
+                //subTitle: '',
+                template: 'This cannot be undone!',
                 scope: $scope,
                 buttons:[
                     {
@@ -1367,7 +1369,8 @@ angular.module('starter')
 
             $ionicPopup.show({
                 title: settingName,
-                subTitle: explanationText[settingName],
+                //subTitle: '',
+                template: explanationText[settingName],
                 scope: $scope,
                 buttons: [
                     {
