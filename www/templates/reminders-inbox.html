@@ -52,9 +52,16 @@
 								<i class="ion-android-cancel"> &nbsp; Skip</i>
 							</button>
 							<button class="button button-clear button-royal"
+									ng-if="trackingReminderNotification.abbreviatedUnitName != '/5'"
 									style="text-overflow: clip; font-size: 12px;"
 									ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
 								<i class="ion-android-notifications-off"> &nbsp; Snooze</i>
+							</button>
+							<button class="button button-clear button-royal"
+									ng-if="trackingReminderNotification.abbreviatedUnitName == '/5'"
+									style="text-overflow: clip; font-size: 12px;"
+									ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
+								<i class="ion-edit"> &nbsp; Add Note</i>
 							</button>
 							<button class="button button-clear button-calm"
 									ng-click="editReminderSettingsByNotification(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)"
