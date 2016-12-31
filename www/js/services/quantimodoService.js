@@ -22,7 +22,7 @@ angular.module('starter')
             }
         };
 
-        quantimodoService.errorHandler = function(data, status, headers, config, request, doNotSendToLogin){
+        quantimodoService.errorHandler = function(data, status, headers, config, request, doNotSendToLogin, doNotShowOfflineError){
 
             if(status === 302){
                 console.warn('quantimodoService.errorHandler: Got 302 response from ' + JSON.stringify(request));
@@ -55,13 +55,14 @@ angular.module('starter')
                         {groupingHash: groupingHash},
                         "error");
                 }
-                if (!$rootScope.offlineConnectionErrorShowing) {
+                if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
                     console.error("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
                     $rootScope.offlineConnectionErrorShowing = true;
                     if($rootScope.isIOS){
                         $ionicPopup.show({
                             title: 'NOT CONNECTED',
-                            subTitle: 'Either you are not connected to the internet or the quantimodoService server cannot be reached.',
+                            //subTitle: '',
+                            template: 'Either you are not connected to the internet or the quantimodoService server cannot be reached.',
                             buttons:[
                                 {text: 'OK',
                                     type: 'button-positive',
@@ -125,7 +126,7 @@ angular.module('starter')
 
         // GET method with the added token
         quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
-                                  minimumSecondsBetweenRequests, doNotSendToLogin){
+                                  minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
             if(!canWeMakeRequestYet('GET', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -187,7 +188,8 @@ angular.module('starter')
                                     "error");
                             }
                         } else if (data.error) {
-                            quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin);
+                            quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin,
+                                doNotShowOfflineError);
                             errorHandler(data);
                         } else {
                             quantimodoService.successHandler(data, baseURL, status);
@@ -203,7 +205,7 @@ angular.module('starter')
 
         // POST method with the added token
         quantimodoService.post = function(baseURL, requiredFields, items, successHandler, errorHandler,
-                                   minimumSecondsBetweenRequests, doNotSendToLogin){
+                                   minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
             if(!canWeMakeRequestYet('POST', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -265,7 +267,8 @@ angular.module('starter')
                 */
 
                 $http(request).success(successHandler).error(function(data, status, headers, config){
-                    quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin);
+                    quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin,
+                        doNotShowOfflineError);
                     errorHandler(data);
                 });
 
@@ -660,7 +663,8 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.postTrackingReminderNotificationsToApi = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
+        quantimodoService.postTrackingReminderNotificationsToApi = function(trackingReminderNotificationsArray,
+                                                                            successHandler, errorHandler) {
             if(!trackingReminderNotificationsArray){
                 successHandler();
                 return;
@@ -669,11 +673,15 @@ angular.module('starter')
                 trackingReminderNotificationsArray = [trackingReminderNotificationsArray];
             }
 
+            var minimumSecondsBetweenRequests = 30;
+            var doNotSendToLogin = false;
+            var doNotShowOfflineError = true;
+
             quantimodoService.post('api/v1/trackingReminderNotifications',
                 [],
                 trackingReminderNotificationsArray,
                 successHandler,
-                errorHandler);
+                errorHandler, minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError);
         };
 
         quantimodoService.getTrackingRemindersFromApi = function(params, successHandler, errorHandler){
