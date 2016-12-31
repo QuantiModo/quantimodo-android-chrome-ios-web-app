@@ -81,23 +81,19 @@ angular.module('starter')
         };
 
         $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
-            var stateParams = {};
             if(correlationObject.causeVariable){
-                stateParams.variableObject = correlationObject.causeVariable;
+                $rootScope.goToVariableSettingsForVariableObject(correlationObject.causeVariable);
             } else {
-                stateParams.variableName = correlationObject.causeVariableName;
+                $state.go('app.variableSettings', {variableName: correlationObject.causeVariableName});
             }
-            $state.go('app.variableSettings', stateParams);
         };
 
         $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
-            var stateParams = {};
             if(correlationObject.effectVariable){
-                stateParams.variableObject = correlationObject.effectVariable;
+                $rootScope.goToVariableSettingsForVariableObject(correlationObject.effectVariable);
             } else {
-                stateParams.variableName = correlationObject.effectVariableName;
+                $state.go('app.variableSettings', {variableName: correlationObject.effectVariableName});
             }
-            $state.go('app.variableSettings', stateParams);
         };
 
         $scope.goToState = function (state, stateParameters) {
@@ -1190,6 +1186,10 @@ angular.module('starter')
             });
         };
 
+        $rootScope.goToVariableSettingsForVariableObject = function (variableObject) {
+            $state.go('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});
+        };
+
         // Triggered on a button click, or some other target
         $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
 
@@ -1197,7 +1197,6 @@ angular.module('starter')
                 id: favorite.variableId,
                 name: favorite.variableName
             };
-
 
             var actionMenuButtons = [
                 { text: '<i class="icon ion-gear-a"></i>Change Default Value' },
@@ -1208,13 +1207,11 @@ angular.module('starter')
                 { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'}
             ];
 
-
             if(config.appSettings.favoritesController){
                 if(config.appSettings.favoritesController.actionMenuButtons){
                     actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
                 }
             }
-
 
             if(bloodPressure){
                 actionMenuButtons = [];

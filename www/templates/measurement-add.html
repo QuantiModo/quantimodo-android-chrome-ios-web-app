@@ -127,19 +127,19 @@
             </div>
             <div class="row">
                 <div class="col col-50">
-                    <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                    <button id="cancelButton" class="button button-outline button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
                 </div>
                 <div class="col col-50">
-                    <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="done()">Save</button>
+                    <button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="done()">Save</button>
                 </div>
             </div>
             <div ng-hide="state.hideRemindMeButton" class="row">
-                <button id="reminderButton" ng-click="goToAddReminder()" class="button icon-left ion-android-notifications button-positive button-block">
+                <button id="reminderButton" ng-click="goToAddReminder()" class="button button-outline icon-left ion-android-notifications button-positive button-block">
                     Remind me to track
                 </button>
             </div>
             <div ng-show="state.measurement.id" class="row">
-                <button id="deleteButton" ng-click="deleteMeasurement()" class="button icon-left ion-trash-a button-assertive button-block">
+                <button id="deleteButton" ng-click="deleteMeasurement()" class="button button-outline icon-left ion-trash-a button-assertive button-block">
                     Delete Measurement
                 </button>
             </div>
