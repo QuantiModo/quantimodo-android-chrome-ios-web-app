@@ -37,18 +37,20 @@ angular.module('starter')
 	    };
 
 	    var setupHelpCards = function () {
+
 			var defaultHelpCards = [
 				{
 					id: "addTreatmentRemindersCard",
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
-					title: 'Treatment Tracking',
+					title: 'Any Treatments?',
 					iconClass: "icon positive ion-ios-medkit-outline",
-					bodyText: 'Get reminded to take and record treatments to identify how they might be affecting you.',
+					bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
+						'(i.e. meditating or psychotherapy)? Please add them so we can identify how they might be affecting you.',
 					buttons: [
 						{
 							id: "goToReminderSearchCategoryTreatmentsButton",
 							clickFunctionCall: "goToReminderSearchCategory('Treatments')",
-							buttonText: 'Add treatment reminder',
+							buttonText: 'Add Treatment',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
@@ -64,21 +66,23 @@ angular.module('starter')
 				{
 					id: "addSymptomRemindersCard",
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
-					title: 'Symptom Ratings',
+					title: 'Recurring Symptoms?',
 					iconClass: "icon positive ion-sad-outline",
-					bodyText: 'Rate symptoms regularly in order to determine which factors are influencing them.',
+					bodyText: 'Got any recurring symptoms that vary in their severity?  If so, add them so I can try to ' +
+						'determine to determine which hidden ' +
+						'factors might be worsening or improving them.',
 					buttons: [
 						{
 							id: "goToReminderSearchCategorySymptomsButton",
 							clickFunctionCall: "goToReminderSearchCategory('Symptoms')",
-							buttonText: 'Add symptom reminder',
+							buttonText: 'Add Symptom',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
 						{
 							id: "hideAddSymptomRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding symptoms',
+							buttonText: 'Done Adding Symptoms',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -89,19 +93,20 @@ angular.module('starter')
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
 					title: 'Varying Emotions?',
 					iconClass: "icon positive ion-happy-outline",
-					bodyText: "It's important to rate variable emotions regularly in order to determine which factors are influencing them.",
+					bodyText: "Do you have any emotions that fluctuate regularly?  If so, add them so I can try to " +
+						"determine which factors are influencing them.",
 					buttons: [
 						{
 							id: "goToReminderSearchCategoryEmotionsButton",
 							clickFunctionCall: "goToReminderSearchCategory('Emotions')",
-							buttonText: 'Add emotions reminder',
+							buttonText: 'Add Emotion',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
 						{
 							id: "hideAddEmotionRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding emotions',
+							buttonText: 'Done Adding Emotions',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
