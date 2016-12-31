@@ -35,14 +35,14 @@
         <div ng-show="variableObject" ng-include="'templates/fragments/tagged-variables-fragment.html'"></div>
         <div ng-show="variableObject" class="row">
             <div class="col col-50">
-                <button class="button button-block icon-left ion-android-cancel button-assertive"
+                <button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
                         id="cancelButton"
                         ng-click="cancel()">
                     Cancel
                 </button>
             </div>
             <div class="col col-50">
-                <button class="button button-block icon-left ion-android-done button-positive"
+                <button class="button button-outline button-block icon-left ion-android-done button-positive"
                         id="saveButton"
                         ng-click="saveVariableSettings(variableObject)">
                     Save
@@ -51,7 +51,7 @@
         </div>
         <div ng-show="variableObject" class="row">
             <div class="col">
-                <button class="button button-block icon-left ion-android-cancel button-assertive"
+                <button class="button button-outline button-outline button-block icon-left ion-android-cancel button-assertive"
                         id="resetButton"
                         ng-click="resetVariableToDefaultSettings(variableObject)">
                     Reset to Default Settings
