@@ -207,15 +207,19 @@ label.item.item-input.item-text > input[type="text"] {
     top:2px
 }
 
+/*
 .button.button-positive {
     border-color: #3369E8 !important;
     background-color: #3369E8 !important;
     color: #fff;
 }
+*/
 
+/*
 .button.button-assertive {
     font-size: 15px;
 }
+*/
 
 .card-item {
 	padding-top: 8px;
