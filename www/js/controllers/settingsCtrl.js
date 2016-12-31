@@ -386,8 +386,9 @@ angular.module('starter')
 
             $scope.showDataClearPopup = function(){
                 $ionicPopup.show({
-                    title:'Clear local storage?',
-                    subTitle: 'Do you want do delete all data from local storage?',
+                    title: 'Clear local storage?',
+                    //subTitle: '',
+                    template: 'Do you want do delete all data from local storage?',
                     scope: $scope,
                     buttons:[
                         {

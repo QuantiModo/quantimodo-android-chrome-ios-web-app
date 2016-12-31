@@ -813,7 +813,8 @@ angular.module('starter')
 
             $ionicPopup.show({
                 title: helpTitle,
-                subTitle: explanationText,
+                //subTitle: '',
+                template: explanationText,
                 scope: $scope,
                 buttons: [
                     {
