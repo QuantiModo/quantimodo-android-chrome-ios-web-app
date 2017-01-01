@@ -116,7 +116,10 @@ angular.module('starter')
         };
 
         $scope.init = function(){
-            $rootScope.hideNavigationMenu = false;
+            if(!$stateParams.hideNavigationMenu){
+                $rootScope.hideNavigationMenu = false;
+            }
+
             console.debug($state.current.name + ' initializing...');
 
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -298,7 +301,7 @@ angular.module('starter')
 
         // when add new variable is tapped
         $scope.addNewVariable = function(){
-            
+
             var variableObject = {};
             variableObject.name = $scope.state.variableSearchQuery.name;
             if($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything'){

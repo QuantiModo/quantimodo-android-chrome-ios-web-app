@@ -61,7 +61,7 @@ angular.module('starter')
 						{
 							id: "hideAddTreatmentRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding treatments',
+							buttonText: 'Nope',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -72,9 +72,8 @@ angular.module('starter')
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
 					title: 'Recurring Symptoms?',
 					iconClass: "icon positive ion-sad-outline",
-					bodyText: 'Got any recurring symptoms that vary in their severity?  If so, add them so I can try to ' +
-						'determine to determine which hidden ' +
-						'factors might be worsening or improving them.',
+					bodyText: 'Got any recurring symptoms that vary in their severity?  If so, add them so I can try ' +
+						'to determine which hidden factors might be worsening or improving them.',
 					buttons: [
 						{
 							id: "goToReminderSearchCategorySymptomsButton",
@@ -86,7 +85,7 @@ angular.module('starter')
 						{
 							id: "hideAddSymptomRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done Adding Symptoms',
+							buttonText: 'Nope',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -110,7 +109,7 @@ angular.module('starter')
 						{
 							id: "hideAddEmotionRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done Adding Emotions',
+							buttonText: 'Nope',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -134,7 +133,7 @@ angular.module('starter')
 						{
 							id: "hideAddFoodRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding common foods',
+							buttonText: 'Nope',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -218,7 +217,7 @@ angular.module('starter')
 						{
 							id: "goToStateAppImportButton",
 							clickFunctionCall: "goToState('app.import')",
-							buttonText: ' Connect an app or device',
+							buttonText: 'Connect an app or device',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
@@ -666,8 +665,6 @@ angular.module('starter')
 				console.debug('ReminderInbox: Hiding splash screen because app is ready');
 				navigator.splashscreen.hide();
 			}
-
-
 		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
@@ -697,15 +694,24 @@ angular.module('starter')
 					fromState : $state.current.name
 				});
 	    };
-		
+
 		$scope.goToReminderSearchCategory = function(variableCategoryName) {
+		    if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
+                $rootScope.defaultHelpCards[0].buttons[0].buttonText =
+                    $rootScope.defaultHelpCards[0].buttons[0].buttonText.replace("Add ", "Add Another ");
+                $rootScope.defaultHelpCards[0].buttons[0].buttonText =
+                    $rootScope.defaultHelpCards[0].buttons[0].buttonText.replace("Add Another Another ", "Add Another ");
+                $rootScope.defaultHelpCards[0].bodyText = "";
+                $rootScope.defaultHelpCards[0].buttons[1].buttonText = "Done Adding " + variableCategoryName;
+            }
 			$state.go('app.reminderSearchCategory',
 				{
 					variableCategoryName : variableCategoryName,
-					fromUrl: window.location.href
+					fromUrl: window.location.href,
+                    hideNavigationMenu: $rootScope.hideNavigationMenu
 				});
 		};
-		
+
     	$scope.$on('$ionicView.enter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
