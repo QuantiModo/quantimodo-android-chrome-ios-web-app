@@ -77,7 +77,7 @@ angular.module('starter')
 						$scope.editMeasurement($rootScope.variableObject);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+						$scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
 						$state.go('app.reminderAdd',

@@ -209,7 +209,7 @@ angular.module('starter')
                 return obj.id !== card.id;
             });
             quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
-            if(!$rootScope.defaultHelpCards || $rootScope.defaultHelpCards.length == 0){
+            if(!$rootScope.defaultHelpCards || $rootScope.defaultHelpCards.length === 0){
                 $rootScope.hideNavigationMenu = false;
             } else {
                 $rootScope.hideNavigationMenu = true;
@@ -378,14 +378,31 @@ angular.module('starter')
                 });
         };
 
-        $scope.addToFavoritesUsingVariableObject = function (variableObject) {
+        $scope.addToFavoritesOrRemindersUsingVariableObject = function (variableObject, reminderFrequency, doneState, addState) {
+
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
-            trackingReminder.reminderFrequency = 0;
+
             trackingReminder.variableName = variableObject.name;
             trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+
+            if(!doneState){
+                doneState = 'app.favorites';
+            }
+
+            if(!addState){
+                addState = 'app.favorites';
+            }
+
+            if(!reminderFrequency){
+                trackingReminder.reminderFrequency = 0;
+            } else {
+                trackingReminder.reminderFrequency = reminderFrequency;
+                trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
+            }
+
 
             if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
                 var message = 'Got deletion request before last reminder refresh completed';
@@ -396,14 +413,12 @@ angular.module('starter')
             }
 
             if (trackingReminder.abbreviatedUnitName === '/5' || trackingReminder.variableName === "Blood Pressure") {
-                $ionicLoading.show({
-                    template: '<ion-spinner></ion-spinner>'
-                });
+                $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                 //trackingReminder.defaultValue = 3;
                 quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                        $state.go('app.favorites',
+                        $state.go(doneState,
                             {
                                 trackingReminder: trackingReminder,
                                 fromState: $state.current.name,
@@ -421,7 +436,7 @@ angular.module('starter')
                     });
 
             } else {
-                $state.go('app.favoriteAdd',
+                $state.go(addState,
                     {
                         variableObject: variableObject,
                         fromState: $state.current.name,

@@ -230,6 +230,7 @@ angular.module('starter')
 			];
 
 			if(typeof $rootScope.defaultHelpCards === "undefined"){
+                $rootScope.hideNavigationMenu = true;
 				quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
 					if(defaultHelpCardsFromLocalStorage === null){
 						$rootScope.defaultHelpCards = defaultHelpCards;
@@ -744,7 +745,7 @@ angular.module('starter')
 						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+						$scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
 						$scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
