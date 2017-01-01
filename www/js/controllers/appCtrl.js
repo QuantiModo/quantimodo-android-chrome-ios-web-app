@@ -393,7 +393,7 @@ angular.module('starter')
             }
 
             if(!addState){
-                addState = 'app.favorites';
+                addState = 'app.favoriteAdd';
             }
 
             if(!reminderFrequency){
