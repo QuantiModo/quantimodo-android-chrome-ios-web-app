@@ -378,34 +378,70 @@ angular.module('starter')
                 });
         };
 
-        $scope.addToFavoritesOrRemindersUsingVariableObject = function (variableObject, reminderFrequency,
-                                                                        skipReminderSettingsForRatings) {
+        $scope.addToRemindersUsingVariableObject = function (variableObject, options) {
 
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
-
             trackingReminder.variableName = variableObject.name;
             trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+            trackingReminder.reminderFrequency = options.reminderFrequency;
+            trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
 
             var doneState = config.appSettings.defaultState;
-            var addState = 'app.reminderAdd';
-
-            if(!reminderFrequency){
-                trackingReminder.reminderFrequency = 0;
-                doneState = 'app.favorites';
-                addState = 'app.favoriteAdd';
-                skipReminderSettingsForRatings = true;
-            } else {
-                trackingReminder.reminderFrequency = reminderFrequency;
-                trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
-                if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
-                    $rootScope.defaultHelpCards[0].bodyText = "Great job!  Now you'll be able to instantly record " +
-                        variableObject.name + " in the Reminder Inbox. Want to add any more " +
-                        variableObject.variableCategoryName.toLowerCase() + '?';
-                }
+            if(options.doneState){
+                doneState = options.doneState;
             }
+
+            if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
+                $rootScope.defaultHelpCards[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+                    variableObject.name + " in the Reminder Inbox. Want to add any more " +
+                    variableObject.variableCategoryName.toLowerCase() + '?';
+            }
+
+            if ((trackingReminder.abbreviatedUnitName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
+                $state.go('app.reminderAdd',
+                    {
+                        reminder: trackingReminder,
+                        doneState: doneState
+                    }
+                );
+                return;
+            }
+
+            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                .then(function() {
+                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+                    $state.go(doneState,
+                        {
+                            trackingReminder: trackingReminder,
+                            fromState: $state.current.name,
+                            fromUrl: window.location.href
+                        }
+                    );
+                    quantimodoService.postTrackingRemindersDeferred(trackingReminder)
+                        .then(function () {
+                            $ionicLoading.hide();
+                            console.debug("Saved to reminders: " + JSON.stringify(trackingReminder));
+                        }, function(error) {
+                            $ionicLoading.hide();
+                            console.error('Failed to add reminders!' + JSON.stringify(error));
+                        });
+                });
+        };
+
+
+        $scope.addToFavoritesUsingVariableObject = function (variableObject, options) {
+
+            var trackingReminder = {};
+            trackingReminder.variableId = variableObject.id;
+            trackingReminder.variableName = variableObject.name;
+            trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
+            trackingReminder.variableDescription = variableObject.description;
+            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+            trackingReminder.reminderFrequency = 0;
 
             if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
                 var message = 'Got deletion request before last reminder refresh completed';
@@ -415,40 +451,40 @@ angular.module('starter')
                 $rootScope.syncingReminders = false;
             }
 
-            if ((trackingReminder.abbreviatedUnitName === '/5' ||
-                trackingReminder.variableName === "Blood Pressure") &&
-                skipReminderSettingsForRatings) {
-                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-                //trackingReminder.defaultValue = 3;
-                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
-                    .then(function() {
-                        // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                        $state.go(doneState,
-                            {
-                                trackingReminder: trackingReminder,
-                                fromState: $state.current.name,
-                                fromUrl: window.location.href
-                            }
-                        );
-                        quantimodoService.postTrackingRemindersDeferred(trackingReminder)
-                            .then(function () {
-                                $ionicLoading.hide();
-                                console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
-                            }, function(error) {
-                                $ionicLoading.hide();
-                                console.error('Failed to add favorite!' + JSON.stringify(error));
-                            });
-                    });
-
-            } else {
-                $state.go(addState,
+            if ((trackingReminder.abbreviatedUnitName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
+                $state.go('app.favoriteAdd',
                     {
                         variableObject: variableObject,
                         fromState: $state.current.name,
-                        fromUrl: window.location.href
+                        fromUrl: window.location.href,
+                        doneState: 'app.favorites'
                     }
                 );
+                return;
             }
+
+            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+            //trackingReminder.defaultValue = 3;
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                .then(function() {
+                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+                    $state.go('app.favorites',
+                        {
+                            trackingReminder: trackingReminder,
+                            fromState: $state.current.name,
+                            fromUrl: window.location.href
+                        }
+                    );
+                    quantimodoService.postTrackingRemindersDeferred(trackingReminder)
+                        .then(function () {
+                            $ionicLoading.hide();
+                            console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
+                        }, function(error) {
+                            $ionicLoading.hide();
+                            console.error('Failed to add favorite!' + JSON.stringify(error));
+                        });
+                });
+
         };
 
         $scope.closeMenuIfNeeded = function (menuItem) {
@@ -490,7 +526,7 @@ angular.module('starter')
             // Show "..." button on top rigt
             if (e.targetScope && e.targetScope.controller_name &&
                 e.targetScope.controller_name === "MeasurementAddCtrl" ||
-                e.targetScope.controller_name === "RemindersAddCtrl" ||
+                e.targetScope.controller_name === "ReminderAddCtrl" ||
                 e.targetScope.controller_name === "FavoriteAddCtrl" ||
                 e.targetScope.controller_name === "ChartsPageCtrl" ||
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
@@ -1488,6 +1524,25 @@ angular.module('starter')
             quantimodoService.resetUserVariableDeferred(variableObject.id).then(function() {
                 $scope.getVariableByName(variableObject.name);
             });
+        };
+
+        $scope.goToReminderSearchCategory = function(variableCategoryName) {
+            if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
+                $rootScope.defaultHelpCards[0].buttons[0].buttonText =
+                    $rootScope.defaultHelpCards[0].buttons[0].buttonText.replace("Add ", "Add Another ");
+                $rootScope.defaultHelpCards[0].buttons[0].buttonText =
+                    $rootScope.defaultHelpCards[0].buttons[0].buttonText.replace("Add Another Another ", "Add Another ");
+                $rootScope.defaultHelpCards[0].bodyText = "";
+                $rootScope.defaultHelpCards[0].buttons[1].buttonText = "Done Adding " + variableCategoryName;
+            }
+            $state.go('app.reminderSearchCategory',
+                {
+                    variableCategoryName : variableCategoryName,
+                    fromUrl: window.location.href,
+                    hideNavigationMenu: $rootScope.hideNavigationMenu,
+                    skipReminderSettingsForRatings: true,
+                    doneState: $state.current.name
+                });
         };
 
         $scope.init();

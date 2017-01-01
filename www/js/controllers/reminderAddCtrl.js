@@ -1,11 +1,11 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
+	.controller('ReminderAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory,
                                              quantimodoService, ionicTimePicker, $ionicPopup, ionicDatePicker) {
 
-	    $scope.controller_name = "RemindersAddCtrl";
+	    $scope.controller_name = "ReminderAddCtrl";
 		console.debug('Loading ' + $scope.controller_name);
         $rootScope.showFilterBarSearchIcon = false;
 	    $scope.state = {
@@ -417,6 +417,12 @@ angular.module('starter')
         var goBack = function () {
             $ionicLoading.hide();
             $scope.loading = false;
+
+            if($stateParams.doneState){
+                $state.go($stateParams.doneState);
+                return;
+            }
+
             var backView = $ionicHistory.backView();
             if(backView.stateName.toLowerCase().indexOf('search') > -1){
                 $state.go(config.appSettings.defaultState);
@@ -753,7 +759,7 @@ angular.module('starter')
             $rootScope.variableObject = $scope.state.trackingReminder;
             $rootScope.variableObject.id = $scope.state.trackingReminder.variableId;
             $rootScope.variableObject.name = $scope.state.trackingReminder.variableName;
-            console.debug("remindersAddCtrl.showActionSheetMenu:   $rootScope.variableObject: ", $rootScope.variableObject);
+            console.debug("ReminderAddCtrl.showActionSheetMenu:   $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
@@ -772,7 +778,7 @@ angular.module('starter')
                     console.debug('BUTTON CLICKED', index);
 
                     if(index === 0){
-                        $scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
+                        $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
                     }
                     if(index === 1){
                         $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);

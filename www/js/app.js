@@ -519,7 +519,8 @@ angular.module('starter',
                     includePublic: true,
                     manualTracking: true
                 },
-                hideNavigationMenu: null
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -542,7 +543,8 @@ angular.module('starter',
                     includePublic: true,
                     manualTracking: true
                 },
-                hideNavigationMenu: null
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -567,7 +569,8 @@ angular.module('starter',
                     manualTracking: true
                 },
                 hideNavigationMenu: null,
-                skipReminderSettingsForRatings: null
+                skipReminderSettingsForRatings: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -592,7 +595,8 @@ angular.module('starter',
                     manualTracking: true
                 },
                 hideNavigationMenu: null,
-                skipReminderSettingsForRatings: null
+                skipReminderSettingsForRatings: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -617,7 +621,8 @@ angular.module('starter',
                     includePublic: true,
                     manualTracking: true
                 },
-                hideNavigationMenu: null
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -642,7 +647,8 @@ angular.module('starter',
                     includePublic: true,
                     manualTracking: true
                 },
-                hideNavigationMenu: null
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -813,7 +819,8 @@ angular.module('starter',
                     includePublic: true
                 },
                 commonVariableSearchParameters: {},
-                hideNavigationMenu: null
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -842,7 +849,8 @@ angular.module('starter',
                     includePublic: true
                 },
                 commonVariableSearchParameters: {},
-                hideNavigationMenu: null
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -1441,33 +1449,24 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 variableObject : null,
-                favorite: false
+                favorite: false,
+                doneState: null
             },
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminder-add.html",
-                    controller: 'RemindersAddCtrl'
+                    controller: 'ReminderAddCtrl'
                 }
             }
         })
-        .state('app.questionOne', {
-            url: "/question-one",
+        .state('app.onboarding', {
+            url: "/onboarding",
             cache: true,
-            params: {
-                question : {
-                    text: "What would you like to improve?",
-                    verticalAnswerButtons: [
-                        {
-                            text: "Overall Mood",
-                            functionName: "add"
-                        }
-                    ]
-                }
-            },
+            params: { },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/reminder-add.html",
-                    controller: 'RemindersAddCtrl'
+                    templateUrl: "templates/onboarding-page.html",
+                    controller: 'OnboardingCtrl'
                 }
             }
         })
@@ -1482,12 +1481,13 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 variableObject : null,
-                favorite: true
+                favorite: true,
+                doneState: null
             },
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminder-add.html",
-                    controller: 'RemindersAddCtrl'
+                    controller: 'ReminderAddCtrl'
                 }
             }
         });

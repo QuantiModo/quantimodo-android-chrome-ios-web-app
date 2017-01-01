@@ -1,0 +1,39 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Get Started">
+    <div
+         style="
+            background-color: {{defaultHelpCards[0].backgroundColor}};
+            text-align: center;
+            color: white;
+            font-weight: 100;
+            padding: 40px;
+            height: 100%" >
+        <div style="
+             position: relative;
+             top: 50%;
+             transform: translateY(-50%);">
+            <div>
+                <img style="width:{{defaultHelpCards[0].image.width}}px; height:{{defaultHelpCards[0].image.height}}px;"
+                     ng-src="{{defaultHelpCards[0].image.url}}">
+            </div>
+            <br>
+            <p style="font-size: 30px">
+                {{defaultHelpCards[0].title}}
+            </p>
+            <br>
+            <p style="font-size: 16px; line-height: 1.5;">
+                {{defaultHelpCards[0].bodyText}}
+            </p>
+            <br>
+            <div ng-repeat="button in defaultHelpCards[0].buttons" >
+                <div class="button-bar">
+                    <button class="button"
+                            style="background-color: {{defaultHelpCards[0].backgroundColor}}; color: white; text-align: center"
+                            id="{{button.id}}"
+                            ng-click="{{button.clickFunctionCall}}">
+                        <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ion-view>
