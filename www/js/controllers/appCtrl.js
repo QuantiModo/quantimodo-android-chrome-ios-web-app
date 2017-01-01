@@ -640,8 +640,6 @@ angular.module('starter')
         $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
-            } else {
-                $rootScope.hideNavigationMenu = false;
             }
         };
 

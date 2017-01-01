@@ -38,6 +38,10 @@ angular.module('starter')
 
 	    var setupHelpCards = function () {
 
+	        if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
+                $rootScope.hideNavigationMenu = true;
+            }
+
 			var defaultHelpCards = [
 				{
 					id: "addTreatmentRemindersCard",
@@ -230,7 +234,7 @@ angular.module('starter')
 			];
 
 			if(typeof $rootScope.defaultHelpCards === "undefined"){
-                $rootScope.hideNavigationMenu = true;
+
 				quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
 					if(defaultHelpCardsFromLocalStorage === null){
 						$rootScope.defaultHelpCards = defaultHelpCards;
@@ -238,6 +242,9 @@ angular.module('starter')
 					} else {
 						$rootScope.defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
 					}
+                    if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
+                        $rootScope.hideNavigationMenu = true;
+                    }
 				});
 			}
 		};
