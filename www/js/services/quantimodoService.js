@@ -6953,7 +6953,7 @@ angular.module('starter')
 
         quantimodoService.forecastioWeather = function() {
 
-            var now = Math.floor(Date.now() / 1000);
+            var nowTimestamp = Math.floor(Date.now() / 1000);
             var lastPostedWeatherAt = Number(quantimodoService.getLocalStorageItemAsString('lastPostedWeatherAt'));
 
             var localMidnightMoment = moment(0, "HH");
@@ -7037,7 +7037,7 @@ angular.module('starter')
                 quantimodoService.postMeasurementsToApi(measurementSets, function () {
                     console.debug("posted weather measurements");
                     if(!lastPostedWeatherAt){
-                        quantimodoService.setLocalStorageItem('lastPostedWeatherAt', now);
+                        quantimodoService.setLocalStorageItem('lastPostedWeatherAt', nowTimestamp);
                     }
                 }, function (error) {
                     console.debug("could not post weather measurements: " + error);
