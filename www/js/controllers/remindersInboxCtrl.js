@@ -708,7 +708,8 @@ angular.module('starter')
 				{
 					variableCategoryName : variableCategoryName,
 					fromUrl: window.location.href,
-                    hideNavigationMenu: $rootScope.hideNavigationMenu
+                    hideNavigationMenu: $rootScope.hideNavigationMenu,
+                    skipReminderSettingsForRatings: true
 				});
 		};
 

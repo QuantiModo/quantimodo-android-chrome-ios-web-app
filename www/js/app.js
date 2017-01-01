@@ -566,7 +566,8 @@ angular.module('starter',
                     includePublic: true,
                     manualTracking: true
                 },
-                hideNavigationMenu: null
+                hideNavigationMenu: null,
+                skipReminderSettingsForRatings: null
             },
             views: {
                 'menuContent': {
@@ -590,7 +591,8 @@ angular.module('starter',
                     includePublic: true,
                     manualTracking: true
                 },
-                hideNavigationMenu: null
+                hideNavigationMenu: null,
+                skipReminderSettingsForRatings: null
             },
             views: {
                 'menuContent': {

@@ -378,7 +378,8 @@ angular.module('starter')
                 });
         };
 
-        $scope.addToFavoritesOrRemindersUsingVariableObject = function (variableObject, reminderFrequency, doneState, addState) {
+        $scope.addToFavoritesOrRemindersUsingVariableObject = function (variableObject, reminderFrequency,
+                                                                        skipReminderSettingsForRatings) {
 
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
@@ -388,16 +389,14 @@ angular.module('starter')
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
 
-            if(!doneState){
-                doneState = 'app.favorites';
-            }
-
-            if(!addState){
-                addState = 'app.favoriteAdd';
-            }
+            var doneState = config.appSettings.defaultState;
+            var addState = 'app.reminderAdd';
 
             if(!reminderFrequency){
                 trackingReminder.reminderFrequency = 0;
+                doneState = 'app.favorites';
+                addState = 'app.favoriteAdd';
+                skipReminderSettingsForRatings = true;
             } else {
                 trackingReminder.reminderFrequency = reminderFrequency;
                 trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
@@ -408,7 +407,6 @@ angular.module('starter')
                 }
             }
 
-
             if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
                 var message = 'Got deletion request before last reminder refresh completed';
                 console.debug(message);
@@ -417,8 +415,10 @@ angular.module('starter')
                 $rootScope.syncingReminders = false;
             }
 
-            if (trackingReminder.abbreviatedUnitName === '/5' || trackingReminder.variableName === "Blood Pressure") {
-                $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+            if ((trackingReminder.abbreviatedUnitName === '/5' ||
+                trackingReminder.variableName === "Blood Pressure") &&
+                skipReminderSettingsForRatings) {
+                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
                 //trackingReminder.defaultValue = 3;
                 quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {

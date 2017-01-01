@@ -32,11 +32,10 @@ angular.module('starter')
             var userTagData;
             if($state.current.name === 'app.favoriteSearch') {
                 $scope.addToFavoritesOrRemindersUsingVariableObject(variableObject);
-/*            } else if (window.location.href.indexOf('reminder-search') !== -1) {
-                var doneState = config.appSettings.defaultState;
+            } else if (window.location.href.indexOf('reminder-search') !== -1) {
                 var frequency = 86400;
-                var addState = 'app.reminderAdd';
-                $scope.addToFavoritesOrRemindersUsingVariableObject(variableObject, frequency, doneState, addState);*/
+                $scope.addToFavoritesOrRemindersUsingVariableObject(variableObject, frequency,
+                    $stateParams.skipReminderSettingsForRatings);
             } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
                 $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
