@@ -401,6 +401,11 @@ angular.module('starter')
             } else {
                 trackingReminder.reminderFrequency = reminderFrequency;
                 trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
+                if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
+                    $rootScope.defaultHelpCards[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+                        variableObject.name + " in the Reminder Inbox. Want to add any more " +
+                        variableObject.variableCategoryName.toLowerCase() + '?';
+                }
             }
 
 
@@ -731,7 +736,7 @@ angular.module('starter')
             }
 
             $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
-            
+
             if($rootScope.urlParameters.refreshUser){
                 quantimodoService.clearLocalStorage();
                 window.localStorage.introSeen = true;
@@ -1123,12 +1128,12 @@ angular.module('starter')
 
                 }
             }
-            
+
             if(!$rootScope.favoritesTally){
                 $rootScope.favoritesTally = {};
             }
 
-            
+
             if(!$rootScope.favoritesTally[trackingReminder.id] || !$rootScope.favoritesTally[trackingReminder.id].tally){
                 $rootScope.favoritesTally[trackingReminder.id] = {
                     tally: 0
