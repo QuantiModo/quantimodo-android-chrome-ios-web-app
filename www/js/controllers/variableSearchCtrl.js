@@ -31,7 +31,11 @@ angular.module('starter')
 
             var userTagData;
             if($state.current.name === 'app.favoriteSearch') {
-                $scope.addToFavoritesUsingVariableObject(variableObject);
+                $scope.addToFavoritesOrRemindersUsingVariableObject(variableObject);
+            } else if (window.location.href.indexOf('reminder-search') !== -1) {
+                var frequency = 86400;
+                $scope.addToFavoritesOrRemindersUsingVariableObject(variableObject, frequency,
+                    $stateParams.skipReminderSettingsForRatings);
             } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
                 $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
@@ -111,7 +115,10 @@ angular.module('starter')
         };
 
         $scope.init = function(){
-            $rootScope.hideNavigationMenu = false;
+            if(!$stateParams.hideNavigationMenu){
+                $rootScope.hideNavigationMenu = false;
+            }
+
             console.debug($state.current.name + ' initializing...');
 
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -293,7 +300,7 @@ angular.module('starter')
 
         // when add new variable is tapped
         $scope.addNewVariable = function(){
-            
+
             var variableObject = {};
             variableObject.name = $scope.state.variableSearchQuery.name;
             if($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything'){

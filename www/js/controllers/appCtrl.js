@@ -209,7 +209,7 @@ angular.module('starter')
                 return obj.id !== card.id;
             });
             quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
-            if(!$rootScope.defaultHelpCards || $rootScope.defaultHelpCards.length == 0){
+            if(!$rootScope.defaultHelpCards || $rootScope.defaultHelpCards.length === 0){
                 $rootScope.hideNavigationMenu = false;
             } else {
                 $rootScope.hideNavigationMenu = true;
@@ -378,14 +378,34 @@ angular.module('starter')
                 });
         };
 
-        $scope.addToFavoritesUsingVariableObject = function (variableObject) {
+        $scope.addToFavoritesOrRemindersUsingVariableObject = function (variableObject, reminderFrequency,
+                                                                        skipReminderSettingsForRatings) {
+
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
-            trackingReminder.reminderFrequency = 0;
+
             trackingReminder.variableName = variableObject.name;
             trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+
+            var doneState = config.appSettings.defaultState;
+            var addState = 'app.reminderAdd';
+
+            if(!reminderFrequency){
+                trackingReminder.reminderFrequency = 0;
+                doneState = 'app.favorites';
+                addState = 'app.favoriteAdd';
+                skipReminderSettingsForRatings = true;
+            } else {
+                trackingReminder.reminderFrequency = reminderFrequency;
+                trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
+                if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
+                    $rootScope.defaultHelpCards[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+                        variableObject.name + " in the Reminder Inbox. Want to add any more " +
+                        variableObject.variableCategoryName.toLowerCase() + '?';
+                }
+            }
 
             if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
                 var message = 'Got deletion request before last reminder refresh completed';
@@ -395,15 +415,15 @@ angular.module('starter')
                 $rootScope.syncingReminders = false;
             }
 
-            if (trackingReminder.abbreviatedUnitName === '/5' || trackingReminder.variableName === "Blood Pressure") {
-                $ionicLoading.show({
-                    template: '<ion-spinner></ion-spinner>'
-                });
+            if ((trackingReminder.abbreviatedUnitName === '/5' ||
+                trackingReminder.variableName === "Blood Pressure") &&
+                skipReminderSettingsForRatings) {
+                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
                 //trackingReminder.defaultValue = 3;
                 quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                        $state.go('app.favorites',
+                        $state.go(doneState,
                             {
                                 trackingReminder: trackingReminder,
                                 fromState: $state.current.name,
@@ -421,7 +441,7 @@ angular.module('starter')
                     });
 
             } else {
-                $state.go('app.favoriteAdd',
+                $state.go(addState,
                     {
                         variableObject: variableObject,
                         fromState: $state.current.name,
@@ -625,8 +645,6 @@ angular.module('starter')
         $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
-            } else {
-                $rootScope.hideNavigationMenu = false;
             }
         };
 
@@ -718,7 +736,7 @@ angular.module('starter')
             }
 
             $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
-            
+
             if($rootScope.urlParameters.refreshUser){
                 quantimodoService.clearLocalStorage();
                 window.localStorage.introSeen = true;
@@ -1110,12 +1128,12 @@ angular.module('starter')
 
                 }
             }
-            
+
             if(!$rootScope.favoritesTally){
                 $rootScope.favoritesTally = {};
             }
 
-            
+
             if(!$rootScope.favoritesTally[trackingReminder.id] || !$rootScope.favoritesTally[trackingReminder.id].tally){
                 $rootScope.favoritesTally[trackingReminder.id] = {
                     tally: 0

@@ -9,7 +9,7 @@ angular.module('starter')
 			history : []
 		};
 		$scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
-		
+
 		$scope.editMeasurement = function(measurement){
 			$state.go('app.measurementAdd', {
 				measurement: measurement,
@@ -21,6 +21,7 @@ angular.module('starter')
         $rootScope.showFilterBarSearchIcon = false;
 
 		$scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
 			console.debug($state.current.name + ' initializing...');
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -77,7 +78,7 @@ angular.module('starter')
 						$scope.editMeasurement($rootScope.variableObject);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+						$scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
 						$state.go('app.reminderAdd',

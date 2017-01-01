@@ -6818,7 +6818,7 @@ angular.module('starter')
                         quantimodoService.refreshUser().then(function(user){
                             console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' +
                                 JSON.stringify(user));
-                            $rootScope.hideNavigationMenu = false;
+                            //$rootScope.hideNavigationMenu = false;
                             $rootScope.$broadcast('callAppCtrlInit');
                         }, function(error){
                             console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));

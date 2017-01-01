@@ -5,7 +5,7 @@ angular.module('starter')
 													   quantimodoService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
-        
+
 	    $scope.state = {
 	    	offset : 0,
 	    	limit : 50,
@@ -29,11 +29,11 @@ angular.module('starter')
 	    };
 
 	    $scope.getVariableCategoryByUnit = function(unit){
-	    	
+
 	    	if(!unit) {
                 return false;
             }
-	    	
+
 	    	var variableCategory = $scope.state.variableCategories.filter(function(vc){
 	    		return vc.name === unit.category;
 	    	})[0];
@@ -109,9 +109,10 @@ angular.module('starter')
 			}
 
 		};
-	    
+
 	    // constructor
 	    $scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
 			$scope.state.loading = true;
 			$scope.state.offset = 0;
 			$rootScope.stateParams = $stateParams;
@@ -194,7 +195,7 @@ angular.module('starter')
 						$scope.editMeasurement($rootScope.variableObject);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+						$scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
 						$state.go('app.reminderAdd',
