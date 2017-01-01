@@ -83,8 +83,9 @@ angular.module('starter')
 					$scope.$broadcast('scroll.refreshComplete');
 				});
 		};
-		
+
 	    $scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
 			console.debug($state.current.name + ' initializing...');
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -178,7 +179,7 @@ angular.module('starter')
 
 	    $scope.edit = function(reminder){
 	    	reminder.fromState = $state.current.name;
-	    	$state.go('app.reminderAdd', 
+	    	$state.go('app.reminderAdd',
 	    	{
 	    		reminder : reminder,
 	    		fromUrl: window.location.href
@@ -241,7 +242,7 @@ angular.module('starter')
 
 		// Triggered on a button click, or some other target
 		$scope.showActionSheet = function(trackingReminder, $index) {
-			
+
 			var variableObject = {
 				id : trackingReminder.variableId,
 				name : trackingReminder.variableName
