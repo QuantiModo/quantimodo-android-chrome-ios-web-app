@@ -772,7 +772,7 @@ angular.module('starter')
                     console.debug('BUTTON CLICKED', index);
 
                     if(index === 0){
-                        $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+                        $scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
                     }
                     if(index === 1){
                         $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
@@ -813,7 +813,8 @@ angular.module('starter')
 
             $ionicPopup.show({
                 title: helpTitle,
-                subTitle: explanationText,
+                //subTitle: '',
+                template: explanationText,
                 scope: $scope,
                 buttons: [
                     {

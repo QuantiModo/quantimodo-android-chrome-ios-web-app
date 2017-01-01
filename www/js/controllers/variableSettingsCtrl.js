@@ -32,7 +32,7 @@ angular.module('starter')
                 buttonClicked: function(index) {
                     console.debug('variableSettingsCtrl BUTTON CLICKED: ' + index);
                     if(index === 0){
-                        $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+                        $scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
                     }
                     if(index === 1){
                         $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);

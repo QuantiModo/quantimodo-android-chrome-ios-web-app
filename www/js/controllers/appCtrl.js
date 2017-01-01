@@ -81,23 +81,19 @@ angular.module('starter')
         };
 
         $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
-            var stateParams = {};
             if(correlationObject.causeVariable){
-                stateParams.variableObject = correlationObject.causeVariable;
+                $rootScope.goToVariableSettingsForVariableObject(correlationObject.causeVariable);
             } else {
-                stateParams.variableName = correlationObject.causeVariableName;
+                $state.go('app.variableSettings', {variableName: correlationObject.causeVariableName});
             }
-            $state.go('app.variableSettings', stateParams);
         };
 
         $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
-            var stateParams = {};
             if(correlationObject.effectVariable){
-                stateParams.variableObject = correlationObject.effectVariable;
+                $rootScope.goToVariableSettingsForVariableObject(correlationObject.effectVariable);
             } else {
-                stateParams.variableName = correlationObject.effectVariableName;
+                $state.go('app.variableSettings', {variableName: correlationObject.effectVariableName});
             }
-            $state.go('app.variableSettings', stateParams);
         };
 
         $scope.goToState = function (state, stateParameters) {
@@ -206,12 +202,18 @@ angular.module('starter')
             quantimodoService.setLocalStorageItem(flagName, true);
         };
 
-        $rootScope.hideHelpCard = function (card) {
+        $rootScope.hideHelpCard = function () {
+            var card = $rootScope.defaultHelpCards[0];
             card.hide = true;
             $rootScope.defaultHelpCards = $rootScope.defaultHelpCards.filter(function( obj ) {
                 return obj.id !== card.id;
             });
             quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
+            if(!$rootScope.defaultHelpCards || $rootScope.defaultHelpCards.length === 0){
+                $rootScope.hideNavigationMenu = false;
+            } else {
+                $rootScope.hideNavigationMenu = true;
+            }
         };
 
         // open datepicker for "from" date
@@ -265,7 +267,7 @@ angular.module('starter')
         $scope.showHelpInfoPopup = function () {
             $rootScope.helpPopup = $ionicPopup.show({
                 title: helpPopupMessages[location.hash],
-                subTitle: '',
+                //subTitle: '',
                 scope: $scope,
                 template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
                 buttons: [
@@ -287,9 +289,9 @@ angular.module('starter')
         $scope.onHelpButtonPress = function () {
             $rootScope.helpButtonPopup = $ionicPopup.show({
                 title: $rootScope.stateParams.title,
-                subTitle: $rootScope.stateParams.helpText,
+                //subTitle: '',
                 scope: $scope,
-                template: '',
+                template: $rootScope.stateParams.helpText,
                 buttons: [
                     {
                         text: 'OK',
@@ -376,14 +378,34 @@ angular.module('starter')
                 });
         };
 
-        $scope.addToFavoritesUsingVariableObject = function (variableObject) {
+        $scope.addToFavoritesOrRemindersUsingVariableObject = function (variableObject, reminderFrequency,
+                                                                        skipReminderSettingsForRatings) {
+
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
-            trackingReminder.reminderFrequency = 0;
+
             trackingReminder.variableName = variableObject.name;
             trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+
+            var doneState = config.appSettings.defaultState;
+            var addState = 'app.reminderAdd';
+
+            if(!reminderFrequency){
+                trackingReminder.reminderFrequency = 0;
+                doneState = 'app.favorites';
+                addState = 'app.favoriteAdd';
+                skipReminderSettingsForRatings = true;
+            } else {
+                trackingReminder.reminderFrequency = reminderFrequency;
+                trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
+                if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
+                    $rootScope.defaultHelpCards[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+                        variableObject.name + " in the Reminder Inbox. Want to add any more " +
+                        variableObject.variableCategoryName.toLowerCase() + '?';
+                }
+            }
 
             if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
                 var message = 'Got deletion request before last reminder refresh completed';
@@ -393,15 +415,15 @@ angular.module('starter')
                 $rootScope.syncingReminders = false;
             }
 
-            if (trackingReminder.abbreviatedUnitName === '/5' || trackingReminder.variableName === "Blood Pressure") {
-                $ionicLoading.show({
-                    template: '<ion-spinner></ion-spinner>'
-                });
+            if ((trackingReminder.abbreviatedUnitName === '/5' ||
+                trackingReminder.variableName === "Blood Pressure") &&
+                skipReminderSettingsForRatings) {
+                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
                 //trackingReminder.defaultValue = 3;
                 quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                        $state.go('app.favorites',
+                        $state.go(doneState,
                             {
                                 trackingReminder: trackingReminder,
                                 fromState: $state.current.name,
@@ -419,7 +441,7 @@ angular.module('starter')
                     });
 
             } else {
-                $state.go('app.favoriteAdd',
+                $state.go(addState,
                     {
                         variableObject: variableObject,
                         fromState: $state.current.name,
@@ -579,7 +601,8 @@ angular.module('starter')
                                 if($rootScope.isAndroid){
                                     $ionicPopup.show({
                                         title: 'Update available',
-                                        subTitle: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
+                                        //subTitle: '',
+                                        template: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
                                         buttons: [
                                             { text: 'Not now' },
                                             {
@@ -622,8 +645,6 @@ angular.module('starter')
         $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
-            } else {
-                $rootScope.hideNavigationMenu = false;
             }
         };
 
@@ -715,7 +736,7 @@ angular.module('starter')
             }
 
             $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
-            
+
             if($rootScope.urlParameters.refreshUser){
                 quantimodoService.clearLocalStorage();
                 window.localStorage.introSeen = true;
@@ -850,9 +871,9 @@ angular.module('starter')
             if (correlationObject.userVote !== 0) {
                 $ionicPopup.show({
                     title:'Implausible relationship?',
-                    subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    //subTitle: '',
                     scope: $scope,
-                    template: $scope.templateConfirmationDown,
+                    template: 'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
                     buttons:[
                         {text: 'No'},
                         {text: 'Yes',
@@ -885,9 +906,9 @@ angular.module('starter')
             if (correlationObject.userVote !== 1) {
                 $ionicPopup.show({
                     title:'Plausible relationship?',
-                    subTitle: 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    //subTitle: '',
                     scope: $scope,
-                    template: $scope.templateConfirmationUp,
+                    template: 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
                     buttons:[
                         {text: 'No'},
                         {text: 'Yes',
@@ -1107,12 +1128,12 @@ angular.module('starter')
 
                 }
             }
-            
+
             if(!$rootScope.favoritesTally){
                 $rootScope.favoritesTally = {};
             }
 
-            
+
             if(!$rootScope.favoritesTally[trackingReminder.id] || !$rootScope.favoritesTally[trackingReminder.id].tally){
                 $rootScope.favoritesTally[trackingReminder.id] = {
                     tally: 0
@@ -1173,7 +1194,8 @@ angular.module('starter')
         $scope.showDeleteAllMeasurementsForVariablePopup = function(){
             $ionicPopup.show({
                 title:'Delete all ' + $rootScope.variableName + " measurements?",
-                subTitle: 'This cannot be undone!',
+                //subTitle: '',
+                template: 'This cannot be undone!',
                 scope: $scope,
                 buttons:[
                     {
@@ -1190,6 +1212,10 @@ angular.module('starter')
             });
         };
 
+        $rootScope.goToVariableSettingsForVariableObject = function (variableObject) {
+            $state.go('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});
+        };
+
         // Triggered on a button click, or some other target
         $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
 
@@ -1197,7 +1223,6 @@ angular.module('starter')
                 id: favorite.variableId,
                 name: favorite.variableName
             };
-
 
             var actionMenuButtons = [
                 { text: '<i class="icon ion-gear-a"></i>Change Default Value' },
@@ -1208,13 +1233,11 @@ angular.module('starter')
                 { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'}
             ];
 
-
             if(config.appSettings.favoritesController){
                 if(config.appSettings.favoritesController.actionMenuButtons){
                     actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
                 }
             }
-
 
             if(bloodPressure){
                 actionMenuButtons = [];
@@ -1342,35 +1365,36 @@ angular.module('starter')
         $scope.showExplanationsPopup = function(settingName) {
             var explanationText = {
                 "Minimum value": "The minimum allowed value for measurements. " +
-                "While you can record a value below this minimum, it will be " +
-                "excluded from the correlation analysis.",
+                    "While you can record a value below this minimum, it will be " +
+                    "excluded from the correlation analysis.",
                 "Maximum value": "The maximum allowed value for measurements. " +
-                "While you can record a value above this maximum, it will be " +
-                "excluded from the correlation analysis.",
+                    "While you can record a value above this maximum, it will be " +
+                    "excluded from the correlation analysis.",
                 "Onset delay": "An outcome is always preceded by the predictor or stimulus. " +
-                "The amount of time that elapses after the predictor/stimulus event " +
-                "before the outcome as perceived by a self-tracker is known as the “onset delay”.  " +
-                "For example, the “onset delay” between the time a person takes an aspirin " +
-                "(predictor/stimulus event) and the time a person perceives a change in their" +
-                " headache severity (outcome) is approximately 30 minutes.",
+                    "The amount of time that elapses after the predictor/stimulus event " +
+                    "before the outcome as perceived by a self-tracker is known as the “onset delay”.  " +
+                    "For example, the “onset delay” between the time a person takes an aspirin " +
+                    "(predictor/stimulus event) and the time a person perceives a change in their" +
+                    " headache severity (outcome) is approximately 30 minutes.",
                 "Duration of action": "The amount of time over " +
-                "which a predictor/stimulus event can exert an observable influence " +
-                "on an outcome variable’s value. For instance, aspirin (stimulus/predictor) " +
-                "typically decreases headache severity for approximately four hours" +
-                " (duration of action) following the onset delay.",
+                    "which a predictor/stimulus event can exert an observable influence " +
+                    "on an outcome variable’s value. For instance, aspirin (stimulus/predictor) " +
+                    "typically decreases headache severity for approximately four hours" +
+                    " (duration of action) following the onset delay.",
                 "Filling value": "When it comes to analysis to determine the effects of this variable," +
-                " knowing when it did not occur is as important as knowing when it did occur. " +
-                "For example, if you are tracking a medication, it is important to know " +
-                "when you did not take it, but you do not have to log zero values for " +
-                "all the days when you haven't taken it. Hence, you can specify a filling value " +
-                "(typically 0) to insert whenever data is missing.",
+                    " knowing when it did not occur is as important as knowing when it did occur. " +
+                    "For example, if you are tracking a medication, it is important to know " +
+                    "when you did not take it, but you do not have to log zero values for " +
+                    "all the days when you haven't taken it. Hence, you can specify a filling value " +
+                    "(typically 0) to insert whenever data is missing.",
                 "Combination Method": "How multiple measurements are combined over time.  We use the average (or mean) " +
-                "for things like your weight.  Summing is used for things like number of apples eaten. "
+                    "for things like your weight.  Summing is used for things like number of apples eaten. "
             };
 
             $ionicPopup.show({
                 title: settingName,
-                subTitle: explanationText[settingName],
+                //subTitle: '',
+                template: explanationText[settingName],
                 scope: $scope,
                 buttons: [
                     {

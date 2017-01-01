@@ -37,25 +37,31 @@ angular.module('starter')
 	    };
 
 	    var setupHelpCards = function () {
+
+	        if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
+                $rootScope.hideNavigationMenu = true;
+            }
+
 			var defaultHelpCards = [
 				{
 					id: "addTreatmentRemindersCard",
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
-					title: 'Treatment Tracking',
+					title: 'Any Treatments?',
 					iconClass: "icon positive ion-ios-medkit-outline",
-					bodyText: 'Get reminded to take and record treatments to identify how they might be affecting you.',
+					bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
+						'(i.e. meditating or psychotherapy)? Please add them so we can identify how they might be affecting you.',
 					buttons: [
 						{
 							id: "goToReminderSearchCategoryTreatmentsButton",
 							clickFunctionCall: "goToReminderSearchCategory('Treatments')",
-							buttonText: 'Add treatment reminder',
+							buttonText: 'Add Treatment',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
 						{
 							id: "hideAddTreatmentRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding treatments',
+							buttonText: 'Nope',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -64,21 +70,22 @@ angular.module('starter')
 				{
 					id: "addSymptomRemindersCard",
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
-					title: 'Symptom Ratings',
+					title: 'Recurring Symptoms?',
 					iconClass: "icon positive ion-sad-outline",
-					bodyText: 'Rate symptoms regularly in order to determine which factors are influencing them.',
+					bodyText: 'Got any recurring symptoms that vary in their severity?  If so, add them so I can try ' +
+						'to determine which hidden factors might be worsening or improving them.',
 					buttons: [
 						{
 							id: "goToReminderSearchCategorySymptomsButton",
 							clickFunctionCall: "goToReminderSearchCategory('Symptoms')",
-							buttonText: 'Add symptom reminder',
+							buttonText: 'Add Symptom',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
 						{
 							id: "hideAddSymptomRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding symptoms',
+							buttonText: 'Nope',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -89,19 +96,20 @@ angular.module('starter')
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
 					title: 'Varying Emotions?',
 					iconClass: "icon positive ion-happy-outline",
-					bodyText: "It's important to rate variable emotions regularly in order to determine which factors are influencing them.",
+					bodyText: "Do you have any emotions that fluctuate regularly?  If so, add them so I can try to " +
+						"determine which factors are influencing them.",
 					buttons: [
 						{
 							id: "goToReminderSearchCategoryEmotionsButton",
 							clickFunctionCall: "goToReminderSearchCategory('Emotions')",
-							buttonText: 'Add emotions reminder',
+							buttonText: 'Add Emotion',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
 						{
 							id: "hideAddEmotionRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding emotions',
+							buttonText: 'Nope',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -110,22 +118,21 @@ angular.module('starter')
 				{
 					id: "addFoodRemindersCard",
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-					title: 'Track Diet',
+					title: 'Common Foods?',
 					iconClass: "icon positive ion-ios-nutrition-outline",
-					bodyText: "Diet can have a significant impact on your health. It's important to enter any foods that " +
-					"you regularly eat to see how they might be affecting you.",
+					bodyText: "Diet can have a significant impact on your health. Are there any foods that you eat regularly?",
 					buttons: [
 						{
 							id: "goToReminderSearchCategoryFoodsButton",
 							clickFunctionCall: "goToReminderSearchCategory('Foods')",
-							buttonText: 'Add a food reminder ',
+							buttonText: 'Add Common Food',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
 						{
 							id: "hideAddFoodRemindersCardButton",
 							clickFunctionCall: "hideHelpCard(card)",
-							buttonText: 'Done adding common foods',
+							buttonText: 'Nope',
 							buttonIconClass: "ion-close-circled",
 							buttonClass: "button button-clear button-assertive"
 						}
@@ -209,7 +216,7 @@ angular.module('starter')
 						{
 							id: "goToStateAppImportButton",
 							clickFunctionCall: "goToState('app.import')",
-							buttonText: ' Connect an app or device',
+							buttonText: 'Connect an app or device',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
@@ -225,6 +232,7 @@ angular.module('starter')
 			];
 
 			if(typeof $rootScope.defaultHelpCards === "undefined"){
+
 				quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
 					if(defaultHelpCardsFromLocalStorage === null){
 						$rootScope.defaultHelpCards = defaultHelpCards;
@@ -232,6 +240,9 @@ angular.module('starter')
 					} else {
 						$rootScope.defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
 					}
+                    if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
+                        $rootScope.hideNavigationMenu = true;
+                    }
 				});
 			}
 		};
@@ -653,8 +664,6 @@ angular.module('starter')
 				console.debug('ReminderInbox: Hiding splash screen because app is ready');
 				navigator.splashscreen.hide();
 			}
-
-
 		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
@@ -684,15 +693,25 @@ angular.module('starter')
 					fromState : $state.current.name
 				});
 	    };
-		
+
 		$scope.goToReminderSearchCategory = function(variableCategoryName) {
+		    if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
+                $rootScope.defaultHelpCards[0].buttons[0].buttonText =
+                    $rootScope.defaultHelpCards[0].buttons[0].buttonText.replace("Add ", "Add Another ");
+                $rootScope.defaultHelpCards[0].buttons[0].buttonText =
+                    $rootScope.defaultHelpCards[0].buttons[0].buttonText.replace("Add Another Another ", "Add Another ");
+                $rootScope.defaultHelpCards[0].bodyText = "";
+                $rootScope.defaultHelpCards[0].buttons[1].buttonText = "Done Adding " + variableCategoryName;
+            }
 			$state.go('app.reminderSearchCategory',
 				{
 					variableCategoryName : variableCategoryName,
-					fromUrl: window.location.href
+					fromUrl: window.location.href,
+                    hideNavigationMenu: $rootScope.hideNavigationMenu,
+                    skipReminderSettingsForRatings: true
 				});
 		};
-		
+
     	$scope.$on('$ionicView.enter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
@@ -739,7 +758,7 @@ angular.module('starter')
 						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+						$scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
 						$scope.goToAddMeasurementForVariableObject($rootScope.variableObject);

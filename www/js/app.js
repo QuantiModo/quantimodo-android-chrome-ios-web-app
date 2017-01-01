@@ -30,11 +30,11 @@ angular.module('starter',
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
-        
+
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-                alert(errorMsg);
+                //alert(errorMsg);
                 quantimodoService.reportError(errorMsg);
             };
         }
@@ -122,7 +122,7 @@ angular.module('starter',
              };
 
              window.trackOneRatingAction = function (data){
-                 
+
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -134,7 +134,7 @@ angular.module('starter',
              };
 
              window.trackTwoRatingAction = function (data){
-                 
+
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -146,7 +146,7 @@ angular.module('starter',
              };
 
              window.trackThreeRatingAction = function (data){
-                 
+
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -158,7 +158,7 @@ angular.module('starter',
              };
 
              window.trackFourRatingAction = function (data){
-                 
+
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -170,7 +170,7 @@ angular.module('starter',
              };
 
              window.trackFiveRatingAction = function (data){
-                 
+
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -182,7 +182,7 @@ angular.module('starter',
              };
 
              window.trackDefaultValueAction = function (data){
-                 
+
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
@@ -193,7 +193,7 @@ angular.module('starter',
              };
 
              window.snoozeAction = function (data){
-                 
+
                  console.debug("snoozeAction push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
@@ -203,7 +203,7 @@ angular.module('starter',
              };
 
              window.trackLastValueAction = function (data){
-                 
+
                  console.debug("trackLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -214,7 +214,7 @@ angular.module('starter',
              };
 
              window.trackSecondToLastValueAction = function (data){
-                 
+
                  console.debug("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -225,7 +225,7 @@ angular.module('starter',
              };
 
              window.trackThirdToLastValueAction = function (data){
-                 
+
                  console.debug("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -289,7 +289,7 @@ angular.module('starter',
         } else {
             //console.debug("Google Analytics Unavailable");
         }
-        
+
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -518,7 +518,8 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -540,7 +541,8 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -563,7 +565,9 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null,
+                skipReminderSettingsForRatings: null
             },
             views: {
                 'menuContent': {
@@ -586,7 +590,9 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null,
+                skipReminderSettingsForRatings: null
             },
             views: {
                 'menuContent': {
@@ -610,7 +616,8 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -634,7 +641,8 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -717,7 +725,8 @@ angular.module('starter',
                     limit: 100,
                     includePublic: false
                     //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -741,7 +750,8 @@ angular.module('starter',
                     limit: 100,
                     includePublic: false
                     //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -773,7 +783,8 @@ angular.module('starter',
                 },
                 commonVariableSearchParameters: {
                     numberOfAggregateCorrelationsAsEffect: '(gt)1'
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -801,7 +812,8 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true
                 },
-                commonVariableSearchParameters: {}
+                commonVariableSearchParameters: {},
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -829,7 +841,8 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true
                 },
-                commonVariableSearchParameters: {}
+                commonVariableSearchParameters: {},
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -884,7 +897,8 @@ angular.module('starter',
                 },
                 commonVariableSearchParameters: {
                     numberOfAggregateCorrelationsAsCause: '(gt)1'
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -905,7 +919,8 @@ angular.module('starter',
                     includePublic: false,
                     //manualTracking: false,  Shouldn't do this because it will only include explicitly false variables
                     numberOfUserCorrelations: '(gt)1'
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -926,7 +941,8 @@ angular.module('starter',
                     includePublic: true,
                     //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
                     numberOfAggregatedCorrelations: '(gt)1'
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -1484,7 +1500,7 @@ angular.module('starter',
         $urlRouterProvider.otherwise('/');
     }
       // if none of the above states are matched, use this as the fallback
-    
+
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {

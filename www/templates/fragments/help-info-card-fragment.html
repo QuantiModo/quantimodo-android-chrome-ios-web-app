@@ -1,6 +1,8 @@
-<div class="card" ng-if="!card.hide" id="{{card.id}}" >
+<div class="card"
+     ng-if="!defaultHelpCards[0].hide"
+     id="{{defaultHelpCards[0].id}}" >
     <div class="item item-avatar item-borderless">
-        <i class="{{card.iconClass}}"
+        <i class="{{defaultHelpCards[0].iconClass}}"
            style="position: absolute;
 							top: 15px;
 							left: 15px;
@@ -16,14 +18,21 @@
 					  white-space: nowrap;
 					  color: black;
 					font-size: 18px;">
-           {{card.title}}
+           {{defaultHelpCards[0].title}}
         </p>
     </div>
+<!--    <div >
+        <div class="row" >
+            <div class="button-bar">
+                <img style="margin: auto;" src="img/cute_robot_happy_transparent.png">
+            </div>
+        </div>
+    </div>-->
     <div class="item item-body item-borderless" style="text-align: center;">
-        {{card.bodyText}}
+        {{defaultHelpCards[0].bodyText}}
     </div>
-    <!--buttons: <pre>{{card.buttons|json}}</pre>-->
-    <div ng-repeat="button in card.buttons" >
+    <!--buttons: <pre>{{defaultHelpCards[0].buttons|json}}</pre>-->
+    <div ng-repeat="button in defaultHelpCards[0].buttons" >
         <!--button: <pre>{{button|json}}</pre>-->
         <div class="row" >
             <div class="button-bar">

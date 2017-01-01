@@ -22,7 +22,7 @@ angular.module('starter')
             }
         };
 
-        quantimodoService.errorHandler = function(data, status, headers, config, request, doNotSendToLogin){
+        quantimodoService.errorHandler = function(data, status, headers, config, request, doNotSendToLogin, doNotShowOfflineError){
 
             if(status === 302){
                 console.warn('quantimodoService.errorHandler: Got 302 response from ' + JSON.stringify(request));
@@ -55,13 +55,14 @@ angular.module('starter')
                         {groupingHash: groupingHash},
                         "error");
                 }
-                if (!$rootScope.offlineConnectionErrorShowing) {
+                if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
                     console.error("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
                     $rootScope.offlineConnectionErrorShowing = true;
                     if($rootScope.isIOS){
                         $ionicPopup.show({
                             title: 'NOT CONNECTED',
-                            subTitle: 'Either you are not connected to the internet or the quantimodoService server cannot be reached.',
+                            //subTitle: '',
+                            template: 'Either you are not connected to the internet or the quantimodoService server cannot be reached.',
                             buttons:[
                                 {text: 'OK',
                                     type: 'button-positive',
@@ -125,7 +126,7 @@ angular.module('starter')
 
         // GET method with the added token
         quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
-                                  minimumSecondsBetweenRequests, doNotSendToLogin){
+                                  minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
             if(!canWeMakeRequestYet('GET', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -187,7 +188,8 @@ angular.module('starter')
                                     "error");
                             }
                         } else if (data.error) {
-                            quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin);
+                            quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin,
+                                doNotShowOfflineError);
                             errorHandler(data);
                         } else {
                             quantimodoService.successHandler(data, baseURL, status);
@@ -203,7 +205,7 @@ angular.module('starter')
 
         // POST method with the added token
         quantimodoService.post = function(baseURL, requiredFields, items, successHandler, errorHandler,
-                                   minimumSecondsBetweenRequests, doNotSendToLogin){
+                                   minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
             if(!canWeMakeRequestYet('POST', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -265,7 +267,8 @@ angular.module('starter')
                 */
 
                 $http(request).success(successHandler).error(function(data, status, headers, config){
-                    quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin);
+                    quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin,
+                        doNotShowOfflineError);
                     errorHandler(data);
                 });
 
@@ -425,7 +428,6 @@ angular.module('starter')
             );
         };
 
-        // post new correlation for user
         quantimodoService.postCorrelationToApi = function(correlationSet, successHandler ,errorHandler){
             quantimodoService.post('api/v1/correlations',
                 ['causeVariableName', 'effectVariableName', 'correlation', 'vote'],
@@ -434,7 +436,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // post a vote
         quantimodoService.postVoteToApi = function(correlationSet, successHandler ,errorHandler){
             quantimodoService.post('api/v1/votes',
                 ['causeVariableName', 'effectVariableName', 'correlation', 'vote'],
@@ -443,7 +444,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // delete a vote
         quantimodoService.deleteVoteToApi = function(correlationSet, successHandler ,errorHandler){
             quantimodoService.post('api/v1/votes/delete',
                 ['causeVariableName', 'effectVariableName', 'correlation'],
@@ -452,7 +452,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // search for user variables
         quantimodoService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
             quantimodoService.get('api/v1/variables/search/' + encodeURIComponent(query),
                 ['limit','includePublic', 'manualTracking'],
@@ -485,7 +484,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // get user variables
         quantimodoService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
 
             if(!params){
@@ -507,7 +505,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // post changes to user variable
         quantimodoService.postUserVariableToApi = function(userVariable, successHandler, errorHandler) {
             quantimodoService.post('api/v1/userVariables',
                 [
@@ -537,7 +534,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // deletes all of a user's measurements for a variable
         quantimodoService.deleteUserVariableMeasurements = function(variableId, successHandler, errorHandler) {
             quantimodoService.deleteElementOfLocalStorageItemByProperty('userVariables', 'variableId', variableId);
             quantimodoService.deleteElementOfLocalStorageItemById('commonVariables', variableId);
@@ -550,7 +546,6 @@ angular.module('starter')
             errorHandler);
         };
 
-        // get variable categories
         quantimodoService.getVariableCategoriesFromApi = function(successHandler, errorHandler){
             quantimodoService.get('api/variableCategories',
                 [],
@@ -559,7 +554,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // get units
         quantimodoService.getUnitsFromApi = function(successHandler, errorHandler){
             quantimodoService.get('api/units',
                 [],
@@ -568,7 +562,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // get units
         quantimodoService.getConnectorsFromApi = function(successHandler, errorHandler){
             quantimodoService.get('api/connectors/list',
                 [],
@@ -577,7 +570,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // get units
         quantimodoService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
             quantimodoService.get('api/v1/connectors/' + name + '/disconnect',
                 [],
@@ -631,7 +623,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // get user data
         quantimodoService.getUserFromApi = function(successHandler, errorHandler){
             if($rootScope.user){
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
@@ -648,7 +639,6 @@ angular.module('starter')
             );
         };
 
-        // get user data
         quantimodoService.getUserEmailPreferences = function(params, successHandler, errorHandler){
             if($rootScope.user){
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
@@ -665,7 +655,6 @@ angular.module('starter')
             );
         };
 
-        // get pending reminders
         quantimodoService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/trackingReminderNotifications',
                 ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'],
@@ -674,7 +663,8 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.postTrackingReminderNotificationsToApi = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
+        quantimodoService.postTrackingReminderNotificationsToApi = function(trackingReminderNotificationsArray,
+                                                                            successHandler, errorHandler) {
             if(!trackingReminderNotificationsArray){
                 successHandler();
                 return;
@@ -683,14 +673,17 @@ angular.module('starter')
                 trackingReminderNotificationsArray = [trackingReminderNotificationsArray];
             }
 
+            var minimumSecondsBetweenRequests = 30;
+            var doNotSendToLogin = false;
+            var doNotShowOfflineError = true;
+
             quantimodoService.post('api/v1/trackingReminderNotifications',
                 [],
                 trackingReminderNotificationsArray,
                 successHandler,
-                errorHandler);
+                errorHandler, minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError);
         };
 
-        // get reminders
         quantimodoService.getTrackingRemindersFromApi = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/trackingReminders',
                 ['variableCategoryName', 'id'],
@@ -699,7 +692,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // get reminders
         quantimodoService.getStudy = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/study',
                 [],
@@ -727,7 +719,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // post tracking reminder
         quantimodoService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
             if(trackingRemindersArray.constructor !== Array){
                 trackingRemindersArray = [trackingRemindersArray];
@@ -774,7 +765,6 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        // post tracking reminder
         quantimodoService.postUserTag = function(userTagData, successHandler, errorHandler) {
             if(userTagData.constructor !== Array){
                 userTagData = [userTagData];
@@ -798,7 +788,6 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        // delete tracking reminder
         quantimodoService.deleteUserTag = function(userTagData, successHandler, errorHandler) {
             quantimodoService.post('api/v1/userTags/delete',
                 [],
@@ -816,7 +805,6 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        // get reminders
         quantimodoService.getUserTags = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/userTags',
                 ['variableCategoryName', 'id'],
@@ -1029,7 +1017,7 @@ angular.module('starter')
             });
 
         };
-        
+
         quantimodoService.saveAccessTokenInLocalStorage = function (accessResponse) {
             var accessToken = accessResponse.accessToken || accessResponse.access_token;
             if (accessToken) {
@@ -2220,7 +2208,6 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        // service methods
         function addUnitsToRootScope(units) {
             $rootScope.unitObjects = units;
             $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
@@ -6831,7 +6818,7 @@ angular.module('starter')
                         quantimodoService.refreshUser().then(function(user){
                             console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' +
                                 JSON.stringify(user));
-                            $rootScope.hideNavigationMenu = false;
+                            //$rootScope.hideNavigationMenu = false;
                             $rootScope.$broadcast('callAppCtrlInit');
                         }, function(error){
                             console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
@@ -6964,20 +6951,23 @@ angular.module('starter')
             }
         };
 
-
         quantimodoService.forecastioWeather = function() {
 
-            var now = Math.floor(Date.now() / 1000);
+            var nowTimestamp = Math.floor(Date.now() / 1000);
             var lastPostedWeatherAt = Number(quantimodoService.getLocalStorageItemAsString('lastPostedWeatherAt'));
 
-            if(lastPostedWeatherAt && lastPostedWeatherAt > now - 8 * 3600){
+            var localMidnightMoment = moment(0, "HH");
+            var localMidnightTimestamp = localMidnightMoment.unix();
+            var yesterdayNoonTimestamp = localMidnightTimestamp - 86400/2;
+
+            if(lastPostedWeatherAt && lastPostedWeatherAt > yesterdayNoonTimestamp){
                 console.debug("recently posted weather already");
-                //return;
+                return;
             }
 
             var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
             var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
-            url = url + $rootScope.lastLatitude + ',' + $rootScope.lastLongitude + '?callback=JSON_CALLBACK';
+            url = url + $rootScope.lastLatitude + ',' + $rootScope.lastLongitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
 
             console.debug('Checking weather forecast at ' + url);
             var measurementSets = [];
@@ -6991,8 +6981,9 @@ angular.module('starter')
                     sourceName: $rootScope.appSettings.appDisplayName,
                     abbreviatedUnitName: "F",
                     measurements: [{
-                        value: data.currently.temperature,
-                        startTimeEpoch: now
+                        value: (data.daily.data[0].temperatureMax +  data.daily.data[0].temperatureMin)/2,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
                     }]}
                 );
                 measurementSets.push({
@@ -7002,8 +6993,9 @@ angular.module('starter')
                     sourceName: $rootScope.appSettings.appDisplayName,
                     abbreviatedUnitName: "Pa",
                     measurements: [{
-                        value: data.currently.pressure,
-                        startTimeEpoch: now
+                        value: data.daily.data[0].pressure * 100,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
                     }]}
                 );
                 measurementSets.push({
@@ -7013,8 +7005,9 @@ angular.module('starter')
                     sourceName: $rootScope.appSettings.appDisplayName,
                     abbreviatedUnitName: "%",
                     measurements: [{
-                        value: data.currently.humidity,
-                        startTimeEpoch: now
+                        value: data.daily.data[0].humidity * 100,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
                     }]}
                 );
                 measurementSets.push({
@@ -7022,16 +7015,29 @@ angular.module('starter')
                     variableName: "Outdoor Visibility",
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "km",
+                    abbreviatedUnitName: "miles",
                     measurements: [{
-                        value: data.currently.visibility,
-                        startTimeEpoch: now
+                        value: data.daily.data[0].visibility,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
+                    }]}
+                );
+                measurementSets.push({
+                    variableCategoryName: "Environment",
+                    variableName: "Cloud Cover",
+                    combinationOperation: "MEAN",
+                    sourceName: $rootScope.appSettings.appDisplayName,
+                    abbreviatedUnitName: "%",
+                    measurements: [{
+                        value: data.daily.data[0].cloudCover * 100,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
                     }]}
                 );
                 quantimodoService.postMeasurementsToApi(measurementSets, function () {
                     console.debug("posted weather measurements");
                     if(!lastPostedWeatherAt){
-                        quantimodoService.setLocalStorageItem('lastPostedWeatherAt', now);
+                        quantimodoService.setLocalStorageItem('lastPostedWeatherAt', nowTimestamp);
                     }
                 }, function (error) {
                     console.debug("could not post weather measurements: " + error);
@@ -7041,7 +7047,6 @@ angular.module('starter')
                 console.debug("Request failed");
             });
         };
-
 
         return quantimodoService;
     });

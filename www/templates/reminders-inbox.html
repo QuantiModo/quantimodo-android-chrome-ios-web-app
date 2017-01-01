@@ -3,8 +3,7 @@
 	<ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true } ">
 		<!--<ion-content scroll="true" overflow-scroll="true">-->
 		<ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
-		<div ng-if="stateParams.showHelpCards === true"
-			 ng-repeat="card in defaultHelpCards" >
+		<div ng-if="stateParams.showHelpCards === true && defaultHelpCards && defaultHelpCards[0]" >
 			<div ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
 		</div>
 		<div  class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
@@ -52,9 +51,16 @@
 								<i class="ion-android-cancel"> &nbsp; Skip</i>
 							</button>
 							<button class="button button-clear button-royal"
+									ng-if="trackingReminderNotification.abbreviatedUnitName != '/5'"
 									style="text-overflow: clip; font-size: 12px;"
 									ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
 								<i class="ion-android-notifications-off"> &nbsp; Snooze</i>
+							</button>
+							<button class="button button-clear button-royal"
+									ng-if="trackingReminderNotification.abbreviatedUnitName == '/5'"
+									style="text-overflow: clip; font-size: 12px;"
+									ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
+								<i class="ion-edit"> &nbsp; Add Note</i>
 							</button>
 							<button class="button button-clear button-calm"
 									ng-click="editReminderSettingsByNotification(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)"
@@ -141,7 +147,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="list card"  ng-if="!state.loading && state.numberOfDisplayedNotifications === 0">
+		<div class="list card"  ng-if="!state.loading && state.numberOfDisplayedNotifications === 0 && !defaultHelpCards">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
 				<div class="row">

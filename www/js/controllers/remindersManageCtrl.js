@@ -83,8 +83,9 @@ angular.module('starter')
 					$scope.$broadcast('scroll.refreshComplete');
 				});
 		};
-		
+
 	    $scope.init = function(){
+            $rootScope.hideNavigationMenu = false;
 			console.debug($state.current.name + ' initializing...');
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -153,7 +154,8 @@ angular.module('starter')
 				title: "Individual Notifications Disabled",
 				subTitle: 'Currently, you will only get one non-specific repeating device notification at a time.',
 				scope: $scope,
-				template: "It is possible to instead get a separate device notification for each tracking reminder that you create.  You can change this setting or update the notification frequency on the settings page.",
+				template: "It is possible to instead get a separate device notification for each tracking reminder that " +
+					"you create.  You can change this setting or update the notification frequency on the settings page.",
 				buttons:[
 					{
 						text: 'Settings',
@@ -177,7 +179,7 @@ angular.module('starter')
 
 	    $scope.edit = function(reminder){
 	    	reminder.fromState = $state.current.name;
-	    	$state.go('app.reminderAdd', 
+	    	$state.go('app.reminderAdd',
 	    	{
 	    		reminder : reminder,
 	    		fromUrl: window.location.href
@@ -240,7 +242,7 @@ angular.module('starter')
 
 		// Triggered on a button click, or some other target
 		$scope.showActionSheet = function(trackingReminder, $index) {
-			
+
 			var variableObject = {
 				id : trackingReminder.variableId,
 				name : trackingReminder.variableName
@@ -267,7 +269,7 @@ angular.module('starter')
 						$scope.edit(trackingReminder);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject(variableObject);
+						$scope.addToFavoritesOrRemindersUsingVariableObject(variableObject);
 					}
 					if(index === 2){
 						$scope.goToAddMeasurementForVariableObject(variableObject);

@@ -38,8 +38,8 @@ angular.module('starter')
         };
 
         $scope.editSettingsButtonClick = function() {
-            $state.go('app.variableSettings',
-                {variableObject: $rootScope.variableObject});
+            $rootScope.goToVariableSettingsForVariableObject($rootScope.variableObject);
+
         };
 
 
@@ -263,7 +263,7 @@ angular.module('starter')
                     buttonClicked: function(index) {
                         console.debug('BUTTON CLICKED', index);
                         if(index === 0){
-                            $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+                            $scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
                         }
                         if(index === 1){
                             $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
@@ -275,8 +275,7 @@ angular.module('starter')
                             $scope.goToHistoryForVariableObject($rootScope.variableObject);
                         }
                         if (index === 4) {
-                            $state.go('app.variableSettings',
-                                {variableObject: $rootScope.variableObject});
+                            $rootScope.goToVariableSettingsForVariableObject($rootScope.variableObject);
                         }
                         if (index === 5) {
                             $scope.addTag($rootScope.variableObject);
