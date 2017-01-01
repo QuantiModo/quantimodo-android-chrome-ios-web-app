@@ -1017,7 +1017,7 @@ angular.module('starter')
             });
 
         };
-        
+
         quantimodoService.saveAccessTokenInLocalStorage = function (accessResponse) {
             var accessToken = accessResponse.accessToken || accessResponse.access_token;
             if (accessToken) {
@@ -6958,7 +6958,7 @@ angular.module('starter')
 
             if(lastPostedWeatherAt && lastPostedWeatherAt > now - 8 * 3600){
                 console.debug("recently posted weather already");
-                //return;
+                return;
             }
 
             var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
@@ -7027,6 +7027,6 @@ angular.module('starter')
                 console.debug("Request failed");
             });
         };
-        
+
         return quantimodoService;
     });
