@@ -118,15 +118,14 @@ angular.module('starter')
 				{
 					id: "addFoodRemindersCard",
 					ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-					title: 'Track Diet',
+					title: 'Common Foods?',
 					iconClass: "icon positive ion-ios-nutrition-outline",
-					bodyText: "Diet can have a significant impact on your health. It's important to enter any foods that " +
-					"you regularly eat to see how they might be affecting you.",
+					bodyText: "Diet can have a significant impact on your health. Are there any foods that you eat regularly?",
 					buttons: [
 						{
 							id: "goToReminderSearchCategoryFoodsButton",
 							clickFunctionCall: "goToReminderSearchCategory('Foods')",
-							buttonText: 'Add a food reminder ',
+							buttonText: 'Add Common Food',
 							buttonIconClass: "ion-plus-round",
 							buttonClass: "button button-clear button-balanced"
 						},
