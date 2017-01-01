@@ -6956,14 +6956,18 @@ angular.module('starter')
             var now = Math.floor(Date.now() / 1000);
             var lastPostedWeatherAt = Number(quantimodoService.getLocalStorageItemAsString('lastPostedWeatherAt'));
 
-            if(lastPostedWeatherAt && lastPostedWeatherAt > now - 8 * 3600){
+            var localMidnightMoment = moment(0, "HH");
+            var localMidnightTimestamp = localMidnightMoment.unix();
+            var yesterdayNoonTimestamp = localMidnightTimestamp - 86400/2;
+
+            if(lastPostedWeatherAt && lastPostedWeatherAt > yesterdayNoonTimestamp){
                 console.debug("recently posted weather already");
                 return;
             }
 
             var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
             var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
-            url = url + $rootScope.lastLatitude + ',' + $rootScope.lastLongitude + '?callback=JSON_CALLBACK';
+            url = url + $rootScope.lastLatitude + ',' + $rootScope.lastLongitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
 
             console.debug('Checking weather forecast at ' + url);
             var measurementSets = [];
@@ -6977,8 +6981,9 @@ angular.module('starter')
                     sourceName: $rootScope.appSettings.appDisplayName,
                     abbreviatedUnitName: "F",
                     measurements: [{
-                        value: data.currently.temperature,
-                        startTimeEpoch: now
+                        value: (data.daily.data[0].temperatureMax +  data.daily.data[0].temperatureMin)/2,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
                     }]}
                 );
                 measurementSets.push({
@@ -6988,8 +6993,9 @@ angular.module('starter')
                     sourceName: $rootScope.appSettings.appDisplayName,
                     abbreviatedUnitName: "Pa",
                     measurements: [{
-                        value: data.currently.pressure,
-                        startTimeEpoch: now
+                        value: data.daily.data[0].pressure * 100,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
                     }]}
                 );
                 measurementSets.push({
@@ -6999,8 +7005,9 @@ angular.module('starter')
                     sourceName: $rootScope.appSettings.appDisplayName,
                     abbreviatedUnitName: "%",
                     measurements: [{
-                        value: data.currently.humidity,
-                        startTimeEpoch: now
+                        value: data.daily.data[0].humidity * 100,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
                     }]}
                 );
                 measurementSets.push({
@@ -7008,10 +7015,23 @@ angular.module('starter')
                     variableName: "Outdoor Visibility",
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "km",
+                    abbreviatedUnitName: "miles",
                     measurements: [{
-                        value: data.currently.visibility,
-                        startTimeEpoch: now
+                        value: data.daily.data[0].visibility,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
+                    }]}
+                );
+                measurementSets.push({
+                    variableCategoryName: "Environment",
+                    variableName: "Cloud Cover",
+                    combinationOperation: "MEAN",
+                    sourceName: $rootScope.appSettings.appDisplayName,
+                    abbreviatedUnitName: "%",
+                    measurements: [{
+                        value: data.daily.data[0].cloudCover * 100,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        note: data.daily.data[0].icon
                     }]}
                 );
                 quantimodoService.postMeasurementsToApi(measurementSets, function () {
