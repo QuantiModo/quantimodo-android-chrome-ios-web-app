@@ -397,8 +397,8 @@ angular.module('starter')
                     variableObject.variableCategoryName.toLowerCase() + '?';
             }
 
-            if (options.skipReminderSettingsForRatings &&
-                (trackingReminder.abbreviatedUnitName !== '/5' || trackingReminder.variableName !== "Blood Pressure")) {
+            if (!options.skipReminderSettingsForRatings ||
+                (trackingReminder.abbreviatedUnitName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
                 $state.go('app.reminderAdd',
                     {
                         reminder: trackingReminder,
