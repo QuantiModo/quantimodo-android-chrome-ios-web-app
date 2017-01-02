@@ -7,6 +7,10 @@ angular.module('starter')
         if(!$rootScope.onboardingPages){
             quantimodoService.setupOnboardingPages();
         }
+        if(!$rootScope.user){
+            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
+            $rootScope.sendToLogin();
+        }
         $ionicLoading.hide();
         $rootScope.hideNavigationMenu = true;
     });
