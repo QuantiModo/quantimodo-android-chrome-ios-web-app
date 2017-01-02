@@ -34,7 +34,6 @@ angular.module('starter')
                 $scope.addToFavoritesUsingVariableObject(variableObject);
             } else if (window.location.href.indexOf('reminder-search') !== -1) {
                 var options = {
-                    frequency: 86400,
                     skipReminderSettingsForRatings: $stateParams.skipReminderSettingsForRatings,
                     doneState: $stateParams.doneState
                 };

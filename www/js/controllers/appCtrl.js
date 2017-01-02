@@ -374,16 +374,6 @@ angular.module('starter')
         };
 
         $scope.addToRemindersUsingVariableObject = function (variableObject, options) {
-
-            var trackingReminder = {};
-            trackingReminder.variableId = variableObject.id;
-            trackingReminder.variableName = variableObject.name;
-            trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
-            trackingReminder.variableDescription = variableObject.description;
-            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
-            trackingReminder.reminderFrequency = options.reminderFrequency;
-            trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
-
             var doneState = config.appSettings.defaultState;
             if(options.doneState){
                 doneState = options.doneState;
@@ -398,15 +388,24 @@ angular.module('starter')
             }
 
             if (!options.skipReminderSettingsForRatings ||
-                (trackingReminder.abbreviatedUnitName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
+                (variableObject.abbreviatedUnitName !== '/5' && variableObject.variableName !== "Blood Pressure")) {
                 $state.go('app.reminderAdd',
                     {
-                        reminder: trackingReminder,
+                        variableObject: variableObject,
                         doneState: doneState
                     }
                 );
                 return;
             }
+
+            var trackingReminder = {};
+            trackingReminder.variableId = variableObject.id;
+            trackingReminder.variableName = variableObject.name;
+            trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
+            trackingReminder.variableDescription = variableObject.description;
+            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+            trackingReminder.reminderFrequency = 86400;
+            trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
 
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
