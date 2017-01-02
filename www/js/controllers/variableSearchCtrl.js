@@ -385,6 +385,10 @@ angular.module('starter')
                 $stateParams.commonVariableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;
             }
 
+            if($stateParams.variableCategoryName){
+                $rootScope.variableCategoryName = $stateParams.variableCategoryName;
+            }
+
             if ($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything') {
                 $scope.state.variableSearchPlaceholderText = "Search for a " +
                     $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";

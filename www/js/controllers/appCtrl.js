@@ -394,9 +394,11 @@ angular.module('starter')
                 doneState = options.doneState;
             }
 
-            if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
-                $rootScope.defaultHelpCards[0].bodyText = "Great job!  Now you'll be able to instantly record " +
-                    variableObject.name + " in the Reminder Inbox. Want to add any more " +
+            if($rootScope.onboardingPages && $rootScope.onboardingPages[0]){
+                $rootScope.onboardingPages[0].buttons[0].buttonText = "Add Another";
+                $rootScope.onboardingPages[0].buttons[1].buttonText = "All Done";
+                $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+                    variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
                     variableObject.variableCategoryName.toLowerCase() + '?';
             }
 
@@ -1527,14 +1529,6 @@ angular.module('starter')
         };
 
         $scope.goToReminderSearchCategory = function(variableCategoryName) {
-            if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
-                $rootScope.defaultHelpCards[0].buttons[0].buttonText =
-                    $rootScope.defaultHelpCards[0].buttons[0].buttonText.replace("Add ", "Add Another ");
-                $rootScope.defaultHelpCards[0].buttons[0].buttonText =
-                    $rootScope.defaultHelpCards[0].buttons[0].buttonText.replace("Add Another Another ", "Add Another ");
-                $rootScope.defaultHelpCards[0].bodyText = "";
-                $rootScope.defaultHelpCards[0].buttons[1].buttonText = "Done Adding " + variableCategoryName;
-            }
             $state.go('app.reminderSearchCategory',
                 {
                     variableCategoryName : variableCategoryName,
@@ -1543,6 +1537,19 @@ angular.module('starter')
                     skipReminderSettingsForRatings: true,
                     doneState: $state.current.name
                 });
+        };
+
+        $scope.sendChromeEmailLink = function(){
+            var subjectLine = "Install%20the%20" + config.appSettings.appDisplayName + "%20Chrome%20Browser%20Extension";
+            var linkToChromeExtension = config.appSettings.linkToChromeExtension;
+            var emailBody = "Did%20you%20know%20that%20you%20can%20easily%20track%20everything%20on%20your%20laptop%20and%20desktop%20with%20our%20Google%20Chrome%20browser%20extension%3F%20%20Your%20data%20is%20synced%20between%20devices%20so%20you%27ll%20never%20have%20to%20track%20twice!%0A%0ADownload%20it%20here!%0A%0A" + encodeURIComponent(linkToChromeExtension)  + "%0A%0ALove%2C%20%0AYou";
+            var fallbackUrl = null;
+            var emailAddress = $rootScope.user.email;
+            if($rootScope.isMobile){
+                $scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+            } else {
+                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+            }
         };
 
         $scope.init();

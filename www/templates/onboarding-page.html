@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Get Started">
     <div
          style="
-            background-color: {{defaultHelpCards[0].backgroundColor}};
+            background-color: {{onboardingPages[0].backgroundColor}};
             text-align: center;
             color: white;
             font-weight: 100;
@@ -11,23 +11,40 @@
              position: relative;
              top: 50%;
              transform: translateY(-50%);">
-            <div>
-                <img style="width:{{defaultHelpCards[0].image.width}}px; height:{{defaultHelpCards[0].image.height}}px;"
-                     ng-src="{{defaultHelpCards[0].image.url}}">
+            <div style="
+                box-shadow: 2px 2px 5px #434343;
+                margin: 0 auto;
+                border-radius: 50%;
+                width: 130px;
+                height: 130px;
+                background-color: {{onboardingPages[0].circleColor}};
+                ">
+                <img style="
+                        position: relative;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width:{{onboardingPages[0].image.width}}px;
+                        height:{{onboardingPages[0].image.height}}px;"
+                     ng-src="{{onboardingPages[0].image.url}}">
             </div>
             <br>
-            <p style="font-size: 30px">
-                {{defaultHelpCards[0].title}}
+            <p style="font-size: 30px; line-height: 1;">
+                {{onboardingPages[0].title}}
             </p>
             <br>
-            <p style="font-size: 16px; line-height: 1.5;">
-                {{defaultHelpCards[0].bodyText}}
-            </p>
+            <span ng-bind-html="onboardingPages[0].bodyText"
+                style="font-size: 16px; line-height: 1.5;">
+            </span>
             <br>
-            <div ng-repeat="button in defaultHelpCards[0].buttons" >
+            <br>
+            <div ng-repeat="button in onboardingPages[0].buttons" >
                 <div class="button-bar">
                     <button class="button"
-                            style="background-color: {{defaultHelpCards[0].backgroundColor}}; color: white; text-align: center"
+                            style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
                             id="{{button.id}}"
                             ng-click="{{button.clickFunctionCall}}">
                         <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
