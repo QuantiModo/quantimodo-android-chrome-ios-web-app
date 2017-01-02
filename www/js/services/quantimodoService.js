@@ -7125,7 +7125,7 @@ angular.module('starter')
                         },
                         {
                             id: "hideChromeExtensionInfoCardButton",
-                            clickFunctionCall: "hideOnboardingPage(card)",
+                            clickFunctionCall: "hideHelpCard(card)",
                             buttonText: 'Dismiss',
                             buttonIconClass: "ion-close-circled",
                             buttonClass: "button button-clear button-assertive"

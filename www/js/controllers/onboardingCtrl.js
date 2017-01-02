@@ -27,6 +27,11 @@ angular.module('starter')
         } else {
             $rootScope.hideNavigationMenu = true;
         }
+        if(!$rootScope.onboardingPages || !$rootScope.onboardingPages.length){
+            $state.go(config.appSettings.defaultState);
+        }
+
+
     };
 
 });
