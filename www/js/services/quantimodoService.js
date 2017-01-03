@@ -215,7 +215,8 @@ angular.module('starter')
                 $rootScope.offlineConnectionErrorShowing = false;
             }
 
-            console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(items));
+            console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' +
+                JSON.stringify(items).substring(0, 140));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
 
                 //console.debug("Token : ", token.accessToken);
