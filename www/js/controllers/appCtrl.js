@@ -2284,7 +2284,7 @@ angular.module('starter')
                     console.debug("facebook login error"+ JSON.stringify(error));
                 });
         };
-        // when user click's skip button
+        
         $scope.skipLogin = function(){
             quantimodoService.setLocalStorageItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
