@@ -7075,6 +7075,10 @@ angular.module('starter')
 
         quantimodoService.setupHelpCards = function (firstCard) {
 
+            if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
+                console.debug('Help cards already set up');
+                return;
+            }
             var defaultHelpCards = [
                 {
                     id: "recordMeasurementInfoCard",
@@ -7128,32 +7132,6 @@ angular.module('starter')
                             id: "hideChromeExtensionInfoCardButton",
                             clickFunctionCall: "hideHelpCard(card)",
                             buttonText: 'Dismiss',
-                            buttonIconClass: "ion-close-circled",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
-                },
-                {
-                    id: "importDataCard",
-                    ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
-                    title: 'Import Your Data',
-                    "backgroundColor": "#3467d6",
-                    circleColor: "#5b95f9",
-                    iconClass: "icon positive ion-ios-cloud-download-outline",
-                    bodyText: "Start by scrolling down to the Weather connector and enter your zip code so we can see how " +
-                    "the weather might be affecting you.",
-                    buttons: [
-                        {
-                            id: "goToStateAppImportButton",
-                            clickFunctionCall: "goToState('app.import')",
-                            buttonText: 'Connect an app or device',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
-                            id: "hideImportDataCardButton",
-                            clickFunctionCall: "hideHelpCard(card)",
-                            buttonText: 'Done connecting data sources',
                             buttonIconClass: "ion-close-circled",
                             buttonClass: "button button-clear button-assertive"
                         }
@@ -7369,7 +7347,7 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToStateAppSettingsButton",
-                            clickFunctionCall: "trackLocation(true)",
+                            clickFunctionCall: "enableLocationTracking()",
                             buttonText: 'YES',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-balanced"
@@ -7418,8 +7396,8 @@ angular.module('starter')
                     id: "allDoneCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                     title: 'Great job!',
-                    "backgroundColor": "#f09402",
-                    circleColor: "#fab952",
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
                         url: "img/cute_robot_happy_transparent.png",
@@ -7433,7 +7411,7 @@ angular.module('starter')
                             id: "goToInboxButton",
                             clickFunctionCall: "doneOnboarding()",
                             buttonText: 'GO TO INBOX',
-                            buttonIconClass: "ion-checkmark",
+                            buttonIconClass: "ion-ios-filing-outline",
                             buttonClass: "button button-clear button-assertive"
                         }
                     ]
@@ -7442,7 +7420,7 @@ angular.module('starter')
 
             var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
             if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length){
-                //onboardingPages = onboardingPagesFromLocalStorage;
+                onboardingPages = onboardingPagesFromLocalStorage;
             }
 
             $rootScope.onboardingPages = onboardingPages;

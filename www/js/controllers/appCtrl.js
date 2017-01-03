@@ -2308,14 +2308,14 @@ angular.module('starter')
             $scope.goToDefaultStateIfWelcomed();
         };
 
-        $rootScope.trackLocationChange = function(trackLocation) {
+        $rootScope.trackLocationChange = function(trackLocation, skipPopup) {
             if(trackLocation !== null){
                 $rootScope.trackLocation = trackLocation;
             }
             console.debug('trackLocation', $rootScope.trackLocation);
             $rootScope.user.trackLocation = $rootScope.trackLocation;
             quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
-            if($rootScope.trackLocation){
+            if($rootScope.trackLocation && !skipPopup){
                 $ionicPopup.alert({
                     title: 'Location Tracking Enabled',
                     template: 'Location tracking is an experimental feature.  Your location is automatically logged ' +

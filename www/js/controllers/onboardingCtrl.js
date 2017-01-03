@@ -6,11 +6,7 @@ angular.module('starter')
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 
         $rootScope.onboardingFooterText = null;
-        //quantimodoService.setupOnboardingPages();
-        if(!$rootScope.onboardingPages){
-            quantimodoService.setupOnboardingPages();
-        }
-
+        quantimodoService.setupOnboardingPages();
         if($rootScope.user){
             $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
                 return obj.id !== 'loginOnboardingPage';
@@ -54,13 +50,14 @@ angular.module('starter')
     var removeImportPage = function () {
         quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
         var onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
-            return obj.id.indexOf('import') !== -1;
+            return obj.id.indexOf('import') === -1;
         });
         quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify(onboardingPages));
     };
 
     $scope.onboardingGoToImportPage = function () {
         removeImportPage();
+        $rootScope.onboardingFooterText = "Done connecting data sources";
         $state.go('app.import');
     };
 
@@ -72,15 +69,20 @@ angular.module('starter')
         $scope.onHelpButtonPress($rootScope.onboardingPages[0].title, $rootScope.onboardingPages[0].moreInfo);
     };
 
-    $scope.doneOnboarding = function () {
+    $scope.enableLocationTracking = function () {
+        $rootScope.trackLocationChange(true, true);
+        $rootScope.hideOnboardingPage();
+    };
 
+    $scope.doneOnboarding = function () {
+        $rootScope.defaultHelpCards = null;
         var getStartedHelpCard = {
             id: "getStartedHelpCard",
                 ngIfLogic: "stateParams.showHelpCards === true && !hideGetStartedHelpCard",
             title: 'Great Job!',
             "backgroundColor": "#f09402",
             circleColor: "#fab952",
-            iconClass: "icon positive ion-happy",
+            iconClass: "icon positive ion-happy-outline",
             image: {
                 url: "img/variable_categories/vegetarian_food-96.png",
                     height: "96",
@@ -99,9 +101,9 @@ angular.module('starter')
                     }
                 ]
         };
-
         quantimodoService.setupHelpCards(getStartedHelpCard);
-
+        quantimodoService.deleteItemFromLocalStorage('onboardingPages');
+        $state.go('app.remindersInbox');
     };
 
     $rootScope.hideOnboardingPage = function () {
@@ -117,10 +119,6 @@ angular.module('starter')
             $state.go(config.appSettings.defaultState);
         } else {
             $rootScope.hideNavigationMenu = true;
-        }
-
-        if($rootScope.onboardingPages[0] && $rootScope.onboardingPages[0].id === "importDataCard"){
-            $rootScope.onboardingFooterText = "Done connecting data sources";
         }
     };
 
