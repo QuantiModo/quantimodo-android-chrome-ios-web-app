@@ -281,12 +281,21 @@ angular.module('starter')
             $state.go('app.help');
         };
 
-        $scope.onHelpButtonPress = function () {
+        $scope.onHelpButtonPress = function (title, helpText) {
+
+            if(!helpText){
+                helpText = $rootScope.stateParams.helpText;
+            }
+
+            if(!title){
+                title = $rootScope.stateParams.title;
+            }
+
             $rootScope.helpButtonPopup = $ionicPopup.show({
-                title: $rootScope.stateParams.title,
+                title: title,
                 //subTitle: '',
                 scope: $scope,
-                template: $rootScope.stateParams.helpText,
+                template: helpText,
                 buttons: [
                     {
                         text: 'OK',
@@ -380,6 +389,7 @@ angular.module('starter')
             }
 
             if($rootScope.onboardingPages && $rootScope.onboardingPages[0]){
+                $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
                 $rootScope.onboardingPages[0].buttons[0].buttonText = "Add Another";
                 $rootScope.onboardingPages[0].buttons[1].buttonText = "All Done";
                 $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
@@ -1524,6 +1534,12 @@ angular.module('starter')
         };
 
         $scope.goToReminderSearchCategory = function(variableCategoryName) {
+            if(!$rootScope.user){
+                $rootScope.onboardingPages = null;
+                quantimodoService.deleteItemFromLocalStorage('onboardingPages');
+                $state.go('app.onboarding');
+                return;
+            }
             $state.go('app.reminderSearchCategory',
                 {
                     variableCategoryName : variableCategoryName,
@@ -2290,6 +2306,28 @@ angular.module('starter')
             $rootScope.isWelcomed = true;
             // move to the next screen
             $scope.goToDefaultStateIfWelcomed();
+        };
+
+        $rootScope.trackLocationChange = function(trackLocation) {
+            if(trackLocation !== null){
+                $rootScope.trackLocation = trackLocation;
+            }
+            console.debug('trackLocation', $rootScope.trackLocation);
+            $rootScope.user.trackLocation = $rootScope.trackLocation;
+            quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+            if($rootScope.trackLocation){
+                $ionicPopup.alert({
+                    title: 'Location Tracking Enabled',
+                    template: 'Location tracking is an experimental feature.  Your location is automatically logged ' +
+                    'when you open the app. Your location is not logged when the ' +
+                    'app is closed so you should create reminder and open the app regularly to ' +
+                    'keep your location up to date.'
+                });
+                quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
+            } else {
+                console.debug("Do not track location");
+            }
+
         };
 
         $scope.init();

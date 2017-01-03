@@ -17,13 +17,13 @@
         </div>
 
         <div ng-show="user" class="card sign-in" >
-            <ion-toggle ng-model="state.trackLocation"
+            <ion-toggle ng-model="trackLocation"
                         ng-change="trackLocationChange()">
                 <i class="icon ion-map"></i>
                 &nbsp
                 Track my location
             </ion-toggle>
-<!--            <div ng-show="state.trackLocation" class="list card">
+<!--            <div ng-show="trackLocation" class="list card">
                 <a ng-show="user" ng-click="goToState('app.map')" class="item ">
                     Open Map
                 </a>
