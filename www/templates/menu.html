@@ -12,7 +12,7 @@
                     <a href="#/app/settings"
                        ng-if="user && user.avatar && !isMobile"
                        class="button button-clear" >
-                        <img id="navBarAvatar" ng-src="{{user.avatar}}">
+                        <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}">
                     </a>
                     <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="toggleFilterBar($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
@@ -50,12 +50,23 @@
 
     <ion-side-menu side="left" is-enabled="!hideNavigationMenu">
         <ion-header-bar class="bar-positive">
-            <h1 class="title"></h1>
+            <a href="#/app/settings"
+               ng-if="user && user.avatar && !isMobile"
+               class="button button-clear" >
+                <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
+
+            </a>
+            <h1 class="title"
+                style="cursor:pointer;"
+                ng-click="goToState('app.settings')"
+                ng-if="user && user.avatar && !isMobile">
+                {{user.displayName}}
+            </h1>
         </ion-header-bar>
         <ion-content>
-                        
+
             <ion-list>
-               
+
                 <ion-item ng-show="menuItem.isSubMenuParent ||
                     (!menuItem.isSubMenuParent && !menuItem.isSubMenuChild) ||
                      this[menuItem.showSubMenuVariable]"

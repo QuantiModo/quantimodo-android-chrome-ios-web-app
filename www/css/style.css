@@ -657,7 +657,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     overflow-y: auto !important;
 }
 
-#navBarAvatar {
+.menu-avatar {
     height: 30px;
     border-radius: 50%;
 }
