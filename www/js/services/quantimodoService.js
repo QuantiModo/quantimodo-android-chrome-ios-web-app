@@ -7177,9 +7177,8 @@ angular.module('starter')
                         width: "70"
                     },
                     bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
-                    //+ 'Please add them so we can identify how they might be affecting you.',
-                    moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
-                        "the NSA waterboards me, I will never divulge share your data without your permission.",
+                    // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
+                    //     "the NSA waterboards me, I will never divulge share your data without your permission.",
                     buttons: [
                         {
                             id: "signUpButton",
