@@ -5,9 +5,18 @@
             <div ng-include="'templates/fragments/connectors-fragment.html'"></div>
         </div>
 <!--        <div id="import-iframe" ng-if="!isMobile">
-        	
+
         </div>-->
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->
     </ion-content>
+    <div ng-show="onboardingFooterText"
+         ng-click="goToState('app.onboarding')"
+         style="cursor:pointer;"
+         class="bar bar-footer bar-balanced">
+        <div class="title">
+            <i class="icon ion-reply"></i>
+            {{onboardingFooterText}}
+        </div>
+    </div>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>

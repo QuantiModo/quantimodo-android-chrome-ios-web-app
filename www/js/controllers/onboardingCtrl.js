@@ -4,6 +4,8 @@ angular.module('starter')
 
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+
+        $rootScope.onboardingFooterText = null;
         //quantimodoService.setupOnboardingPages();
         if(!$rootScope.onboardingPages){
             quantimodoService.setupOnboardingPages();
@@ -51,10 +53,14 @@ angular.module('starter')
 
         if(!$rootScope.onboardingPages || $rootScope.onboardingPages.length === 0){
             $rootScope.hideNavigationMenu = false;
-            $state.go(console.appSettings.defaultState);
+            $state.go(config.appSettings.defaultState);
         } else {
             $rootScope.hideNavigationMenu = true;
         }
-    }
+
+        if($rootScope.onboardingPages[0] && $rootScope.onboardingPages[0].id === "importDataCard"){
+            $rootScope.onboardingFooterText = "Done connecting data sources";
+        }
+    };
 
 });

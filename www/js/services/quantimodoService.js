@@ -7391,9 +7391,14 @@ angular.module('starter')
                     id: "importDataCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                     title: 'Import Your Data',
-                    "backgroundColor": "#3467d6",
-                    circleColor: "#5b95f9",
+                    "backgroundColor": "#f09402",
+                    circleColor: "#fab952",
                     iconClass: "icon positive ion-ios-cloud-download-outline",
+                    image: {
+                        url: "img/download_2-96.png",
+                        height: "96",
+                        width: "96"
+                    },
                     bodyText: "Start by scrolling down to the Weather connector and enter your zip code so we can see how " +
                         "the weather might be affecting you.",
                     buttons: [
