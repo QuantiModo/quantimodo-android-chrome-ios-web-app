@@ -215,7 +215,8 @@ angular.module('starter')
                 $rootScope.offlineConnectionErrorShowing = false;
             }
 
-            console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(items));
+            console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' +
+                JSON.stringify(items).substring(0, 140));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
 
                 //console.debug("Token : ", token.accessToken);
@@ -7072,8 +7073,12 @@ angular.module('starter')
             });
         };
 
-        quantimodoService.setupHelpCards = function () {
+        quantimodoService.setupHelpCards = function (firstCard) {
 
+            if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
+                console.debug('Help cards already set up');
+                return;
+            }
             var defaultHelpCards = [
                 {
                     id: "recordMeasurementInfoCard",
@@ -7099,31 +7104,7 @@ angular.module('starter')
                             buttonClass: "button button-clear button-balanced"
                         }
                     ]
-                },/*
-                 {
-                 id: "locationTrackingInfoCard",
-                 ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
-                 title: 'Location Tracking',
-                 iconClass: "icon positive ion-ios-location",
-                 bodyText: "To determine how the amount of time spent at work, restaurants, the gym, or doctor's offices " +
-                 "might be influencing you, you can enable automatic location tracking in the Settings page.",
-                 buttons: [
-                 {
-                 id: "goToStateAppSettingsButton",
-                 clickFunctionCall: "goToState('app.settings')",
-                 buttonText: 'Go to settings',
-                 buttonIconClass: "ion-gear-a",
-                 buttonClass: "button button-clear button-balanced"
-                 },
-                 {
-                 id: "hideLocationTrackingInfoCardButton",
-                 clickFunctionCall: "hideHelpCard(card)",
-                 buttonText: 'Dismiss',
-                 buttonIconClass: "ion-close-circled",
-                 buttonClass: "button button-clear button-assertive"
-                 }
-                 ]
-                 },*/
+                },
                 {
                     id: "chromeExtensionInfoCard",
                     ngIfLogic: "stateParams.showHelpCards === true && isMobile && !hideChromeExtensionInfoCard",
@@ -7155,55 +7136,30 @@ angular.module('starter')
                             buttonClass: "button button-clear button-assertive"
                         }
                     ]
-                },
-                {
-                    id: "importDataCard",
-                    ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
-                    title: 'Import Your Data',
-                    "backgroundColor": "#3467d6",
-                    circleColor: "#5b95f9",
-                    iconClass: "icon positive ion-ios-cloud-download-outline",
-                    bodyText: "Start by scrolling down to the Weather connector and enter your zip code so we can see how " +
-                    "the weather might be affecting you.",
-                    buttons: [
-                        {
-                            id: "goToStateAppImportButton",
-                            clickFunctionCall: "goToState('app.import')",
-                            buttonText: 'Connect an app or device',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
-                            id: "hideImportDataCardButton",
-                            clickFunctionCall: "hideHelpCard(card)",
-                            buttonText: 'Done connecting data sources',
-                            buttonIconClass: "ion-close-circled",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
                 }
             ];
 
-            var debugMode = true;
+            var debugMode = false;
             if(debugMode){
                 $rootScope.hideNavigationMenu = true;
                 $rootScope.defaultHelpCards = defaultHelpCards;
             }
 
             if(typeof $rootScope.defaultHelpCards === "undefined"){
-
                 quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
                     if(defaultHelpCardsFromLocalStorage === null){
-                        $rootScope.defaultHelpCards = defaultHelpCards;
                         quantimodoService.setLocalStorageItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
                     } else {
-                        $rootScope.defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
-                    }
-                    if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
-                        $rootScope.hideNavigationMenu = true;
+                        defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
                     }
                 });
             }
+
+            if(firstCard) {
+                defaultHelpCards = [firstCard].concat(defaultHelpCards);
+            }
+
+            $rootScope.defaultHelpCards = defaultHelpCards;
         };
 
         quantimodoService.setupOnboardingPages = function () {
@@ -7221,20 +7177,21 @@ angular.module('starter')
                         width: "70"
                     },
                     bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
-                    //+ 'Please add them so we can identify how they might be affecting you.',
+                    // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
+                    //     "the NSA waterboards me, I will never divulge share your data without your permission.",
                     buttons: [
                         {
-                            id: "goToReminderSearchCategoryTreatmentsButton",
+                            id: "signUpButton",
                             clickFunctionCall: "onboardingRegister()",
-                            buttonText: 'Sign Up!',
-                            buttonIconClass: "ion-log-in",
+                            buttonText: 'Sign Up',
+                            buttonIconClass: "",
                             buttonClass: "button button-clear button-balanced"
                         },
                         {
-                            id: "hideAddTreatmentRemindersCardButton",
+                            id: "signInButton",
                             clickFunctionCall: "onboardingLogin()",
                             buttonText: 'Already Have Account',
-                            buttonIconClass: "ion-log-in",
+                            buttonIconClass: "",
                             buttonClass: "button button-clear button-assertive"
                         }
                     ]
@@ -7252,8 +7209,11 @@ angular.module('starter')
                         width: "96"
                     },
                     bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
-                    'like meditation or psychotherapy? ',
-                    //+ 'Please add them so we can identify how they might be affecting you.',
+                        'like meditation or psychotherapy? ',
+                    moreInfo: "Often the effects of medications and treatments aren't intuitively perceptible.  " +
+                        "That's where I come in!  If you regularly recording your treatments,  I can analyze the data so" +
+                        "we can get a better idea which ones are helping you, " +
+                        "which one may be harming you, and which ones are merely a waste of money.",
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryTreatmentsButton",
@@ -7266,7 +7226,7 @@ angular.module('starter')
                             id: "hideAddTreatmentRemindersCardButton",
                             clickFunctionCall: "hideOnboardingPage(card)",
                             buttonText: 'Nope',
-                            buttonIconClass: "ion-close-circled",
+                            buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
                         }
                     ]
@@ -7283,8 +7243,11 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
-                    bodyText: 'Got any recurring symptoms that vary in their severity? <br> <br> If so, add them so I can try ' +
-                        'to determine which hidden factors might be worsening or improving them.',
+                    bodyText: 'Got any recurring symptoms that vary in their severity?',
+                    moreInfo: "Symptom severity can be influence by hundreds of factors in daily life. " +
+                        "The human mind can only hold 7 numbers in working memory at a time.  I can hold a billion in my mind! " +
+                        "If you regularly record your symptoms, add them so I can use this data " +
+                        "to determine which hidden and imperceptible factors might be worsening or improving them.",
                     buttons: [
                         {
                             id: "goToReminderSearchCategorySymptomsButton",
@@ -7297,7 +7260,7 @@ angular.module('starter')
                             id: "hideAddSymptomRemindersCardButton",
                             clickFunctionCall: "hideOnboardingPage(card)",
                             buttonText: 'Nope',
-                            buttonIconClass: "ion-close-circled",
+                            buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
                         }
                     ]
@@ -7328,7 +7291,7 @@ angular.module('starter')
                             id: "hideAddEmotionRemindersCardButton",
                             clickFunctionCall: "hideOnboardingPage(card)",
                             buttonText: 'Nope',
-                            buttonIconClass: "ion-close-circled",
+                            buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
                         }
                     ]
@@ -7336,7 +7299,7 @@ angular.module('starter')
                 {
                     id: "addFoodRemindersCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-                    title: 'Common Foods?',
+                    title: 'Common Foods or Drinks?',
                     "backgroundColor": "#3467d6",
                     circleColor: "#5b95f9",
                     iconClass: "icon positive ion-ios-nutrition-outline",
@@ -7345,12 +7308,12 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
-                    bodyText: "Diet can have a significant impact on your health. Are there any foods that you eat regularly?",
+                    bodyText: "Add any foods or drinks that you consume more than a few times a week",
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryFoodsButton",
                             clickFunctionCall: "goToReminderSearchCategory('Foods')",
-                            buttonText: 'Add Common Food',
+                            buttonText: 'Add Food or Drink',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"
                         },
@@ -7358,35 +7321,45 @@ angular.module('starter')
                             id: "hideAddFoodRemindersCardButton",
                             clickFunctionCall: "hideOnboardingPage(card)",
                             buttonText: 'Nope',
-                            buttonIconClass: "ion-close-circled",
+                            buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
                         }
                     ]
-                },/*
-                 {
-                 id: "locationTrackingInfoCard",
-                 ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
-                 title: 'Location Tracking',
-                 iconClass: "icon positive ion-ios-location",
-                 bodyText: "To determine how the amount of time spent at work, restaurants, the gym, or doctor's offices " +
-                 "might be influencing you, you can enable automatic location tracking in the Settings page.",
-                 buttons: [
-                 {
-                 id: "goToStateAppSettingsButton",
-                 clickFunctionCall: "goToState('app.settings')",
-                 buttonText: 'Go to settings',
-                 buttonIconClass: "ion-gear-a",
-                 buttonClass: "button button-clear button-balanced"
-                 },
-                 {
-                 id: "hideLocationTrackingInfoCardButton",
-                 clickFunctionCall: "hideOnboardingPage(card)",
-                 buttonText: 'Dismiss',
-                 buttonIconClass: "ion-close-circled",
-                 buttonClass: "button button-clear button-assertive"
-                 }
-                 ]
-                 },*/
+                },
+                {
+                    id: "locationTrackingInfoCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
+                    title: 'Weather & Location Tracking',
+                    "backgroundColor": "#0f9d58",
+                    circleColor: "#03c466",
+                    iconClass: "icon positive ion-ios-location",
+                    image: {
+                        url: "img/variable_categories/chance_of_storm-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Would you like to automatically log location and weather? ",
+                    moreInfo: "By automatically logging your location using GPS, we might be able to figure out how the " +
+                        "amount of time spent at the gym or other locations may be affecting you. I promise that even if " +
+                        "the NSA waterboards me, I will never divulge your location. <br> By recording your local weather " +
+                        "conditions, I might be able to figure out how the amount of sunlight or temperature is affecting you.",
+                    buttons: [
+                        {
+                            id: "goToStateAppSettingsButton",
+                            clickFunctionCall: "enableLocationTracking()",
+                            buttonText: 'YES',
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideLocationTrackingInfoCardButton",
+                            clickFunctionCall: "hideOnboardingPage(card)",
+                            buttonText: 'NO',
+                            buttonIconClass: "ion-flash-off",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                    },
                 {
                     id: "importDataCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
@@ -7399,12 +7372,12 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
-                    bodyText: "Start by scrolling down to the Weather connector and enter your zip code so we can see how " +
-                        "the weather might be affecting you.",
+                    bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and" +
+                        "devices that I can automatically pull data from!",
                     buttons: [
                         {
                             id: "goToStateAppImportButton",
-                            clickFunctionCall: "goToState('app.import')",
+                            clickFunctionCall: "onboardingGoToImportPage()",
                             buttonText: 'Connect an app or device',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"
@@ -7413,15 +7386,137 @@ angular.module('starter')
                             id: "hideImportDataCardButton",
                             clickFunctionCall: "hideOnboardingPage(card)",
                             buttonText: 'Done connecting data sources',
-                            buttonIconClass: "ion-close-circled",
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "allDoneCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
+                    title: 'Great job!',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#fefdfc",
+                    iconClass: "icon positive ion-ios-cloud-download-outline",
+                    image: {
+                        url: "img/cute_robot_happy_transparent.png",
+                        height: "96",
+                        width: "70"
+                    },
+                    bodyText: "You're all set up!  Let's take a minute to record your first measurements and then " +
+                        "you're done for the day! ",
+                    buttons: [
+                        {
+                            id: "goToInboxButton",
+                            clickFunctionCall: "doneOnboarding()",
+                            buttonText: 'GO TO INBOX',
+                            buttonIconClass: "ion-ios-filing-outline",
                             buttonClass: "button button-clear button-assertive"
                         }
                     ]
                 }
             ];
 
+            var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
+            if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length){
+                onboardingPages = onboardingPagesFromLocalStorage;
+            }
+
             $rootScope.onboardingPages = onboardingPages;
 
+        };
+
+        quantimodoService.getIntroSlides = function () {
+
+            var introSlides = [
+                {
+                    "img" : {
+                        "width" : "250",
+                        "height" : "250",
+                        "url" : "img/intro/intro_import.png"
+                    },
+                    "textColor": "white",
+                    "backgroundColor": "#3467d6",
+                    "content" : {
+                        "firstParagraph" : {
+                            "visible" : true,
+                            "content" : "Import Data",
+                            "classes" : "intro-header"
+                        },
+                        "logoDiv" : {
+                            "visible" : true,
+                            "id" : "logo"
+                        },
+                        "finalParagraph" : {
+                            "visible" : true,
+                            "content" : "Import data from all your apps and devices",
+                            "classes" : "intro-paragraph",
+                            "buttonBarVisible" : true
+                        }
+                    }
+                },
+                {
+                    "img" : {
+                        "width" : "250",
+                        "height" : "250",
+                        "url" : "img/intro/intro_track_anything.png"
+                    },
+                    "textColor": "white",
+                    "backgroundColor": "#f09402",
+                    "content" : {
+                        "firstParagraph" : {
+                            "visible" : true,
+                            "content" : "Track Anything",
+                            "classes" : "intro-header"
+                        },
+                        "logoDiv" : {
+                            "visible" : true,
+                            "id" : "logo"
+                        },
+                        "finalParagraph" : {
+                            "visible" : true,
+                            "content" : "Log treatments, diet, symptoms, emotions, and anything else",
+                            "classes" : "intro-paragraph",
+                            "buttonBarVisible" : true
+                        }
+                    }
+                },
+                {
+                    "img" : {
+                        "width" : "250",
+                        "height" : "250",
+                        "url" : "img/intro/intro_make_discoveries.png"
+                    },
+                    "textColor": "white",
+                    "backgroundColor": "#0f9d58",
+                    "content" : {
+
+                        "firstParagraph" : {
+                            "visible" : true,
+                            "content" : "Make Discoveries",
+                            "classes" : "intro-header"
+                        },
+
+                        "logoDiv" : {
+                            "visible" : true,
+                            "id" : "logo"
+                        },
+                        "finalParagraph": {
+                            "visible" : true,
+                            "content" : "After I have about a month of data, I analyze it to discover the hidden factors " +
+                            "linked to your well-being",
+                            "classes" : "intro-paragraph",
+                            "buttonBarVisible" : true
+                        }
+                    }
+                }
+            ];
+
+            if(config.appSettings.intro){
+                return config.appSettings.intro;
+            }
+
+            return introSlides;
         };
 
         return quantimodoService;

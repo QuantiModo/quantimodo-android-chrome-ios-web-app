@@ -100,60 +100,7 @@ config.appSettings  = {
         "ecstatic": 5
     },
 
-    intro : [
-        // screen 1
-        {
-            img : {
-                width : '150',
-                height : '150',
-                url : 'img/icons/icon.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Welcome to SuperCell',
-                    classes : 'intro-header positive'
-                },
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP : {
-                    visible : true,
-                    content : 'SuperCell allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        {
-            img : {
-                width : '180',
-                height : '180',
-                url : 'img/rating/ic_face_ecstatic.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Thank you for helping us derive a mathematical equation for happiness!',
-                    classes : 'intro-paragraph positive'
-                },
-
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Now start tracking and optimize your life!',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }
-            }
-        }
-    ],
+    "intro" : null,
 
     helpPopupMessages : {
         "#/app/example" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',

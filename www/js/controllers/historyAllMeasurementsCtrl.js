@@ -97,19 +97,6 @@ angular.module('starter')
 	    	$scope.getHistory(true);
 	    };
 
-		$scope.trackLocationChange = function() {
-
-			console.debug($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
-			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
-			if($scope.state.trackLocation){
-				quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-			} else {
-				console.debug($state.current.name + ": " + "Do not track location");
-			}
-
-		};
-
 	    // constructor
 	    $scope.init = function(){
             $rootScope.hideNavigationMenu = false;
@@ -130,7 +117,7 @@ angular.module('starter')
 			}
 
 			if($rootScope.user){
-				$scope.state.trackLocation = $rootScope.user.trackLocation;
+				$rootScope.trackLocation = $rootScope.user.trackLocation;
 			}
 			$scope.showHelpInfoPopupIfNecessary();
 			quantimodoService.getVariableCategories()

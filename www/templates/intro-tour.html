@@ -2,7 +2,7 @@
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
         <ion-slide ng-repeat="introSlide in introSlides"
                    ng-show="myIntro.ready"
-                   style="background-color: {{introSlide.backgroundColor}}">
+                   style="background-color: {{introSlide.backgroundColor}}; font-weight: 100;">
             <div class="content intro-content" >
                 <div ng-if="introSlide.content.logoDiv" id="{{introSlide.content.logoDiv.id}}">
                     <img style="width:{{introSlide.img.width}}px; height:{{introSlide.img.height}}px;" ng-src="{{introSlide.img.url}}">

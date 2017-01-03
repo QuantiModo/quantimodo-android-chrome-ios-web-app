@@ -36,6 +36,12 @@
                 style="font-size: 16px; line-height: 1.5;">
             </span>
             <br>
+            <span ng-if="onboardingPages[0].moreInfo"
+                  ng-click="showMoreOnboardingInfo()";
+                  style="font-size: 12px; line-height: 1.5;">
+                MORE INFO
+            </span>
+            <br>
             <br>
             <div ng-repeat="button in onboardingPages[0].buttons" >
                 <div class="button-bar">
@@ -51,6 +57,24 @@
                     </button>
                 </div>
             </div>
+            <br>
+            <div ng-if="onboardingPages[0].id.indexOf('login') === -1" >
+                <div class="button-bar">
+                    <button class="button"
+                            style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                font-size: 12px;
+                                text-align: center"
+                            id="skipButtonWelcome"
+                            ng-click="skipOnboarding()">
+                        &nbsp; SKIP SETUP &nbsp;</i>
+                    </button>
+                </div>
+            </div>
         </div>
+
     </div>
+
 </ion-view>

@@ -1,5 +1,5 @@
 angular.module('starter')
-	
+
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
 										  quantimodoService, ionicTimePicker, $stateParams, $ionicHistory,
@@ -13,8 +13,8 @@ angular.module('starter')
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
 		if($rootScope.user){
-			$scope.state.trackLocation = $rootScope.user.trackLocation;
-			console.debug('trackLocation is '+ $scope.state.trackLocation);
+			$rootScope.trackLocation = $rootScope.user.trackLocation;
+			console.debug('trackLocation is '+ $rootScope.trackLocation);
 			if(!$rootScope.user.getPreviewBuilds){
 				$rootScope.user.getPreviewBuilds = false;
 			}
@@ -132,7 +132,7 @@ angular.module('starter')
 				window.location = '#app/feedback';
 			}
 		};
-		
+
 		$scope.postIdea = function() {
 			$scope.hideLoader();
 			if ($rootScope.isChromeApp) {
@@ -173,7 +173,7 @@ angular.module('starter')
 					quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
 				});
 			}
-			
+
 		};
 
 		$scope.showAppInfoPopup = function () {
@@ -330,25 +330,6 @@ angular.module('starter')
 			ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
 		};
 
-		$scope.trackLocationChange = function() {
-			console.debug('trackLocation', $scope.state.trackLocation);
-			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
-			if($scope.state.trackLocation){
-				$ionicPopup.alert({
-					title: 'Location Tracking Enabled',
-					template: 'Location tracking is an experimental feature.  Your location is automatically logged ' +
-					'when you open the app. Your location is not logged when the ' +
-					'app is closed so you should create reminder notifications and open the app regularly to ' +
-					'keep your location up to date.'
-				});
-				quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-			} else {
-				console.debug("Do not track location");
-			}
-
-		};
-
         $scope.logout = function() {
 
 			var completelyResetAppState = function(){
@@ -364,9 +345,8 @@ angular.module('starter')
 					window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
 				}
 				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
+                $state.go('app.intro');
+				//$state.go(config.appSettings.welcomeState, {}, { reload: true });
 			};
 
 			var afterLogoutDoNotDeleteMeasurements = function(){
@@ -380,10 +360,9 @@ angular.module('starter')
 				}
 				quantimodoService.setLocalStorageItem('isWelcomed', false);
 				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
+                $state.go('app.intro');
 				//hard reload
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
+				//$state.go(config.appSettings.welcomeState, {}, { reload: true });
 			};
 
             $scope.showDataClearPopup = function(){
@@ -524,7 +503,7 @@ angular.module('starter')
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.init();
             if($rootScope.user){
-                $scope.state.trackLocation = $rootScope.user.trackLocation;
+                $rootScope.trackLocation = $rootScope.user.trackLocation;
             }
 		});
 

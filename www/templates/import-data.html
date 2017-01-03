@@ -1,6 +1,36 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Import Data">
     <ion-content scroll="true" overflow-scroll="true">
         <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
+        <div class="card"
+             ng-show="onboardingFooterText"
+             id="importHelpCard" >
+            <div class="item item-avatar item-borderless">
+                <i class="{{defaultHelpCards[0].iconClass}}"
+                   style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							border-radius: 4px;"
+                ></i>
+                <p style="  text-align: center;
+					  height: 40px;
+					  line-height: 40px;
+					  white-space: nowrap;
+					  color: black;
+					font-size: 18px;">
+                    Import Your Data
+                </p>
+            </div>
+            <div class="item item-body item-borderless" style="text-align: center;">
+                Scroll down and press Connect for any apps or device you currently use.  Once you're finished, press
+                the Done bar at the bottom.
+            </div>
+            <br>
+        </div>
+
         <div  class="list card" ng-if="connectors">
             <div ng-include="'templates/fragments/connectors-fragment.html'"></div>
         </div>
