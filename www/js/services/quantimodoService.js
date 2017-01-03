@@ -7425,5 +7425,98 @@ angular.module('starter')
 
         };
 
+        quantimodoService.getIntroSlides = function () {
+
+            var introSlides = [
+                {
+                    "img" : {
+                        "width" : "250",
+                        "height" : "250",
+                        "url" : "img/intro/intro_import.png"
+                    },
+                    "textColor": "white",
+                    "backgroundColor": "#3467d6",
+                    "content" : {
+                        "firstParagraph" : {
+                            "visible" : true,
+                            "content" : "Import Data",
+                            "classes" : "intro-header"
+                        },
+                        "logoDiv" : {
+                            "visible" : true,
+                            "id" : "logo"
+                        },
+                        "finalParagraph" : {
+                            "visible" : true,
+                            "content" : "Import data from all your apps and devices",
+                            "classes" : "intro-paragraph",
+                            "buttonBarVisible" : true
+                        }
+                    }
+                },
+                {
+                    "img" : {
+                        "width" : "250",
+                        "height" : "250",
+                        "url" : "img/intro/intro_track_anything.png"
+                    },
+                    "textColor": "white",
+                    "backgroundColor": "#f09402",
+                    "content" : {
+                        "firstParagraph" : {
+                            "visible" : true,
+                            "content" : "Track Anything",
+                            "classes" : "intro-header"
+                        },
+                        "logoDiv" : {
+                            "visible" : true,
+                            "id" : "logo"
+                        },
+                        "finalParagraph" : {
+                            "visible" : true,
+                            "content" : "Log treatments, diet, symptoms, emotions, and anything else",
+                            "classes" : "intro-paragraph",
+                            "buttonBarVisible" : true
+                        }
+                    }
+                },
+                {
+                    "img" : {
+                        "width" : "250",
+                        "height" : "250",
+                        "url" : "img/intro/intro_make_discoveries.png"
+                    },
+                    "textColor": "white",
+                    "backgroundColor": "#0f9d58",
+                    "content" : {
+
+                        "firstParagraph" : {
+                            "visible" : true,
+                            "content" : "Make Discoveries",
+                            "classes" : "intro-header"
+                        },
+
+                        "logoDiv" : {
+                            "visible" : true,
+                            "id" : "logo"
+                        },
+                        "finalParagraph": {
+                            "visible" : true,
+                            "content" : "After I have about a month of data, I analyze it to discover the hidden factors " +
+                            "linked to your well-being",
+                            "classes" : "intro-paragraph",
+                            "buttonBarVisible" : true
+                        }
+                    }
+                }
+            ];
+
+            if(config.appSettings.intro){
+                return config.appSettings.intro;
+            }
+
+            return introSlides;
+        };
+
         return quantimodoService;
     });

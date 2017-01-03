@@ -4,7 +4,7 @@ angular.module('starter')
 
     $scope.viewTitle = config.appSettings.appDisplayName;
     $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
-    $scope.introSlides = config.appSettings.intro;
+    $scope.introSlides = quantimodoService.getIntroSlides();
 
     $rootScope.showFilterBarSearchIcon = false;
 
