@@ -1,6 +1,6 @@
 angular.module('starter')
 .controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
-                                  $rootScope, $stateParams, quantimodoService) {
+                                  $rootScope, $stateParams, quantimodoService, $timeout) {
 
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
@@ -45,6 +45,11 @@ angular.module('starter')
             return obj.id !== 'loginOnboardingPage';
         });
         quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify(onboardingPages));
+        $timeout(function() {
+            $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
+                return obj.id !== 'loginOnboardingPage';
+            });
+        }, 2000);
     };
 
     var removeImportPage = function () {
