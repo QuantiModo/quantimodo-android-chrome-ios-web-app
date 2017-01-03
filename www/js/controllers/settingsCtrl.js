@@ -1,5 +1,5 @@
 angular.module('starter')
-	
+
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
 										  quantimodoService, ionicTimePicker, $stateParams, $ionicHistory,
@@ -132,7 +132,7 @@ angular.module('starter')
 				window.location = '#app/feedback';
 			}
 		};
-		
+
 		$scope.postIdea = function() {
 			$scope.hideLoader();
 			if ($rootScope.isChromeApp) {
@@ -173,7 +173,7 @@ angular.module('starter')
 					quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
 				});
 			}
-			
+
 		};
 
 		$scope.showAppInfoPopup = function () {
@@ -364,9 +364,8 @@ angular.module('starter')
 					window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
 				}
 				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
+                $state.go('app.intro');
+				//$state.go(config.appSettings.welcomeState, {}, { reload: true });
 			};
 
 			var afterLogoutDoNotDeleteMeasurements = function(){
@@ -380,10 +379,9 @@ angular.module('starter')
 				}
 				quantimodoService.setLocalStorageItem('isWelcomed', false);
 				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
+                $state.go('app.intro');
 				//hard reload
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
+				//$state.go(config.appSettings.welcomeState, {}, { reload: true });
 			};
 
             $scope.showDataClearPopup = function(){

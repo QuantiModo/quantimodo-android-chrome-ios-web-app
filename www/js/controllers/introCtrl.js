@@ -16,8 +16,9 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             console.debug('startApp: Going to welcome state...');
-            $rootScope.hideNavigationMenu = false;
-            $state.go(config.appSettings.welcomeState);
+            $state.go('app.onboarding');
+            //$rootScope.hideNavigationMenu = false;
+            //$state.go(config.appSettings.welcomeState);
         },
 
         next : function(index) {
