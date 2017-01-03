@@ -563,7 +563,7 @@ angular.module('starter')
         };
 
         quantimodoService.getConnectorsFromApi = function(successHandler, errorHandler){
-            quantimodoService.get('api/connectors/list',
+            quantimodoService.get('api/v1/connectors/list',
                 [],
                 {},
                 successHandler,
