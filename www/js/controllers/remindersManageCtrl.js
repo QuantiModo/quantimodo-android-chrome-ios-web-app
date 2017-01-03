@@ -269,7 +269,7 @@ angular.module('starter')
 						$scope.edit(trackingReminder);
 					}
 					if(index === 1){
-						$scope.addToFavoritesOrRemindersUsingVariableObject(variableObject);
+						$scope.addToFavoritesUsingVariableObject(variableObject);
 					}
 					if(index === 2){
 						$scope.goToAddMeasurementForVariableObject(variableObject);

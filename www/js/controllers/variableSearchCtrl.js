@@ -31,11 +31,13 @@ angular.module('starter')
 
             var userTagData;
             if($state.current.name === 'app.favoriteSearch') {
-                $scope.addToFavoritesOrRemindersUsingVariableObject(variableObject);
+                $scope.addToFavoritesUsingVariableObject(variableObject);
             } else if (window.location.href.indexOf('reminder-search') !== -1) {
-                var frequency = 86400;
-                $scope.addToFavoritesOrRemindersUsingVariableObject(variableObject, frequency,
-                    $stateParams.skipReminderSettingsForRatings);
+                var options = {
+                    skipReminderSettingsForRatings: $stateParams.skipReminderSettingsForRatings,
+                    doneState: $stateParams.doneState
+                };
+                $scope.addToRemindersUsingVariableObject(variableObject, options);
             } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
                 $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
@@ -380,6 +382,10 @@ angular.module('starter')
 
             if(!$stateParams.commonVariableSearchParameters.variableCategoryName){
                 $stateParams.commonVariableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;
+            }
+
+            if($stateParams.variableCategoryName){
+                $rootScope.variableCategoryName = $stateParams.variableCategoryName;
             }
 
             if ($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything') {

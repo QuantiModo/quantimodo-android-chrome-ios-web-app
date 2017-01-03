@@ -195,7 +195,7 @@ angular.module('starter')
 						$scope.editMeasurement($rootScope.variableObject);
 					}
 					if(index === 1){
-						$scope.addToFavoritesOrRemindersUsingVariableObject($rootScope.variableObject);
+						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
 						$state.go('app.reminderAdd',

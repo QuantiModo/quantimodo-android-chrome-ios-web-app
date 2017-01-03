@@ -2,8 +2,8 @@ angular.module('starter')
     // Parent Controller
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
-                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
-                                    quantimodoService, ionicDatePicker,
+                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector,
+                                    quantimodoService, ionicDatePicker, $cordovaOauth,
                                     $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.appMigrationVersion = 1489;
@@ -209,11 +209,6 @@ angular.module('starter')
                 return obj.id !== card.id;
             });
             quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
-            if(!$rootScope.defaultHelpCards || $rootScope.defaultHelpCards.length === 0){
-                $rootScope.hideNavigationMenu = false;
-            } else {
-                $rootScope.hideNavigationMenu = true;
-            }
         };
 
         // open datepicker for "from" date
@@ -378,34 +373,72 @@ angular.module('starter')
                 });
         };
 
-        $scope.addToFavoritesOrRemindersUsingVariableObject = function (variableObject, reminderFrequency,
-                                                                        skipReminderSettingsForRatings) {
+        $scope.addToRemindersUsingVariableObject = function (variableObject, options) {
+            var doneState = config.appSettings.defaultState;
+            if(options.doneState){
+                doneState = options.doneState;
+            }
+
+            if($rootScope.onboardingPages && $rootScope.onboardingPages[0]){
+                $rootScope.onboardingPages[0].buttons[0].buttonText = "Add Another";
+                $rootScope.onboardingPages[0].buttons[1].buttonText = "All Done";
+                $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+                    variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
+                    variableObject.variableCategoryName.toLowerCase() + '?';
+            }
+
+            if (!options.skipReminderSettingsForRatings ||
+                (variableObject.abbreviatedUnitName !== '/5' && variableObject.variableName !== "Blood Pressure")) {
+                $state.go('app.reminderAdd',
+                    {
+                        variableObject: variableObject,
+                        doneState: doneState
+                    }
+                );
+                return;
+            }
 
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
-
             trackingReminder.variableName = variableObject.name;
             trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+            trackingReminder.reminderFrequency = 86400;
+            trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
 
-            var doneState = config.appSettings.defaultState;
-            var addState = 'app.reminderAdd';
+            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                .then(function() {
+                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+                    $state.go(doneState,
+                        {
+                            trackingReminder: trackingReminder,
+                            fromState: $state.current.name,
+                            fromUrl: window.location.href
+                        }
+                    );
+                    quantimodoService.postTrackingRemindersDeferred(trackingReminder)
+                        .then(function () {
+                            $ionicLoading.hide();
+                            console.debug("Saved to reminders: " + JSON.stringify(trackingReminder));
+                        }, function(error) {
+                            $ionicLoading.hide();
+                            console.error('Failed to add reminders!' + JSON.stringify(error));
+                        });
+                });
+        };
 
-            if(!reminderFrequency){
-                trackingReminder.reminderFrequency = 0;
-                doneState = 'app.favorites';
-                addState = 'app.favoriteAdd';
-                skipReminderSettingsForRatings = true;
-            } else {
-                trackingReminder.reminderFrequency = reminderFrequency;
-                trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
-                if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards[0]){
-                    $rootScope.defaultHelpCards[0].bodyText = "Great job!  Now you'll be able to instantly record " +
-                        variableObject.name + " in the Reminder Inbox. Want to add any more " +
-                        variableObject.variableCategoryName.toLowerCase() + '?';
-                }
-            }
+
+        $scope.addToFavoritesUsingVariableObject = function (variableObject, options) {
+
+            var trackingReminder = {};
+            trackingReminder.variableId = variableObject.id;
+            trackingReminder.variableName = variableObject.name;
+            trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
+            trackingReminder.variableDescription = variableObject.description;
+            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+            trackingReminder.reminderFrequency = 0;
 
             if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
                 var message = 'Got deletion request before last reminder refresh completed';
@@ -415,40 +448,40 @@ angular.module('starter')
                 $rootScope.syncingReminders = false;
             }
 
-            if ((trackingReminder.abbreviatedUnitName === '/5' ||
-                trackingReminder.variableName === "Blood Pressure") &&
-                skipReminderSettingsForRatings) {
-                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-                //trackingReminder.defaultValue = 3;
-                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
-                    .then(function() {
-                        // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                        $state.go(doneState,
-                            {
-                                trackingReminder: trackingReminder,
-                                fromState: $state.current.name,
-                                fromUrl: window.location.href
-                            }
-                        );
-                        quantimodoService.postTrackingRemindersDeferred(trackingReminder)
-                            .then(function () {
-                                $ionicLoading.hide();
-                                console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
-                            }, function(error) {
-                                $ionicLoading.hide();
-                                console.error('Failed to add favorite!' + JSON.stringify(error));
-                            });
-                    });
-
-            } else {
-                $state.go(addState,
+            if ((trackingReminder.abbreviatedUnitName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
+                $state.go('app.favoriteAdd',
                     {
                         variableObject: variableObject,
                         fromState: $state.current.name,
-                        fromUrl: window.location.href
+                        fromUrl: window.location.href,
+                        doneState: 'app.favorites'
                     }
                 );
+                return;
             }
+
+            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+            //trackingReminder.defaultValue = 3;
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                .then(function() {
+                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+                    $state.go('app.favorites',
+                        {
+                            trackingReminder: trackingReminder,
+                            fromState: $state.current.name,
+                            fromUrl: window.location.href
+                        }
+                    );
+                    quantimodoService.postTrackingRemindersDeferred(trackingReminder)
+                        .then(function () {
+                            $ionicLoading.hide();
+                            console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
+                        }, function(error) {
+                            $ionicLoading.hide();
+                            console.error('Failed to add favorite!' + JSON.stringify(error));
+                        });
+                });
+
         };
 
         $scope.closeMenuIfNeeded = function (menuItem) {
@@ -490,7 +523,7 @@ angular.module('starter')
             // Show "..." button on top rigt
             if (e.targetScope && e.targetScope.controller_name &&
                 e.targetScope.controller_name === "MeasurementAddCtrl" ||
-                e.targetScope.controller_name === "RemindersAddCtrl" ||
+                e.targetScope.controller_name === "ReminderAddCtrl" ||
                 e.targetScope.controller_name === "FavoriteAddCtrl" ||
                 e.targetScope.controller_name === "ChartsPageCtrl" ||
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
@@ -1488,6 +1521,775 @@ angular.module('starter')
             quantimodoService.resetUserVariableDeferred(variableObject.id).then(function() {
                 $scope.getVariableByName(variableObject.name);
             });
+        };
+
+        $scope.goToReminderSearchCategory = function(variableCategoryName) {
+            $state.go('app.reminderSearchCategory',
+                {
+                    variableCategoryName : variableCategoryName,
+                    fromUrl: window.location.href,
+                    hideNavigationMenu: $rootScope.hideNavigationMenu,
+                    skipReminderSettingsForRatings: true,
+                    doneState: $state.current.name
+                });
+        };
+
+        $scope.sendChromeEmailLink = function(){
+            var subjectLine = "Install%20the%20" + config.appSettings.appDisplayName + "%20Chrome%20Browser%20Extension";
+            var linkToChromeExtension = config.appSettings.linkToChromeExtension;
+            var emailBody = "Did%20you%20know%20that%20you%20can%20easily%20track%20everything%20on%20your%20laptop%20and%20desktop%20with%20our%20Google%20Chrome%20browser%20extension%3F%20%20Your%20data%20is%20synced%20between%20devices%20so%20you%27ll%20never%20have%20to%20track%20twice!%0A%0ADownload%20it%20here!%0A%0A" + encodeURIComponent(linkToChromeExtension)  + "%0A%0ALove%2C%20%0AYou";
+            var fallbackUrl = null;
+            var emailAddress = $rootScope.user.email;
+            if($rootScope.isMobile){
+                $scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+            } else {
+                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+            }
+        };
+
+        $scope.refreshConnectors = function(){
+            quantimodoService.refreshConnectors()
+                .then(function(connectors){
+                    $rootScope.connectors = connectors;
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
+                    $ionicLoading.hide().then(function(){
+                        console.debug("The loading indicator is now hidden");
+                    });
+                }, function(response){
+                    console.error(response);
+                    $scope.$broadcast('scroll.refreshComplete');
+                    $ionicLoading.hide().then(function(){
+                        console.debug("The loading indicator is now hidden");
+                    });
+                });
+        };
+
+        $scope.connect = function(connector){
+
+            var scopes;
+            var myPopup;
+            var options;
+            connector.loadingText = 'Connecting...';
+
+            var connectWithParams = function(params, lowercaseConnectorName) {
+                quantimodoService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
+                    .then(function(result){
+                        console.debug(JSON.stringify(result));
+                        $scope.refreshConnectors();
+                    }, function (error) {
+                        errorHandler(error);
+                        $scope.refreshConnectors();
+                    });
+            };
+
+            var connectWithToken = function(response) {
+                console.debug("Response Object -> " + JSON.stringify(response));
+                var body = {
+                    connectorCredentials: {token: response},
+                    connector: connector
+                };
+                quantimodoService.connectConnectorWithTokenDeferred(body).then(function(result){
+                    console.debug(JSON.stringify(result));
+                    $scope.refreshConnectors();
+                }, function (error) {
+                    errorHandler(error);
+                    $scope.refreshConnectors();
+                });
+            };
+
+            var connectWithAuthCode = function(authorizationCode, connector){
+                console.debug(connector.name + " connect result is " + JSON.stringify(authorizationCode));
+                quantimodoService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
+                    $scope.refreshConnectors();
+                }, function() {
+                    console.error("error on connectWithAuthCode for " + connector.name);
+                    $scope.refreshConnectors();
+                });
+            };
+
+            var errorHandler = function(error){
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            };
+
+            if(connector.name === 'github') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = ['user', 'repo'];
+                $cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
+                    scopes).then(function(result) {
+                    connectWithToken(result);
+                }, function(error) {
+                    errorHandler(error);
+                });
+            }
+
+            if(connector.name === 'withings') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                $cordovaOauth.withings(window.private_keys.WITHINGS_CLIENT_ID, window.private_keys.WITHINGS_CLIENT_SECRET)
+                    .then(function(result) {
+                        connectWithToken(result);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'fitbit') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = [
+                    'activity',
+                    'heartrate',
+                    'location',
+                    'nutrition',
+                    'profile',
+                    'settings',
+                    'sleep',
+                    'social',
+                    'weight'
+                ];
+
+                options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+                $cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
+                    .then(function(authorizationCode) {
+                        connectWithAuthCode(authorizationCode, connector);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'runkeeper') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = [];
+                options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+                $cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
+                    .then(function(authorizationCode) {
+                        connectWithAuthCode(authorizationCode, connector);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'rescuetime') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = ['time_data', 'category_data', 'productivity_data'];
+                options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+                $cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
+                    .then(function(authorizationCode) {
+                        connectWithAuthCode(authorizationCode, connector);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'slice') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = [];
+                options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+                $cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
+                    .then(function(authorizationCode) {
+                        connectWithAuthCode(authorizationCode, connector);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+
+            if(connector.name === 'facebook') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = ['user_likes', 'user_posts'];
+                $cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
+                    .then(function(result) {
+                        connectWithToken(result);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'googlefit') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = [
+                    "https://www.googleapis.com/auth/fitness.activity.read",
+                    "https://www.googleapis.com/auth/fitness.body.read",
+                    "https://www.googleapis.com/auth/fitness.location.read"
+                ];
+
+                options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+                $cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
+                    .then(function(authorizationCode) {
+                        connectWithAuthCode(authorizationCode, connector);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'googlecalendar') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = [
+                    "https://www.googleapis.com/auth/calendar",
+                    "https://www.googleapis.com/auth/calendar.readonly"
+                ];
+                options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+                $cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
+                    .then(function(authorizationCode) {
+                        connectWithAuthCode(authorizationCode, connector);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'sleepcloud') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = [
+                    'https://www.googleapis.com/auth/userinfo.email'
+                ];
+                options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+                $cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
+                    .then(function(authorizationCode) {
+                        connectWithAuthCode(authorizationCode, connector);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'up') {
+
+                if($rootScope.isWeb){
+                    webConnect(connector);
+                    return;
+                }
+
+                scopes = [
+                    'basic_read',
+                    'extended_read',
+                    'location_read',
+                    'friends_read',
+                    'mood_read',
+                    'move_read',
+                    'sleep_read',
+                    'meal_read',
+                    'weight_read',
+                    'heartrate_read',
+                    'generic_event_read'
+                ];
+
+                $cordovaOauth.jawbone(window.private_keys.JAWBONE_CLIENT_ID, window.private_keys.JAWBONE_CLIENT_SECRET, scopes)
+                    .then(function(result) {
+                        connectWithToken(result);
+                    }, function(error) {
+                        errorHandler(error);
+                    });
+            }
+
+            if(connector.name === 'worldweatheronline') {
+                $scope.data = {};
+
+                myPopup = $ionicPopup.show({
+                    template: '<label class="item item-input">' +
+                    '<i class="icon ion-location placeholder-icon"></i>' +
+                    '<input type="text" placeholder="Zip Code or City, Country" ng-model="data.location"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter Your Zip Code or City, Country/State',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.location) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data.location;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        location: String($scope.data.location)
+                    };
+                    connectWithParams(params, connector.name);
+                    console.debug('Entered zip code. Result: ', res);
+                });
+            }
+
+            if(connector.name === 'whatpulse') {
+                $scope.data = {};
+
+                myPopup = $ionicPopup.show({
+                    template: '<label class="item item-input">' +
+                    '<i class="icon ion-person placeholder-icon"></i>' +
+                    '<input type="text" placeholder="Username" ng-model="data.username"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter your ' + connector.displayName + ' username found next to your avatar on the WhatPulse My Stats page',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.username) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data.username;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        username: $scope.data.username
+                    };
+                    var body = {
+                        connectorCredentials: params,
+                        connector: connector
+                    };
+                    connectWithParams(params, connector.name);
+                });
+            }
+
+            if(connector.name === 'myfitnesspal') {
+                $scope.data = {};
+
+                myPopup = $ionicPopup.show({
+                    template: '<label class="item item-input">' +
+                    '<i class="icon ion-person placeholder-icon"></i>' +
+                    '<input type="text" placeholder="Username" ng-model="data.username"></label>' +
+                    '<br> <label class="item item-input">' +
+                    '<i class="icon ion-locked placeholder-icon"></i>' +
+                    '<input type="password" placeholder="Password" ng-model="data.password"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.username || !$scope.data.password) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        username: $scope.data.username,
+                        password: $scope.data.password
+                    };
+                    connectWithParams(params, connector.name);
+                });
+            }
+
+            if(connector.name === 'mynetdiary') {
+                $scope.data = {};
+
+                myPopup = $ionicPopup.show({
+                    template: '<label class="item item-input">' +
+                    '<i class="icon ion-person placeholder-icon"></i>' +
+                    '<input type="text" placeholder="Username" ng-model="data.username"></label>' +
+                    '<br> <label class="item item-input">' +
+                    '<i class="icon ion-locked placeholder-icon"></i>' +
+                    '<input type="password" placeholder="Password" ng-model="data.password"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.password || !$scope.data.username) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        username: $scope.data.username,
+                        password: $scope.data.password
+                    };
+                    connectWithParams(params, connector.name);
+                });
+            }
+
+            if(connector.name === 'moodpanda') {
+                $scope.data = {};
+
+                myPopup = $ionicPopup.show({
+                    template: '<label class="item item-input">' +
+                    '<i class="icon ion-email placeholder-icon"></i>' +
+                    '<input type="email" placeholder="Email" ng-model="data.email"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter Your ' + connector.displayName + ' Email',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.email) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        email: $scope.data.email
+                    };
+                    connectWithParams(params, connector.name);
+                });
+            }
+
+            if(connector.name === 'moodscope') {
+                $scope.data = {};
+
+                myPopup = $ionicPopup.show({
+                    template: '<label class="item item-input">' +
+                    '<i class="icon ion-person placeholder-icon"></i>' +
+                    '<input type="text" placeholder="Username" ng-model="data.username"></label>' +
+                    '<br> <label class="item item-input">' +
+                    '<i class="icon ion-locked placeholder-icon"></i>' +
+                    '<input type="password" placeholder="Password" ng-model="data.password"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.password || !$scope.data.username) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        username: $scope.data.username,
+                        password: $scope.data.password
+                    };
+                    connectWithParams(params, connector.name);
+                });
+            }
+        };
+
+        $scope.disconnect = function (connector){
+            connector.loadingText = 'Disconnecting...';
+            quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){
+                $scope.refreshConnectors();
+            }, function() {
+                console.error("error disconnecting " + connector.name);
+            });
+        };
+
+        $scope.getItHere = function (connector){
+            window.open(connector.getItUrl, '_blank');
+        };
+
+        var webConnect = function (connector) {
+            var url = connector.connectInstructions.url;
+            console.debug('targetUrl is ',  url);
+            var ref = window.open(url,'', "width=600,height=800");
+            console.debug('Opened ' + url);
+        };
+
+        // LOGIN FUNCTIONS
+
+        $scope.register = function() {
+            var register = true;
+            $scope.login(register);
+        };
+
+        // User wants to login
+        $scope.login = function(register) {
+
+            $scope.showLoader('Logging you in...');
+            quantimodoService.setLocalStorageItem('isWelcomed', true);
+            $rootScope.isWelcomed = true;
+
+            if($rootScope.isChromeApp){
+                quantimodoService.chromeAppLogin(register);
+            } else if ($rootScope.isChromeExtension) {
+                quantimodoService.chromeExtensionLogin(register);
+            } else if ($rootScope.isAndroid || $rootScope.isIOS || $rootScope.isWindows) {
+                console.debug("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using quantimodoService.nonNativeMobileLogin");
+                quantimodoService.nonNativeMobileLogin(register);
+            } else {
+                console.debug("$scope.login: Not windows, android or is so assuming browser.");
+                $scope.showLoader('Logging you in...');
+                quantimodoService.browserLogin(register);
+            }
+
+            if($rootScope.user){
+                $rootScope.hideNavigationMenu = false;
+                quantimodoService.createDefaultReminders();
+                console.debug($scope.controller_name + ".login: Got user and going to default state");
+                quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
+            }
+        };
+
+        $scope.nativeSocialLogin = function(provider, accessToken){
+            quantimodoService.setLocalStorageItem('isWelcomed', true);
+            $rootScope.isWelcomed = true;
+            console.debug('$scope.nativeSocialLogin: Going to try to quantimodoService.getTokensAndUserViaNativeSocialLogin for ' +
+                provider + ' provider');
+
+            quantimodoService.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
+                .then(function(response){
+                    console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
+                        JSON.stringify(response));
+
+                    if(response.user){
+                        quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
+                        $rootScope.hideNavigationMenu = false;
+                        console.debug($scope.controller_name + ".getTokensAndUserViaNativeSocialLogin: Got user and going to default state");
+                        quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
+                        return;
+                    }
+
+                    var JWTToken = response.jwtToken;
+                    console.debug("nativeSocialLogin: Mobile device detected and provider is " + provider + ". Got JWT token " + JWTToken);
+                    var url = quantimodoService.generateV2OAuthUrl(JWTToken);
+
+                    console.debug('nativeSocialLogin: open the auth window via inAppBrowser.');
+                    var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
+
+                    console.debug('nativeSocialLogin: listen to event at ' + url + ' when the page changes.');
+                    /*
+                     $timeout(function () {
+                     if(!$rootScope.user){
+                     quantimodoService.reportError('Could not get user with url ' + url);
+                     }
+                     }, 30000);
+                     */
+                    ref.addEventListener('loadstart', function(event) {
+
+                        console.debug('nativeSocialLogin: loadstart event is ' + JSON.stringify(event));
+                        console.debug('nativeSocialLogin: check if changed url is the same as redirection url.');
+
+                        if(quantimodoService.startsWith(event.url, quantimodoService.getRedirectUri())) {
+                            if(!quantimodoService.getUrlParameter(event.url,'error')) {
+                                var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
+                                console.debug('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
+                                ref.close();
+
+                                var withJWT = true;
+                                // get access token from authorization code
+                                quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
+                            } else {
+                                var errorMessage = "nativeSocialLogin: error occurred: " + quantimodoService.getUrlParameter(event.url, 'error');
+                                quantimodoService.reportError(errorMessage);
+                                // close inAppBrowser
+                                ref.close();
+                                $scope.hideLoader();
+                            }
+                        }
+
+                    });
+                }, function(error){
+                    $scope.hideLoader();
+                    quantimodoService.reportError("quantimodoService.getTokensAndUserViaNativeSocialLogin error occurred! " +
+                        "Couldn't generate JWT! Error response: " + JSON.stringify(error));
+                });
+        };
+
+        $scope.googleLogin = function(register){
+            // For debugging Google login
+            // var tokenForApi = 'ya29.CjF7A0faph6-8m91vuLDZVnKZqXeC4JjGWfubyV6PmgTqZmjkPohGx2tXVNpSjn4euhV';
+            // $scope.nativeSocialLogin('google', tokenForApi);
+            // return;
+
+            /* Too many undesirable redirects
+             var seconds  = 30;
+             console.debug('Setting googleLogin timeout for ' + seconds + ' seconds');
+             $timeout(function () {
+             if(!$rootScope.user){
+             quantimodoService.reportError('$scope.googleLogin: Could not get user within 30 seconds! Fallback to non-native registration...');
+             register = true;
+             quantimodoService.nonNativeMobileLogin(register);
+             //quantimodoService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+             }
+             }, seconds * 1000);
+             */
+            $scope.showLoader('Logging you in...');
+            document.addEventListener('deviceready', deviceReady, false);
+            function deviceReady() {
+                //I get called when everything's ready for the plugin to be called!
+                console.debug('Device is ready!');
+                window.plugins.googleplus.login({
+                        'scopes': 'email https://www.googleapis.com/auth/fitness.activity.write https://www.googleapis.com/auth/fitness.body.write https://www.googleapis.com/auth/fitness.nutrition.write https://www.googleapis.com/auth/plus.login', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                        'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                        'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                    },
+                    function (userData) {
+                        console.debug('$scope.googleLogin: successfully got user data-> ', JSON.stringify(userData));
+                        var tokenForApi = null;
+
+                        /** @namespace userData.oauthToken */
+                        /** @namespace userData.serverAuthCode */
+                        if(userData.oauthToken) {
+                            console.debug('userData.oauthToken is ' + userData.oauthToken);
+                            tokenForApi = userData.oauthToken;
+                        } else if(userData.serverAuthCode) {
+                            console.error('googleLogin: No userData.accessToken!  You might have to use cordova-plugin-googleplus@4.0.8 or update API to use serverAuthCode to get an accessToken from Google...');
+                            tokenForApi = userData.serverAuthCode;
+                        }
+
+                        if(!tokenForApi){
+                            Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
+                            console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to quantimodoService.nonNativeMobileLogin registration...');
+                            register = true;
+                            quantimodoService.nonNativeMobileLogin(register);
+                        } else {
+                            $scope.nativeSocialLogin('google', tokenForApi);
+                        }
+                    },
+                    function (errorMessage) {
+                        $scope.hideLoader();
+                        quantimodoService.reportError("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                        register = true;
+                        quantimodoService.nonNativeMobileLogin(register);
+                    }
+                );
+            }
+
+        };
+
+        $scope.googleLogout = function(){
+            /** @namespace window.plugins.googleplus */
+            window.plugins.googleplus.logout(function (msg) {
+                console.debug("logged out of google!");
+            }, function(fail){
+                console.debug("failed to logout", fail);
+            });
+        };
+
+        $scope.facebookLogin = function(){
+            $scope.showLoader('Logging you in...');
+            console.debug("$scope.facebookLogin about to try $cordovaFacebook.login");
+            var $cordovaFacebook = {};
+            if (($rootScope.isIOS || $rootScope.isAndroid) && $injector.has('$cordovaFacebook')) {
+                console.debug('Injecting $cordovaFacebook');
+                $cordovaFacebook = $injector.get('$cordovaFacebook');
+            } else {
+                console.debug("Could not inject $cordovaFacebook");
+            }
+
+            var seconds  = 30;
+            $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
+            console.debug('Setting facebookLogin timeout for ' + seconds + ' seconds');
+            $timeout(function () {
+                if(!$rootScope.user){
+                    quantimodoService.reportError('Could not get user $scope.facebookLogin within 30 seconds! Falling back to non-native registration...');
+                    var register = true;
+                    quantimodoService.nonNativeMobileLogin(register);
+                }
+            }, seconds * 1000);
+
+            $cordovaFacebook.login(["public_profile", "email", "user_friends"])
+                .then(function(response) {
+                    console.debug("facebookLogin_success response->", JSON.stringify(response));
+                    var accessToken = response.authResponse.accessToken;
+                    if(!accessToken){
+                        quantimodoService.reportError('ERROR: facebookLogin could not get accessToken! response: ' + JSON.stringify(response));
+                        quantimodoService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                    }
+                    $scope.nativeSocialLogin('facebook', accessToken);
+                }, function (error) {
+                    Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
+                    console.debug("facebook login error"+ JSON.stringify(error));
+                });
+        };
+        
+        $scope.skipLogin = function(){
+            quantimodoService.setLocalStorageItem('isWelcomed', true);
+            $rootScope.isWelcomed = true;
+            // move to the next screen
+            $scope.goToDefaultStateIfWelcomed();
         };
 
         $scope.init();

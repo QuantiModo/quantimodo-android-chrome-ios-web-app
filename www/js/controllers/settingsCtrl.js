@@ -352,6 +352,7 @@ angular.module('starter')
         $scope.logout = function() {
 
 			var completelyResetAppState = function(){
+				$rootScope.user = null;
 				// Getting token so we can post as the new user if they log in again
 				$rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
 				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
@@ -369,6 +370,7 @@ angular.module('starter')
 			};
 
 			var afterLogoutDoNotDeleteMeasurements = function(){
+                $rootScope.user = null;
 				// Getting token so we can post as the new user if they log in again
 				$rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
 				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);

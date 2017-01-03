@@ -1296,14 +1296,33 @@ angular.module('starter')
                 quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
                 $rootScope.sendReminderNotificationEmails = null;
             }
+            quantimodoService.afterLoginGoToUrlOrState();
+
+        };
+
+        quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
+            if(!quantimodoService.afterLoginGoToUrlOrState()){
+                $state.go(config.appSettings.defaultState);
+            }
+        };
+
+        quantimodoService.afterLoginGoToUrlOrState = function () {
             var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
             console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
             if(afterLoginGoTo) {
                 quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
                 window.location.replace(afterLoginGoTo);
-            } else {
-                //$state.go(config.appSettings.defaultState);
+                return true;
             }
+
+            var afterLoginGoToState = quantimodoService.getLocalStorageItemAsString('afterLoginGoToState');
+            console.debug("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
+            if(afterLoginGoToState){
+                quantimodoService.deleteItemFromLocalStorage('afterLoginGoToState');
+                $state.go(afterLoginGoToState);
+                return true;
+            }
+            return false;
         };
 
         quantimodoService.refreshUser = function(){
@@ -6953,6 +6972,11 @@ angular.module('starter')
 
         quantimodoService.forecastioWeather = function() {
 
+            if(!$rootScope.user){
+                console.debug("No recording weather because we're not logged in");
+                return;
+            }
+
             var nowTimestamp = Math.floor(Date.now() / 1000);
             var lastPostedWeatherAt = Number(quantimodoService.getLocalStorageItemAsString('lastPostedWeatherAt'));
 
@@ -7046,6 +7070,358 @@ angular.module('starter')
             error(function (data) {
                 console.debug("Request failed");
             });
+        };
+
+        quantimodoService.setupHelpCards = function () {
+
+            var defaultHelpCards = [
+                {
+                    id: "recordMeasurementInfoCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideRecordMeasurementInfoCard",
+                    title: 'Record Measurements',
+                    "backgroundColor": "#f09402",
+                    circleColor: "#fab952",
+                    iconClass: "icon positive ion-edit",
+                    image: {
+                        url: "img/variable_categories/vegetarian_food-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Want to just record a medication, food or symptom immediately instead of creating a reminder? " +
+                    "Just go to the Record Measurement menu item and select the appropriate variable category. " +
+                    "Alternatively, you can just press the little red button at the bottom of the screen.",
+                    buttons: [
+                        {
+                            id: "hideRecordMeasurementInfoCardButton",
+                            clickFunctionCall: "hideHelpCard(card)",
+                            buttonText: 'Got it!',
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-balanced"
+                        }
+                    ]
+                },/*
+                 {
+                 id: "locationTrackingInfoCard",
+                 ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
+                 title: 'Location Tracking',
+                 iconClass: "icon positive ion-ios-location",
+                 bodyText: "To determine how the amount of time spent at work, restaurants, the gym, or doctor's offices " +
+                 "might be influencing you, you can enable automatic location tracking in the Settings page.",
+                 buttons: [
+                 {
+                 id: "goToStateAppSettingsButton",
+                 clickFunctionCall: "goToState('app.settings')",
+                 buttonText: 'Go to settings',
+                 buttonIconClass: "ion-gear-a",
+                 buttonClass: "button button-clear button-balanced"
+                 },
+                 {
+                 id: "hideLocationTrackingInfoCardButton",
+                 clickFunctionCall: "hideHelpCard(card)",
+                 buttonText: 'Dismiss',
+                 buttonIconClass: "ion-close-circled",
+                 buttonClass: "button button-clear button-assertive"
+                 }
+                 ]
+                 },*/
+                {
+                    id: "chromeExtensionInfoCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && isMobile && !hideChromeExtensionInfoCard",
+                    title: 'Track on the Computer',
+                    "backgroundColor": "#0f9d58",
+                    circleColor: "#03c466",
+                    iconClass: "icon positive ion-social-chrome",
+                    image: {
+                        url: "img/chrome.ico",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Did you know that you can easily track everything on your laptop and desktop with our " +
+                    "Google Chrome browser extension?  Your data is synced between devices so you'll never have to " +
+                    "track twice!",
+                    buttons: [
+                        {
+                            id: "sendChromeEmailLinkButton",
+                            clickFunctionCall: "sendChromeEmailLink()",
+                            buttonText: 'Send Yourself a Link',
+                            buttonIconClass: "ion-email",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideChromeExtensionInfoCardButton",
+                            clickFunctionCall: "hideHelpCard(card)",
+                            buttonText: 'Dismiss',
+                            buttonIconClass: "ion-close-circled",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "importDataCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
+                    title: 'Import Your Data',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#5b95f9",
+                    iconClass: "icon positive ion-ios-cloud-download-outline",
+                    bodyText: "Start by scrolling down to the Weather connector and enter your zip code so we can see how " +
+                    "the weather might be affecting you.",
+                    buttons: [
+                        {
+                            id: "goToStateAppImportButton",
+                            clickFunctionCall: "goToState('app.import')",
+                            buttonText: 'Connect an app or device',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideImportDataCardButton",
+                            clickFunctionCall: "hideHelpCard(card)",
+                            buttonText: 'Done connecting data sources',
+                            buttonIconClass: "ion-close-circled",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                }
+            ];
+
+            var debugMode = true;
+            if(debugMode){
+                $rootScope.hideNavigationMenu = true;
+                $rootScope.defaultHelpCards = defaultHelpCards;
+            }
+
+            if(typeof $rootScope.defaultHelpCards === "undefined"){
+
+                quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
+                    if(defaultHelpCardsFromLocalStorage === null){
+                        $rootScope.defaultHelpCards = defaultHelpCards;
+                        quantimodoService.setLocalStorageItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
+                    } else {
+                        $rootScope.defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
+                    }
+                    if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
+                        $rootScope.hideNavigationMenu = true;
+                    }
+                });
+            }
+        };
+
+        quantimodoService.setupOnboardingPages = function () {
+
+            var onboardingPages = [
+                {
+                    id: "loginOnboardingPage",
+                    title: 'Sign In',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#fefdfc",
+                    iconClass: "icon positive ion-ios-medkit-outline",
+                    image: {
+                        url: "img/cute_robot_happy_transparent.png",
+                        height: "96",
+                        width: "70"
+                    },
+                    bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
+                    //+ 'Please add them so we can identify how they might be affecting you.',
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategoryTreatmentsButton",
+                            clickFunctionCall: "onboardingRegister()",
+                            buttonText: 'Sign Up!',
+                            buttonIconClass: "ion-log-in",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddTreatmentRemindersCardButton",
+                            clickFunctionCall: "onboardingLogin()",
+                            buttonText: 'Already Have Account',
+                            buttonIconClass: "ion-log-in",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "addTreatmentRemindersCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
+                    title: 'Any Treatments?',
+                    "backgroundColor": "#f09402",
+                    circleColor: "#fab952",
+                    iconClass: "icon positive ion-ios-medkit-outline",
+                    image: {
+                        url: "img/variable_categories/pill-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
+                    'like meditation or psychotherapy? ',
+                    //+ 'Please add them so we can identify how they might be affecting you.',
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategoryTreatmentsButton",
+                            clickFunctionCall: "goToReminderSearchCategory('Treatments')",
+                            buttonText: 'Add Treatment',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddTreatmentRemindersCardButton",
+                            clickFunctionCall: "hideOnboardingPage(card)",
+                            buttonText: 'Nope',
+                            buttonIconClass: "ion-close-circled",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "addSymptomRemindersCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
+                    title: 'Recurring Symptoms?',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#5b95f9",
+                    iconClass: "icon positive ion-sad-outline",
+                    image: {
+                        url: "img/variable_categories/dizzy_person_2-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: 'Got any recurring symptoms that vary in their severity? <br> <br> If so, add them so I can try ' +
+                        'to determine which hidden factors might be worsening or improving them.',
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategorySymptomsButton",
+                            clickFunctionCall: "goToReminderSearchCategory('Symptoms')",
+                            buttonText: 'Add Symptom',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddSymptomRemindersCardButton",
+                            clickFunctionCall: "hideOnboardingPage(card)",
+                            buttonText: 'Nope',
+                            buttonIconClass: "ion-close-circled",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "addEmotionRemindersCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
+                    title: 'Varying Emotions?',
+                    "backgroundColor": "#0f9d58",
+                    circleColor: "#03c466",
+                    iconClass: "icon positive ion-happy-outline",
+                    image: {
+                        url: "img/variable_categories/theatre_mask-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
+                    "determine which factors are influencing them.",
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategoryEmotionsButton",
+                            clickFunctionCall: "goToReminderSearchCategory('Emotions')",
+                            buttonText: 'Add Emotion',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddEmotionRemindersCardButton",
+                            clickFunctionCall: "hideOnboardingPage(card)",
+                            buttonText: 'Nope',
+                            buttonIconClass: "ion-close-circled",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "addFoodRemindersCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
+                    title: 'Common Foods?',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#5b95f9",
+                    iconClass: "icon positive ion-ios-nutrition-outline",
+                    image: {
+                        url: "img/variable_categories/vegetarian_food-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Diet can have a significant impact on your health. Are there any foods that you eat regularly?",
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategoryFoodsButton",
+                            clickFunctionCall: "goToReminderSearchCategory('Foods')",
+                            buttonText: 'Add Common Food',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddFoodRemindersCardButton",
+                            clickFunctionCall: "hideOnboardingPage(card)",
+                            buttonText: 'Nope',
+                            buttonIconClass: "ion-close-circled",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },/*
+                 {
+                 id: "locationTrackingInfoCard",
+                 ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
+                 title: 'Location Tracking',
+                 iconClass: "icon positive ion-ios-location",
+                 bodyText: "To determine how the amount of time spent at work, restaurants, the gym, or doctor's offices " +
+                 "might be influencing you, you can enable automatic location tracking in the Settings page.",
+                 buttons: [
+                 {
+                 id: "goToStateAppSettingsButton",
+                 clickFunctionCall: "goToState('app.settings')",
+                 buttonText: 'Go to settings',
+                 buttonIconClass: "ion-gear-a",
+                 buttonClass: "button button-clear button-balanced"
+                 },
+                 {
+                 id: "hideLocationTrackingInfoCardButton",
+                 clickFunctionCall: "hideOnboardingPage(card)",
+                 buttonText: 'Dismiss',
+                 buttonIconClass: "ion-close-circled",
+                 buttonClass: "button button-clear button-assertive"
+                 }
+                 ]
+                 },*/
+                {
+                    id: "importDataCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
+                    title: 'Import Your Data',
+                    "backgroundColor": "#f09402",
+                    circleColor: "#fab952",
+                    iconClass: "icon positive ion-ios-cloud-download-outline",
+                    image: {
+                        url: "img/download_2-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Start by scrolling down to the Weather connector and enter your zip code so we can see how " +
+                        "the weather might be affecting you.",
+                    buttons: [
+                        {
+                            id: "goToStateAppImportButton",
+                            clickFunctionCall: "goToState('app.import')",
+                            buttonText: 'Connect an app or device',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideImportDataCardButton",
+                            clickFunctionCall: "hideOnboardingPage(card)",
+                            buttonText: 'Done connecting data sources',
+                            buttonIconClass: "ion-close-circled",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                }
+            ];
+
+            $rootScope.onboardingPages = onboardingPages;
+
         };
 
         return quantimodoService;

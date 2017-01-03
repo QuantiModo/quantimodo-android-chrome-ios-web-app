@@ -73,7 +73,7 @@ p.heading {
 
 div.dateDiv {
 	padding: 10px;
-	
+
 }
 
 div.dateDiv > input {
@@ -104,7 +104,7 @@ div.dateDiv > input {
 
 .calm-icon {
 	font-size: 40px;
-	margin-left: 15px;	
+	margin-left: 15px;
 	display:inline-block;
 }
 
@@ -173,12 +173,12 @@ iframe {
 	border-radius: 40px;
 }
 
-.center { 
+.center {
 	text-align: center;
 }
 
-/*::-webkit-input-placeholder { 
-	text-align:right; 
+/*::-webkit-input-placeholder {
+	text-align:right;
 }*/
 
 label.item.item-input.item-text > input[type="text"] {
@@ -287,7 +287,7 @@ label.item.item-input.item-text > input[type="text"] {
   background-color: #fff;
   text-align: center;
 
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
 
@@ -325,8 +325,8 @@ label.item.item-input.item-text > input[type="text"] {
 }
 
 div.previous {
-  float: left; 
-  margin-left: 15px;  
+  float: left;
+  margin-left: 15px;
   font-size: 40px;
   position: relative;
   top: 50%;
@@ -338,8 +338,8 @@ div.previous {
 }
 
 div.next{
-  float:right; 
-  margin-right:15px; 
+  float:right;
+  margin-right:15px;
   font-size: 40px;
   position: relative;
   top: 50%;
@@ -364,17 +364,17 @@ div.intro-content{
 }
 
 p.intro-paragraph {
-  font-size: 18px; 
+  font-size: 18px;
   line-height: initial;
 }
 
 p.intro-paragraph-small {
-  font-size: 16px; 
+  font-size: 16px;
   line-height: initial;
 }
 
 p.intro-header {
-  font-size:26px; 
+  font-size:26px;
   line-height:initial
 }
 
@@ -657,7 +657,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     overflow-y: auto !important;
 }
 
-#navBarAvatar {
+.menu-avatar {
     height: 30px;
     border-radius: 50%;
 }
@@ -742,3 +742,7 @@ img.intro-primary-outcome-variable-rating-buttons {
 {
     background-color: #007aff;
 }
+
+/*
+Cool animations at http://ianlunn.github.io/Hover/
+*/
