@@ -2778,6 +2778,46 @@ angular.module('starter')
             }
         };
 
+        function lookupGoogleAndFoursquareLocationAndPostMeasurement(position, deferred) {
+            $rootScope.lastLatitude = position.coords.latitude;
+            quantimodoService.setLocalStorageItem('lastLatitude', position.coords.latitude);
+            $rootScope.lastLongitude = position.coords.longitude;
+            quantimodoService.setLocalStorageItem('lastLongitude', position.coords.longitude);
+
+            quantimodoService.forecastioWeather();
+
+            quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps($rootScope.lastLongitude,
+                $rootScope.lastLatitude).then(function (result) {
+                //console.debug('Result was '+JSON.stringify(result));
+                if (result.type === 'foursquare') {
+                    //console.debug('Foursquare location name is ' + result.name + ' located at ' + result.address);
+                } else if (result.type === 'geocode') {
+                    //console.debug('geocode address is ' + result.address);
+                } else {
+                    var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' +
+                        $rootScope.lastLatitude + ',' + $rootScope.lastLongitude +
+                        'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' +
+                        $rootScope.lastLatitude + ',' + $rootScope.lastLongitude;
+                    console.debug('Sorry, I\'ve got nothing. But here is a map!');
+                }
+
+                var currentTimeEpochMilliseconds = new Date().getTime();
+                var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
+                if (!$rootScope.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined") {
+                    quantimodoService.setLocationVariables(result, currentTimeEpochSeconds);
+                } else {
+                    if (result.address && result.address !== "undefined" &&
+                        ($rootScope.lastLocationAddress !== result.address || $rootScope.lastLocationName !== result.name)) {
+                        quantimodoService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result);
+                    }
+                }
+                if(deferred){
+                    deferred.resolve(result);
+                }
+
+            });
+        }
+
         quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged = function () {
             var deferred = $q.defer();
             quantimodoService.getLocationVariablesFromLocalStorage();
@@ -2798,43 +2838,8 @@ angular.module('starter')
                 };
 
                 $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                    $rootScope.lastLatitude  = position.coords.latitude;
-                    quantimodoService.setLocalStorageItem('lastLatitude', position.coords.latitude);
-                    $rootScope.lastLongitude = position.coords.longitude;
-                    quantimodoService.setLocalStorageItem('lastLongitude', position.coords.longitude);
-
-                    quantimodoService.forecastioWeather();
-
-                    quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps($rootScope.lastLongitude,
-                        $rootScope.lastLatitude).then(function(result) {
-                        //console.debug('Result was '+JSON.stringify(result));
-                        if(result.type === 'foursquare') {
-                            //console.debug('Foursquare location name is ' + result.name + ' located at ' + result.address);
-                        } else if (result.type === 'geocode') {
-                            //console.debug('geocode address is ' + result.address);
-                        } else {
-                            var map = 'https://maps.googleapis.com/maps/api/staticmap?center='+
-                                $rootScope.lastLatitude+','+$rootScope.lastLongitude+
-                                'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C'+
-                                $rootScope.lastLatitude+','+$rootScope.lastLongitude;
-                            console.debug('Sorry, I\'ve got nothing. But here is a map!');
-                        }
-
-                        var currentTimeEpochMilliseconds = new Date().getTime();
-                        var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds/1000);
-                        if(!$rootScope.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined"){
-                            quantimodoService.setLocationVariables(result, currentTimeEpochSeconds);
-                        } else {
-                            if(result.address && result.address !== "undefined" &&
-                                ($rootScope.lastLocationAddress !== result.address || $rootScope.lastLocationName !== result.name)){
-                                quantimodoService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result);
-                            }
-                        }
-                        deferred.resolve(result);
-                    });
-
+                    lookupGoogleAndFoursquareLocationAndPostMeasurement(position, deferred);
                     //console.debug("My coordinates are: ", position.coords);
-
                 }, function(error) {
                     deferred.reject(error);
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
@@ -2843,6 +2848,53 @@ angular.module('starter')
             });
 
             return deferred.promise;
+        };
+
+        quantimodoService.backgroundGeolocation = function ($q, $http) {
+            var callbackFn = function(location) {
+                lookupGoogleAndFoursquareLocationAndPostMeasurement(location);
+                backgroundGeoLocation.finish();
+            },
+
+            failureFn = function(error) {
+                console.log('BackgroundGeoLocation error ' + JSON.stringify(error));
+            },
+
+            //Enable background geolocation
+            start = function () {
+                //save settings (background tracking is enabled) in local storage
+                window.localStorage.setItem('bgGPS', 1);
+
+                backgroundGeoLocation.configure(callbackFn, failureFn, {
+                    desiredAccuracy: 10,
+                    stationaryRadius: 20,
+                    distanceFilter: 30,
+                    locationService: 'ANDROID_DISTANCE_FILTER',
+                    debug: false,
+                    stopOnTerminate: false
+                });
+
+                backgroundGeoLocation.start();
+            };
+
+            return {
+                start: start,
+
+                // Initialize service and enable background geolocation by default
+                init: function () {
+                    var bgGPS = window.localStorage.getItem('bgGPS');
+                    if (bgGPS === 1 || bgGPS === null) {
+                        start();
+                    }
+                },
+
+                // Stop data tracking
+                stop: function () {
+                    window.localStorage.setItem('bgGPS', 0);
+                    backgroundGeoLocation.stop();
+                }
+            };
+
         };
 
         var delayBeforePostingNotifications = 3 * 60 * 1000;

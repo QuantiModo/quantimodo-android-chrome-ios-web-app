@@ -778,6 +778,12 @@ angular.module('starter')
                 $rootScope.showUndoButton = false;
             }
 
+            if($rootScope.user && $rootScope.user.trackLocation){
+                $ionicPlatform.ready(function() { //For Ionic
+                    quantimodoService.backgroundGeolocation.init();
+                });
+            }
+
             $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
 
             if($rootScope.urlParameters.refreshUser){
@@ -2315,6 +2321,11 @@ angular.module('starter')
             console.debug('trackLocation', $rootScope.trackLocation);
             $rootScope.user.trackLocation = $rootScope.trackLocation;
             quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+            if($rootScope.user && $rootScope.user.trackLocation){
+                $ionicPlatform.ready(function() { //For Ionic
+                    quantimodoService.backgroundGeolocation.init();
+                });
+            }
             if($rootScope.trackLocation && !skipPopup){
                 $ionicPopup.alert({
                     title: 'Location Tracking Enabled',
