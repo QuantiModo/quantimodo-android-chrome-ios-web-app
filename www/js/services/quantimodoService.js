@@ -7182,14 +7182,14 @@ angular.module('starter')
                         "the NSA waterboards me, I will never divulge share your data without your permission.",
                     buttons: [
                         {
-                            id: "goToReminderSearchCategoryTreatmentsButton",
+                            id: "signUpButton",
                             clickFunctionCall: "onboardingRegister()",
                             buttonText: 'Sign Up',
                             buttonIconClass: "",
                             buttonClass: "button button-clear button-balanced"
                         },
                         {
-                            id: "hideAddTreatmentRemindersCardButton",
+                            id: "signInButton",
                             clickFunctionCall: "onboardingLogin()",
                             buttonText: 'Already Have Account',
                             buttonIconClass: "",
