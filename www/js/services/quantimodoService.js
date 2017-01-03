@@ -2741,7 +2741,7 @@ angular.module('starter')
             }
         };
 
-        quantimodoService.postLocationMeasurementAndSetLocationVariables = function (currentTimeEpochSeconds, result) {
+        quantimodoService.postLocationMeasurementAndSetLocationVariables = function (currentTimeEpochSeconds, result, isBackground) {
             var variableName = false;
             if ($rootScope.lastLocationName && $rootScope.lastLocationName !== "undefined") {
                 variableName = $rootScope.lastLocationName;
@@ -2752,15 +2752,22 @@ angular.module('starter')
             }
             var secondsAtLocation = currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds;
             var hoursAtLocation = Math.round(secondsAtLocation/3600 * 100) / 100;
+
+            var sourceName = $rootScope.lastLocationResultType + ' on ' + $rootScope.appDisplayName + ' for ' + $rootScope.currentPlatform;
+
+            var note = $rootScope.lastLocationAddress;
+            if(isBackground){
+                note = note + " (Background Geolocation)";
+            }
             if (variableName && variableName !== "undefined" && secondsAtLocation > 60) {
                 var newMeasurement = {
                     variableName: variableName,
                     abbreviatedUnitName: 'h',
                     startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
-                    sourceName: $rootScope.lastLocationResultType + ' on ' + $rootScope.appDisplayName + ' for ' + $rootScope.currentPlatform,
+                    sourceName: sourceName,
                     value: hoursAtLocation,
                     variableCategoryName: 'Location',
-                    note: $rootScope.lastLocationAddress,
+                    note: note,
                     combinationOperation: "SUM"
                 };
                 quantimodoService.postMeasurementDeferred(newMeasurement);
@@ -2778,7 +2785,7 @@ angular.module('starter')
             }
         };
 
-        function lookupGoogleAndFoursquareLocationAndPostMeasurement(position, deferred) {
+        function lookupGoogleAndFoursquareLocationAndPostMeasurement(position, deferred, isBackground) {
             $rootScope.lastLatitude = position.coords.latitude;
             quantimodoService.setLocalStorageItem('lastLatitude', position.coords.latitude);
             $rootScope.lastLongitude = position.coords.longitude;
@@ -2808,7 +2815,7 @@ angular.module('starter')
                 } else {
                     if (result.address && result.address !== "undefined" &&
                         ($rootScope.lastLocationAddress !== result.address || $rootScope.lastLocationName !== result.name)) {
-                        quantimodoService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result);
+                        quantimodoService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result, isBackground);
                     }
                 }
                 if(deferred){
@@ -2850,9 +2857,10 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.backgroundGeolocation = function ($q, $http) {
+        quantimodoService.backgroundGeolocation = function () {
             var callbackFn = function(location) {
-                lookupGoogleAndFoursquareLocationAndPostMeasurement(location);
+                var isBackground = true;
+                lookupGoogleAndFoursquareLocationAndPostMeasurement(location, null, isBackground);
                 backgroundGeoLocation.finish();
             },
 
