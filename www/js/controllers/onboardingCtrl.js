@@ -4,7 +4,7 @@ angular.module('starter')
 
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        quantimodoService.setupOnboardingPages();
+        //quantimodoService.setupOnboardingPages();
         if(!$rootScope.onboardingPages){
             quantimodoService.setupOnboardingPages();
         }
