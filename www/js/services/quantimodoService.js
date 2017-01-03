@@ -1296,14 +1296,33 @@ angular.module('starter')
                 quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
                 $rootScope.sendReminderNotificationEmails = null;
             }
+            quantimodoService.afterLoginGoToUrlOrState();
+
+        };
+
+        quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
+            if(!quantimodoService.afterLoginGoToUrlOrState()){
+                $state.go(config.appSettings.defaultState);
+            }
+        };
+
+        quantimodoService.afterLoginGoToUrlOrState = function () {
             var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
             console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
             if(afterLoginGoTo) {
                 quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
                 window.location.replace(afterLoginGoTo);
-            } else {
-                //$state.go(config.appSettings.defaultState);
+                return true;
             }
+
+            var afterLoginGoToState = quantimodoService.getLocalStorageItemAsString('afterLoginGoToState');
+            console.debug("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
+            if(afterLoginGoToState){
+                quantimodoService.deleteItemFromLocalStorage('afterLoginGoToState');
+                $state.go(afterLoginGoToState);
+                return true;
+            }
+            return false;
         };
 
         quantimodoService.refreshUser = function(){
@@ -6953,6 +6972,11 @@ angular.module('starter')
 
         quantimodoService.forecastioWeather = function() {
 
+            if(!$rootScope.user){
+                console.debug("No recording weather because we're not logged in");
+                return;
+            }
+
             var nowTimestamp = Math.floor(Date.now() / 1000);
             var lastPostedWeatherAt = Number(quantimodoService.getLocalStorageItemAsString('lastPostedWeatherAt'));
 
@@ -7185,6 +7209,36 @@ angular.module('starter')
         quantimodoService.setupOnboardingPages = function () {
 
             var onboardingPages = [
+                {
+                    id: "loginOnboardingPage",
+                    title: 'Sign In',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#fefdfc",
+                    iconClass: "icon positive ion-ios-medkit-outline",
+                    image: {
+                        url: "img/cute_robot_happy_transparent.png",
+                        height: "96",
+                        width: "70"
+                    },
+                    bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
+                    //+ 'Please add them so we can identify how they might be affecting you.',
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategoryTreatmentsButton",
+                            clickFunctionCall: "onboardingRegister()",
+                            buttonText: 'Sign Up!',
+                            buttonIconClass: "ion-log-in",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddTreatmentRemindersCardButton",
+                            clickFunctionCall: "onboardingLogin()",
+                            buttonText: 'Already Have Account',
+                            buttonIconClass: "ion-log-in",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
                 {
                     id: "addTreatmentRemindersCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",

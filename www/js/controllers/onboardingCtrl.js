@@ -4,13 +4,17 @@ angular.module('starter')
 
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+        quantimodoService.setupOnboardingPages();
         if(!$rootScope.onboardingPages){
             quantimodoService.setupOnboardingPages();
         }
-        if(!$rootScope.user){
-            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-            $rootScope.sendToLogin();
+
+        if($rootScope.user){
+            $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
+                return obj.id !== 'loginOnboardingPage';
+            });
         }
+
         $ionicLoading.hide();
         $rootScope.hideNavigationMenu = true;
     });
@@ -19,23 +23,38 @@ angular.module('starter')
 
     });
 
+    $scope.onboardingLogin = function () {
+        if(!$rootScope.user){
+            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
+            $scope.login();
+            $rootScope.hideOnboardingPage();
+        } else {
+            $rootScope.hideOnboardingPage();
+        }
+    };
+
+    $scope.onboardingRegister = function () {
+        if(!$rootScope.user){
+            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
+            $scope.register();
+            $rootScope.hideOnboardingPage();
+        } else {
+            $rootScope.hideOnboardingPage();
+        }
+    };
+
     $rootScope.hideOnboardingPage = function () {
-        var card = $rootScope.onboardingPages[0];
-        card.hide = true;
+
         $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
-            return obj.id !== card.id;
+            return obj.id !== $rootScope.onboardingPages[0].id;
         });
-        quantimodoService.deleteElementOfLocalStorageItemById('onboardingPages', card.id);
+
         if(!$rootScope.onboardingPages || $rootScope.onboardingPages.length === 0){
             $rootScope.hideNavigationMenu = false;
+            $state.go(console.appSettings.defaultState);
         } else {
             $rootScope.hideNavigationMenu = true;
         }
-        if(!$rootScope.onboardingPages || !$rootScope.onboardingPages.length){
-            $state.go(config.appSettings.defaultState);
-        }
-
-
-    };
+    }
 
 });
