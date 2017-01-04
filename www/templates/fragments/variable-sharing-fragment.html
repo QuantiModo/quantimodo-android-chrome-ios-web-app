@@ -1,0 +1,12 @@
+<div ng-show="variableObject.userId && user && variableObject.userId === user.id"
+     class="card sign-in" >
+    <ion-toggle ng-model="variableObject.shareUserMeasurements"
+                ng-change="toggleVariableShare(variableObject)">
+        <i ng-if="variableObject.shareUserMeasurements === false" class="icon ion-locked">
+            &nbsp {{variableObject.name}} is Private
+        </i>
+        <i ng-if="variableObject.shareUserMeasurements === true" class="icon ion-unlocked">
+            &nbsp {{variableObject.name}} is Public
+        </i>
+    </ion-toggle>
+</div>
