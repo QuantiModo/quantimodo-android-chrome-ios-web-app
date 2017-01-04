@@ -2785,11 +2785,7 @@ angular.module('starter')
             }
         };
 
-        function lookupGoogleAndFoursquareLocationAndPostMeasurement(position, deferred, isBackground) {
-            $rootScope.lastLatitude = position.coords.latitude;
-            quantimodoService.setLocalStorageItem('lastLatitude', position.coords.latitude);
-            $rootScope.lastLongitude = position.coords.longitude;
-            quantimodoService.setLocalStorageItem('lastLongitude', position.coords.longitude);
+        function lookupGoogleAndFoursquareLocationAndPostMeasurement(deferred, isBackground) {
 
             quantimodoService.forecastioWeather();
 
@@ -2827,6 +2823,13 @@ angular.module('starter')
 
         quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged = function () {
             var deferred = $q.defer();
+
+            var usingBackgroundLocationTracking = true;
+            if(usingBackgroundLocationTracking){
+                console.debug("Not logging location with $cordovaGeolocation because we're using background location tracker instead");
+                deferred.reject();
+                return deferred.promise;
+            }
             quantimodoService.getLocationVariablesFromLocalStorage();
             if(!$rootScope.user){
                 deferred.reject();
@@ -2845,7 +2848,11 @@ angular.module('starter')
                 };
 
                 $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                    lookupGoogleAndFoursquareLocationAndPostMeasurement(position, deferred);
+                    $rootScope.lastLatitude = position.coords.latitude;
+                    quantimodoService.setLocalStorageItem('lastLatitude', position.coords.latitude);
+                    $rootScope.lastLongitude = position.coords.longitude;
+                    quantimodoService.setLocalStorageItem('lastLongitude', position.coords.longitude);
+                    lookupGoogleAndFoursquareLocationAndPostMeasurement(deferred);
                     //console.debug("My coordinates are: ", position.coords);
                 }, function(error) {
                     deferred.reject(error);
@@ -2859,16 +2866,22 @@ angular.module('starter')
 
         quantimodoService.backgroundGeolocationStart = function () {
 
-            console.log('Starting quantimodoService.backgroundGeolocationStart');
+            console.debug('Starting quantimodoService.backgroundGeolocationStart');
             var callbackFn = function(location) {
-                console.debug("background location is " + JSON.stringify(location))
+                console.debug("background location is " + JSON.stringify(location));
                 var isBackground = true;
-                lookupGoogleAndFoursquareLocationAndPostMeasurement(location, null, isBackground);
+                $rootScope.lastLatitude = location.latitude;
+                quantimodoService.setLocalStorageItem('lastLatitude', location.latitude);
+                $rootScope.lastLongitude = location.longitude;
+                quantimodoService.setLocalStorageItem('lastLongitude', location.longitude);
+                lookupGoogleAndFoursquareLocationAndPostMeasurement(null, isBackground);
                 backgroundGeoLocation.finish();
             };
 
             var failureFn = function(error) {
-                console.log('BackgroundGeoLocation error ' + JSON.stringify(error));
+                var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
+                console.log(errorMessage);
+                quantimodoService.reportError(errorMessage);
             };
 
             //save settings (background tracking is enabled) in local storage
@@ -2880,22 +2893,31 @@ angular.module('starter')
                 distanceFilter: 30,
                 locationService: 'ANDROID_DISTANCE_FILTER',
                 debug: false,
-                stopOnTerminate: false
+                stopOnTerminate: false,
+                notificationTitle: config.appSettings.appDisplayName,
+                notificationText: 'Recording Location',
+                notificationIconLarge: null,
+                notificationIconSmall: 'ic_stat_icon_bw',
+                interval: 6000000,
+                fastestInterval: 500000,
+                activitiesInterval: 1000000
             });
 
             backgroundGeoLocation.start();
         };
 
         quantimodoService.backgroundGeolocationInit = function () {
+            console.debug('Starting quantimodoService.backgroundGeolocationInit');
             var bgGPS = window.localStorage.getItem('bgGPS');
-            if (bgGPS === 1 || bgGPS === null) {
+            if (bgGPS === "1" || bgGPS === null) {
                 quantimodoService.backgroundGeolocationStart();
             } else {
-                console.error('quantimodoService.backgroundGeolocationInit failed because bgGPS is not 1 or null')
+                console.debug('quantimodoService.backgroundGeolocationInit failed because bgGPS is ' + bgGPS);
             }
         };
 
         quantimodoService.backgroundGeolocationStop = function () {
+
             window.localStorage.setItem('bgGPS', 0);
             backgroundGeoLocation.stop();
         };
