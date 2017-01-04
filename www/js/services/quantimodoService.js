@@ -2857,52 +2857,47 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.backgroundGeolocation = function () {
+        quantimodoService.backgroundGeolocationStart = function () {
+
+            console.log('Starting quantimodoService.backgroundGeolocationStart');
             var callbackFn = function(location) {
+                console.debug("background location is " + JSON.stringify(location))
                 var isBackground = true;
                 lookupGoogleAndFoursquareLocationAndPostMeasurement(location, null, isBackground);
                 backgroundGeoLocation.finish();
-            },
+            };
 
-            failureFn = function(error) {
+            var failureFn = function(error) {
                 console.log('BackgroundGeoLocation error ' + JSON.stringify(error));
-            },
-
-            //Enable background geolocation
-            start = function () {
-                //save settings (background tracking is enabled) in local storage
-                window.localStorage.setItem('bgGPS', 1);
-
-                backgroundGeoLocation.configure(callbackFn, failureFn, {
-                    desiredAccuracy: 10,
-                    stationaryRadius: 20,
-                    distanceFilter: 30,
-                    locationService: 'ANDROID_DISTANCE_FILTER',
-                    debug: false,
-                    stopOnTerminate: false
-                });
-
-                backgroundGeoLocation.start();
             };
 
-            return {
-                start: start,
+            //save settings (background tracking is enabled) in local storage
+            window.localStorage.setItem('bgGPS', 1);
 
-                // Initialize service and enable background geolocation by default
-                init: function () {
-                    var bgGPS = window.localStorage.getItem('bgGPS');
-                    if (bgGPS === 1 || bgGPS === null) {
-                        start();
-                    }
-                },
+            backgroundGeoLocation.configure(callbackFn, failureFn, {
+                desiredAccuracy: 10,
+                stationaryRadius: 20,
+                distanceFilter: 30,
+                locationService: 'ANDROID_DISTANCE_FILTER',
+                debug: false,
+                stopOnTerminate: false
+            });
 
-                // Stop data tracking
-                stop: function () {
-                    window.localStorage.setItem('bgGPS', 0);
-                    backgroundGeoLocation.stop();
-                }
-            };
+            backgroundGeoLocation.start();
+        };
 
+        quantimodoService.backgroundGeolocationInit = function () {
+            var bgGPS = window.localStorage.getItem('bgGPS');
+            if (bgGPS === 1 || bgGPS === null) {
+                quantimodoService.backgroundGeolocationStart();
+            } else {
+                console.error('quantimodoService.backgroundGeolocationInit failed because bgGPS is not 1 or null')
+            }
+        };
+
+        quantimodoService.backgroundGeolocationStop = function () {
+            window.localStorage.setItem('bgGPS', 0);
+            backgroundGeoLocation.stop();
         };
 
         var delayBeforePostingNotifications = 3 * 60 * 1000;

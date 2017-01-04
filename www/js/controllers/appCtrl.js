@@ -780,7 +780,7 @@ angular.module('starter')
 
             if($rootScope.user && $rootScope.user.trackLocation){
                 $ionicPlatform.ready(function() { //For Ionic
-                    quantimodoService.backgroundGeolocation.init();
+                    quantimodoService.backgroundGeolocationInit();
                 });
             }
 
@@ -2323,7 +2323,7 @@ angular.module('starter')
             quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
             if($rootScope.user && $rootScope.user.trackLocation){
                 $ionicPlatform.ready(function() { //For Ionic
-                    quantimodoService.backgroundGeolocation.init();
+                    quantimodoService.backgroundGeolocationInit();
                 });
             }
             if($rootScope.trackLocation && !skipPopup){
