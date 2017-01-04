@@ -84,18 +84,18 @@ angular.module('starter')
         var getStartedHelpCard = {
             id: "getStartedHelpCard",
                 ngIfLogic: "stateParams.showHelpCards === true && !hideGetStartedHelpCard",
-            title: 'Great Job!',
+            title: 'Reminder Inbox',
             "backgroundColor": "#f09402",
             circleColor: "#fab952",
-            iconClass: "icon positive ion-happy-outline",
+            iconClass: "icon positive ion-archive",
             image: {
                 url: "img/variable_categories/vegetarian_food-96.png",
                     height: "96",
                     width: "96"
             },
-            bodyText: "You're all set up!  Let's record your first measurements. Scroll through the inbox and press the " +
-                "appropriate button on each reminder notification.  Each one only takes a few seconds. You'll be " +
-                "shocked at how much data you can collect with just a few minutes in the inbox each day!",
+            bodyText: "Scroll through the Inbox and press the appropriate button on each reminder notification. " +
+                "Each one only takes a few seconds. You'll be " +
+                "shocked at how much valuable data you can collect with just a few minutes in the Reminder Inbox each day!",
                 buttons: [
                     {
                         id: "hideRecordMeasurementInfoCardButton",
