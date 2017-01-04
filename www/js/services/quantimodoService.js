@@ -2866,7 +2866,7 @@ angular.module('starter')
 
         quantimodoService.backgroundGeolocationStart = function () {
 
-            if(!backgroundGeoLocation){
+            if(typeof backgroundGeoLocation === "undefined"){
                 console.debug('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
                 return;
             }
@@ -7250,6 +7250,7 @@ angular.module('starter')
                 {
                     id: "loginOnboardingPage",
                     title: 'Sign In',
+                    titleClickFunctionCall: "onboardingRegister()",
                     "backgroundColor": "#3467d6",
                     circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-medkit-outline",
