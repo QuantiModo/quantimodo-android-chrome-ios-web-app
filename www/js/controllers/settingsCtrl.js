@@ -12,13 +12,6 @@ angular.module('starter')
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
-		if($rootScope.user){
-			$rootScope.trackLocation = $rootScope.user.trackLocation;
-			console.debug('trackLocation is '+ $rootScope.trackLocation);
-			if(!$rootScope.user.getPreviewBuilds){
-				$rootScope.user.getPreviewBuilds = false;
-			}
-		}
 
 		//quantimodoService.updateUserTimeZoneIfNecessary();
 
