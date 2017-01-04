@@ -67,6 +67,15 @@
             </a>
         </div>
 
+        <div class="card" ng-if="user && user.avatar && user.email">
+            <a class="item item-avatar"
+               href="https://en.gravatar.com/emails/">
+                <img ng-src="{{user.avatar}}">
+                <h2>Update Avatar</h2>
+                <p>for {{user.email}}</p>
+            </a>
+        </div>
+
         <div ng-if="!user" class="card sign-in" >
             <div class="item item-text-wrap">
                 <button class="button button-outline button-block icon-left ion-trash-a button-assertive" ng-click="logout()">
