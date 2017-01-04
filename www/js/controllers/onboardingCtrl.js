@@ -23,7 +23,7 @@ angular.module('starter')
 
     $scope.onboardingLogin = function () {
         if(!$rootScope.user){
-            removeLoginPage();
+            removeLoginPageAfterDelay();
             $scope.login();
         } else {
             $rootScope.hideOnboardingPage();
@@ -31,15 +31,20 @@ angular.module('starter')
     };
 
     $scope.onboardingRegister = function () {
+        var delayInSeconds = 3;
         if(!$rootScope.user){
-            removeLoginPage();
+            removeLoginPageAfterDelay(delayInSeconds);
             $scope.register();
         } else {
-            $rootScope.hideOnboardingPage();
+            delayInSeconds = 0.01;
+            removeLoginPageAfterDelay(delayInSeconds);
         }
     };
 
-    var removeLoginPage = function () {
+    var removeLoginPageAfterDelay = function (delayInSeconds) {
+        if(!delayInSeconds){
+            delayInSeconds = 0.01;
+        }
         quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
         var onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
             return obj.id !== 'loginOnboardingPage';
@@ -49,7 +54,7 @@ angular.module('starter')
             $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
                 return obj.id !== 'loginOnboardingPage';
             });
-        }, 2000);
+        }, delayInSeconds * 3000);
     };
 
     var removeImportPage = function () {

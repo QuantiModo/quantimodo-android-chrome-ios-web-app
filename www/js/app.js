@@ -448,6 +448,7 @@ angular.module('starter',
 
     $stateProvider
         .state('intro', {
+            cache: false,
             url: '/',
             templateUrl: 'templates/intro-tour.html',
             controller: 'IntroCtrl',
@@ -483,6 +484,7 @@ angular.module('starter',
             }
         })
         .state('app.intro', {
+            cache: false,
             url: "/intro",
             params: {
                 doNotRedirect: true
