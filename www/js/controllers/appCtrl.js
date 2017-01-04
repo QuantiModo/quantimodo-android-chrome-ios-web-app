@@ -801,6 +801,21 @@ angular.module('starter')
                 });
             }
 
+            if($rootScope.user){
+                $rootScope.trackLocation = $rootScope.user.trackLocation;
+                console.debug('$rootScope.trackLocation  is '+ $rootScope.trackLocation);
+                if(!$rootScope.user.getPreviewBuilds){
+                    $rootScope.user.getPreviewBuilds = false;
+                }
+            }
+
+
+            if($rootScope.user && $rootScope.user.trackLocation){
+                $ionicPlatform.ready(function() { //For Ionic
+                    quantimodoService.backgroundGeolocationInit();
+                });
+            }
+
             if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
                 console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function () {
@@ -2315,6 +2330,12 @@ angular.module('starter')
             console.debug('trackLocation', $rootScope.trackLocation);
             $rootScope.user.trackLocation = $rootScope.trackLocation;
             quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+            if($rootScope.user && $rootScope.user.trackLocation){
+                console.debug('Going to execute quantimodoService.backgroundGeolocationInit if $ionicPlatform.ready')
+                $ionicPlatform.ready(function() { //For Ionic
+                    quantimodoService.backgroundGeolocationInit();
+                });
+            }
             if($rootScope.trackLocation && !skipPopup){
                 $ionicPopup.alert({
                     title: 'Location Tracking Enabled',
@@ -2324,7 +2345,10 @@ angular.module('starter')
                     'keep your location up to date.'
                 });
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-            } else {
+            }
+
+            if(!$rootScope.trackLocation) {
+                quantimodoService.backgroundGeolocationStop();
                 console.debug("Do not track location");
             }
 
