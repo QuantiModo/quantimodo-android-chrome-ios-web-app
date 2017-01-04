@@ -379,7 +379,7 @@ angular.module('starter',
     /*  Trying to move to appCtrl
     $ionicCloudProvider.init({
         "core": {
-            "app_id": "__IONIC_APP_ID__"
+            "app_id": "42fe48d4"
         }
     });
     */

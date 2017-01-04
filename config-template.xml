@@ -74,6 +74,7 @@
   <plugin name="cordova-plugin-device" spec="~1.1.2"/>
   <plugin name="cordova-plugin-geolocation" version="2.3.0"/>
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1"/>
+  <plugin name="cordova-plugin-mauron85-background-geolocation" spec="^2.2.0"/>
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
   <plugin name="cordova-plugin-statusbar" version="2.2.0"/>
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2"/>
