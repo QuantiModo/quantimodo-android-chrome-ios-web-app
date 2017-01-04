@@ -1577,6 +1577,10 @@ angular.module('starter')
             });
         };
 
+        $rootScope.goBack = function () {
+            $ionicHistory.goBack();
+        };
+
         $scope.setupVariableByVariableObject = function(variableObject) {
             $rootScope.variableName = variableObject.name;
             $rootScope.variableObject = variableObject;
