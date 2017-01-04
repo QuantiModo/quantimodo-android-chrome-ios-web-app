@@ -158,13 +158,12 @@ angular.module('starter')
             });
         };
 
-
         $scope.showUnshareStudyConfirmation = function(correlationObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
                 template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
                 ' and ' + correlationObject.effectVariableName + ' measurements private? <br><br> Links to studies you ' +
-                'previously shared with these variable will no longer work.'
+                'previously shared with these variables will no longer work.'
             });
 
             confirmPopup.then(function(res) {
@@ -187,12 +186,79 @@ angular.module('starter')
             });
         };
 
-
         $scope.toggleStudyShare = function (correlationObject) {
             if(correlationObject.shareUserMeasurements){
                 $scope.showShareStudyConfirmation(correlationObject);
             } else {
                 $scope.showUnshareStudyConfirmation(correlationObject);
+            }
+        };
+
+
+        $scope.showShareVariableConfirmation = function(variableObject, url) {
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Share Variable',
+                template: 'Are you absolutely sure you want to make your ' + variableObject.name +
+                ' measurements publicly visible? <br><br> You can ' +
+                'make them private again at any time on this page.'
+            });
+
+            confirmPopup.then(function(res) {
+                if(res) {
+                    variableObject.shareUserMeasurements = true;
+                    var body = {
+                        variableId: variableObject.id,
+                        shareUserMeasurements: true
+                    };
+                    $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+                    quantimodoService.postUserVariableDeferred(body).then(function () {
+                        $ionicLoading.hide();
+                        if(url){
+                            $scope.openUrl(url);
+                        }
+                    }, function (error) {
+                        $ionicLoading.hide();
+                        console.error(error);
+                    });
+                } else {
+                    variableObject.shareUserMeasurements = false;
+                    console.log('You are not sure');
+                }
+            });
+        };
+
+        $scope.showUnshareVariableConfirmation = function(variableObject) {
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Share Variable',
+                template: 'Are you absolutely sure you want to make your ' + variableObject.name +
+                ' and ' + variableObject.name + ' measurements private? <br><br> Links to studies you ' +
+                'previously shared with this variable will no longer work.'
+            });
+
+            confirmPopup.then(function(res) {
+                if(res) {
+                    variableObject.shareUserMeasurements = false;
+                    var body = {
+                        variableId: variableObject.id,
+                        shareUserMeasurements: true
+                    };
+                    quantimodoService.postUserVariableDeferred(body).then(function () {
+
+                    }, function (error) {
+                        console.error(error);
+                    });
+                } else {
+                    variableObject.shareUserMeasurements = true;
+                    console.log('You are not sure');
+                }
+            });
+        };
+        
+        $scope.toggleVariableShare = function (variableObject) {
+            if(variableObject.shareUserMeasurements){
+                $scope.showShareVariableConfirmation(variableObject);
+            } else {
+                $scope.showUnshareVariableConfirmation(variableObject);
             }
         };
 

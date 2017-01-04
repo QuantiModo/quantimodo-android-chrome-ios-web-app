@@ -12,29 +12,30 @@
 
         <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <highchart id="chart2" config="lineChartConfig"></highchart>
+                <highchart id="lineChart" config="lineChartConfig"></highchart>
             </div>
         </div>
         <div ng-show="hourlyChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <highchart id="chart3" config="hourlyChartConfig"></highchart>
+                <highchart id="hourlyChart" config="hourlyChartConfig"></highchart>
             </div>
         </div>
         <div ng-show="weekdayChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <highchart id="chart4" config="weekdayChartConfig"></highchart>
+                <highchart id="weekdayChart" config="weekdayChartConfig"></highchart>
             </div>
         </div>
         <div ng-show="monthlyChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <highchart id="chart4" config="monthlyChartConfig"></highchart>
+                <highchart id="monthlyChart" config="monthlyChartConfig"></highchart>
             </div>
         </div>
         <div ng-show="distributionChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <highchart id="chart1" config="distributionChartConfig"></highchart>
+                <highchart id="distributionChart" config="distributionChartConfig"></highchart>
             </div>
         </div>
+        <div ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
         <div class="card list" id="statisticsCard" ng-if="variableObject.numberOfRawMeasurements">
             <label class="item item-content" ng-if="variableObject.numberOfRawMeasurements">
                 <span class="input-label left-text"># of measurements</span>
