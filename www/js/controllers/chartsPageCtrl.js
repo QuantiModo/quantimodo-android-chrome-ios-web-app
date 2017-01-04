@@ -119,6 +119,9 @@ angular.module('starter')
                         variableName: $rootScope.variableObject.name,
                         limit: 200
                     };
+                    if($rootScope.urlParameters.userId){
+                        params.userId = $rootScope.urlParameters.userId;
+                    }
                     updateCharts();
                     getHistoryForVariable(params);
                 } else {
@@ -165,6 +168,9 @@ angular.module('starter')
                         variableName: $rootScope.variableObject.name,
                         limit: 200
                     };
+                    if($rootScope.urlParameters.userId){
+                        params.userId = $rootScope.urlParameters.userId;
+                    }
                     updateDailyCharts();
                     getDailyHistoryForVariable(params);
                 } else {
@@ -188,7 +194,11 @@ angular.module('starter')
                 name:  variableName
             };
             $rootScope.variableName = variableName;
-            quantimodoService.getVariablesByNameDeferred(variableName).then(function(variableObject){
+            var params = [];
+            if($rootScope.urlParameters.userId){
+                params.userId = $rootScope.urlParameters.userId;
+            }
+            quantimodoService.getVariablesByNameDeferred(variableName, params).then(function(variableObject){
                 $rootScope.variableObject = variableObject;
             });
         };
@@ -231,6 +241,9 @@ angular.module('starter')
                     limit: 200,
                     offset: 0
                 };
+                if($rootScope.urlParameters.userId){
+                    params.userId = $rootScope.urlParameters.userId;
+                }
                 getDailyHistoryForVariable(params);
                 getHistoryForVariable(params);
             } else {
