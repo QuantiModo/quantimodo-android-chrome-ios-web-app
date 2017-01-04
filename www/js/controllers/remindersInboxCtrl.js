@@ -484,13 +484,6 @@ angular.module('starter')
 			getTrackingReminderNotifications();
 		});
 
-        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-            $rootScope.hideHomeButton = true;
-            setPageTitle();
-            quantimodoService.setupHelpCards();
-            getTrackingReminderNotifications();
-        });
-
         $scope.$on('$ionicView.afterLeave', function(){
             $rootScope.hideHomeButton = false;
         });
