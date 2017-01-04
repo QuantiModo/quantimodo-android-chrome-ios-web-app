@@ -461,6 +461,7 @@ angular.module('starter')
                 $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
                     variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
                     variableObject.variableCategoryName.toLowerCase() + '?';
+                quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
             }
 
             if (!options.skipReminderSettingsForRatings ||
