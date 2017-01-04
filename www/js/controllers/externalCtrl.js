@@ -19,4 +19,12 @@ angular.module('starter')
 	    };
 
 	    $scope.init();
+
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+            $rootScope.hideHelpButton = true;
+        });
+
+        $scope.$on('$ionicView.afterLeave', function(){
+            $rootScope.hideHelpButton = false;
+        });
 	});
