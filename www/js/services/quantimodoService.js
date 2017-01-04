@@ -2866,6 +2866,11 @@ angular.module('starter')
 
         quantimodoService.backgroundGeolocationStart = function () {
 
+            if(!backgroundGeoLocation){
+                console.debug('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
+                return;
+            }
+
             console.debug('Starting quantimodoService.backgroundGeolocationStart');
             var callbackFn = function(location) {
                 console.debug("background location is " + JSON.stringify(location));
