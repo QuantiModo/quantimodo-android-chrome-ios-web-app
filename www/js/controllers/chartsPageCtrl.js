@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
-                                             $stateParams, quantimodoService) {
+                                             $stateParams, quantimodoService, clipboard) {
         $scope.controller_name = "ChartsPageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -21,6 +21,17 @@ angular.module('starter')
         var maximumMeasurements = 2000;
 
         $rootScope.showFilterBarSearchIcon = false;
+
+        if (!clipboard.supported) {
+            console.log('Sorry, copy to clipboard is not supported');
+            $scope.hideClipboardButton = true;
+        }
+
+        $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
+        $scope.copyChartsUrlToClipboard = function () {
+            $scope.copyLinkText = 'Copied!';
+            clipboard.copyText($rootScope.variableObject.chartsUrl);
+        };
 
         $scope.addNewReminderButtonClick = function() {
             console.debug("addNewReminderButtonClick");

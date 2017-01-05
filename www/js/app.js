@@ -18,7 +18,8 @@ angular.module('starter',
         //'templates',
         'fabric',
         'ngCordovaOauth',
-        'jtt_wikipedia'
+        'jtt_wikipedia',
+        'angular-clipboard'
     ]
 )
 
