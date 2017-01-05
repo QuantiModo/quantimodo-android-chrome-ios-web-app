@@ -113,6 +113,7 @@ angular.module('starter')
         };
         quantimodoService.setupHelpCards(getStartedHelpCard);
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
+        $rootScope.onboardingPages = null;
         $state.go('app.remindersInbox');
     };
 

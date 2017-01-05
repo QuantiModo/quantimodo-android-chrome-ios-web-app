@@ -454,7 +454,8 @@ angular.module('starter')
                 doneState = options.doneState;
             }
 
-            if($rootScope.onboardingPages && $rootScope.onboardingPages[0]){
+            if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
+                $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
                 $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
                 $rootScope.onboardingPages[0].buttons[0].buttonText = "Add Another";
                 $rootScope.onboardingPages[0].buttons[1].buttonText = "All Done";
