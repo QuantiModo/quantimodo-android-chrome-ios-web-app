@@ -1596,7 +1596,11 @@ angular.module('starter')
         };
 
         $rootScope.goBack = function () {
-            $ionicHistory.goBack();
+            if($ionicHistory.viewHistory().backView){
+                $ionicHistory.goBack();
+            } else {
+                $state.go(config.appSettings.defaultState);
+            }
         };
 
         $scope.setupVariableByVariableObject = function(variableObject) {
