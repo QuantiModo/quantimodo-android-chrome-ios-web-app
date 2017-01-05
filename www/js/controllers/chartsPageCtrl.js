@@ -110,14 +110,14 @@ angular.module('starter')
             //$scope.showLoader('Fetching measurements');
             quantimodoService.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
-                
+
                 if(history.length > 0 && $scope.state.history.length < maximumMeasurements){
                     $scope.state.offset = $scope.state.offset + 200;
                     params = {
                         offset: $scope.state.offset,
                         sort: "-startTimeEpoch",
                         variableName: $rootScope.variableObject.name,
-                        limit: 200
+                        limit: 0
                     };
                     if($rootScope.urlParameters.userId){
                         params.userId = $rootScope.urlParameters.userId;
@@ -166,7 +166,7 @@ angular.module('starter')
                         offset: $scope.state.dailyHistoryOffset,
                         sort: "-startTimeEpoch",
                         variableName: $rootScope.variableObject.name,
-                        limit: 200
+                        limit: 0
                     };
                     if($rootScope.urlParameters.userId){
                         params.userId = $rootScope.urlParameters.userId;
@@ -207,7 +207,7 @@ angular.module('starter')
             console.debug('Leaving so setting $scope.stopGettingMeasurements to true');
             $scope.stopGettingMeasurements = true;
         });
-        
+
         $scope.init = function(){
 
             $rootScope.getAllUrlParams();
@@ -238,7 +238,7 @@ angular.module('starter')
                 var params = {
                     sort: "-startTimeEpoch",
                     variableName: $rootScope.variableObject.name,
-                    limit: 200,
+                    limit: 0,
                     offset: 0
                 };
                 if($rootScope.urlParameters.userId){
