@@ -275,7 +275,7 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
             if (numberOfWaitingNotifications > 0) {
                 notificationParams = {
                     type: "basic",
-                    title: numberOfWaitingNotifications + " new tracking reminder notifications!",
+                    title: "How are you?",
                     message: "Click to open reminder inbox",
                     iconUrl: "www/img/icons/icon_700.png",
                     priority: 2
@@ -287,7 +287,9 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                 var showNotification = localStorage.showNotification === "true";
                 if (showNotification) {
                     chrome.notifications.create(notificationId, notificationParams, function (id) {});
+                    openPopup(notificationId);
                 } else {
+                    chrome.notifications.create(notificationId, notificationParams, function (id) {});
                     openPopup(notificationId);
                 }
             } else {
