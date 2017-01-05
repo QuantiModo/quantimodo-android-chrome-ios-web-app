@@ -2,9 +2,14 @@
     <ion-side-menu-content>
         <ion-nav-bar class="{{appSettings.ionNavBarClass}}" ng-hide="hideNavigationMenu" >
             <ion-nav-buttons side="left">
-                <button class="button button-icon button-clear ion-navicon" menu-toggle="left"> </button>
+                <button ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left">
+                </button>
+                <button ng-hide="hideBackButton" class="button button-icon ion-chevron-left"
+                        ng-click="goBack()">
+                </button>
                 <button ng-hide="hideHomeButton" class="button button-icon ion-home"
-                        ng-click="goToState('app.remindersInbox')"></button>
+                        ng-click="goToState('app.remindersInbox')">
+                </button>
             </ion-nav-buttons>
 
             <ion-nav-buttons side="right">

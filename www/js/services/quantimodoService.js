@@ -7300,7 +7300,7 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryTreatmentsButton",
-                            clickFunctionCall: "goToReminderSearchCategory('Treatments')",
+                            clickFunctionCall: "goToReminderSearchCategoryFromOnboarding('Treatments')",
                             buttonText: 'Add Treatment',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"
@@ -7334,7 +7334,7 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToReminderSearchCategorySymptomsButton",
-                            clickFunctionCall: "goToReminderSearchCategory('Symptoms')",
+                            clickFunctionCall: "goToReminderSearchCategoryFromOnboarding('Symptoms')",
                             buttonText: 'Add Symptom',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"
@@ -7365,7 +7365,7 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryEmotionsButton",
-                            clickFunctionCall: "goToReminderSearchCategory('Emotions')",
+                            clickFunctionCall: "goToReminderSearchCategoryFromOnboarding('Emotions')",
                             buttonText: 'Add Emotion',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"
@@ -7395,7 +7395,7 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryFoodsButton",
-                            clickFunctionCall: "goToReminderSearchCategory('Foods')",
+                            clickFunctionCall: "goToReminderSearchCategoryFromOnboarding('Foods')",
                             buttonText: 'Add Food or Drink',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"

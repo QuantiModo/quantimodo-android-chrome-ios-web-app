@@ -14,11 +14,20 @@ angular.module('starter')
         }
 
         $ionicLoading.hide();
+        $rootScope.hideMenuButton = true;
         $rootScope.hideNavigationMenu = true;
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
 
+    });
+
+    $scope.$on('$ionicView.beforeLeave', function(){
+
+    });
+
+    $scope.$on('$ionicView.afterLeave', function(){
+        $rootScope.hideNavigationMenu = false;
     });
 
     $scope.onboardingLogin = function () {
@@ -66,17 +75,33 @@ angular.module('starter')
     };
 
     $scope.onboardingGoToImportPage = function () {
+        $rootScope.hideHomeButton = true;
+        $rootScope.hideMenuButton = true;
         removeImportPage();
         $rootScope.onboardingFooterText = "Done connecting data sources";
         $state.go('app.import');
     };
 
     $scope.skipOnboarding = function () {
+        $rootScope.hideMenuButton = false;
         $state.go(config.appSettings.defaultState);
     };
 
     $scope.showMoreOnboardingInfo = function () {
         $scope.onHelpButtonPress($rootScope.onboardingPages[0].title, $rootScope.onboardingPages[0].moreInfo);
+    };
+
+    $scope.goToReminderSearchCategoryFromOnboarding = function(variableCategoryName) {
+        $rootScope.hideHomeButton = true;
+        $rootScope.hideMenuButton = true;
+        if(!$rootScope.user){
+            $rootScope.onboardingPages = null;
+            quantimodoService.deleteItemFromLocalStorage('onboardingPages');
+            $state.go('app.onboarding');
+            return;
+        }
+
+        $scope.goToReminderSearchCategory(variableCategoryName);
     };
 
     $scope.enableLocationTracking = function () {
@@ -85,6 +110,7 @@ angular.module('starter')
     };
 
     $scope.doneOnboarding = function () {
+        $rootScope.hideMenuButton = false;
         $rootScope.defaultHelpCards = null;
         var getStartedHelpCard = {
             id: "getStartedHelpCard",
@@ -113,6 +139,7 @@ angular.module('starter')
         };
         quantimodoService.setupHelpCards(getStartedHelpCard);
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
+        $rootScope.onboardingPages = null;
         $state.go('app.remindersInbox');
     };
 
@@ -125,10 +152,10 @@ angular.module('starter')
         quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
 
         if(!$rootScope.onboardingPages || $rootScope.onboardingPages.length === 0){
-            $rootScope.hideNavigationMenu = false;
+            $rootScope.hideMenuButton = false;
             $state.go(config.appSettings.defaultState);
         } else {
-            $rootScope.hideNavigationMenu = true;
+            $rootScope.hideMenuButton = true;
         }
     };
 
