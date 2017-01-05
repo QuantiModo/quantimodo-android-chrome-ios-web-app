@@ -253,7 +253,7 @@ angular.module('starter')
                 }
             });
         };
-        
+
         $scope.toggleVariableShare = function (variableObject) {
             if(variableObject.shareUserMeasurements){
                 $scope.showShareVariableConfirmation(variableObject);
@@ -464,17 +464,6 @@ angular.module('starter')
                 quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
             }
 
-            if (!options.skipReminderSettingsForRatings ||
-                (variableObject.abbreviatedUnitName !== '/5' && variableObject.variableName !== "Blood Pressure")) {
-                $state.go('app.reminderAdd',
-                    {
-                        variableObject: variableObject,
-                        doneState: doneState
-                    }
-                );
-                return;
-            }
-
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.variableName = variableObject.name;
@@ -483,6 +472,33 @@ angular.module('starter')
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 86400;
             trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
+
+            var skipReminderSettings = false;
+
+            if(variableObject.variableName !== "Blood Pressure"){
+                skipReminderSettings = true;
+            }
+
+            if(options.skipReminderSettingsIfPossible){
+                if(variableObject.abbreviatedUnitName === '/5'){
+                    skipReminderSettings = true;
+                }
+
+                if(variableObject.abbreviatedUnitName === 'serving'){
+                    skipReminderSettings = true;
+                    trackingReminder.defaultValue = 1;
+                }
+            }
+
+            if (!skipReminderSettings) {
+                $state.go('app.reminderAdd',
+                    {
+                        variableObject: variableObject,
+                        doneState: doneState
+                    }
+                );
+                return;
+            }
 
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
@@ -507,7 +523,7 @@ angular.module('starter')
         };
 
 
-        $scope.addToFavoritesUsingVariableObject = function (variableObject, options) {
+        $scope.addToFavoritesUsingVariableObject = function (variableObject) {
 
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
@@ -1631,7 +1647,7 @@ angular.module('starter')
                     variableCategoryName : variableCategoryName,
                     fromUrl: window.location.href,
                     hideNavigationMenu: $rootScope.hideNavigationMenu,
-                    skipReminderSettingsForRatings: true,
+                    skipReminderSettingsIfPossible: true,
                     doneState: $state.current.name
                 });
         };
@@ -2386,7 +2402,7 @@ angular.module('starter')
                     console.debug("facebook login error"+ JSON.stringify(error));
                 });
         };
-        
+
         $scope.skipLogin = function(){
             quantimodoService.setLocalStorageItem('isWelcomed', true);
             $rootScope.isWelcomed = true;

@@ -571,7 +571,7 @@ angular.module('starter',
                     manualTracking: true
                 },
                 hideNavigationMenu: null,
-                skipReminderSettingsForRatings: null,
+                skipReminderSettingsIfPossible: null,
                 doneState: null
             },
             views: {
@@ -597,7 +597,7 @@ angular.module('starter',
                     manualTracking: true
                 },
                 hideNavigationMenu: null,
-                skipReminderSettingsForRatings: null,
+                skipReminderSettingsIfPossible: null,
                 doneState: null
             },
             views: {

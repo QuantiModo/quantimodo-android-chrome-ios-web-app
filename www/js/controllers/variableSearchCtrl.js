@@ -34,7 +34,7 @@ angular.module('starter')
                 $scope.addToFavoritesUsingVariableObject(variableObject);
             } else if (window.location.href.indexOf('reminder-search') !== -1) {
                 var options = {
-                    skipReminderSettingsForRatings: $stateParams.skipReminderSettingsForRatings,
+                    skipReminderSettingsIfPossible: $stateParams.skipReminderSettingsIfPossible,
                     doneState: $stateParams.doneState
                 };
                 $scope.addToRemindersUsingVariableObject(variableObject, options);
