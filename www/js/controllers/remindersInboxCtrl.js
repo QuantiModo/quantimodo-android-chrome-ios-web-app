@@ -478,6 +478,7 @@ angular.module('starter')
     	});
 
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+            $rootScope.hideBackButton = true;
 			$rootScope.hideHomeButton = true;
 			setPageTitle();
             quantimodoService.setupHelpCards();
@@ -486,6 +487,7 @@ angular.module('starter')
 
         $scope.$on('$ionicView.afterLeave', function(){
             $rootScope.hideHomeButton = false;
+            $rootScope.hideBackButton = false;
         });
 
 		// Triggered on a button click, or some other target
