@@ -1637,12 +1637,6 @@ angular.module('starter')
         };
 
         $scope.goToReminderSearchCategory = function(variableCategoryName) {
-            if(!$rootScope.user){
-                $rootScope.onboardingPages = null;
-                quantimodoService.deleteItemFromLocalStorage('onboardingPages');
-                $state.go('app.onboarding');
-                return;
-            }
             $state.go('app.reminderSearchCategory',
                 {
                     variableCategoryName : variableCategoryName,

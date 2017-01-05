@@ -36,12 +36,11 @@
                 style="font-size: 16px; line-height: 1.5;">
             </span>
             <br>
-            <span ng-if="onboardingPages[0].moreInfo"
-                  ng-click="showMoreOnboardingInfo()";
-                  style="font-size: 12px; line-height: 1.5;">
+            <button class="button button-small button-clear button-light"
+                    ng-if="onboardingPages[0].moreInfo"
+                    ng-click="showMoreOnboardingInfo()">
                 MORE INFO
-            </span>
-            <br>
+            </button>
             <br>
             <div ng-repeat="button in onboardingPages[0].buttons" >
                 <div class="button-bar">
