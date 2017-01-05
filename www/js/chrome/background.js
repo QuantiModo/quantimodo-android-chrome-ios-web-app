@@ -66,6 +66,8 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 });
 
 function openOrFocusPopupWindow(windowParams) {
+    windowParams.focused = true;
+    console.log('openOrFocusPopupWindow', windowParams );
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
@@ -77,6 +79,7 @@ function openOrFocusPopupWindow(windowParams) {
                 windowParams,
                 function (chromeWindow) {
                     vid = chromeWindow.id;
+                    chrome.windows.update(vid, { focused: false });
                 }
             );
         });
@@ -85,6 +88,7 @@ function openOrFocusPopupWindow(windowParams) {
             windowParams,
             function (chromeWindow) {
                 vid = chromeWindow.id;
+                chrome.windows.update(vid, { focused: false });
             }
         );
     }
