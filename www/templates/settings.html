@@ -16,6 +16,15 @@
     		
         </div>
 
+        <div class="list card" ng-show="user && !user.email">
+            <a ng-click="updateEmailAndExecuteCallback()" class="item ">
+                <i class="icon ion-email"></i>
+                &nbsp
+                Add Your Email Address
+                <p style="white-space: normal">So you'll never lose access to your account</p>
+            </a>
+        </div>
+
         <div ng-show="user" class="card sign-in" >
             <ion-toggle ng-model="trackLocation"
                         ng-change="trackLocationChange()">
