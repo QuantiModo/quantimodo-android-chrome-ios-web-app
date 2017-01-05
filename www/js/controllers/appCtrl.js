@@ -476,7 +476,7 @@ angular.module('starter')
 
             var skipReminderSettings = false;
 
-            if(variableObject.variableName !== "Blood Pressure"){
+            if(variableObject.variableName === "Blood Pressure"){
                 skipReminderSettings = true;
             }
 
