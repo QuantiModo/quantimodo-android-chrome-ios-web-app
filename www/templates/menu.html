@@ -89,7 +89,8 @@
                        class="{{menuItem.collapsedIcon}}">
                         &nbsp; {{menuItem.title}}
                     </i>
-                    <i ng-if="!menuItem.isSubMenuParent" class="{{menuItem.icon}}" menu-close>
+                    <!--Don't use menu-close instead of menu-toggle because it clears the state history-->
+                    <i ng-if="!menuItem.isSubMenuParent" class="{{menuItem.icon}}" menu-toggle>
                         &nbsp; {{menuItem.title}}
                     </i >
                 </ion-item>
