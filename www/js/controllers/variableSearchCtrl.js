@@ -23,7 +23,8 @@ angular.module('starter')
         };
 
         $scope.selectVariable = function(variableObject) {
-            console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject));
+            console.debug($state.current.name + ": " + "$scope.selectVariable: " +
+                JSON.stringify(variableObject).substring(0, 140) + '...');
             if(variableObject.lastValue !== null){
                 quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);
             }

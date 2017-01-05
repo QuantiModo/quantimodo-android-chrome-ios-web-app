@@ -39,7 +39,7 @@ angular.module('starter')
         } else {
             quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!');
         }
-        
+
         $scope.state.trackingReminder = {
             variableId : null,
             variableName : null,
@@ -47,7 +47,7 @@ angular.module('starter')
         };
 
         $scope.loading = true;
-		
+
 	    // data
 	    $scope.variables = {
 	    	variableCategories : [
@@ -104,7 +104,7 @@ angular.module('starter')
 
             defaultStartTimeInSecondsSinceMidnightLocal =
                 quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
-            
+
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
@@ -222,7 +222,7 @@ angular.module('starter')
 
 	    // when a search result is selected
 	    var setupByVariableObject = function(selectedVariable){
-            console.debug("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable));
+            console.debug("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable).substring(0, 140) + '...');
 
 	    	if(!selectedVariable.variableCategoryName){
 	    		selectedVariable.variableCategoryName = selectedVariable.category;
@@ -322,7 +322,7 @@ angular.module('starter')
                 Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
             }
         };
-        
+
         var validReminderSettings = function(){
 
             if(!$scope.state.trackingReminder.variableCategoryName) {
@@ -384,16 +384,16 @@ angular.module('starter')
                 }
             }
 
-            
+
             return true;
         };
-        
-        var configureReminderTimeSettings = function(trackingReminder, 
+
+        var configureReminderTimeSettings = function(trackingReminder,
                                                      reminderStartTimeLocal,
                                                      reminderStartTimeEpochTime){
-            
+
             var updatedTrackingReminder = trackingReminder;
-            
+
             updatedTrackingReminder.reminderStartTimeLocal = reminderStartTimeLocal;
             updatedTrackingReminder.reminderStartTimeEpochTime = reminderStartTimeEpochTime;
             if(updatedTrackingReminder.reminderFrequency === 86400){
@@ -469,7 +469,7 @@ angular.module('starter')
             remindersArray[0] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
             remindersArray[0] = configureReminderTimeSettings(remindersArray[0],
                 $scope.state.firstReminderStartTimeLocal, $scope.state.firstReminderStartTimeEpochTime);
-            
+
             if($scope.state.secondReminderStartTimeLocal){
                 remindersArray[1] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
                 remindersArray[1].id = null;
@@ -536,7 +536,7 @@ angular.module('starter')
             if(trackingReminder.startTrackingDate){
                 $scope.state.selectedStartTrackingDate = new Date(trackingReminder.startTrackingDate);
             }
-            
+
 	    	var reverseFrequencyChart = {
                 604800: 'Weekly',
                 1209600: 'Every 2 weeks',
