@@ -57,7 +57,7 @@
     <ion-side-menu side="left" is-enabled="!hideNavigationMenu">
         <ion-header-bar class="bar-positive">
             <a href="#/app/settings"
-               ng-if="user && user.avatar && !isMobile"
+               ng-if="user && user.avatar"
                class="button button-clear" >
                 <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
 
@@ -65,7 +65,7 @@
             <h1 class="title"
                 style="cursor:pointer;"
                 ng-click="goToState('app.settings')"
-                ng-if="user && user.avatar && !isMobile">
+                ng-if="user && user.displayName">
                 {{user.displayName}}
             </h1>
         </ion-header-bar>
