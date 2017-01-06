@@ -122,8 +122,8 @@ function openPopup(notificationId, focusWindow) {
 	var windowParams = {
 		url: "/www/index.html#/app/reminders-inbox",
 		type: 'panel',
-        top: screen.height + 755,
-        left: screen.width + 455,
+        top: screen.height - 800,
+        left: screen.width - 455,
 		width: 450,
 		height: 750
 	};
