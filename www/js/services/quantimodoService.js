@@ -7276,6 +7276,14 @@ angular.module('starter')
                             buttonText: 'Already Have Account',
                             buttonIconClass: "",
                             buttonClass: "button button-clear button-assertive"
+                        },
+                        {
+                            id: "signInWithGoogle",
+                            ngHideLogic: "!isAndroid",
+                            clickFunctionCall: "onboardingGoogleLogin()",
+                            buttonText: 'Sign In With Google',
+                            buttonIconClass: "",
+                            buttonClass: "button button-clear button-assertive"
                         }
                     ]
                 },

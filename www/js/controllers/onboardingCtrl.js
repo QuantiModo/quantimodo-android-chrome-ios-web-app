@@ -30,20 +30,31 @@ angular.module('starter')
         $rootScope.hideNavigationMenu = false;
     });
 
+    var delayInSeconds = 3;
     $scope.onboardingLogin = function () {
         if(!$rootScope.user){
-            removeLoginPageAfterDelay();
+            removeLoginPageAfterDelay(delayInSeconds);
             $scope.login();
         } else {
-            $rootScope.hideOnboardingPage();
+            delayInSeconds = 0.01;
+            $rootScope.hideOnboardingPage(delayInSeconds);
         }
     };
 
     $scope.onboardingRegister = function () {
-        var delayInSeconds = 3;
         if(!$rootScope.user){
             removeLoginPageAfterDelay(delayInSeconds);
             $scope.register();
+        } else {
+            delayInSeconds = 0.01;
+            removeLoginPageAfterDelay(delayInSeconds);
+        }
+    };
+
+    $scope.onboardingGoogleLogin = function () {
+        if(!$rootScope.user){
+            removeLoginPageAfterDelay(delayInSeconds);
+            $scope.googleLogin();
         } else {
             delayInSeconds = 0.01;
             removeLoginPageAfterDelay(delayInSeconds);
