@@ -45,6 +45,7 @@
             <div ng-repeat="button in onboardingPages[0].buttons" >
                 <div class="button-bar">
                     <button class="button"
+                            ng-hide="{{button.ngHideLogic}}"
                             style="background-color: {{onboardingPages[0].backgroundColor}};
                                 border: none;
                                 outline: none;
