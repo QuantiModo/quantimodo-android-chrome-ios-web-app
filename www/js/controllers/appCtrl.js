@@ -1569,26 +1569,7 @@ angular.module('starter')
                 quantimodoService.deleteItemFromLocalStorage('lastStudy');
                 console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(params));
                 $ionicLoading.hide();
-
-                var viewHistory = $ionicHistory.viewHistory();
-                var views = viewHistory.views;
-                var viewsArray = $.map(views, function(value, index) {
-                    return [value];
-                });
-
-                var numberToGoBack = 0;
-
-                for(var i = viewsArray.length - 1; i > 0; i--){
-                    if(viewsArray[i].stateName.toLowerCase().indexOf('tag') === -1 &&
-                        viewsArray[i].stateName.toLowerCase().indexOf('settings') === -1){
-                        $ionicHistory.goBack(numberToGoBack);
-                        return;
-                    }
-                    numberToGoBack--;
-                }
-
-                $state.go(config.appSettings.defaultState);
-
+                $rootScope.goBack();
             }, function(error) {
                 $ionicLoading.hide();
                 console.error(error);
