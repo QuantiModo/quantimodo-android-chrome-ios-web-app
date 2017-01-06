@@ -530,9 +530,21 @@ gulp.task('encryptAndroidKeystore', [], function(callback){
     encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 });
 
+gulp.task('encryptAndroidDebugKeystore', [], function(callback){
+    var fileToEncryptPath = 'debug.keystore';
+    var encryptedFilePath = 'debug.keystore.enc';
+    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
+});
+
 gulp.task('decryptAndroidKeystore', [], function(callback){
     var fileToDecryptPath = 'quantimodo.keystore.enc';
     var decryptedFilePath = 'quantimodo.keystore';
+    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
+});
+
+gulp.task('decryptAndroidDebugKeystore', [], function(callback){
+    var fileToDecryptPath = 'debug.keystore.enc';
+    var decryptedFilePath = 'debug.keystore';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 
