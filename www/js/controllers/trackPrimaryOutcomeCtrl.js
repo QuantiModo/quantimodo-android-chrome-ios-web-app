@@ -22,9 +22,7 @@ angular.module('starter')
             $scope.showRatingFaces = false;
 
             if (window.chrome && window.chrome.browserAction) {
-                chrome.browserAction.setBadgeText({
-                    text: ""
-                });
+                chrome.browserAction.setBadgeText({text: ""});
             }
 
             //  add to measurementsQueue

@@ -285,7 +285,8 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                 };
                 notificationId = alarm.name;
 
-                chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
+                chrome.browserAction.setBadgeText({text: "?"});
+                //chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
 
                 var showNotification = localStorage.showNotification === "true";
                 if (showNotification) {

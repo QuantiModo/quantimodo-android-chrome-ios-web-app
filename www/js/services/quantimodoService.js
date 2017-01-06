@@ -3160,7 +3160,8 @@ angular.module('starter')
                 $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
                 if (window.chrome && window.chrome.browserAction && !variableCategoryName) {
                     //noinspection JSUnresolvedFunction
-                    chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
+                    chrome.browserAction.setBadgeText({text: "?"});
+                    //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                 }
                 deferred.resolve(trackingReminderNotifications);
             } else {
@@ -3196,7 +3197,8 @@ angular.module('starter')
                             quantimodoService.attachVariableCategoryIcons(response.data);
                         $rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
                         if (window.chrome && window.chrome.browserAction) {
-                            chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
+                            chrome.browserAction.setBadgeText({text: "?"});
+                            //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
                         quantimodoService.setLocalStorageItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
                         $rootScope.refreshingTrackingReminderNotifications = false;
@@ -5692,9 +5694,8 @@ angular.module('starter')
                         /** @namespace window.chrome */
                         /** @namespace window.chrome.browserAction */
                         if (window.chrome && window.chrome.browserAction) {
-                            chrome.browserAction.setBadgeText({
-                                text: String($rootScope.numberOfPendingNotifications)
-                            });
+                            chrome.browserAction.setBadgeText({text: "?"});
+                            //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
 
                         if (!$rootScope.numberOfPendingNotifications) {
@@ -5808,9 +5809,8 @@ angular.module('starter')
             if($rootScope.numberOfPendingNotifications > 0){
                 if (window.chrome && window.chrome.browserAction) {
                     //noinspection JSUnresolvedFunction
-                    chrome.browserAction.setBadgeText({
-                        text: String($rootScope.numberOfPendingNotifications)
-                    });
+                    chrome.browserAction.setBadgeText({text: "?"});
+                    //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                 }
                 this.updateOrRecreateNotifications();
             }
@@ -5820,9 +5820,8 @@ angular.module('starter')
             console.debug("setNotificationBadge: numberOfPendingNotifications is " + numberOfPendingNotifications);
             $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
             if (window.chrome && window.chrome.browserAction) {
-                chrome.browserAction.setBadgeText({
-                    text: String($rootScope.numberOfPendingNotifications)
-                });
+                chrome.browserAction.setBadgeText({text: "?"});
+                //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
             }
             this.updateOrRecreateNotifications();
         };
