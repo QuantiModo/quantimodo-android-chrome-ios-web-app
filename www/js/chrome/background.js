@@ -65,14 +65,16 @@ chrome.alarms.onAlarm.addListener(function(alarm)
     checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
 });
 
-function openOrFocusPopupWindow(windowParams) {
+function openOrFocusPopupWindow(windowParams, focusWindow) {
     windowParams.focused = true;
     console.log('openOrFocusPopupWindow', windowParams );
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
                 // Commenting existing window focus so we don't irritate users
-                //chrome.windows.update(vid, {focused: true});
+				if(focusWindow){
+                    chrome.windows.update(vid, {focused: true});
+				}
                 return;
             }
             chrome.windows.create(
@@ -109,7 +111,7 @@ function executeCallbackOrFocusExistingPopup(callback) {
 }
 
 
-function openPopup(notificationId) {
+function openPopup(notificationId, focusWindow) {
 
 	if(!notificationId){
 		notificationId = null;
@@ -150,7 +152,7 @@ function openPopup(notificationId) {
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
 
-    openOrFocusPopupWindow(windowParams);
+    openOrFocusPopupWindow(windowParams, focusWindow);
 
 /*
 	chrome.windows.update(vid, {focused: true}, function() {
@@ -176,7 +178,8 @@ function openPopup(notificationId) {
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
     console.debug('onClicked: notificationId:', notificationId);
-	openPopup(notificationId);
+    var focusWindow = true;
+	openPopup(notificationId, focusWindow);
 
 	// chrome.notifications.getAll(function (notifications){
 	// 	console.debug('Got all notifications ', notifications);
