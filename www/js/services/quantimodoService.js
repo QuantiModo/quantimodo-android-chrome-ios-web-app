@@ -6023,7 +6023,8 @@ angular.module('starter')
                 };
 
                 if($rootScope.numberOfPendingNotifications){
-                    notificationSettings.badge = $rootScope.numberOfPendingNotifications;
+                    notificationSettings.badge = 1; // Less stressful
+                    //notificationSettings.badge = $rootScope.numberOfPendingNotifications;
                 }
 
                 var dayInMinutes = 24 * 60;
@@ -6067,7 +6068,8 @@ angular.module('starter')
                 }
                 var notificationSettings = {
                     //autoClear: true,  iOS doesn't recognize this property
-                    badge: numberOfPendingNotifications,
+                    badge: 1, // Reduces user stress
+                    //badge: numberOfPendingNotifications,
                     //color: undefined,  iOS doesn't recognize this property
                     data: trackingReminder,
                     //led: undefined,  iOS doesn't recognize this property
@@ -6180,7 +6182,8 @@ angular.module('starter')
 
             if($rootScope.numberOfPendingNotifications > 0) {
                 notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
-                notificationSettings.badge = $rootScope.numberOfPendingNotifications;
+                notificationSettings.badge = 1; // Less stressful
+                //notificationSettings.badge = $rootScope.numberOfPendingNotifications;
             }
             if($rootScope.isAndroid){
                 notificationSettings.icon = 'ic_stat_icon_bw';
@@ -6353,7 +6356,8 @@ angular.module('starter')
                                 notificationSettings.at = at;
                                 notificationSettings.id = parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", ""));
                                 if($rootScope.numberOfPendingNotifications > 0) {
-                                    notificationSettings.badge = $rootScope.numberOfPendingNotifications;
+                                    notificationSettings.badge = 1; // Less stressful
+                                    //notificationSettings.badge = $rootScope.numberOfPendingNotifications;
                                 }
                                 if($rootScope.isAndroid){
                                     notificationSettings.icon = 'ic_stat_icon_bw';
