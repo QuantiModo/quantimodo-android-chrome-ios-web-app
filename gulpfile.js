@@ -1236,7 +1236,7 @@ gulp.task('makeIosApp', function(callback){
 		'ionicResources',
 		'readKeysForCurrentApp',
 		'addFacebookPlugin',
-		'addGooglePlusPlugin',
+		//'addGooglePlusPlugin',
 		'fixResourcesPlist',
 		'addBugsnagInObjC',
 		'enableBitCode',
@@ -2153,7 +2153,7 @@ gulp.task('prepareRepositoryForAndroid', function(callback){
         'decryptAndroidDebugKeystore',
 		'androidDebugKeystoreInfo',
 		//'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
-        'addGooglePlusPlugin',
+        //'addGooglePlusPlugin',
 		//'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
         //'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
