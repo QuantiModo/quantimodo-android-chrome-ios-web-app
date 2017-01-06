@@ -530,6 +530,8 @@ gulp.task('encryptAndroidKeystore', [], function(callback){
     encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 });
 
+// keytool -genkey -keyalg RSA -alias androiddebugkey -keystore debug.keystore -storepass android -validity 10000 -keysize 2048
+
 gulp.task('encryptAndroidDebugKeystore', [], function(callback){
     var fileToEncryptPath = 'debug.keystore';
     var encryptedFilePath = 'debug.keystore.enc';
@@ -650,6 +652,10 @@ gulp.task('fastlaneSupplyProduction', function(callback){
 
 gulp.task('ionicResources', function(callback){
 	executeCommand("ionic resources", callback);
+});
+
+gulp.task('androidDebugKeystoreInfo', function(callback){
+    executeCommand("keytool -exportcert -list -v -alias androiddebugkey -keystore debug.keystore", callback);
 });
 
 var LOWERCASE_APP_NAME = false;
@@ -2144,6 +2150,8 @@ gulp.task('prepareRepositoryForAndroid', function(callback){
 		'ionicPlatformAddAndroid',
         'decryptBuildJson',
         'decryptAndroidKeystore',
+        'decryptAndroidDebugKeystore',
+		'androidDebugKeystoreInfo',
 		//'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
         'addGooglePlusPlugin',
 		//'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
