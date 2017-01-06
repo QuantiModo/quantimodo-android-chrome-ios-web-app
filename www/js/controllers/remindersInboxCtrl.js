@@ -107,13 +107,13 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            trackingReminderNotification.hide = true;
 			$rootScope.numberOfPendingNotifications--;
-			$scope.state.numberOfDisplayedNotifications--;
-			getWeekdayChartIfNecessary();
-			console.debug('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total);
+            afterTrackingActions();
+			console.debug('modifiedReminderValue is ' + trackingReminderNotification.total);
 
-			var value = $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total;
+			var value = trackingReminderNotification.total;
 			$scope.lastAction = 'Record ' + value + trackingReminderNotification.abbreviatedUnitName;
 			var body = {
 				trackingReminderNotification: trackingReminderNotification,
@@ -145,15 +145,27 @@ angular.module('starter')
 			}
 		};
 
+		var closeWindowIfNecessary = function () {
+            if($state.current.name === "app.remindersInboxCompact" && !$scope.state.numberOfDisplayedNotifications){
+                $scope.refreshTrackingReminderNotifications();
+                window.close();
+            }
+        };
+
+        var afterTrackingActions = function () {
+            $rootScope.numberOfPendingNotifications--;
+            $scope.state.numberOfDisplayedNotifications--;
+            closeWindowIfNecessary();
+            getWeekdayChartIfNecessary();
+        };
 
 		var notificationAction = function(trackingReminderNotification, $event, dividerIndex,
 										  trackingReminderNotificationIndex){
 			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications--;
-			$scope.state.numberOfDisplayedNotifications--;
-			getWeekdayChartIfNecessary();
+            //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            trackingReminderNotification.hide = true;
+            afterTrackingActions();
 			if(!$rootScope.showUndoButton){
 				$rootScope.showUndoButton = true;
 			}
@@ -256,9 +268,14 @@ angular.module('starter')
                         return obj.variableName !== 'Blood Pressure';
                     });*/
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-					$scope.filteredTrackingReminderNotifications =
-						quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-					getWeekdayChartIfNecessary();
+					if($state.current.name === "app.remindersInboxCompact"){
+                        $scope.trackingReminderNotifications = trackingReminderNotifications;
+					} else {
+                        $scope.filteredTrackingReminderNotifications =
+                            quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                        getWeekdayChartIfNecessary();
+					}
+
 					$scope.hideLoader();
 				}, function(){
 					getWeekdayChartIfNecessary();
@@ -354,7 +371,9 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-	    	$rootScope.hideNavigationMenu = false;
+	    	if ($stateParams.hideNavigationMenu !== true){
+                $rootScope.hideNavigationMenu = false;
+			}
 			console.debug($state.current.name + ' initializing...');
 
 			$rootScope.bloodPressure = {
@@ -444,12 +463,12 @@ angular.module('starter')
 		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            trackingReminderNotification.hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
 			quantimodoService.deleteElementOfLocalStorageItemById('trackingReminderNotifications',
 				trackingReminderNotification.id);
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 			$state.go('app.measurementAdd',
 				{
 					reminderNotification: trackingReminderNotification,
@@ -458,7 +477,8 @@ angular.module('starter')
 	    };
 
 	    $scope.editReminderSettingsByNotification = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            trackingReminderNotification.hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
 			var trackingReminder = trackingReminderNotification;
@@ -478,6 +498,11 @@ angular.module('starter')
     	});
 
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+
+            if($stateParams.hideNavigationMenu){
+                $rootScope.hideNavigationMenu = true;
+            }
+
             $rootScope.hideBackButton = true;
 			$rootScope.hideHomeButton = true;
 			setPageTitle();

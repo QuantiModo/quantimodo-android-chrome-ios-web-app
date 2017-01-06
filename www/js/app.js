@@ -1308,6 +1308,27 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.remindersInboxCompact', {
+            url: "/reminders-inbox-compact",
+            cache: false,
+            params: {
+                title: 'Reminder Inbox',
+                reminderFrequency: null,
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null,
+                showHelpCards: true,
+                hideNavigationMenu: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox-compact.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
         .state('app.favorites', {
             url: "/favorites",
             cache: false,
