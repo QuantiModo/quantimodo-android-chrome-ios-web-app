@@ -1185,8 +1185,20 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken, body) {
+        quantimodoService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken) {
             var deferred = $q.defer();
+
+            if(!accessToken || accessToken === "null"){
+                quantimodoService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
+                deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
+            }
+            var url = quantimodoService.getQuantiModoUrl('api/v2/auth/social/authorizeToken');
+
+            url += "provider=" + encodeURIComponent(provider);
+            url += "&accessToken=" + encodeURIComponent(accessToken);
+            url += "&client_id=" + encodeURIComponent(quantimodoService.getClientId());
+
+            console.debug('quantimodoService.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
 
             $http({
                 method: 'GET',
