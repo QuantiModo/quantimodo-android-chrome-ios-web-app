@@ -2185,6 +2185,10 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
+            if(window && window.plugins && window.plugins.googleplus){
+                $scope.googleLogout();
+            }
+
             $scope.showLoader('Logging you in...');
             quantimodoService.setLocalStorageItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
@@ -2338,12 +2342,21 @@ angular.module('starter')
         };
 
         $scope.googleLogout = function(){
-            /** @namespace window.plugins.googleplus */
-            window.plugins.googleplus.logout(function (msg) {
-                console.debug("logged out of google!");
-            }, function(fail){
-                console.debug("failed to logout", fail);
-            });
+            document.addEventListener('deviceready', deviceReady, false);
+            function deviceReady() {
+                /** @namespace window.plugins.googleplus */
+                window.plugins.googleplus.logout(function (msg) {
+                    console.debug("logged out of google!");
+                }, function (fail) {
+                    console.debug("failed to logout", fail);
+                });
+
+                window.plugins.googleplus.disconnect(
+                    function (msg) {
+                        console.debug("disconnect google!");
+                    }
+                );
+            }
         };
 
         $scope.facebookLogin = function(){
