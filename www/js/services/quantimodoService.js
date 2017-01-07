@@ -203,7 +203,7 @@ angular.module('starter')
             };
 
         // POST method with the added token
-        quantimodoService.post = function(baseURL, requiredFields, items, successHandler, errorHandler,
+        quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler,
                                    minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
             if(!canWeMakeRequestYet('POST', baseURL, minimumSecondsBetweenRequests)){
@@ -215,14 +215,14 @@ angular.module('starter')
             }
 
             console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' +
-                JSON.stringify(items).substring(0, 140));
+                JSON.stringify(body).substring(0, 140));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
 
                 //console.debug("Token : ", token.accessToken);
                 // configure params
-                for (var i = 0; i < items.length; i++)
+                for (var i = 0; i < body.length; i++)
                 {
-                    var item = items[i];
+                    var item = body[i];
                     for (var j = 0; j < requiredFields.length; j++) {
                         if (!(requiredFields[j] in item)) {
                             quantimodoService.reportError('Missing required field ' + requiredFields[j] + ' in ' +
@@ -234,7 +234,9 @@ angular.module('starter')
                 var urlParams = [];
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
-                items.clientId = quantimodoService.getClientId();
+                body.clientId = quantimodoService.getClientId();
+                body.appName = config.appSettings.appDisplayName;
+                body.appVersion = $rootScope.appVersion;
 
                 var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
@@ -246,7 +248,7 @@ angular.module('starter')
                     headers : {
                         'Content-Type': "application/json"
                     },
-                    data : JSON.stringify(items)
+                    data : JSON.stringify(body)
                 };
 
                 if(quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
@@ -1171,20 +1173,20 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken, urlParams) {
+        quantimodoService.getTokensAndUserViaNativeGoogleLogin = function (body) {
             var deferred = $q.defer();
+            var path = 'api/v1/googleIdToken';
+            quantimodoService.post(path, [], body, function (response) {
+                deferred.resolve(response);
+            }, function (error) {
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
 
-            if(!accessToken || accessToken === "null"){
-                quantimodoService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
-                deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
-            }
-            var path = 'api/v2/auth/social/authorizeToken';
-
-            urlParams.provider = provider;
-            urlParams.accessToken = accessToken;
-            var url = generateFullRequestUrl(path, urlParams);
-
-            console.debug('quantimodoService.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
+        quantimodoService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken, body) {
+            var deferred = $q.defer();
 
             $http({
                 method: 'GET',
