@@ -2464,7 +2464,7 @@ angular.module('starter')
             return "https://app.quantimo.do";
         };
 
-        quantimodoService.getQuantiModoUrl = function (path, urlParams) {
+        quantimodoService.getQuantiModoUrl = function (path) {
             if(typeof path === "undefined") {
                 path = "";
             } else {

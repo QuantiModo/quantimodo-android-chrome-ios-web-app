@@ -2214,13 +2214,13 @@ angular.module('starter')
             }
         };
 
-        $scope.nativeSocialLogin = function(provider, accessToken, urlParams, path){
+        $scope.nativeSocialLogin = function(provider, accessToken){
             quantimodoService.setLocalStorageItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
             console.debug('$scope.nativeSocialLogin: Going to try to quantimodoService.getTokensAndUserViaNativeSocialLogin for ' +
                 provider + ' provider');
 
-            quantimodoService.getTokensAndUserViaNativeSocialLogin(provider, accessToken, urlParams, path)
+            quantimodoService.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
                 .then(function(response){
                     console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
                         JSON.stringify(response));
@@ -2277,22 +2277,6 @@ angular.module('starter')
                     quantimodoService.reportError("quantimodoService.getTokensAndUserViaNativeSocialLogin error occurred! " +
                         "Couldn't generate JWT! Error response: " + JSON.stringify(error));
                 });
-        };
-
-        $scope.googleLoginDebgging = function () {
-            var userData = JSON.parse('{"email":"m@thinkbynumbers.org","idToken":"eyJhbGciOiJSUzI1NiIsImtpZCI6IjAxMjg1OGI1YTZiNDQ3YmY4MDdjNTJkOGJjZGQyOGMwODJmZjc4MjYifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJpYXQiOjE0ODM4MTM4MTcsImV4cCI6MTQ4MzgxNzQxNywiYXVkIjoiMTA1MjY0ODg1NTE5NC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExODQ0NDY5MzE4NDgyOTU1NTM2MiIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhenAiOiIxMDUyNjQ4ODU1MTk0LWVuMzg1amxua25iMzhtYThvbTI5NnBuZWozaTR0amFkLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiaGQiOiJ0aGlua2J5bnVtYmVycy5vcmciLCJlbWFpbCI6Im1AdGhpbmtieW51bWJlcnMub3JnIiwibmFtZSI6Ik1pa2UgU2lubiIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLUJIcjRoeVVXcVpVL0FBQUFBQUFBQUFJL0FBQUFBQUFFNkw0LzIxRHZnVC1UNVZNL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJNaWtlIiwiZmFtaWx5X25hbWUiOiJTaW5uIiwibG9jYWxlIjoiZW4ifQ.YiHQH3-mBCaFxi9BgXe52S2scgVbMQ_-bMWVYY3d8MJZegQI5rl0IvUr0RmYT1k5bIda1sN0qeRyGkbzBHc7f3uctgpXtzjd02flgl4fNHmRgJkRgK_ttTO6Upx9bRR0ItghS_okM2gjgDWwO5wceTNF1f46vEVFH72GAUHVR9Csh4qs9yjqK66vxOEKN4UqIE9JRSn58dgIW8s6CNlBHiLUChUy1nfd2U0zGQ_tmu90y_76vVw5AYDrHDDPQBJ5Z4K_arzjnVzjhKeHpgOaywS4S1ifrylGkpGt5L2iB9sfdA8tNR5iJcEvEuhzGohnd7HvIWyJJ2-BRHukNYQX4Q","serverAuthCode":"4/3xjhGuxUYJVTVPox8Knyp0xJSzMFteFMvNxdwO5H8jQ","userId":"118444693184829555362","displayName":"Mike Sinn","familyName":"Sinn","givenName":"Mike","imageUrl":"https://lh6.googleusercontent.com/-BHr4hyUWqZU/AAAAAAAAAAI/AAAAAAAE6L4/21DvgT-T5VM/s96-c/photo.jpg"}');
-            quantimodoService.getTokensAndUserViaNativeGoogleLogin(userData).then(function (response) {
-                console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
-                    JSON.stringify(response));
-                quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response);
-                quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
-            }, function (errorMessage) {
-                $scope.hideLoader();
-                quantimodoService.reportError("ERROR: googleLogin could not get userData!  Fallback to " +
-                    "quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
-                var register = true;
-                quantimodoService.nonNativeMobileLogin(register);
-            });
         };
 
         $scope.googleLogin = function(register) {
