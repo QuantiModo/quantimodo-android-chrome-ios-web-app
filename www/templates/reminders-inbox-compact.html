@@ -6,7 +6,7 @@
 			 ng-show="trackingReminderNotifications && trackingReminderNotifications.length"
 			 ng-repeat="trackingReminderNotification in trackingReminderNotifications"
 			 ng-init="trackingReminderNotificationIndex = $index" >
-			<div class="item" style="padding-bottom:0;">
+			<div class="item-borderless" style="padding-bottom:0; background-color: #f2f2f2;">
 				<div ng-show="!trackingReminderNotification.hide"
 					 ng-include="'templates/fragments/reminder-notification-fragment.html'">
 				</div>

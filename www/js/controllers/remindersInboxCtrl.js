@@ -159,6 +159,26 @@ angular.module('starter')
             getWeekdayChartIfNecessary();
         };
 
+        var enlargeChromePopupIfNecessary = function () {
+        	if($rootScope.alreadyEnlargedWindow){
+        		return;
+			}
+            var largeInboxWindowParams = {
+                top: screen.height - 800,
+                left: screen.width - 455,
+                width: 450,
+                height: 750
+            };
+            if($state.current.name === "app.remindersInboxCompact"){
+				$state.go("app.remindersInbox");
+                chrome.windows.getCurrent({}, function (chromeWindow) {
+                	$rootScope.alreadyEnlargedWindow = true;
+                    var vid = chromeWindow.id;
+                    chrome.windows.update(vid, largeInboxWindowParams);
+                });
+            }
+        };
+
 		var notificationAction = function(trackingReminderNotification, $event, dividerIndex,
 										  trackingReminderNotificationIndex){
 			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
@@ -463,6 +483,7 @@ angular.module('starter')
 		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
+            enlargeChromePopupIfNecessary();
             //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
             trackingReminderNotification.hide = true;
 			$rootScope.numberOfPendingNotifications--;
@@ -477,7 +498,8 @@ angular.module('starter')
 	    };
 
 	    $scope.editReminderSettingsByNotification = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            enlargeChromePopupIfNecessary();
+	    	//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
             trackingReminderNotification.hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
