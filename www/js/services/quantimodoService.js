@@ -124,43 +124,42 @@ angular.module('starter')
             return true;
         };
 
+        var generateFullRequestUrl = function (path, rawParams) {
+
+            rawParams.client_id = quantimodoService.getClientId();
+            rawParams.appName = config.appSettings.appDisplayName;
+            rawParams.appVersion = $rootScope.appVersion;
+            //We can't append access token to Ionic requests for some reason
+            //rawParams.access_token = tokenObject.accessToken;
+
+            var encodedParams = [];
+            for (var property in rawParams) {
+                if (rawParams.hasOwnProperty(property)) {
+                    if (typeof rawParams[property] !== "undefined" && rawParams[property] !== null) {
+                        encodedParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(rawParams[property]));
+                    } else {
+                        console.warn("Not including parameter " + property + " in request because it is null or undefined");
+                    }
+                }
+            }
+
+            return $rootScope.qmApiUrl + "/" + path + ((encodedParams.length === 0) ? '' : encodedParams.join('&'));
+        };
+
         // GET method with the added token
-        quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
+        quantimodoService.get = function(path, allowedParams, params, successHandler, errorHandler,
                                   minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
-            if(!canWeMakeRequestYet('GET', baseURL, minimumSecondsBetweenRequests)){
+            if(!canWeMakeRequestYet('GET', path, minimumSecondsBetweenRequests)){
                 return;
             }
 
-            console.debug('quantimodoService.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
+            console.debug('quantimodoService.get: Going to try to make request to ' + path + " with params: " + JSON.stringify(params));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
 
-                allowedParams.push('limit');
-                allowedParams.push('offset');
-                allowedParams.push('sort');
-                allowedParams.push('updatedAt');
-                // configure params
-                var urlParams = [];
-                for (var property in params) {
-                    if (params.hasOwnProperty(property)) {
-                        if (typeof params[property] !== "undefined" && params[property] !== null) {
-                            urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
-                        } else {
-                            console.warn("Not including parameter " + property + " in request because it is null or undefined");
-                        }
-                    }
-                }
-                urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-                urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
-                urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-                //We can't append access token to Ionic requests for some reason
-                //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
-
-                // configure request
-                var url = quantimodoService.getQuantiModoUrl(baseURL);
                 var request = {
                     method: 'GET',
-                    url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
+                    url: generateFullRequestUrl(path, params),
                     responseType: 'json',
                     headers: {
                         'Content-Type': "application/json"
@@ -192,7 +191,7 @@ angular.module('starter')
                                 doNotShowOfflineError);
                             errorHandler(data);
                         } else {
-                            quantimodoService.successHandler(data, baseURL, status);
+                            quantimodoService.successHandler(data, path, status);
                             successHandler(data);
                         }
                     })
@@ -1172,18 +1171,18 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken) {
+        quantimodoService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken, urlParams) {
             var deferred = $q.defer();
 
             if(!accessToken || accessToken === "null"){
                 quantimodoService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
                 deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
             }
-            var url = quantimodoService.getQuantiModoUrl('api/v2/auth/social/authorizeToken');
+            var path = 'api/v2/auth/social/authorizeToken';
 
-            url += "provider=" + encodeURIComponent(provider);
-            url += "&accessToken=" + encodeURIComponent(accessToken);
-            url += "&client_id=" + encodeURIComponent(quantimodoService.getClientId());
+            urlParams.provider = provider;
+            urlParams.accessToken = accessToken;
+            var url = generateFullRequestUrl(path, urlParams);
 
             console.debug('quantimodoService.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
 
@@ -1349,7 +1348,8 @@ angular.module('starter')
                 quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
                 loginUrl += "redirect_uri=" + encodeURIComponent(afterLoginGoTo);
             } else {
-                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
+                loginUrl += "redirect_uri=" +
+                    encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
             }
             console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
             var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
@@ -2462,7 +2462,7 @@ angular.module('starter')
             return "https://app.quantimo.do";
         };
 
-        quantimodoService.getQuantiModoUrl = function (path) {
+        quantimodoService.getQuantiModoUrl = function (path, urlParams) {
             if(typeof path === "undefined") {
                 path = "";
             } else {

@@ -2214,13 +2214,13 @@ angular.module('starter')
             }
         };
 
-        $scope.nativeSocialLogin = function(provider, accessToken){
+        $scope.nativeSocialLogin = function(provider, accessToken, urlParams){
             quantimodoService.setLocalStorageItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
             console.debug('$scope.nativeSocialLogin: Going to try to quantimodoService.getTokensAndUserViaNativeSocialLogin for ' +
                 provider + ' provider');
 
-            quantimodoService.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
+            quantimodoService.getTokensAndUserViaNativeSocialLogin(provider, accessToken, urlParams)
                 .then(function(response){
                     console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
                         JSON.stringify(response));
@@ -2327,7 +2327,7 @@ angular.module('starter')
                             register = true;
                             quantimodoService.nonNativeMobileLogin(register);
                         } else {
-                            $scope.nativeSocialLogin('google', tokenForApi);
+                            $scope.nativeSocialLogin('google', tokenForApi, userData);
                         }
                     },
                     function (errorMessage) {
