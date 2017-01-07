@@ -124,42 +124,43 @@ angular.module('starter')
             return true;
         };
 
-        var generateFullRequestUrl = function (path, rawParams) {
-
-            rawParams.client_id = quantimodoService.getClientId();
-            rawParams.appName = config.appSettings.appDisplayName;
-            rawParams.appVersion = $rootScope.appVersion;
-            //We can't append access token to Ionic requests for some reason
-            //rawParams.access_token = tokenObject.accessToken;
-
-            var encodedParams = [];
-            for (var property in rawParams) {
-                if (rawParams.hasOwnProperty(property)) {
-                    if (typeof rawParams[property] !== "undefined" && rawParams[property] !== null) {
-                        encodedParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(rawParams[property]));
-                    } else {
-                        console.warn("Not including parameter " + property + " in request because it is null or undefined");
-                    }
-                }
-            }
-
-            return $rootScope.qmApiUrl + "/" + path + ((encodedParams.length === 0) ? '' : encodedParams.join('&'));
-        };
-
         // GET method with the added token
-        quantimodoService.get = function(path, allowedParams, params, successHandler, errorHandler,
-                                  minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
+        quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
+                                         minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
-            if(!canWeMakeRequestYet('GET', path, minimumSecondsBetweenRequests)){
+            if(!canWeMakeRequestYet('GET', baseURL, minimumSecondsBetweenRequests)){
                 return;
             }
 
-            console.debug('quantimodoService.get: Going to try to make request to ' + path + " with params: " + JSON.stringify(params));
+            console.debug('quantimodoService.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
 
+                allowedParams.push('limit');
+                allowedParams.push('offset');
+                allowedParams.push('sort');
+                allowedParams.push('updatedAt');
+                // configure params
+                var urlParams = [];
+                for (var property in params) {
+                    if (params.hasOwnProperty(property)) {
+                        if (typeof params[property] !== "undefined" && params[property] !== null) {
+                            urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
+                        } else {
+                            console.warn("Not including parameter " + property + " in request because it is null or undefined");
+                        }
+                    }
+                }
+                urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
+                urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+                urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
+                //We can't append access token to Ionic requests for some reason
+                //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
+
+                // configure request
+                var url = quantimodoService.getQuantiModoUrl(baseURL);
                 var request = {
                     method: 'GET',
-                    url: generateFullRequestUrl(path, params),
+                    url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
                     responseType: 'json',
                     headers: {
                         'Content-Type': "application/json"
@@ -191,7 +192,7 @@ angular.module('starter')
                                 doNotShowOfflineError);
                             errorHandler(data);
                         } else {
-                            quantimodoService.successHandler(data, path, status);
+                            quantimodoService.successHandler(data, baseURL, status);
                             successHandler(data);
                         }
                     })
@@ -199,8 +200,8 @@ angular.module('starter')
                         quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                         errorHandler(data);
                     }, onRequestFailed);
-                });
-            };
+            });
+        };
 
         // POST method with the added token
         quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler,
