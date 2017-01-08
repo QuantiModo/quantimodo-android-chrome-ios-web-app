@@ -2189,7 +2189,7 @@ angular.module('starter')
             var register = true;
             $scope.login(register);
         };
-        
+
         $scope.login = function(register) {
 
             if(window && window.plugins && window.plugins.googleplus){
@@ -2431,6 +2431,7 @@ angular.module('starter')
             if($rootScope.offlineConnectionErrorShowing){
                 $rootScope.offlineConnectionErrorShowing = false;
             }
+            $scope.closeMenu();
         });
 
         $scope.init();
