@@ -132,6 +132,11 @@ angular.module('starter')
                 return;
             }
 
+            if($state.current.name === 'app.intro'){
+                console.warn('Not making request to ' + baseURL + ' user because we are in the intro state');
+                return;
+            }
+
             console.debug('quantimodoService.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
 
@@ -235,7 +240,7 @@ angular.module('starter')
                 var urlParams = [];
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
-                
+
                 var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
                 // configure request
@@ -1308,8 +1313,17 @@ angular.module('starter')
                 quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
                 $rootScope.sendReminderNotificationEmails = null;
             }
+            quantimodoService.removeOnboardingLoginPage();
             quantimodoService.afterLoginGoToUrlOrState();
+        };
 
+        quantimodoService.removeOnboardingLoginPage = function () {
+            if($rootScope.onboardingPages){
+                $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
+                    return obj.id !== 'loginOnboardingPage';
+                });
+            }
+            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
         };
 
         quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
