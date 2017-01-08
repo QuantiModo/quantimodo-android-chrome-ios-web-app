@@ -1324,7 +1324,7 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/reminders-inbox-compact.html",
+                    templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
             }
