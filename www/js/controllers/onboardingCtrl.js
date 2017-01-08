@@ -30,51 +30,30 @@ angular.module('starter')
         $rootScope.hideNavigationMenu = false;
     });
 
-    var delayInSeconds = 3;
     $scope.onboardingLogin = function () {
         if(!$rootScope.user){
-            removeLoginPageAfterDelay(delayInSeconds);
             $scope.login();
         } else {
-            delayInSeconds = 0.01;
-            $rootScope.hideOnboardingPage(delayInSeconds);
+            quantimodoService.removeOnboardingLoginPage();
         }
     };
 
     $scope.onboardingRegister = function () {
         if(!$rootScope.user){
-            removeLoginPageAfterDelay(delayInSeconds);
+            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
             $scope.register();
         } else {
-            delayInSeconds = 0.01;
-            removeLoginPageAfterDelay(delayInSeconds);
+            quantimodoService.removeOnboardingLoginPage();
         }
     };
 
     $scope.onboardingGoogleLogin = function () {
         if(!$rootScope.user){
-            removeLoginPageAfterDelay(delayInSeconds);
             $scope.googleLogin();
+            //$scope.googleLoginDebug();
         } else {
-            delayInSeconds = 0.01;
-            removeLoginPageAfterDelay(delayInSeconds);
+            quantimodoService.removeOnboardingLoginPage();
         }
-    };
-
-    var removeLoginPageAfterDelay = function (delayInSeconds) {
-        if(!delayInSeconds){
-            delayInSeconds = 0.01;
-        }
-        quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-        var onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
-            return obj.id !== 'loginOnboardingPage';
-        });
-        quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify(onboardingPages));
-        $timeout(function() {
-            $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
-                return obj.id !== 'loginOnboardingPage';
-            });
-        }, delayInSeconds * 3000);
     };
 
     var removeImportPage = function () {
