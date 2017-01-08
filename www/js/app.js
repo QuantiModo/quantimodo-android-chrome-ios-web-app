@@ -19,11 +19,12 @@ angular.module('starter',
         'fabric',
         'ngCordovaOauth',
         'jtt_wikipedia',
-        'angular-clipboard'
+        'angular-clipboard',
+        'angular-google-analytics'
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -375,7 +376,29 @@ angular.module('starter',
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider, $ionicConfigProvider) {
+                 ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
+
+    AnalyticsProvider.setAccount('UA-39222734-25');
+    // Track all routes (default is true).
+    AnalyticsProvider.trackPages(true);
+
+    // Track all URL query params (default is false).
+    AnalyticsProvider.trackUrlParams(true);
+
+    // Ignore first page view (default is false).
+    // Helpful when using hashes and whenever your bounce rate looks obscenely low.
+    //AnalyticsProvider.ignoreFirstPageLoad(true);
+
+    // URL prefix (default is empty).
+    // Helpful when the app doesn't run in the root directory.
+    //AnalyticsProvider.trackPrefix('my-application');
+
+    // Change the default page event name.
+    // Helpful when using ui-router, which fires $stateChangeSuccess instead of $routeChangeSuccess.
+    AnalyticsProvider.setPageEvent('$stateChangeSuccess');
+
+    // Set hybrid mobile application support
+    AnalyticsProvider.setHybridMobileSupport(true);
 
     /*  Trying to move to appCtrl
     $ionicCloudProvider.init({
