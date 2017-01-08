@@ -37,7 +37,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                 });
             }
-           
+
         };
 
         var updateAveragePrimaryOutcomeRatingView = function(){
@@ -112,6 +112,7 @@ angular.module('starter')
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             console.debug('$ionicView.enter. Updating charts and syncing..');
+            $rootScope.hideNavigationMenu = false;
             $scope.init();
         });
     });
