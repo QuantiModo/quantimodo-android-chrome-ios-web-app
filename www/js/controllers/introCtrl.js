@@ -17,17 +17,14 @@ angular.module('starter')
         startApp : function() {
             console.debug('startApp: Going to welcome state...');
             $state.go('app.onboarding');
-            //$rootScope.hideNavigationMenu = false;
-            //$state.go(config.appSettings.welcomeState);
         },
 
         next : function(index) {
             if(index === $scope.introSlides.length - 1){
-                console.debug('startApp: Going to welcome state...');
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.welcomeState);
+                $scope.myIntro.startApp();
+            } else {
+                $ionicSlideBoxDelegate.next();
             }
-            $ionicSlideBoxDelegate.next();
         },
 
         previous : function() {
@@ -69,9 +66,11 @@ angular.module('starter')
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
+        $rootScope.hideNavigationMenu = true;
         if(navigator && navigator.splashscreen) {
             console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
+
         }
     });
 
