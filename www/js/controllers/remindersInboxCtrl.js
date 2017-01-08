@@ -513,7 +513,6 @@ angular.module('starter')
 				});
 	    };
 
-
     	$scope.$on('$ionicView.enter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
@@ -619,6 +618,4 @@ angular.module('starter')
 			}, 20000);
 
 		};
-
-
 	});
