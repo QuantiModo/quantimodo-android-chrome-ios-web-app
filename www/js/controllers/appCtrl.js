@@ -2226,6 +2226,7 @@ angular.module('starter')
                         JSON.stringify(response));
 
                     if(response.user){
+                        $scope.hideLoader();
                         quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                         $rootScope.hideNavigationMenu = false;
                         console.debug($scope.controller_name + ".getTokensAndUserViaNativeSocialLogin: Got user and going to default state");
@@ -2291,6 +2292,7 @@ angular.module('starter')
                     'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                 }, function (userData) {
                     quantimodoService.getTokensAndUserViaNativeGoogleLogin(userData).then(function (response) {
+                        $scope.hideLoader();
                         console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
                             JSON.stringify(response));
                         quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
