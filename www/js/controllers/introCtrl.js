@@ -16,20 +16,15 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             console.debug('startApp: Going to welcome state...');
-            if($scope.myIntro.slideIndex === $scope.introSlides.length-1){
-                $state.go('app.onboarding');
-            }
-            //$rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
-            //$state.go(config.appSettings.welcomeState);
+            $state.go('app.onboarding');
         },
 
         next : function(index) {
             if(index === $scope.introSlides.length - 1){
-                console.debug('startApp: Going to welcome state...');
-                $rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
-                $state.go(config.appSettings.welcomeState);
+                $scope.myIntro.startApp();
+            } else {
+                $ionicSlideBoxDelegate.next();
             }
-            $ionicSlideBoxDelegate.next();
         },
 
         previous : function() {
@@ -38,9 +33,6 @@ angular.module('starter')
 
         // Called each time the slide changes
         slideChanged : function(index) {
-            if($scope.myIntro.slideIndex === $scope.introSlides.length-1){
-                $state.go('app.onboarding');
-            }
             $scope.myIntro.slideIndex = index;
             if($scope.introSlides[index].backgroundColor){
                 $scope.myIntro.backgroundColor = $scope.introSlides[index].backgroundColor;
