@@ -2783,7 +2783,7 @@ angular.module('starter')
 
             var note = $rootScope.lastLocationAddress;
             if(isBackground){
-                note = note + " (Background Geolocation)";
+                sourceName = sourceName + " (Background Geolocation)";
             }
             if (variableName && variableName !== "undefined" && secondsAtLocation > 60) {
                 var newMeasurement = {
