@@ -2,12 +2,13 @@
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
         <ion-slide ng-repeat="introSlide in introSlides"
                    ng-show="myIntro.ready"
-                   style="background-color: {{introSlide.backgroundColor}}; font-weight: 100;">
+                   style="background-color: {{introSlide.backgroundColor}};">
             <div class="content intro-content" >
                 <div ng-if="introSlide.content.logoDiv" id="{{introSlide.content.logoDiv.id}}">
                     <img style="width:{{introSlide.img.width}}px; height:{{introSlide.img.height}}px;" ng-src="{{introSlide.img.url}}">
                 </div>
-                <p ng-if="introSlide.content.firstParagraph"
+                <p ng-click="myIntro.startApp()"
+                    ng-if="introSlide.content.firstParagraph"
                    class="{{introSlide.content.firstParagraph.classes}}"
                    ng-bind-html="introSlide.content.firstParagraph.content"
                    style="color: {{introSlide.textColor}}">
@@ -27,7 +28,6 @@
                        ng-click="myIntro.startApp()">
                         GET STARTED
                     </a>
-                    <br>
                 </p>
                 <div class="button-bar">
                     <a id="skipButtonIntro"

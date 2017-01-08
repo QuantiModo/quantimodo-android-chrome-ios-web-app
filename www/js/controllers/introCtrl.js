@@ -16,15 +16,17 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             console.debug('startApp: Going to welcome state...');
-            $state.go('app.onboarding');
-            //$rootScope.hideNavigationMenu = false;
+            if($scope.myIntro.slideIndex === $scope.introSlides.length-1){
+                $state.go('app.onboarding');
+            }
+            //$rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
             //$state.go(config.appSettings.welcomeState);
         },
 
         next : function(index) {
             if(index === $scope.introSlides.length - 1){
                 console.debug('startApp: Going to welcome state...');
-                $rootScope.hideNavigationMenu = false;
+                $rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
                 $state.go(config.appSettings.welcomeState);
             }
             $ionicSlideBoxDelegate.next();
@@ -36,6 +38,9 @@ angular.module('starter')
 
         // Called each time the slide changes
         slideChanged : function(index) {
+            if($scope.myIntro.slideIndex === $scope.introSlides.length-1){
+                $state.go('app.onboarding');
+            }
             $scope.myIntro.slideIndex = index;
             if($scope.introSlides[index].backgroundColor){
                 $scope.myIntro.backgroundColor = $scope.introSlides[index].backgroundColor;
@@ -69,9 +74,11 @@ angular.module('starter')
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
+        $rootScope.hideNavigationMenu = true;
         if(navigator && navigator.splashscreen) {
             console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
+
         }
     });
 

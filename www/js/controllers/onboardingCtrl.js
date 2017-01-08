@@ -22,12 +22,16 @@ angular.module('starter')
 
     });
 
+    $scope.$on('$ionicView.leave', function(){
+        $rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
+    });
+
     $scope.$on('$ionicView.beforeLeave', function(){
 
     });
 
     $scope.$on('$ionicView.afterLeave', function(){
-        $rootScope.hideNavigationMenu = false;
+
     });
 
     $scope.onboardingLogin = function () {
