@@ -423,6 +423,12 @@ img.intro-primary-outcome-variable-rating-buttons {
 }
 
 /* Timepicker */
+
+.ionic_timepicker_popup .popup {
+    background-color: #ffffff;
+    height: 260px;
+}
+
 .ionic_timepicker_popup .heading {
     height: 44px;
     background-color: #3369E8 !important;
