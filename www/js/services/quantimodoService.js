@@ -235,10 +235,7 @@ angular.module('starter')
                 var urlParams = [];
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
-                body.clientId = quantimodoService.getClientId();
-                body.appName = config.appSettings.appDisplayName;
-                body.appVersion = $rootScope.appVersion;
-
+                
                 var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
                 // configure request
