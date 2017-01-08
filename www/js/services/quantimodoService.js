@@ -126,7 +126,7 @@ angular.module('starter')
 
         // GET method with the added token
         quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
-                                  minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
+                                         minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
             if(!canWeMakeRequestYet('GET', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -200,11 +200,11 @@ angular.module('starter')
                         quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                         errorHandler(data);
                     }, onRequestFailed);
-                });
-            };
+            });
+        };
 
         // POST method with the added token
-        quantimodoService.post = function(baseURL, requiredFields, items, successHandler, errorHandler,
+        quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler,
                                    minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
 
             if(!canWeMakeRequestYet('POST', baseURL, minimumSecondsBetweenRequests)){
@@ -216,14 +216,14 @@ angular.module('starter')
             }
 
             console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' +
-                JSON.stringify(items).substring(0, 140));
+                JSON.stringify(body).substring(0, 140));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
 
                 //console.debug("Token : ", token.accessToken);
                 // configure params
-                for (var i = 0; i < items.length; i++)
+                for (var i = 0; i < body.length; i++)
                 {
-                    var item = items[i];
+                    var item = body[i];
                     for (var j = 0; j < requiredFields.length; j++) {
                         if (!(requiredFields[j] in item)) {
                             quantimodoService.reportError('Missing required field ' + requiredFields[j] + ' in ' +
@@ -235,7 +235,9 @@ angular.module('starter')
                 var urlParams = [];
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
-                items.clientId = quantimodoService.getClientId();
+                body.clientId = quantimodoService.getClientId();
+                body.appName = config.appSettings.appDisplayName;
+                body.appVersion = $rootScope.appVersion;
 
                 var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
@@ -247,7 +249,7 @@ angular.module('starter')
                     headers : {
                         'Content-Type': "application/json"
                     },
-                    data : JSON.stringify(items)
+                    data : JSON.stringify(body)
                 };
 
                 if(quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
@@ -1172,6 +1174,18 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        quantimodoService.getTokensAndUserViaNativeGoogleLogin = function (body) {
+            var deferred = $q.defer();
+            var path = 'api/v1/googleIdToken';
+            quantimodoService.post(path, [], body, function (response) {
+                deferred.resolve(response);
+            }, function (error) {
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
         quantimodoService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken) {
             var deferred = $q.defer();
 
@@ -1349,7 +1363,8 @@ angular.module('starter')
                 quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
                 loginUrl += "redirect_uri=" + encodeURIComponent(afterLoginGoTo);
             } else {
-                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
+                loginUrl += "redirect_uri=" +
+                    encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
             }
             console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
             var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
