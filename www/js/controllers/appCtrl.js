@@ -41,6 +41,20 @@ angular.module('starter')
         $scope.closeMenu = function () {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
+
+        $scope.$watch(function () {
+            return $ionicSideMenuDelegate.getOpenRatio();
+        }, function (ratio) {
+            if (ratio == 1){
+                $scope.showCloseMenuButton = true;
+                $scope.hideMenuButton = true;
+            }
+            if (ratio == 0){
+                $scope.showCloseMenuButton = false;
+                $scope.hideMenuButton = false;
+            }
+        });
+
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
         $rootScope.unitsIndexedByAbbreviatedName = [];
         $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];

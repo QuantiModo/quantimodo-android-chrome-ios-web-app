@@ -7,6 +7,9 @@
                 <button ng-hide="hideBackButton" class="button button-icon ion-chevron-left"
                         ng-click="goBack()">
                 </button>
+                <button ng-show="showCloseMenuButton" class="button button-icon ion-chevron-left"
+                        ng-click="closeMenu()">
+                </button>
                 <!-- Gets cut off so hiding until I have time to implement this: http://ionicframework.com/docs/api/directive/ionHeaderBar/
                 Also, now back button goes home if we don't have a back view so we don't need a home button
                 <button ng-hide="hideHomeButton" class="button button-icon ion-home"
