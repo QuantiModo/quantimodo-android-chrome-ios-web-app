@@ -2293,7 +2293,7 @@ angular.module('starter')
                     quantimodoService.getTokensAndUserViaNativeGoogleLogin(userData).then(function (response) {
                         console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
                             JSON.stringify(response));
-                        quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response);
+                        quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                         quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
                     }, function (errorMessage) {
                         $scope.hideLoader();
