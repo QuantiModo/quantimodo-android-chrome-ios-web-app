@@ -544,6 +544,7 @@ angular.module('starter')
 				return;
 			}
 
+            enlargeChromePopupIfNecessary();
 
 			$scope.state.trackingReminderNotification = trackingReminderNotification;
 			$scope.state.trackingReminder = trackingReminderNotification;
