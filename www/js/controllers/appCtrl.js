@@ -2421,5 +2421,11 @@ angular.module('starter')
 
         };
 
+        $scope.$on('$stateChangeSuccess', function() {
+            if($rootScope.offlineConnectionErrorShowing){
+                $rootScope.offlineConnectionErrorShowing = false;
+            }
+        });
+
         $scope.init();
     });

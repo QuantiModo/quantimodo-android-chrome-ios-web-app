@@ -74,19 +74,19 @@
 				hidden factors that might be improving or exacerbating your symptoms.
 			</div>
 		</div>
-		
+
 		<div class="list card" ng-show="state.trackingReminders.length" id="remindersList">
 			<div on-hold="showActionSheet(reminder)"
 				 class="list card"
 				 ng-repeat="reminder in state.trackingReminders | orderBy:reminderOrderParameter track by $index"
 				 ng-if="!reminder.hide">
-				<div class="item" style="padding-bottom:0px;">
+				<div class="item" style="padding-bottom:0;">
 					<div class="row">
 						<div ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">
 							<i style="font-size: 40px;" class="icon positive {{reminder.icon}}"></i>
 						</div>
 						<div ng-click="showActionSheet(reminder)" class="col col-70">
-							<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
+							<h2 style="white-space: normal; line-height: normal;">{{reminder.variableName}}</h2>
 							<p style="white-space: normal;">{{reminder.valueAndFrequencyTextDescriptionWithTime}}</p>
 						</div>
 						<div ng-click="showActionSheet(reminder)" class="col col-10">
