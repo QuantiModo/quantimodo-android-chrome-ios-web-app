@@ -118,7 +118,7 @@ function openPopup(notificationId, focusWindow) {
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
 
-    var height = 350;
+    var height = 360;
     var width = 350;
     var windowParams = {
         url: "/www/index.html#/app/reminders-inbox-compact",
