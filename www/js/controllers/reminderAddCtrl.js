@@ -834,6 +834,7 @@ angular.module('starter')
 
         $scope.$on('$ionicView.beforeEnter', function(){
             $scope.init();
+            $rootScope.hideNavigationMenu = false;
         });
 
 	});

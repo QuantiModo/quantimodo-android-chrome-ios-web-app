@@ -1,0 +1,16 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Inbox">
+	<ion-nav-title>{{state.title}}</ion-nav-title>
+	<ion-content style="background-color: #f2f2f2" >
+		<div on-hold="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
+			 class="list"
+			 ng-show="trackingReminderNotifications && trackingReminderNotifications.length"
+			 ng-repeat="trackingReminderNotification in trackingReminderNotifications"
+			 ng-init="trackingReminderNotificationIndex = $index" >
+			<div class="item-borderless" style="padding-bottom:0; background-color: #f2f2f2;">
+				<div ng-show="!trackingReminderNotification.hide"
+					 ng-include="'templates/fragments/reminder-notification-fragment.html'">
+				</div>
+			</div>
+		</div>
+	</ion-content>
+</ion-view>

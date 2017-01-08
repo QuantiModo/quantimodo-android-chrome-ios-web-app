@@ -770,6 +770,7 @@ angular.module('starter')
         $scope.$on('$ionicView.beforeEnter', function(){
             console.debug($state.current.name + ": beforeEnter");
             $scope.init();
+            $rootScope.hideNavigationMenu = false;
         });
 
     });

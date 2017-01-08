@@ -110,7 +110,6 @@ function executeCallbackOrFocusExistingPopup(callback) {
     }
 }
 
-
 function openPopup(notificationId, focusWindow) {
 
 	if(!notificationId){
@@ -119,14 +118,28 @@ function openPopup(notificationId, focusWindow) {
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
 
-	var windowParams = {
-		url: "/www/index.html#/app/reminders-inbox",
-		type: 'panel',
-        top: screen.height - 800,
-        left: screen.width - 455,
-		width: 450,
-		height: 750
-	};
+    var height = 350;
+    var width = 350;
+    var windowParams = {
+        url: "/www/index.html#/app/reminders-inbox-compact",
+        type: 'panel',
+        top: screen.height - height - 30,
+        left: screen.width - width,
+        width: width,
+        height: height
+    };
+
+    //var useLargeInbox = false;
+    if(localStorage.useLargeInbox === "true"){
+        windowParams = {
+            url: "/www/index.html#/app/reminders-inbox",
+            type: 'panel',
+            top: screen.height - 800,
+            left: screen.width - 455,
+            width: 450,
+            height: 750
+        };
+	}
 
 	if(notificationId === "moodReportNotification")
 	{
