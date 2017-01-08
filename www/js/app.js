@@ -388,6 +388,7 @@ angular.module('starter',
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
+    $ionicConfigProvider.navBar.alignTitle('center');
 
     if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
         // Prevents back swipe white screen on iOS when caching is disabled
