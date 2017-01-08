@@ -99,7 +99,7 @@ div.dateDiv > input {
 	display:inline-block;
 	padding-top: 0px;
 	padding-left: 10px;
-    padding-right: 60px;
+    max-width: 100%;
 }
 
 .calm-icon {
