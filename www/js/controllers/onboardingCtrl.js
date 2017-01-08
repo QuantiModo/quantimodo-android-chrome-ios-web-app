@@ -14,7 +14,7 @@ angular.module('starter')
         }
 
         $ionicLoading.hide();
-        $rootScope.hideMenuButton = true;
+        //$rootScope.hideMenuButton = true;
         $rootScope.hideNavigationMenu = true;
     });
 
