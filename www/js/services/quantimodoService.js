@@ -2148,10 +2148,19 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getHistoryMeasurements = function(params){
+        quantimodoService.getHistoryMeasurements = function(params, refresh){
             var deferred = $q.defer();
 
+            if(!refresh){
+                var cachedMeasurements = quantimodoService.getCachedResponse('getV1Measurements', params);
+                if(cachedMeasurements){
+                    deferred.resolve(cachedMeasurements);
+                    return deferred.promise;
+                }
+            }
+
             quantimodoService.getV1Measurements(params, function(response){
+                quantimodoService.storeCachedResponse('getV1Measurements', params, response);
                 deferred.resolve(response);
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {
