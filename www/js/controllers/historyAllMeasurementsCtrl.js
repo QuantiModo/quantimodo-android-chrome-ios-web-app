@@ -41,7 +41,6 @@ angular.module('starter')
 	    	return variableCategory? variableCategory : false;
 	    };
 
-
 	    $scope.getHistory = function(concat){
 			if($scope.state.history.length < 1){
 				//$scope.showLoader('Squirrels retrieving measurements...');
@@ -63,6 +62,17 @@ angular.module('starter')
             if($stateParams.variableName){
                 params.variableName = $stateParams.variableName;
             }
+
+            if(params.variableName){
+                $rootScope.showMoreMenuButton = true;
+                if(!$rootScope.variableObject){
+                    quantimodoService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {
+						$rootScope.variableObject = variables[0];
+                    }, function (error) {
+						console.error(error);
+                    });
+                }
+			}
 
 	    	quantimodoService.getHistoryMeasurements(params).then(function(history){
 	    		if (concat) {
@@ -92,6 +102,65 @@ angular.module('starter')
 	    	});
 	    };
 
+        $rootScope.showActionSheetMenu = function() {
+            console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
+                    { text: '<i class="icon ion-compose"></i>Record Measurement'},
+                    { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
+                    { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
+                    { text: '<i class="icon ion-ios-list-outline"></i>History'},
+                    { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
+                    { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
+
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.debug('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.debug('variableSettingsCtrl BUTTON CLICKED: ' + index);
+                    if(index === 0){
+                        $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+                    }
+                    if(index === 1){
+                        $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
+                    }
+                    if(index === 2){
+                        $scope.goToAddReminderForVariableObject($rootScope.variableObject);
+                    }
+                    if (index === 3) {
+                        $scope.goToChartsPageForVariableObject($rootScope.variableObject);
+                    }
+                    if(index === 4) {
+                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
+                        $scope.goToHistoryForVariableObject($rootScope.variableObject);
+                    }
+                    if (index === 5) {
+                        $scope.addTag($rootScope.variableObject);
+                    }
+                    if(index === 6) {
+                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
+                        $scope.tagAnotherVariable($rootScope.variableObject);
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.showDeleteAllMeasurementsForVariablePopup();
+                    return true;
+                }
+            });
+
+            console.debug('Setting hideSheet timeout');
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
+        };
+
 	    $scope.getNext = function(){
 	    	$scope.state.offset += $scope.state.limit;
 	    	$scope.getHistory(true);
@@ -114,6 +183,7 @@ angular.module('starter')
 
 			if ($stateParams.variableObject) {
 				$scope.state.title = $stateParams.variableObject.name + ' History';
+				$rootScope.variableObject = $stateParams.variableObject;
 			}
 
 			if($rootScope.user){

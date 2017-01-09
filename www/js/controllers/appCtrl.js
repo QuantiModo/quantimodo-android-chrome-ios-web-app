@@ -440,7 +440,8 @@ angular.module('starter')
         $scope.goToHistoryForVariableObject = function (variableObject) {
             $state.go('app.historyAllVariable',
                 {
-                    variableObject: variableObject
+                    variableObject: variableObject,
+                    variableName: variableObject.name
                 });
         };
 
@@ -625,7 +626,7 @@ angular.module('starter')
                 $scope.showCalendarButton = false;
             }
 
-            // Show "..." button on top rigt
+            // Show "..." button on top right
             if (e.targetScope && e.targetScope.controller_name &&
                 e.targetScope.controller_name === "MeasurementAddCtrl" ||
                 e.targetScope.controller_name === "ReminderAddCtrl" ||
@@ -635,7 +636,7 @@ angular.module('starter')
                 e.targetScope.controller_name === "RemindersInboxCtrl" ||
                 e.targetScope.controller_name === "RemindersManageCtrl" ||
                 e.targetScope.controller_name === "StudyCtrl" ||
-                e.targetScope.controller_name === "PredictorsCtrl"
+                e.targetScope.controller_name === "PredictorsCtrl" || $state.current.name === 'app.historyAllVariable'
             ) {
                 $scope.showMoreMenuButton = true;
             } else {
