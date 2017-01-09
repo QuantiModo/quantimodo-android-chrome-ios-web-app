@@ -17,17 +17,23 @@
                     <span class="input-label left-span" on-tap="showExplanationsPopup('Default Value')">{{state.defaultValueLabel}} <i class="icon ion-help-circled"></i></span>
                     <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
-                <label ng-if="!state.hideDefaultValueField" class="item item-input item-select">
+                <label id="unitSelectorBlock" class="item item-input item-select"
+                       ng-if="!state.showMoreUnits && !state.hideDefaultValueField">
                     <div class="input-label">
                         Unit
                     </div>
                     <select id="unitSelector"
-                            ng-if="!state.showMoreUnits"
                             ng-model="state.trackingReminder.abbreviatedUnitName"
                             ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects"
                             ng-change="unitSelected()">
                     </select>
-                    <select ng-if="state.showMoreUnits"
+                </label>
+                <label id="advancedUnitSelectorBlock" class="item item-input item-select"
+                       ng-if="state.showMoreUnits || state.showMoreOptions">
+                    <div class="input-label">
+                        Advanced Units
+                    </div>
+                    <select
                             id="advancedUnitSelector"
                             ng-model="state.trackingReminder.abbreviatedUnitName"
                             ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
