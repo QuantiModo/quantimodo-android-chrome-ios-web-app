@@ -404,7 +404,7 @@ angular.module('starter')
 	    };
 
 	    var verifyEmailAddressAndExecuteCallback = function (callback) {
-	    	if($rootScope.user.email){
+	    	if($rootScope.user.email || $rootScope.user.userEmail){
 	    		callback();
 	    		return;
 			}
