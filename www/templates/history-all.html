@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
     <ion-nav-title>{{state.title}}</ion-nav-title>
      <ion-content ng-class="{ isBrowserView : isWeb == true }">
-         <ion-refresher on-refresh="getHistory()"></ion-refresher>
+         <ion-refresher on-refresh="refreshHistory()"></ion-refresher>
          <div class="list card" ng-show="state.noHistory">
              <div class="item" style="padding-bottom:10px;">
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">No Measurements</p>

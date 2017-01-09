@@ -41,7 +41,13 @@ angular.module('starter')
 	    	return variableCategory? variableCategory : false;
 	    };
 
-	    $scope.getHistory = function(concat){
+        $scope.refreshHistory = function(concat){
+        	var concat = false;
+        	var refresh = true;
+            $scope.getHistory(concat, refresh);
+		};
+
+	    $scope.getHistory = function(concat, refresh){
 			if($scope.state.history.length < 1){
 				//$scope.showLoader('Squirrels retrieving measurements...');
 			}
@@ -74,7 +80,7 @@ angular.module('starter')
                 }
 			}
 
-	    	quantimodoService.getHistoryMeasurements(params).then(function(history){
+	    	quantimodoService.getHistoryMeasurements(params, refresh).then(function(history){
 	    		if (concat) {
 					$scope.state.history = $scope.state.history.concat(history);
 				}
