@@ -44,5 +44,5 @@ if [ -z ${BUILD_ANDROID} ];
         echo password | sudo -S apt-get install imagemagick
 
         echo "gulp buildQuantiModoAndroid"
-        gulp buildAndroidApp
+        gulp buildQuantiModoAndroid
 fi
