@@ -91,9 +91,10 @@
       <ion-list id="historyList">
           <div ng-repeat="historyItem in state.history"
                class="item item-avatar"
+               id="historyItem"
                on-hold="showActionSheet(historyItem, $index)"
                ng-click="editMeasurement(historyItem)">
-              <i class="icon positive {{historyItem.icon}} icon-positive"
+              <i id="historyItemIcon" class="icon positive {{historyItem.icon}} icon-positive"
                  style="position: absolute;
 							top: 15px;
 							left: 15px;
@@ -102,10 +103,10 @@
 							max-height: 40px;
 							width: 100%;
 							border-radius: 4px;"></i>
-              <h2 style="font-weight:bold; white-space:normal;">
+              <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal;">
                   {{historyItem.valueUnitVariableName}}
               </h2>
-              <p>
+              <p id="historyItemBody" >
                   {{historyItem.startTimeEpoch | timeOfDayDayOfWeekNoArray}}<br>
                   {{historyItem.startTimeEpoch | justDateNoArray}}<br>
                   {{historyItem.note | limitTo:40}}
