@@ -90,6 +90,7 @@
 
       <ion-list id="historyList">
           <div ng-repeat="historyItem in state.history"
+               data-measurementid="{{historyItem.id}}"
                class="item item-avatar"
                id="historyItem"
                on-hold="showActionSheet(historyItem, $index)"
