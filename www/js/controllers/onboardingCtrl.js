@@ -7,7 +7,7 @@ angular.module('starter')
 
         $rootScope.onboardingFooterText = null;
         quantimodoService.setupOnboardingPages();
-        if($rootScope.user){
+        if($rootScope.onboardingPages && $rootScope.user){
             $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
                 return obj.id !== 'loginOnboardingPage';
             });

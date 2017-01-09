@@ -16,7 +16,7 @@ angular.module('starter')
 			showLocationToggle: false,
 			noHistory: false,
 			helpCardTitle: "Past Measurements",
-			title: "Measurement History",
+			title: "History",
 			loadingText: "Fetching measurements..."
 	    };
 

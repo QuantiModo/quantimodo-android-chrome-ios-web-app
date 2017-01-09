@@ -60,6 +60,18 @@ angular.module('starter')
 			}
 		};
 	})
+    .filter('timeOfDayDayOfWeekNoArray', function(){
+        return function(time){
+            if(time){
+                if(typeof time === "number") {
+                    return moment(time * 1000).format("h:mm a dddd");
+                }
+                return moment.utc(time).local().format("h:mm a dddd");
+            } else {
+                return "";
+            }
+        };
+    })
 	.filter('timeOfDayDayOfWeekDate', function(){
 		return function(time){
 			if(time){
@@ -84,6 +96,18 @@ angular.module('starter')
 			}
 		};
 	})
+    .filter('justDateNoArray', function(){
+        return function(time){
+            if(time){
+                if(typeof time === "number") {
+                    return moment(time * 1000).format("MMMM Do YYYY");
+                }
+                return moment.utc(time).local().format("MMMM Do YYYY");
+            } else {
+                return "";
+            }
+        };
+    })
 	.filter('dayOfWeekAndDate', function(){
 		return function(time){
 			if(time){
