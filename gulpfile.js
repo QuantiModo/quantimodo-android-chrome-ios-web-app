@@ -44,7 +44,7 @@ if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
 }
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.0.1';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.1.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
