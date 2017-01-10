@@ -2264,6 +2264,9 @@ angular.module('starter')
         };
 
         function addUnitsToRootScope(units) {
+            if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
+                $rootScope.abbreviatedUnitNames = [];
+            }
             $rootScope.unitObjects = units;
             $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
             $rootScope.nonAdvancedAbbreviatedUnitNames = [];
@@ -2294,19 +2297,25 @@ angular.module('starter')
         quantimodoService.getUnits = function(){
             var deferred = $q.defer();
 
-            quantimodoService.getLocalStorageItemAsStringWithCallback('units', function(unitsString){
-                if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
-                    $rootScope.abbreviatedUnitNames = [];
-                }
-                var unitObjects = JSON.parse(unitsString);
+            var cachedUnits = quantimodoService.getCachedResponse('getUnits', params);
+            if(cachedUnits){
+                addUnitsToRootScope(cachedUnits);
+                deferred.resolve(cachedUnits);
+                return deferred.promise;
+            }
 
-                if(unitObjects && typeof(unitObjects[0].advanced) !== "undefined"){
-                    addUnitsToRootScope(unitObjects);
-                    deferred.resolve(unitObjects);
-                } else {
-                    quantimodoService.refreshUnits().then(function(unitObjects){
-                        deferred.resolve(unitObjects);
-                    });
+            var params = {};
+            quantimodoService.refreshUnits().then(function(unitObjects){
+                quantimodoService.storeCachedResponse('getUnits', params, unitObjects);
+                deferred.resolve(unitObjects);
+            }, function (error) {
+                console.error("Could not refresh units.  Falling back to stale ones in local storage. Error: " + error);
+                var ignoreExpiration = true;
+                var cachedUnits = quantimodoService.getCachedResponse('getUnits', params, ignoreExpiration);
+                if(cachedUnits){
+                    addUnitsToRootScope(cachedUnits);
+                    deferred.resolve(cachedUnits);
+                    return deferred.promise;
                 }
             });
 
@@ -6857,7 +6866,9 @@ angular.module('starter')
             return stringOrObject;
         };
 
-        quantimodoService.getCachedResponse = function(requestName, params){
+
+
+        quantimodoService.getCachedResponse = function(requestName, params, ignoreExpiration){
             if(!params){
                 console.error('No params provided to getCachedResponse');
                 return false;
@@ -6868,6 +6879,10 @@ angular.module('starter')
             }
             var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
             var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
+
+            if(ignoreExpiration){
+                cacheNotExpired = true;
+            }
 
             if(cachedResponse && paramsMatch && cachedResponse.response.length && cacheNotExpired){
                 return cachedResponse.response;
