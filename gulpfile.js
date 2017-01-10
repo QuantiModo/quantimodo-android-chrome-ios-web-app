@@ -38,13 +38,13 @@ var paths = {
 };
 
 if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.2.9.0';
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.3.0.0';
     console.log('Falling back to OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 }
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.0.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.0.1';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
@@ -1364,7 +1364,7 @@ gulp.task('setVersionNumberInFiles', function(callback){
         'build/chrome_extension/manifest.json',
 		'resources/chrome_app/manifest.json'
 	];
-	
+
 	return gulp.src(filesToUpdate, {base: "."}) // Every file allown.
 		.pipe(replace(process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER, process.env.IONIC_IOS_APP_VERSION_NUMBER))
 		.pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_IOS_APP_VERSION_NUMBER))
@@ -1684,7 +1684,7 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 	} else {
         console.log("generateConfigXmlFromTemplate using " + process.env.CONFIG_XML_TEMPLATE_PATH);
 	}
-	
+
 	var xml = fs.readFileSync(process.env.CONFIG_XML_TEMPLATE_PATH, 'utf8');
 
 	if(!xml){
