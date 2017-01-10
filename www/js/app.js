@@ -1343,7 +1343,7 @@ angular.module('starter',
                 dateTime : null,
                 value : null,
                 fromUrl : null,
-                showHelpCards: true,
+                showHelpCards: false,
                 hideNavigationMenu: true
             },
             views: {
