@@ -130,7 +130,7 @@ function openPopup(notificationId, focusWindow) {
     };
 
     //var useLargeInbox = false;
-    if(localStorage.useLargeInbox === "true"){
+    if(!localStorage.useSmallInbox){
         windowParams = {
             url: "/www/index.html#/app/reminders-inbox",
             type: 'panel',

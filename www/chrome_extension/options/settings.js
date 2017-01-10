@@ -62,9 +62,9 @@ var onShowNotificationChanged = function()
 	localStorage["showNotification"] = this.checked;
 };
 
-var onUseLargeInboxChanged = function()
+var onUseSmallInboxChanged = function()
 {
-    localStorage.useLargeInbox = this.checked;
+    localStorage.useSmallInbox = this.checked;
 };
 
 var showBadgeChanged = function()
@@ -96,9 +96,9 @@ document.addEventListener('DOMContentLoaded', function ()
 	showNotificationCheckbox.checked = showNotification;
 	showNotificationCheckbox.onchange=onShowNotificationChanged;
 
-    var useLargeInboxCheckbox = document.getElementById('useLargeInboxCheckbox');
-    useLargeInboxCheckbox.checked = localStorage.useLargeInbox === "true";
-    useLargeInboxCheckbox.onchange=onUseLargeInboxChanged;
+    var useSmallInboxCheckbox = document.getElementById('useSmallInboxCheckbox');
+    useSmallInboxCheckbox.checked = localStorage.useSmallInbox === "true";
+    useSmallInboxCheckbox.onchange=onUseSmallInboxChanged;
 
 	// Set badge enabled checkbox
 	var showBadgeCheckbox = document.getElementById('showBadgeCheckbox');
