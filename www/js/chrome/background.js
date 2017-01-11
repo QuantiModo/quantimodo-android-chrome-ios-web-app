@@ -5,6 +5,21 @@
 var v = null;
 var vid = null;
 
+var introWindowParams = {
+    url: "/www/index.html#/app/intro",
+    type: 'panel',
+    top: 0.2 * screen.height,
+    left: 0.4 * screen.width,
+    width: 450,
+    height: 750
+};
+
+if (!localStorage.introSeeen) {
+    window.localStorage.setItem('hasSeenIntro', 'yep');
+    var focusWindow = true;
+    openOrFocusPopupWindow(introWindowParams, focusWindow);
+}
+
 /*
 **	Returns true in the result listener if the user is logged in, false if not
 */
