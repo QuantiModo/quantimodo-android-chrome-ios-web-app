@@ -7566,7 +7566,8 @@ angular.module('starter')
             ];
 
             var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
-            if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length){
+            if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length &&
+                onboardingPagesFromLocalStorage !== "undefined"){
                 onboardingPages = onboardingPagesFromLocalStorage;
             }
 
