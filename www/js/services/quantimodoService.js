@@ -2537,6 +2537,10 @@ angular.module('starter')
         // returns bool
         // if a string starts with substring
         quantimodoService.startsWith = function (fullString, search) {
+            if(!fullString){
+                console.error('fullString not provided to quantimodoService.startsWith');
+                return false;
+            }
             return fullString.slice(0, search.length) === search;
         };
 
