@@ -2443,7 +2443,7 @@ angular.module('starter')
             }
 
             inAppPurchase
-                .getProducts(['com.quantimodo.subscription'])
+                .getProducts(['com.quantimodo.quantimodo.subscription1'])
             .then(function (products) {
                 alert('Available Products: ' + JSON.stringify(products));
                 /*
