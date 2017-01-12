@@ -527,7 +527,6 @@ angular.module('starter')
             $rootScope.hideBackButton = true;
 			$rootScope.hideHomeButton = true;
 			setPageTitle();
-            quantimodoService.setupHelpCards();
 			getTrackingReminderNotifications();
 		});
 

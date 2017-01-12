@@ -7212,12 +7212,15 @@ angular.module('starter')
             });
         };
 
-        quantimodoService.setupHelpCards = function (firstCard) {
+        quantimodoService.setupHelpCards = function () {
 
-            if($rootScope.defaultHelpCards && $rootScope.defaultHelpCards.length){
+            if(window.localStorage.getItem('helpCardsSetup')){
                 console.debug('Help cards already set up');
                 return;
             }
+            
+            window.localStorage.setItem('helpCardsSetup', true);
+
             var defaultHelpCards = [
                 {
                     id: "recordMeasurementInfoCard",
@@ -7292,10 +7295,6 @@ angular.module('starter')
                         defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
                     }
                 });
-            }
-
-            if(firstCard) {
-                defaultHelpCards = [firstCard].concat(defaultHelpCards);
             }
 
             $rootScope.defaultHelpCards = defaultHelpCards;
