@@ -20,6 +20,7 @@ angular.module('starter')
 
     $scope.$on('$ionicView.afterEnter', function(){
 
+        quantimodoService.setupHelpCards();
     });
 
     $scope.$on('$ionicView.leave', function(){
@@ -131,7 +132,8 @@ angular.module('starter')
                     }
                 ]
         };
-        quantimodoService.setupHelpCards(getStartedHelpCard);
+
+        $rootScope.defaultHelpCards = [getStartedHelpCard].concat($rootScope.defaultHelpCards);
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
         $rootScope.onboardingPages = null;
         $state.go('app.remindersInbox');

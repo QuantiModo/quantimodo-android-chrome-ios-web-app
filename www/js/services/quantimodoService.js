@@ -7212,7 +7212,7 @@ angular.module('starter')
             });
         };
 
-        quantimodoService.setupHelpCards = function (firstCard) {
+        quantimodoService.setupHelpCards = function () {
 
             if(window.localStorage.getItem('helpCardsSetup')){
                 console.debug('Help cards already set up');
@@ -7295,10 +7295,6 @@ angular.module('starter')
                         defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
                     }
                 });
-            }
-
-            if(firstCard) {
-                defaultHelpCards = [firstCard].concat(defaultHelpCards);
             }
 
             $rootScope.defaultHelpCards = defaultHelpCards;
