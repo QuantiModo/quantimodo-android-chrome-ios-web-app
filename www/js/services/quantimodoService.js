@@ -158,6 +158,12 @@ angular.module('starter')
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
                 urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
+                if(window.private_keys.username){
+                    urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));
+                }
+                if(window.private_keys.password){
+                    urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));
+                }
                 //We can't append access token to Ionic requests for some reason
                 //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
@@ -7049,7 +7055,11 @@ angular.module('starter')
 
         quantimodoService.browserLogin = function(register) {
             console.debug("Browser Login");
-            if (quantimodoService.getClientId() !== 'oAuthDisabled') {
+            if (window.private_keys.username) {
+                quantimodoService.refreshUser().then(function () {
+                    $state.go(config.appSettings.defaultState);
+                });
+            } else if (quantimodoService.getClientId() !== 'oAuthDisabled') {
                 quantimodoService.oAuthBrowserLogin(register);
             } else {
                 quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
