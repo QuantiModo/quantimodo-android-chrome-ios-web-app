@@ -14,8 +14,8 @@ var introWindowParams = {
     height: 750
 };
 
-if (!localStorage.introSeeen) {
-    window.localStorage.setItem('hasSeenIntro', 'yep');
+if (!localStorage.introSeen) {
+    window.localStorage.setItem('introSeen', true);
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
 }
