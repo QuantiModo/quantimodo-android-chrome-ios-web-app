@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, $rootScope, quantimodoService) {
+    .controller('IframeScreenCtrl', function ($stateParams, $scope, $ionicLoading, $sce, $state, $rootScope, quantimodoService) {
 
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
@@ -18,11 +18,16 @@ angular.module('starter')
             $scope.title = 'Create Study';
         }
 
-        if(window.location.href.indexOf('update-card') > -1 )
-        {
-            $scope.iFrameStyle = "height:2500px; width:100%;";
-            iFrameUrl = $rootScope.qmApiUrl + '/api/v2/account/update-card?hideMenu=true';
-            $scope.title = 'Update Card';
+        if($stateParams.title) {
+            $scope.title = $stateParams.title;
+        }
+
+        if($stateParams.path) {
+            iFrameUrl = $rootScope.qmApiUrl + $stateParams.path;
+        }
+
+        if($stateParams.iFrameStyle) {
+            $scope.iFrameStyle = $stateParams.iFrameStyle;
         }
 
         if(window.location.href.indexOf('search-variables') > -1 )
