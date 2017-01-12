@@ -2435,5 +2435,42 @@ angular.module('starter')
             $scope.closeMenu();
         });
 
+        $scope.upgrade = function () {
+
+            if (!window.inAppPurchase) {
+                console.error('inAppPurchase not available');
+                return;
+            }
+
+            inAppPurchase
+                .getProducts(['com.quantimodo.subscription'])
+            .then(function (products) {
+                alert('Available Products: ' + JSON.stringify(products));
+                /*
+                 [{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
+                 */
+
+                inAppPurchase
+                    .subscribe('com.quantimodo.quantimodo.subscription1')
+                    .then(function (data) {
+                        alert(JSON.stringify(data));
+                        /*
+                         {
+                         transactionId: ...
+                         receipt: ...
+                         signature: ...
+                         }
+                         */
+                    })
+                    .catch(function (err) {
+                        alert(err);
+                    });
+            })
+                .catch(function (err) {
+                    alert(err);
+                });
+
+        };
+
         $scope.init();
     });
