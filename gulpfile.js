@@ -1837,6 +1837,12 @@ gulp.task('removeFacebookFromChromeExtension', [], function(){
 		.pipe(clean());
 });
 
+gulp.task('removeAndroidManifestFromChromeExtension', [], function(){
+    return gulp.src("build/chrome_extension/www/manifest.json",
+        { read: false })
+        .pipe(clean());
+});
+
 gulp.task('zipChromeExtension', [], function(){
 	console.log('If this fails, make sure there are no symlinks.');
 	return gulp.src(['build/chrome_extension/**/*'])
@@ -1882,6 +1888,7 @@ gulp.task('buildChromeExtension', [], function(callback){
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
 		'copyManifestToChromeExtension',
 		'removeFacebookFromChromeExtension',
+        'removeAndroidManifestFromChromeExtension',
 		'zipChromeExtension',
 		'unzipChromeExtension',
 		callback);

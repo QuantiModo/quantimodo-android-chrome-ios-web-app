@@ -1023,8 +1023,13 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.updateCard', {
-            url: "/update-card",
+        .state('app.creditCard', {
+            url: "/credit-card",
+            params: {
+                path: '/api/v2/account/update-card?hideMenu=true',
+                title: 'Update Card',
+                iFrameStyle: "height:2500px; width:100%;"
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/iframe-embed.html",
