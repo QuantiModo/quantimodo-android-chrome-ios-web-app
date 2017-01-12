@@ -14,9 +14,9 @@ var introWindowParams = {
     height: 750
 };
 
-var facesRatingPopupWindowParams = {url: "rating_popup.html",
+var facesRatingPopupWindowParams = {url: "www/templates/chrome/faces_popup.html",
     type: 'panel',
-    top: 0.6 * screen.height,
+    top: screen.height - 80,
     left: screen.width - 371,
     width: 371,
     height: 70
@@ -80,6 +80,9 @@ chrome.runtime.onInstalled.addListener(function()
 */
 chrome.alarms.onAlarm.addListener(function(alarm)
 {
+    if(localStorage.useSmallInbox){
+        openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
+    }
 	console.debug('onAlarm Listener heard this alarm ', alarm);
     checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
 });
