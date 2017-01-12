@@ -14,41 +14,45 @@ var introWindowParams = {
     height: 750
 };
 
+var facesRatingPopupWindowParams = {url: "rating_popup.html",
+    type: 'panel',
+    top: 0.6 * screen.height,
+    left: screen.width - 371,
+    width: 371,
+    height: 70
+};
+
+var loginPopupWindowParams = {
+    url: "/www/index.html#/app/login",
+    type: 'panel',
+    top: 0.2 * screen.height,
+    left: 0.4 * screen.width,
+    width: 450,
+    height: 750
+};
+
+var reminderInboxPopupWindowParams = {
+    url: "/www/index.html#/app/reminders-inbox",
+    type: 'panel',
+    top: screen.height - 800,
+    left: screen.width - 455,
+    width: 450,
+    height: 750
+};
+
+var compactInboxPopupWindowParams = {
+    url: "/www/index.html#/app/reminders-inbox-compact",
+    type: 'panel',
+    top: screen.height - 360 - 30,
+    left: screen.width - 350,
+    width: 350,
+    height: 360
+};
+
 if (!localStorage.introSeen) {
     window.localStorage.setItem('introSeen', true);
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
-}
-
-/*
-**	Returns true in the result listener if the user is logged in, false if not
-*/
-function isUserLoggedIn(resultListener)
-{
-	var xhr = new XMLHttpRequest();
-	var url = "https://app.quantimo.do/api/user/me";
-	if(localStorage.accessToken){
-		url = url + '?access_token=' + localStorage.accessToken;
-	}
-	xhr.open("GET", url, false);
-	xhr.onreadystatechange = function()
-		{
-			if (xhr.readyState === 4)
-			{
-				var userObject = JSON.parse(xhr.responseText);
-				localStorage.user = xhr.responseText;
-				/*
-				 * it should hide and show sign in button based upon the cookie set or not
-				 */
-				if(typeof userObject.displayName !== "undefined") {
-					console.debug(userObject.displayName + " is logged in.  ");
-				} else {
-					var url = "https://app.quantimo.do/api/v2/auth/login";
-					chrome.tabs.create({"url":url, "selected":true});
-				}
-			}
-		};
-	xhr.send();
 }
 
 /*
@@ -111,20 +115,6 @@ function openOrFocusPopupWindow(windowParams, focusWindow) {
     }
 }
 
-function executeCallbackOrFocusExistingPopup(callback) {
-    if (vid) {
-        chrome.windows.get(vid, function (chromeWindow) {
-            if (!chrome.runtime.lastError && chromeWindow) {
-                chrome.windows.update(vid, {focused: true});
-                return;
-            }
-            callback();
-        });
-    } else {
-        callback();
-    }
-}
-
 function openPopup(notificationId, focusWindow) {
 
 	if(!notificationId){
@@ -133,66 +123,25 @@ function openPopup(notificationId, focusWindow) {
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
 
-    var height = 360;
-    var width = 350;
-    var windowParams = {
-        url: "/www/index.html#/app/reminders-inbox-compact",
-        type: 'panel',
-        top: screen.height - height - 30,
-        left: screen.width - width,
-        width: width,
-        height: height
-    };
 
-    //var useLargeInbox = false;
-    if(!localStorage.useSmallInbox){
-        windowParams = {
-            url: "/www/index.html#/app/reminders-inbox",
-            type: 'panel',
-            top: screen.height - 800,
-            left: screen.width - 455,
-            width: 450,
-            height: 750
-        };
-	}
-
-	if(notificationId === "moodReportNotification")
-	{
-		windowParams = {url: "rating_popup.html",
-			type: 'panel',
-			top: 0.6 * screen.height,
-			left: screen.width - 371,
-			width: 371,
-			height: 70
-		};
+	if(notificationId === "moodReportNotification") {
+        openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
 	} else if (notificationId === "signin") {
-		windowParams = {
-			url: "/www/index.html#/app/login",
-			type: 'panel',
-			top: 0.2 * screen.height,
-			left: 0.4 * screen.width,
-			width: 450,
-			height: 750
-		};
+        openOrFocusPopupWindow(loginPopupWindowParams, focusWindow);
 	} else if (notificationId && IsJsonString(notificationId)) {
+        var windowParams = reminderInboxPopupWindowParams;
 		windowParams.url = "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
+        openOrFocusPopupWindow(windowParams, focusWindow);
 	} else {
+        //var useLargeInbox = false;
+        if(!localStorage.useSmallInbox){
+            openOrFocusPopupWindow(reminderInboxPopupWindowParams, focusWindow);
+        } else {
+            openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
+            //openOrFocusPopupWindow(compactInboxPopupWindowParams, focusWindow);
+        }
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
-
-    openOrFocusPopupWindow(windowParams, focusWindow);
-
-/*
-	chrome.windows.update(vid, {focused: true}, function() {
-		if (chrome.runtime.lastError) {
-			chrome.windows.create(
-				windowParams,
-				function(chromeWindow) {
-					vid = chromeWindow.id;
-				});
-		}
-	});
-*/
 
 	//chrome.windows.create(windowParams);
 	if(notificationId){
@@ -201,7 +150,7 @@ function openPopup(notificationId, focusWindow) {
 }
 
 /*
-**	Called when the "report your mood" notification is clicked
+**	Called when the notification is clicked
 */
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
@@ -312,18 +261,11 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                     priority: 2
                 };
                 notificationId = alarm.name;
-
                 chrome.browserAction.setBadgeText({text: "?"});
                 //chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
+                chrome.notifications.create(notificationId, notificationParams, function (id) {});
+                openPopup(notificationId);
 
-                var showNotification = localStorage.showNotification === "true";
-                if (showNotification) {
-                    chrome.notifications.create(notificationId, notificationParams, function (id) {});
-                    openPopup(notificationId);
-                } else {
-                    chrome.notifications.create(notificationId, notificationParams, function (id) {});
-                    openPopup(notificationId);
-                }
             } else {
                 chrome.browserAction.setBadgeText({text: ""});
             }
@@ -370,18 +312,7 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
 		console.debug('alarm.name is not a json object', alarm);
 	}
 
-    if (vid) {
-        chrome.windows.get(vid, function (chromeWindow) {
-            if (!chrome.runtime.lastError && chromeWindow) {
-            	// Commenting window focus so we don't irritate users
-                //chrome.windows.update(vid, {focused: true});
-                return;
-            }
-            checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);
-        });
-    } else {
-        checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);
-    }
+    checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);
 }
 
 function IsJsonString(str) {
