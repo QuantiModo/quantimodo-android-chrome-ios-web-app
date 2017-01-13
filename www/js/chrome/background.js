@@ -50,6 +50,22 @@ var compactInboxPopupWindowParams = {
     height: 360
 };
 
+var inboxNotificationParams = {
+    type: "basic",
+    title: "How are you?",
+    message: "Click to open reminder inbox",
+    iconUrl: "www/img/icons/icon_700.png",
+    priority: 2
+};
+
+var signInNotificationParams = {
+    type: "basic",
+    title: "How are you?",
+    message: "Click to sign in and record a measurement",
+    iconUrl: "www/img/icons/icon_700.png",
+    priority: 2
+};
+
 if (!localStorage.introSeen) {
     window.localStorage.setItem('introSeen', true);
     var focusWindow = true;
@@ -210,15 +226,8 @@ function objectLength(obj) {
 }
 
 function showSignInNotification() {
-    var notificationParams = {
-        type: "basic",
-        title: "How are you?",
-        message: "Click to sign in and record a measurement",
-        iconUrl: "www/img/icons/icon_700.png",
-        priority: 2
-    };
     var notificationId = 'signin';
-    chrome.notifications.create(notificationId, notificationParams, function (id) {});
+    chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
 }
 
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
@@ -241,17 +250,10 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
             var notificationsObject = JSON.parse(xhr.responseText);
             var numberOfWaitingNotifications = objectLength(notificationsObject.data);
             if (numberOfWaitingNotifications > 0) {
-                notificationParams = {
-                    type: "basic",
-                    title: "How are you?",
-                    message: "Click to open reminder inbox",
-                    iconUrl: "www/img/icons/icon_700.png",
-                    priority: 2
-                };
                 notificationId = alarm.name;
                 chrome.browserAction.setBadgeText({text: "?"});
                 //chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
-                chrome.notifications.create(notificationId, notificationParams, function (id) {});
+                chrome.notifications.create(notificationId, inboxNotificationParams, function (id) {});
                 openPopup(notificationId);
 
             } else {
@@ -284,24 +286,17 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
         }
     }
 
-	var notificationParams = {
-		type: "basic",
-		title: "How are you?",
-		message: "Click to open reminder inbox",
-		iconUrl: "www/img/icons/icon_700.png",
-		priority: 2
-	};
-
 	if (IsJsonString(alarm.name)) {
+        var notificationParams = inboxNotificationParams;
 		console.debug('alarm.name IsJsonString', alarm);
 		var trackingReminder = JSON.parse(alarm.name);
 		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';
 		notificationParams.message = 'Click to add measurement';
+        checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);
 	} else {
 		console.debug('alarm.name is not a json object', alarm);
+        checkForNotificationsAndShowPopupIfSo(inboxNotificationParams, alarm);
 	}
-
-    checkForNotificationsAndShowPopupIfSo(notificationParams, alarm);
 }
 
 function IsJsonString(str) {

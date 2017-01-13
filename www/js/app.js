@@ -1523,6 +1523,17 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.upgrade', {
+            url: "/upgrade",
+            cache: true,
+            params: { },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/onboarding-page.html",
+                    controller: 'UpgradeCtrl'
+                }
+            }
+        })
         .state('app.favoriteAdd', {
             url: "/favorite-add",
             cache: false,

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="YourAppIdentifierHere" version="IONIC_APP_VERSION_NUMBER_PLACEHOLDER" ios-CFBundleVersion="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="YourAppIdentifierHere" version="IONIC_APP_VERSION_NUMBER_PLACEHOLDER" ios-CFBundleVersion="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" android-versionCode="203024" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>YourAppDisplayNameHere</name>
   <description>
     YourAppDescriptionHere
@@ -77,6 +77,7 @@
     <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d" />
   </plugin>
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1"/>
+  <plugin name="cordova-plugin-inapppurchase" spec="~1.1.0" />
   <plugin name="cordova-plugin-mauron85-background-geolocation" spec="^2.2.0"/>
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
   <plugin name="cordova-plugin-statusbar" version="2.2.0"/>

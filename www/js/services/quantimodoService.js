@@ -7676,6 +7676,294 @@ angular.module('starter')
 
             return introSlides;
         };
+        
+        quantimodoService.setupUpgradePages = function () {
+            /*
+
+             Support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
+              Enjoy advanced analytics, secure cloud backup, sync between computer and mobile devices, automatically import from dozens of apps/devices!
+
+            Please support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
+                With QuantiModo Plus, you'll enjoy these awesome features and more:
+            Import Data from Other Apps and Devices - Easily import your data from Fitbit, Withings, Jawbone, Facebook, Rescuetime, Sleep as Android, MoodiModo, Github, Google Calendar, Facebook, Runkeeper, and even the weather!
+                Discover Hidden Causes of Suffering - The QuantiModo Analytics Engine will identify the foods, treatments, and other factors most likely to improve or exacerbate your symptoms!
+                Secure Cloud Storage - Never worry about losing your self-tracking data as it will be highly encrypted and backed up in multiple secure databases.
+                Privacy - We will never share your data without your explicit permission.
+                Sync Data Across Devices - Any of your QuantiModo-supported apps will be able to automatically sync from any other app.
+
+            */
+
+            var upgradePages = [
+                {
+                    id: "upgradePage",
+                    title: 'QuantiModo Plus',
+                    titleClickFunctionCall: "upgradeRegister()",
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#fefdfc",
+                    iconClass: "icon positive ion-ios-medkit-outline",
+                    image: {
+                        url: "img/cute_robot_happy_transparent.png",
+                        height: "96",
+                        width: "70"
+                    },
+                    bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
+                    // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
+                    //     "the NSA waterboards me, I will never divulge share your data without your permission.",
+                    buttons: [
+                        {
+                            id: "signUpButton",
+                            clickFunctionCall: "upgradeRegister()",
+                            buttonText: 'Sign Up',
+                            buttonIconClass: "",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "signInButton",
+                            clickFunctionCall: "upgradeLogin()",
+                            buttonText: 'Already Have Account',
+                            buttonIconClass: "",
+                            buttonClass: "button button-clear button-assertive"
+                        },
+                        {
+                            id: "signInWithGoogle",
+                            ngHideLogic: "!isAndroid",
+                            clickFunctionCall: "upgradeGoogleLogin()",
+                            buttonText: 'Sign In With Google',
+                            buttonIconClass: "",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "addTreatmentRemindersCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
+                    title: 'Any Treatments?',
+                    "backgroundColor": "#f09402",
+                    circleColor: "#fab952",
+                    iconClass: "icon positive ion-ios-medkit-outline",
+                    image: {
+                        url: "img/variable_categories/pill-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
+                    'like meditation or psychotherapy? ',
+                    moreInfo: "Often the effects of medications and treatments aren't intuitively perceptible.  " +
+                    "That's where I come in!  If you regularly recording your treatments,  I can analyze the data so" +
+                    "we can get a better idea which ones are helping you, " +
+                    "which one may be harming you, and which ones are merely a waste of money.",
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategoryTreatmentsButton",
+                            clickFunctionCall: "goToReminderSearchCategoryFromUpgrade('Treatments')",
+                            buttonText: 'Add Treatment',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddTreatmentRemindersCardButton",
+                            clickFunctionCall: "hideUpgradePage(card)",
+                            buttonText: 'Nope',
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "addSymptomRemindersCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
+                    title: 'Recurring Symptoms?',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#5b95f9",
+                    iconClass: "icon positive ion-sad-outline",
+                    image: {
+                        url: "img/variable_categories/dizzy_person_2-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: 'Got any recurring symptoms that vary in their severity?',
+                    moreInfo: "Symptom severity can be influence by hundreds of factors in daily life. " +
+                    "The human mind can only hold 7 numbers in working memory at a time.  I can hold a billion in my mind! " +
+                    "If you regularly record your symptoms, add them so I can use this data " +
+                    "to determine which hidden and imperceptible factors might be worsening or improving them.",
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategorySymptomsButton",
+                            clickFunctionCall: "goToReminderSearchCategoryFromUpgrade('Symptoms')",
+                            buttonText: 'Add Symptom',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddSymptomRemindersCardButton",
+                            clickFunctionCall: "hideUpgradePage(card)",
+                            buttonText: 'Nope',
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "addEmotionRemindersCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
+                    title: 'Varying Emotions?',
+                    "backgroundColor": "#0f9d58",
+                    circleColor: "#03c466",
+                    iconClass: "icon positive ion-happy-outline",
+                    image: {
+                        url: "img/variable_categories/theatre_mask-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
+                    "determine which factors are influencing them.",
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategoryEmotionsButton",
+                            clickFunctionCall: "goToReminderSearchCategoryFromUpgrade('Emotions')",
+                            buttonText: 'Add Emotion',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddEmotionRemindersCardButton",
+                            clickFunctionCall: "hideUpgradePage(card)",
+                            buttonText: 'Nope',
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "addFoodRemindersCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
+                    title: 'Common Foods or Drinks?',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#5b95f9",
+                    iconClass: "icon positive ion-ios-nutrition-outline",
+                    image: {
+                        url: "img/variable_categories/vegetarian_food-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Add any foods or drinks that you consume more than a few times a week",
+                    buttons: [
+                        {
+                            id: "goToReminderSearchCategoryFoodsButton",
+                            clickFunctionCall: "goToReminderSearchCategoryFromUpgrade('Foods')",
+                            buttonText: 'Add Food or Drink',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideAddFoodRemindersCardButton",
+                            clickFunctionCall: "hideUpgradePage(card)",
+                            buttonText: 'Nope',
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "locationTrackingInfoCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
+                    title: 'Weather & Location Tracking',
+                    "backgroundColor": "#0f9d58",
+                    circleColor: "#03c466",
+                    iconClass: "icon positive ion-ios-location",
+                    image: {
+                        url: "img/variable_categories/chance_of_storm-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Would you like to automatically log location and weather? ",
+                    moreInfo: "By automatically logging your location using GPS, we might be able to figure out how the " +
+                    "amount of time spent at the gym or other locations may be affecting you. I promise that even if " +
+                    "the NSA waterboards me, I will never divulge your location. <br> By recording your local weather " +
+                    "conditions, I might be able to figure out how the amount of sunlight or temperature is affecting you.",
+                    buttons: [
+                        {
+                            id: "goToStateAppSettingsButton",
+                            clickFunctionCall: "enableLocationTracking()",
+                            buttonText: 'YES',
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideLocationTrackingInfoCardButton",
+                            clickFunctionCall: "hideUpgradePage(card)",
+                            buttonText: 'NO',
+                            buttonIconClass: "ion-flash-off",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "importDataCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
+                    title: 'Import Your Data',
+                    "backgroundColor": "#f09402",
+                    circleColor: "#fab952",
+                    iconClass: "icon positive ion-ios-cloud-download-outline",
+                    image: {
+                        url: "img/download_2-96.png",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and" +
+                    "devices that I can automatically pull data from!",
+                    buttons: [
+                        {
+                            id: "goToStateAppImportButton",
+                            clickFunctionCall: "upgradeGoToImportPage()",
+                            buttonText: 'Connect an app or device',
+                            buttonIconClass: "ion-plus-round",
+                            buttonClass: "button button-clear button-balanced"
+                        },
+                        {
+                            id: "hideImportDataCardButton",
+                            clickFunctionCall: "hideUpgradePage(card)",
+                            buttonText: 'Done connecting data sources',
+                            buttonIconClass: "ion-checkmark",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                },
+                {
+                    id: "allDoneCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
+                    title: 'Great job!',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#fefdfc",
+                    iconClass: "icon positive ion-ios-cloud-download-outline",
+                    image: {
+                        url: "img/cute_robot_happy_transparent.png",
+                        height: "96",
+                        width: "70"
+                    },
+                    bodyText: "You're all set up!  Let's take a minute to record your first measurements and then " +
+                    "you're done for the day! ",
+                    buttons: [
+                        {
+                            id: "goToInboxButton",
+                            clickFunctionCall: "doneUpgrade()",
+                            buttonText: 'GO TO INBOX',
+                            buttonIconClass: "ion-ios-filing-outline",
+                            buttonClass: "button button-clear button-assertive"
+                        }
+                    ]
+                }
+            ];
+
+            var upgradePagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('upgradePages');
+            if(upgradePagesFromLocalStorage && upgradePagesFromLocalStorage.length &&
+                upgradePagesFromLocalStorage !== "undefined"){
+                upgradePages = upgradePagesFromLocalStorage;
+            }
+
+            $rootScope.upgradePages = upgradePages;
+
+        };
 
         return quantimodoService;
     });
