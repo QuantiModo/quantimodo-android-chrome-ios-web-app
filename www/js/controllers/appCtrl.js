@@ -2463,11 +2463,11 @@ angular.module('starter')
                          */
                     })
                     .catch(function (err) {
-                        alert(err);
+                        alert(JSON.stringify(err));
                     });
             })
                 .catch(function (err) {
-                    alert(err);
+                    alert(JSON.stringify(err));
                 });
 
         };

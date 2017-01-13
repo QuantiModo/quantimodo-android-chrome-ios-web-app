@@ -7679,6 +7679,10 @@ angular.module('starter')
         
         quantimodoService.setupUpgradePages = function () {
             /*
+
+             Support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
+              Enjoy advanced analytics, secure cloud backup, sync between computer and mobile devices, automatically import from dozens of apps/devices!
+
             Please support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
                 With QuantiModo Plus, you'll enjoy these awesome features and more:
             Import Data from Other Apps and Devices - Easily import your data from Fitbit, Withings, Jawbone, Facebook, Rescuetime, Sleep as Android, MoodiModo, Github, Google Calendar, Facebook, Runkeeper, and even the weather!
