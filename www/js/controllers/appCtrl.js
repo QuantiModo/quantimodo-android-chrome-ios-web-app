@@ -2437,6 +2437,10 @@ angular.module('starter')
 
         $scope.upgrade = function () {
 
+            if(!$rootScope.isMobile){
+                $state.go('app.upgrade');
+                return;
+            }
             if (!window.inAppPurchase) {
                 console.error('inAppPurchase not available');
                 return;

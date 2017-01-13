@@ -6,7 +6,7 @@
         <div ng-if="stateParams.showHelpCards === true && defaultHelpCards && defaultHelpCards[0]" >
             <div ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
         </div>
-        <div  class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
+        <div class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
             <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
                  id="{{divider.name}}Reminders">
                 <div ng-hide="hideNavigationMenu" class="item item-divider" style="">
@@ -211,8 +211,21 @@
             <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
             <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
         </div>
-        <div ng-if="weekdayChartConfig">
-            <highchart id="chart3" config="weekdayChartConfig"></highchart>
+        <div class="card">
+            <adsense ad-client="ca-pub-2427218021515520"
+                     ad-slot="5093178896"
+                     inline-style="display:inline-block;width:100%;height:90px"
+                     ad-format="auto">
+            </adsense>
+<!--            <div class="item item-divider" ng-click="upgrade()" style="text-align: center">
+                Remove These Ads
+            </div>-->
+        </div>
+        <div class="card" ng-if="weekdayChartConfig">
+            <div>
+                <i></i>
+                <highchart id="chart3" config="weekdayChartConfig"></highchart>
+            </div>
         </div>
         <div class="card"  ng-show="state.loading">
             <div class="item" >
