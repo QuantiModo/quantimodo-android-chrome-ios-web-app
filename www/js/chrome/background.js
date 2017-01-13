@@ -14,12 +14,13 @@ var introWindowParams = {
     height: 750
 };
 
-var facesRatingPopupWindowParams = {url: "www/templates/chrome/faces_popup.html",
+var facesRatingPopupWindowParams = {
+    url: "www/templates/chrome/faces_popup.html",
     type: 'panel',
-    top: screen.height - 80,
-    left: screen.width - 371,
-    width: 371,
-    height: 70
+    top: screen.height - 150,
+    left: screen.width - 380,
+    width: 390,
+    height: 110
 };
 
 var loginPopupWindowParams = {
@@ -62,13 +63,10 @@ chrome.runtime.onInstalled.addListener(function()
 {
 	var notificationInterval = parseInt(localStorage.notificationInterval || "60");
 
-	if(notificationInterval === -1)
-	{
+	if(notificationInterval === -1) {
 		chrome.alarms.clear("moodReportAlarm");
 		console.debug("Alarm cancelled");
-	}
-	else
-	{
+	} else {
 		var alarmInfo = {periodInMinutes: notificationInterval};
 		chrome.alarms.create("moodReportAlarm", alarmInfo);
 		console.debug("Alarm set, every " + notificationInterval + " minutes");
@@ -78,13 +76,13 @@ chrome.runtime.onInstalled.addListener(function()
 /*
 **	Called when an alarm goes off (we only have one)
 */
-chrome.alarms.onAlarm.addListener(function(alarm)
-{
-    if(localStorage.useSmallInbox){
+chrome.alarms.onAlarm.addListener(function(alarm) {
+    console.debug('onAlarm Listener heard this alarm ', alarm);
+    if(localStorage.useSmallInbox && localStorage.useSmallInbox === "true"){
         openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
+    } else {
+        checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
     }
-	console.debug('onAlarm Listener heard this alarm ', alarm);
-    checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
 });
 
 function openOrFocusPopupWindow(windowParams, focusWindow) {
@@ -136,13 +134,7 @@ function openPopup(notificationId, focusWindow) {
 		windowParams.url = "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
         openOrFocusPopupWindow(windowParams, focusWindow);
 	} else {
-        //var useLargeInbox = false;
-        if(!localStorage.useSmallInbox){
-            openOrFocusPopupWindow(reminderInboxPopupWindowParams, focusWindow);
-        } else {
-            openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
-            //openOrFocusPopupWindow(compactInboxPopupWindowParams, focusWindow);
-        }
+        openOrFocusPopupWindow(reminderInboxPopupWindowParams, focusWindow);
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
 
@@ -160,13 +152,6 @@ chrome.notifications.onClicked.addListener(function(notificationId)
     console.debug('onClicked: notificationId:', notificationId);
     var focusWindow = true;
 	openPopup(notificationId, focusWindow);
-
-	// chrome.notifications.getAll(function (notifications){
-	// 	console.debug('Got all notifications ', notifications);
-	// 	for(var i = 0; i < notifications.length; i++){
-	// 		chrome.notifications.clear(notifications[i].id);
-	// 	}
-	// });
 });
 
 /*
@@ -270,6 +255,7 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                 openPopup(notificationId);
 
             } else {
+                openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
                 chrome.browserAction.setBadgeText({text: ""});
             }
         }
