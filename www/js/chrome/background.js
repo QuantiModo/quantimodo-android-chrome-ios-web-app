@@ -63,13 +63,10 @@ chrome.runtime.onInstalled.addListener(function()
 {
 	var notificationInterval = parseInt(localStorage.notificationInterval || "60");
 
-	if(notificationInterval === -1)
-	{
+	if(notificationInterval === -1) {
 		chrome.alarms.clear("moodReportAlarm");
 		console.debug("Alarm cancelled");
-	}
-	else
-	{
+	} else {
 		var alarmInfo = {periodInMinutes: notificationInterval};
 		chrome.alarms.create("moodReportAlarm", alarmInfo);
 		console.debug("Alarm set, every " + notificationInterval + " minutes");
@@ -81,7 +78,7 @@ chrome.runtime.onInstalled.addListener(function()
 */
 chrome.alarms.onAlarm.addListener(function(alarm) {
     console.debug('onAlarm Listener heard this alarm ', alarm);
-    if(localStorage.useSmallInbox){
+    if(localStorage.useSmallInbox && localStorage.useSmallInbox === "true"){
         openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
     } else {
         checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
@@ -137,13 +134,7 @@ function openPopup(notificationId, focusWindow) {
 		windowParams.url = "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
         openOrFocusPopupWindow(windowParams, focusWindow);
 	} else {
-        //var useLargeInbox = false;
-        if(!localStorage.useSmallInbox){
-            openOrFocusPopupWindow(reminderInboxPopupWindowParams, focusWindow);
-        } else {
-            openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
-            //openOrFocusPopupWindow(compactInboxPopupWindowParams, focusWindow);
-        }
+        openOrFocusPopupWindow(reminderInboxPopupWindowParams, focusWindow);
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
 
