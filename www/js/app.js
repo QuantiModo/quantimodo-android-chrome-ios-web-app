@@ -20,7 +20,8 @@ angular.module('starter',
         'ngCordovaOauth',
         'jtt_wikipedia',
         'angular-clipboard',
-        'angular-google-analytics'
+        'angular-google-analytics',
+        'angular-google-adsense'
     ]
 )
 
@@ -1529,7 +1530,7 @@ angular.module('starter',
             params: { },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/onboarding-page.html",
+                    templateUrl: "templates/upgrade-page.html",
                     controller: 'UpgradeCtrl'
                 }
             }
