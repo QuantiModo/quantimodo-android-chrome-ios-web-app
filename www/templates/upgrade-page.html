@@ -34,13 +34,6 @@
             <span ng-bind-html="upgradePages[0].bodyText"
                 style="font-size: 16px; line-height: 1.5;">
             </span>
-            <br>
-            <button class="button button-small button-clear button-light"
-                    ng-if="upgradePages[0].moreInfo"
-                    ng-click="showMoreUpgradeInfo()">
-                MORE INFO
-            </button>
-            <br>
             <div ng-repeat="button in upgradePages[0].buttons" >
                 <div class="button-bar">
                     <button class="button"
@@ -57,7 +50,38 @@
                 </div>
             </div>
             <br>
-            <div ng-if="upgradePages[0].id.indexOf('login') === -1" >
+            <div>
+                <div class="button-bar">
+                    <button class="button"
+                            style="background-color: {{upgradePages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                font-size: 16px;
+                                text-align: center"
+                            id="monthlyButton"
+                            ng-click="monthlySubscription()">
+                        &nbsp; $6.75/month &nbsp;</i>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <div class="button-bar">
+                    <button class="button"
+                            style="background-color: {{upgradePages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                font-size: 16px;
+                                text-align: center"
+                            id="annualButton"
+                            ng-click="yearlySubscription()">
+                        &nbsp; $54/year (10% Savings) &nbsp;</i>
+                    </button>
+                </div>
+            </div>
+
+            <div ng-hide="hideLearnMoreButton" >
                 <div class="button-bar">
                     <button class="button"
                             style="background-color: {{upgradePages[0].backgroundColor}};
@@ -66,9 +90,9 @@
                                 color: white;
                                 font-size: 12px;
                                 text-align: center"
-                            id="skipButtonWelcome"
-                            ng-click="skipUpgrade()">
-                        &nbsp; SKIP SETUP &nbsp;</i>
+                            id="learnMoreButton"
+                            ng-click="hideUpgradePage()">
+                        &nbsp; LEARN MORE &nbsp;</i>
                     </button>
                 </div>
             </div>

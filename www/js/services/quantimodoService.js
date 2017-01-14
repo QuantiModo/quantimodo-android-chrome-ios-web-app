@@ -255,7 +255,8 @@ angular.module('starter')
                     url: url,
                     responseType: 'json',
                     headers : {
-                        'Content-Type': "application/json"
+                        'Content-Type': "application/json",
+                        'Accept': "application/json"
                     },
                     data : JSON.stringify(body)
                 };
@@ -263,7 +264,8 @@ angular.module('starter')
                 if(quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
                     request.headers = {
                         "Authorization" : "Bearer " + accessToken,
-                        'Content-Type': "application/json"
+                        'Content-Type': "application/json",
+                        'Accept': "application/json"
                     };
                 }
 
@@ -7706,33 +7708,7 @@ angular.module('starter')
                         height: "96",
                         width: "70"
                     },
-                    bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
-                    // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
-                    //     "the NSA waterboards me, I will never divulge share your data without your permission.",
-                    buttons: [
-                        {
-                            id: "signUpButton",
-                            clickFunctionCall: "upgradeRegister()",
-                            buttonText: 'Sign Up',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
-                            id: "signInButton",
-                            clickFunctionCall: "upgradeLogin()",
-                            buttonText: 'Already Have Account',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-assertive"
-                        },
-                        {
-                            id: "signInWithGoogle",
-                            ngHideLogic: "!isAndroid",
-                            clickFunctionCall: "upgradeGoogleLogin()",
-                            buttonText: 'Sign In With Google',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
+                    bodyText: "I need to eat electricity to live and I am very hungry.  Please help me by subscribing or I will die."
                 },
                 {
                     id: "addTreatmentRemindersCard",
@@ -7963,6 +7939,42 @@ angular.module('starter')
 
             $rootScope.upgradePages = upgradePages;
 
+        };
+
+        quantimodoService.postCreditCard = function(body, successHandler, errorHandler) {
+            quantimodoService.post('api/v2/account/subscribe',
+                [],
+                body,
+                successHandler,
+                errorHandler);
+        };
+
+        quantimodoService.postCreditCardDeferred = function(body){
+            var deferred = $q.defer();
+            quantimodoService.postCreditCard(body, function(response){
+                deferred.resolve(response);
+            }, function(response){
+                deferred.reject(response);
+            });
+            return deferred.promise;
+        };
+
+        quantimodoService.postUnsubscribe = function(body, successHandler, errorHandler) {
+            quantimodoService.post('api/v2/account/unsubscribe',
+                [],
+                body,
+                successHandler,
+                errorHandler);
+        };
+
+        quantimodoService.postUnsubscribeDeferred = function(){
+            var deferred = $q.defer();
+            quantimodoService.postUnsubscribe({}, function(response){
+                deferred.resolve(response);
+            }, function(response){
+                deferred.reject(response);
+            });
+            return deferred.promise;
         };
 
         return quantimodoService;

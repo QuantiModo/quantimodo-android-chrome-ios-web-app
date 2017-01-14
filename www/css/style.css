@@ -752,3 +752,17 @@ img.intro-primary-outcome-variable-rating-buttons {
 /*
 Cool animations at http://ianlunn.github.io/Hover/
 */
+
+
+/* Credit card stuff */
+input.ng-invalid.ng-dirty {
+    background-color: #FA787E;
+}
+
+input.ng-valid.ng-dirty {
+    background-color: #78FA89;
+}
+
+ul {
+    margin:0;
+}
