@@ -7679,7 +7679,7 @@ angular.module('starter')
             return introSlides;
         };
         
-        quantimodoService.setupUpgradePages = function () {
+        quantimodoService.setupPlanFeaturesCards = function () {
             /*
 
              Support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
@@ -7694,6 +7694,93 @@ angular.module('starter')
                 Sync Data Across Devices - Any of your QuantiModo-supported apps will be able to automatically sync from any other app.
 
             */
+
+            var planFeaturesCards = [
+                {
+                    title: 'QuantiModo Lite',
+                    headerColor: "#f2f9ff",
+                    backgroundColor: "#ffffff",
+                    subtitle: 'Perfect your life!',
+                    features: [
+                        {
+                            text: 'Track mood',
+                        },
+                        {
+                            text: 'Track symptoms',
+                        },
+                        {
+                            text: 'Track diet',
+                        },
+                        {
+                            text: 'Track anything'
+                        },
+                        {
+                            text: '3 month data history',
+                        },
+                        {
+                            text: 'Price: Free forever',
+                        }
+                    ],
+                    buttonText: "Sign Up Now",
+                    buttonClass: "button button-light"
+                },
+                {
+                    title: 'QuantiModo Premium',
+                    headerColor: "#f0df9a",
+                    backgroundColor: "#ffeda5",
+                    subtitle: 'Perfect your life!',
+                    features: [
+                        {
+                            text: 'Import data from other apps and devices',
+                        },
+                        {
+                            text: 'Sync data across devices',
+                        },
+                        {
+                            text: 'Unlimited data history',
+                        },
+                        {
+                            text: 'Advanced analytics'
+                        },
+                        {
+                            text: 'Faster data processing',
+                        },
+                        {
+                            text: '14 day free trial',
+                        },
+                        {
+                            text: "Monthly: $6.99/month"
+                        },
+                        {
+                            text: "Annual: $4.99/month (4 months free!)"
+                        }
+
+                    ],
+                    buttonText: "Start 14 Day Free Trial",
+                    buttonClass: "button button-balanced"
+                },
+            ];
+
+            $rootScope.planFeaturesCards = planFeaturesCards;
+
+        };
+
+
+        quantimodoService.setupUpgradePages = function () {
+            /*
+
+             Support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
+             Enjoy advanced analytics, secure cloud backup, sync between computer and mobile devices, automatically import from dozens of apps/devices!
+
+             Please support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
+             With QuantiModo Plus, you'll enjoy these awesome features and more:
+             Import Data from Other Apps and Devices - Easily import your data from Fitbit, Withings, Jawbone, Facebook, Rescuetime, Sleep as Android, MoodiModo, Github, Google Calendar, Facebook, Runkeeper, and even the weather!
+             Discover Hidden Causes of Suffering - The QuantiModo Analytics Engine will identify the foods, treatments, and other factors most likely to improve or exacerbate your symptoms!
+             Secure Cloud Storage - Never worry about losing your self-tracking data as it will be highly encrypted and backed up in multiple secure databases.
+             Privacy - We will never share your data without your explicit permission.
+             Sync Data Across Devices - Any of your QuantiModo-supported apps will be able to automatically sync from any other app.
+
+             */
 
             var upgradePages = [
                 {

@@ -701,6 +701,10 @@ img.intro-primary-outcome-variable-rating-buttons {
     border: 1px solid #ccc ;
 }
 
+.popup-container .popup {
+    background-color: white;
+}
+
 .popup-head
 {
 

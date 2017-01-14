@@ -1,6 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Get Started">
-    <div
-         style="
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
+    <div style="
             background-color: {{upgradePages[0].backgroundColor}};
             text-align: center;
             color: white;
@@ -10,6 +9,18 @@
              position: relative;
              top: 50%;
              transform: translateY(-50%);">
+            <div class="button-bar">
+                <button class="button button-light button-outline"
+                        id="monthlyButton"
+                        ng-click="monthlySubscription()">
+                    &nbsp; $6.99/mo Monthly &nbsp;
+                </button>
+                <button class="button button-light button-outline"
+                        id="annualButton"
+                        ng-click="yearlySubscription()">
+                    &nbsp; $4.99/mo Annually &nbsp;
+                </button>
+            </div>
             <div style="
                 box-shadow: 2px 2px 5px #434343;
                 margin: 0 auto;
@@ -52,32 +63,12 @@
             <br>
             <div>
                 <div class="button-bar">
-                    <button class="button"
-                            style="background-color: {{upgradePages[0].backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                font-size: 16px;
-                                text-align: center"
-                            id="monthlyButton"
-                            ng-click="monthlySubscription()">
-                        &nbsp; $6.75/month &nbsp;</i>
-                    </button>
+
                 </div>
             </div>
             <div>
                 <div class="button-bar">
-                    <button class="button"
-                            style="background-color: {{upgradePages[0].backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                font-size: 16px;
-                                text-align: center"
-                            id="annualButton"
-                            ng-click="yearlySubscription()">
-                        &nbsp; $54/year (10% Savings) &nbsp;</i>
-                    </button>
+
                 </div>
             </div>
 
