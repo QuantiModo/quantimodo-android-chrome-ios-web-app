@@ -10,20 +10,20 @@
             </p>
         </div>
 
-        <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item">
-            <p >{{feature.title}}</p>
-        </a>
-
         <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar">
             <img ng-if="feature.image" src="{{feature.image}}">
             <h2 style="line-height: normal">{{feature.title}} &nbsp;
                 <i style="color: darkgrey; text-align: right"
                    ng-if="feature.moreInfo"
-                   ng-click="showAlert(feature.title, feature.moreInfo)"
+                   ng-click="showAlert(feature.title, feature.moreInfo, feature.subtitle)"
                    class="icon ion-help-circled">
                 </i>
             </h2>
             <p>{{feature.subtitle}}</p>
+        </a>
+
+        <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item">
+            <p >{{feature.title}}</p>
         </a>
 
     </div>

@@ -5,6 +5,7 @@ angular.module('starter')
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 
+        $scope.planFeaturesCard = $rootScope.planFeaturesCards[1];
         $rootScope.upgradeFooterText = null;
         quantimodoService.setupUpgradePages();
 
@@ -43,5 +44,5 @@ angular.module('starter')
             $rootScope.hideMenuButton = true;
         }
     };
-    
+
 });

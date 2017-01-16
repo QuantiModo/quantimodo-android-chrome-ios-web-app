@@ -2571,11 +2571,12 @@ angular.module('starter')
             return stringOrObject;
         };
 
-        quantimodoService.showAlert = function(title, template) {
+        quantimodoService.showAlert = function(title, template, subTitle) {
             var alertPopup = $ionicPopup.alert({
                 cssClass : 'positive',
                 okType : 'button-positive',
                 title: title,
+                subTitle: subTitle,
                 template: template
             });
         };
@@ -7267,7 +7268,7 @@ angular.module('starter')
                 console.debug('Help cards already set up');
                 return;
             }
-            
+
             window.localStorage.setItem('helpCardsSetup', true);
 
             var defaultHelpCards = [
@@ -7715,19 +7716,33 @@ angular.module('starter')
                 subtitle: 'Improve your life!',
                 featuresBasicList: [
                     {
-                        title: 'Track mood',
-                    },
-                    {
-                        title: 'Track symptoms',
-                    },
-                    {
-                        title: 'Track diet',
-                    },
-                    {
-                        title: 'Track treatments'
-                    },
-                    {
                         title: '3 month data history',
+                    },
+                ],
+                featuresAvatarList: [
+                    {
+                        title: 'Emotion Tracking',
+                        subtitle: 'Turn data into happiness!',
+                        moreInfo: $rootScope.variableCategories.Emotions.moreInfo,
+                        image: $rootScope.variableCategories.Emotions.imageUrl,
+                    },
+                    {
+                        title: 'Track Symptoms',
+                        subtitle: 'in just seconds a day',
+                        moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
+                        image: $rootScope.variableCategories.Symptoms.imageUrl,
+                    },
+                    {
+                        title: 'Track Diet',
+                        subtitle: 'Identify dietary triggers',
+                        moreInfo: $rootScope.variableCategories.Foods.moreInfo,
+                        image: $rootScope.variableCategories.Foods.imageUrl,
+                    },
+                    {
+                        title: 'Treatment Tracking',
+                        subtitle: 'with reminders',
+                        moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
+                        image: $rootScope.variableCategories.Treatments.imageUrl,
                     },
                 ],
                 priceHtml: "Price: Free forever",
@@ -7810,8 +7825,8 @@ angular.module('starter')
                         image: $rootScope.variableCategories.Physique.imageUrl
                     },
                     {
-                        title: 'Fitness',
-                        subtitle: 'Track of your steps and physical activity',
+                        title: 'Fitness Tracking',
+                        subtitle: 'Steps and physical activity',
                         moreInfo: $rootScope.variableCategories['Physical Activity'].moreInfo,
                         image: $rootScope.variableCategories['Physical Activity'].imageUrl
                     },
@@ -7873,10 +7888,7 @@ angular.module('starter')
                     },
                     bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
                     'like meditation or psychotherapy? ',
-                    moreInfo: "Often the effects of medications and treatments aren't intuitively perceptible.  " +
-                    "That's where I come in!  If you regularly recording your treatments,  I can analyze the data so" +
-                    "we can get a better idea which ones are helping you, " +
-                    "which one may be harming you, and which ones are merely a waste of money.",
+                    moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryTreatmentsButton",
@@ -7902,15 +7914,12 @@ angular.module('starter')
                     circleColor: "#5b95f9",
                     iconClass: "icon positive ion-sad-outline",
                     image: {
-                        url: "img/variable_categories/dizzy_person_2-96.png",
+                        url: $rootScope.variableCategories.Symptoms.imageUrl,
                         height: "96",
                         width: "96"
                     },
                     bodyText: 'Got any recurring symptoms that vary in their severity?',
-                    moreInfo: "Symptom severity can be influence by hundreds of factors in daily life. " +
-                    "The human mind can only hold 7 numbers in working memory at a time.  I can hold a billion in my mind! " +
-                    "If you regularly record your symptoms, add them so I can use this data " +
-                    "to determine which hidden and imperceptible factors might be worsening or improving them.",
+                    moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategorySymptomsButton",
@@ -7940,8 +7949,9 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
-                    bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
-                    "determine which factors are influencing them.",
+                    bodyText: "Do you have any emotions that fluctuate regularly?<br><br>If so, add them so I can try to " +
+                        "determine which factors are influencing them.",
+                    moreInfo: $rootScope.variableCategories.Emotions.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryEmotionsButton",
@@ -7972,6 +7982,7 @@ angular.module('starter')
                         width: "96"
                     },
                     bodyText: "Add any foods or drinks that you consume more than a few times a week",
+                    moreInfo: $rootScope.variableCategories.Foods.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryFoodsButton",
@@ -8125,8 +8136,6 @@ angular.module('starter')
             });
             return deferred.promise;
         };
-
-
 
         return quantimodoService;
     });

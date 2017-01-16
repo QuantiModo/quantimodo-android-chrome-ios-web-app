@@ -2435,8 +2435,8 @@ angular.module('starter')
             $scope.closeMenu();
         });
 
-        $scope.showAlert = function(title, template) {
-            quantimodoService.showAlert(title, template);
+        $scope.showAlert = function(title, template, subTitle) {
+            quantimodoService.showAlert(title, template, subTitle);
         };
 
         $scope.monthlySubscription = function () {
@@ -2560,7 +2560,7 @@ angular.module('starter')
                 console.debug(JSON.stringify(error));
             });
         };
-        
+
 
         var androidDowngrade = function () {
             var confirmPopup = $ionicPopup.confirm({

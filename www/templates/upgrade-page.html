@@ -1,69 +1,72 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
-    <div style="
-            background-color: {{upgradePages[0].backgroundColor}};
-            text-align: center;
-            color: white;
-            padding: 20px;
-            height: 100%" >
-        <br>
-        <br>
-        <p style="font-size: 20px; line-height: 1;">
-            QuantiModo Premium
-        </p>
-        <div class="row">
-            <div class="col">
-                <button class="button button-light button-outline"
-                        id="monthlyButton"
-                        ng-click="monthlySubscription()">
-                    $6.99/mo
-                </button>
-            </div>
-            <div class="col">
-                <button class="button button-light button-outline"
-                        id="annualButton"
-                        ng-click="yearlySubscription()">
-                    $60/year
-                </button>
-            </div>
-        </div>
-        <div class="list">
 
-            <a ng-repeat="feature in planFeaturesCards[1].features" class="item item-avatar" >
-                <img src="{{feature.image}}">
-                <h2>{{feature.title}}</h2>
-                <p>{{feature.body}}</p>
-            </a>
+    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } ">
 
-        </div>
-        <br>
-        <div class="row">
-            <div class="col">
-                <div >
-                    <img style="width:100%" ng-src="img/intro/intro_import.png">
+        <div ng-include="'templates/fragments/plan-features-card-fragment.html'"></div>
+        <div style="background-color: {{upgradePages[0].backgroundColor}};
+                text-align: center;
+                color: white;
+                padding: 20px;
+                height: 100%" >
+            <br>
+            <br>
+            <p style="font-size: 20px; line-height: 1;">
+                QuantiModo Premium
+            </p>
+            <div class="row">
+                <div class="col">
+                    <button class="button button-light button-outline"
+                            id="monthlyButton"
+                            ng-click="monthlySubscription()">
+                        $6.99/mo
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="button button-light button-outline"
+                            id="annualButton"
+                            ng-click="yearlySubscription()">
+                        $60/year
+                    </button>
                 </div>
             </div>
-            <div class="col">
-                <span style="font-size: 16px; line-height: 1.5;">
-                    Import Your Data
-                </span>
-                <br>
-                Automatically import your data from dozens of apps and devices
+            <div class="list">
+
+                <a ng-repeat="feature in planFeaturesCards[1].features" class="item item-avatar" >
+                    <img src="{{feature.image}}">
+                    <h2>{{feature.title}}</h2>
+                    <p>{{feature.body}}</p>
+                </a>
+
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div >
-                    <img style="width:100%" ng-src="img/intro/intro_track_anything.png">
+            <br>
+            <div class="row">
+                <div class="col">
+                    <div >
+                        <img style="width:100%" ng-src="img/intro/intro_import.png">
+                    </div>
+                </div>
+                <div class="col">
+                    <span style="font-size: 16px; line-height: 1.5;">
+                        Import Your Data
+                    </span>
+                    <br>
+                    Automatically import your data from dozens of apps and devices
                 </div>
             </div>
-            <div class="col">
-                <span style="font-size: 16px; line-height: 1.5;">
-                    Analytics
-                </span>
-                <br>
-                Personalized studies exploring factors influencing your health and happiness.
+            <div class="row">
+                <div class="col">
+                    <div >
+                        <img style="width:100%" ng-src="img/intro/intro_track_anything.png">
+                    </div>
+                </div>
+                <div class="col">
+                    <span style="font-size: 16px; line-height: 1.5;">
+                        Analytics
+                    </span>
+                    <br>
+                    Personalized studies exploring factors influencing your health and happiness.
+                </div>
             </div>
-        </div>
 
             <div style="
                 box-shadow: 2px 2px 5px #434343;
@@ -129,6 +132,7 @@
             </div>
         </div>
 
-    </div>
+
+    </ion-content>
 
 </ion-view>
