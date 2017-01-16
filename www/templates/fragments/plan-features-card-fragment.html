@@ -9,8 +9,21 @@
                 {{planFeaturesCard.subtitle}}
             </p>
         </div>
-        <a class="item" href="#" ng-repeat="feature in planFeaturesCard.features">
-            {{feature.text}}
+
+        <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item">
+            <p >{{feature.title}}</p>
+        </a>
+
+        <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar">
+            <img ng-if="feature.image" src="{{feature.image}}">
+            <h2 style="line-height: normal">{{feature.title}} &nbsp;
+                <i style="color: darkgrey; text-align: right"
+                   ng-if="feature.moreInfo"
+                   ng-click="showAlert(feature.title, feature.moreInfo)"
+                   class="icon ion-help-circled">
+                </i>
+            </h2>
+            <p>{{feature.subtitle}}</p>
         </a>
 
     </div>
@@ -19,4 +32,6 @@
     <button class="{{planFeaturesCard.buttonClass}}">
         {{planFeaturesCard.buttonText}}
     </button>
+    <br>
+    <br>
 </div>

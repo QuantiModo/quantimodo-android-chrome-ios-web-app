@@ -1,5 +1,5 @@
-<div ng-if="!connector.hide" class="list card"
-     ng-repeat="connector in connectors" >
+<div ng-if="!connector.hide && connector.isParent" class="list card"
+     ng-repeat="connector in connectors">
     <div class="item" style="padding-bottom:10px;">
         <div class="row">
             <div class="col col-20" style="padding-top: 10px;">

@@ -39,6 +39,7 @@
     "deferred" : false,
     "PushNotification" : false,
     "navigator" : false,
-    "UserVoice" : false
+    "UserVoice" : false,
+    "backgroundGeoLocation" : false
   }
 }

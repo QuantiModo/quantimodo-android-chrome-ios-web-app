@@ -50,4 +50,4 @@ You can pause or quit QuantiModo at any time. You have complete control.
 
 ### QuantiModo Security
 
-From individuals to Fortune 500 companies, our customers have demanding security and privacy requirements. QuantiModo was designed for the most rigorous security standards, using the same technology used by online banks.
+Our customers have demanding security and privacy requirements. QuantiModo was designed for the most rigorous security standards, using the same technology used by online banks.

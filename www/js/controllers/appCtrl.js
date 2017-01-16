@@ -2435,17 +2435,8 @@ angular.module('starter')
             $scope.closeMenu();
         });
 
-
-        // An alert dialog
-        $scope.showAlert = function(title) {
-            var alertPopup = $ionicPopup.alert({
-                title: title,
-                template: ''
-            });
-
-            alertPopup.then(function(res) {
-                console.log('Thank you for not eating my delicious ice cream cone');
-            });
+        $scope.showAlert = function(title, template) {
+            quantimodoService.showAlert(title, template);
         };
 
         $scope.monthlySubscription = function () {
