@@ -7398,7 +7398,7 @@ angular.module('starter')
                     title: 'Any Treatments?',
                     "backgroundColor": "#f09402",
                     circleColor: "#fab952",
-                    iconClass: "icon positive " + $rootScope.Treatments.icon,
+                    iconClass: "icon positive " + $rootScope.variableCategories.Treatments.icon,
                     image: {
                         url: $rootScope.variableCategories.Treatments.imageUrl,
                         height: "96",
@@ -7406,7 +7406,7 @@ angular.module('starter')
                     },
                     bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
                         'like meditation or psychotherapy? ',
-                    moreInfo: $rootScope.Treatments.moreInfo,
+                    moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryTreatmentsButton",
