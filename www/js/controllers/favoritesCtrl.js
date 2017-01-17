@@ -31,11 +31,13 @@ angular.module('starter')
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Syncing...');
 				quantimodoService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+					$scope.hideLoader();
 					quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 				});
 			} else {
+				$scope.hideLoader();
 				$scope.$broadcast('scroll.refreshComplete');
 			}
 		};
