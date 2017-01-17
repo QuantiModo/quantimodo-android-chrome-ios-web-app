@@ -132,7 +132,7 @@ angular.module('starter')
 					}
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                    $scope.hideLoader();
+                    $scope.hideInboxLoader();
 				});
 		};
 
@@ -218,7 +218,7 @@ angular.module('starter')
 					}
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                    $scope.hideLoader();
+                    $scope.hideInboxLoader();
 				});
 	    };
 
@@ -239,7 +239,7 @@ angular.module('starter')
 					}
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                    $scope.hideLoader();
+                    $scope.hideInboxLoader();
 				});
 	    };
 
@@ -260,7 +260,7 @@ angular.module('starter')
 					}
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                    $scope.hideLoader();
+                    $scope.hideInboxLoader();
 				});
 	    };
 
@@ -296,10 +296,10 @@ angular.module('starter')
                         getWeekdayChartIfNecessary();
 					}
 
-					$scope.hideLoader();
+					$scope.hideInboxLoader();
 				}, function(){
 					getWeekdayChartIfNecessary();
-					$scope.hideLoader();
+					$scope.hideInboxLoader();
 					console.error("failed to get reminder notifications!");
 				});
 		};
@@ -316,10 +316,10 @@ angular.module('starter')
 			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 			$scope.filteredTrackingReminderNotifications =
 				quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-            $scope.hideLoader();
+            $scope.hideInboxLoader();
 		};
 
-		$scope.hideLoader = function(){
+		$scope.hideInboxLoader = function(){
 			$ionicLoading.hide();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
@@ -336,12 +336,12 @@ angular.module('starter')
 					getWeekdayChartIfNecessary();
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
-					$scope.hideLoader();
+					$scope.hideInboxLoader();
 					$scope.state.loading = false;
 				}, function(error){
 					getWeekdayChartIfNecessary();
 					console.error(error);
-					$scope.hideLoader();
+					$scope.hideInboxLoader();
 					console.error("failed to get reminder notifications!");
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
@@ -385,12 +385,13 @@ angular.module('starter')
 					getTrackingReminderNotifications();
 				}, function (error) {
 					console.error('$scope.refreshTrackingReminderNotifications: ' + error);
-                    $scope.hideLoader();
+                    $scope.hideInboxLoader();
 				});
 			}
 		};
 
 	    $scope.init = function(){
+			$scope.hideLoader();
 	    	if ($stateParams.hideNavigationMenu !== true){
                 $rootScope.hideNavigationMenu = false;
 			}
@@ -514,7 +515,7 @@ angular.module('starter')
 	    };
 
     	$scope.$on('$ionicView.enter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-			$scope.hideLoader();
+			$scope.hideInboxLoader();
     		$scope.init();
     	});
 
@@ -597,10 +598,10 @@ angular.module('starter')
 					$scope.showLoader('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
 					quantimodoService.skipAllTrackingReminderNotificationsDeferred(params)
 						.then(function(){
-							$scope.hideLoader();
+							$scope.hideInboxLoader();
 							$scope.init();
 						}, function(error){
-							$scope.hideLoader();
+							$scope.hideInboxLoader();
 							if (typeof Bugsnag !== "undefined") {
 								Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 							}

@@ -60,7 +60,7 @@
                                     ng-if="trackingReminderNotification.abbreviatedUnitName == '/5'"
                                     style="text-overflow: clip; font-size: 12px;"
                                     ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
-                                <i class="ion-edit"> &nbsp; Add Note</i>
+                                <i class="ion-edit">Add Note</i>
                             </button>
                             <button class="button button-clear button-calm"
                                     ng-click="editReminderSettingsByNotification(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)"
@@ -211,7 +211,7 @@
             <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
             <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
         </div>
-        <div class="card">
+        <div ng-if="isWeb" class="card">
             <adsense ad-client="ca-pub-2427218021515520"
                      ad-slot="5093178896"
                      inline-style="display:inline-block;width:100%;height:90px"
