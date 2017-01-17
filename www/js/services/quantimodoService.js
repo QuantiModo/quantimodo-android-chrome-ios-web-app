@@ -6917,8 +6917,6 @@ angular.module('starter')
             return stringOrObject;
         };
 
-
-
         quantimodoService.getCachedResponse = function(requestName, params, ignoreExpiration){
             if(!params){
                 console.error('No params provided to getCachedResponse');
@@ -7707,6 +7705,25 @@ angular.module('starter')
 
             return introSlides;
         };
+
+        $rootScope.signUpQuestions = [
+            {
+                question: "What do you do with my data?",
+                answer: "Your data belongs entirely to you. We do not sell or otherwise do anything with your data to put your privacy at risk."
+            },
+            {
+                question: "QuantiModo Privacy",
+                answer: "Your privacy is very important to us. You can delete your data at any time, all of it, or just a slice of it."
+            },
+            {
+                question: "Can I pause QuantiModo?",
+                answer: "You can pause or quit QuantiModo at any time. You have complete control."
+            },
+            {
+                question: "QuantiModo Security",
+                answer: "Our customers have demanding security and privacy requirements. QuantiModo was designed for the most rigorous security standards, using the same technology used by online banks."
+            },
+        ];
 
         $rootScope.planFeaturesCards = [
             {

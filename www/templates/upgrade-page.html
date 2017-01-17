@@ -3,6 +3,14 @@
     <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } ">
 
         <div ng-include="'templates/fragments/plan-features-card-fragment.html'"></div>
+        <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
+            <div class="item item-divider">
+                {{signUpQuestion.question}}
+            </div>
+            <div class="item item-text-wrap">
+                {{signUpQuestion.answer}}
+            </div>
+        </div>
         <div style="background-color: {{upgradePages[0].backgroundColor}};
                 text-align: center;
                 color: white;
