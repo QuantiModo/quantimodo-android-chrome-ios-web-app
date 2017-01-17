@@ -7832,8 +7832,8 @@ angular.module('starter')
                     },
                     {
                         title: 'Advanced analytics',
-                        subtitle: 'vs last 3 months for lite',
-                        moreInfo: "",
+                        subtitle: 'Top Predictors',
+                        moreInfo: "See a list of the strongest predictors for any outcome.  Dive deeper by checking out the full sties",
                         image: 'img/features/calendar.svg'
                     },
                 ],
