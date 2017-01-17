@@ -66,9 +66,11 @@ angular.module('starter')
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Syncing...');
 				quantimodoService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+					$scope.hideLoader();
 					getTrackingReminders();
 				});
 			} else {
+				$scope.hideLoader();
 				$scope.$broadcast('scroll.refreshComplete');
 			}
 		};
