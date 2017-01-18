@@ -531,6 +531,10 @@ angular.module('starter')
 			getTrackingReminderNotifications();
 		});
 
+        $scope.$on('$ionicView.afterEnter', function(){
+            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+        });
+
         $scope.$on('$ionicView.afterLeave', function(){
             $rootScope.hideHomeButton = false;
             $rootScope.hideBackButton = false;
