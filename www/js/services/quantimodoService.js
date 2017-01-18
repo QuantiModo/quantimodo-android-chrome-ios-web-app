@@ -7860,8 +7860,8 @@ angular.module('starter')
                     },
                 ],
                 priceHtml: "14 day free trial <br> Monthly: $6.99/month <br> Annual: $4.99/month (4 months free!)",
-                buttonText: "Start 14 Day Free Trial",
-                buttonClass: "button button-balanced"
+                buttonText: "Start My 14 Day Free Trial",
+                buttonClass: "button button-large button-assertive"
             },
         ];
 
