@@ -30,11 +30,14 @@
     "angular-wikipedia-api-factory": "^0.2.3",
     "angular-clipboard": "^1.5.0",
     "angular-google-analytics": "^1.1.9",
-    "angular-google-adsense": "^0.4.5"
+    "angular-google-adsense": "^0.4.5",
+    "angular-material-datetimepicker": "^1.4.0",
+    "angular-material": "^1.1.1"
   },
   "resolutions": {
-    "angular": "1.3.13",
-    "angular-animate": "1.3.13",
-    "angular-sanitize": "1.3.13"
+    "angular": "1.6.1",
+    "angular-animate": "1.5.3",
+    "angular-sanitize": "1.3.13",
+    "angular-material": "^1.1.1"
   }
 }

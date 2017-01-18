@@ -21,7 +21,9 @@ angular.module('starter',
         'jtt_wikipedia',
         'angular-clipboard',
         'angular-google-analytics',
-        'angular-google-adsense'
+        'angular-google-adsense',
+        'ngMaterialDatePicker',
+        'ngMaterial'
     ]
 )
 
@@ -1029,6 +1031,20 @@ angular.module('starter',
             params: {
                 path: '/api/v2/account/update-card?hideMenu=true',
                 title: 'Update Card',
+                iFrameStyle: "height:2500px; width:100%;"
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/credit-card.html",
+                    controller: 'CreditCardCtrl'
+                }
+            }
+        })
+        .state('app.manageSubscription', {
+            url: "/manage-subscription",
+            params: {
+                path: '/api/v2/account/subscription?hideMenu=true',
+                title: 'Subscription',
                 iFrameStyle: "height:2500px; width:100%;"
             },
             views: {
