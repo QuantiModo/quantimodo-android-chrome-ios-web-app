@@ -2342,15 +2342,13 @@ angular.module('starter')
 
         quantimodoService.getUnits = function(){
             var deferred = $q.defer();
-
+            var params = {};
             var cachedUnits = quantimodoService.getCachedResponse('getUnits', params);
             if(cachedUnits){
                 addUnitsToRootScope(cachedUnits);
                 deferred.resolve(cachedUnits);
                 return deferred.promise;
             }
-
-            var params = {};
             quantimodoService.refreshUnits().then(function(unitObjects){
                 quantimodoService.storeCachedResponse('getUnits', params, unitObjects);
                 deferred.resolve(unitObjects);
@@ -6579,6 +6577,13 @@ angular.module('starter')
         quantimodoService.getEpochTimeFromLocalString = function (localTimeString) {
             var timeFormat = "HH:mm:ss";
             var epochTime = moment(localTimeString, timeFormat).unix();
+            return epochTime;
+        };
+
+        quantimodoService.getEpochTimeFromLocalStringRoundedToHour = function (localTimeString) {
+            var timeFormat = "HH";
+            var partsOfString = localTimeString.split(':');
+            var epochTime = moment(partsOfString[0], timeFormat).unix();
             return epochTime;
         };
 
