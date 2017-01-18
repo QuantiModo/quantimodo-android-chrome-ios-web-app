@@ -1535,6 +1535,17 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.tabs', {
+            url: "/tabs",
+            cache: true,
+            params: { },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/tabs.html",
+                    controller: 'TabsCtrl'
+                }
+            }
+        })
         .state('app.favoriteAdd', {
             url: "/favorite-add",
             cache: false,
