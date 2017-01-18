@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
     <ion-nav-title>Study</ion-nav-title>
-        <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
+        <ion-content ng-class="{ isBrowserView : isWeb == true }">
             <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
             <div ng-show="state.loading && !state.studyNotFound" style="text-align: center">
                 <br>
@@ -143,7 +143,6 @@
                             <p ng-bind-html="causeWikiEntry" style="text-align: left"></p>
                         </div>
                     </div>
-                    <br>
                     <div>
                         <div ng-if="effectWikiImage" style="width: 100%">
                             <img hspace="20" style="float:right; padding: 5px" ng-show="effectWikiImage" ng-src="{{effectWikiImage}}" >
@@ -152,18 +151,20 @@
                             <p ng-bind-html="effectWikiEntry" style="text-align: left"></p>
                         </div>
                     </div>
-                    <br>
+
                     <h3 ng-show="correlationObject.studyObjective" id="studyObjective">Study Objective</h3>
-                       <p>{{correlationObject.studyObjective}}</p><br>
+                       <p>{{correlationObject.studyObjective}}</p>
                     <h3 ng-show="correlationObject.studyDesign" id="studyDesign">Study Design</h3>
-                       <p>{{correlationObject.studyDesign}}</p><br>
+                       <p>{{correlationObject.studyDesign}}</p>
                     <h3 ng-show="correlationObject.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
-                       <p>{{correlationObject.dataAnalysis}}</p><br>
+                       <p>{{correlationObject.dataAnalysis}}</p>
+
                     <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
-                       <p ng-bind-html="correlationObject.dataSources"></p><br>
+                       <p ng-bind-html="correlationObject.dataSources"></p>
+
                     <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
-                        <p>{{correlationObject.studyLimitations}}</p><br>
-                    <br>
+                        <p>{{correlationObject.studyLimitations}}</p>
+
                 </div>
             </div>
             <div ng-show="correlationObject">

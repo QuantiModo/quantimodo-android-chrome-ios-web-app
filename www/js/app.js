@@ -1033,6 +1033,20 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
+                    templateUrl: "templates/credit-card.html",
+                    controller: 'CreditCardCtrl'
+                }
+            }
+        })
+        .state('app.manageSubscription', {
+            url: "/manage-subscription",
+            params: {
+                path: '/api/v2/account/subscription?hideMenu=true',
+                title: 'Subscription',
+                iFrameStyle: "height:2500px; width:100%;"
+            },
+            views: {
+                'menuContent': {
                     templateUrl: "templates/iframe-embed.html",
                     controller: 'IframeScreenCtrl'
                 }

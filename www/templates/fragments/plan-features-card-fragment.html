@@ -1,0 +1,37 @@
+<div class="card" style="background-color: {{planFeaturesCard.backgroundColor}}; text-align: center;" >
+    <div class="list">
+
+        <div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}">
+            <p style="font-size: 25px; color: black; margin-bottom: 10px;">
+                {{planFeaturesCard.title}}
+            </p>
+            <p style="font-size: 18px; color: black; margin-top: 10px;">
+                {{planFeaturesCard.subtitle}}
+            </p>
+        </div>
+
+        <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar">
+            <img ng-if="feature.image" src="{{feature.image}}">
+            <h2 style="line-height: normal">{{feature.title}} &nbsp;
+                <i style="color: darkgrey; text-align: right"
+                   ng-if="feature.moreInfo"
+                   ng-click="showAlert(feature.title, feature.moreInfo, feature.subtitle)"
+                   class="icon ion-help-circled">
+                </i>
+            </h2>
+            <p>{{feature.subtitle}}</p>
+        </a>
+
+        <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item">
+            <p >{{feature.title}}</p>
+        </a>
+
+    </div>
+    <div ng-bind-html="planFeaturesCard.priceHtml"></div>
+    <br>
+    <button class="{{planFeaturesCard.buttonClass}}">
+        {{planFeaturesCard.buttonText}}
+    </button>
+    <br>
+    <br>
+</div>

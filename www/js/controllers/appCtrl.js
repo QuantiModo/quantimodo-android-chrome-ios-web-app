@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector,
                                     quantimodoService, ionicDatePicker, $cordovaOauth,
-                                    $ionicActionSheet, $ionicDeploy) {
+                                    $ionicActionSheet, $ionicDeploy, $locale) {
 
         $rootScope.appMigrationVersion = 1489;
         $rootScope.appVersion = "2.3.2.0";
@@ -2435,45 +2435,175 @@ angular.module('starter')
             $scope.closeMenu();
         });
 
-        $scope.upgrade = function () {
+        $scope.showAlert = function(title, template, subTitle) {
+            quantimodoService.showAlert(title, template, subTitle);
+        };
 
-            if(!$rootScope.isMobile){
-                $state.go('app.upgrade');
-                return;
+        $scope.monthlySubscription = function () {
+            $scope.plan = 'monthly';
+            $scope.upgrade();
+        };
+
+        $scope.yearlySubscription = function () {
+            $scope.plan = 'yearly';
+            $scope.upgrade();
+        };
+
+        $scope.upgrade = function () {
+            if(!$scope.plan){
+                $scope.plan = 'monthly';
             }
+            if($rootScope.isMobile){
+                mobileUpgrade();
+            } else {
+                webUpgrade();
+            }
+        };
+
+        var webUpgrade = function() {
+            var myPopup;
+            $scope.currentYear = new Date().getFullYear();
+            $scope.currentMonth = new Date().getMonth() + 1;
+            $scope.months = $locale.DATETIME_FORMATS.MONTH;
+            $scope.ccinfo = {type:undefined};
+            $scope.popupSubtitle = '';
+
+            myPopup = $ionicPopup.show({
+                templateUrl: 'templates/credit-card.html',
+                title: 'Payment Info',
+                subTitle: $scope.popupSubtitle,
+                scope: $scope,
+                buttons: [
+                    { text: 'Cancel' },
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            if (!$scope.ccinfo.securityCode) {
+                                $scope.showAlert('Please enter security code');
+                                e.preventDefault();
+                            } else if (!$scope.ccinfo.number) {
+                                $scope.showAlert('Please enter card number');
+                                e.preventDefault();
+                            } else {
+                                return $scope.ccinfo;
+                            }
+                        }
+                    }
+                ]
+            });
+
+            myPopup.then(function() {
+                var body = {
+                    "card_number": $scope.ccinfo.number,
+                    "card_month": $scope.ccinfo.month,
+                    "card_year": $scope.ccinfo.year,
+                    "card_cvc": $scope.ccinfo.securityCode,
+                    'plan': $scope.plan,
+                    'coupon': $scope.coupon
+                };
+
+                quantimodoService.postCreditCardDeferred(body).then(function (response) {
+                    console.debug(JSON.stringify(response));
+                }, function (error) {
+                    console.debug(JSON.stringify(error));
+                });
+            });
+        };
+
+        var mobileUpgrade = function () {
+            //makeInAppPurchase('com.quantimodo.quantimodo.subscription1');
+            makeInAppPurchase('subscription1');
+        };
+
+        var makeInAppPurchase = function (productName) {
             if (!window.inAppPurchase) {
                 console.error('inAppPurchase not available');
+                webUpgrade();
                 return;
             }
-
             inAppPurchase
-                .getProducts(['com.quantimodo.quantimodo.subscription1'])
-            .then(function (products) {
-                alert('Available Products: ' + JSON.stringify(products));
-                /*
-                 [{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
-                 */
+                .getProducts([productName])
+                .then(function (products) {
+                    alert('Available Products: ' + JSON.stringify(products));
+                    /*
+                     [{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
+                     */
 
-                inAppPurchase
-                    .subscribe('com.quantimodo.quantimodo.subscription1')
-                    .then(function (data) {
-                        alert(JSON.stringify(data));
-                        /*
-                         {
-                         transactionId: ...
-                         receipt: ...
-                         signature: ...
-                         }
-                         */
-                    })
-                    .catch(function (err) {
-                        alert(JSON.stringify(err));
-                    });
-            })
+                    inAppPurchase
+                        .subscribe(productName)
+                        .then(function (data) {
+                            alert(JSON.stringify(data));
+                            /*
+                             {
+                             transactionId: ...
+                             receipt: ...
+                             signature: ...
+                             }
+                             */
+                        })
+                        .catch(function (err) {
+                            alert(JSON.stringify(err));
+                        });
+                })
                 .catch(function (err) {
-                    alert(JSON.stringify(err));
+                    alert("couldn't get product " + productName + ": " + JSON.stringify(err));
                 });
+        };
 
+        var webDowngrade = function() {
+            quantimodoService.postUnsubscribeDeferred().then(function (response) {
+                console.debug(JSON.stringify(response));
+                $scope.showAlert('Successfully downgraded to QuantiModo Lite');
+            }, function (error) {
+                $scope.showAlert('An error occurred while downgrading.  Please email mike@quantimo.do');
+                console.debug(JSON.stringify(error));
+            });
+        };
+
+
+        var androidDowngrade = function () {
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Google Play',
+                template: "You subscribed through Google Play so I have to send you to a page that tells you how to " +
+                    "unsubscribe from Play subscriptions"
+            });
+
+            confirmPopup.then(function(res) {
+                if(res) {
+                    window.open("https://support.google.com/googleplay/answer/7018481", '_system', 'location=yes');
+                    quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
+                } else {
+                    console.log('You are not sure');
+                }
+            });
+        };
+
+        var appleDowngrade = function () {
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'App Store',
+                template: "You subscribed through the App Store so I have to send you to a page that tells you how to " +
+                "unsubscribe from App Store subscriptions"
+            });
+
+            confirmPopup.then(function(res) {
+                if(res) {
+                    window.open("https://support.apple.com/en-us/HT202039", '_system', 'location=yes');
+                    quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
+                } else {
+                    console.log('You are not sure');
+                }
+            });
+        };
+
+        $scope.downgrade = function () {
+            if ($rootScope.user.subscriptionProvider === 'google') {
+                androidDowngrade();
+            } else if ($rootScope.user.subscriptionProvider === 'apple') {
+                appleDowngrade();
+            } else {
+                webDowngrade();
+            }
         };
 
         $scope.init();

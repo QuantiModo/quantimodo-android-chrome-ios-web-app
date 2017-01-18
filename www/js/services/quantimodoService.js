@@ -255,7 +255,8 @@ angular.module('starter')
                     url: url,
                     responseType: 'json',
                     headers : {
-                        'Content-Type': "application/json"
+                        'Content-Type': "application/json",
+                        'Accept': "application/json"
                     },
                     data : JSON.stringify(body)
                 };
@@ -263,7 +264,8 @@ angular.module('starter')
                 if(quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
                     request.headers = {
                         "Authorization" : "Bearer " + accessToken,
-                        'Content-Type': "application/json"
+                        'Content-Type': "application/json",
+                        'Accept': "application/json"
                     };
                 }
 
@@ -1482,138 +1484,176 @@ angular.module('starter')
             return dataArray;
         };
 
+        $rootScope.variableCategories = {
+            "Anything": {
+                defaultAbbreviatedUnitName: '',
+                helpText: "What do you want to record?",
+                variableCategoryNameSingular: "anything",
+                defaultValuePlaceholderText : "Enter most common value here...",
+                defaultValueLabel : 'Value',
+                addNewVariableCardText : 'Add a new variable',
+                variableCategoryName : '',
+                defaultValue : '',
+                measurementSynonymSingularLowercase : "measurement",
+                icon: "ion-speedometer"
+            },
+            "Activity": {
+                defaultAbbreviatedUnitName: 'min',
+                helpText: "What activity do you want to record?",
+                variableCategoryName: "Activity",
+                variableCategoryNameSingular: "Activity",
+                measurementSynonymSingularLowercase : "activity",
+                icon: "ion-ios-body"
+            },
+            "Emotions": {
+                defaultAbbreviatedUnitName: "/5",
+                helpText: "What emotion do you want to rate?",
+                variableCategoryName: "Emotions",
+                variableCategoryNameSingular: "Emotion",
+                measurementSynonymSingularLowercase : "rating",
+                icon: "ion-happy-outline",
+                moreInfo: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
+                "determine which factors are influencing them.",
+                imageUrl: "img/variable_categories/theatre_mask-96.png"
+            },
+            "Environment": {
+                defaultAbbreviatedUnitName: '',
+                helpText: "What environmental variable do you want to record?",
+                variableCategoryName: "Environment",
+                variableCategoryNameSingular: "Environment",
+                measurementSynonymSingularLowercase : "environmental measurement",
+                icon: "ion-ios-partlysunny-outline",
+                moreInfo: "By recording your local weather conditions, I might be able to figure out how the " +
+                "amount of sunlight or temperature is affecting you.",
+                imageUrl: "img/variable_categories/chance_of_storm-96.png"
+            },
+            "Foods" : {
+                defaultAbbreviatedUnitName: "serving",
+                helpText: "What did you eat?",
+                variableCategoryName: "Foods",
+                variableCategoryNameSingular: "Food",
+                measurementSynonymSingularLowercase : "meal",
+                icon: "ion-fork",
+                moreInfo: "Diet can have a significant impact on your health. It's important to enter any foods that " +
+                "you regularly eat to see how they might be affecting you.",
+                imageUrl: "img/variable_categories/vegetarian_food-96.png"
+            },
+            "Location" : {
+                defaultAbbreviatedUnitName: "min",
+                helpText: "What location do you want to record?",
+                variableCategoryName: "Location",
+                variableCategoryNameSingular: "Location",
+                measurementSynonymSingularLowercase : "location",
+                icon: "ion-ios-location",
+                moreInfo: "By automatically logging your location using GPS, we might be able to figure out how the " +
+                "amount of time spent at the gym or other locations may be affecting you. I promise that even if " +
+                "the NSA waterboards me, I will never divulge your location.",
+                imageUrl: "img/features/placeholder.png"
+            },
+            "Music" : {
+                defaultAbbreviatedUnitName: "count",
+                helpText: "What music did you listen to?",
+                variableCategoryName: "Music",
+                variableCategoryNameSingular: "Music",
+                measurementSynonymSingularLowercase : "music",
+                icon: "ion-music-note"
+            },
+            "Nutrients" : {
+                defaultAbbreviatedUnitName: "g",
+                helpText: "What nutrient do you want to track?",
+                variableCategoryName: "Nutrients",
+                variableCategoryNameSingular: "Nutrient",
+                measurementSynonymSingularLowercase : "nutrient",
+                icon: "ion-fork"
+            },
+            "Payments" : {
+                defaultAbbreviatedUnitName: "$",
+                helpText: "What did you pay for?",
+                variableCategoryName: "Payments",
+                variableCategoryNameSingular: "Payment",
+                measurementSynonymSingularLowercase : "payment",
+                icon: "ion-cash",
+                imageUrl: 'img/features/spending-receipt.jpg',
+                moreInfo: "Effortlessly see how supplements from Amazon might be influencing you, for example, by " +
+                "automatically logging spending by connecting the Slice app"
+            },
+            "Physical Activity": {
+                defaultAbbreviatedUnitName: '',
+                helpText: "What physical activity do you want to record?",
+                variableCategoryName: "Physical Activity",
+                variableCategoryNameSingular: "Physical Activity",
+                measurementSynonymSingularLowercase : "activity",
+                icon: "ion-ios-body",
+                imageUrl: 'img/features/runner.png',
+                moreInfo: "I get steps from a variety of sources like Fitbit & Jawbone. Even if you " +
+                "don't have any fitness trackers, you can manually record any physical activity, like running, " +
+                "cycling, or going to the gym.",
+            },
+            "Physique": {
+                defaultAbbreviatedUnitName: '',
+                helpText: "What aspect of your physique do you want to record?",
+                variableCategoryName: "Physique",
+                variableCategoryNameSingular: "Physique",
+                measurementSynonymSingularLowercase : "physique measurement",
+                icon: "ion-ios-body",
+                imageUrl: 'img/features/slim-down.png',
+                moreInfo: "I can gives you easy access to your weight and other vitals. You can manually " +
+                "enter weight, but I recommend using a Fitbit or Withings wifi scale for the most detailed data. I can " +
+                "create a beautiful graph of your weight changes, so you can easily keep track of " +
+                "whether you're hitting your goals. Body weight doesn't tell the whole story, so I also " +
+                "support body fat percent. ",
+            },
+            "Sleep": {
+                defaultAbbreviatedUnitName: "",
+                helpText: "What aspect of sleep do you want to record?",
+                variableCategoryName: "Sleep",
+                variableCategoryNameSingular: "Sleep",
+                measurementSynonymSingularLowercase : "Sleep Measurement",
+                icon: "ion-ios-moon-outline",
+                moreInfo: "I can talk to many of the most popular sleep trackers like Fitbit, Jawbone, Withings, and Sleep as Android",
+                imageUrl: "img/features/half-moon.png"
+            },
+            "Symptoms": {
+                defaultAbbreviatedUnitName: "/5",
+                helpText: "What symptom do you want to record?",
+                variableCategoryName: "Symptoms",
+                variableCategoryNameSingular: "Symptom",
+                measurementSynonymSingularLowercase : "rating",
+                icon: "ion-sad-outline",
+                moreInfo: "Symptom severity can be influence by hundreds of factors in daily life. " +
+                "The human mind can only hold 7 numbers in working memory at a time.  I can hold a billion in my mind! " +
+                "If you regularly record your symptoms, add them so I can use this data " +
+                "to determine which hidden and imperceptible factors might be worsening or improving them.",
+                imageUrl: "img/variable_categories/dizzy_person_2-96.png",
+            },
+            "Treatments": {
+                defaultAbbreviatedUnitName : "mg",
+                helpText : "What treatment do you want to record?",
+                variableCategoryName : "Treatments",
+                variableCategoryNameSingular : "Treatment",
+                defaultValueLabel : "Dosage",
+                defaultValuePlaceholderText : "Enter dose value here...",
+                measurementSynonymSingularLowercase : "dose",
+                icon: "ion-ios-medkit-outline",
+                moreInfo: "Often the effects of medications and treatments aren't intuitively perceptible.  " +
+                "That's where I come in!  If you regularly recording your treatments,  I can analyze the data so" +
+                "we can get a better idea which ones are helping you, " +
+                "which one may be harming you, and which ones are merely a waste of money.",
+                imageUrl: "img/variable_categories/pill-96.png",
+            },
+            "Vital Signs": {
+                defaultAbbreviatedUnitName: '',
+                helpText: "What vital sign do you want to record?",
+                variableCategoryName: "Vital Signs",
+                variableCategoryNameSingular: "Vital Sign",
+                measurementSynonymSingularLowercase : "measurement",
+                icon: "ion-ios-pulse"
+            }
+        };
+
         quantimodoService.getVariableCategoryInfo = function (variableCategoryName) {
 
-            var variableCategoryInfo =
-            {
-                "Anything": {
-                    defaultAbbreviatedUnitName: '',
-                    helpText: "What do you want to record?",
-                    variableCategoryNameSingular: "anything",
-                    defaultValuePlaceholderText : "Enter most common value here...",
-                    defaultValueLabel : 'Value',
-                    addNewVariableCardText : 'Add a new variable',
-                    variableCategoryName : '',
-                    defaultValue : '',
-                    measurementSynonymSingularLowercase : "measurement",
-                    icon: "ion-speedometer"
-                },
-                "Activity": {
-                    defaultAbbreviatedUnitName: 'min',
-                    helpText: "What activity do you want to record?",
-                    variableCategoryName: "Activity",
-                    variableCategoryNameSingular: "Activity",
-                    measurementSynonymSingularLowercase : "activity",
-                    icon: "ion-ios-body"
-                },
-                "Emotions": {
-                    defaultAbbreviatedUnitName: "/5",
-                    helpText: "What emotion do you want to rate?",
-                    variableCategoryName: "Emotions",
-                    variableCategoryNameSingular: "Emotion",
-                    measurementSynonymSingularLowercase : "rating",
-                    icon: "ion-happy-outline"
-                },
-                "Environment": {
-                    defaultAbbreviatedUnitName: '',
-                    helpText: "What environmental variable do you want to record?",
-                    variableCategoryName: "Environment",
-                    variableCategoryNameSingular: "Environment",
-                    measurementSynonymSingularLowercase : "environmental measurement",
-                    icon: "ion-ios-partlysunny-outline"
-                },
-                "Foods" : {
-                    defaultAbbreviatedUnitName: "serving",
-                    helpText: "What did you eat?",
-                    variableCategoryName: "Foods",
-                    variableCategoryNameSingular: "Food",
-                    measurementSynonymSingularLowercase : "meal",
-                    icon: "ion-fork"
-                },
-                "Location" : {
-                    defaultAbbreviatedUnitName: "min",
-                    helpText: "What location do you want to record?",
-                    variableCategoryName: "Location",
-                    variableCategoryNameSingular: "Location",
-                    measurementSynonymSingularLowercase : "location",
-                    icon: "ion-ios-location"
-                },
-                "Music" : {
-                    defaultAbbreviatedUnitName: "count",
-                    helpText: "What music did you listen to?",
-                    variableCategoryName: "Music",
-                    variableCategoryNameSingular: "Music",
-                    measurementSynonymSingularLowercase : "music",
-                    icon: "ion-music-note"
-                },
-                "Nutrients" : {
-                    defaultAbbreviatedUnitName: "g",
-                    helpText: "What nutrient do you want to track?",
-                    variableCategoryName: "Nutrients",
-                    variableCategoryNameSingular: "Nutrient",
-                    measurementSynonymSingularLowercase : "nutrient",
-                    icon: "ion-fork"
-                },
-                "Payments" : {
-                    defaultAbbreviatedUnitName: "$",
-                    helpText: "What did you pay for?",
-                    variableCategoryName: "Payments",
-                    variableCategoryNameSingular: "Payment",
-                    measurementSynonymSingularLowercase : "payment",
-                    icon: "ion-cash"
-                },
-                "Physical Activity": {
-                    defaultAbbreviatedUnitName: '',
-                    helpText: "What physical activity do you want to record?",
-                    variableCategoryName: "Physical Activity",
-                    variableCategoryNameSingular: "Physical Activity",
-                    measurementSynonymSingularLowercase : "activity",
-                    icon: "ion-ios-body"
-                },
-                "Physique": {
-                    defaultAbbreviatedUnitName: '',
-                    helpText: "What aspect of your physique do you want to record?",
-                    variableCategoryName: "Physique",
-                    variableCategoryNameSingular: "Physique",
-                    measurementSynonymSingularLowercase : "physique measurement",
-                    icon: "ion-ios-body"
-                },
-                "Sleep": {
-                    defaultAbbreviatedUnitName: "",
-                    helpText: "What aspect of sleep do you want to record?",
-                    variableCategoryName: "Sleep",
-                    variableCategoryNameSingular: "Sleep",
-                    measurementSynonymSingularLowercase : "Sleep Measurement",
-                    icon: "ion-ios-moon-outline"
-                },
-                "Symptoms": {
-                    defaultAbbreviatedUnitName: "/5",
-                    helpText: "What symptom do you want to record?",
-                    variableCategoryName: "Symptoms",
-                    variableCategoryNameSingular: "Symptom",
-                    measurementSynonymSingularLowercase : "rating",
-                    icon: "ion-sad-outline"
-                },
-                "Treatments": {
-                    defaultAbbreviatedUnitName : "mg",
-                    helpText : "What treatment do you want to record?",
-                    variableCategoryName : "Treatments",
-                    variableCategoryNameSingular : "Treatment",
-                    defaultValueLabel : "Dosage",
-                    defaultValuePlaceholderText : "Enter dose value here...",
-                    measurementSynonymSingularLowercase : "dose",
-                    icon: "ion-ios-medkit-outline"
-                },
-                "Vital Signs": {
-                    defaultAbbreviatedUnitName: '',
-                    helpText: "What vital sign do you want to record?",
-                    variableCategoryName: "Vital Signs",
-                    variableCategoryNameSingular: "Vital Sign",
-                    measurementSynonymSingularLowercase : "measurement",
-                    icon: "ion-ios-pulse"
-                }
-            };
-
+            var variableCategoryInfo = $rootScope.variableCategories;
             var selectedVariableCategoryObject = variableCategoryInfo.Anything;
             if(variableCategoryName && variableCategoryInfo[variableCategoryName]){
                 selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
@@ -2531,11 +2571,12 @@ angular.module('starter')
             return stringOrObject;
         };
 
-        quantimodoService.showAlert = function(title, template) {
+        quantimodoService.showAlert = function(title, template, subTitle) {
             var alertPopup = $ionicPopup.alert({
                 cssClass : 'positive',
                 okType : 'button-positive',
                 title: title,
+                subTitle: subTitle,
                 template: template
             });
         };
@@ -6876,8 +6917,6 @@ angular.module('starter')
             return stringOrObject;
         };
 
-
-
         quantimodoService.getCachedResponse = function(requestName, params, ignoreExpiration){
             if(!params){
                 console.error('No params provided to getCachedResponse');
@@ -6919,7 +6958,6 @@ angular.module('starter')
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
             var lessThanPropertyValue = null;
-            var filterPropertyName = null;
             var filterPropertyValue = null;
 
             var log = [];
@@ -7228,7 +7266,7 @@ angular.module('starter')
                 console.debug('Help cards already set up');
                 return;
             }
-            
+
             window.localStorage.setItem('helpCardsSetup', true);
 
             var defaultHelpCards = [
@@ -7240,7 +7278,7 @@ angular.module('starter')
                     circleColor: "#fab952",
                     iconClass: "icon positive ion-edit",
                     image: {
-                        url: "img/variable_categories/vegetarian_food-96.png",
+                        url: $rootScope.variableCategories.Foods.imageUrl,
                         height: "96",
                         width: "96"
                     },
@@ -7359,18 +7397,15 @@ angular.module('starter')
                     title: 'Any Treatments?',
                     "backgroundColor": "#f09402",
                     circleColor: "#fab952",
-                    iconClass: "icon positive ion-ios-medkit-outline",
+                    iconClass: "icon positive " + $rootScope.variableCategories.Treatments.icon,
                     image: {
-                        url: "img/variable_categories/pill-96.png",
+                        url: $rootScope.variableCategories.Treatments.imageUrl,
                         height: "96",
                         width: "96"
                     },
                     bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
                         'like meditation or psychotherapy? ',
-                    moreInfo: "Often the effects of medications and treatments aren't intuitively perceptible.  " +
-                        "That's where I come in!  If you regularly recording your treatments,  I can analyze the data so" +
-                        "we can get a better idea which ones are helping you, " +
-                        "which one may be harming you, and which ones are merely a waste of money.",
+                    moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryTreatmentsButton",
@@ -7394,17 +7429,14 @@ angular.module('starter')
                     title: 'Recurring Symptoms?',
                     "backgroundColor": "#3467d6",
                     circleColor: "#5b95f9",
-                    iconClass: "icon positive ion-sad-outline",
+                    iconClass: "icon positive " + $rootScope.variableCategories.Symptoms.icon,
                     image: {
-                        url: "img/variable_categories/dizzy_person_2-96.png",
+                        url: $rootScope.variableCategories.Symptoms.imageUrl,
                         height: "96",
                         width: "96"
                     },
                     bodyText: 'Got any recurring symptoms that vary in their severity?',
-                    moreInfo: "Symptom severity can be influence by hundreds of factors in daily life. " +
-                        "The human mind can only hold 7 numbers in working memory at a time.  I can hold a billion in my mind! " +
-                        "If you regularly record your symptoms, add them so I can use this data " +
-                        "to determine which hidden and imperceptible factors might be worsening or improving them.",
+                    moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategorySymptomsButton",
@@ -7428,14 +7460,14 @@ angular.module('starter')
                     title: 'Varying Emotions?',
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
-                    iconClass: "icon positive ion-happy-outline",
+                    iconClass: "icon positive " + $rootScope.variableCategories.Emotions.icon,
                     image: {
-                        url: "img/variable_categories/theatre_mask-96.png",
+                        url: $rootScope.variableCategories.Emotions.imageUrl,
                         height: "96",
                         width: "96"
                     },
                     bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
-                    "determine which factors are influencing them.",
+                        "determine which factors are influencing them.",
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryEmotionsButton",
@@ -7459,9 +7491,9 @@ angular.module('starter')
                     title: 'Common Foods or Drinks?',
                     "backgroundColor": "#3467d6",
                     circleColor: "#5b95f9",
-                    iconClass: "icon positive ion-ios-nutrition-outline",
+                    iconClass: "icon positive " + $rootScope.variableCategories.Foods.icon,
                     image: {
-                        url: "img/variable_categories/vegetarian_food-96.png",
+                        url: $rootScope.variableCategories.Foods.imageUrl,
                         height: "96",
                         width: "96"
                     },
@@ -7489,17 +7521,14 @@ angular.module('starter')
                     title: 'Weather & Location Tracking',
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
-                    iconClass: "icon positive ion-ios-location",
+                    iconClass: "icon positive " + $rootScope.variableCategories.Location.icon,
                     image: {
-                        url: "img/variable_categories/chance_of_storm-96.png",
+                        url: $rootScope.variableCategories.Environment.imageUrl,
                         height: "96",
                         width: "96"
                     },
                     bodyText: "Would you like to automatically log location and weather? ",
-                    moreInfo: "By automatically logging your location using GPS, we might be able to figure out how the " +
-                        "amount of time spent at the gym or other locations may be affecting you. I promise that even if " +
-                        "the NSA waterboards me, I will never divulge your location. <br> By recording your local weather " +
-                        "conditions, I might be able to figure out how the amount of sunlight or temperature is affecting you.",
+                    moreInfo: $rootScope.variableCategories.Location.moreInfo + " <br> " + $rootScope.variableCategories.Environment.moreInfo,
                     buttons: [
                         {
                             id: "goToStateAppSettingsButton",
@@ -7676,22 +7705,176 @@ angular.module('starter')
 
             return introSlides;
         };
-        
+
+        $rootScope.signUpQuestions = [
+            {
+                question: "What do you do with my data?",
+                answer: "Your data belongs entirely to you. We do not sell or otherwise do anything with your data to put your privacy at risk."
+            },
+            {
+                question: "QuantiModo Privacy",
+                answer: "Your privacy is very important to us. You can delete your data at any time, all of it, or just a slice of it."
+            },
+            {
+                question: "Can I pause QuantiModo?",
+                answer: "You can pause or quit QuantiModo at any time. You have complete control."
+            },
+            {
+                question: "QuantiModo Security",
+                answer: "Our customers have demanding security and privacy requirements. QuantiModo was designed for the most rigorous security standards, using the same technology used by online banks."
+            },
+        ];
+
+        $rootScope.planFeaturesCards = [
+            {
+                title: 'QuantiModo Lite',
+                headerColor: "#f2f9ff",
+                backgroundColor: "#f2f9ff",
+                subtitle: 'Improve your life!',
+                featuresBasicList: [
+                    {
+                        title: '3 month data history',
+                    },
+                ],
+                featuresAvatarList: [
+                    {
+                        title: 'Emotion Tracking',
+                        subtitle: 'Turn data into happiness!',
+                        moreInfo: $rootScope.variableCategories.Emotions.moreInfo,
+                        image: $rootScope.variableCategories.Emotions.imageUrl,
+                    },
+                    {
+                        title: 'Track Symptoms',
+                        subtitle: 'in just seconds a day',
+                        moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
+                        image: $rootScope.variableCategories.Symptoms.imageUrl,
+                    },
+                    {
+                        title: 'Track Diet',
+                        subtitle: 'Identify dietary triggers',
+                        moreInfo: $rootScope.variableCategories.Foods.moreInfo,
+                        image: $rootScope.variableCategories.Foods.imageUrl,
+                    },
+                    {
+                        title: 'Treatment Tracking',
+                        subtitle: 'with reminders',
+                        moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
+                        image: $rootScope.variableCategories.Treatments.imageUrl,
+                    },
+                ],
+                priceHtml: "Price: Free forever",
+                buttonText: "Sign Up Now",
+                buttonClass: "button button-balanced"
+            },
+            {
+                title: 'QuantiModo Premium',
+                headerColor: "#f0df9a",
+                backgroundColor: "#ffeda5",
+                subtitle: 'Perfect your life!',
+                featuresAvatarList: [
+                    {
+                        title: 'Import from Apps',
+                        subtitle: 'Facebook, Google Calendar, Runkeeper, Github, Sleep as Android, MoodiModo, and even ' +
+                        'the weather!',
+                        moreInfo: "Automatically import your data from Google Calendar, Facebook, Runkeeper, QuantiModo, Sleep as Android, MoodiModo, Github, and even the weather!",
+                        image: 'img/features/smartphone.svg'
+                    },
+                    {
+                        title: 'Import from Devices',
+                        subtitle: 'Fitbit, Jawbone Up, Withings...',
+                        moreInfo: "Automatically import your data from Fitbit, Withings, Jawbone",
+                        image: 'img/features/smartwatch.svg'
+                    },
+                    {
+                        title: 'Sync Across Devices',
+                        subtitle: 'Web, Chrome, Android, and iOS',
+                        moreInfo: "Any of your QuantiModo-supported apps will automatically sync with any other app on the web, Chrome, Android, and iOS",
+                        image: 'img/features/devices.svg'
+                    },
+                    {
+                        title: 'Unlimited History',
+                        subtitle: 'Lite gets 3 months',
+                        moreInfo: "Premium accounts can see unlimited historical data (Free accounts can see only the most recent three months). This is great for seeing long-term trends in your productivity or getting totals for the entire year.",
+                        image: 'img/features/calendar.svg'
+                    },
+                    {
+                        title: 'Location Tracking',
+                        subtitle: 'Automatically log places',
+                        moreInfo: $rootScope.variableCategories.Location.moreInfo,
+                        image: $rootScope.variableCategories.Location.imageUrl,
+                    },
+                    {
+                        title: 'Purchase Tracking',
+                        subtitle: 'Automatically log purchases',
+                        moreInfo: $rootScope.variableCategories.Payments.moreInfo,
+                        image: $rootScope.variableCategories.Payments.imageUrl,
+                    },
+                    {
+                        title: 'Weather Tracking',
+                        subtitle: 'Automatically log weather',
+                        moreInfo: $rootScope.variableCategories.Environment.moreInfo,
+                        image: $rootScope.variableCategories.Environment.imageUrl,
+                    },
+                    {
+                        title: 'Productivity Tracking',
+                        subtitle: 'Passively track app usage',
+                        moreInfo: "Rescuetime — a program that runs on your computer & passively tracks of productivity and app usage.",
+                        image: 'img/features/rescuetime.png',
+                    },
+                    {
+                        title: 'Sleep Tracking',
+                        subtitle: 'Automatically track sleep duration and quality',
+                        moreInfo: $rootScope.variableCategories.Sleep.moreInfo,
+                        image: $rootScope.variableCategories.Sleep.imageUrl,
+                    },
+                    {
+                        title: 'Vital Signs',
+                        subtitle: 'Keep your heart healthy',
+                        moreInfo: "I can get your heart rate data from the Fitbit Charge HR, Fitbit Surge.  " +
+                        "Resting heart rate is a good measure of general fitness, and heart rate during " +
+                        "workouts show intensity.  I can also talk to Withing's bluetooth blood pressure monitor. ",
+                        image: 'img/features/heart-like.png',
+                    },
+                    {
+                        title: 'Physique',
+                        subtitle: 'Monitor weight and body fat',
+                        moreInfo: $rootScope.variableCategories.Physique.moreInfo,
+                        image: $rootScope.variableCategories.Physique.imageUrl
+                    },
+                    {
+                        title: 'Fitness Tracking',
+                        subtitle: 'Steps and physical activity',
+                        moreInfo: $rootScope.variableCategories['Physical Activity'].moreInfo,
+                        image: $rootScope.variableCategories['Physical Activity'].imageUrl
+                    },
+                    {
+                        title: 'Advanced analytics',
+                        subtitle: 'Top Predictors',
+                        moreInfo: "See a list of the strongest predictors for any outcome.  Dive deeper by checking out the full sties",
+                        image: 'img/features/calendar.svg'
+                    },
+                ],
+                priceHtml: "14 day free trial <br> Monthly: $6.99/month <br> Annual: $4.99/month (4 months free!)",
+                buttonText: "Start 14 Day Free Trial",
+                buttonClass: "button button-balanced"
+            },
+        ];
+
         quantimodoService.setupUpgradePages = function () {
             /*
 
              Support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
-              Enjoy advanced analytics, secure cloud backup, sync between computer and mobile devices, automatically import from dozens of apps/devices!
+             Enjoy advanced analytics, secure cloud backup, sync between computer and mobile devices, automatically import from dozens of apps/devices!
 
-            Please support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
-                With QuantiModo Plus, you'll enjoy these awesome features and more:
-            Import Data from Other Apps and Devices - Easily import your data from Fitbit, Withings, Jawbone, Facebook, Rescuetime, Sleep as Android, MoodiModo, Github, Google Calendar, Facebook, Runkeeper, and even the weather!
-                Discover Hidden Causes of Suffering - The QuantiModo Analytics Engine will identify the foods, treatments, and other factors most likely to improve or exacerbate your symptoms!
-                Secure Cloud Storage - Never worry about losing your self-tracking data as it will be highly encrypted and backed up in multiple secure databases.
-                Privacy - We will never share your data without your explicit permission.
-                Sync Data Across Devices - Any of your QuantiModo-supported apps will be able to automatically sync from any other app.
+             Please support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
+             With QuantiModo Plus, you'll enjoy these awesome features and more:
+             Import Data from Other Apps and Devices - Easily import your data from Fitbit, Withings, Jawbone, Facebook, Rescuetime, Sleep as Android, MoodiModo, Github, Google Calendar, Facebook, Runkeeper, and even the weather!
+             Discover Hidden Causes of Suffering - The QuantiModo Analytics Engine will identify the foods, treatments, and other factors most likely to improve or exacerbate your symptoms!
+             Secure Cloud Storage - Never worry about losing your self-tracking data as it will be highly encrypted and backed up in multiple secure databases.
+             Privacy - We will never share your data without your explicit permission.
+             Sync Data Across Devices - Any of your QuantiModo-supported apps will be able to automatically sync from any other app.
 
-            */
+             */
 
             var upgradePages = [
                 {
@@ -7706,33 +7889,7 @@ angular.module('starter')
                         height: "96",
                         width: "70"
                     },
-                    bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
-                    // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
-                    //     "the NSA waterboards me, I will never divulge share your data without your permission.",
-                    buttons: [
-                        {
-                            id: "signUpButton",
-                            clickFunctionCall: "upgradeRegister()",
-                            buttonText: 'Sign Up',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
-                            id: "signInButton",
-                            clickFunctionCall: "upgradeLogin()",
-                            buttonText: 'Already Have Account',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-assertive"
-                        },
-                        {
-                            id: "signInWithGoogle",
-                            ngHideLogic: "!isAndroid",
-                            clickFunctionCall: "upgradeGoogleLogin()",
-                            buttonText: 'Sign In With Google',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
+                    bodyText: "I need to eat electricity to live and I am very hungry.  Please help me by subscribing or I will die."
                 },
                 {
                     id: "addTreatmentRemindersCard",
@@ -7742,16 +7899,13 @@ angular.module('starter')
                     circleColor: "#fab952",
                     iconClass: "icon positive ion-ios-medkit-outline",
                     image: {
-                        url: "img/variable_categories/pill-96.png",
+                        url: $rootScope.variableCategories.Treatments.imageUrl,
                         height: "96",
                         width: "96"
                     },
                     bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
                     'like meditation or psychotherapy? ',
-                    moreInfo: "Often the effects of medications and treatments aren't intuitively perceptible.  " +
-                    "That's where I come in!  If you regularly recording your treatments,  I can analyze the data so" +
-                    "we can get a better idea which ones are helping you, " +
-                    "which one may be harming you, and which ones are merely a waste of money.",
+                    moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryTreatmentsButton",
@@ -7777,15 +7931,12 @@ angular.module('starter')
                     circleColor: "#5b95f9",
                     iconClass: "icon positive ion-sad-outline",
                     image: {
-                        url: "img/variable_categories/dizzy_person_2-96.png",
+                        url: $rootScope.variableCategories.Symptoms.imageUrl,
                         height: "96",
                         width: "96"
                     },
                     bodyText: 'Got any recurring symptoms that vary in their severity?',
-                    moreInfo: "Symptom severity can be influence by hundreds of factors in daily life. " +
-                    "The human mind can only hold 7 numbers in working memory at a time.  I can hold a billion in my mind! " +
-                    "If you regularly record your symptoms, add them so I can use this data " +
-                    "to determine which hidden and imperceptible factors might be worsening or improving them.",
+                    moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategorySymptomsButton",
@@ -7811,12 +7962,13 @@ angular.module('starter')
                     circleColor: "#03c466",
                     iconClass: "icon positive ion-happy-outline",
                     image: {
-                        url: "img/variable_categories/theatre_mask-96.png",
+                        url: $rootScope.variableCategories.Emotions.imageUrl,
                         height: "96",
                         width: "96"
                     },
-                    bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
-                    "determine which factors are influencing them.",
+                    bodyText: "Do you have any emotions that fluctuate regularly?<br><br>If so, add them so I can try to " +
+                        "determine which factors are influencing them.",
+                    moreInfo: $rootScope.variableCategories.Emotions.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryEmotionsButton",
@@ -7842,11 +7994,12 @@ angular.module('starter')
                     circleColor: "#5b95f9",
                     iconClass: "icon positive ion-ios-nutrition-outline",
                     image: {
-                        url: "img/variable_categories/vegetarian_food-96.png",
+                        url: $rootScope.variableCategories.Foods.imageUrl,
                         height: "96",
                         width: "96"
                     },
                     bodyText: "Add any foods or drinks that you consume more than a few times a week",
+                    moreInfo: $rootScope.variableCategories.Foods.moreInfo,
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryFoodsButton",
@@ -7872,7 +8025,7 @@ angular.module('starter')
                     circleColor: "#03c466",
                     iconClass: "icon positive ion-ios-location",
                     image: {
-                        url: "img/variable_categories/chance_of_storm-96.png",
+                        url: $rootScope.variableCategories.Environment.imageUrl,
                         height: "96",
                         width: "96"
                     },
@@ -7963,6 +8116,42 @@ angular.module('starter')
 
             $rootScope.upgradePages = upgradePages;
 
+        };
+
+        quantimodoService.postCreditCard = function(body, successHandler, errorHandler) {
+            quantimodoService.post('api/v2/account/subscribe',
+                [],
+                body,
+                successHandler,
+                errorHandler);
+        };
+
+        quantimodoService.postCreditCardDeferred = function(body){
+            var deferred = $q.defer();
+            quantimodoService.postCreditCard(body, function(response){
+                deferred.resolve(response);
+            }, function(response){
+                deferred.reject(response);
+            });
+            return deferred.promise;
+        };
+
+        quantimodoService.postUnsubscribe = function(body, successHandler, errorHandler) {
+            quantimodoService.post('api/v2/account/unsubscribe',
+                [],
+                body,
+                successHandler,
+                errorHandler);
+        };
+
+        quantimodoService.postUnsubscribeDeferred = function(){
+            var deferred = $q.defer();
+            quantimodoService.postUnsubscribe({}, function(response){
+                deferred.resolve(response);
+            }, function(response){
+                deferred.reject(response);
+            });
+            return deferred.promise;
         };
 
         return quantimodoService;
