@@ -54,7 +54,8 @@
                     <div class="input-label" >
                         Reminder time
                     </div>
-                    <button class="button button-block up-top"
+                    <button id="oldFirstReminderStartTime"
+                            class="button button-block up-top"
                             style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                             ng-click="openReminderStartTimePicker('first')">
                         {{state.firstReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
@@ -64,7 +65,8 @@
                     <div class="input-label" >
                         2nd reminder time
                     </div>
-                    <button class="button button-block up-top"
+                    <button id="oldSecondReminderStartTime"
+                            class="button button-block up-top"
                             style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                             ng-click="openReminderStartTimePicker('second')">
                         {{state.secondReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
@@ -74,7 +76,8 @@
                     <div class="input-label" >
                         3nd reminder time
                     </div>
-                    <button class="button button-block up-top"
+                    <button id="oldThirdReminderStartTime"
+                            class="button button-block up-top"
                             style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                             ng-click="openReminderStartTimePicker('third')">
                         {{state.thirdReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
