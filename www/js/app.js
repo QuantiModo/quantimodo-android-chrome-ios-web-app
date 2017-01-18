@@ -21,7 +21,9 @@ angular.module('starter',
         'jtt_wikipedia',
         'angular-clipboard',
         'angular-google-analytics',
-        'angular-google-adsense'
+        'angular-google-adsense',
+        'ngMaterialDatePicker',
+        'ngMaterial'
     ]
 )
 
