@@ -2343,19 +2343,19 @@ angular.module('starter')
         quantimodoService.getUnits = function(ignoreExpiration){
             var deferred = $q.defer();
             var params = {};
-            var cachedUnits = quantimodoService.getCachedResponse('getUnits', params, ignoreExpiration);
+            var cachedUnits = quantimodoService.getCachedResponse('units', params, ignoreExpiration);
             if(cachedUnits){
                 addUnitsToRootScope(cachedUnits);
                 deferred.resolve(cachedUnits);
                 return deferred.promise;
             }
             quantimodoService.refreshUnits().then(function(unitObjects){
-                quantimodoService.storeCachedResponse('getUnits', params, unitObjects);
+                quantimodoService.storeCachedResponse('Units', params, unitObjects);
                 deferred.resolve(unitObjects);
             }, function (error) {
                 console.error("Could not refresh units.  Falling back to stale ones in local storage. Error: " + error);
                 var ignoreExpiration = true;
-                var cachedUnits = quantimodoService.getCachedResponse('getUnits', params, ignoreExpiration);
+                var cachedUnits = quantimodoService.getCachedResponse('units', params, ignoreExpiration);
                 if(cachedUnits){
                     addUnitsToRootScope(cachedUnits);
                     deferred.resolve(cachedUnits);
@@ -3667,13 +3667,13 @@ angular.module('starter')
         };
 
         quantimodoService.clearCorrelationCache = function(){
-            quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
-            quantimodoService.deleteCachedResponse('GetUserCorrelations');
+            quantimodoService.deleteCachedResponse('aggregatedCorrelations');
+            quantimodoService.deleteCachedResponse('userCorrelations');
         };
 
         quantimodoService.getAggregatedCorrelationsDeferred = function(params){
             var deferred = $q.defer();
-            var cachedCorrelations = quantimodoService.getCachedResponse('GetAggregatedCorrelations', params);
+            var cachedCorrelations = quantimodoService.getCachedResponse('aggregatedCorrelations', params);
             if(cachedCorrelations){
                 deferred.resolve(cachedCorrelations);
                 return deferred.promise;
@@ -3681,7 +3681,7 @@ angular.module('starter')
 
             quantimodoService.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
                 correlationObjects = useLocalImages(correlationObjects);
-                quantimodoService.storeCachedResponse('GetAggregatedCorrelations', params, correlationObjects);
+                quantimodoService.storeCachedResponse('aggregatedCorrelations', params, correlationObjects);
                 deferred.resolve(correlationObjects);
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {
@@ -3694,14 +3694,14 @@ angular.module('starter')
 
         quantimodoService.getUserCorrelationsDeferred = function (params) {
             var deferred = $q.defer();
-            var cachedCorrelations = quantimodoService.getCachedResponse('GetUserCorrelations', params);
+            var cachedCorrelations = quantimodoService.getCachedResponse('userCorrelations', params);
             if(cachedCorrelations){
                 deferred.resolve(cachedCorrelations);
                 return deferred.promise;
             }
             quantimodoService.getUserCorrelationsFromApi(params, function(correlationObjects){
                 correlationObjects = useLocalImages(correlationObjects);
-                quantimodoService.storeCachedResponse('GetUserCorrelations', params, correlationObjects);
+                quantimodoService.storeCachedResponse('userCorrelations', params, correlationObjects);
                 deferred.resolve(correlationObjects);
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {
@@ -3715,8 +3715,8 @@ angular.module('starter')
         quantimodoService.postVoteDeferred = function(correlationObject){
             var deferred = $q.defer();
             quantimodoService.postVoteToApi(correlationObject, function(response){
-                quantimodoService.deleteCachedResponse('GetUserCorrelations');
-                quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
+                quantimodoService.deleteCachedResponse('userCorrelations');
+                quantimodoService.deleteCachedResponse('aggregatedCorrelations');
                 console.debug("postVote response", response);
                 deferred.resolve(true);
             }, function(error){
@@ -3729,8 +3729,8 @@ angular.module('starter')
         quantimodoService.deleteVoteDeferred = function(correlationObject){
             var deferred = $q.defer();
             quantimodoService.deleteVoteToApi(correlationObject, function(response){
-                quantimodoService.deleteCachedResponse('GetUserCorrelations');
-                quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
+                quantimodoService.deleteCachedResponse('userCorrelations');
+                quantimodoService.deleteCachedResponse('aggregatedCorrelations');
                 console.debug("deleteVote response", response);
                 deferred.resolve(true);
             }, function(error){
@@ -6927,7 +6927,7 @@ angular.module('starter')
                 console.error('No params provided to getCachedResponse');
                 return false;
             }
-            var cachedResponse = JSON.parse(quantimodoService.getLocalStorageItemAsString('cached' + requestName));
+            var cachedResponse = JSON.parse(quantimodoService.getLocalStorageItemAsString(requestName));
             if(!cachedResponse){
                 return false;
             }
@@ -6951,11 +6951,11 @@ angular.module('starter')
                 response: response,
                 expirationTimeMilliseconds: Date.now() + 86400 * 1000
             };
-            quantimodoService.setLocalStorageItem('cached' + requestName, JSON.stringify(cachedResponse));
+            quantimodoService.setLocalStorageItem(requestName, JSON.stringify(cachedResponse));
         };
 
         quantimodoService.deleteCachedResponse = function(requestName){
-            quantimodoService.deleteItemFromLocalStorage('cached' + requestName);
+            quantimodoService.deleteItemFromLocalStorage(requestName);
         };
 
         quantimodoService.getElementsFromLocalStorageItemWithRequestParams = function(localStorageItemName, requestParams) {
