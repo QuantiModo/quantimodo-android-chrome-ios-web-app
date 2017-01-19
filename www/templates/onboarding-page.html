@@ -44,7 +44,7 @@
             <div ng-repeat="button in onboardingPages[0].buttons" >
                 <div class="button-bar">
                     <button class="button"
-                            ng-hide="!isIOS && button.premiumFeature && !user.stripePlan"
+                            ng-hide="!isIOS && button.premiumFeature && !user.stripeActive"
                             style="background-color: {{onboardingPages[0].backgroundColor}};
                                 border: none;
                                 outline: none;
@@ -55,7 +55,7 @@
                         <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
                     </button>
                     <button class="button"
-                            ng-show="!isIOS && button.premiumFeature && !user.stripePlan"
+                            ng-show="!isIOS && button.premiumFeature && !user.stripeActive"
                             style="background-color: {{onboardingPages[0].backgroundColor}};
                                 border: none;
                                 outline: none;

@@ -8118,6 +8118,8 @@ angular.module('starter')
 
         quantimodoService.postUnsubscribeDeferred = function(){
             var deferred = $q.defer();
+
+            quantimodoService.reportError('User un-subscribed: ' + JSON.stringify($rootScope.user));
             quantimodoService.postUnsubscribe({}, function(response){
                 $rootScope.user = response.user;
                 quantimodoService.setLocalStorageItem('user', JSON.stringify($rootScope.user));

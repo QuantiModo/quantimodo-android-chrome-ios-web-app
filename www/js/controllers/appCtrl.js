@@ -2519,7 +2519,7 @@ angular.module('starter')
                             .title('Thank you!')
                             .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
                             .ariaLabel('Alert Dialog Demo')
-                            .ok('Get Started!')
+                            .ok('Get Started')
                     )
                     .finally(function() {
                         $state.go(config.appSettings.defaultState);
@@ -2588,10 +2588,10 @@ angular.module('starter')
                                     .title('Thank you!')
                                     .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
                                     .ariaLabel('Alert Dialog Demo')
-                                    .ok('Get Started!')
+                                    .ok('Get Started')
                             )
                             .finally(function() {
-                                $state.go(config.appSettings.defaultState);
+                                $scope.goBack();
                             });
                         })
                         .catch(function (err) {
@@ -2627,7 +2627,11 @@ angular.module('starter')
             confirmPopup.then(function(res) {
                 if(res) {
                     window.open("https://support.google.com/googleplay/answer/7018481", '_system', 'location=yes');
-                    quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
+                    quantimodoService.postUnsubscribeDeferred().then(function (response) {
+                        console.debug(JSON.stringify(response));
+                    }, function (error) {
+                        console.error(JSON.stringify(error));
+                    });
                 } else {
                     console.log('You are not sure');
                 }
@@ -2644,7 +2648,13 @@ angular.module('starter')
             confirmPopup.then(function(res) {
                 if(res) {
                     window.open("https://support.apple.com/en-us/HT202039", '_system', 'location=yes');
-                    quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
+                    //quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
+                    quantimodoService.postUnsubscribeDeferred().then(function (response) {
+                        console.debug(JSON.stringify(response));
+                    }, function (error) {
+                        console.error(JSON.stringify(error));
+                    });
+                    
                 } else {
                     console.log('You are not sure');
                 }
