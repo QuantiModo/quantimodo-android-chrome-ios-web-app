@@ -15,7 +15,7 @@ angular.module('fabric', ['ng']).config(['$provide', function($provide) {
       }
       if (typeof Bugsnag !== "undefined") {
           //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-          Bugsnag.notify("ERROR: " + message, "Stacktrace: " + stacktrace, {}, "error");
+          Bugsnag.notify("ERROR: " + message, "Stacktrace: " + stacktrace, {groupingHash: message}, "error");
       }
 
       if(typeof window.fabric !== 'undefined' && typeof window.fabric.Crashlytics !== 'undefined'){
