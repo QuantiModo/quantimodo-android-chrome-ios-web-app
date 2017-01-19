@@ -59,7 +59,7 @@ angular.module('starter')
                         Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                     }
                     console.error(error);
-                    console.error('Failed to Track by favorite, Try again!');
+                    console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                 });
             var backView = $ionicHistory.backView();
             if(backView.stateName.toLowerCase().indexOf('search') > -1){

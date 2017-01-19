@@ -464,7 +464,7 @@ angular.module('starter')
 									Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 								}
 								console.error(error);
-								quantimodoService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
+								quantimodoService.showAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
 							});
 						return true;
 					}
@@ -610,7 +610,7 @@ angular.module('starter')
 								Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 							}
 							console.error(error);
-							quantimodoService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');
+							quantimodoService.showAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
 						});
 					return true;
 				}

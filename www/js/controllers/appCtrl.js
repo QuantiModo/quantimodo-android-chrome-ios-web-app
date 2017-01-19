@@ -1254,7 +1254,7 @@ angular.module('starter')
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     console.error(error);
-                    console.error('Failed to Track by favorite, Try again!');
+                    console.error('Failed to track favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                 });
         };
 
@@ -1314,7 +1314,7 @@ angular.module('starter')
                                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                             }
                             console.error(error);
-                            console.error('Failed to Track by favorite, Try again!');
+                            console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                         });
                     $rootScope.favoritesTally[trackingReminder.id].tally = 0;
                 }
@@ -1490,7 +1490,7 @@ angular.module('starter')
                     console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                    console.error('Failed to Track by favorite, Try again!');
+                    console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                 });
         };
 
