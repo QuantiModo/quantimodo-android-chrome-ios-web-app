@@ -130,7 +130,7 @@ angular.module('starter')
                 buttons: [
                     {
                         id: "hideRecordMeasurementInfoCardButton",
-                        clickFunctionCall: "hideHelpCard(card)",
+                        clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
                         buttonText: 'Got it!',
                         buttonIconClass: "ion-checkmark",
                         buttonClass: "button button-clear button-balanced"

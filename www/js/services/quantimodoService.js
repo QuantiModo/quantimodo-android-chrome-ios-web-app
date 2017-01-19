@@ -7293,7 +7293,7 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "hideRecordMeasurementInfoCardButton",
-                            clickFunctionCall: "hideHelpCard(card)",
+                            clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
                             buttonText: 'Got it!',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-balanced"
@@ -7318,14 +7318,14 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "sendChromeEmailLinkButton",
-                            clickFunctionCall: "sendChromeEmailLink()",
+                            clickFunctionCall: function(){ $rootScope.sendChromeEmailLink();},
                             buttonText: 'Send Yourself a Link',
                             buttonIconClass: "ion-email",
                             buttonClass: "button button-clear button-balanced"
                         },
                         {
                             id: "hideChromeExtensionInfoCardButton",
-                            clickFunctionCall: "hideHelpCard(card)",
+                            clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
                             buttonText: 'Dismiss',
                             buttonIconClass: "ion-close-circled",
                             buttonClass: "button button-clear button-assertive"
@@ -7884,7 +7884,6 @@ angular.module('starter')
                 {
                     id: "upgradePage",
                     title: 'QuantiModo Plus',
-                    titleClickFunctionCall: "upgradeRegister()",
                     "backgroundColor": "#3467d6",
                     circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-medkit-outline",
