@@ -2340,22 +2340,22 @@ angular.module('starter')
             $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName["Show more units"] = showMoreUnitsObject;
         }
 
-        quantimodoService.getUnits = function(){
+        quantimodoService.getUnits = function(ignoreExpiration){
             var deferred = $q.defer();
             var params = {};
-            var cachedUnits = quantimodoService.getCachedResponse('getUnits', params);
+            var cachedUnits = quantimodoService.getCachedResponse('units', params, ignoreExpiration);
             if(cachedUnits){
                 addUnitsToRootScope(cachedUnits);
                 deferred.resolve(cachedUnits);
                 return deferred.promise;
             }
             quantimodoService.refreshUnits().then(function(unitObjects){
-                quantimodoService.storeCachedResponse('getUnits', params, unitObjects);
+                quantimodoService.storeCachedResponse('Units', params, unitObjects);
                 deferred.resolve(unitObjects);
             }, function (error) {
                 console.error("Could not refresh units.  Falling back to stale ones in local storage. Error: " + error);
                 var ignoreExpiration = true;
-                var cachedUnits = quantimodoService.getCachedResponse('getUnits', params, ignoreExpiration);
+                var cachedUnits = quantimodoService.getCachedResponse('units', params, ignoreExpiration);
                 if(cachedUnits){
                     addUnitsToRootScope(cachedUnits);
                     deferred.resolve(cachedUnits);
@@ -3667,13 +3667,13 @@ angular.module('starter')
         };
 
         quantimodoService.clearCorrelationCache = function(){
-            quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
-            quantimodoService.deleteCachedResponse('GetUserCorrelations');
+            quantimodoService.deleteCachedResponse('aggregatedCorrelations');
+            quantimodoService.deleteCachedResponse('userCorrelations');
         };
 
         quantimodoService.getAggregatedCorrelationsDeferred = function(params){
             var deferred = $q.defer();
-            var cachedCorrelations = quantimodoService.getCachedResponse('GetAggregatedCorrelations', params);
+            var cachedCorrelations = quantimodoService.getCachedResponse('aggregatedCorrelations', params);
             if(cachedCorrelations){
                 deferred.resolve(cachedCorrelations);
                 return deferred.promise;
@@ -3681,7 +3681,7 @@ angular.module('starter')
 
             quantimodoService.getAggregatedCorrelationsFromApi(params, function(correlationObjects){
                 correlationObjects = useLocalImages(correlationObjects);
-                quantimodoService.storeCachedResponse('GetAggregatedCorrelations', params, correlationObjects);
+                quantimodoService.storeCachedResponse('aggregatedCorrelations', params, correlationObjects);
                 deferred.resolve(correlationObjects);
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {
@@ -3694,14 +3694,14 @@ angular.module('starter')
 
         quantimodoService.getUserCorrelationsDeferred = function (params) {
             var deferred = $q.defer();
-            var cachedCorrelations = quantimodoService.getCachedResponse('GetUserCorrelations', params);
+            var cachedCorrelations = quantimodoService.getCachedResponse('userCorrelations', params);
             if(cachedCorrelations){
                 deferred.resolve(cachedCorrelations);
                 return deferred.promise;
             }
             quantimodoService.getUserCorrelationsFromApi(params, function(correlationObjects){
                 correlationObjects = useLocalImages(correlationObjects);
-                quantimodoService.storeCachedResponse('GetUserCorrelations', params, correlationObjects);
+                quantimodoService.storeCachedResponse('userCorrelations', params, correlationObjects);
                 deferred.resolve(correlationObjects);
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {
@@ -3715,8 +3715,8 @@ angular.module('starter')
         quantimodoService.postVoteDeferred = function(correlationObject){
             var deferred = $q.defer();
             quantimodoService.postVoteToApi(correlationObject, function(response){
-                quantimodoService.deleteCachedResponse('GetUserCorrelations');
-                quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
+                quantimodoService.deleteCachedResponse('userCorrelations');
+                quantimodoService.deleteCachedResponse('aggregatedCorrelations');
                 console.debug("postVote response", response);
                 deferred.resolve(true);
             }, function(error){
@@ -3729,8 +3729,8 @@ angular.module('starter')
         quantimodoService.deleteVoteDeferred = function(correlationObject){
             var deferred = $q.defer();
             quantimodoService.deleteVoteToApi(correlationObject, function(response){
-                quantimodoService.deleteCachedResponse('GetUserCorrelations');
-                quantimodoService.deleteCachedResponse('GetAggregatedCorrelations');
+                quantimodoService.deleteCachedResponse('userCorrelations');
+                quantimodoService.deleteCachedResponse('aggregatedCorrelations');
                 console.debug("deleteVote response", response);
                 deferred.resolve(true);
             }, function(error){
@@ -6927,22 +6927,28 @@ angular.module('starter')
                 console.error('No params provided to getCachedResponse');
                 return false;
             }
-            var cachedResponse = JSON.parse(quantimodoService.getLocalStorageItemAsString('cached' + requestName));
-            if(!cachedResponse){
+            var cachedResponse = JSON.parse(quantimodoService.getLocalStorageItemAsString(requestName));
+            if(!cachedResponse || !cachedResponse.expirationTimeMilliseconds){
                 return false;
             }
             var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
-            var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
+            if(!paramsMatch){
+                return false;
+            }
 
+            var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
             if(ignoreExpiration){
                 cacheNotExpired = true;
             }
-
-            if(cachedResponse && paramsMatch && cachedResponse.response.length && cacheNotExpired){
-                return cachedResponse.response;
-            } else {
+            if(!cacheNotExpired){
                 return false;
             }
+
+            if(!cachedResponse.response.length){
+                return false;
+            }
+
+            return cachedResponse.response;
         };
 
         quantimodoService.storeCachedResponse = function(requestName, params, response){
@@ -6951,11 +6957,11 @@ angular.module('starter')
                 response: response,
                 expirationTimeMilliseconds: Date.now() + 86400 * 1000
             };
-            quantimodoService.setLocalStorageItem('cached' + requestName, JSON.stringify(cachedResponse));
+            quantimodoService.setLocalStorageItem(requestName, JSON.stringify(cachedResponse));
         };
 
         quantimodoService.deleteCachedResponse = function(requestName){
-            quantimodoService.deleteItemFromLocalStorage('cached' + requestName);
+            quantimodoService.deleteItemFromLocalStorage(requestName);
         };
 
         quantimodoService.getElementsFromLocalStorageItemWithRequestParams = function(localStorageItemName, requestParams) {
@@ -7535,11 +7541,12 @@ angular.module('starter')
                     moreInfo: $rootScope.variableCategories.Location.moreInfo + " <br> " + $rootScope.variableCategories.Environment.moreInfo,
                     buttons: [
                         {
-                            id: "goToStateAppSettingsButton",
+                            id: "enableLocationTrackingButton",
                             clickFunctionCall: function(){$rootScope.enableLocationTracking();},
                             buttonText: 'YES',
                             buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-balanced"
+                            buttonClass: "button button-clear button-balanced",
+                            premiumFeature: true
                         },
                         {
                             id: "hideLocationTrackingInfoCardButton",
@@ -7570,7 +7577,8 @@ angular.module('starter')
                             clickFunctionCall: function(){$rootScope.onboardingGoToImportPage();},
                             buttonText: 'Connect an app or device',
                             buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
+                            buttonClass: "button button-clear button-balanced",
+                            premiumFeature: true
                         },
                         {
                             id: "hideImportDataCardButton",
@@ -8091,6 +8099,8 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.postCreditCard(body, function(response){
                 $rootScope.user = response.user;
+                quantimodoService.setLocalStorageItem('user', JSON.stringify($rootScope.user));
+                localStorage.user = JSON.stringify($rootScope.user); // For Chrome Extension
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);
@@ -8110,6 +8120,8 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.postUnsubscribe({}, function(response){
                 $rootScope.user = response.user;
+                quantimodoService.setLocalStorageItem('user', JSON.stringify($rootScope.user));
+                localStorage.user = JSON.stringify($rootScope.user); // For Chrome Extension
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);

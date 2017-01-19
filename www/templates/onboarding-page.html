@@ -44,6 +44,7 @@
             <div ng-repeat="button in onboardingPages[0].buttons" >
                 <div class="button-bar">
                     <button class="button"
+                            ng-hide="!isIOS && button.premiumFeature && !user.stripePlan"
                             style="background-color: {{onboardingPages[0].backgroundColor}};
                                 border: none;
                                 outline: none;
@@ -51,6 +52,17 @@
                                 text-align: center"
                             id="{{button.id}}"
                             ng-click="button.clickFunctionCall()">
+                        <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
+                    </button>
+                    <button class="button"
+                            ng-show="!isIOS && button.premiumFeature && !user.stripePlan"
+                            style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                            id="goToUpgradePageButton"
+                            ng-click="goToState('app.upgrade')">
                         <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
                     </button>
                 </div>
