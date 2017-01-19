@@ -2561,7 +2561,7 @@ angular.module('starter')
                     inAppPurchase
                         .subscribe(productName)
                         .then(function (data) {
-                            alert(JSON.stringify(data));
+                            quantimodoService.reportError(JSON.stringify(data));
                             /*
                              {
                              transactionId: ...
@@ -2595,11 +2595,11 @@ angular.module('starter')
                             });
                         })
                         .catch(function (err) {
-                            alert(JSON.stringify(err));
+                            quantimodoService.reportError(JSON.stringify(err));
                         });
                 })
                 .catch(function (err) {
-                    alert("couldn't get product " + productName + ": " + JSON.stringify(err));
+                    quantimodoService.reportError("couldn't get product " + productName + ": " + JSON.stringify(err));
                 });
         };
 
