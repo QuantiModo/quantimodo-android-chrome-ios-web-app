@@ -7293,7 +7293,7 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "hideRecordMeasurementInfoCardButton",
-                            clickFunctionCall: "hideHelpCard(card)",
+                            clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
                             buttonText: 'Got it!',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-balanced"
@@ -7318,14 +7318,14 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "sendChromeEmailLinkButton",
-                            clickFunctionCall: "sendChromeEmailLink()",
+                            clickFunctionCall: function(){ $rootScope.sendChromeEmailLink();},
                             buttonText: 'Send Yourself a Link',
                             buttonIconClass: "ion-email",
                             buttonClass: "button button-clear button-balanced"
                         },
                         {
                             id: "hideChromeExtensionInfoCardButton",
-                            clickFunctionCall: "hideHelpCard(card)",
+                            clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
                             buttonText: 'Dismiss',
                             buttonIconClass: "ion-close-circled",
                             buttonClass: "button button-clear button-assertive"
@@ -7359,7 +7359,7 @@ angular.module('starter')
                 {
                     id: "loginOnboardingPage",
                     title: 'Sign In',
-                    titleClickFunctionCall: "onboardingRegister()",
+                    titleClickFunctionCall: function(){$scope.onboardingRegister();},
                     "backgroundColor": "#3467d6",
                     circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-medkit-outline",
@@ -7374,25 +7374,24 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "signUpButton",
-                            clickFunctionCall: "onboardingRegister()",
+                            clickFunctionCall: function(){$rootScope.onboardingRegister();},
                             buttonText: 'Sign Up',
                             buttonIconClass: "",
-                            buttonClass: "button button-clear button-balanced"
+                            buttonClass: "button button-clear button-balanced",
                         },
                         {
                             id: "signInButton",
-                            clickFunctionCall: "onboardingLogin()",
+                            clickFunctionCall: function(){$rootScope.onboardingLogin();},
                             buttonText: 'Already Have Account',
                             buttonIconClass: "",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
                         },
                         {
                             id: "signInWithGoogle",
-                            ngHideLogic: "!isAndroid",
-                            clickFunctionCall: "onboardingGoogleLogin()",
+                            clickFunctionCall: function(){$rootScope.onboardingGoogleLogin();},
                             buttonText: 'Sign In With Google',
                             buttonIconClass: "",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
                         }
                     ]
                 },
@@ -7414,17 +7413,17 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryTreatmentsButton",
-                            clickFunctionCall: "goToReminderSearchCategoryFromOnboarding('Treatments')",
                             buttonText: 'Add Treatment',
                             buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
+                            buttonClass: "button button-clear button-balanced",
+                            clickFunctionCall: function(){$rootScope.goToReminderSearchCategoryFromOnboarding('Treatments');}
                         },
                         {
                             id: "hideAddTreatmentRemindersCardButton",
-                            clickFunctionCall: "hideOnboardingPage(card)",
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
                         }
                     ]
                 },
@@ -7445,14 +7444,14 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToReminderSearchCategorySymptomsButton",
-                            clickFunctionCall: "goToReminderSearchCategoryFromOnboarding('Symptoms')",
+                            clickFunctionCall: function(){$rootScope.goToReminderSearchCategoryFromOnboarding('Symptoms');},
                             buttonText: 'Add Symptom',
                             buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
+                            buttonClass: "button button-clear button-balanced",
                         },
                         {
                             id: "hideAddSymptomRemindersCardButton",
-                            clickFunctionCall: "hideOnboardingPage(card)",
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
@@ -7476,14 +7475,14 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryEmotionsButton",
-                            clickFunctionCall: "goToReminderSearchCategoryFromOnboarding('Emotions')",
+                            clickFunctionCall: function(){$rootScope.goToReminderSearchCategoryFromOnboarding('Emotions');},
                             buttonText: 'Add Emotion',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"
                         },
                         {
                             id: "hideAddEmotionRemindersCardButton",
-                            clickFunctionCall: "hideOnboardingPage(card)",
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
@@ -7506,14 +7505,14 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToReminderSearchCategoryFoodsButton",
-                            clickFunctionCall: "goToReminderSearchCategoryFromOnboarding('Foods')",
+                            clickFunctionCall: function(){$rootScope.goToReminderSearchCategoryFromOnboarding('Foods');},
                             buttonText: 'Add Food or Drink',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"
                         },
                         {
                             id: "hideAddFoodRemindersCardButton",
-                            clickFunctionCall: "hideOnboardingPage(card)",
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
@@ -7537,14 +7536,14 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToStateAppSettingsButton",
-                            clickFunctionCall: "enableLocationTracking()",
+                            clickFunctionCall: function(){$rootScope.enableLocationTracking();},
                             buttonText: 'YES',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-balanced"
                         },
                         {
                             id: "hideLocationTrackingInfoCardButton",
-                            clickFunctionCall: "hideOnboardingPage(card)",
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
                             buttonText: 'NO',
                             buttonIconClass: "ion-flash-off",
                             buttonClass: "button button-clear button-assertive"
@@ -7568,14 +7567,14 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToStateAppImportButton",
-                            clickFunctionCall: "onboardingGoToImportPage()",
+                            clickFunctionCall: function(){$rootScope.onboardingGoToImportPage();},
                             buttonText: 'Connect an app or device',
                             buttonIconClass: "ion-plus-round",
                             buttonClass: "button button-clear button-balanced"
                         },
                         {
                             id: "hideImportDataCardButton",
-                            clickFunctionCall: "hideOnboardingPage(card)",
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
                             buttonText: 'Done connecting data sources',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
@@ -7599,7 +7598,7 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToInboxButton",
-                            clickFunctionCall: "doneOnboarding()",
+                            clickFunctionCall: function(){$rootScope.doneOnboarding();},
                             buttonText: 'GO TO INBOX',
                             buttonIconClass: "ion-ios-filing-outline",
                             buttonClass: "button button-clear button-assertive"
@@ -7885,7 +7884,6 @@ angular.module('starter')
                 {
                     id: "upgradePage",
                     title: 'QuantiModo Plus',
-                    titleClickFunctionCall: "upgradeRegister()",
                     "backgroundColor": "#3467d6",
                     circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-medkit-outline",
@@ -7913,18 +7911,11 @@ angular.module('starter')
                     moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
                     buttons: [
                         {
-                            id: "goToReminderSearchCategoryTreatmentsButton",
-                            clickFunctionCall: "goToReminderSearchCategoryFromUpgrade('Treatments')",
-                            buttonText: 'Add Treatment',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
                             id: "hideAddTreatmentRemindersCardButton",
-                            clickFunctionCall: "hideUpgradePage(card)",
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
                         }
                     ]
                 },
@@ -7944,18 +7935,11 @@ angular.module('starter')
                     moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
                     buttons: [
                         {
-                            id: "goToReminderSearchCategorySymptomsButton",
-                            clickFunctionCall: "goToReminderSearchCategoryFromUpgrade('Symptoms')",
-                            buttonText: 'Add Symptom',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
                             id: "hideAddSymptomRemindersCardButton",
-                            clickFunctionCall: "hideUpgradePage(card)",
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
                         }
                     ]
                 },
@@ -7976,18 +7960,11 @@ angular.module('starter')
                     moreInfo: $rootScope.variableCategories.Emotions.moreInfo,
                     buttons: [
                         {
-                            id: "goToReminderSearchCategoryEmotionsButton",
-                            clickFunctionCall: "goToReminderSearchCategoryFromUpgrade('Emotions')",
-                            buttonText: 'Add Emotion',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
                             id: "hideAddEmotionRemindersCardButton",
-                            clickFunctionCall: "hideUpgradePage(card)",
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
                         }
                     ]
                 },
@@ -8007,18 +7984,11 @@ angular.module('starter')
                     moreInfo: $rootScope.variableCategories.Foods.moreInfo,
                     buttons: [
                         {
-                            id: "goToReminderSearchCategoryFoodsButton",
-                            clickFunctionCall: "goToReminderSearchCategoryFromUpgrade('Foods')",
-                            buttonText: 'Add Food or Drink',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
                             id: "hideAddFoodRemindersCardButton",
-                            clickFunctionCall: "hideUpgradePage(card)",
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
                         }
                     ]
                 },
@@ -8041,18 +8011,11 @@ angular.module('starter')
                     "conditions, I might be able to figure out how the amount of sunlight or temperature is affecting you.",
                     buttons: [
                         {
-                            id: "goToStateAppSettingsButton",
-                            clickFunctionCall: "enableLocationTracking()",
-                            buttonText: 'YES',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
                             id: "hideLocationTrackingInfoCardButton",
-                            clickFunctionCall: "hideUpgradePage(card)",
                             buttonText: 'NO',
                             buttonIconClass: "ion-flash-off",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
                         }
                     ]
                 },
@@ -8072,18 +8035,11 @@ angular.module('starter')
                     "devices that I can automatically pull data from!",
                     buttons: [
                         {
-                            id: "goToStateAppImportButton",
-                            clickFunctionCall: "upgradeGoToImportPage()",
-                            buttonText: 'Connect an app or device',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
                             id: "hideImportDataCardButton",
-                            clickFunctionCall: "hideUpgradePage(card)",
                             buttonText: 'Done connecting data sources',
                             buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
                         }
                     ]
                 },
@@ -8104,10 +8060,10 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "goToInboxButton",
-                            clickFunctionCall: "doneUpgrade()",
                             buttonText: 'GO TO INBOX',
                             buttonIconClass: "ion-ios-filing-outline",
-                            buttonClass: "button button-clear button-assertive"
+                            buttonClass: "button button-clear button-assertive",
+                            clickFunctionCall: function(){$rootScope.doneUpgrade();}
                         }
                     ]
                 }
