@@ -7535,11 +7535,12 @@ angular.module('starter')
                     moreInfo: $rootScope.variableCategories.Location.moreInfo + " <br> " + $rootScope.variableCategories.Environment.moreInfo,
                     buttons: [
                         {
-                            id: "goToStateAppSettingsButton",
+                            id: "enableLocationTrackingButton",
                             clickFunctionCall: function(){$rootScope.enableLocationTracking();},
                             buttonText: 'YES',
                             buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-balanced"
+                            buttonClass: "button button-clear button-balanced",
+                            premiumFeature: true
                         },
                         {
                             id: "hideLocationTrackingInfoCardButton",
@@ -7570,7 +7571,8 @@ angular.module('starter')
                             clickFunctionCall: function(){$rootScope.onboardingGoToImportPage();},
                             buttonText: 'Connect an app or device',
                             buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
+                            buttonClass: "button button-clear button-balanced",
+                            premiumFeature: true
                         },
                         {
                             id: "hideImportDataCardButton",
@@ -8091,6 +8093,8 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.postCreditCard(body, function(response){
                 $rootScope.user = response.user;
+                quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
+                localStorage.user = JSON.stringify(user); // For Chrome Extension
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);
@@ -8110,6 +8114,8 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.postUnsubscribe({}, function(response){
                 $rootScope.user = response.user;
+                quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
+                localStorage.user = JSON.stringify(user); // For Chrome Extension
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);
