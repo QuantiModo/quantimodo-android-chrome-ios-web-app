@@ -8093,8 +8093,8 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.postCreditCard(body, function(response){
                 $rootScope.user = response.user;
-                quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
-                localStorage.user = JSON.stringify(user); // For Chrome Extension
+                quantimodoService.setLocalStorageItem('user', JSON.stringify($rootScope.user));
+                localStorage.user = JSON.stringify($rootScope.user); // For Chrome Extension
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);
@@ -8114,8 +8114,8 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.postUnsubscribe({}, function(response){
                 $rootScope.user = response.user;
-                quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
-                localStorage.user = JSON.stringify(user); // For Chrome Extension
+                quantimodoService.setLocalStorageItem('user', JSON.stringify($rootScope.user));
+                localStorage.user = JSON.stringify($rootScope.user); // For Chrome Extension
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);
