@@ -2190,6 +2190,7 @@ gulp.task('prepareAndroidApp', function(callback){
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
+        'decryptWwwManifestJson',
         'decryptAndroidKeystore',
         'generateAndroidResources',
 		'copyAndroidResources',
