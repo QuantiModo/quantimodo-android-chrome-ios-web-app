@@ -2604,10 +2604,13 @@ angular.module('starter')
         };
 
         var webDowngrade = function() {
+            $ionicLoading.show();
             quantimodoService.postUnsubscribeDeferred().then(function (response) {
+                $ionicLoading.hide();
                 console.debug(JSON.stringify(response));
                 $scope.showAlert('Successfully downgraded to QuantiModo Lite');
             }, function (error) {
+                $ionicLoading.hide();
                 $scope.showAlert('An error occurred while downgrading.  Please email mike@quantimo.do');
                 console.debug(JSON.stringify(error));
             });
