@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector,
                                     quantimodoService, ionicDatePicker, $cordovaOauth,
-                                    $ionicActionSheet, $ionicDeploy, $locale) {
+                                    $ionicActionSheet, $ionicDeploy, $locale, $mdDialog) {
 
         $rootScope.appMigrationVersion = 1489;
         $rootScope.appVersion = "2.3.2.0";
@@ -2439,20 +2439,21 @@ angular.module('starter')
             quantimodoService.showAlert(title, template, subTitle);
         };
 
+        if(!$scope.subscriptionPlanId){
+            $scope.subscriptionPlanId = 'yearly60';
+        }
+
         $scope.monthlySubscription = function () {
-            $scope.plan = 'monthly';
+            $scope.subscriptionPlanId = 'yearly60';
             $scope.upgrade();
         };
 
         $scope.yearlySubscription = function () {
-            $scope.plan = 'yearly';
+            $scope.subscriptionPlanId = 'yearly60';
             $scope.upgrade();
         };
 
         $scope.upgrade = function () {
-            if(!$scope.plan){
-                $scope.plan = 'monthly';
-            }
             if($rootScope.isMobile){
                 mobileUpgrade();
             } else {
@@ -2470,7 +2471,7 @@ angular.module('starter')
 
             myPopup = $ionicPopup.show({
                 templateUrl: 'templates/credit-card.html',
-                title: 'Payment Info',
+                title: 'Your Plan',
                 subTitle: $scope.popupSubtitle,
                 scope: $scope,
                 buttons: [
@@ -2499,13 +2500,38 @@ angular.module('starter')
                     "card_month": $scope.ccinfo.month,
                     "card_year": $scope.ccinfo.year,
                     "card_cvc": $scope.ccinfo.securityCode,
-                    'plan': $scope.plan,
+                    'plan': $scope.subscriptionPlanId,
                     'coupon': $scope.coupon
                 };
 
+                $ionicLoading.show();
+
                 quantimodoService.postCreditCardDeferred(body).then(function (response) {
+                    $ionicLoading.hide();
                     console.debug(JSON.stringify(response));
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('Thank you!')
+                            .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('Get Started!')
+                    )
+                    .finally(function() {
+                        $state.go(config.appSettings.defaultState);
+                    });
                 }, function (error) {
+                    $ionicLoading.hide();
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('Error')
+                            .textContent(JSON.stringify(error))
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('Get Started')
+                    );
                     console.debug(JSON.stringify(error));
                 });
             });
@@ -2513,7 +2539,7 @@ angular.module('starter')
 
         var mobileUpgrade = function () {
             //makeInAppPurchase('com.quantimodo.quantimodo.subscription1');
-            makeInAppPurchase('subscription1');
+            makeInAppPurchase($scope.subscriptionPlanId);
         };
 
         var makeInAppPurchase = function (productName) {

@@ -1546,7 +1546,7 @@ angular.module('starter',
             params: { },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/upgrade-page.html",
+                    templateUrl: "templates/upgrade-page-cards.html",
                     controller: 'UpgradeCtrl'
                 }
             }

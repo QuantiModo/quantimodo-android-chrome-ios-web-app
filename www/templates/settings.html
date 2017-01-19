@@ -126,18 +126,18 @@
                 Update App
             </a>
         </div>
-        <div ng-if="(user && !user.stripeActive) || isMobile" class="list card" ng-click="upgrade()">
+        <div ng-if="user && !user.subscriptionProvider" class="list card" ng-click="goToState('app.upgrade')">
             <a class="item">
                 <i class="icon ion-ios-color-wand"></i>
                 &nbsp;
-                Upgrade to QuantiModo Plus
+                Upgrade to Premium
             </a>
         </div>
-        <div ng-if="user && user.stripeActive" class="list card" ng-click="upgrade()">
+        <div ng-if="user && user.subscriptionProvider" class="list card" ng-click="downgrade()">
             <a class="item">
                 <i class="icon ion-ios-color-wand"></i>
                 &nbsp;
-                Downgrade from QuantiModo Plus
+                Downgrade to Lite
             </a>
         </div>
         <br>

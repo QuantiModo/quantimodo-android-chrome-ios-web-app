@@ -1,13 +1,19 @@
-<div class="card" style="background-color: {{planFeaturesCard.backgroundColor}}; text-align: center;" >
+<div class="card" style="text-align: center;" >
     <div class="list">
-
         <div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}">
+            <br>
             <p style="font-size: 25px; color: black; margin-bottom: 10px;">
                 {{planFeaturesCard.title}}
             </p>
             <p style="font-size: 18px; color: black; margin-top: 10px;">
                 {{planFeaturesCard.subtitle}}
             </p>
+            <br>
+            <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade()">
+                {{planFeaturesCard.buttonText}}
+            </button>
+            <br>
+            <br>
         </div>
 
         <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar">
@@ -29,9 +35,13 @@
     </div>
     <div ng-bind-html="planFeaturesCard.priceHtml"></div>
     <br>
-    <button class="{{planFeaturesCard.buttonClass}}">
+    <br>
+    <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade()">
         {{planFeaturesCard.buttonText}}
     </button>
     <br>
+    <br>
+    <br>
+    <p style="color: grey;" ng-click="goToState(config.appSettings.defaultState)">Use Lite Plan instead</p>
     <br>
 </div>

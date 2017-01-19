@@ -1,4 +1,10 @@
 <form novalidate name="paymentForm">
+    <md-radio-group ng-model="subscriptionPlanId">
+
+        <md-radio-button value="yearly60" class="md-primary">Yearly ($59.99/yr)</md-radio-button>
+        <md-radio-button value="monthly 7">Monthly ($6.99/mo)</md-radio-button>
+
+    </md-radio-group>
     <input style="text-align: center; border: 1px solid #a2a2a2;"
             type="text"
             name="creditCard"
