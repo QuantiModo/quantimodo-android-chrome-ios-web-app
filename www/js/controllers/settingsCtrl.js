@@ -501,9 +501,11 @@ angular.module('starter')
                     console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
                 });
             } else {
-                if($rootScope.user && $rootScope.user.trackLocation){
+                if($rootScope.user){
                     $rootScope.trackLocation = $rootScope.user.trackLocation;
-                } else {
+                }
+
+                if(!$rootScope.user || typeof $rootScope.user.trackLocation === "undefined"){
                     quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
                     console.debug("set afterLoginGoTo to " + window.location.href);
                     $rootScope.sendToLogin();
