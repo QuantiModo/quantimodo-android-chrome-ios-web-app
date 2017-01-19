@@ -6928,21 +6928,27 @@ angular.module('starter')
                 return false;
             }
             var cachedResponse = JSON.parse(quantimodoService.getLocalStorageItemAsString(requestName));
-            if(!cachedResponse){
+            if(!cachedResponse || !cachedResponse.expirationTimeMilliseconds){
                 return false;
             }
             var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
-            var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
+            if(!paramsMatch){
+                return false;
+            }
 
+            var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
             if(ignoreExpiration){
                 cacheNotExpired = true;
             }
-
-            if(cachedResponse && paramsMatch && cachedResponse.response.length && cacheNotExpired){
-                return cachedResponse.response;
-            } else {
+            if(!cacheNotExpired){
                 return false;
             }
+
+            if(!cachedResponse.response.length){
+                return false;
+            }
+
+            return cachedResponse.response;
         };
 
         quantimodoService.storeCachedResponse = function(requestName, params, response){
