@@ -2340,10 +2340,10 @@ angular.module('starter')
             $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName["Show more units"] = showMoreUnitsObject;
         }
 
-        quantimodoService.getUnits = function(){
+        quantimodoService.getUnits = function(ignoreExpiration){
             var deferred = $q.defer();
             var params = {};
-            var cachedUnits = quantimodoService.getCachedResponse('getUnits', params);
+            var cachedUnits = quantimodoService.getCachedResponse('getUnits', params, ignoreExpiration);
             if(cachedUnits){
                 addUnitsToRootScope(cachedUnits);
                 deferred.resolve(cachedUnits);

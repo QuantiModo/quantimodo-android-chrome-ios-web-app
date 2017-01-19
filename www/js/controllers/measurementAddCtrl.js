@@ -153,7 +153,7 @@ angular.module('starter')
                 Bugsnag.notify(message, "measurement is " + JSON.stringify($scope.state.measurement), {}, "error");
             }
         };
-        
+
         var validate = function () {
 
             var message;
@@ -353,6 +353,11 @@ angular.module('starter')
             }
         };
 
+        var refreshUnitsIfStale = function () {
+            var ignoreExpiration = false;
+            quantimodoService.getUnits(ignoreExpiration);
+        };
+
         $scope.init = function(){
             $rootScope.bloodPressure = {
                 diastolicValue: null,
@@ -367,7 +372,11 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state.title = 'Record a Measurement';
-            quantimodoService.getUnits().then(function () {
+            var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
+            $ionicLoading.show();
+            quantimodoService.getUnits(ignoreExpiration).then(function () {
+                $ionicLoading.hide();
+                refreshUnitsIfStale();
                 console.debug($state.current.name + ": " + "got units in init function");
                 if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                     console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
@@ -590,7 +599,7 @@ angular.module('starter')
         };
 
         function setupValueFieldType(abbreviatedUnitName, variableDescription) {
-            
+
             if(!abbreviatedUnitName){
                 console.error('No abbreviatedUnitName provided to setupValueFieldType');
                 return false;
