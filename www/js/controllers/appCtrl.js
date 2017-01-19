@@ -2471,7 +2471,7 @@ angular.module('starter')
 
             myPopup = $ionicPopup.show({
                 templateUrl: 'templates/credit-card.html',
-                title: 'Your Plan',
+                title: 'Select Plan',
                 subTitle: $scope.popupSubtitle,
                 scope: $scope,
                 buttons: [
