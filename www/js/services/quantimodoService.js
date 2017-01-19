@@ -7420,7 +7420,7 @@ angular.module('starter')
                         },
                         {
                             id: "hideAddTreatmentRemindersCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive",
@@ -7451,7 +7451,7 @@ angular.module('starter')
                         },
                         {
                             id: "hideAddSymptomRemindersCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
@@ -7482,7 +7482,7 @@ angular.module('starter')
                         },
                         {
                             id: "hideAddEmotionRemindersCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
@@ -7512,7 +7512,7 @@ angular.module('starter')
                         },
                         {
                             id: "hideAddFoodRemindersCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"
@@ -7543,7 +7543,7 @@ angular.module('starter')
                         },
                         {
                             id: "hideLocationTrackingInfoCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
                             buttonText: 'NO',
                             buttonIconClass: "ion-flash-off",
                             buttonClass: "button button-clear button-assertive"
@@ -7574,7 +7574,7 @@ angular.module('starter')
                         },
                         {
                             id: "hideImportDataCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage(card);},
+                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
                             buttonText: 'Done connecting data sources',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive"

@@ -2494,7 +2494,10 @@ angular.module('starter')
                 ]
             });
 
-            myPopup.then(function() {
+            myPopup.then(function(result) {
+                if(!result){
+                    return;
+                }
                 var body = {
                     "card_number": $scope.ccinfo.number,
                     "card_month": $scope.ccinfo.month,

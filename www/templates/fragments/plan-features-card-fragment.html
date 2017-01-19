@@ -9,11 +9,11 @@
                 {{planFeaturesCard.subtitle}}
             </p>
             <br>
-            <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade()">
+<!--            <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade()">
                 {{planFeaturesCard.buttonText}}
             </button>
             <br>
-            <br>
+            <br>-->
         </div>
 
         <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar">
@@ -42,6 +42,7 @@
     <br>
     <br>
     <br>
-    <p style="color: grey;" ng-click="goToState(config.appSettings.defaultState)">Use Lite Plan instead</p>
+    <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="goToState('app.remindersInbox')">Use Lite Plan instead</u>
+    <br>
     <br>
 </div>
