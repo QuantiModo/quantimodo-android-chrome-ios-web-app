@@ -8134,6 +8134,7 @@ angular.module('starter')
         quantimodoService.postCreditCardDeferred = function(body){
             var deferred = $q.defer();
             quantimodoService.postCreditCard(body, function(response){
+                $rootScope.user = response.user;
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);
@@ -8152,6 +8153,7 @@ angular.module('starter')
         quantimodoService.postUnsubscribeDeferred = function(){
             var deferred = $q.defer();
             quantimodoService.postUnsubscribe({}, function(response){
+                $rootScope.user = response.user;
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);

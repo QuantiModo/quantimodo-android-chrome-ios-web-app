@@ -2471,7 +2471,7 @@ angular.module('starter')
 
             myPopup = $ionicPopup.show({
                 templateUrl: 'templates/credit-card.html',
-                title: 'Your Plan',
+                title: 'Select Plan',
                 subTitle: $scope.popupSubtitle,
                 scope: $scope,
                 buttons: [
@@ -2555,7 +2555,6 @@ angular.module('starter')
                     /*
                      [{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                      */
-
                     inAppPurchase
                         .subscribe(productName)
                         .then(function (data) {
@@ -2567,6 +2566,30 @@ angular.module('starter')
                              signature: ...
                              }
                              */
+                            var subscriptionProvider = 'unknown';
+                            if($rootScope.isAndroid){
+                                subscriptionProvider = 'google';
+                            }
+                            if($rootScope.isIOS){
+                                subscriptionProvider = 'apple';
+                            }
+                            quantimodoService.updateUserSettingsDeferred({
+                                subscriptionProvider: subscriptionProvider,
+                                stripePlan: productName,
+                                trialEndsAt: moment().add(14, 'days').toISOString()
+                            });
+                            $mdDialog.show(
+                                $mdDialog.alert()
+                                    .parent(angular.element(document.querySelector('#popupContainer')))
+                                    .clickOutsideToClose(true)
+                                    .title('Thank you!')
+                                    .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
+                                    .ariaLabel('Alert Dialog Demo')
+                                    .ok('Get Started!')
+                            )
+                            .finally(function() {
+                                $state.go(config.appSettings.defaultState);
+                            });
                         })
                         .catch(function (err) {
                             alert(JSON.stringify(err));
