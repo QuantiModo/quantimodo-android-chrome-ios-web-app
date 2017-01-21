@@ -35,7 +35,7 @@ angular.module('starter')
                 quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($scope.correlationObject));
                 $ionicLoading.hide();
             }
-            
+
             if($scope.correlationObject){
                 $scope.state.requestParams = {
                     causeVariableName: $scope.correlationObject.causeVariableName,
@@ -189,8 +189,8 @@ angular.module('starter')
 
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    { text: '<i class="icon ion-log-in"></i>' + $scope.correlationObject.causeVariableName + ' Settings' },
-                    { text: '<i class="icon ion-log-out"></i>' + $scope.correlationObject.effectVariableName + ' Settings' },
+                    { text: '<i class="icon ion-log-in"></i>' + $scope.correlationObject.causeVariableName.substring(0,15) + ' Settings' },
+                    { text: '<i class="icon ion-log-out"></i>' + $scope.correlationObject.effectVariableName.substring(0,15) + ' Settings' },
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Seems Wrong',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
