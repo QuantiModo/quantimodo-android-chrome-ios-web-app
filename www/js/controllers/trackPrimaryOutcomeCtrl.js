@@ -56,7 +56,7 @@ angular.module('starter')
         };
 
         var updateCharts = function(){
-            $scope.state.primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('allMeasurements');
+            $scope.state.primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
             var measurementsQueue = quantimodoService.getLocalStorageItemAsObject('measurementsQueue');
             if(!$scope.state.primaryOutcomeMeasurements){
                 $scope.state.primaryOutcomeMeasurements = [];

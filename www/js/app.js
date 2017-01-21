@@ -270,10 +270,10 @@ angular.module('starter',
                 };
 
                 // update full data
-                if(localStorage[keyIdentifier+'allMeasurements']){
-                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
+                if(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']){
+                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']);
                     allMeasurements.push(allMeasurementsObject);
-                    localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
+                    localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
                 }
 
                 //update measurementsQueue

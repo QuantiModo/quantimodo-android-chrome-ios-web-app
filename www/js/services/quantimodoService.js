@@ -1710,7 +1710,7 @@ angular.module('starter')
         };
 
         quantimodoService.getAllLocalMeasurements = function(){
-            var primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('allMeasurements');
+            var primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
             if(!primaryOutcomeMeasurements) {
                 primaryOutcomeMeasurements = [];
             }
@@ -1770,7 +1770,7 @@ angular.module('starter')
                     if (response.length > 0 && response.length <= 200) {
                         // Update local data
                         var allMeasurements;
-                        quantimodoService.getLocalStorageItemAsStringWithCallback('allMeasurements',function(allMeasurements){
+                        quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeVariableMeasurements',function(allMeasurements){
                             allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
 
                             var filteredStoredMeasurements = [];
@@ -1808,7 +1808,7 @@ angular.module('starter')
                             //quantimodoService.setDates(new Date().getTime(),s*1000);
                             //console.debug("getPrimaryOutcomeVariableMeasurements: allMeasurements length is " + allMeasurements.length);
                             //console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
-                            quantimodoService.setLocalStorageItem('allMeasurements', JSON.stringify(allMeasurements));
+                            quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements', JSON.stringify(allMeasurements));
                             console.debug("getPrimaryOutcomeVariableMeasurements broadcasting to update charts");
                             $rootScope.$broadcast('updateCharts');
                         });
@@ -2022,7 +2022,7 @@ angular.module('starter')
 
                 } else if(measurementInfo.id) {
                     var newAllMeasurements = [];
-                    quantimodoService.getLocalStorageItemAsStringWithCallback('allMeasurements',function(oldAllMeasurements) {
+                    quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeVariableMeasurements',function(oldAllMeasurements) {
                         oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
                         oldAllMeasurements.forEach(function (storedMeasurement) {
                             // look for edited measurement based on IDs
@@ -2039,7 +2039,7 @@ angular.module('starter')
                     });
                     console.debug("postTrackingMeasurement: newAllMeasurements length is " + newAllMeasurements.length);
                     //console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
-                    quantimodoService.setLocalStorageItem('allMeasurements', JSON.stringify(newAllMeasurements));
+                    quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements', JSON.stringify(newAllMeasurements));
                     var editedMeasurement = {
                         id: measurementInfo.id,
                         variableName: measurementInfo.variableName,
@@ -2242,7 +2242,7 @@ angular.module('starter')
 
         quantimodoService.deleteMeasurementFromLocalStorage = function(measurement) {
             var deferred = $q.defer();
-            quantimodoService.deleteElementOfLocalStorageItemById('allMeasurements', measurement.id).then(function(){
+            quantimodoService.deleteElementOfLocalStorageItemById('primaryOutcomeVariableMeasurements', measurement.id).then(function(){
                 deferred.resolve();
             });
             quantimodoService.deleteElementOfLocalStorageItemByProperty('measurementQueue', 'startTimeEpoch',
@@ -3988,7 +3988,7 @@ angular.module('starter')
 
         quantimodoService.getWeekdayChartConfigForPrimaryOutcome = function () {
             var deferred = $q.defer();
-            deferred.resolve(quantimodoService.processDataAndConfigureWeekdayChart(quantimodoService.getLocalStorageItemAsObject('allMeasurements'),
+            deferred.resolve(quantimodoService.processDataAndConfigureWeekdayChart(quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements'),
                 config.appSettings.primaryOutcomeVariableDetails));
             return deferred.promise;
         };

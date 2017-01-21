@@ -1358,7 +1358,7 @@ angular.module('starter')
             quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
                 // If primaryOutcomeVariableName, delete local storage measurements
                 if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
-                    quantimodoService.setLocalStorageItem('allMeasurements',[]);
+                    quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
                     quantimodoService.setLocalStorageItem('measurementsQueue',[]);
                     quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
                     quantimodoService.setLocalStorageItem('lastSyncTime',0);
