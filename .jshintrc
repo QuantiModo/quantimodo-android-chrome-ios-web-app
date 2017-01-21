@@ -40,6 +40,7 @@
     "PushNotification" : false,
     "navigator" : false,
     "UserVoice" : false,
-    "backgroundGeoLocation" : false
+    "backgroundGeoLocation" : false,
+    "inAppPurchase" : false
   }
 }
