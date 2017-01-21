@@ -2350,7 +2350,7 @@ angular.module('starter')
                 return deferred.promise;
             }
             quantimodoService.refreshUnits().then(function(unitObjects){
-                quantimodoService.storeCachedResponse('Units', params, unitObjects);
+                quantimodoService.storeCachedResponse('units', params, unitObjects);
                 deferred.resolve(unitObjects);
             }, function (error) {
                 console.error("Could not refresh units.  Falling back to stale ones in local storage. Error: " + error);
