@@ -3024,10 +3024,15 @@ angular.module('starter')
 
         quantimodoService.postTrackingRemindersDeferred = function(trackingRemindersArray){
             var deferred = $q.defer();
-            quantimodoService.postTrackingRemindersToApi(trackingRemindersArray, function(){
+            quantimodoService.postTrackingRemindersToApi(trackingRemindersArray, function(response){
                 //update alarms and local notifications
                 console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
-                quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
+                //quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
+
+                quantimodoService.setLocalStorageItem('trackingReminderNotifications',
+                    JSON.stringify(response.trackingReminderNotifications));
+                quantimodoService.setLocalStorageItem('trackingReminders',
+                    JSON.stringify(response.trackingReminderNotifications));
                 deferred.resolve();
             }, function(error){
                 deferred.reject(error);
@@ -3046,7 +3051,7 @@ angular.module('starter')
                 deferred.resolve();
                 return deferred.promise;
             }
-            quantimodoService.postTrackingReminderNotificationsToApi(trackingReminderNotificationsArray, function(){
+            quantimodoService.postTrackingReminderNotificationsToApi(trackingReminderNotificationsArray, function(response){
                 quantimodoService.deleteItemFromLocalStorage('notificationsSyncQueue');
                 if($rootScope.showUndoButton){
                     $rootScope.showUndoButton = false;
@@ -3457,20 +3462,6 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.addRatingTimesToDailyReminders = function(reminders) {
-            var index;
-            for (index = 0; index < reminders.length; ++index) {
-                if (reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0 &&
-                    reminders[index].valueAndFrequencyTextDescription.indexOf(' at ') === -1 &&
-                    reminders[index].valueAndFrequencyTextDescription.toLowerCase().indexOf('disabled') === -1) {
-                    reminders[index].valueAndFrequencyTextDescription =
-                        reminders[index].valueAndFrequencyTextDescription + ' at ' +
-                        quantimodoService.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
-                }
-            }
-            return reminders;
-        };
-
         quantimodoService.convertReminderTimeStringToMoment = function(reminderTimeString) {
             var now = new Date();
             var hourOffsetFromUtc = now.getTimezoneOffset()/60;
@@ -3613,7 +3604,6 @@ angular.module('starter')
                 } else {
                     allReminders = nonFavoriteReminders;
                 }
-                allReminders = quantimodoService.addRatingTimesToDailyReminders(allReminders);
                 deferred.resolve(allReminders);
             }
             return deferred.promise;
@@ -5387,14 +5377,22 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getVariablesByNameDeferred = function(name, params){
+        quantimodoService.getUserVariableByNameDeferred = function(name, params){
             var deferred = $q.defer();
 
-            // refresh always
-            quantimodoService.getVariablesByNameFromApi(name, params, function(variable){
-                deferred.resolve(variable);
-            }, function(error){
-                deferred.reject(error);
+            quantimodoService.getLocalStorageItemAsStringWithCallback('userVariables', function (userVariables) {
+                for(var i = 0; i < userVariables.length; i++){
+                    if(userVariables[i].name === name){
+                        deferred.resolve(userVariables[i]);
+                        return
+                    }
+                }
+
+                quantimodoService.getVariablesByNameFromApi(name, params, function(variable){
+                    deferred.resolve(variable);
+                }, function(error){
+                    deferred.reject(error);
+                });
             });
 
             return deferred.promise;
@@ -5416,6 +5414,7 @@ angular.module('starter')
         quantimodoService.postUserVariableDeferred = function(userVariable) {
 
             var deferred = $q.defer();
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', userVariable);
             quantimodoService.postUserVariableToApi(userVariable, function(userVariable) {
                 deferred.resolve(userVariable);
             }, function(error){

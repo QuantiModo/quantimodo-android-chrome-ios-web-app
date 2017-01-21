@@ -1,5 +1,5 @@
 angular.module('starter')
-    
+
     // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
         function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $stateParams, $ionicHistory, $ionicActionSheet) {
@@ -82,7 +82,7 @@ angular.module('starter')
                 $scope.setupVariableByVariableObject($stateParams.variableObject);
             } else if ($stateParams.variableName) {
                 $rootScope.variableName = $stateParams.variableName;
-                $scope.getVariableByName($rootScope.variableName);
+                $scope.getUserVariableByName($rootScope.variableName);
             } else if ($rootScope.variableObject) {
                 $scope.setupVariableByVariableObject($rootScope.variableObject);
             } else {

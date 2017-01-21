@@ -209,7 +209,7 @@ angular.module('starter')
             if($rootScope.urlParameters.userId){
                 params.userId = $rootScope.urlParameters.userId;
             }
-            quantimodoService.getVariablesByNameDeferred(variableName, params).then(function(variableObject){
+            quantimodoService.getUserVariableByNameDeferred(variableName, params).then(function(variableObject){
                 $rootScope.variableObject = variableObject;
             });
         };

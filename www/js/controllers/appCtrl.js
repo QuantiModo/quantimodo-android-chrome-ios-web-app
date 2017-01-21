@@ -1049,7 +1049,7 @@ angular.module('starter')
                     title:'Delete Downvote',
                     //subTitle: '',
                     scope: $scope,
-                    template: 'You previously voted that it is IMPOSSIBLE that ' + correlationObject.causeVariableName + 
+                    template: 'You previously voted that it is IMPOSSIBLE that ' + correlationObject.causeVariableName +
                     ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this down vote?',
                     buttons:[
                         {text: 'No'},
@@ -1098,7 +1098,7 @@ angular.module('starter')
                     title:'Delete Upvote',
                     //subTitle: '',
                     scope: $scope,
-                    template: 'You previously voted that it is POSSIBLE that '+ correlationObject.causeVariableName + 
+                    template: 'You previously voted that it is POSSIBLE that '+ correlationObject.causeVariableName +
                     ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this up vote?',
                     buttons:[
                         {text: 'No'},
@@ -1632,13 +1632,13 @@ angular.module('starter')
             $scope.hideLoader() ;
         };
 
-        $scope.getVariableByName = function (variableName) {
+        $scope.getUserVariableByName = function (variableName) {
             if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){
                 $rootScope.variableObject = null;
             }
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             var params = {includeTags : true};
-            quantimodoService.getVariablesByNameDeferred(variableName, params).then(function(variableObject){
+            quantimodoService.getUserVariableByNameDeferred(variableName, params).then(function(variableObject){
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 $ionicLoading.hide();
@@ -1656,7 +1656,7 @@ angular.module('starter')
             // Populate fields with original settings for variable
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             quantimodoService.resetUserVariableDeferred(variableObject.id).then(function() {
-                $scope.getVariableByName(variableObject.name);
+                $scope.getUserVariableByName(variableObject.name);
             });
         };
 
@@ -2684,7 +2684,7 @@ angular.module('starter')
                     }, function (error) {
                         console.error(JSON.stringify(error));
                     });
-                    
+
                 } else {
                     console.log('You are not sure');
                 }
