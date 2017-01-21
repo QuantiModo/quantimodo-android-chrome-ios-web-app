@@ -121,7 +121,7 @@ angular.module('starter')
         };
 
         // delete measurement
-        $scope.deleteMeasurement = function(){
+        $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
             $scope.showLoader('Deleting measurement...');
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                 quantimodoService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
@@ -764,7 +764,7 @@ angular.module('starter')
                     return true;
                 },
                 destructiveButtonClicked: function() {
-                    $scope.deleteMeasurement();
+                    $scope.deleteMeasurementFromMeasurementAddCtrl();
                     return true;
                 }
             });
