@@ -1045,7 +1045,22 @@ angular.module('starter')
                     ]
                 });
             } else {
-                deleteVote(correlationObject, $index);
+                $ionicPopup.show({
+                    title:'Delete Downvote',
+                    //subTitle: '',
+                    scope: $scope,
+                    template: 'You previously voted that it is IMPOSSIBLE that ' + correlationObject.causeVariableName + 
+                    ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this down vote?',
+                    buttons:[
+                        {text: 'No'},
+                        {text: 'Yes',
+                            type: 'button-positive',
+                            onTap: function(){
+                                deleteVote(correlationObject, $index);
+                            }
+                        }
+                    ]
+                });
             }
         };
 
@@ -1079,7 +1094,22 @@ angular.module('starter')
                     ]
                 });
             } else {
-                deleteVote(correlationObject, $index);
+                $ionicPopup.show({
+                    title:'Delete Upvote',
+                    //subTitle: '',
+                    scope: $scope,
+                    template: 'You previously voted that it is POSSIBLE that '+ correlationObject.causeVariableName + 
+                    ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this up vote?',
+                    buttons:[
+                        {text: 'No'},
+                        {text: 'Yes',
+                            type: 'button-positive',
+                            onTap: function(){
+                                deleteVote(correlationObject, $index);
+                            }
+                        }
+                    ]
+                });
             }
         };
 
