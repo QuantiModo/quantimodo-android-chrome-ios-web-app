@@ -112,7 +112,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                quantimodoService.getVariablesByNameDeferred('Anxiety').then(function (variable) {
+                quantimodoService.getUserVariableByNameDeferred('Anxiety').then(function (variable) {
                     $rootScope.stateParams.tagVariableObject = variable;
                     $ionicLoading.hide();
                 });
@@ -122,7 +122,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                quantimodoService.getVariablesByNameDeferred('Overall Mood').then(function (variable) {
+                quantimodoService.getUserVariableByNameDeferred('Overall Mood').then(function (variable) {
                     $rootScope.stateParams.taggedVariableObject = variable;
                     $ionicLoading.hide();
                 });

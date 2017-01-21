@@ -1,8 +1,7 @@
 angular.module('starter')
 
     // Handlers the Welcome Page
-    .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector,
-                                      $timeout, $stateParams, quantimodoService) {
+    .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, quantimodoService) {
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";

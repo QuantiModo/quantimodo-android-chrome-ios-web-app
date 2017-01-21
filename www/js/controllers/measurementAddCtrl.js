@@ -121,7 +121,7 @@ angular.module('starter')
         };
 
         // delete measurement
-        $scope.deleteMeasurement = function(){
+        $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
             $scope.showLoader('Deleting measurement...');
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                 quantimodoService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
@@ -285,7 +285,7 @@ angular.module('starter')
             // Measurement only - post measurement. This is for adding or editing
             quantimodoService.postMeasurementDeferred(measurementInfo, true);
             var backView = $ionicHistory.backView();
-            if(backView.stateName.toLowerCase().indexOf('search') > -1){
+            if(backView && backView.stateName.toLowerCase().indexOf('search') > -1){
                 $state.go(config.appSettings.defaultState);
                 // This often doesn't work and the user should go to the inbox more anyway
                 //$ionicHistory.goBack(-2);
@@ -764,7 +764,7 @@ angular.module('starter')
                     return true;
                 },
                 destructiveButtonClicked: function() {
-                    $scope.deleteMeasurement();
+                    $scope.deleteMeasurementFromMeasurementAddCtrl();
                     return true;
                 }
             });
