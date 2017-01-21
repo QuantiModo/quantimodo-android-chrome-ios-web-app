@@ -3015,7 +3015,6 @@ angular.module('starter')
         };
 
         quantimodoService.backgroundGeolocationStop = function () {
-
             window.localStorage.setItem('bgGPS', 0);
             backgroundGeoLocation.stop();
         };
@@ -3026,13 +3025,10 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.postTrackingRemindersToApi(trackingRemindersArray, function(response){
                 //update alarms and local notifications
-                console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
+                //console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
                 //quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
-
-                quantimodoService.setLocalStorageItem('trackingReminderNotifications',
-                    JSON.stringify(response.trackingReminderNotifications));
-                quantimodoService.setLocalStorageItem('trackingReminders',
-                    JSON.stringify(response.trackingReminderNotifications));
+                quantimodoService.setLocalStorageItem('trackingReminderNotifications', JSON.stringify(response.trackingReminderNotifications));
+                quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));
                 deferred.resolve();
             }, function(error){
                 deferred.reject(error);

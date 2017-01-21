@@ -494,15 +494,6 @@ angular.module('starter')
                     quantimodoService.postTrackingRemindersDeferred(remindersArray)
                         .then(function(){
                             $scope.hideLoader();
-                            quantimodoService.refreshTrackingReminderNotifications().then(function(){
-                                console.debug('reminderAddCtrl.save successfully refreshed notifications');
-                            }, function (error) {
-                                console.error(error);
-                                //if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
-                            });
-
-                            // We need to do this again in case a reminder sync replaced our updated one before posting finished
-                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
                             goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         }, function(error){
                             $scope.hideLoader();
