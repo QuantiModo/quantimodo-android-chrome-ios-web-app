@@ -2593,7 +2593,7 @@ angular.module('starter')
         }
 
         var mobileUpgrade = function (ev) {
-            if (window.inAppPurchase) {
+            if (!window.inAppPurchase) {
                 console.error('inAppPurchase not available');
                 webUpgrade();
                 return;
