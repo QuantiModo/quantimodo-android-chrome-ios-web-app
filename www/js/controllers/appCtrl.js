@@ -2575,21 +2575,52 @@ angular.module('starter')
             });
         };
 
-        var mobileUpgrade = function () {
-            //makeInAppPurchase('com.quantimodo.quantimodo.subscription1');
-            makeInAppPurchase($scope.subscriptionPlanId);
-        };
+        function DialogController($scope, $mdDialog) {
+            console.debug('$scope.subscriptionPlanId is ' + $scope.subscriptionPlanId);
 
-        var makeInAppPurchase = function (productName) {
-            if (!window.inAppPurchase) {
+            $scope.subscriptionPlanId = 'monthly7';
+            $scope.hide = function() {
+                $mdDialog.hide();
+            };
+
+            $scope.cancel = function() {
+                $mdDialog.cancel();
+            };
+
+            $scope.answer = function(answer) {
+                $mdDialog.hide(answer);
+            };
+        }
+
+        var mobileUpgrade = function (ev) {
+            if (window.inAppPurchase) {
                 console.error('inAppPurchase not available');
                 webUpgrade();
                 return;
             }
+
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: 'templates/fragments/select-subscription-plan-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose:true,
+                fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+            })
+                .then(function() {
+                    makeInAppPurchase($scope.subscriptionPlanId);
+                }, function() {
+                    $scope.status = 'You cancelled the dialog.';
+                });
+
+        };
+
+        var makeInAppPurchase = function (productName) {
+
             inAppPurchase
                 .getProducts([productName])
                 .then(function (products) {
-                    alert('Available Products: ' + JSON.stringify(products));
+                    console.debug('Available Products: ' + JSON.stringify(products));
                     /*
                      [{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                      */

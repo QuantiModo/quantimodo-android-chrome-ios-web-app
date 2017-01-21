@@ -7874,8 +7874,8 @@ angular.module('starter')
                         image: $rootScope.variableCategories['Physical Activity'].imageUrl
                     },
                     {
-                        title: 'Advanced analytics',
-                        subtitle: 'Top Predictors',
+                        title: 'Advanced Analytics',
+                        subtitle: 'See Top Predictors',
                         moreInfo: "See a list of the strongest predictors for any outcome.  Dive deeper by checking out the full sties",
                         image: 'img/features/calendar.svg'
                     },
