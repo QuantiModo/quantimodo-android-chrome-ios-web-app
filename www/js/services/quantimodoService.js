@@ -5377,14 +5377,16 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getUserVariableByNameDeferred = function(name, params){
+        quantimodoService.getUserVariableByNameDeferred = function(name, params, refresh){
             var deferred = $q.defer();
 
             quantimodoService.getLocalStorageItemAsStringWithCallback('userVariables', function (userVariables) {
-                for(var i = 0; i < userVariables.length; i++){
-                    if(userVariables[i].name === name){
-                        deferred.resolve(userVariables[i]);
-                        return
+                if(!refresh){
+                    for(var i = 0; i < userVariables.length; i++){
+                        if(userVariables[i].name === name){
+                            deferred.resolve(userVariables[i]);
+                            return;
+                        }
                     }
                 }
 

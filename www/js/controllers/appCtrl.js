@@ -1632,13 +1632,13 @@ angular.module('starter')
             $scope.hideLoader() ;
         };
 
-        $scope.getUserVariableByName = function (variableName) {
+        $scope.getUserVariableByName = function (variableName, refresh) {
             if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){
                 $rootScope.variableObject = null;
             }
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             var params = {includeTags : true};
-            quantimodoService.getUserVariableByNameDeferred(variableName, params).then(function(variableObject){
+            quantimodoService.getUserVariableByNameDeferred(variableName, params, refresh).then(function(variableObject){
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 $ionicLoading.hide();
@@ -1650,6 +1650,11 @@ angular.module('starter')
                 $ionicLoading.hide();
                 console.error(error);
             });
+        };
+
+        $scope.refreshUserVariable = function () {
+            var refresh = true;
+            $scope.getUserVariableByName($rootScope.variableObject.name, refresh);
         };
 
         $scope.resetVariableToDefaultSettings = function(variableObject) {
