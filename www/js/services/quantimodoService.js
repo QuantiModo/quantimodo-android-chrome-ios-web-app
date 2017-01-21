@@ -3458,6 +3458,21 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        // We need to keep this in case we want offline reminders
+        quantimodoService.addRatingTimesToDailyReminders = function(reminders) {
+            var index;
+            for (index = 0; index < reminders.length; ++index) {
+                if (reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0 &&
+                    reminders[index].valueAndFrequencyTextDescription.indexOf(' at ') === -1 &&
+                    reminders[index].valueAndFrequencyTextDescription.toLowerCase().indexOf('disabled') === -1) {
+                    reminders[index].valueAndFrequencyTextDescription =
+                        reminders[index].valueAndFrequencyTextDescription + ' at ' +
+                        quantimodoService.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
+                }
+            }
+            return reminders;
+        };
+
         quantimodoService.convertReminderTimeStringToMoment = function(reminderTimeString) {
             var now = new Date();
             var hourOffsetFromUtc = now.getTimezoneOffset()/60;
@@ -3600,6 +3615,8 @@ angular.module('starter')
                 } else {
                     allReminders = nonFavoriteReminders;
                 }
+
+                allReminders = quantimodoService.addRatingTimesToDailyReminders(allReminders); //We need to keep this in case we want offline reminders
                 deferred.resolve(allReminders);
             }
             return deferred.promise;
