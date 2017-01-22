@@ -2692,7 +2692,6 @@ angular.module('starter')
             });
         };
 
-
         var androidDowngrade = function () {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Google Play',
@@ -2737,8 +2736,9 @@ angular.module('starter')
             });
         };
 
+        var googleDowngradeDebug = false;
         $scope.downgrade = function () {
-            if ($rootScope.user.subscriptionProvider === 'google') {
+            if ($rootScope.user.subscriptionProvider === 'google' || googleDowngradeDebug) {
                 androidDowngrade();
             } else if ($rootScope.user.subscriptionProvider === 'apple') {
                 appleDowngrade();
