@@ -2629,7 +2629,8 @@ angular.module('starter')
                     inAppPurchase
                         .subscribe(productName)
                         .then(function (data) {
-                            quantimodoService.reportError(JSON.stringify(data));
+                            quantimodoService.reportError("User subscribed to " + productName + ": " +
+                                JSON.stringify(data));
                             /*
                              {
                              transactionId: ...
