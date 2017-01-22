@@ -1633,6 +1633,10 @@ angular.module('starter')
         };
 
         $scope.getUserVariableByName = function (variableName, refresh) {
+            if(!variableName){
+                quantimodoService.reportError('No variable name provided to $scope.getUserVariableByName');
+                return;
+            }
             if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){
                 $rootScope.variableObject = null;
             }
@@ -1654,7 +1658,10 @@ angular.module('starter')
 
         $scope.refreshUserVariable = function () {
             var refresh = true;
-            $scope.getUserVariableByName($rootScope.variableObject.name, refresh);
+            if($rootScope.variableObject){
+                $rootScope.variableName = $rootScope.variableObject.name;
+            }
+            $scope.getUserVariableByName($rootScope.variableName, refresh);
         };
 
         $scope.resetVariableToDefaultSettings = function(variableObject) {
