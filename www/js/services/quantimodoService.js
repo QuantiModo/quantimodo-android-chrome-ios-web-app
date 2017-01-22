@@ -3112,6 +3112,16 @@ angular.module('starter')
         quantimodoService.trackTrackingReminderNotificationDeferred = function(body){
             var deferred = $q.defer();
             console.debug('quantimodoService.trackTrackingReminderNotificationDeferred: Going to track ' + JSON.stringify(body));
+
+            if(!body.variableName && body.trackingReminderNotificationId){
+                var notificationFromLocalStorage =
+                    quantimodoService.getElementOfLocalStorageItemById('trackingReminderNotifications',
+                        body.trackingReminderNotificationId);
+                if(notificationFromLocalStorage){
+                    body = notificationFromLocalStorage;
+                }
+            }
+
             quantimodoService.deleteTrackingReminderNotificationFromLocalStorage(body);
             body.action = 'track';
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('notificationsSyncQueue', body);
@@ -6736,6 +6746,20 @@ angular.module('starter')
             }
             deferred.resolve(elementsToKeep);
             return deferred.promise;
+        };
+
+        quantimodoService.getElementOfLocalStorageItemById = function(localStorageItemName, elementId){
+            var localStorageItemAsString = quantimodoService.getLocalStorageItemAsString(localStorageItemName);
+            var localStorageItemArray = JSON.parse(localStorageItemAsString);
+            if(!localStorageItemArray){
+                console.warn("Local storage item " + localStorageItemName + " not found");
+            } else {
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    if(localStorageItemArray[i].id === elementId){
+                        return localStorageItemArray[i];
+                    }
+                }
+            }
         };
 
         quantimodoService.deleteElementOfLocalStorageItemByProperty = function(localStorageItemName, propertyName, propertyValue){
