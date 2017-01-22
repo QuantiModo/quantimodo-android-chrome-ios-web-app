@@ -2345,11 +2345,15 @@ angular.module('starter')
         };
 
         $scope.googleLogin = function(register) {
+            var debugMode = false;
             $scope.showLoader('Logging you in...');
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
                 //I get called when everything's ready for the plugin to be called!
-                console.debug('Device is ready!');
+                if(debugMode){
+                    alert('Device is ready in googleLogin!');
+                }
+                console.debug('Device is ready in googleLogin!');
                 window.plugins.googleplus.login({
                     'scopes': 'email https://www.googleapis.com/auth/fitness.activity.write https://www.googleapis.com/auth/fitness.body.write https://www.googleapis.com/auth/fitness.nutrition.write https://www.googleapis.com/auth/plus.login', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
                     'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
@@ -2357,11 +2361,19 @@ angular.module('starter')
                 }, function (userData) {
                     quantimodoService.getTokensAndUserViaNativeGoogleLogin(userData).then(function (response) {
                         $scope.hideLoader();
+                        if(debugMode){
+                            alert('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
+                                JSON.stringify(response));
+                        }
                         console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
                             JSON.stringify(response));
                         quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                     }, function (errorMessage) {
                         $scope.hideLoader();
+                        if(debugMode){
+                            alert("ERROR: googleLogin could not get userData!  Fallback to " +
+                                "quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                        }
                         quantimodoService.reportError("ERROR: googleLogin could not get userData!  Fallback to " +
                             "quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                         var register = true;
@@ -2369,6 +2381,10 @@ angular.module('starter')
                     });
                 }, function (errorMessage) {
                     $scope.hideLoader();
+                    if(debugMode){
+                        alert("ERROR: googleLogin could not get userData!  Fallback to " +
+                            "quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                    }
                     quantimodoService.reportError("ERROR: googleLogin could not get userData!  Fallback to " +
                         "quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                     register = true;
@@ -2482,7 +2498,7 @@ angular.module('starter')
         };
 
         if(!$scope.subscriptionPlanId){
-            $scope.subscriptionPlanId = 'yearly60';
+            $scope.subscriptionPlanId = 'monthly7';
         }
 
         $scope.monthlySubscription = function () {
@@ -2584,8 +2600,8 @@ angular.module('starter')
             });
         };
 
+        var purchaseDebugMode = false;
         function DialogController($scope, $mdDialog) {
-
             $scope.subscriptionPlanId = 'monthly7';
             $scope.hide = function() {
                 $mdDialog.hide();
@@ -2595,8 +2611,8 @@ angular.module('starter')
                 $mdDialog.cancel();
             };
 
-            $scope.subscribe = function() {
-                $mdDialog.hide();
+            $scope.subscribe = function(answer) {
+                $mdDialog.hide(answer);
             };
         }
 
@@ -2614,23 +2630,35 @@ angular.module('starter')
                 targetEvent: ev,
                 clickOutsideToClose: false,
                 fullscreen: false
-            }).then(function() {
-                    makeInAppPurchase($scope.subscriptionPlanId);
-                }, function() {
-                    $scope.status = 'You cancelled the dialog.';
-                });
+            }).then(function(answer) {
+                if(purchaseDebugMode){
+                    alert('About to call makeInAppPurchase for ' + answer);
+                }
+                makeInAppPurchase(answer);
+            }, function() {
+                $scope.status = 'You cancelled the dialog.';
+            });
         };
 
         var makeInAppPurchase = function (productName) {
 
+            if(purchaseDebugMode){
+                alert('Called makeInAppPurchase for ' + productName);
+            }
             $ionicLoading.show();
             inAppPurchase
                 .getProducts([productName])
                 .then(function (products) {
                     console.debug('Available Products: ' + JSON.stringify(products));
+                    if(purchaseDebugMode){
+                        alert('Available Products: ' + JSON.stringify(products));
+                    }
                     /*
                      [{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                      */
+                    if(purchaseDebugMode){
+                        alert('About to subscribe to ' + JSON.stringify(productName));
+                    }
                     inAppPurchase
                         .subscribe(productName)
                         .then(function (data) {
