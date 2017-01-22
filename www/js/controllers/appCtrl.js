@@ -2795,7 +2795,6 @@ angular.module('starter')
         };
 
         $scope.showUndoToast = function(lastAction) {
-            var pinTo = $scope.getToastPosition();
             var toast = $mdToast.simple()
                 .textContent(lastAction)
                 .action('UNDO')
@@ -2810,6 +2809,15 @@ angular.module('starter')
                     $rootScope.undoInboxAction();
                 }
             });
+        };
+
+        $scope.showInfoToast = function(text) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .textContent(text)
+                    .position($scope.getToastPosition())
+                    .hideDelay(3000)
+            );
         };
 
         $scope.init();

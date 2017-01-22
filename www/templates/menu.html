@@ -62,17 +62,25 @@
 
     <ion-side-menu side="left" is-enabled="!hideNavigationMenu">
         <ion-header-bar class="bar-positive">
-            <a href="#/app/settings"
-               ng-if="user && user.avatar"
-               class="button button-clear" >
-                <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
-            </a>
-            <h1 class="title"
-                style="cursor:pointer;"
-                ng-click="goToState('app.settings')"
-                ng-if="user && user.displayName">
-                {{user.displayName}}
-            </h1>
+            <div style="cursor:pointer;"
+                 ng-click="goToState('app.settings')"
+                 ng-if="user && user.displayName && user.stripeActive">
+                <a ng-if="user && user.avatar"
+                   class="button button-clear" >
+                    <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
+                </a>
+                <h1 class="title">
+                    {{user.displayName}}
+                </h1>
+            </div>
+            <div style="cursor:pointer;"
+                 ng-if="user && user.displayName && !user.stripeActive && !isIOS"
+                 ng-click="goToState('app.upgrade')">
+                <button class="button button-icon ion-android-star-outline"></button>
+                <h1 class="title">
+                    UPGRADE
+                </h1>
+            </div>
         </ion-header-bar>
         <ion-content>
 
