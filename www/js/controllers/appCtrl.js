@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector,
                                     quantimodoService, ionicDatePicker, $cordovaOauth,
-                                    $ionicActionSheet, $ionicDeploy, $locale, $mdDialog) {
+                                    $ionicActionSheet, $ionicDeploy, $locale, $mdDialog, $mdToast) {
 
         $rootScope.appMigrationVersion = 1489;
         $rootScope.appVersion = "2.3.2.0";
@@ -869,9 +869,9 @@ angular.module('starter')
                 console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
             }
 
-            if($rootScope.showUndoButton){
-                $rootScope.showUndoButton = false;
-            }
+            //if($rootScope.showUndoButton){
+                //$rootScope.showUndoButton = false;
+            //}
 
             $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
 
@@ -2773,6 +2773,43 @@ angular.module('starter')
             } else {
                 webDowngrade();
             }
+        };
+        var last = {
+            bottom: true,
+            top: false,
+            left: true,
+            right: false
+        };
+
+        $scope.toastPosition = angular.extend({},{
+            bottom: true,
+            top: false,
+            left: true,
+            right: false
+        });
+
+        $scope.getToastPosition = function() {
+            return Object.keys($scope.toastPosition)
+                .filter(function(pos) { return $scope.toastPosition[pos]; })
+                .join(' ');
+        };
+
+        $scope.showUndoToast = function(lastAction) {
+            var pinTo = $scope.getToastPosition();
+            var toast = $mdToast.simple()
+                .textContent(lastAction)
+                .action('UNDO')
+                .highlightAction(true)
+                .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
+                .hideDelay(10000)
+                .position($scope.getToastPosition());
+
+            $mdToast.show(toast).then(function(response) {
+                if ( response === 'ok' ) {
+                    //alert('You clicked the \'UNDO\' action.');
+                    $rootScope.undoInboxAction();
+                }
+            });
         };
 
         $scope.init();
