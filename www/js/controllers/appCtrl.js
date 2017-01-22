@@ -2613,8 +2613,8 @@ angular.module('starter')
                 templateUrl: 'templates/fragments/select-subscription-plan-fragment.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
-                clickOutsideToClose:true,
-                fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                clickOutsideToClose: false,
+                fullscreen: false
             })
                 .then(function() {
 
