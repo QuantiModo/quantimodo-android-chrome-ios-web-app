@@ -2596,7 +2596,6 @@ angular.module('starter')
             };
 
             $scope.subscribe = function() {
-                makeInAppPurchase($scope.subscriptionPlanId);
                 $mdDialog.hide();
             };
         }
@@ -2615,17 +2614,16 @@ angular.module('starter')
                 targetEvent: ev,
                 clickOutsideToClose: false,
                 fullscreen: false
-            })
-                .then(function() {
-
+            }).then(function() {
+                    makeInAppPurchase($scope.subscriptionPlanId);
                 }, function() {
                     $scope.status = 'You cancelled the dialog.';
                 });
-
         };
 
         var makeInAppPurchase = function (productName) {
 
+            $ionicLoading.show();
             inAppPurchase
                 .getProducts([productName])
                 .then(function (products) {
@@ -2636,6 +2634,7 @@ angular.module('starter')
                     inAppPurchase
                         .subscribe(productName)
                         .then(function (data) {
+                            $ionicLoading.hide();
                             quantimodoService.reportError("User subscribed to " + productName + ": " +
                                 JSON.stringify(data));
                             /*
@@ -2665,16 +2664,17 @@ angular.module('starter')
                                     .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
                                     .ariaLabel('Alert Dialog Demo')
                                     .ok('Get Started')
-                            )
-                            .finally(function() {
+                            ).finally(function() {
                                 $scope.goBack();
                             });
                         })
                         .catch(function (err) {
+                            $ionicLoading.hide();
                             quantimodoService.reportError(JSON.stringify(err));
                         });
                 })
                 .catch(function (err) {
+                    $ionicLoading.hide();
                     quantimodoService.reportError("couldn't get product " + productName + ": " + JSON.stringify(err));
                 });
         };
