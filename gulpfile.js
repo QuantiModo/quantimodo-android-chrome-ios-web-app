@@ -1850,14 +1850,26 @@ gulp.task('zipChromeExtension', [], function(){
 		.pipe(gulp.dest('build'));
 });
 
-gulp.task('configureApp', [], function(callback){
+// Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
+gulp.task('configureAppAfterNpmInstall', [], function(callback){
+    if (process.env.PREPARE_IOS_APP){
+    	console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
+        runSequence(
+            'prepareIosApp',
+            callback);
+    } else if (process.env.BUILD_ANDROID){
+        console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
+        runSequence(
+            'buildQuantiModoAndroid',
+            callback);
+    } else {
+        runSequence(
+            'configureApp',
+            callback);
+    }
+});
 
-    // if(false && process.env.PREPARE_IOS_APP){  // Results in infinite loop
-    // 	console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
-    //     runSequence(
-    //         'prepareIosApp',
-    //         callback);
-    // }
+gulp.task('configureApp', [], function(callback){
 
 	runSequence(
 		'copyAppResources',
