@@ -17,7 +17,7 @@
         </div>
 
         <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar">
-            <img ng-if="feature.image" src="{{feature.image}}">
+            <img ng-if="feature.image" ng-src="{{feature.image}}">
             <h2 style="line-height: normal">{{feature.title}} &nbsp;
                 <i style="color: darkgrey; text-align: right"
                    ng-if="feature.moreInfo"

@@ -2488,8 +2488,10 @@ angular.module('starter')
             $scope.upgrade();
         };
 
+        var mobilePurchaseDebug = false;
+
         $scope.upgrade = function () {
-            if($rootScope.isMobile){
+            if($rootScope.isMobile || mobilePurchaseDebug){
                 mobileUpgrade();
             } else {
                 webUpgrade();
@@ -2576,7 +2578,6 @@ angular.module('starter')
         };
 
         function DialogController($scope, $mdDialog) {
-            console.debug('$scope.subscriptionPlanId is ' + $scope.subscriptionPlanId);
 
             $scope.subscriptionPlanId = 'monthly7';
             $scope.hide = function() {
@@ -2587,13 +2588,14 @@ angular.module('starter')
                 $mdDialog.cancel();
             };
 
-            $scope.answer = function(answer) {
-                $mdDialog.hide(answer);
+            $scope.subscribe = function() {
+                makeInAppPurchase($scope.subscriptionPlanId);
+                $mdDialog.hide();
             };
         }
 
         var mobileUpgrade = function (ev) {
-            if (!window.inAppPurchase) {
+            if (!window.inAppPurchase && !mobilePurchaseDebug) {
                 console.error('inAppPurchase not available');
                 webUpgrade();
                 return;
@@ -2608,7 +2610,7 @@ angular.module('starter')
                 fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
             })
                 .then(function() {
-                    makeInAppPurchase($scope.subscriptionPlanId);
+
                 }, function() {
                     $scope.status = 'You cancelled the dialog.';
                 });
