@@ -3118,6 +3118,9 @@ angular.module('starter')
                     quantimodoService.getElementOfLocalStorageItemById('trackingReminderNotifications',
                         body.trackingReminderNotificationId);
                 if(notificationFromLocalStorage){
+                    if(typeof body.modifiedValue !== "undefined" && body.modifiedValue !== null){
+                        notificationFromLocalStorage.modifiedValue = body.modifiedValue;
+                    }
                     body = notificationFromLocalStorage;
                 }
             }
