@@ -38,7 +38,7 @@ if [ -z ${BUILD_ANDROID} ];
         echo password | sudo -S apt-get install imagemagick
 
         echo "Running npm install -g gulp bower ionic cordova"
-        #npm install -g gulp bower ionic cordova
+        npm install -g gulp bower ionic cordova
 
         echo "Running npm install"
         #npm install  # Done in gulpfile now
