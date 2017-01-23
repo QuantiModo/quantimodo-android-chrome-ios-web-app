@@ -2207,7 +2207,7 @@ angular.module('starter')
 
             quantimodoService.getV1Measurements(params, function(response){
                 quantimodoService.storeCachedResponse('getV1Measurements', params, response);
-                deferred.resolve(response);
+                deferred.resolve(quantimodoService.addInfoAndImagesToMeasurements(response));
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");

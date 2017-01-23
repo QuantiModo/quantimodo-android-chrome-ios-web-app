@@ -41,7 +41,7 @@ angular.module('starter')
 	    	return variableCategory? variableCategory : false;
 	    };
 
-        $scope.refreshHistory = function(concat){
+        $scope.refreshHistory = function(){
         	var concat = false;
         	var refresh = true;
             $scope.getHistory(concat, refresh);
@@ -87,7 +87,6 @@ angular.module('starter')
     			else {
 					$scope.state.history = history;
 				}
-				$scope.state.history = quantimodoService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
 				if(history.length < $scope.state.limit){
 					$scope.state.hideLoadMoreButton = true;
