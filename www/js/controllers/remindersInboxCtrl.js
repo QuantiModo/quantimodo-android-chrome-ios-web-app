@@ -180,15 +180,13 @@ angular.module('starter')
         };
 
 		var notificationAction = function(trackingReminderNotification){
-			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
-            //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
-            trackingReminderNotification.hide = true;
+
+			trackingReminderNotification.hide = true;
             afterTrackingActions();
-			if(!$rootScope.showUndoButton){
+			//if(!$rootScope.showUndoButton){
 				//$rootScope.showUndoButton = true;
-                $scope.showUndoToast($scope.lastAction);
-			}
+			//}
+            $scope.showUndoToast($scope.lastAction);
             trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
 			return trackingReminderNotification;
 		};
@@ -394,7 +392,7 @@ angular.module('starter')
 
 		};
 
-	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
+	    $scope.editMeasurement = function(trackingReminderNotification){
             enlargeChromePopupIfNecessary();
             //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
             trackingReminderNotification.hide = true;
@@ -409,7 +407,7 @@ angular.module('starter')
 				});
 	    };
 
-	    $scope.editReminderSettingsByNotification = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
+	    $scope.editReminderSettingsByNotification = function(trackingReminderNotification){
             enlargeChromePopupIfNecessary();
 	    	//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
             trackingReminderNotification.hide = true;
