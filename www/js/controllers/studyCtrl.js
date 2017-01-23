@@ -5,33 +5,11 @@ angular.module('starter')
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
 
-        $scope.refreshStudy = function() {
-            quantimodoService.clearCorrelationCache();
-            getStudy();
-        };
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+            $rootScope.getAllUrlParams();
+        });
 
-        if (!clipboard.supported) {
-            console.debug('Sorry, copy to clipboard is not supported');
-            $scope.hideClipboardButton = true;
-        }
-
-        $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
-        $scope.copyStudyUrlToClipboard = function () {
-            $scope.copyLinkText = 'Copied!';
-            var studyLink;
-            if($scope.correlationObject.studyLinkStatic){
-                studyLink = $scope.correlationObject.studyLinkStatic;
-            }
-            if($scope.correlationObject.userStudy && $scope.correlationObject.userStudy.studyLinkStatic){
-                studyLink = $scope.correlationObject.userStudy.studyLinkStatic;
-            }
-            if($scope.correlationObject.publicStudy && $scope.correlationObject.publicStudy.studyLinkStatic){
-                studyLink = $scope.correlationObject.publicStudy.studyLinkStatic;
-            }
-            clipboard.copyText(studyLink);
-        };
-
-        $scope.init = function(){
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $rootScope.hideNavigationMenu = false;
             $scope.state = {
                 title: 'Loading study...',
@@ -40,13 +18,11 @@ angular.module('starter')
                 loading: true
             };
 
-            $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
 
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
 
             if($rootScope.urlParameters.causeVariableName){
                 $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
@@ -100,6 +76,36 @@ angular.module('starter')
             } else {
                 getStudy();
             }
+        });
+
+        $scope.refreshStudy = function() {
+            quantimodoService.clearCorrelationCache();
+            getStudy();
+        };
+
+        $scope.joinStudy = function () {
+            $state.go('app.studyJoin', {correlationObject: $scope.correlationObject});
+        };
+
+        if (!clipboard.supported) {
+            console.debug('Sorry, copy to clipboard is not supported');
+            $scope.hideClipboardButton = true;
+        }
+
+        $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
+        $scope.copyStudyUrlToClipboard = function () {
+            $scope.copyLinkText = 'Copied!';
+            var studyLink;
+            if($scope.correlationObject.studyLinkStatic){
+                studyLink = $scope.correlationObject.studyLinkStatic;
+            }
+            if($scope.correlationObject.userStudy && $scope.correlationObject.userStudy.studyLinkStatic){
+                studyLink = $scope.correlationObject.userStudy.studyLinkStatic;
+            }
+            if($scope.correlationObject.publicStudy && $scope.correlationObject.publicStudy.studyLinkStatic){
+                studyLink = $scope.correlationObject.publicStudy.studyLinkStatic;
+            }
+            clipboard.copyText(studyLink);
         };
 
         function addWikipediaInfo() {
@@ -248,10 +254,5 @@ angular.module('starter')
             $timeout(function() {
                 hideSheet();
             }, 20000);
-
         };
-
-        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            $scope.init();
-        });
 	});
