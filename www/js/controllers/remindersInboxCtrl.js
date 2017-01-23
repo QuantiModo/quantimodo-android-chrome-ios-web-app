@@ -425,7 +425,20 @@ angular.module('starter')
 				});
 	    };
 
-    	$scope.$on('$ionicView.enter', function(e) { console.debug("enter state " + $state.current.name);
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+
+            if(!$rootScope.accessTokenInUrl && !$rootScope.user){
+                quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
+                $state.go('app.login');
+            }
+
+            $rootScope.hideBackButton = true;
+            $rootScope.hideHomeButton = true;
+            setPageTitle();
+            getTrackingReminderNotifications();
+        });
+
+        $scope.$on('$ionicView.enter', function(e) { console.debug("enter state " + $state.current.name);
 			$scope.hideInboxLoader();
             $scope.hideLoader();
             console.debug($state.current.name + ' initializing...');
@@ -449,19 +462,13 @@ angular.module('starter')
                 $rootScope.variableCategoryName = null;
             }
             $scope.refreshTrackingReminderNotifications();
-            //getTrackingReminderNotifications();
 
             if($rootScope.localNotificationsEnabled){
                 console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
                 quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
             }
 
-            $rootScope.hideNavigationMenuIfSetInUrlParameter();
             quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
-
-            quantimodoService.updateUserTimeZoneIfNecessary();
-
-            quantimodoService.shouldWeUseIonicLocalNotifications();
 
             // Triggered on a button click, or some other target
             $rootScope.showActionSheetMenu = function() {
@@ -514,30 +521,11 @@ angular.module('starter')
             }
     	});
 
-		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-
-            if($stateParams.hideNavigationMenu){
-                $rootScope.hideNavigationMenu = true;
-            }
-
-            quantimodoService.getAccessTokenFromUrlParameter();
-            if(!$rootScope.accessTokenInUrl && !$rootScope.user){
-                quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
-                $state.go('app.login');
-			}
-
-            $rootScope.hideBackButton = true;
-			$rootScope.hideHomeButton = true;
-			setPageTitle();
-			getTrackingReminderNotifications();
-		});
-
         $scope.$on('$ionicView.afterEnter', function(){
 
             if ($stateParams.hideNavigationMenu !== true){
                 $rootScope.hideNavigationMenu = false;
             }
-            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
         });
 
         $scope.$on('$ionicView.afterLeave', function(){
