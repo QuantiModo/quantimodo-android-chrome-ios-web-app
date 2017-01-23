@@ -209,10 +209,19 @@ angular.module('starter')
             }
         };
 
-        $scope.getMeasurementHistory = function(variableName){
-            var params = {limit: 0};
-            if(variableName) {params.variableName = variableName;}
+        // Gets measurements directly from API instead of checking local storage cache first
+        // To restrict to a specific variable, provide params = {variableName: "Your Variable Name Here"}
+        $scope.refreshMeasurementHistory = function(params){
             var refresh = true;
+            $scope.getMeasurementHistory(params, refresh);
+        };
+
+        // Returns cached measurements in local storage if available
+        // To restrict to a specific variable, provide params = {variableName: "Your Variable Name Here"}
+        $scope.getMeasurementHistory = function(params, refresh){
+            if(!params.limit){
+                params.limit = 0;
+            }
             quantimodoService.getHistoryMeasurements(params, refresh).then(function(measurements){
                 $scope.measurementHistory = measurements;
                 $scope.hideLoader();
