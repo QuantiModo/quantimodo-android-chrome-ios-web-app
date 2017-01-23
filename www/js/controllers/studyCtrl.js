@@ -1,6 +1,6 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, quantimodoService, $stateParams, $ionicHistory, $rootScope,
-                                      $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet) {
+                                      $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard) {
 
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -8,6 +8,17 @@ angular.module('starter')
         $scope.refreshStudy = function() {
             quantimodoService.clearCorrelationCache();
             getStudy();
+        };
+
+        if (!clipboard.supported) {
+            console.debug('Sorry, copy to clipboard is not supported');
+            $scope.hideClipboardButton = true;
+        }
+
+        $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
+        $scope.copyStudyUrlToClipboard = function () {
+            $scope.copyLinkText = 'Copied!';
+            clipboard.copyText($rootScope.correlationObject.studyLinkStatic);
         };
 
         $scope.init = function(){
