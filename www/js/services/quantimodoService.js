@@ -7418,45 +7418,6 @@ angular.module('starter')
 
             var onboardingPages = [
                 {
-                    id: "loginOnboardingPage",
-                    title: 'Sign In',
-                    titleClickFunctionCall: function(){$scope.onboardingRegister();},
-                    "backgroundColor": "#3467d6",
-                    circleColor: "#fefdfc",
-                    iconClass: "icon positive ion-ios-medkit-outline",
-                    image: {
-                        url: "img/cute_robot_happy_transparent.png",
-                        height: "96",
-                        width: "70"
-                    },
-                    bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
-                    // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
-                    //     "the NSA waterboards me, I will never divulge share your data without your permission.",
-                    buttons: [
-                        {
-                            id: "signUpButton",
-                            clickFunctionCall: function(){$rootScope.onboardingRegister();},
-                            buttonText: 'Sign Up',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-balanced",
-                        },
-                        {
-                            id: "signInButton",
-                            clickFunctionCall: function(){$rootScope.onboardingLogin();},
-                            buttonText: 'Already Have Account',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-assertive",
-                        },
-                        {
-                            id: "signInWithGoogle",
-                            clickFunctionCall: function(){$rootScope.onboardingGoogleLogin();},
-                            buttonText: 'Sign In With Google',
-                            buttonIconClass: "",
-                            buttonClass: "button button-clear button-assertive",
-                        }
-                    ]
-                },
-                {
                     id: "addTreatmentRemindersCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
                     title: 'Any Treatments?',

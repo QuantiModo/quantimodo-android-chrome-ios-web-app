@@ -4,6 +4,12 @@ angular.module('starter')
 
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+        $rootScope.hideNavigationMenu = true;
+        if(!$rootScope.user){
+            quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
+            $state.go('app.login');
+            return;
+        }
 
         $rootScope.onboardingFooterText = null;
         quantimodoService.setupOnboardingPages();
@@ -15,56 +21,23 @@ angular.module('starter')
 
         $ionicLoading.hide();
         //$rootScope.hideMenuButton = true;
-        $rootScope.hideNavigationMenu = true;
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
-
         quantimodoService.setupHelpCards();
     });
 
     $scope.$on('$ionicView.leave', function(){
-        $rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
+
     });
 
     $scope.$on('$ionicView.beforeLeave', function(){
-
+        $rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
     });
 
     $scope.$on('$ionicView.afterLeave', function(){
 
     });
-
-    $rootScope.onboardingLogin = function () {
-        if(!$rootScope.user){
-            $scope.login();
-        } else {
-            quantimodoService.removeOnboardingLoginPage();
-        }
-    };
-
-    $rootScope.onboardingRegister = function () {
-        if(!$rootScope.user){
-            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-            $scope.register();
-        } else {
-            quantimodoService.removeOnboardingLoginPage();
-        }
-    };
-
-    $rootScope.onboardingGoogleLogin = function () {
-        if(!$rootScope.user){
-            if($rootScope.isAndroid){
-                $scope.googleLogin();
-            } else {
-                $scope.onboardingRegister();
-            }
-
-            //$scope.googleLoginDebug();
-        } else {
-            quantimodoService.removeOnboardingLoginPage();
-        }
-    };
 
     var removeImportPage = function () {
         quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);

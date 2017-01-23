@@ -498,6 +498,19 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.loginOld', {
+            url: "/login-old",
+            params: {
+                fromState : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/login-page-old.html",
+                    controller: 'LoginCtrl'
+              }
+            }
+        })
         .state('app.login', {
             url: "/login",
             params: {
@@ -508,7 +521,7 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/login-page.html",
                     controller: 'LoginCtrl'
-              }
+                }
             }
         })
         .state('app.intro', {
@@ -1222,6 +1235,19 @@ angular.module('starter',
         .state('app.study', {
             cache: false,
             url: "/study",
+            params: {
+                correlationObject: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/study-page.html",
+                    controller: 'StudyCtrl'
+                }
+            }
+        })
+        .state('app.studyJoin', {
+            cache: false,
+            url: "/study-join",
             params: {
                 correlationObject: null
             },
