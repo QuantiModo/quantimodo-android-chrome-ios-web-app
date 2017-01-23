@@ -216,6 +216,21 @@ angular.module('starter')
             $scope.getMeasurementHistory(params, refresh);
         };
 
+        $scope.joinStudy = function(correlationObject){
+            quantimodoService.joinStudy(params, refresh).then(function(measurements){
+                $scope.measurementHistory = measurements;
+                $scope.hideLoader();
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function(error){
+                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                console.error('error getting measurements' + JSON.stringify(error));
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+                $scope.hideLoader();
+            });
+        }
+
         // Returns cached measurements in local storage if available
         // To restrict to a specific variable, provide params = {variableName: "Your Variable Name Here"}
         $scope.getMeasurementHistory = function(params, refresh){
@@ -641,6 +656,21 @@ angular.module('starter')
         $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
         /*Wrapper Config End*/
 
+
+        $scope.$on('$ionicView.beforeEnter', function (e) {
+            quantimodoService.getAccessTokenFromUrlParameter();
+            if(!window.private_keys) {
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+            }
+            if($rootScope.urlParameters.refreshUser){
+                quantimodoService.clearLocalStorage();
+                window.localStorage.introSeen = true;
+                window.localStorage.isWelcomed = true;
+                $rootScope.user = null;
+                $rootScope.refreshUser = false;
+            }
+        });
+
         // when view is changed
         $scope.$on('$ionicView.enter', function (e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
@@ -670,7 +700,36 @@ angular.module('starter')
 
         // when view is changed
         $scope.$on('$ionicView.afterEnter', function (e) {
-            quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
+            if($rootScope.user && $rootScope.user.trackLocation){
+                $ionicPlatform.ready(function() { //For Ionic
+                    quantimodoService.backgroundGeolocationInit();
+                });
+            }
+            //quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();  // Using background geolocation
+            $rootScope.hideNavigationMenuIfSetInUrlParameter();
+            quantimodoService.updateUserTimeZoneIfNecessary();
+            quantimodoService.shouldWeUseIonicLocalNotifications();
+            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+            quantimodoService.setupBugsnag();
+            if($rootScope.user){
+                $rootScope.trackLocation = $rootScope.user.trackLocation;
+                console.debug('$rootScope.trackLocation  is '+ $rootScope.trackLocation);
+                if(!$rootScope.user.getPreviewBuilds){
+                    $rootScope.user.getPreviewBuilds = false;
+                }
+            }
+
+            if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
+                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
+                $ionicPlatform.ready(function () {
+                    console.debug("Setting on trigger and on click actions for notifications");
+                    quantimodoService.setOnTriggerActionForLocalNotifications();
+                    quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
+                    quantimodoService.setOnUpdateActionForLocalNotifications();
+                });
+            } else {
+                //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
+            }
         });
 
         $scope.highchartsReflow = function() {
@@ -851,16 +910,6 @@ angular.module('starter')
             });
         };
 
-        var goToDefaultStateIfLoggedInOnLoginState = function () {
-            var loginState = 'app.login';
-            if (loginState.indexOf($state.current.name) !== -1 && $rootScope.user) {
-                $rootScope.hideNavigationMenu = false;
-                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state. $state.current.name is ' +
-                    $state.current.name);
-                $state.go(config.appSettings.defaultState);
-            }
-        };
-
         $scope.editTag = function(tagVariable){
             $state.go('app.tagAdd', {
                 tagConversionFactor: tagVariable.tagConversionFactor,
@@ -888,10 +937,6 @@ angular.module('starter')
         });
 
         $scope.init = function () {
-            console.debug("Main Constructor Start");
-            if(!window.private_keys) {
-                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
-            }
 
             //if($rootScope.showUndoButton){
                 //$rootScope.showUndoButton = false;
@@ -899,16 +944,6 @@ angular.module('starter')
 
             $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
 
-            if($rootScope.urlParameters.refreshUser){
-                quantimodoService.clearLocalStorage();
-                window.localStorage.introSeen = true;
-                window.localStorage.isWelcomed = true;
-                $rootScope.user = null;
-                $rootScope.refreshUser = false;
-            }
-            quantimodoService.setupBugsnag();
-            quantimodoService.getAccessTokenFromUrlParameter();
-            $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){
                 $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user'));
             }
@@ -919,34 +954,6 @@ angular.module('starter')
                     console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
                 });
             }
-
-            if($rootScope.user){
-                $rootScope.trackLocation = $rootScope.user.trackLocation;
-                console.debug('$rootScope.trackLocation  is '+ $rootScope.trackLocation);
-                if(!$rootScope.user.getPreviewBuilds){
-                    $rootScope.user.getPreviewBuilds = false;
-                }
-            }
-
-
-            if($rootScope.user && $rootScope.user.trackLocation){
-                $ionicPlatform.ready(function() { //For Ionic
-                    quantimodoService.backgroundGeolocationInit();
-                });
-            }
-
-            if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
-                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
-                $ionicPlatform.ready(function () {
-                    console.debug("Setting on trigger and on click actions for notifications");
-                    quantimodoService.setOnTriggerActionForLocalNotifications();
-                    quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
-                    quantimodoService.setOnUpdateActionForLocalNotifications();
-                });
-            } else {
-                //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
-            }
-            goToDefaultStateIfLoggedInOnLoginState();
         };
 
         $scope.$on('callAppCtrlInit', function () {
@@ -2470,13 +2477,6 @@ angular.module('starter')
                     Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
                     console.debug("facebook login error"+ JSON.stringify(error));
                 });
-        };
-
-        $scope.skipLogin = function(){
-            quantimodoService.setLocalStorageItem('isWelcomed', true);
-            $rootScope.isWelcomed = true;
-            // move to the next screen
-            $scope.goToDefaultStateIfWelcomed();
         };
 
         $rootScope.trackLocationChange = function(trackLocation, skipPopup) {
