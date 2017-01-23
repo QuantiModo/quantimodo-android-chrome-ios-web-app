@@ -20,8 +20,8 @@
                 <img ng-src="{{correlationObject.effectVariableImageUrl}}">-->
                 <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div><br>
-                <h3 id="studyAbstract">Study Abstract</h3>
-                <p>{{correlationObject.studyAbstract}}</p><br>
+                <h3 id="studyAbstractTitle">Study Abstract</h3>
+                <p id="studyAbstractBody">{{correlationObject.studyAbstract}}</p><br>
                 <div ng-show="loadingCharts" style="text-align: center">
                     <br>
                     <ion-spinner icon="android"></ion-spinner>
@@ -125,6 +125,10 @@
                             &nbsp Study is Public
                         </i>
                     </ion-toggle>
+                    <label ng-click="copyStudyUrlToClipboard()" class="item item-content"
+                           ng-if="correlationObject.shareUserMeasurements === true && correlationObject.studyLinkStatic">
+                        <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
+                    </label>
                 </div>
                 <div id="studyBody" >
                     <h3 ng-if="causeWikiEntry || effectWikiEntry || correlationObject.studyBackground"
