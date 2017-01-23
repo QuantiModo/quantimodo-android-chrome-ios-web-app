@@ -18,7 +18,17 @@ angular.module('starter')
         $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
         $scope.copyStudyUrlToClipboard = function () {
             $scope.copyLinkText = 'Copied!';
-            clipboard.copyText($rootScope.correlationObject.studyLinkStatic);
+            var studyLink;
+            if($scope.correlationObject.studyLinkStatic){
+                studyLink = $scope.correlationObject.studyLinkStatic;
+            }
+            if($scope.correlationObject.userStudy && $scope.correlationObject.userStudy.studyLinkStatic){
+                studyLink = $scope.correlationObject.userStudy.studyLinkStatic;
+            }
+            if($scope.correlationObject.publicStudy && $scope.correlationObject.publicStudy.studyLinkStatic){
+                studyLink = $scope.correlationObject.publicStudy.studyLinkStatic;
+            }
+            clipboard.copyText(studyLink);
         };
 
         $scope.init = function(){
@@ -32,13 +42,24 @@ angular.module('starter')
 
             $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
-            if($rootScope.urlParameters.userId && !$rootScope.user){
-                $rootScope.sendToLogin();
-                return;
-            }
+
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
+
+            if($rootScope.urlParameters.causeVariableName){
+                $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
+            }
+
+            if($rootScope.urlParameters.effectVariableName){
+                $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
+            }
+
+            if($rootScope.urlParameters.userId){
+                getStudy();
+                return;
+            }
 
             if($stateParams.correlationObject){
                 $scope.correlationObject = $stateParams.correlationObject;
@@ -54,17 +75,9 @@ angular.module('starter')
                 };
                 //addWikipediaInfo();
                 if($scope.correlationObject.userId && !$scope.correlationObject.scatterPlotConfig){
-                    getStudy($scope.state.requestParams);
+                    getStudy();
                 }
                 return;
-            }
-
-            if($rootScope.urlParameters.causeVariableName){
-                $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
-            }
-
-            if($rootScope.urlParameters.effectVariableName){
-                $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
             if(!$scope.state.requestParams.effectVariableName){
@@ -82,7 +95,7 @@ angular.module('starter')
 
                 //addWikipediaInfo();
                 if($scope.correlationObject.userId && !$scope.correlationObject.scatterPlotConfig){
-                    getStudy($scope.state.requestParams);
+                    getStudy();
                 }
             } else {
                 getStudy();

@@ -150,6 +150,7 @@ angular.module('starter')
             confirmPopup.then(function(res) {
                 if(res) {
                     correlationObject.shareUserMeasurements = true;
+                    quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
                     var body = {
                         causeVariableId: correlationObject.causeVariableId,
                         effectVariableId: correlationObject.effectVariableId,
