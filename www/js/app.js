@@ -1253,8 +1253,8 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/study-page.html",
-                    controller: 'StudyCtrl'
+                    templateUrl: "templates/study-join-page.html",
+                    controller: 'StudyJoinCtrl'
                 }
             }
         })

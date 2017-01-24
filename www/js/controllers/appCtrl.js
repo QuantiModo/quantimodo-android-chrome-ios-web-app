@@ -216,21 +216,6 @@ angular.module('starter')
             $scope.getMeasurementHistory(params, refresh);
         };
 
-        $scope.joinStudy = function(correlationObject){
-            quantimodoService.joinStudy(params, refresh).then(function(measurements){
-                $scope.measurementHistory = measurements;
-                $scope.hideLoader();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-            }, function(error){
-                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                console.error('error getting measurements' + JSON.stringify(error));
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                $scope.hideLoader();
-            });
-        }
-
         // Returns cached measurements in local storage if available
         // To restrict to a specific variable, provide params = {variableName: "Your Variable Name Here"}
         $scope.getMeasurementHistory = function(params, refresh){

@@ -713,7 +713,7 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.getStudyDeferred = function(params, successHandler, errorHandler) {
+        quantimodoService.getStudyDeferred = function(params) {
             var deferred = $q.defer();
             quantimodoService.postStudy(params, function(){
                 deferred.resolve();
@@ -755,8 +755,8 @@ angular.module('starter')
                 successHandler,
                 errorHandler);
         };
-
-        quantimodoService.postStudyDeferred = function(body, successHandler, errorHandler) {
+        
+        quantimodoService.postStudyDeferred = function(body) {
             var deferred = $q.defer();
             quantimodoService.postStudy(body, function(){
                 deferred.resolve();
@@ -767,7 +767,29 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.postUserTagDeferred = function(tagData, successHandler, errorHandler) {
+        quantimodoService.joinStudy = function(body, successHandler, errorHandler){
+            quantimodoService.post('api/v1/study/join',
+                [],
+                body,
+                successHandler,
+                errorHandler);
+        };
+
+        quantimodoService.joinStudyDeferred = function(body) {
+            var deferred = $q.defer();
+            quantimodoService.joinStudy(body, function(response){
+                quantimodoService.setLocalStorageItem('trackingReminderNotifications',
+                    JSON.stringify(response.trackingReminderNotifications));
+                quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        quantimodoService.postUserTagDeferred = function(tagData) {
             var deferred = $q.defer();
             quantimodoService.postUserTag(tagData, function(){
                 deferred.resolve();
@@ -790,7 +812,7 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.deleteUserTagDeferred = function(tagData, successHandler, errorHandler) {
+        quantimodoService.deleteUserTagDeferred = function(tagData) {
             var deferred = $q.defer();
             quantimodoService.deleteUserTag(tagData, function(){
                 deferred.resolve();
@@ -809,7 +831,7 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.getUserTagsDeferred = function(variableCategoryName) {
+        quantimodoService.getUserTagsDeferred = function() {
             var deferred = $q.defer();
             quantimodoService.getUserTags.then(function (userTags) {
                 deferred.resolve(userTags);
