@@ -4,7 +4,7 @@ angular.module('starter')
 		$scope.controller_name = "StudyJoinCtrl";
 
         $scope.studyJoinPage = {
-            title: 'Joining study...',
+            title: 'Joining Study',
             "backgroundColor": "#3467d6",
             circleColor: "#fefdfc",
             image: {
@@ -12,7 +12,7 @@ angular.module('starter')
                 height: "96",
                 width: "70"
             },
-            bodyText: "One moment please",
+            bodyText: "One moment please...",
             // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
             //     "the NSA waterboards me, I will never divulge share your data without your permission.",
         };
@@ -42,13 +42,13 @@ angular.module('starter')
                 $scope.studyJoinPage.title = "Thank you!";
                 $scope.studyJoinPage.bodyText = 'Thank you for helping us to discover the relationship between ' +
                     $scope.requestParams.causeVariableName + ' and ' + $scope.requestParams.effectVariableName +
-                    '! <br> Now lets record your first measurements!';
+                    "! <br> Now let's record your first measurements!";
                 $scope.showGetStartedButton = true;
             }, function (error) {
                 quantimodoService.reportError(error);
                 $scope.showAlert("Could not join study.  Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
             });
-            
+
         });
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
