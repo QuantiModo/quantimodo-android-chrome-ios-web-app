@@ -6912,6 +6912,11 @@ angular.module('starter')
                 return null;
             }
 
+            if(itemAsString == "undefined"){
+                quantimodoService.reportError(localStorageItemName  + " local storage item is undefined!");
+                return null;
+            }
+
             var matchingElements = JSON.parse(itemAsString);
 
             if(matchingElements.length){
