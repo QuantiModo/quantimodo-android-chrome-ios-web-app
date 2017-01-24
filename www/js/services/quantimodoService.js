@@ -755,7 +755,7 @@ angular.module('starter')
                 successHandler,
                 errorHandler);
         };
-        
+
         quantimodoService.postStudyDeferred = function(body) {
             var deferred = $q.defer();
             quantimodoService.postStudy(body, function(){
@@ -872,7 +872,8 @@ angular.module('starter')
             }
             var params = {
                 platform: platform,
-                deviceToken: deviceToken
+                deviceToken: deviceToken,
+                clientId: quantimodoService.getClientId()
             };
             quantimodoService.post('api/v1/deviceTokens',
                 [
