@@ -520,7 +520,7 @@ angular.module('starter')
     	});
 
         $scope.$on('$ionicView.afterEnter', function(){
-
+            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
             if ($stateParams.hideNavigationMenu !== true){
                 $rootScope.hideNavigationMenu = false;
             }
