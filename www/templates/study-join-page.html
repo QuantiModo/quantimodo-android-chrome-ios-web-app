@@ -20,6 +20,7 @@
                         transform: translateY(-50%);
                         width:{{studyJoinPage.image.width}}px;
                         height:{{studyJoinPage.image.height}}px;"
+                     ng-show="showGetStartedButton"
                      ng-src="{{studyJoinPage.image.url}}">
             </div>
             <br>
@@ -27,6 +28,15 @@
                 {{studyJoinPage.title}}
             </p>
             <br>
+            <div ng-show="!showGetStartedButton" style="text-align: center">
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <ion-spinner icon="android"></ion-spinner>
+                <br>
+            </div>
             <span ng-bind-html="studyJoinPage.bodyText"
                 style="font-size: 16px; line-height: 1.5;">
             </span>
