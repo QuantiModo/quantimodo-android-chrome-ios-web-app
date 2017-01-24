@@ -779,9 +779,16 @@ angular.module('starter')
         quantimodoService.joinStudyDeferred = function(body) {
             var deferred = $q.defer();
             quantimodoService.joinStudy(body, function(response){
-                quantimodoService.setLocalStorageItem('trackingReminderNotifications',
-                    JSON.stringify(response.trackingReminderNotifications));
-                quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));
+                if(response){
+                    if(response.trackingReminderNotifications){
+                        quantimodoService.setLocalStorageItem('trackingReminderNotifications',
+                            JSON.stringify(response.trackingReminderNotifications));
+                    }
+                    if(response.trackingReminders){
+                        quantimodoService.setLocalStorageItem('trackingReminders',
+                            JSON.stringify(response.trackingReminders));
+                    }
+                }
                 deferred.resolve();
             }, function(error){
                 deferred.reject(error);
@@ -3053,8 +3060,17 @@ angular.module('starter')
                     //update alarms and local notifications
                     //console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
                     //quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
-                    quantimodoService.setLocalStorageItem('trackingReminderNotifications', JSON.stringify(response.trackingReminderNotifications));
-                    quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));
+                    if(response){
+                        if(response.trackingReminderNotifications){
+                            quantimodoService.setLocalStorageItem('trackingReminderNotifications',
+                                JSON.stringify(response.trackingReminderNotifications));
+                        }
+                        if(response.trackingReminders){
+                            quantimodoService.setLocalStorageItem('trackingReminders',
+                                JSON.stringify(response.trackingReminders));
+                        }
+                    }
+
                     deferred.resolve();
                 }, function(error){
                     deferred.reject(error);
