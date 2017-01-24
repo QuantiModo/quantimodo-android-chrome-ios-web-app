@@ -694,7 +694,6 @@ angular.module('starter')
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             quantimodoService.updateUserTimeZoneIfNecessary();
             quantimodoService.shouldWeUseIonicLocalNotifications();
-            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
             quantimodoService.setupBugsnag();
             if($rootScope.user){
                 $rootScope.trackLocation = $rootScope.user.trackLocation;
