@@ -7,7 +7,7 @@ angular.module('starter')
                                     $ionicActionSheet, $ionicDeploy, $locale, $mdDialog, $mdToast) {
 
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.3.2.0";
+        $rootScope.appVersion = "2.3.3.0";
 
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
             quantimodoService.getLocalStorageItemAsStringWithCallback('trackLocation', function(trackLocation){
@@ -130,7 +130,7 @@ angular.module('starter')
         $scope.shareStudy = function(correlationObject, url){
             if(url.indexOf('userId') !== -1){
                 if(!correlationObject.shareUserMeasurements){
-                    $scope.showShareStudyConfirmation(correlationObject, url);
+                    showShareStudyConfirmation(correlationObject, url);
                 } else {
                     $scope.openUrl(url);
                 }
@@ -139,7 +139,7 @@ angular.module('starter')
             }
         };
 
-        $scope.showShareStudyConfirmation = function(correlationObject, url) {
+        var showShareStudyConfirmation = function(correlationObject, url) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
                 template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
@@ -150,6 +150,7 @@ angular.module('starter')
             confirmPopup.then(function(res) {
                 if(res) {
                     correlationObject.shareUserMeasurements = true;
+                    $rootScope.correlationObject.shareUserMeasurements = true;
                     quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
                     var body = {
                         causeVariableId: correlationObject.causeVariableId,
@@ -203,7 +204,7 @@ angular.module('starter')
 
         $scope.toggleStudyShare = function (correlationObject) {
             if(correlationObject.shareUserMeasurements){
-                $scope.showShareStudyConfirmation(correlationObject);
+                showShareStudyConfirmation(correlationObject);
             } else {
                 $scope.showUnshareStudyConfirmation(correlationObject);
             }

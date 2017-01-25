@@ -18,6 +18,7 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.beforeEnter', function(e) {
+            $scope.studyJoinPage.loading = true;
             $rootScope.stateParams = $stateParams;
             $rootScope.getAllUrlParams();
             if(!$rootScope.user){
@@ -43,8 +44,9 @@ angular.module('starter')
                 $scope.studyJoinPage.bodyText = 'Thank you for helping us to discover the relationship between ' +
                     $scope.requestParams.causeVariableName + ' and ' + $scope.requestParams.effectVariableName +
                     "! <br> Now let's record your first measurements!";
-                $scope.showGetStartedButton = true;
+                $scope.studyJoinPage.loading = false;
             }, function (error) {
+                $scope.studyJoinPage.loading = false;
                 quantimodoService.reportError(error);
                 $scope.showAlert("Could not join study.  Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
             });

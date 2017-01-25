@@ -1,101 +1,103 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Charts">
     <ion-nav-title>{{variableObject.name}}</ion-nav-title>
-    <ion-content ng-class="{ isBrowserView : isWeb == true }">
-        <div class="card"  ng-show="state.loading">
-            <div class="item" >
-                <div class="row">
-                    <ion-spinner></ion-spinner>
-                    <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p>
+    <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
+        <div ng-cloak>
+            <div class="card"  ng-show="state.loadingHistory || state.loadingDailyHistory">
+                <div class="item" >
+                    <div class="row">
+                        <ion-spinner></ion-spinner>
+                        <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
-            <div class="item item-text-wrap">
-                <highchart id="lineChart" config="lineChartConfig"></highchart>
+            <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
+                <div class="item item-text-wrap">
+                    <highchart id="lineChart" config="lineChartConfig"></highchart>
+                </div>
             </div>
-        </div>
-        <div ng-show="hourlyChartConfig" class="card primary-outcome-variable-reporting-chart">
-            <div class="item item-text-wrap">
-                <highchart id="hourlyChart" config="hourlyChartConfig"></highchart>
+            <div ng-show="hourlyChartConfig" class="card primary-outcome-variable-reporting-chart">
+                <div class="item item-text-wrap">
+                    <highchart id="hourlyChart" config="hourlyChartConfig"></highchart>
+                </div>
             </div>
-        </div>
-        <div ng-show="weekdayChartConfig" class="card primary-outcome-variable-reporting-chart">
-            <div class="item item-text-wrap">
-                <highchart id="weekdayChart" config="weekdayChartConfig"></highchart>
+            <div ng-show="weekdayChartConfig" class="card primary-outcome-variable-reporting-chart">
+                <div class="item item-text-wrap">
+                    <highchart id="weekdayChart" config="weekdayChartConfig"></highchart>
+                </div>
             </div>
-        </div>
-        <div ng-show="monthlyChartConfig" class="card primary-outcome-variable-reporting-chart">
-            <div class="item item-text-wrap">
-                <highchart id="monthlyChart" config="monthlyChartConfig"></highchart>
+            <div ng-show="monthlyChartConfig" class="card primary-outcome-variable-reporting-chart">
+                <div class="item item-text-wrap">
+                    <highchart id="monthlyChart" config="monthlyChartConfig"></highchart>
+                </div>
             </div>
-        </div>
-        <div ng-show="distributionChartConfig" class="card primary-outcome-variable-reporting-chart">
-            <div class="item item-text-wrap">
-                <highchart id="distributionChart" config="distributionChartConfig"></highchart>
+            <div ng-show="distributionChartConfig" class="card primary-outcome-variable-reporting-chart">
+                <div class="item item-text-wrap">
+                    <highchart id="distributionChart" config="distributionChartConfig"></highchart>
+                </div>
             </div>
-        </div>
-        <div ng-hide="urlParameters && urlParameters.userId" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
-        <div class="card list" id="statisticsCard" ng-if="variableObject.numberOfRawMeasurements">
-            <label class="item item-content" ng-if="variableObject.numberOfRawMeasurements">
-                <span class="input-label left-text"># of measurements</span>
-                <span class="input-label right-text">{{variableObject.numberOfRawMeasurements}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.numberOfCorrelations">
-                <span class="input-label left-text"># of correlations</span>
-                <span class="input-label right-text">{{variableObject.numberOfCorrelations}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.numberOfUniqueDailyValues">
-                <span class="input-label left-text"># of unique daily values</span>
-                <span class="input-label right-text">{{variableObject.numberOfUniqueDailyValues}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.mean">
-                <span class="input-label left-text">Mean</span>
-                <span class="input-label right-text">{{variableObject.mean}} {{variableObject.abbreviatedUnitName}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.median">
-                <span class="input-label left-text">Median</span>
-                <span class="input-label right-text">{{variableObject.median}} {{variableObject.abbreviatedUnitName}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.mostCommonValue">
-                <span class="input-label left-text">Most common value</span>
-                <span class="input-label right-text">{{variableObject.mostCommonValue}} {{variableObject.abbreviatedUnitName}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.standardDeviation">
-                <span class="input-label left-text">Standard deviation</span>
-                <span class="input-label right-text">{{variableObject.standardDeviation}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.variance">
-                <span class="input-label left-text">Variance</span>
-                <span class="input-label right-text">{{variableObject.variance}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.skewness">
-                <span class="input-label left-text">Skewness</span>
-                <span class="input-label right-text">{{variableObject.skewness}}</span>
-            </label>
-            <label class="item item-content" ng-if="variableObject.kurtosis">
-                <span class="input-label left-text">Kurtosis</span>
-                <span class="input-label right-text">{{variableObject.kurtosis}}</span>
-            </label>
-        </div>
-        <div class="list card" ng-click="recordMeasurementButtonClick()">
-            <a id="recordMeasurementButton" class="item item-icon-left">
-                <i class="icon ion-plus positive"></i>
-                {{recordMeasurementButtonText}}
-            </a>
-        </div>
-        <div class="list card" ng-click="addNewReminderButtonClick()">
-            <a id="addReminderButton" class="item item-icon-left">
-                <i class="icon ion-plus positive"></i>
-                {{addReminderButtonText}}
-            </a>
-        </div>
-        <div class="list card" ng-click="editSettingsButtonClick()">
-            <a class="item item-icon-left">
-                <!--Find better icon in blue-->
-                <i class="icon ion-settings positive"></i>
-                Edit {{variableObject.variableName}} Settings
-            </a>
+            <div ng-hide="urlParameters && urlParameters.userId" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
+            <div class="card list" id="statisticsCard" ng-if="variableObject.numberOfRawMeasurements">
+                <label class="item item-content" ng-if="variableObject.numberOfRawMeasurements">
+                    <span class="input-label left-text"># of measurements</span>
+                    <span class="input-label right-text">{{variableObject.numberOfRawMeasurements}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.numberOfCorrelations">
+                    <span class="input-label left-text"># of correlations</span>
+                    <span class="input-label right-text">{{variableObject.numberOfCorrelations}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.numberOfUniqueDailyValues">
+                    <span class="input-label left-text"># of unique daily values</span>
+                    <span class="input-label right-text">{{variableObject.numberOfUniqueDailyValues}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.mean">
+                    <span class="input-label left-text">Mean</span>
+                    <span class="input-label right-text">{{variableObject.mean}} {{variableObject.abbreviatedUnitName}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.median">
+                    <span class="input-label left-text">Median</span>
+                    <span class="input-label right-text">{{variableObject.median}} {{variableObject.abbreviatedUnitName}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.mostCommonValue">
+                    <span class="input-label left-text">Most common value</span>
+                    <span class="input-label right-text">{{variableObject.mostCommonValue}} {{variableObject.abbreviatedUnitName}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.standardDeviation">
+                    <span class="input-label left-text">Standard deviation</span>
+                    <span class="input-label right-text">{{variableObject.standardDeviation}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.variance">
+                    <span class="input-label left-text">Variance</span>
+                    <span class="input-label right-text">{{variableObject.variance}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.skewness">
+                    <span class="input-label left-text">Skewness</span>
+                    <span class="input-label right-text">{{variableObject.skewness}}</span>
+                </label>
+                <label class="item item-content" ng-if="variableObject.kurtosis">
+                    <span class="input-label left-text">Kurtosis</span>
+                    <span class="input-label right-text">{{variableObject.kurtosis}}</span>
+                </label>
+            </div>
+            <div class="list card" ng-click="recordMeasurementButtonClick()">
+                <a id="recordMeasurementButton" class="item item-icon-left">
+                    <i class="icon ion-plus positive"></i>
+                    {{recordMeasurementButtonText}}
+                </a>
+            </div>
+            <div class="list card" ng-click="addNewReminderButtonClick()">
+                <a id="addReminderButton" class="item item-icon-left">
+                    <i class="icon ion-plus positive"></i>
+                    {{addReminderButtonText}}
+                </a>
+            </div>
+            <div class="list card" ng-click="editSettingsButtonClick()">
+                <a class="item item-icon-left">
+                    <!--Find better icon in blue-->
+                    <i class="icon ion-settings positive"></i>
+                    Edit {{variableObject.variableName}} Settings
+                </a>
+            </div>
         </div>
     </ion-content>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
