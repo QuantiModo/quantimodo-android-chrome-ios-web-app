@@ -31,6 +31,7 @@ angular.module('starter')
         $scope.copyChartsUrlToClipboard = function () {
             $scope.copyLinkText = 'Copied!';
             clipboard.copyText($rootScope.variableObject.chartsUrl);
+            $scope.showInfoToast('Copied link!');
         };
 
         $scope.addNewReminderButtonClick = function() {
