@@ -7,16 +7,17 @@ angular.module('starter')
 
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
             $rootScope.getAllUrlParams();
-        });
-
-        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            $rootScope.hideNavigationMenu = false;
             $scope.state = {
                 title: 'Loading study...',
                 requestParams: {},
                 hideStudyButton: true,
                 loading: true
             };
+        });
+
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+            $rootScope.hideNavigationMenu = false;
+
 
             console.debug($state.current.name + ' initializing...');
 
@@ -50,7 +51,7 @@ angular.module('starter')
                     effectVariableName: $scope.correlationObject.effectVariableName
                 };
                 //addWikipediaInfo();
-                if($scope.correlationObject.userId && !$scope.correlationObject.scatterPlotConfig){
+                if($scope.correlationObject.userId && !$scope.correlationObject.charts){
                     getStudy();
                 }
                 return;
@@ -70,7 +71,7 @@ angular.module('starter')
                 };
 
                 //addWikipediaInfo();
-                if($scope.correlationObject.userId && !$scope.correlationObject.scatterPlotConfig){
+                if($scope.correlationObject.userId && !$scope.correlationObject.charts){
                     getStudy();
                 }
             } else {

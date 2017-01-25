@@ -1,4 +1,4 @@
-<div class="voteButtons">
+<div class="voteButtons" style="cursor: pointer">
     <div ng-click="upVote(correlationObject, $index)" class="show-inline">
         <div class="tooltip" title="Relationship Seems Plausible">
             <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
@@ -44,6 +44,13 @@
     <div ng-click="shareStudy(correlationObject, correlationObject.studyLinkTwitter);" class="show-inline">
         <div class="tooltip" title="Share Study to Twitter">
             <i  style="font-size: 32px;" class="ion-social-twitter"></i>
+        </div>
+    </div>
+    &nbsp;
+    &nbsp;
+    <div ng-click="shareStudy(correlationObject, correlationObject.studyLinkEmail);" class="show-inline">
+        <div class="tooltip" title="Share Study to Twitter">
+            <i  style="font-size: 32px;" class="ion-email"></i>
         </div>
     </div>
 </div>

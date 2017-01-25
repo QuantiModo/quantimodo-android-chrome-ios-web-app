@@ -130,7 +130,7 @@ angular.module('starter')
         $scope.shareStudy = function(correlationObject, url){
             if(url.indexOf('userId') !== -1){
                 if(!correlationObject.shareUserMeasurements){
-                    $scope.showShareStudyConfirmation(correlationObject, url);
+                    showShareStudyConfirmation(correlationObject, url);
                 } else {
                     $scope.openUrl(url);
                 }
@@ -139,7 +139,7 @@ angular.module('starter')
             }
         };
 
-        $scope.showShareStudyConfirmation = function(correlationObject, url) {
+        var showShareStudyConfirmation = function(correlationObject, url) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
                 template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
@@ -203,7 +203,7 @@ angular.module('starter')
 
         $scope.toggleStudyShare = function (correlationObject) {
             if(correlationObject.shareUserMeasurements){
-                $scope.showShareStudyConfirmation(correlationObject);
+                showShareStudyConfirmation(correlationObject);
             } else {
                 $scope.showUnshareStudyConfirmation(correlationObject);
             }
