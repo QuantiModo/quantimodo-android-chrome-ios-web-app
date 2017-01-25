@@ -120,6 +120,7 @@ angular.module('starter')
                 params.doNotProcess = true;
             }
             //$scope.showLoader('Fetching measurements');
+            $scope.state.loadingHistory = true;
             quantimodoService.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
 
@@ -137,7 +138,7 @@ angular.module('starter')
                     updateCharts();
                     getHistoryForVariable(params);
                 } else {
-                    $scope.state.loading = false;
+                    $scope.state.loadingHistory = false;
                     $scope.hideLoader();
                     if ($scope.state.history.length > 0) {
                         updateCharts();
@@ -148,7 +149,7 @@ angular.module('starter')
                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                 }
                 console.error($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
-                $scope.state.loading = false;
+                $scope.state.loadingHistory = false;
                 $scope.hideLoader();
             }, function(history) {
                 $scope.state.history = $scope.state.history.concat(history);
@@ -169,6 +170,7 @@ angular.module('starter')
                 return;
             }
             //$scope.showLoader('Fetching measurements');
+            $scope.state.loadingDailyHistory = true;
             quantimodoService.getMeasurementsDailyFromApiDeferred(params).then(function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
@@ -186,6 +188,7 @@ angular.module('starter')
                     updateDailyCharts();
                     getDailyHistoryForVariable(params);
                 } else {
+                    $scope.state.loadingDailyHistory = false;
                     if ($scope.state.dailyHistory.length > 0) {
                         updateDailyCharts();
                     }
@@ -196,7 +199,9 @@ angular.module('starter')
                 }
                 console.error($state.current.name + ' error getting dailyHistory measurements: ' + JSON.stringify(error));
                 $scope.hideLoader();
+                $scope.state.loadingDailyHistory = false;
             }, function(history) {
+                $scope.state.loadingDailyHistory = false;
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(history);
             });
         };
@@ -230,7 +235,6 @@ angular.module('starter')
             $scope.stopGettingMeasurements = false;
             $ionicLoading.hide();
             //$scope.showLoader('Fetching measurements');
-            $scope.state.loading = true;
             console.debug("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $rootScope.variableObject = $stateParams.variableObject;
