@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Charts">
     <ion-nav-title>{{variableObject.name}}</ion-nav-title>
-    <ion-content ng-class="{ isBrowserView : isWeb == true }">
+    <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
         <div ng-cloak>
             <div class="card"  ng-show="state.loadingHistory || state.loadingDailyHistory">
                 <div class="item" >
