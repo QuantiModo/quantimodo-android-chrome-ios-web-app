@@ -900,9 +900,7 @@ angular.module('starter')
                 tagConversionFactor: tagVariable.tagConversionFactor,
                 taggedVariableObject: $rootScope.variableObject,
                 fromState: $state.current.name,
-                fromStateParams: {variableObject: $rootScope.variableObject},
-                tagVariableObject: tagVariable,
-                variableObject: $rootScope.variableObject,
+                tagVariableObject: tagVariable
             });
         };
 
@@ -911,9 +909,7 @@ angular.module('starter')
                 tagConversionFactor: taggedVariable.tagConversionFactor,
                 taggedVariableObject: taggedVariable,
                 fromState: $state.current.name,
-                fromStateParams: {variableObject: $rootScope.variableObject},
-                tagVariableObject: $rootScope.variableObject,
-                variableObject: $rootScope.variableObject
+                tagVariableObject: $rootScope.variableObject
             });
         };
 
