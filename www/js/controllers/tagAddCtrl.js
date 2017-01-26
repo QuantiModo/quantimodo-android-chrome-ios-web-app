@@ -14,10 +14,10 @@ angular.module('starter')
 
         var goBack = function () {
             $ionicLoading.hide();
-            if($stateParams.fromState){
+            if($stateParams.fromState && $stateParams.fromStateParams){
                 $state.go($stateParams.fromState, {variableObject: $stateParams.fromStateParams.variableObject});
             } else {
-                $state.go(config.appSettings.defaultState);
+                $scope.goBack();
             }
         };
 

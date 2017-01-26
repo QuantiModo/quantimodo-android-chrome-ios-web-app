@@ -2,7 +2,7 @@
 
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2 style="color: white">Join a Variable</h2>
+            <h2 style="color: white">{{ctrl.title}}</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="ctrl.cancel()">
                 <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
@@ -13,9 +13,7 @@
     <md-dialog-content ng-cloak>
         <div class="md-dialog-content">
             <form ng-submit="$event.preventDefault()">
-                <p>Search for a duplicated or synonymous variable that you'd like to join to {{ctrl.variableObject.name}}.
-                    Once joined, its measurements will be included in the analysis of {{ctrl.variableObject.name}}.
-                    You can only join variables that have the same unit {{ctrl.variableObject.abbreviatedUnitName}}.</p>
+                <p>{{ctrl.helpText}}</p>
                 <md-autocomplete
                         md-no-cache="true"
                         md-selected-item="ctrl.selectedItem"
@@ -26,7 +24,7 @@
                         ng-model-options="{debounce: 500}"
                         md-item-text="item.display"
                         md-min-length="2"
-                        placeholder="What variable would you like to join?"
+                        placeholder="{{ctrl.placeholder}}"
                         md-autofocus>
                     <md-item-template>
                         <!--<i class="icon {{item.ionIcon}}"></i>-->
@@ -35,7 +33,7 @@
                         </span>
                     </md-item-template>
                     <md-not-found>
-                        No variables matching "{{ctrl.searchText}}" were found.
+                        {{ctrl.notFoundText}}
                     </md-not-found>
                 </md-autocomplete>
             </form>
@@ -43,6 +41,6 @@
     </md-dialog-content>
 
     <md-dialog-actions>
-        <md-button aria-label="Finished" ng-click="ctrl.finish($event, item)">Finished</md-button>
+        <md-button ng-if="ctrl.buttonText" aria-label="Finished" ng-click="ctrl.finish($event, item)">{{ctrl.buttonText}}</md-button>
     </md-dialog-actions>
 </md-dialog>
