@@ -98,6 +98,7 @@ angular.module('starter')
 				$scope.$broadcast('scroll.refreshComplete');
 				$scope.state.loading = false;
 	    	}, function(error){
+                $scope.state.noHistory = true;
 				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 	    		console.error('error getting measurements' + JSON.stringify(error));
 				//Stop the ion-refresher from spinning
