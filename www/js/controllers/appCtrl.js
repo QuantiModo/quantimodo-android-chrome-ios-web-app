@@ -2666,6 +2666,9 @@ angular.module('starter')
                 alert('Called makeInAppPurchase for ' + productName);
             }
             $ionicLoading.show();
+            if($rootScope.isIOS){
+                productName = config.appSettings.lowercaseAppName + '_' + productName;
+            }
             inAppPurchase
                 .getProducts([productName])
                 .then(function (products) {
