@@ -820,6 +820,48 @@ angular.module('starter')
                 errorHandler);
         };
 
+        quantimodoService.postVariableJoinDeferred = function(tagData) {
+            var deferred = $q.defer();
+            quantimodoService.postVariableJoin(tagData, function(response){
+                deferred.resolve(response);
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        quantimodoService.postVariableJoin = function(variableJoinData, successHandler, errorHandler) {
+            if(variableJoinData.constructor !== Array){
+                variableJoinData = [variableJoinData];
+            }
+
+            quantimodoService.post('api/v1/variables/join',
+                [],
+                variableJoinData,
+                successHandler,
+                errorHandler);
+        };
+
+        quantimodoService.deleteVariableJoinDeferred = function(tagData) {
+            var deferred = $q.defer();
+            quantimodoService.deleteVariableJoin(tagData, function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        quantimodoService.deleteVariableJoin = function(variableJoinData, successHandler, errorHandler) {
+            quantimodoService.post('api/v1/variables/join/delete',
+                [],
+                variableJoinData,
+                successHandler,
+                errorHandler);
+        };
+
         quantimodoService.deleteUserTagDeferred = function(tagData) {
             var deferred = $q.defer();
             quantimodoService.deleteUserTag(tagData, function(){
@@ -5461,7 +5503,8 @@ angular.module('starter')
             var deferred = $q.defer();
 
             quantimodoService.getLocalStorageItemAsStringWithCallback('userVariables', function (userVariables) {
-                if(!refresh){
+                if(!refresh && userVariables){
+                    userVariables = JSON.parse(userVariables);
                     for(var i = 0; i < userVariables.length; i++){
                         if(userVariables[i].name === name){
                             deferred.resolve(userVariables[i]);
