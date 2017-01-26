@@ -174,6 +174,17 @@ angular.module('starter')
             });
         };
 
+        $scope.openVariableSearchDialog = function($event) {
+            $mdDialog.show({
+                controller: VariableSearchCtrl,
+                controllerAs: 'ctrl',
+                templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: $event,
+                clickOutsideToClose:true
+            });
+        };
+
         $scope.showUnshareStudyConfirmation = function(correlationObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
@@ -2472,7 +2483,7 @@ angular.module('starter')
             $rootScope.user.trackLocation = $rootScope.trackLocation;
             quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
             if($rootScope.user && $rootScope.user.trackLocation){
-                console.debug('Going to execute quantimodoService.backgroundGeolocationInit if $ionicPlatform.ready')
+                console.debug('Going to execute quantimodoService.backgroundGeolocationInit if $ionicPlatform.ready');
                 $ionicPlatform.ready(function() { //For Ionic
                     quantimodoService.backgroundGeolocationInit();
                 });
@@ -2830,4 +2841,139 @@ angular.module('starter')
         };
 
         $scope.init();
+
+        var VariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter,
+                 quantimodoService, $q, $log) {
+
+            var self = this;
+
+            self.simulateQuery = true;
+            self.isDisabled    = false;
+
+            // list of `state` value/display objects
+            self.variables        = loadAll();
+            self.querySearch   = querySearch;
+            self.selectedItemChange = selectedItemChange;
+            self.searchTextChange   = searchTextChange;
+
+            self.variableObject = $rootScope.variableObject;
+
+            self.newVariable = newVariable;
+
+            self.cancel = function($event) {
+                $mdDialog.cancel();
+            };
+
+            self.finish = function($event) {
+                var variableData = {
+                    parentVariableId: $rootScope.variableObject.id,
+                    joinedVariableId: self.selectedItem.variable.id,
+                    conversionFactor: 1
+                };
+                $ionicLoading.show();
+                quantimodoService.postVariableJoinDeferred(variableData).then(function (response) {
+                    $ionicLoading.hide();
+                    $rootScope.variableObject = response.userVariable;
+                    quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+                        response.userVariable);
+                }, function (error) {
+                    $ionicLoading.hide();
+                    console.error(error);
+                });
+
+                $mdDialog.hide();
+            };
+
+            function newVariable(variable) {
+                alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
+            }
+
+            function querySearch (query) {
+                var results = query ? self.variables.filter( createFilterFor(query) ) : self.variables,
+                    deferred;
+                if (self.simulateQuery) {
+                    deferred = $q.defer();
+                    results = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
+                    if(results && results.length){
+                        results = loadAll(results).filter(createFilterFor(query));
+                        if(results && results.length){
+                            deferred.resolve(results);
+                            return deferred.promise;
+                        }
+                    }
+
+                    quantimodoService.searchUserVariablesDeferred(query, {defaultUnitId:
+                        $rootScope.variableObject.defaultUnitId})
+                        .then(function(results){
+                            deferred.resolve(loadAll(results));
+                        });
+                    return deferred.promise;
+                } else {
+                    return results;
+                }
+            }
+
+            function searchTextChange(text) {
+                $log.info('Text changed to ' + text);
+            }
+
+            function selectedItemChange(item) {
+                self.selectedItem = item;
+                $log.info('Item changed to ' + JSON.stringify(item));
+            }
+
+            /**
+             * Build `variables` list of key/value pairs
+             */
+            function loadAll(variables, filters) {
+                if(!variables){
+                    variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
+                }
+
+                if(variables){
+                    variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId));
+                }
+
+                if(variables){
+                    variables = variables.filter(excludeParentVariable());
+                }
+
+                return variables.map( function (variable) {
+                    return {
+                        value: variable.name.toLowerCase(),
+                        display: variable.name,
+                        variable: variable
+                    };
+                });
+            }
+
+            /**
+             * Create filter function for a query string
+             */
+            function createFilterFor(query) {
+                var lowercaseQuery = angular.lowercase(query);
+
+                return function filterFn(item) {
+                    return (item.value.indexOf(lowercaseQuery) !== -1);
+                };
+            }
+
+            /**
+             * Create filter function for a query string
+             */
+            function filterByProperty(filterPropertyName, allowedFilterValue) {
+                return function filterFn(item) {
+                    return (item[filterPropertyName] === allowedFilterValue);
+                };
+            }
+
+            /**
+             * Create filter function for a query string
+             */
+            function excludeParentVariable() {
+                return function filterFn(item) {
+                    return (item.id !== $rootScope.variableObject.id);
+                };
+            }
+        };
     });
