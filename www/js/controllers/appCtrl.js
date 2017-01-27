@@ -174,7 +174,7 @@ angular.module('starter')
             });
         };
 
-        $scope.showUnshareStudyConfirmation = function(correlationObject) {
+        var showUnshareStudyConfirmation = function(correlationObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
                 template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
@@ -206,35 +206,11 @@ angular.module('starter')
             if(correlationObject.shareUserMeasurements){
                 showShareStudyConfirmation(correlationObject);
             } else {
-                $scope.showUnshareStudyConfirmation(correlationObject);
+                showUnshareStudyConfirmation(correlationObject);
             }
         };
 
-        // Gets measurements directly from API instead of checking local storage cache first
-        // To restrict to a specific variable, provide params = {variableName: "Your Variable Name Here"}
-        $scope.refreshMeasurementHistory = function(params){
-            var refresh = true;
-            $scope.getMeasurementHistory(params, refresh);
-        };
-
-        // Returns cached measurements in local storage if available
-        // To restrict to a specific variable, provide params = {variableName: "Your Variable Name Here"}
-        $scope.getMeasurementHistory = function(params, refresh){
-            quantimodoService.getHistoryMeasurements(params, refresh).then(function(measurements){
-                $scope.measurementHistory = measurements;
-                $scope.hideLoader();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-            }, function(error){
-                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                console.error('error getting measurements' + JSON.stringify(error));
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                $scope.hideLoader();
-            });
-        };
-
-        $scope.showShareVariableConfirmation = function(variableObject, url) {
+        var showShareVariableConfirmation = function(variableObject, url) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',
                 template: 'Are you absolutely sure you want to make your ' + variableObject.name +
@@ -266,7 +242,7 @@ angular.module('starter')
             });
         };
 
-        $scope.showUnshareVariableConfirmation = function(variableObject) {
+        var showUnshareVariableConfirmation = function(variableObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',
                 template: 'Are you absolutely sure you want to make your ' + variableObject.name +
@@ -295,9 +271,9 @@ angular.module('starter')
 
         $scope.toggleVariableShare = function (variableObject) {
             if(variableObject.shareUserMeasurements){
-                $scope.showShareVariableConfirmation(variableObject);
+                showShareVariableConfirmation(variableObject);
             } else {
-                $scope.showUnshareVariableConfirmation(variableObject);
+                showUnshareVariableConfirmation(variableObject);
             }
         };
 
@@ -850,47 +826,6 @@ angular.module('starter')
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
             }
-        };
-
-        function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
-
-            if ($state.current.name === "app.welcome") {
-                $rootScope.hideNavigationMenu = false;
-                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
-                $state.go(config.appSettings.defaultState);
-            }
-
-            if ($state.current.name === "app.login" && $rootScope.user) {
-                $rootScope.hideNavigationMenu = false;
-                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
-                $state.go(config.appSettings.defaultState);
-            }
-
-            if (config.appSettings.allowOffline) {
-                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-            }
-
-            // don't animate, clear back history
-            $ionicHistory.nextViewOptions({
-                disableAnimate: false,
-                disableBack: true
-            });
-
-            // redraw everything according to updated appstate
-            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-        }
-
-        $scope.goToDefaultStateIfWelcomed = function () {
-            console.debug('appCtrl: user has seen the welcome screen before...');
-            quantimodoService.getLocalStorageItemAsStringWithCallback('isWelcomed', function (isWelcomed) {
-                if (isWelcomed === true || isWelcomed === "true") {
-                    $rootScope.isWelcomed = true;
-                    console.debug('goToDefaultStateIfWelcomed: Going to default state...');
-                    goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
-                }
-            });
         };
 
         $scope.editTag = function(tagVariable){
