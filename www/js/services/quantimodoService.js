@@ -128,7 +128,7 @@ angular.module('starter')
         quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler, options){
 
             if(!options){
-                var options = {};
+                options = {};
             }
 
             if(!canWeMakeRequestYet('GET', baseURL, options)){
