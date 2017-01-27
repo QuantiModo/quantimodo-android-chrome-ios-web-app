@@ -3088,8 +3088,10 @@ angular.module('starter')
         };
 
         quantimodoService.backgroundGeolocationStop = function () {
-            window.localStorage.setItem('bgGPS', 0);
-            backgroundGeoLocation.stop();
+            if(typeof backgroundGeoLocation !== "undefined"){
+                window.localStorage.setItem('bgGPS', 0);
+                backgroundGeoLocation.stop();
+            }
         };
 
         var delayBeforePostingNotifications = 3 * 60 * 1000;
@@ -3131,6 +3133,7 @@ angular.module('starter')
         quantimodoService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
             var deferred = $q.defer();
             var trackingReminderNotificationsArray = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
+            quantimodoService.deleteItemFromLocalStorage('notificationsSyncQueue');
             if(!trackingReminderNotificationsArray){
                 if(successHandler){
                     successHandler();
@@ -3139,15 +3142,18 @@ angular.module('starter')
                 return deferred.promise;
             }
             quantimodoService.postTrackingReminderNotificationsToApi(trackingReminderNotificationsArray, function(response){
-                quantimodoService.deleteItemFromLocalStorage('notificationsSyncQueue');
-                //if($rootScope.showUndoButton){
-                    //$rootScope.showUndoButton = false;
-                //}
                 if(successHandler){
                     successHandler();
                 }
                 deferred.resolve();
             }, function(error){
+                var newNotificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
+                if(newNotificationsSyncQueue){
+                    trackingReminderNotificationsArray =
+                        trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
+                }
+                quantimodoService.setLocalStorageItem('notificationsSyncQueue',
+                    JSON.stringify(trackingReminderNotificationsArray));
                 if(errorHandler){
                     errorHandler();
                 }
@@ -8233,6 +8239,16 @@ angular.module('starter')
                 deferred.reject(response);
             });
             return deferred.promise;
+        };
+
+        quantimodoService.helpInfo = {
+            locationAndWeatherTracking: {
+                title: "Location and Weather Tracking",
+                textContent: 'By automatically recording your location we can try to gain insights into the effects ' +
+                    ' of time spent at the gym, certain restaurants, or work.  Another benefit is that it keeps the ' +
+                    ' app running the background so it opens instantly instead of taking a few seconds to load.  ' +
+                    'You can view your location history by going to Menu -> History -> Locations.'
+            }
         };
 
         return quantimodoService;

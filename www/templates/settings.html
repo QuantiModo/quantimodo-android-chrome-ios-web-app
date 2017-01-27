@@ -26,17 +26,18 @@
         </div>
 
         <div ng-show="user" class="card sign-in" >
+            <div class="item item-divider" ng-click="showHelpInfoPopup($event, 'locationAndWeatherTracking')">
+                <i class="icon ion-ios-download"></i>
+                &nbsp
+                Location and Weather Tracking &nbsp; <i class="icon ion-information-circled"></i>
+            </div>
             <ion-toggle ng-model="trackLocation"
                         ng-change="trackLocationChange()">
-                <i class="icon ion-map"></i>
-                &nbsp
-                Track my location
+                <div >
+                    <i class="icon ion-map"></i> &nbsp Record Location and Weather &nbsp
+
+                </div>
             </ion-toggle>
-<!--            <div ng-show="trackLocation" class="list card">
-                <a ng-show="user" ng-click="goToState('app.map')" class="item ">
-                    Open Map
-                </a>
-            </div>-->
         </div>
         <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>
         <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
@@ -59,10 +60,11 @@
             <a href="" ng-click="exportPdf()" class="item ">
               Export as PDF File
             </a>
-            -->
+           
             <a href="" ng-click="exportXls()" class="item ">
                 Export as XLS File
             </a>
+            -->
             <a href="" ng-click="exportCsv()" class="item ">
                 Export as CSV File
             </a>
