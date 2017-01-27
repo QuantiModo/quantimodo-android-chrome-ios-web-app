@@ -113,16 +113,16 @@ angular.module('starter')
             afterTrackingActions();
 			console.debug('modifiedReminderValue is ' + trackingReminderNotification.total);
 
-			var value = trackingReminderNotification.total;
-			$scope.lastAction = 'Record ' + value + trackingReminderNotification.abbreviatedUnitName;
-			var body = {
-				trackingReminderNotification: trackingReminderNotification,
-				modifiedValue: value
-			};
+            trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
+			var lastAction = 'Recorded ' + trackingReminderNotification.modifiedValue + ' ' +
+				trackingReminderNotification.abbreviatedUnitName;
+            $scope.lastAction = lastAction.replace(' /', '/');
+
 			if(!$rootScope.showUndoButton){
-				$rootScope.showUndoButton = true;
+				//$rootScope.showUndoButton = true;
+                $scope.showUndoToast($scope.lastAction);
 			}
-			quantimodoService.trackTrackingReminderNotificationDeferred(body)
+			quantimodoService.trackTrackingReminderNotificationDeferred(trackingReminderNotification)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						quantimodoService.decrementNotificationBadges();
@@ -179,20 +179,16 @@ angular.module('starter')
             }
         };
 
-		var notificationAction = function(trackingReminderNotification, $event, dividerIndex,
-										  trackingReminderNotificationIndex){
-			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
-            //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
-            trackingReminderNotification.hide = true;
+		var notificationAction = function(trackingReminderNotification){
+
+			trackingReminderNotification.hide = true;
             afterTrackingActions();
-			if(!$rootScope.showUndoButton){
-				$rootScope.showUndoButton = true;
-			}
-			return {
-				trackingReminderNotification: trackingReminderNotification,
-				trackingReminderNotificationId: trackingReminderNotification.id
-			};
+			//if(!$rootScope.showUndoButton){
+				//$rootScope.showUndoButton = true;
+			//}
+            $scope.showUndoToast($scope.lastAction);
+            trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
+			return trackingReminderNotification;
 		};
 
 		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationIndex){
@@ -204,10 +200,12 @@ angular.module('starter')
 				modifiedReminderValue = trackingReminderNotification.defaultValue;
 			}
 
+            var lastAction = 'Recorded ' + modifiedReminderValue + ' ' + trackingReminderNotification.abbreviatedUnitName;
+            $scope.lastAction = lastAction.replace(' /', '/');
 			var body = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
-			$scope.lastAction = 'Record ' + modifiedReminderValue + trackingReminderNotification.abbreviatedUnitName;
+
 	    	quantimodoService.trackTrackingReminderNotificationDeferred(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -226,7 +224,7 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-			$scope.lastAction = 'Skip';
+			$scope.lastAction = 'Skipped';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 	    	quantimodoService.skipTrackingReminderNotificationDeferred(params)
@@ -247,7 +245,7 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-			$scope.lastAction = 'Snooze';
+			$scope.lastAction = 'Snoozed';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 	    	quantimodoService.snoozeTrackingReminderNotificationDeferred(params)
@@ -264,15 +262,15 @@ angular.module('starter')
 				});
 	    };
 
-		$scope.undo = function(){
-			$rootScope.showUndoButton = false;
+		$rootScope.undoInboxAction = function(){
+			//$rootScope.showUndoButton = false;
 			var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
 			if(!notificationsSyncQueue){
 				return false;
 			}
-			notificationsSyncQueue[0].trackingReminderNotification.hide = false;
+			notificationsSyncQueue[0].hide = false;
 			quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications',
-				notificationsSyncQueue[0].trackingReminderNotification);
+				notificationsSyncQueue[0]);
 			quantimodoService.deleteElementOfLocalStorageItemByProperty('notificationsSyncQueue',
 				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
 			getTrackingReminderNotifications();
@@ -391,99 +389,10 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-			$scope.hideLoader();
-	    	if ($stateParams.hideNavigationMenu !== true){
-                $rootScope.hideNavigationMenu = false;
-			}
-			console.debug($state.current.name + ' initializing...');
 
-			$rootScope.bloodPressure = {
-				systolicValue: null,
-				diastolicValue: null,
-				displayTotal: "Blood Pressure"
-			};
-
-			$rootScope.stateParams = $stateParams;
-			if($rootScope.showUndoButton){
-				$rootScope.showUndoButton = false;
-			}
-			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
-			if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-				$rootScope.variableCategoryName = $stateParams.variableCategoryName;
-			} else {
-				$rootScope.variableCategoryName = null;
-			}
-			showLoader();
-			quantimodoService.getAccessTokenFromUrlParameter();
-			$rootScope.hideNavigationMenuIfSetInUrlParameter();
-			$scope.refreshTrackingReminderNotifications();
-			//getTrackingReminderNotifications();
-
-			if($rootScope.localNotificationsEnabled){
-				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
-				quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
-			}
-
-			quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
-
-			quantimodoService.updateUserTimeZoneIfNecessary();
-
-			quantimodoService.shouldWeUseIonicLocalNotifications();
-
-			// Triggered on a button click, or some other target
-			$rootScope.showActionSheetMenu = function() {
-				// Show the action sheet
-				var hideSheet = $ionicActionSheet.show({
-					buttons: [
-
-					],
-					destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
-					cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-					cancel: function() {
-						console.debug('CANCELLED');
-					},
-					buttonClicked: function(index) {
-						console.debug('BUTTON CLICKED', index);
-						if(index === 0){
-
-						}
-						return true;
-					},
-					destructiveButtonClicked: function() {
-						$scope.showLoader('Skipping all reminder notifications...');
-						quantimodoService.skipAllTrackingReminderNotificationsDeferred()
-							.then(function(){
-								if($rootScope.localNotificationsEnabled){
-									quantimodoService.setNotificationBadge(0);
-								}
-								$scope.init();
-							}, function(error){
-								if (typeof Bugsnag !== "undefined") {
-									Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-								}
-								console.error(error);
-								quantimodoService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
-							});
-						return true;
-					}
-				});
-
-				console.debug('Setting hideSheet timeout');
-				$timeout(function() {
-					hideSheet();
-				}, 20000);
-
-			};
-
-			if(navigator && navigator.splashscreen) {
-				console.debug('ReminderInbox: Hiding splash screen because app is ready');
-				navigator.splashscreen.hide();
-			}
 		};
 
-	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
+	    $scope.editMeasurement = function(trackingReminderNotification){
             enlargeChromePopupIfNecessary();
             //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
             trackingReminderNotification.hide = true;
@@ -498,7 +407,7 @@ angular.module('starter')
 				});
 	    };
 
-	    $scope.editReminderSettingsByNotification = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex){
+	    $scope.editReminderSettingsByNotification = function(trackingReminderNotification){
             enlargeChromePopupIfNecessary();
 	    	//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
             trackingReminderNotification.hide = true;
@@ -514,25 +423,107 @@ angular.module('starter')
 				});
 	    };
 
-    	$scope.$on('$ionicView.enter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-			$scope.hideInboxLoader();
-    		$scope.init();
-    	});
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 
-		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-
-            if($stateParams.hideNavigationMenu){
-                $rootScope.hideNavigationMenu = true;
+            if(!$rootScope.accessTokenInUrl && !$rootScope.user){
+                quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
+                $state.go('app.login');
             }
 
             $rootScope.hideBackButton = true;
-			$rootScope.hideHomeButton = true;
-			setPageTitle();
-			getTrackingReminderNotifications();
-		});
+            $rootScope.hideHomeButton = true;
+            setPageTitle();
+            getTrackingReminderNotifications();
+        });
+
+        $scope.$on('$ionicView.enter', function(e) { console.debug("enter state " + $state.current.name);
+			$scope.hideInboxLoader();
+            $scope.hideLoader();
+            console.debug($state.current.name + ' initializing...');
+
+            $rootScope.bloodPressure = {
+                systolicValue: null,
+                diastolicValue: null,
+                displayTotal: "Blood Pressure"
+            };
+
+            $rootScope.stateParams = $stateParams;
+            //if($rootScope.showUndoButton){
+            //$rootScope.showUndoButton = false;
+            //}
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
+            if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+                $rootScope.variableCategoryName = $stateParams.variableCategoryName;
+            } else {
+                $rootScope.variableCategoryName = null;
+            }
+            $scope.refreshTrackingReminderNotifications();
+
+            if($rootScope.localNotificationsEnabled){
+                console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
+                quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
+            }
+
+            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
+
+            // Triggered on a button click, or some other target
+            $rootScope.showActionSheetMenu = function() {
+                // Show the action sheet
+                var hideSheet = $ionicActionSheet.show({
+                    buttons: [
+
+                    ],
+                    destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
+                    cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                    cancel: function() {
+                        console.debug('CANCELLED');
+                    },
+                    buttonClicked: function(index) {
+                        console.debug('BUTTON CLICKED', index);
+                        if(index === 0){
+
+                        }
+                        return true;
+                    },
+                    destructiveButtonClicked: function() {
+                        $scope.showLoader('Skipping all reminder notifications...');
+                        quantimodoService.skipAllTrackingReminderNotificationsDeferred()
+                            .then(function(){
+                                if($rootScope.localNotificationsEnabled){
+                                    quantimodoService.setNotificationBadge(0);
+                                }
+                                $scope.refreshTrackingReminderNotifications();
+                            }, function(error){
+                                if (typeof Bugsnag !== "undefined") {
+                                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                                }
+                                console.error(error);
+                                quantimodoService.showAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
+                            });
+                        return true;
+                    }
+                });
+
+                console.debug('Setting hideSheet timeout');
+                $timeout(function() {
+                    hideSheet();
+                }, 20000);
+
+            };
+
+            if(navigator && navigator.splashscreen) {
+                console.debug('ReminderInbox: Hiding splash screen because app is ready');
+                navigator.splashscreen.hide();
+            }
+    	});
 
         $scope.$on('$ionicView.afterEnter', function(){
             quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+            if ($stateParams.hideNavigationMenu !== true){
+                $rootScope.hideNavigationMenu = false;
+            }
         });
 
         $scope.$on('$ionicView.afterLeave', function(){
@@ -603,14 +594,14 @@ angular.module('starter')
 					quantimodoService.skipAllTrackingReminderNotificationsDeferred(params)
 						.then(function(){
 							$scope.hideInboxLoader();
-							$scope.init();
+                            $scope.refreshTrackingReminderNotifications();
 						}, function(error){
 							$scope.hideInboxLoader();
 							if (typeof Bugsnag !== "undefined") {
 								Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 							}
 							console.error(error);
-							quantimodoService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');
+							quantimodoService.showAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
 						});
 					return true;
 				}

@@ -18,7 +18,7 @@
                     <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
                 <label id="unitSelectorBlock" class="item item-input item-select"
-                       ng-if="!state.showMoreUnits && !state.hideDefaultValueField">
+                       ng-if="!state.showMoreUnits && !state.hideDefaultValueField && !state.showMoreOptions">
                     <div class="input-label">
                         Unit
                     </div>
@@ -31,7 +31,7 @@
                 <label id="advancedUnitSelectorBlock" class="item item-input item-select"
                        ng-if="state.showMoreUnits || state.showMoreOptions">
                     <div class="input-label">
-                        Advanced Units
+                        Unit
                     </div>
                     <select
                             id="advancedUnitSelector"

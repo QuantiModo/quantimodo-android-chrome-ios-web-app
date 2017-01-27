@@ -41,7 +41,7 @@ angular.module('starter')
 	    	return variableCategory? variableCategory : false;
 	    };
 
-        $scope.refreshHistory = function(concat){
+        $scope.refreshHistory = function(){
         	var concat = false;
         	var refresh = true;
             $scope.getHistory(concat, refresh);
@@ -80,14 +80,13 @@ angular.module('starter')
                 }
 			}
 
-	    	quantimodoService.getHistoryMeasurements(params, refresh).then(function(history){
+	    	quantimodoService.getMeasurementsDeferred(params, refresh).then(function(history){
 	    		if (concat) {
 					$scope.state.history = $scope.state.history.concat(history);
 				}
     			else {
 					$scope.state.history = history;
 				}
-				$scope.state.history = quantimodoService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
 				if(history.length < $scope.state.limit){
 					$scope.state.hideLoadMoreButton = true;
@@ -99,6 +98,7 @@ angular.module('starter')
 				$scope.$broadcast('scroll.refreshComplete');
 				$scope.state.loading = false;
 	    	}, function(error){
+                $scope.state.noHistory = true;
 				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 	    		console.error('error getting measurements' + JSON.stringify(error));
 				//Stop the ion-refresher from spinning

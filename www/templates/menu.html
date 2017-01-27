@@ -26,7 +26,7 @@
                        class="button button-clear" >
                         <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}">
                     </a>
-                    <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="toggleFilterBar($event)"></button>
+                    <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="openCorrelationSearchDialog($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="onGenericHelpButtonPress()"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
@@ -62,17 +62,25 @@
 
     <ion-side-menu side="left" is-enabled="!hideNavigationMenu">
         <ion-header-bar class="bar-positive">
-            <a href="#/app/settings"
-               ng-if="user && user.avatar"
-               class="button button-clear" >
-                <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
-            </a>
-            <h1 class="title"
-                style="cursor:pointer;"
-                ng-click="goToState('app.settings')"
-                ng-if="user && user.displayName">
-                {{user.displayName}}
-            </h1>
+            <div style="cursor:pointer;"
+                 ng-click="goToState('app.settings')"
+                 ng-if="user && user.displayName && user.stripeActive">
+                <a ng-if="user && user.avatar"
+                   class="button button-clear" >
+                    <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
+                </a>
+                <h1 class="title" style="position: fixed; bottom: 0;">
+                    {{user.displayName}}
+                </h1>
+            </div>
+            <div style="cursor:pointer;"
+                 ng-if="user && user.displayName && !user.stripeActive"
+                 ng-click="goToState('app.upgrade')">
+                <button class="button button-icon ion-android-star-outline"></button>
+                <h1 class="title" style="position: fixed; bottom: 0;">
+                    UPGRADE
+                </h1>
+            </div>
         </ion-header-bar>
         <ion-content>
 

@@ -14,10 +14,10 @@ angular.module('starter')
 
         var goBack = function () {
             $ionicLoading.hide();
-            if($stateParams.fromState){
-                $state.go($stateParams.fromState, {variableObject: $stateParams.fromStateParams.variableObject});
+            if($stateParams.fromState && $stateParams.fromStateParams){
+                $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject});
             } else {
-                $state.go(config.appSettings.defaultState);
+                $scope.goBack();
             }
         };
 
@@ -29,19 +29,22 @@ angular.module('starter')
             };
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
 
-            if($stateParams.taggedVariableObject.userTagVariables){
+            if($rootScope.variableObject.userTagVariables){
                 $rootScope.variableObject.userTagVariables =
                     $rootScope.variableObject.userTagVariables.filter(function( obj ) {
                         return obj.id !== $rootScope.stateParams.tagVariableObject.id;
                     });
             }
 
-            if($stateParams.taggedVariableObject.userTaggedVariables){
+            if($rootScope.variableObject.userTaggedVariables){
                 $rootScope.variableObject.userTaggedVariables =
                     $rootScope.variableObject.userTaggedVariables.filter(function( obj ) {
                         return obj.id !== $rootScope.stateParams.taggedVariableObject.id;
                     });
             }
+
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+                $rootScope.variableObject);
 
             quantimodoService.deleteUserTagDeferred(userTagData).then(function () {
                 goBack();
@@ -62,33 +65,36 @@ angular.module('starter')
                 conversionFactor: $rootScope.stateParams.tagConversionFactor
             };
 
-            if($stateParams.fromStateParams.variableObject.id === $rootScope.stateParams.tagVariableObject.id){
+            if($rootScope.variableObject.id === $rootScope.stateParams.tagVariableObject.id){
                 $rootScope.stateParams.taggedVariableObject.tagConversionFactor = $rootScope.stateParams.tagConversionFactor;
                 $rootScope.stateParams.taggedVariableObject.tagDisplayText = $rootScope.stateParams.tagConversionFactor +
                     ' ' + $rootScope.stateParams.tagVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.tagVariableObject.name + ' per ' +
                     $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.taggedVariableObject.name;
-                if(!$stateParams.fromStateParams.variableObject.userTaggedVariables){
-                    $stateParams.fromStateParams.variableObject.userTaggedVariables = [];
+                if(!$rootScope.variableObject.userTaggedVariables){
+                    $rootScope.variableObject.userTaggedVariables = [];
                 }
-                $stateParams.fromStateParams.variableObject.userTaggedVariables.push($rootScope.stateParams.taggedVariableObject);
+                $rootScope.variableObject.userTaggedVariables.push($rootScope.stateParams.taggedVariableObject);
             }
 
-            if($stateParams.fromStateParams.variableObject.id === $rootScope.stateParams.taggedVariableObject.id){
+            if($rootScope.variableObject.id === $rootScope.stateParams.taggedVariableObject.id){
                 $rootScope.stateParams.tagVariableObject.tagConversionFactor = $rootScope.stateParams.tagConversionFactor;
                 $rootScope.stateParams.tagVariableObject.tagDisplayText = $rootScope.stateParams.tagConversionFactor +
                     ' ' + $rootScope.stateParams.tagVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.tagVariableObject.name + ' per ' +
                     $rootScope.stateParams.taggedVariableObject.unitName + ' of ' +
                     $rootScope.stateParams.taggedVariableObject.name;
-                if(!$stateParams.fromStateParams.variableObject.userTagVariables){
-                    $stateParams.fromStateParams.variableObject.userTagVariables = [];
+                if(!$rootScope.variableObject.userTagVariables){
+                    $rootScope.variableObject.userTagVariables = [];
                 }
-                $stateParams.fromStateParams.variableObject.userTagVariables.push($rootScope.stateParams.tagVariableObject);
+                $rootScope.variableObject.userTagVariables.push($rootScope.stateParams.tagVariableObject);
             }
 
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+                $rootScope.variableObject);
 
             quantimodoService.postUserTagDeferred(userTagData).then(function () {
                 goBack();
@@ -112,7 +118,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                quantimodoService.getVariablesByNameDeferred('Anxiety').then(function (variable) {
+                quantimodoService.getUserVariableByNameDeferred('Anxiety').then(function (variable) {
                     $rootScope.stateParams.tagVariableObject = variable;
                     $ionicLoading.hide();
                 });
@@ -122,7 +128,7 @@ angular.module('starter')
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                quantimodoService.getVariablesByNameDeferred('Overall Mood').then(function (variable) {
+                quantimodoService.getUserVariableByNameDeferred('Overall Mood').then(function (variable) {
                     $rootScope.stateParams.taggedVariableObject = variable;
                     $ionicLoading.hide();
                 });

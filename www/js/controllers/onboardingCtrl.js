@@ -1,9 +1,14 @@
 angular.module('starter')
 .controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
-                                  $rootScope, $stateParams, quantimodoService, $timeout) {
+                                  $rootScope, $stateParams, quantimodoService) {
 
-    // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+        $rootScope.hideNavigationMenu = true;
+        if(!$rootScope.user){
+            quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
+            $state.go('app.login');
+            return;
+        }
 
         $rootScope.onboardingFooterText = null;
         quantimodoService.setupOnboardingPages();
@@ -15,51 +20,27 @@ angular.module('starter')
 
         $ionicLoading.hide();
         //$rootScope.hideMenuButton = true;
-        $rootScope.hideNavigationMenu = true;
+    });
+
+    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
-
         quantimodoService.setupHelpCards();
     });
 
-    $scope.$on('$ionicView.leave', function(){
+    $scope.$on('$ionicView.beforeLeave', function(){
         $rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
     });
 
-    $scope.$on('$ionicView.beforeLeave', function(){
+    $scope.$on('$ionicView.leave', function(){
 
     });
 
     $scope.$on('$ionicView.afterLeave', function(){
 
     });
-
-    $scope.onboardingLogin = function () {
-        if(!$rootScope.user){
-            $scope.login();
-        } else {
-            quantimodoService.removeOnboardingLoginPage();
-        }
-    };
-
-    $scope.onboardingRegister = function () {
-        if(!$rootScope.user){
-            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-            $scope.register();
-        } else {
-            quantimodoService.removeOnboardingLoginPage();
-        }
-    };
-
-    $scope.onboardingGoogleLogin = function () {
-        if(!$rootScope.user){
-            $scope.googleLogin();
-            //$scope.googleLoginDebug();
-        } else {
-            quantimodoService.removeOnboardingLoginPage();
-        }
-    };
 
     var removeImportPage = function () {
         quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
@@ -69,7 +50,7 @@ angular.module('starter')
         quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify(onboardingPages));
     };
 
-    $scope.onboardingGoToImportPage = function () {
+    $rootScope.onboardingGoToImportPage = function () {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         removeImportPage();
@@ -77,16 +58,16 @@ angular.module('starter')
         $state.go('app.import');
     };
 
-    $scope.skipOnboarding = function () {
+    $rootScope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
         $state.go(config.appSettings.defaultState);
     };
 
-    $scope.showMoreOnboardingInfo = function () {
+    $rootScope.showMoreOnboardingInfo = function () {
         $scope.onHelpButtonPress($rootScope.onboardingPages[0].title, $rootScope.onboardingPages[0].moreInfo);
     };
 
-    $scope.goToReminderSearchCategoryFromOnboarding = function(variableCategoryName) {
+    $rootScope.goToReminderSearchCategoryFromOnboarding = function(variableCategoryName) {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         if(!$rootScope.user){
@@ -99,12 +80,12 @@ angular.module('starter')
         $scope.goToReminderSearchCategory(variableCategoryName);
     };
 
-    $scope.enableLocationTracking = function () {
+    $rootScope.enableLocationTracking = function () {
         $rootScope.trackLocationChange(true, true);
         $rootScope.hideOnboardingPage();
     };
 
-    $scope.doneOnboarding = function () {
+    $rootScope.doneOnboarding = function () {
         $rootScope.hideMenuButton = false;
         $rootScope.defaultHelpCards = null;
         var getStartedHelpCard = {
@@ -125,7 +106,7 @@ angular.module('starter')
                 buttons: [
                     {
                         id: "hideRecordMeasurementInfoCardButton",
-                        clickFunctionCall: "hideHelpCard(card)",
+                        clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
                         buttonText: 'Got it!',
                         buttonIconClass: "ion-checkmark",
                         buttonClass: "button button-clear button-balanced"
@@ -136,7 +117,11 @@ angular.module('starter')
         $rootScope.defaultHelpCards = [getStartedHelpCard].concat($rootScope.defaultHelpCards);
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
         $rootScope.onboardingPages = null;
-        $state.go('app.remindersInbox');
+        if(!$rootScope.user.stripePlan){
+            $state.go('app.upgrade');
+        } else {
+            $state.go('app.remindersInbox');
+        }
     };
 
     $rootScope.hideOnboardingPage = function () {

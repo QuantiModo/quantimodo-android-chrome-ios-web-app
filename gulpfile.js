@@ -38,13 +38,13 @@ var paths = {
 };
 
 if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.3.1.0';
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.3.2.0';
     console.log('Falling back to OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 }
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.2.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.3.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
@@ -1850,14 +1850,26 @@ gulp.task('zipChromeExtension', [], function(){
 		.pipe(gulp.dest('build'));
 });
 
-gulp.task('configureApp', [], function(callback){
+// Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
+gulp.task('configureAppAfterNpmInstall', [], function(callback){
+    if (process.env.PREPARE_IOS_APP){
+    	console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
+        runSequence(
+            'prepareIosApp',
+            callback);
+    } else if (process.env.BUILD_ANDROID){
+        console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
+        runSequence(
+            'buildQuantiModoAndroid',
+            callback);
+    } else {
+        runSequence(
+            'configureApp',
+            callback);
+    }
+});
 
-    // if(false && process.env.PREPARE_IOS_APP){  // Results in infinite loop
-    // 	console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
-    //     runSequence(
-    //         'prepareIosApp',
-    //         callback);
-    // }
+gulp.task('configureApp', [], function(callback){
 
 	runSequence(
 		'copyAppResources',
@@ -2190,6 +2202,7 @@ gulp.task('prepareAndroidApp', function(callback){
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
+        'decryptWwwManifestJson',
         'decryptAndroidKeystore',
         'generateAndroidResources',
 		'copyAndroidResources',

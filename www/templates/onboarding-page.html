@@ -27,7 +27,7 @@
                      ng-src="{{onboardingPages[0].image.url}}">
             </div>
             <br>
-            <p ng-click="onboardingRegister()" style="font-size: 30px; line-height: 1;">
+            <p ng-click="onboardingPages[0].titleClickFunctionCall()" style="font-size: 30px; line-height: 1;">
                 {{onboardingPages[0].title}}
             </p>
             <br>
@@ -44,14 +44,25 @@
             <div ng-repeat="button in onboardingPages[0].buttons" >
                 <div class="button-bar">
                     <button class="button"
-                            ng-hide="{{button.ngHideLogic}}"
+                            ng-hide="button.premiumFeature && !user.stripeActive"
                             style="background-color: {{onboardingPages[0].backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
                                 text-align: center"
                             id="{{button.id}}"
-                            ng-click="{{button.clickFunctionCall}}">
+                            ng-click="button.clickFunctionCall()">
+                        <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
+                    </button>
+                    <button class="button"
+                            ng-show="button.premiumFeature && !user.stripeActive"
+                            style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                            id="goToUpgradePageButton"
+                            ng-click="goToState('app.upgrade')">
                         <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
                     </button>
                 </div>

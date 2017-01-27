@@ -508,15 +508,6 @@ angular.module('starter')
                     quantimodoService.postTrackingRemindersDeferred(remindersArray)
                         .then(function(){
                             $scope.hideLoader();
-                            quantimodoService.refreshTrackingReminderNotifications().then(function(){
-                                console.debug('reminderAddCtrl.save successfully refreshed notifications');
-                            }, function (error) {
-                                console.error(error);
-                                //if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
-                            });
-
-                            // We need to do this again in case a reminder sync replaced our updated one before posting finished
-                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
                             goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         }, function(error){
                             $scope.hideLoader();
@@ -688,6 +679,11 @@ angular.module('starter')
             }
         };
 
+        var refreshUnitsIfStale = function () {
+            var ignoreExpiration = false;
+            quantimodoService.getUnits(ignoreExpiration);
+        };
+
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
             if($stateParams.variableObject){
@@ -700,7 +696,11 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             setTitle();
-            quantimodoService.getUnits().then(function () {
+            var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
+            $ionicLoading.show();
+            quantimodoService.getUnits(ignoreExpiration).then(function () {
+                $ionicLoading.hide();
+                refreshUnitsIfStale();
                 var reminderIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'variableId');
                 if ($stateParams.variableObject) {

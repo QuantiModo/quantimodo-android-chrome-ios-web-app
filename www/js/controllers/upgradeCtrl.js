@@ -7,6 +7,7 @@ angular.module('starter')
 
         $scope.planFeaturesCard = $rootScope.planFeaturesCards[1];
         $rootScope.upgradeFooterText = null;
+        $rootScope.hideNavigationMenu = true;
         quantimodoService.setupUpgradePages();
 
         $ionicLoading.hide();

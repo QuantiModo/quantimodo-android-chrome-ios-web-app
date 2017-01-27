@@ -48,7 +48,7 @@
     "xml2js": "^0.4.15"
   },
   "scripts": {
-    "postinstall": "bower install && npm rebuild node-sass && ionic config build && gulp configureApp"
+    "postinstall": "bower install && npm rebuild node-sass && ionic config build && gulp configureAppAfterNpmInstall"
   },
   "cordovaPlugins": [
     "cordova-plugin-file-opener2",

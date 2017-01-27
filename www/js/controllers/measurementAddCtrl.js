@@ -59,7 +59,7 @@ angular.module('starter')
                         Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                     }
                     console.error(error);
-                    console.error('Failed to Track by favorite, Try again!');
+                    console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                 });
             var backView = $ionicHistory.backView();
             if(backView.stateName.toLowerCase().indexOf('search') > -1){
@@ -121,7 +121,7 @@ angular.module('starter')
         };
 
         // delete measurement
-        $scope.deleteMeasurement = function(){
+        $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
             $scope.showLoader('Deleting measurement...');
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                 quantimodoService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
@@ -153,7 +153,7 @@ angular.module('starter')
                 Bugsnag.notify(message, "measurement is " + JSON.stringify($scope.state.measurement), {}, "error");
             }
         };
-        
+
         var validate = function () {
 
             var message;
@@ -285,7 +285,7 @@ angular.module('starter')
             // Measurement only - post measurement. This is for adding or editing
             quantimodoService.postMeasurementDeferred(measurementInfo, true);
             var backView = $ionicHistory.backView();
-            if(backView.stateName.toLowerCase().indexOf('search') > -1){
+            if(backView && backView.stateName.toLowerCase().indexOf('search') > -1){
                 $state.go(config.appSettings.defaultState);
                 // This often doesn't work and the user should go to the inbox more anyway
                 //$ionicHistory.goBack(-2);
@@ -353,6 +353,11 @@ angular.module('starter')
             }
         };
 
+        var refreshUnitsIfStale = function () {
+            var ignoreExpiration = false;
+            quantimodoService.getUnits(ignoreExpiration);
+        };
+
         $scope.init = function(){
             $rootScope.bloodPressure = {
                 diastolicValue: null,
@@ -367,7 +372,11 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state.title = 'Record a Measurement';
-            quantimodoService.getUnits().then(function () {
+            var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
+            $ionicLoading.show();
+            quantimodoService.getUnits(ignoreExpiration).then(function () {
+                $ionicLoading.hide();
+                refreshUnitsIfStale();
                 console.debug($state.current.name + ": " + "got units in init function");
                 if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                     console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
@@ -590,7 +599,7 @@ angular.module('starter')
         };
 
         function setupValueFieldType(abbreviatedUnitName, variableDescription) {
-            
+
             if(!abbreviatedUnitName){
                 console.error('No abbreviatedUnitName provided to setupValueFieldType');
                 return false;
@@ -755,7 +764,7 @@ angular.module('starter')
                     return true;
                 },
                 destructiveButtonClicked: function() {
-                    $scope.deleteMeasurement();
+                    $scope.deleteMeasurementFromMeasurementAddCtrl();
                     return true;
                 }
             });

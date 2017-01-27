@@ -1,16 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
-
     <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } ">
-
-        <div ng-include="'templates/fragments/plan-features-card-fragment.html'"></div>
-        <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
-            <div class="item item-divider">
-                {{signUpQuestion.question}}
-            </div>
-            <div class="item item-text-wrap">
-                {{signUpQuestion.answer}}
-            </div>
-        </div>
         <div style="background-color: {{upgradePages[0].backgroundColor}};
                 text-align: center;
                 color: white;
@@ -33,7 +22,7 @@
                     <button class="button button-light button-outline"
                             id="annualButton"
                             ng-click="yearlySubscription()">
-                        $60/year
+                        $59.99/year
                     </button>
                 </div>
             </div>
@@ -106,7 +95,7 @@
                                 color: white;
                                 text-align: center"
                             id="{{button.id}}"
-                            ng-click="{{button.clickFunctionCall}}">
+                            ng-click="button.clickFunctionCall()">
                         <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
                     </button>
                 </div>
@@ -134,13 +123,20 @@
                                 text-align: center"
                             id="learnMoreButton"
                             ng-click="hideUpgradePage()">
-                        &nbsp; LEARN MORE &nbsp;</i>
+                        &nbsp; LEARN MORE
                     </button>
                 </div>
             </div>
         </div>
 
-
+        <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
+            <div class="item item-divider">
+                {{signUpQuestion.question}}
+            </div>
+            <div class="item item-text-wrap">
+                {{signUpQuestion.answer}}
+            </div>
+        </div>
     </ion-content>
 
 </ion-view>

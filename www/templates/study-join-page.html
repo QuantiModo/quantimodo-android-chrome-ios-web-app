@@ -1,0 +1,14 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Join Study">
+    <div style="background-color: {{studyJoinPage.backgroundColor}};
+        text-align: center;
+        color: white;
+        padding: 40px;
+        height: 100%" >
+        <div style="position: relative;
+         top: 50%;
+         transform: translateY(-50%);">
+            <div ng-if="studyJoinPage.loading" ng-include="'templates/fragments/study-join-loading-fragment.html'"></div>
+            <div ng-if="!studyJoinPage.loading" ng-include="'templates/fragments/study-join-thanks-fragment.html'"></div>
+        </div>
+    </div>
+</ion-view>

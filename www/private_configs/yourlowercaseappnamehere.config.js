@@ -1,4 +1,6 @@
 private_keys = {
+    "username": null,
+    "password": null,
     "bugsnag_key" : "xyz",
     "client_ids": {
         "iOS": "your_quantimodo_client_id_here",

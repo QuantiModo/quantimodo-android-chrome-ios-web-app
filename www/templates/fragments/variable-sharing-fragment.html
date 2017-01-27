@@ -3,10 +3,10 @@
     <ion-toggle ng-model="variableObject.shareUserMeasurements"
                 ng-change="toggleVariableShare(variableObject)">
         <i ng-if="variableObject.shareUserMeasurements === false" class="icon ion-locked">
-            &nbsp {{variableObject.name}} is Private
+            &nbsp Variable is Private
         </i>
         <i ng-if="variableObject.shareUserMeasurements === true" class="icon ion-unlocked">
-            &nbsp {{variableObject.name}} is Public
+            &nbsp Variable is Public
         </i>
     </ion-toggle>
     <label ng-click="copyChartsUrlToClipboard()" class="item item-content"

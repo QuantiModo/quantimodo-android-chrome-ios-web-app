@@ -21,9 +21,10 @@ angular.module('starter',
         'jtt_wikipedia',
         'angular-clipboard',
         'angular-google-analytics',
-        'angular-google-adsense',
+        //'angular-google-adsense',
         'ngMaterialDatePicker',
-        'ngMaterial'
+        'ngMaterial',
+        'angular-cache'
     ]
 )
 
@@ -270,10 +271,10 @@ angular.module('starter',
                 };
 
                 // update full data
-                if(localStorage[keyIdentifier+'allMeasurements']){
-                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
+                if(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']){
+                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']);
                     allMeasurements.push(allMeasurementsObject);
-                    localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
+                    localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
                 }
 
                 //update measurementsQueue
@@ -498,6 +499,19 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.loginOld', {
+            url: "/login-old",
+            params: {
+                fromState : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/login-page-old.html",
+                    controller: 'LoginCtrl'
+              }
+            }
+        })
         .state('app.login', {
             url: "/login",
             params: {
@@ -508,7 +522,7 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/login-page.html",
                     controller: 'LoginCtrl'
-              }
+                }
             }
         })
         .state('app.intro', {
@@ -1232,6 +1246,19 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.studyJoin', {
+            cache: false,
+            url: "/study-join",
+            params: {
+                correlationObject: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/study-join-page.html",
+                    controller: 'StudyJoinCtrl'
+                }
+            }
+        })
         .state('app.settings', {
             url: "/settings",
             views: {
@@ -1546,7 +1573,7 @@ angular.module('starter',
             params: { },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/upgrade-page.html",
+                    templateUrl: "templates/upgrade-page-cards.html",
                     controller: 'UpgradeCtrl'
                 }
             }

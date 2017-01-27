@@ -55,9 +55,9 @@ angular.module('starter')
 			var fallbackUrl = quantimodoService.getQuantiModoUrl("api/v2/account/applications", true);
 			var emailAddress = null;
 			if($rootScope.isMobile){
-				$scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+				quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 			} else {
-				$scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+				quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
 			}
 		};
 
@@ -66,7 +66,7 @@ angular.module('starter')
 			var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
 				"Additional Information: " + '\r\n';
 			//template =  template + $rootScope.appSettings.appDisplayName + ' ' + $rootScope.appVersion + '\r\n';
-			template = template + "quantimodoService Client Id: " + quantimodoService.getClientId();
+			template = template + "QuantiModo Client ID: " + quantimodoService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
@@ -85,36 +85,11 @@ angular.module('starter')
 			var emailAddress = 'mike@quantimo.do';
 			var fallbackUrl = 'http://help.quantimo.do';
 			if($rootScope.isMobile){
-				$scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+				quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 			} else {
-				$scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+				quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
 			}
 		};
-
-		$scope.init = function() {
-			console.debug($state.current.name + ' initializing...');
-			$rootScope.hideNavigationMenu = false;
-			$rootScope.stateParams = $stateParams;
-			$rootScope.getAllUrlParams();
-			if($rootScope.urlParameters.userEmail){
-				$scope.state.loading = true;
-				$ionicLoading.show({
-					template: '<ion-spinner></ion-spinner>'
-				});
-				quantimodoService.refreshUserEmailPreferences({userEmail: $rootScope.urlParameters.userEmail}).then(function(user){
-					$rootScope.user = user;
-					$scope.state.loading = false;
-					$ionicLoading.hide();
-				}, function(error){
-					$scope.state.loading = false;
-					$ionicLoading.hide();
-					console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
-				});
-			}
-			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			quantimodoService.getLocationVariablesFromLocalStorage();
-	    };
 
 		$scope.contactUs = function() {
 			$scope.hideLoader();
@@ -173,7 +148,7 @@ angular.module('starter')
 
 			var template = "Please provide the following information when submitting a bug report: <br><br>";
 			template =  template + $rootScope.appSettings.appDisplayName + ' ' + $rootScope.appVersion + "<br><br>";
-			template = template + "quantimodoService Client Id: " + quantimodoService.getClientId();
+			template = template + "QuantiModo Client Id: " + quantimodoService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
@@ -505,11 +480,39 @@ angular.module('starter')
 		};
 
 		// when view is changed
-		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-			$scope.init();
-            if($rootScope.user){
-                $rootScope.trackLocation = $rootScope.user.trackLocation;
+		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            $rootScope.hideNavigationMenu = false;
+            $rootScope.stateParams = $stateParams;
+            $rootScope.getAllUrlParams();
+            if($rootScope.urlParameters.userEmail){
+                $scope.state.loading = true;
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
+                quantimodoService.refreshUserEmailPreferences({userEmail: $rootScope.urlParameters.userEmail}).then(function(user){
+                    $rootScope.user = user;
+                    $scope.state.loading = false;
+                    $ionicLoading.hide();
+                }, function(error){
+                    $scope.state.loading = false;
+                    $ionicLoading.hide();
+                    console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
+                });
+            } else {
+                if($rootScope.user){
+                    $rootScope.trackLocation = $rootScope.user.trackLocation;
+                }
+
+                if(!$rootScope.user || typeof $rootScope.user.trackLocation === "undefined"){
+                    quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
+                    console.debug("set afterLoginGoTo to " + window.location.href);
+                    $rootScope.sendToLogin();
+                }
             }
+            quantimodoService.getLocationVariablesFromLocalStorage();
+
 		});
 
 	});

@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, quantimodoService,
-                                           $rootScope, $ionicActionSheet) {
+                                           $rootScope, $ionicActionSheet, $mdDialog) {
 
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
@@ -287,14 +287,12 @@ angular.module('starter')
                 $rootScope.variableName = $stateParams.causeVariableName;
 
                 $scope.outcomeList = true;
-                $scope.searchFilterBoxPlaceholderText = "Filter by specific outcome";
             }
 
             if ($stateParams.effectVariableName) {
                 $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
                 $rootScope.variableName = $stateParams.effectVariableName;
                 $scope.predictorList = true;
-                $scope.searchFilterBoxPlaceholderText = "Filter by specific predictor";
             }
 
             if($stateParams.effectVariableName){
@@ -341,5 +339,117 @@ angular.module('starter')
             $scope.hideLoader();
             $scope.init();
         });
+
+        $rootScope.openCorrelationSearchDialog = function($event) {
+            $mdDialog.show({
+                controller: CorrelationSearchCtrl,
+                controllerAs: 'ctrl',
+                templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: $event,
+                clickOutsideToClose:true
+            });
+        };
+
+        var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter,
+                                          quantimodoService, $q, $log) {
+
+            var self = this;
+
+            self.simulateQuery = true;
+            self.isDisabled    = false;
+
+            self.correlations        = loadAll();
+            self.querySearch   = querySearch;
+            self.selectedItemChange = selectedItemChange;
+            self.searchTextChange   = searchTextChange;
+
+            if ($stateParams.causeVariableName){
+                self.variableName = $stateParams.causeVariableName;
+                self.title = "Select a specific outcome";
+                self.helpText = "Search for an outcome that you think might be influenced by " +
+                    self.variableName + ".";
+                self.placeholder = "Search for an outcome...";
+            }
+
+            if ($stateParams.effectVariableName) {
+                self.variableName = $stateParams.effectVariableName;
+                self.title = "Select a specific predictor";
+                self.helpText = "Search for a factor that you think might influence " +
+                    self.variableName + ".";
+                self.placeholder = "Search for a predictor...";
+            }
+
+            self.helpText = self.helpText + "  Then you can see a study exploring the relationship between those variables.";
+
+            self.cancel = function($event) {
+                $mdDialog.cancel();
+            };
+
+            self.finish = function($event) {
+                $state.go('app.study', {correlationObject: self.correlationObject});
+                $mdDialog.hide();
+            };
+
+            function querySearch (query) {
+
+                self.notFoundText = "I don't have enough data to determine the relationship between " + query + " and " +
+                    self.variableName + ".  I generally need about a month of overlapping data for each variable first.  " +
+                    "Create some reminders and let's make some discoveries!";
+                var deferred = $q.defer();
+                var requestParams = {};
+                if($stateParams.causeVariableName){
+                    requestParams.causeVariableName = $stateParams.causeVariableName;
+                    requestParams.effectVariableName = "**" + query + "**";
+                }
+
+                if($stateParams.effectVariableName){
+                    requestParams.effectVariableName = $stateParams.effectVariableName;
+                    requestParams.causeVariableName = "**" + query + "**";
+                }
+
+                quantimodoService.getUserCorrelationsDeferred(requestParams)
+                    .then(function (results) {
+                        deferred.resolve(loadAll(results));
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                return deferred.promise;
+            }
+
+            function searchTextChange(text) {
+                $log.debug('Text changed to ' + text);
+            }
+
+            function selectedItemChange(item) {
+                self.selectedItem = item;
+                self.correlationObject = item.correlationObject;
+                self.buttonText = "Go to Study";
+                $log.info('Item changed to ' + JSON.stringify(item));
+            }
+
+            function loadAll(correlations) {
+                if(!correlations){
+                    return;
+                }
+                return correlations.map( function (correlationObject) {
+                    if($stateParams.effectVariableName){
+                        return {
+                            value: correlationObject.causeVariableName.toLowerCase(),
+                            display: correlationObject.causeVariableName,
+                            correlationObject: correlationObject
+                        };
+                    }
+                    if($stateParams.causeVariableName){
+                        return {
+                            value: correlationObject.effectVariableName.toLowerCase(),
+                            display: correlationObject.effectVariableName,
+                            correlationObject: correlationObject
+                        };
+                    }
+
+                });
+            }
+        };
 
 	});
