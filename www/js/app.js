@@ -23,7 +23,8 @@ angular.module('starter',
         'angular-google-analytics',
         //'angular-google-adsense',
         'ngMaterialDatePicker',
-        'ngMaterial'
+        'ngMaterial',
+        'angular-cache'
     ]
 )
 
