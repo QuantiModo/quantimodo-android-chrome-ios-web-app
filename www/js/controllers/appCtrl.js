@@ -852,47 +852,6 @@ angular.module('starter')
             }
         };
 
-        function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
-
-            if ($state.current.name === "app.welcome") {
-                $rootScope.hideNavigationMenu = false;
-                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
-                $state.go(config.appSettings.defaultState);
-            }
-
-            if ($state.current.name === "app.login" && $rootScope.user) {
-                $rootScope.hideNavigationMenu = false;
-                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
-                $state.go(config.appSettings.defaultState);
-            }
-
-            if (config.appSettings.allowOffline) {
-                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-            }
-
-            // don't animate, clear back history
-            $ionicHistory.nextViewOptions({
-                disableAnimate: false,
-                disableBack: true
-            });
-
-            // redraw everything according to updated appstate
-            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-        }
-
-        $scope.goToDefaultStateIfWelcomed = function () {
-            console.debug('appCtrl: user has seen the welcome screen before...');
-            quantimodoService.getLocalStorageItemAsStringWithCallback('isWelcomed', function (isWelcomed) {
-                if (isWelcomed === true || isWelcomed === "true") {
-                    $rootScope.isWelcomed = true;
-                    console.debug('goToDefaultStateIfWelcomed: Going to default state...');
-                    goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
-                }
-            });
-        };
-
         $scope.editTag = function(tagVariable){
             $state.go('app.tagAdd', {
                 tagConversionFactor: tagVariable.tagConversionFactor,

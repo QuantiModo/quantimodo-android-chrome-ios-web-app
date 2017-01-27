@@ -335,39 +335,6 @@ angular.module('starter')
             );
         };
 
-        quantimodoService.getMeasurementsLooping = function(params){
-            var defer = $q.defer();
-            var response_array = [];
-            var errorCallback = function(){
-                defer.resolve(response_array);
-            };
-
-            var successCallback =  function(response){
-                // Get a maximum of 2000 measurements to avoid exceeding localstorage quota
-                if (response.length === 0 || typeof response === "string" || params.offset >= 2000) {
-                    defer.resolve(response_array);
-                } else {
-                    quantimodoService.getLocalStorageItemAsStringWithCallback('user', function(user){
-                        if(!user){
-                            defer.reject('No user in local storage!');
-                        } else {
-                            response_array = response_array.concat(response);
-                            params.offset+=200;
-                            params.limit = 200;
-                            defer.notify(response);
-                            getMeasurements(params,successCallback,errorCallback);
-                        }
-                    });
-
-
-                }
-            };
-
-            getMeasurements(params,successCallback,errorCallback);
-
-            return defer.promise;
-        };
-
         quantimodoService.getV1Measurements = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/measurements',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
