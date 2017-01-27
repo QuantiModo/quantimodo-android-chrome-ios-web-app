@@ -84,32 +84,38 @@
 
                 </label>
                 <div class="row labeled-control">
-                    <div class="col col-l">
+                    <div class="col col-1">
                         <span>
                             Date
                         </span>
                     </div>
                     <div class="col" style="padding-top: 15px;">
-                        <button class="button button-block measure-date up-top"
-                                style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
-                                ng-click="openMeasurementDatePicker()">
-                            {{ selectedDate | date:'dd - MMMM - yyyy' }}
-                        </button>
+                        <input time="false" date="true" mdc-datetime-picker type="text" id="date2342"
+                               placeholder="Date"
+                               style="cursor: pointer;  background-color: white;"
+                               format="dddd, MMM Do YYYY"
+                               ng-model="state.selectedDate">
                     </div>
                 </div>
-
                 <div class="row labeled-control">
                     <div class="col col-l">
                         <span>
                             Time
                         </span>
                     </div>
-                    <div class="col" style="padding-top: 11px;">
-                        <button class="button button-block up-top"
-                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                                ng-click="openMeasurementStartTimePicker()">
-                            {{selectedDate.getTime()/1000 | fromUnixTimestampToLocalTimeOfDay}}
-                        </button>
+                    <div class="col" style="padding-top: 15px;">
+                        <input style="cursor: pointer; background-color: white"
+                               mdc-datetime-picker=""
+                               date="false"
+                               time="true"
+                               type="text"
+                               id="materialFirstReminderStartTime"
+                               short-time="true"
+                               placeholder="Time"
+                               min-date="minDate"
+                               format="h:mm A"
+                               ng-model="state.selectedDate"
+                               class=" md-input">
                     </div>
                 </div>
                 <div class="row labeled-control">
