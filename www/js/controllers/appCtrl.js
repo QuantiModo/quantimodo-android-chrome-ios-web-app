@@ -1206,71 +1206,6 @@ angular.module('starter')
             }
         };
 
-        $scope.sendWithMailTo = function(subjectLine, emailBody, emailAddress, fallbackUrl){
-            var emailUrl = 'mailto:';
-            if(emailAddress){
-                emailUrl = emailUrl + emailAddress;
-            }
-            emailUrl = emailUrl + '?subject=' + subjectLine + '&body=' + emailBody;
-            if($rootScope.isChromeExtension){
-                console.debug('isChromeExtension so sending to website');
-                var newTab = window.open(fallbackUrl,'_blank');
-                if(!newTab){
-                    alert("Please unblock popups and refresh to access the Data Sharing page.");
-                }
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-
-            } else {
-                console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-                window.location.href = emailUrl;
-            }
-        };
-
-        $scope.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
-            if(!cordova || !cordova.plugins.email){
-                quantimodoService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
-                    ' Using $scope.sendWithMailTo instead.');
-                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
-                return;
-            }
-
-            if(!emailAddress){
-                emailAddress = null;
-            }
-
-            document.addEventListener('deviceready', function () {
-                console.debug('deviceready');
-                cordova.plugins.email.isAvailable(
-                    function (isAvailable) {
-                        if(isAvailable){
-                            if(window.plugins && window.plugins.emailComposer) {
-                                console.debug('Generating email with cordova-plugin-email-composer');
-                                window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-                                        console.debug("Response -> " + result);
-                                    },
-                                    subjectLine, // Subject
-                                    emailBody,                      // Body
-                                    emailAddress,    // To
-                                    'info@quantimo.do',                    // CC
-                                    null,                    // BCC
-                                    true,                   // isHTML
-                                    null,                    // Attachments
-                                    null);                   // Attachment Data
-                            } else {
-                                console.error('window.plugins.emailComposer not available!');
-                                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
-                            }
-                        } else {
-                            console.error('Email has not been configured for this device!');
-                            $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
-                        }
-                    }
-                );
-
-            }, false);
-        };
-
         $scope.onTextClick = function ($event) {
             console.debug("Auto selecting text so the user doesn't have to press backspace...");
             $event.target.select();
@@ -1700,9 +1635,9 @@ angular.module('starter')
             var fallbackUrl = null;
             var emailAddress = $rootScope.user.email;
             if($rootScope.isMobile){
-                $scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+                quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
             } else {
-                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+                quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
             }
         };
 

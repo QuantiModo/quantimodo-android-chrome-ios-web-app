@@ -55,9 +55,9 @@ angular.module('starter')
 			var fallbackUrl = quantimodoService.getQuantiModoUrl("api/v2/account/applications", true);
 			var emailAddress = null;
 			if($rootScope.isMobile){
-				$scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+				quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 			} else {
-				$scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+				quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
 			}
 		};
 
@@ -85,9 +85,9 @@ angular.module('starter')
 			var emailAddress = 'mike@quantimo.do';
 			var fallbackUrl = 'http://help.quantimo.do';
 			if($rootScope.isMobile){
-				$scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+				quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 			} else {
-				$scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+				quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
 			}
 		};
 

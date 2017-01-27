@@ -8298,5 +8298,70 @@ angular.module('starter')
             }
         };
 
+        quantimodoService.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
+            if(!cordova || !cordova.plugins.email){
+                quantimodoService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
+                    ' Using quantimodoService.sendWithMailTo instead.');
+                quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+                return;
+            }
+
+            if(!emailAddress){
+                emailAddress = null;
+            }
+
+            document.addEventListener('deviceready', function () {
+                console.debug('deviceready');
+                cordova.plugins.email.isAvailable(
+                    function (isAvailable) {
+                        if(isAvailable){
+                            if(window.plugins && window.plugins.emailComposer) {
+                                console.debug('Generating email with cordova-plugin-email-composer');
+                                window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                                        console.debug("Response -> " + result);
+                                    },
+                                    subjectLine, // Subject
+                                    emailBody,                      // Body
+                                    emailAddress,    // To
+                                    'info@quantimo.do',                    // CC
+                                    null,                    // BCC
+                                    true,                   // isHTML
+                                    null,                    // Attachments
+                                    null);                   // Attachment Data
+                            } else {
+                                console.error('window.plugins.emailComposer not available!');
+                                quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+                            }
+                        } else {
+                            console.error('Email has not been configured for this device!');
+                            quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+                        }
+                    }
+                );
+
+            }, false);
+        };
+
+        quantimodoService.sendWithMailTo = function(subjectLine, emailBody, emailAddress, fallbackUrl){
+            var emailUrl = 'mailto:';
+            if(emailAddress){
+                emailUrl = emailUrl + emailAddress;
+            }
+            emailUrl = emailUrl + '?subject=' + subjectLine + '&body=' + emailBody;
+            if($rootScope.isChromeExtension){
+                console.debug('isChromeExtension so sending to website');
+                var newTab = window.open(fallbackUrl,'_blank');
+                if(!newTab){
+                    alert("Please unblock popups and refresh to access the Data Sharing page.");
+                }
+                $rootScope.hideNavigationMenu = false;
+                $state.go(config.appSettings.defaultState);
+
+            } else {
+                console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
+                window.location.href = emailUrl;
+            }
+        };
+
         return quantimodoService;
     });
