@@ -127,6 +127,10 @@ angular.module('starter')
         // GET method with the added token
         quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler, options){
 
+            if(!options){
+                var options = {};
+            }
+
             if(!canWeMakeRequestYet('GET', baseURL, options)){
                 return;
             }
