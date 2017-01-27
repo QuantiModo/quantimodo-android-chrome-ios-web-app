@@ -174,7 +174,7 @@ angular.module('starter')
             });
         };
 
-        $scope.showUnshareStudyConfirmation = function(correlationObject) {
+        var showUnshareStudyConfirmation = function(correlationObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
                 template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
@@ -206,11 +206,11 @@ angular.module('starter')
             if(correlationObject.shareUserMeasurements){
                 showShareStudyConfirmation(correlationObject);
             } else {
-                $scope.showUnshareStudyConfirmation(correlationObject);
+                showUnshareStudyConfirmation(correlationObject);
             }
         };
 
-        $scope.showShareVariableConfirmation = function(variableObject, url) {
+        var showShareVariableConfirmation = function(variableObject, url) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',
                 template: 'Are you absolutely sure you want to make your ' + variableObject.name +
@@ -242,7 +242,7 @@ angular.module('starter')
             });
         };
 
-        $scope.showUnshareVariableConfirmation = function(variableObject) {
+        var showUnshareVariableConfirmation = function(variableObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',
                 template: 'Are you absolutely sure you want to make your ' + variableObject.name +
@@ -271,9 +271,9 @@ angular.module('starter')
 
         $scope.toggleVariableShare = function (variableObject) {
             if(variableObject.shareUserMeasurements){
-                $scope.showShareVariableConfirmation(variableObject);
+                showShareVariableConfirmation(variableObject);
             } else {
-                $scope.showUnshareVariableConfirmation(variableObject);
+                showUnshareVariableConfirmation(variableObject);
             }
         };
 
