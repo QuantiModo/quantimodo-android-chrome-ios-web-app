@@ -55,7 +55,11 @@ angular.module('starter')
                         {groupingHash: groupingHash},
                         "error");
                 }
-                if (!$rootScope.offlineConnectionErrorShowing && !options.doNotShowOfflineError) {
+                var doNotShowOfflineError = false;
+                if(options && options.doNotShowOfflineError){
+                    doNotShowOfflineError = true;
+                }
+                if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
                     console.error("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
                     $rootScope.offlineConnectionErrorShowing = true;
                     if($rootScope.isIOS){
@@ -347,7 +351,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
             }
-            
+
             if(refresh){
                 //deleteCache(getCurrentFunctionName());
             }
@@ -603,7 +607,7 @@ angular.module('starter')
         };
 
         quantimodoService.deleteUserVariableMeasurements = function(variableId, successHandler, errorHandler) {
-            quantimodoService.deleteElementOfLocalStorageItemByProperty('userVariables', 'variableId', variableId);
+            quantimodoService.deleteElementsOfLocalStorageItemByProperty('userVariables', 'variableId', variableId);
             quantimodoService.deleteElementOfLocalStorageItemById('commonVariables', variableId);
             quantimodoService.post('api/v1/userVariables/delete',
             [
@@ -2329,7 +2333,7 @@ angular.module('starter')
             quantimodoService.deleteElementOfLocalStorageItemById('primaryOutcomeVariableMeasurements', measurement.id).then(function(){
                 deferred.resolve();
             });
-            quantimodoService.deleteElementOfLocalStorageItemByProperty('measurementQueue', 'startTimeEpoch',
+            quantimodoService.deleteElementsOfLocalStorageItemByProperty('measurementQueue', 'startTimeEpoch',
                 measurement.startTimeEpoch).then(function (){
                 deferred.resolve();
             });
@@ -3554,24 +3558,15 @@ angular.module('starter')
 
         quantimodoService.deleteTrackingReminderDeferred = function(reminderId){
             var deferred = $q.defer();
-
-            if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
-                var message = 'Got deletion request before last reminder refresh completed';
-                console.debug(message);
-                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
-                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
-                $rootScope.syncingReminders = false;
-            }
-
             quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminderId);
-
+            quantimodoService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications',
+                'trackingReminderId', reminderId);
             quantimodoService.deleteTrackingReminder(reminderId, function(response){
                 if(response.success) {
-                    //update alarms and local notifications
-                    console.debug("remindersService:  Finished deleteReminder so now refreshTrackingRemindersAndScheduleAlarms");
-                    quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
-                    // No need to do this for favorites so we do it at a higher level
-                    //quantimodoService.refreshTrackingReminderNotifications();
+                    // Delete again in case we refreshed before deletion completed
+                    quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminderId);
+                    quantimodoService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications',
+                        'trackingReminderId', reminderId);
                     deferred.resolve();
                 }
                 else {
@@ -6880,7 +6875,7 @@ angular.module('starter')
             }
         };
 
-        quantimodoService.deleteElementOfLocalStorageItemByProperty = function(localStorageItemName, propertyName, propertyValue){
+        quantimodoService.deleteElementsOfLocalStorageItemByProperty = function(localStorageItemName, propertyName, propertyValue){
             var deferred = $q.defer();
             var elementsToKeep = [];
             var localStorageItemArray = JSON.parse(quantimodoService.getLocalStorageItemAsString(localStorageItemName));

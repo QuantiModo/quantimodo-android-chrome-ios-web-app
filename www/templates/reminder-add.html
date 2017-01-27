@@ -74,7 +74,7 @@
                     <button id="oldFirstReminderStartTime"
                             class="button button-block up-top"
                             style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                            ng-click="openReminderStartTimePicker('first')">
+                            ng-click="oldOpenReminderStartTimePicker('first')">
                         {{state.firstReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
                     </button>
                 </label>
@@ -102,7 +102,7 @@
                     <button id="oldSecondReminderStartTime"
                             class="button button-block up-top"
                             style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                            ng-click="openReminderStartTimePicker('second')">
+                            ng-click="oldOpenReminderStartTimePicker('second')">
                         {{state.secondReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
                     </button>
                 </label>
@@ -130,12 +130,16 @@
                     <button id="oldThirdReminderStartTime"
                             class="button button-block up-top"
                             style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                            ng-click="openReminderStartTimePicker('third')">
+                            ng-click="oldOpenReminderStartTimePicker('third')">
                         {{state.thirdReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
                     </button>
                 </label>
-                <label ng-hide="state.hideAdditionalReminderTimeButton" ng-click="showAdditionalReminderTime()"
+                <label id="oldAdditionalTimeButton" ng-hide="true" ng-click="oldShowAdditionalReminderTime()"
                         class="item icon-left ion-clock">
+                    Add additional time
+                </label>
+                <label id="additionalTimeButton" ng-hide="state.hideAdditionalReminderTimeButton" ng-click="showAdditionalReminderTime()"
+                       class="item icon-left ion-clock">
                     Add additional time
                 </label>
             </div>
@@ -146,7 +150,7 @@
                     </div>
                     <button class="button button-block up-top"
                             style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                            ng-click="openReminderStartTimePicker()">
+                            ng-click="oldOpenReminderStartTimePicker()">
                         {{state.reminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
                     </button>
                 </label>
