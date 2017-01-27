@@ -636,6 +636,7 @@ angular.module('starter')
                 measurementObject.prevStartTimeEpoch = measurementObject.startTimeEpoch;
             }
 
+            $scope.state.title = "Edit Measurement";
             $scope.state.selectedDate = moment(measurementObject.startTimeEpoch * 1000);
             $scope.state.measurement = measurementObject;
             $scope.state.measurementIsSetup = true;
