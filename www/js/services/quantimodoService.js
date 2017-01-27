@@ -8242,7 +8242,8 @@ angular.module('starter')
                 title: "Location and Weather Tracking",
                 textContent: 'By automatically recording your location we can try to gain insights into the effects ' +
                     ' of time spent at the gym, certain restaurants, or work.  Another benefit is that it keeps the ' +
-                    ' app running the background so it opens instantly instead of taking a few seconds to load.'
+                    ' app running the background so it opens instantly instead of taking a few seconds to load.  ' +
+                    'You can view your location history by going to Menu -> History -> Locations.'
             }
         };
 
