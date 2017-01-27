@@ -3133,6 +3133,7 @@ angular.module('starter')
         quantimodoService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
             var deferred = $q.defer();
             var trackingReminderNotificationsArray = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
+            quantimodoService.deleteItemFromLocalStorage('notificationsSyncQueue');
             if(!trackingReminderNotificationsArray){
                 if(successHandler){
                     successHandler();
@@ -3141,15 +3142,18 @@ angular.module('starter')
                 return deferred.promise;
             }
             quantimodoService.postTrackingReminderNotificationsToApi(trackingReminderNotificationsArray, function(response){
-                quantimodoService.deleteItemFromLocalStorage('notificationsSyncQueue');
-                //if($rootScope.showUndoButton){
-                    //$rootScope.showUndoButton = false;
-                //}
                 if(successHandler){
                     successHandler();
                 }
                 deferred.resolve();
             }, function(error){
+                var newNotificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
+                if(newNotificationsSyncQueue){
+                    trackingReminderNotificationsArray =
+                        trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
+                }
+                quantimodoService.setLocalStorageItem('notificationsSyncQueue',
+                    JSON.stringify(trackingReminderNotificationsArray));
                 if(errorHandler){
                     errorHandler();
                 }
