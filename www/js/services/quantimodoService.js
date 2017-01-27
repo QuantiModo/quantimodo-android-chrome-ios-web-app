@@ -1,7 +1,7 @@
 angular.module('starter')
     // quantimodoService API implementation
     .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform,
-                                           $cordovaGeolocation) {
+                                           $cordovaGeolocation, CacheFactory) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -22,7 +22,7 @@ angular.module('starter')
             }
         };
 
-        quantimodoService.errorHandler = function(data, status, headers, config, request, doNotSendToLogin, doNotShowOfflineError){
+        quantimodoService.errorHandler = function(data, status, headers, config, request, options){
 
             if(status === 302){
                 console.warn('quantimodoService.errorHandler: Got 302 response from ' + JSON.stringify(request));
@@ -30,7 +30,7 @@ angular.module('starter')
             }
 
             if(status === 401){
-                if(doNotSendToLogin){
+                if(options.doNotSendToLogin){
                     return;
                 } else {
                     console.warn('quantimodoService.errorHandler: Sending to login because we got 401 with request ' +
@@ -55,7 +55,7 @@ angular.module('starter')
                         {groupingHash: groupingHash},
                         "error");
                 }
-                if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
+                if (!$rootScope.offlineConnectionErrorShowing && !options.doNotShowOfflineError) {
                     console.error("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
                     $rootScope.offlineConnectionErrorShowing = true;
                     if($rootScope.isIOS){
@@ -106,8 +106,8 @@ angular.module('starter')
             console.error("Request error : " + error);
         };
 
-        var canWeMakeRequestYet = function(type, baseURL, minimumSecondsBetweenRequests){
-            if(!minimumSecondsBetweenRequests){
+        var canWeMakeRequestYet = function(type, baseURL, options){
+            if(!options || !options.minimumSecondsBetweenRequests){
                return true;
             }
             var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
@@ -115,9 +115,9 @@ angular.module('starter')
                 $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
                 return true;
             }
-            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
                 console.debug('quantimodoService.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
-                    "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
+                    "we made the same request within the last " + options.minimumSecondsBetweenRequests + ' seconds');
                 return false;
             }
             $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
@@ -125,10 +125,13 @@ angular.module('starter')
         };
 
         // GET method with the added token
-        quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
-                                         minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
+        quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler, options){
 
-            if(!canWeMakeRequestYet('GET', baseURL, minimumSecondsBetweenRequests)){
+            if(!options){
+                options = {};
+            }
+
+            if(!canWeMakeRequestYet('GET', baseURL, options)){
                 return;
             }
 
@@ -175,8 +178,12 @@ angular.module('starter')
                     responseType: 'json',
                     headers: {
                         'Content-Type': "application/json"
-                    }
+                    },
                 };
+
+                if(options.cache){
+                    request.cache = options.cache;
+                }
 
                 if (accessToken) {
                     request.headers = {
@@ -199,26 +206,25 @@ angular.module('starter')
                                     "error");
                             }
                         } else if (data.error) {
-                            quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin,
-                                doNotShowOfflineError);
+                            quantimodoService.errorHandler(data, status, headers, config, request, options);
                             errorHandler(data);
                         } else {
+
                             quantimodoService.successHandler(data, baseURL, status);
                             successHandler(data);
                         }
                     })
                     .error(function (data, status, headers, config) {
-                        quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin);
+                        quantimodoService.errorHandler(data, status, headers, config, request, options);
                         errorHandler(data);
                     }, onRequestFailed);
             });
         };
 
         // POST method with the added token
-        quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler,
-                                   minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError){
+        quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler, options){
 
-            if(!canWeMakeRequestYet('POST', baseURL, minimumSecondsBetweenRequests)){
+            if(!canWeMakeRequestYet('POST', baseURL, options)){
                 return;
             }
 
@@ -281,23 +287,51 @@ angular.module('starter')
                 */
 
                 $http(request).success(successHandler).error(function(data, status, headers, config){
-                    quantimodoService.errorHandler(data, status, headers, config, request, doNotSendToLogin,
-                        doNotShowOfflineError);
+                    quantimodoService.errorHandler(data, status, headers, config, request, options);
                     errorHandler(data);
                 });
 
             }, errorHandler);
         };
 
+        function getCurrentFunctionName() {
+            var myName = arguments.callee.toString();
+            myName = myName.substr('function '.length);
+            myName = myName.substr(0, myName.indexOf('('));
+
+            alert(myName);
+        }
+
+        function getCache(cacheName, minutesToLive){
+            var cacheOptions = {
+                deleteOnExpire: 'aggressive',
+                recycleFreq: 60000,
+                maxAge: minutesToLive * 60 * 1000
+            };
+            if (!CacheFactory.get(cacheName)) {
+                CacheFactory.createCache(cacheName, cacheOptions);
+            }
+            return CacheFactory.get(cacheName);
+        }
+
+        function deleteCache(cacheName) {
+            if (!CacheFactory.get(cacheName)) {
+                return;
+            }
+            var dataCache = CacheFactory.get(cacheName);
+            dataCache.destroy();
+        }
+
         // get Measurements for user
         var getMeasurements = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0;
+            var options = {};
+            //options.cache = getCache(getCurrentFunctionName(), 15);
             quantimodoService.get('api/measurements',
                 ['variableName', 'sort', 'startTimeEpoch', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
                 params,
                 successHandler,
                 errorHandler,
-                minimumSecondsBetweenRequests
+                options
             );
         };
 
@@ -335,24 +369,20 @@ angular.module('starter')
         };
 
         quantimodoService.getV1Measurements = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0;
             quantimodoService.get('api/v1/measurements',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
                 successHandler,
-                errorHandler,
-                minimumSecondsBetweenRequests
+                errorHandler
             );
         };
 
         quantimodoService.getMeasurementsDailyFromApi = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0;
             quantimodoService.get('api/v1/measurements/daily',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
                 successHandler,
-                errorHandler,
-                minimumSecondsBetweenRequests
+                errorHandler
             );
         };
 
@@ -430,10 +460,13 @@ angular.module('starter')
                 ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
                 successHandler,
-                errorHandler);
+                errorHandler,
+                options);
         };
 
         quantimodoService.getUserCorrelationsFromApi = function (params, successHandler, errorHandler) {
+            var options = {};
+            //options.cache = getCache(getCurrentFunctionName(), 15);
             quantimodoService.get('api/v1/correlations',
                 ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
@@ -467,22 +500,30 @@ angular.module('starter')
         };
 
         quantimodoService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
+            var options = {};
+            //options.cache = getCache(getCurrentFunctionName(), 15);
             quantimodoService.get('api/v1/variables/search/' + encodeURIComponent(query),
                 ['limit','includePublic', 'manualTracking'],
                 params,
                 successHandler,
-                errorHandler);
+                errorHandler,
+                options);
         };
 
         quantimodoService.getVariablesByNameFromApi = function(variableName, params, successHandler, errorHandler){
+            var options = {};
+            //options.cache = getCache(getCurrentFunctionName(), 15);
             quantimodoService.get('api/v1/variables/' + encodeURIComponent(variableName),
                 [],
                 params,
                 successHandler,
-                errorHandler);
+                errorHandler,
+                options);
         };
 
         quantimodoService.getPublicVariablesByNameFromApi = function(variableName, successHandler, errorHandler){
+            var options = {};
+            //options.cache = getCache(getCurrentFunctionName(), 15);
             quantimodoService.get('api/v1/public/variables',
                 ['name'],
                 {name: variableName},
@@ -500,6 +541,8 @@ angular.module('starter')
 
         quantimodoService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
 
+            var options = {};
+            //options.cache = getCache(getCurrentFunctionName(), 15);
             if(!params){
                 params = {};
             }
@@ -641,15 +684,15 @@ angular.module('starter')
             if($rootScope.user){
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
             }
-            var minimumSecondsBetweenRequests = 10;
-            var doNotSendToLogin = true;
+            var options = {};
+            options.minimumSecondsBetweenRequests = 10;
+            options.doNotSendToLogin = true;
             quantimodoService.get('api/user/me',
                 [],
                 {},
                 successHandler,
                 errorHandler,
-                minimumSecondsBetweenRequests,
-                doNotSendToLogin
+                options
             );
         };
 
@@ -657,15 +700,15 @@ angular.module('starter')
             if($rootScope.user){
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
             }
-            var minimumSecondsBetweenRequests = 10;
-            var doNotSendToLogin = true;
+            var options = {};
+            options.minimumSecondsBetweenRequests = 10;
+            options.doNotSendToLogin = true;
             quantimodoService.get('api/v1/notificationPreferences',
                 ['userEmail'],
                 params,
                 successHandler,
                 errorHandler,
-                minimumSecondsBetweenRequests,
-                doNotSendToLogin
+                options
             );
         };
 
@@ -687,15 +730,16 @@ angular.module('starter')
                 trackingReminderNotificationsArray = [trackingReminderNotificationsArray];
             }
 
-            var minimumSecondsBetweenRequests = 30;
-            var doNotSendToLogin = false;
-            var doNotShowOfflineError = true;
+            var options = {};
+            options.minimumSecondsBetweenRequests = 30;
+            options.doNotSendToLogin = false;
+            options.doNotShowOfflineError = true;
 
             quantimodoService.post('api/v1/trackingReminderNotifications',
                 [],
                 trackingReminderNotificationsArray,
                 successHandler,
-                errorHandler, minimumSecondsBetweenRequests, doNotSendToLogin, doNotShowOfflineError);
+                errorHandler, options);
         };
 
         quantimodoService.getTrackingRemindersFromApi = function(params, successHandler, errorHandler){
@@ -1736,13 +1780,15 @@ angular.module('starter')
         };
 
         quantimodoService.getPairs = function (params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0;
+            var options = {};
+            options.minimumSecondsBetweenRequests = 0;
+
             quantimodoService.get('api/v1/pairs',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'causeVariableName', 'effectVariableName'],
                 params,
                 successHandler,
                 errorHandler,
-                minimumSecondsBetweenRequests
+                options
             );
         };
 
@@ -3388,10 +3434,11 @@ angular.module('starter')
 
         quantimodoService.refreshTrackingReminderNotifications = function(){
             var deferred = $q.defer();
-            var minimumSecondsBetweenRequests = 3;
-            if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', minimumSecondsBetweenRequests)){
+            var options = {};
+            options.minimumSecondsBetweenRequests = 3;
+            if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', options)){
                 deferred.reject('Already called refreshTrackingReminderNotifications within last ' +
-                    minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
+                    options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
                 return deferred.promise;
             }
 
@@ -8248,6 +8295,71 @@ angular.module('starter')
                     ' of time spent at the gym, certain restaurants, or work.  Another benefit is that it keeps the ' +
                     ' app running the background so it opens instantly instead of taking a few seconds to load.  ' +
                     'You can view your location history by going to Menu -> History -> Locations.'
+            }
+        };
+
+        quantimodoService.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
+            if(!cordova || !cordova.plugins.email){
+                quantimodoService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
+                    ' Using quantimodoService.sendWithMailTo instead.');
+                quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+                return;
+            }
+
+            if(!emailAddress){
+                emailAddress = null;
+            }
+
+            document.addEventListener('deviceready', function () {
+                console.debug('deviceready');
+                cordova.plugins.email.isAvailable(
+                    function (isAvailable) {
+                        if(isAvailable){
+                            if(window.plugins && window.plugins.emailComposer) {
+                                console.debug('Generating email with cordova-plugin-email-composer');
+                                window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                                        console.debug("Response -> " + result);
+                                    },
+                                    subjectLine, // Subject
+                                    emailBody,                      // Body
+                                    emailAddress,    // To
+                                    'info@quantimo.do',                    // CC
+                                    null,                    // BCC
+                                    true,                   // isHTML
+                                    null,                    // Attachments
+                                    null);                   // Attachment Data
+                            } else {
+                                console.error('window.plugins.emailComposer not available!');
+                                quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+                            }
+                        } else {
+                            console.error('Email has not been configured for this device!');
+                            quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+                        }
+                    }
+                );
+
+            }, false);
+        };
+
+        quantimodoService.sendWithMailTo = function(subjectLine, emailBody, emailAddress, fallbackUrl){
+            var emailUrl = 'mailto:';
+            if(emailAddress){
+                emailUrl = emailUrl + emailAddress;
+            }
+            emailUrl = emailUrl + '?subject=' + subjectLine + '&body=' + emailBody;
+            if($rootScope.isChromeExtension){
+                console.debug('isChromeExtension so sending to website');
+                var newTab = window.open(fallbackUrl,'_blank');
+                if(!newTab){
+                    alert("Please unblock popups and refresh to access the Data Sharing page.");
+                }
+                $rootScope.hideNavigationMenu = false;
+                $state.go(config.appSettings.defaultState);
+
+            } else {
+                console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
+                window.location.href = emailUrl;
             }
         };
 
