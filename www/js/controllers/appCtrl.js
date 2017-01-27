@@ -174,17 +174,6 @@ angular.module('starter')
             });
         };
 
-        $scope.openVariableSearchDialog = function($event) {
-            $mdDialog.show({
-                controller: VariableSearchCtrl,
-                controllerAs: 'ctrl',
-                templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
-                parent: angular.element(document.body),
-                targetEvent: $event,
-                clickOutsideToClose:true
-            });
-        };
-
         $scope.showUnshareStudyConfirmation = function(correlationObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
@@ -911,9 +900,7 @@ angular.module('starter')
                 tagConversionFactor: tagVariable.tagConversionFactor,
                 taggedVariableObject: $rootScope.variableObject,
                 fromState: $state.current.name,
-                tagVariableObject: tagVariable,
-                variableObject: $rootScope.variableObject,
-                fromStateParameters: {variableName: $rootScope.variableObject.name}
+                tagVariableObject: tagVariable
             });
         };
 
@@ -922,9 +909,7 @@ angular.module('starter')
                 tagConversionFactor: taggedVariable.tagConversionFactor,
                 taggedVariableObject: taggedVariable,
                 fromState: $state.current.name,
-                tagVariableObject: $rootScope.variableObject,
-                variableObject: $rootScope.variableObject,
-                fromStateParameters: {variableName: $rootScope.variableObject.name}
+                tagVariableObject: $rootScope.variableObject
             });
         };
 
@@ -2845,6 +2830,17 @@ angular.module('starter')
 
         $scope.init();
 
+        $scope.openVariableSearchDialog = function($event) {
+            $mdDialog.show({
+                controller: VariableSearchCtrl,
+                controllerAs: 'ctrl',
+                templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: $event,
+                clickOutsideToClose:true
+            });
+        };
+
         var VariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter,
                  quantimodoService, $q, $log) {
 
@@ -2860,6 +2856,13 @@ angular.module('starter')
             self.searchTextChange   = searchTextChange;
 
             self.variableObject = $rootScope.variableObject;
+
+            self.title = "Join a Variable";
+            self.helpText = "Search for a duplicated or synonymous variable that you'd like to join to " +
+                self.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
+                self.variableObject.name + ".  You can only join variables that have the same unit " +
+                self.variableObject.abbreviatedUnitName + ".";
+            self.placeholder = "What variable would you like to join?";
 
             self.newVariable = newVariable;
 
@@ -2892,6 +2895,7 @@ angular.module('starter')
             }
 
             function querySearch (query) {
+                self.notFoundText = "No variables matching " + query + " were found.";
                 var results = query ? self.variables.filter( createFilterFor(query) ) : self.variables,
                     deferred;
                 if (self.simulateQuery) {
@@ -2922,13 +2926,14 @@ angular.module('starter')
 
             function selectedItemChange(item) {
                 self.selectedItem = item;
+                self.buttonText = "Join Variable";
                 $log.info('Item changed to ' + JSON.stringify(item));
             }
 
             /**
              * Build `variables` list of key/value pairs
              */
-            function loadAll(variables, filters) {
+            function loadAll(variables) {
                 if(!variables){
                     variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
                 }

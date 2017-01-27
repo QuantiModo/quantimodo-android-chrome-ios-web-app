@@ -26,7 +26,7 @@
                        class="button button-clear" >
                         <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}">
                     </a>
-                    <!--<button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="toggleFilterBar($event)"></button>-->
+                    <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="openCorrelationSearchDialog($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="onGenericHelpButtonPress()"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
