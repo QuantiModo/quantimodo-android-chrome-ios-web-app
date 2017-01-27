@@ -117,7 +117,7 @@ angular.module('starter')
             }
             if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
                 console.debug('quantimodoService.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
-                    "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
+                    "we made the same request within the last " + options.minimumSecondsBetweenRequests + ' seconds');
                 return false;
             }
             $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
