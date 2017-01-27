@@ -131,6 +131,12 @@ angular.module('starter')
                 options = {};
             }
 
+            var cache = false;
+            if(params && params.cache){
+                cache = params.cache;
+                params.cache = null;
+            }
+
             if(!canWeMakeRequestYet('GET', baseURL, options)){
                 return;
             }
@@ -181,8 +187,8 @@ angular.module('starter')
                     },
                 };
 
-                if(options.cache){
-                    request.cache = options.cache;
+                if(cache){
+                    request.cache = cache;
                 }
 
                 if (accessToken) {
@@ -322,26 +328,64 @@ angular.module('starter')
             dataCache.destroy();
         }
 
-        // get Measurements for user
-        var getMeasurements = function(params, successHandler, errorHandler){
-            var options = {};
-            //options.cache = getCache(getCurrentFunctionName(), 15);
-            quantimodoService.get('api/measurements',
-                ['variableName', 'sort', 'startTimeEpoch', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
-                params,
-                successHandler,
-                errorHandler,
-                options
-            );
-        };
-
-        quantimodoService.getV1Measurements = function(params, successHandler, errorHandler){
+        quantimodoService.getMeasurementsFromApi = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/measurements',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
                 successHandler,
                 errorHandler
             );
+        };
+
+        quantimodoService.getMeasurementsDeferred = function(params, refresh){
+            var deferred = $q.defer();
+
+            if(!refresh){
+                var cachedMeasurements = quantimodoService.getCachedResponse('getV1Measurements', params);
+                if(cachedMeasurements){
+                    deferred.resolve(cachedMeasurements);
+                    return deferred.promise;
+                }
+            }
+            
+            if(refresh){
+                //deleteCache(getCurrentFunctionName());
+            }
+
+            //params.cache = getCache(getCurrentFunctionName(), 15);
+            quantimodoService.getMeasurementsFromApi(params, function(response){
+                quantimodoService.storeCachedResponse('getMeasurementsFromApi', params, response);
+                deferred.resolve(quantimodoService.addInfoAndImagesToMeasurements(response));
+            }, function(error){
+                if (typeof Bugsnag !== "undefined") {
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                }
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        quantimodoService.getMeasurementById = function(measurementId){
+            var deferred = $q.defer();
+            var params = {id : measurementId};
+            quantimodoService.getMeasurementsFromApi(params, function(response){
+                var measurementArray = response;
+                if(!measurementArray[0]){
+                    console.debug('Could not get measurement with id: ' + measurementId);
+                    deferred.reject();
+                }
+                var measurementObject = measurementArray[0];
+                deferred.resolve(measurementObject);
+            }, function(error){
+                if (typeof Bugsnag !== "undefined") {
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                }
+                console.debug(error);
+                deferred.reject();
+            });
+            return deferred.promise;
+
         };
 
         quantimodoService.getMeasurementsDailyFromApi = function(params, successHandler, errorHandler){
@@ -1851,7 +1895,7 @@ angular.module('starter')
             });
 
             var getPrimaryOutcomeVariableMeasurements = function(params) {
-                quantimodoService.getV1Measurements(params, function(response){
+                quantimodoService.getMeasurementsFromApi(params, function(response){
                     // Do the stuff with adding to allMeasurements
                     if (response.length > 0 && response.length <= 200) {
                         // Update local data
@@ -2278,52 +2322,6 @@ angular.module('starter')
             });
 
             return deferred.promise;
-        };
-
-        quantimodoService.getHistoryMeasurements = function(params, refresh){
-            var deferred = $q.defer();
-
-            if(!refresh){
-                var cachedMeasurements = quantimodoService.getCachedResponse('getV1Measurements', params);
-                if(cachedMeasurements){
-                    deferred.resolve(cachedMeasurements);
-                    return deferred.promise;
-                }
-            }
-
-            quantimodoService.getV1Measurements(params, function(response){
-                quantimodoService.storeCachedResponse('getV1Measurements', params, response);
-                deferred.resolve(quantimodoService.addInfoAndImagesToMeasurements(response));
-            }, function(error){
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                }
-                deferred.reject(error);
-            });
-
-            return deferred.promise;
-        };
-
-        quantimodoService.getMeasurementById = function(measurementId){
-            var deferred = $q.defer();
-            var params = {id : measurementId};
-            quantimodoService.getV1Measurements(params, function(response){
-                var measurementArray = response;
-                if(!measurementArray[0]){
-                    console.debug('Could not get measurement with id: ' + measurementId);
-                    deferred.reject();
-                }
-                var measurementObject = measurementArray[0];
-                deferred.resolve(measurementObject);
-            }, function(error){
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                }
-                console.debug(error);
-                deferred.reject();
-            });
-            return deferred.promise;
-
         };
 
         quantimodoService.deleteMeasurementFromLocalStorage = function(measurement) {

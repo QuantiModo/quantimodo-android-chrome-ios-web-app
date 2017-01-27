@@ -210,30 +210,6 @@ angular.module('starter')
             }
         };
 
-        // Gets measurements directly from API instead of checking local storage cache first
-        // To restrict to a specific variable, provide params = {variableName: "Your Variable Name Here"}
-        $scope.refreshMeasurementHistory = function(params){
-            var refresh = true;
-            $scope.getMeasurementHistory(params, refresh);
-        };
-
-        // Returns cached measurements in local storage if available
-        // To restrict to a specific variable, provide params = {variableName: "Your Variable Name Here"}
-        $scope.getMeasurementHistory = function(params, refresh){
-            quantimodoService.getHistoryMeasurements(params, refresh).then(function(measurements){
-                $scope.measurementHistory = measurements;
-                $scope.hideLoader();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-            }, function(error){
-                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                console.error('error getting measurements' + JSON.stringify(error));
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                $scope.hideLoader();
-            });
-        };
-
         $scope.showShareVariableConfirmation = function(variableObject, url) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',

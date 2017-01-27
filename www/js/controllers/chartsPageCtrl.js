@@ -121,7 +121,7 @@ angular.module('starter')
             }
             //$scope.showLoader('Fetching measurements');
             $scope.state.loadingHistory = true;
-            quantimodoService.getV1Measurements(params, function(history){
+            quantimodoService.getMeasurementsFromApi(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
 
                 if(params.limit > 0 && history.length > 0 && $scope.state.history.length < maximumMeasurements){
