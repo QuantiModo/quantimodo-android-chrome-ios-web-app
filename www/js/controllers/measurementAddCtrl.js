@@ -21,7 +21,6 @@ angular.module('starter')
             variableCategoryObject : variableCategoryObject,
             // variables
             variableName : "",
-            measurementStartTimeEpochTime : currentTime.getTime() / 1000,
             helpText: variableCategoryObject.helpText,
             abbreviatedUnitName : '',
             measurement : {},
@@ -44,12 +43,99 @@ angular.module('starter')
             showMoreUnits: false
         };
 
+        $scope.$on('$ionicView.beforeEnter', function(){
+            console.debug($state.current.name + ": beforeEnter");
+
+            $rootScope.hideNavigationMenu = false;
+            $rootScope.bloodPressure = {
+                diastolicValue: null,
+                systolicValue: null,
+                show: false
+            };
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if($stateParams.trackingReminder){
+                $stateParams.reminderNotification = $stateParams.trackingReminder;
+            }
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            $scope.state.title = 'Record a Measurement';
+            var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
+            $ionicLoading.show();
+            quantimodoService.getUnits(ignoreExpiration).then(function () {
+                $ionicLoading.hide();
+                refreshUnitsIfStale();
+                console.debug($state.current.name + ": " + "got units in init function");
+                if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
+                    console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
+                    if (jQuery.inArray($stateParams.variableObject.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
+                    {
+                        // Note: will occur for new variable
+                        console.warn('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
+                    }
+                    $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
+                    //$scope.unitObject.abbreviatedName = $stateParams.variableObject.abbreviatedUnitName;
+                }
+                if($stateParams.reminderNotification) {
+                    console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by reminder: " + $stateParams.reminderNotification.abbreviatedUnitName);
+                    if (jQuery.inArray($stateParams.reminderNotification.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
+                    {
+                        console.error('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
+                    }
+                    $scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;
+                }
+
+                $scope.state.selectedDate = moment();
+
+                if(!$scope.state.measurementIsSetup){
+                    setupFromUrlParameters();
+                }
+                if(!$scope.state.measurementIsSetup) {
+                    setupFromMeasurementStateParameter();
+                }
+                if(!$scope.state.measurementIsSetup) {
+                    setupFromMeasurementObjectInUrl();
+                }
+                if(!$scope.state.measurementIsSetup) {
+                    setupFromVariableStateParameter();
+                }
+                if(!$scope.state.measurementIsSetup) {
+                    setupFromReminderObjectInUrl();
+                }
+                if(!$scope.state.measurementIsSetup) {
+                    setupFromReminderNotificationStateParameter();
+                }
+                if(!$scope.state.measurementIsSetup){
+                    setMeasurementVariablesByMeasurementId().then(function() {
+                        if(!$scope.state.measurementIsSetup){
+                            // Not set up, go to different state
+                            if($stateParams.fromUrl){
+                                window.location = $stateParams.fromUrl;
+                            } else if ($stateParams.fromState){
+                                $state.go($stateParams.fromState);
+                            } else {
+                                $rootScope.hideNavigationMenu = false;
+                                $state.go(config.appSettings.defaultState);
+                            }
+                        }
+                    });
+                }
+
+                if(!$scope.state.measurementIsSetup){
+                    setupFromVariableNameStateParameter();
+                }
+
+            });
+
+        });
+
         var trackBloodPressure = function(){
             if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
                 validationFailure('Please enter both values for blood pressure.');
                 return;
             }
-            $rootScope.bloodPressure.startTimeEpoch = $scope.selectedDate.getTime()/1000;
+            $scope.state.selectedDate = moment($scope.state.selectedDate);
+            $rootScope.bloodPressure.startTimeEpoch = parseInt($scope.state.selectedDate.format("X"));
             $rootScope.bloodPressure.note = $scope.state.measurement.note;
             quantimodoService.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function () {
@@ -68,51 +154,6 @@ angular.module('starter')
             } else {
                 $ionicHistory.goBack();
             }
-        };
-
-        $scope.openMeasurementStartTimePicker = function() {
-
-            var secondsSinceMidnightLocal = ($scope.selectedHours * 60 * 60) + ($scope.selectedMinutes * 60);
-
-            $scope.state.timePickerConfiguration = {
-                callback: function (val) {
-                    if (typeof (val) === 'undefined') {
-                        console.debug($state.current.name + ": " + 'Time not selected');
-                    } else {
-                        var selectedDateTime = new Date(val * 1000);
-                        $scope.selectedHours = selectedDateTime.getUTCHours();
-                        $scope.selectedMinutes = selectedDateTime.getUTCMinutes();
-                        $scope.selectedDate.setHours($scope.selectedHours);
-                        $scope.selectedDate.setMinutes($scope.selectedMinutes);
-
-                        console.debug($state.current.name + ": " + 'Selected epoch is : ', val, 'and the time is ',
-                            $scope.selectedHours, 'H :', $scope.selectedMinutes, 'M');
-                    }
-                },
-                inputTime: secondsSinceMidnightLocal,
-                step: 1,
-                closeLabel: 'Cancel'
-            };
-            ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
-        };
-
-        $scope.openMeasurementDatePicker = function() {
-            $scope.state.datePickerConfiguration = {
-                callback: function(val) {
-                    if (typeof(val)==='undefined') {
-                        console.debug($state.current.name + ": " + 'Date not selected');
-                    } else {
-                        // clears out hours and minutes
-                        $scope.selectedDate = new Date(val);
-                        $scope.selectedDate.setHours($scope.selectedHours);
-                        $scope.selectedDate.setMinutes($scope.selectedMinutes);
-                    }
-                },
-                inputDate: $scope.selectedDate,
-                from: new Date(2012, 8, 1),
-                to: new Date()
-            };
-            ionicDatePicker.openDatePicker($scope.state.datePickerConfiguration);
         };
 
         // cancel activity
@@ -254,8 +295,7 @@ angular.module('starter')
                 });
             }
 
-            // Combine selected date and time
-            $scope.state.measurement.startTimeEpoch = $scope.selectedDate.getTime()/1000;
+            $scope.state.selectedDate = moment($scope.state.selectedDate);
 
             // Populate measurementInfo (formerly params)
             var measurementInfo = {
@@ -264,7 +304,7 @@ angular.module('starter')
                 value : $scope.state.measurement.value,
                 note : $scope.state.measurement.note || jQuery('#note').val(),
                 prevStartTimeEpoch : $scope.state.measurement.prevStartTimeEpoch,
-                startTimeEpoch : $scope.state.measurement.startTimeEpoch,
+                startTimeEpoch : parseInt($scope.state.selectedDate.format("X")),
                 abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 combinationOperation : $rootScope.variableObject.combinationOperation
@@ -284,14 +324,7 @@ angular.module('starter')
 
             // Measurement only - post measurement. This is for adding or editing
             quantimodoService.postMeasurementDeferred(measurementInfo, true);
-            var backView = $ionicHistory.backView();
-            if(backView && backView.stateName.toLowerCase().indexOf('search') > -1){
-                $state.go(config.appSettings.defaultState);
-                // This often doesn't work and the user should go to the inbox more anyway
-                //$ionicHistory.goBack(-2);
-            } else {
-                $ionicHistory.goBack();
-            }
+            $scope.goBack();
         };
 
         var postMeasurementAndGoToHistory = function (measurementInfo) {
@@ -358,85 +391,6 @@ angular.module('starter')
             quantimodoService.getUnits(ignoreExpiration);
         };
 
-        $scope.init = function(){
-            $rootScope.bloodPressure = {
-                diastolicValue: null,
-                systolicValue: null,
-                show: false
-            };
-            console.debug($state.current.name + ' initializing...');
-            $rootScope.stateParams = $stateParams;
-            if($stateParams.trackingReminder){
-                $stateParams.reminderNotification = $stateParams.trackingReminder;
-            }
-            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.state.title = 'Record a Measurement';
-            var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
-            $ionicLoading.show();
-            quantimodoService.getUnits(ignoreExpiration).then(function () {
-                $ionicLoading.hide();
-                refreshUnitsIfStale();
-                console.debug($state.current.name + ": " + "got units in init function");
-                if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
-                    console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
-                    if (jQuery.inArray($stateParams.variableObject.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
-                    {
-                        // Note: will occur for new variable
-                        console.warn('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
-                    }
-                    $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
-                    //$scope.unitObject.abbreviatedName = $stateParams.variableObject.abbreviatedUnitName;
-                }
-                if($stateParams.reminderNotification) {
-                    console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by reminder: " + $stateParams.reminderNotification.abbreviatedUnitName);
-                    if (jQuery.inArray($stateParams.reminderNotification.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
-                    {
-                        console.error('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
-                    }
-                    $scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;
-                }
-
-                $scope.selectedDate = new Date();
-                $scope.selectedHours = $scope.selectedDate.getHours();
-                $scope.selectedMinutes = $scope.selectedDate.getMinutes();
-
-                if(!$scope.state.measurementIsSetup){
-                    setupFromUrlParameters();
-                }
-                if(!$scope.state.measurementIsSetup) {
-                    setupFromMeasurementStateParameter();
-                }
-                if(!$scope.state.measurementIsSetup) {
-                    setupFromMeasurementObjectInUrl();
-                }
-                if(!$scope.state.measurementIsSetup) {
-                    setupFromVariableStateParameter();
-                }
-                if(!$scope.state.measurementIsSetup) {
-                    setupFromReminderObjectInUrl();
-                }
-                if(!$scope.state.measurementIsSetup) {
-                    setupFromReminderNotificationStateParameter();
-                }
-                if(!$scope.state.measurementIsSetup){
-                    setMeasurementVariablesByMeasurementId().then(function() {
-                        if(!$scope.state.measurementIsSetup){
-                            // Not set up, go to different state
-                            if($stateParams.fromUrl){
-                                window.location = $stateParams.fromUrl;
-                            } else if ($stateParams.fromState){
-                                $state.go($stateParams.fromState);
-                            } else {
-                                $rootScope.hideNavigationMenu = false;
-                                $state.go(config.appSettings.defaultState);
-                            }
-                        }
-                    });
-                }
-            });
-
-        };
 
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', function(e) {
@@ -547,7 +501,7 @@ angular.module('starter')
                 } else {
                     $stateParams.variableObject.combinationOperation = 'MEAN';
                 }
-                $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
+
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
 
@@ -557,6 +511,23 @@ angular.module('starter')
                     typeof $stateParams.variableObject.lastValue !== "undefined") {
                     $scope.state.measurement.value = Number($stateParams.variableObject.lastValue);
                 }
+            }
+        };
+
+        var setupFromVariableNameStateParameter = function(){
+            if($stateParams.variableName) {
+                $ionicLoading.show();
+                quantimodoService.getUserVariableByNameDeferred($stateParams.variableName, {}).then(function(variableObject){
+                    $ionicLoading.hide();
+                    $rootScope.variableObject = variableObject;
+                    $stateParams.variableObject = variableObject;
+                    setupFromVariableStateParameter();
+                }, function (error) {
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
+                    $ionicLoading.hide();
+                    console.error(error);
+                });
             }
         };
 
@@ -665,10 +636,7 @@ angular.module('starter')
                 measurementObject.prevStartTimeEpoch = measurementObject.startTimeEpoch;
             }
 
-            $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
-            $scope.selectedHours = $scope.selectedDate.getHours();
-            $scope.selectedMinutes = $scope.selectedDate.getMinutes();
-            $scope.state.title = "Edit Measurement";
+            $scope.state.selectedDate = moment(measurementObject.startTimeEpoch * 1000);
             $scope.state.measurement = measurementObject;
             $scope.state.measurementIsSetup = true;
             setupValueFieldType($scope.state.measurement.abbreviatedUnitName,
@@ -692,14 +660,8 @@ angular.module('starter')
                 $scope.state.measurement.variableCategoryName = $stateParams.reminderNotification.variableCategoryName;
                 $scope.state.measurement.combinationOperation = $stateParams.reminderNotification.combinationOperation;
                 if($stateParams.reminderNotification.trackingReminderNotificationTimeEpoch !== "undefined" && $stateParams.reminderNotification.trackingReminderNotificationTimeEpoch){
-                    $scope.selectedDate = new Date($stateParams.reminderNotification.trackingReminderNotificationTimeEpoch * 1000);
-                    $scope.selectedHours = $scope.selectedDate.getHours();
-                    $scope.selectedMinutes = $scope.selectedDate.getMinutes();
-                    $scope.state.measurement.startTimeEpoch = $stateParams.reminderNotification.trackingReminderNotificationTimeEpoch;
-                } else {
-                    $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
+                    $scope.state.selectedDate = moment($stateParams.reminderNotification.trackingReminderNotificationTimeEpoch * 1000);
                 }
-
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.reminderNotification.abbreviatedUnitName,
                     $stateParams.reminderNotification.variableDescription);
@@ -775,11 +737,5 @@ angular.module('starter')
             }, 20000);
 
         };
-
-        $scope.$on('$ionicView.beforeEnter', function(){
-            console.debug($state.current.name + ": beforeEnter");
-            $scope.init();
-            $rootScope.hideNavigationMenu = false;
-        });
 
     });
