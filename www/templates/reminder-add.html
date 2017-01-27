@@ -143,30 +143,6 @@
                     Add additional time
                 </label>
             </div>
-<!--            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
-                <label class="item item-input">
-                    <div class="input-label" >
-                        Reminder start time
-                    </div>
-                    <button class="button button-block up-top"
-                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                            ng-click="oldOpenReminderStartTimePicker()">
-                        {{state.reminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                    </button>
-                </label>
-            </div>
-            <div class="list card" ng-if="state.trackingReminder.reminderFrequency < 86400">
-                <label class="item item-input">
-                    <div class="input-label" >
-                        Latest reminder time
-                    </div>
-                    <button class="button button-block up-top"
-                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                            ng-click="openReminderEndTimePicker()">
-                        {{state.reminderEndTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                    </button>
-                </label>
-            </div>-->
             <div class="list card" ng-if="!state.showMoreOptions" >
                 <div class="row" ng-click="showMoreOptions()">
                     <label class="item icon-left ion-gear-a">
@@ -181,11 +157,16 @@
                         </span>
                 </div>
                 <div class="col" style="padding-top: 15px;">
-                    <button class="button button-block measure-date up-top"
+<!--                    <button class="button button-block measure-date up-top"
                             style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
                             ng-click="openStartTrackingDatePicker()">
                         {{ state.selectedStartTrackingDate | date:'dd - MMMM - yyyy' }}
-                    </button>
+                    </button>-->
+                    <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStartTrackingDate"
+                           placeholder="Date"
+                           style="cursor: pointer;  background-color: white;"
+                           format="dddd, MMM Do YYYY"
+                           ng-model="state.selectedStartTrackingDate">
                 </div>
             </div>
             <div ng-if="state.showMoreOptions" class="row labeled-control">
@@ -195,11 +176,16 @@
                         </span>
                 </div>
                 <div class="col" style="padding-top: 15px;">
-                    <button class="button button-block measure-date up-top"
+<!--                    <button class="button button-block measure-date up-top"
                             style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
                             ng-click="openStopTrackingDatePicker()">
                         {{ state.selectedStopTrackingDate | date:'dd - MMMM - yyyy' }}
-                    </button>
+                    </button>-->
+                    <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStopTrackingDate"
+                           placeholder="Date"
+                           style="cursor: pointer;  background-color: white;"
+                           format="dddd, MMM Do YYYY"
+                           ng-model="state.selectedStopTrackingDate">
                 </div>
             </div>
             <label class="item item-input" ng-show="state.showInstructionsField && state.showMoreOptions">

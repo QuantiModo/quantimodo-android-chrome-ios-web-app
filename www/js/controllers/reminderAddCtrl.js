@@ -48,7 +48,6 @@ angular.module('starter')
 
         $scope.loading = true;
 
-	    // data
 	    $scope.variables = {
 	    	variableCategories : [
 		    	{ id : 1, name : 'Emotions' },
@@ -171,82 +170,6 @@ angular.module('starter')
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
 
-        $scope.openStopTrackingDatePicker = function() {
-            var now = new Date();
-            $scope.state.stopTrackingDatePickerConfiguration = {
-                callback: function(val) {
-                    if (typeof(val)==='undefined') {
-                        console.debug('Date not selected');
-                    } else {
-                        // clears out hours and minutes
-
-                        $scope.state.selectedStopTrackingDate = new Date(val);
-                    }
-                },
-                from: new Date(),
-                to: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
-            };
-
-            if($scope.state.selectedStopTrackingDate){
-                $scope.state.stopTrackingDatePickerConfiguration.inputDate = $scope.state.selectedStopTrackingDate;
-            }
-            ionicDatePicker.openDatePicker($scope.state.stopTrackingDatePickerConfiguration);
-        };
-
-        $scope.openStartTrackingDatePicker = function() {
-            var now = new Date();
-            $scope.state.startTrackingDatePickerConfiguration = {
-                callback: function(val) {
-                    if (typeof(val)==='undefined') {
-                        console.debug('Date not selected');
-                    } else {
-                        // clears out hours and minutes
-
-                        $scope.state.selectedStartTrackingDate = new Date(val);
-                    }
-                },
-                from: new Date(),
-                to: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
-            };
-
-            if($scope.state.selectedStartTrackingDate){
-                $scope.state.startTrackingDatePickerConfiguration.inputDate = $scope.state.selectedStartTrackingDate;
-            }
-            ionicDatePicker.openDatePicker($scope.state.startTrackingDatePickerConfiguration);
-        };
-
-/*
-
-        $scope.openReminderEndTimePicker = function() {
-            var default9pmEndTimeInSecondsSinceMidnightLocal = 21 * 60 * 60;
-            $scope.state.reminderEndTimePickerConfiguration = {
-                callback: function (val) {
-                    if (typeof (val) === 'undefined') {
-                        console.debug('Time not selected');
-                    } else {
-                        var a = new Date();
-                        var selectedTime = new Date(val * 1000);
-                        a.setHours(selectedTime.getUTCHours());
-                        a.setMinutes(selectedTime.getUTCMinutes());
-
-                        console.debug('Selected epoch is : ', val, 'and the time is ',
-                            selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
-
-                        $scope.state.reminderEndTimeEpochTime = a.getTime() / 1000;
-                        $scope.state.reminderEndTimeStringLocal = moment(a).format('HH:mm:ss');
-                    }
-                },
-                inputTime: default9pmEndTimeInSecondsSinceMidnightLocal,
-                step: 15,
-                closeLabel: 'Cancel'
-            };
-
-            ionicTimePicker.openTimePicker($scope.state.reminderEndTimePickerConfiguration);
-        };
-
-*/
-
-	    // when a search result is selected
 	    var setupByVariableObject = function(selectedVariable){
             console.debug("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable).substring(0, 140) + '...');
 
@@ -283,22 +206,12 @@ angular.module('starter')
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
             }
 
-            if (typeof selectedVariable.lastValue !== "undefined"){
-                //$scope.state.trackingReminder.defaultValue = Number(selectedVariable.lastValue);
-            }
-
             $scope.state.showReminderFrequencyCard = true;
-
-            // Set default value
-            if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
-                //$scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
-            }
             showMoreUnitsIfNecessary();
 	    };
 
-	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
-            $ionicHistory.goBack();
+            $scope.goBack();
 	    };
 
 	    var getFrequencyChart = function(){
