@@ -106,8 +106,8 @@ angular.module('starter')
             console.error("Request error : " + error);
         };
 
-        var canWeMakeRequestYet = function(type, baseURL, minimumSecondsBetweenRequests){
-            if(!minimumSecondsBetweenRequests){
+        var canWeMakeRequestYet = function(type, baseURL, options){
+            if(!options || !options.minimumSecondsBetweenRequests){
                return true;
             }
             var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
@@ -115,7 +115,7 @@ angular.module('starter')
                 $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
                 return true;
             }
-            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
                 console.debug('quantimodoService.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
                     "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
                 return false;
@@ -125,10 +125,9 @@ angular.module('starter')
         };
 
         // GET method with the added token
-        quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
-                                         options){
+        quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler, options){
 
-            if(!canWeMakeRequestYet('GET', baseURL, options.minimumSecondsBetweenRequests)){
+            if(!canWeMakeRequestYet('GET', baseURL, options)){
                 return;
             }
 
@@ -219,10 +218,9 @@ angular.module('starter')
         };
 
         // POST method with the added token
-        quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler,
-                                   options){
+        quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler, options){
 
-            if(!canWeMakeRequestYet('POST', baseURL, options.minimumSecondsBetweenRequests)){
+            if(!canWeMakeRequestYet('POST', baseURL, options)){
                 return;
             }
 
@@ -371,8 +369,7 @@ angular.module('starter')
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
                 successHandler,
-                errorHandler,
-                options
+                errorHandler
             );
         };
 
@@ -381,8 +378,7 @@ angular.module('starter')
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
                 successHandler,
-                errorHandler,
-                options
+                errorHandler
             );
         };
 
@@ -3436,7 +3432,7 @@ angular.module('starter')
             var deferred = $q.defer();
             var options = {};
             options.minimumSecondsBetweenRequests = 3;
-            if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', options.minimumSecondsBetweenRequests)){
+            if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', options)){
                 deferred.reject('Already called refreshTrackingReminderNotifications within last ' +
                     options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
                 return deferred.promise;
