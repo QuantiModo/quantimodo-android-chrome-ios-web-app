@@ -364,22 +364,20 @@ angular.module('starter')
 
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
-        $scope.showHelpInfoPopup = function () {
-            $rootScope.helpPopup = $ionicPopup.show({
-                title: helpPopupMessages[location.hash],
-                //subTitle: '',
-                scope: $scope,
-                template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
-                buttons: [
-                    {
-                        text: 'OK',
-                        type: 'button-positive',
-                        onTap: function () {
-                            quantimodoService.setLocalStorageItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
-                        }
-                    }
-                ]
-            });
+        $scope.showHelpInfoPopup = function (ev, id) {
+            // Appending dialog to document.body to cover sidenav in docs app
+            // Modal dialogs should fully cover application
+            // to prevent interaction outside of dialog
+            $mdDialog.show(
+                $mdDialog.alert()
+                    .parent(angular.element(document.querySelector('#popupContainer')))
+                    .clickOutsideToClose(true)
+                    .title(quantimodoService.helpInfo[id].title)
+                    .textContent(quantimodoService.helpInfo[id].textContent)
+                    .ariaLabel('Alert Dialog Demo')
+                    .ok('Got it!')
+                    .targetEvent(ev)
+            );
         };
 
         $scope.onGenericHelpButtonPress = function () {
@@ -2476,10 +2474,9 @@ angular.module('starter')
             if($rootScope.trackLocation && !skipPopup){
                 $ionicPopup.alert({
                     title: 'Location Tracking Enabled',
-                    template: 'Location tracking is an experimental feature.  Your location is automatically logged ' +
-                    'when you open the app. Your location is not logged when the ' +
-                    'app is closed so you should create reminder and open the app regularly to ' +
-                    'keep your location up to date.'
+                    template: 'By automatically recording your location we can try to gain insights into the effects ' +
+                        ' of time spent at the gym, certain restaurants, or work.  Another benefit is that it keeps the ' +
+                        ' app running the background so it opens instantly instead of taking a few seconds to load.'
                 });
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
             }
