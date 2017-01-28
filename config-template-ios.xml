@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="2.3.3" ios-CFBundleVersion="20170118205921" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.quantimodo.moodimodoapp" version="2.3.4" ios-CFBundleVersion="20170118205921" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
-  <description>&#xD;
+  <description>
         The mood-tracking app from QuantiModo
-    </description>
+  </description>
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo
-    </author>
+  </author>
   <content src="index.html"/>
   <access origin="*"/>
   <access origin="https://widget.intercom.io/*"/>
