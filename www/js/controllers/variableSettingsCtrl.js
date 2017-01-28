@@ -165,9 +165,7 @@ angular.module('starter')
 
             function querySearch (query) {
                 self.notFoundText = "No variables matching " + query + " were found.";
-                var results = query ? self.variables.filter( createFilterFor(query) ) : self.variables;
-                var deferred;
-                deferred = $q.defer();
+                var deferred = $q.defer();
                 var requestParams = {};
                 if($rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){
                     requestParams = {defaultUnitId: $rootScope.variableObject.defaultUnitId};
