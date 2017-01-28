@@ -46,7 +46,7 @@ angular.module('starter')
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
                 $rootScope.variableObject);
 
-            quantimodoService.deleteUserTagDeferred(userTagData).then(function () {
+            quantimodoService.deleteUserTagDeferred(userTagData).then(function (response) {
                 goBack();
             }, function (error) {
                 console.error(error);
@@ -96,7 +96,7 @@ angular.module('starter')
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
                 $rootScope.variableObject);
 
-            quantimodoService.postUserTagDeferred(userTagData).then(function () {
+            quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
                 goBack();
             }, function (error) {
                 console.error(error);
