@@ -27,13 +27,6 @@ angular.module('starter')
             $scope.hideClipboardButton = true;
         }
 
-        $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
-        $scope.copyChartsUrlToClipboard = function () {
-            $scope.copyLinkText = 'Copied!';
-            clipboard.copyText($rootScope.variableObject.chartsUrl);
-            $scope.showInfoToast('Copied link!');
-        };
-
         $scope.addNewReminderButtonClick = function() {
             console.debug("addNewReminderButtonClick");
             $state.go('app.reminderAdd', {

@@ -858,8 +858,10 @@ angular.module('starter')
 
         quantimodoService.postUserTagDeferred = function(tagData) {
             var deferred = $q.defer();
-            quantimodoService.postUserTag(tagData, function(){
-                deferred.resolve();
+            quantimodoService.postUserTag(tagData, function(response){
+                quantimodoService.addVariableToLocalStorage(response.data.taggedVariable);
+                quantimodoService.addVariableToLocalStorage(response.data.tagVariable);
+                deferred.resolve(response);
             }, function(error){
                 deferred.reject(error);
             });
@@ -882,6 +884,8 @@ angular.module('starter')
         quantimodoService.postVariableJoinDeferred = function(tagData) {
             var deferred = $q.defer();
             quantimodoService.postVariableJoin(tagData, function(response){
+                quantimodoService.addVariableToLocalStorage(response.data.parentVariable);
+                quantimodoService.addVariableToLocalStorage(response.data.joinedVariable);
                 deferred.resolve(response);
             }, function(error){
                 deferred.reject(error);
@@ -904,8 +908,10 @@ angular.module('starter')
 
         quantimodoService.deleteVariableJoinDeferred = function(tagData) {
             var deferred = $q.defer();
-            quantimodoService.deleteVariableJoin(tagData, function(){
-                deferred.resolve();
+            quantimodoService.deleteVariableJoin(tagData, function(response){
+                quantimodoService.addVariableToLocalStorage(response.data.parentVariable);
+                quantimodoService.addVariableToLocalStorage(response.data.joinedVariable);
+                deferred.resolve(response);
             }, function(error){
                 deferred.reject(error);
             });
@@ -923,8 +929,10 @@ angular.module('starter')
 
         quantimodoService.deleteUserTagDeferred = function(tagData) {
             var deferred = $q.defer();
-            quantimodoService.deleteUserTag(tagData, function(){
-                deferred.resolve();
+            quantimodoService.deleteUserTag(tagData, function(response){
+                quantimodoService.addVariableToLocalStorage(response.data.taggedVariable);
+                quantimodoService.addVariableToLocalStorage(response.data.tagVariable);
+                deferred.resolve(response);
             }, function(error){
                 deferred.reject(error);
             });
@@ -8322,6 +8330,13 @@ angular.module('starter')
                 window.location.href = emailUrl;
             }
         };
+
+        quantimodoService.addVariableToLocalStorage = function(variable){
+            if(variable.userId){
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variable);
+            }
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variable);
+        }
 
         return quantimodoService;
     });
