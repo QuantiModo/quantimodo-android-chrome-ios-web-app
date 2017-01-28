@@ -3,7 +3,7 @@ angular.module('starter')
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector,
-                                    quantimodoService, ionicDatePicker, $cordovaOauth,
+                                    quantimodoService, ionicDatePicker, $cordovaOauth, clipboard,
                                     $ionicActionSheet, $ionicDeploy, $locale, $mdDialog, $mdToast) {
 
         $rootScope.appMigrationVersion = 1489;
@@ -2693,6 +2693,13 @@ angular.module('starter')
                     .position($scope.getToastPosition())
                     .hideDelay(3000)
             );
+        };
+
+        $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
+        $scope.copyChartsUrlToClipboard = function () {
+            $scope.copyLinkText = 'Copied!';
+            clipboard.copyText($rootScope.variableObject.chartsUrl);
+            $scope.showInfoToast('Copied link!');
         };
 
         $scope.init();

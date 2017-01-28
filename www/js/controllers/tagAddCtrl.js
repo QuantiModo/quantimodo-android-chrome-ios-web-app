@@ -47,8 +47,6 @@ angular.module('starter')
                 $rootScope.variableObject);
 
             quantimodoService.deleteUserTagDeferred(userTagData).then(function (response) {
-                quantimodoService.addVariableToLocalStorage(response.data.taggedVariable);
-                quantimodoService.addVariableToLocalStorage(response.data.tagVariable);
                 goBack();
             }, function (error) {
                 console.error(error);
@@ -98,9 +96,7 @@ angular.module('starter')
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
                 $rootScope.variableObject);
 
-            quantimodoService.postUserTagDeferred(userTagData).then(function () {
-                quantimodoService.addVariableToLocalStorage(response.data.taggedVariable);
-                quantimodoService.addVariableToLocalStorage(response.data.tagVariable);
+            quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
                 goBack();
             }, function (error) {
                 console.error(error);
