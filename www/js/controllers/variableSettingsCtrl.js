@@ -2,7 +2,8 @@ angular.module('starter')
 
     // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
-        function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $stateParams, $ionicHistory, $ionicActionSheet) {
+        function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $mdDialog, $ionicLoading,
+                 $stateParams, $ionicHistory, $ionicActionSheet) {
 
         $scope.controller_name = "VariableSettingsCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -91,4 +92,326 @@ angular.module('starter')
                 //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
             }
         });
+
+
+            $scope.openTagVariableSearchDialog = function($event) {
+                $mdDialog.show({
+                    controller: TagVariableSearchCtrl,
+                    controllerAs: 'ctrl',
+                    templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+                    parent: angular.element(document.body),
+                    targetEvent: $event,
+                    clickOutsideToClose:true
+                });
+            };
+
+            var TagVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter,
+                                              quantimodoService, $q, $log) {
+
+                var self = this;
+
+                self.simulateQuery = true;
+                self.isDisabled    = false;
+
+                // list of `state` value/display objects
+                self.variables        = loadAll();
+                self.querySearch   = querySearch;
+                self.selectedItemChange = selectedItemChange;
+                self.searchTextChange   = searchTextChange;
+
+                self.variableObject = $rootScope.variableObject;
+
+                self.title = "Add a Tag";
+                self.helpText = "Search for a variable like an ingredient or category " +
+                    "that you'd like to tag " + $rootScope.variableObject.name.toUpperCase() + " with.  Then " +
+                    "when your tag variable is analyzed, measurements from " +
+                    $rootScope.variableObject.name.toUpperCase() + " will be included.";
+                self.placeholder = "Search for a tag...";
+
+                self.newVariable = newVariable;
+
+                self.cancel = function($event) {
+                    $mdDialog.cancel();
+                };
+
+                self.finish = function($event) {
+                    var userTagData;
+                    if($rootScope.variableObject.abbreviatedUnitName !== '/5'){
+                        $state.go('app.tagAdd', {
+                            taggedVariableObject: $rootScope.variableObject,
+                            fromState: $state.current.name,
+                            fromStateParams: {variableObject: $rootScope.variableObject},
+                            tagVariableObject: self.selectedItem.variable
+                        });
+                    } else {
+                        userTagData = {
+                            tagVariableId: self.selectedItem.variable.id,
+                            taggedVariableId: $rootScope.variableObject.id,
+                            conversionFactor: 1
+                        };
+
+                        $ionicLoading.show();
+                        quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
+                            $rootScope.variableObject = response.data.taggedVariable;
+                            quantimodoService.addVariableToLocalStorage(response.data.taggedVariable);
+                            quantimodoService.addVariableToLocalStorage(response.data.tagVariable);
+                            $ionicLoading.hide();
+                        });
+                    }
+
+
+                    $mdDialog.hide();
+                };
+
+                function newVariable(variable) {
+                    alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
+                }
+
+                function querySearch (query) {
+                    self.notFoundText = "No variables matching " + query + " were found.";
+                    var results = query ? self.variables.filter( createFilterFor(query) ) : self.variables;
+                    var deferred;
+                    deferred = $q.defer();
+                    results = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
+                    if(results && results.length){
+                        results = loadAll(results).filter(createFilterFor(query));
+                        if(results && results.length){
+                            deferred.resolve(results);
+                            return deferred.promise;
+                        }
+                    }
+
+                    var requestParams = {};
+                    if($rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){
+                        requestParams = {defaultUnitId: $rootScope.variableObject.defaultUnitId};
+                    }
+
+                    quantimodoService.searchUserVariablesDeferred(query, requestParams)
+                        .then(function(results){
+                            deferred.resolve(loadAll(results));
+                        });
+                    return deferred.promise;
+                }
+
+                function searchTextChange(text) {
+                    $log.info('Text changed to ' + text);
+                }
+
+                function selectedItemChange(item) {
+                    self.selectedItem = item;
+                    self.buttonText = "Tag Variable";
+                    quantimodoService.addVariableToLocalStorage(item.variable);
+                    $log.info('Item changed to ' + JSON.stringify(item));
+                }
+
+                /**
+                 * Build `variables` list of key/value pairs
+                 */
+                function loadAll(variables) {
+                    if(!variables){
+                        variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
+                    }
+
+                    if(variables && $rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){
+                        variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId));
+                    }
+
+                    if(variables){
+                        variables = variables.filter(excludeParentVariable());
+                    }
+
+                    return variables.map( function (variable) {
+                        return {
+                            value: variable.name.toLowerCase(),
+                            display: variable.name,
+                            variable: variable
+                        };
+                    });
+                }
+
+                /**
+                 * Create filter function for a query string
+                 */
+                function createFilterFor(query) {
+                    var lowercaseQuery = angular.lowercase(query);
+
+                    return function filterFn(item) {
+                        return (item.value.indexOf(lowercaseQuery) !== -1);
+                    };
+                }
+
+                /**
+                 * Create filter function for a query string
+                 */
+                function filterByProperty(filterPropertyName, allowedFilterValue) {
+                    return function filterFn(item) {
+                        return (item[filterPropertyName] === allowedFilterValue);
+                    };
+                }
+
+                /**
+                 * Create filter function for a query string
+                 */
+                function excludeParentVariable() {
+                    return function filterFn(item) {
+                        return (item.id !== $rootScope.variableObject.id);
+                    };
+                }
+            };
+
+            $scope.openJoinVariableSearchDialog = function($event) {
+                $mdDialog.show({
+                    controller: JoinVariableSearchCtrl,
+                    controllerAs: 'ctrl',
+                    templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+                    parent: angular.element(document.body),
+                    targetEvent: $event,
+                    clickOutsideToClose:true
+                });
+            };
+
+            var JoinVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter,
+                                              quantimodoService, $q, $log) {
+
+                var self = this;
+
+                self.simulateQuery = true;
+                self.isDisabled    = false;
+
+                // list of `state` value/display objects
+                self.variables        = loadAll();
+                self.querySearch   = querySearch;
+                self.selectedItemChange = selectedItemChange;
+                self.searchTextChange   = searchTextChange;
+
+                self.variableObject = $rootScope.variableObject;
+
+                self.title = "Join a Variable";
+                self.helpText = "Search for a duplicated or synonymous variable that you'd like to join to " +
+                    self.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
+                    self.variableObject.name + ".  You can only join variables that have the same unit " +
+                    self.variableObject.abbreviatedUnitName + ".";
+                self.placeholder = "What variable would you like to join?";
+
+                self.newVariable = newVariable;
+
+                self.cancel = function($event) {
+                    $mdDialog.cancel();
+                };
+
+                self.finish = function($event) {
+                    var variableData = {
+                        parentVariableId: $rootScope.variableObject.id,
+                        joinedVariableId: self.selectedItem.variable.id,
+                        conversionFactor: 1
+                    };
+                    $ionicLoading.show();
+                    quantimodoService.postVariableJoinDeferred(variableData).then(function (response) {
+                        $ionicLoading.hide();
+                        $rootScope.variableObject = response.data.parentVariable;
+                        quantimodoService.addVariableToLocalStorage(response.data.parentVariable);
+                        quantimodoService.addVariableToLocalStorage(response.data.joinedVariable);
+                    }, function (error) {
+                        $ionicLoading.hide();
+                        console.error(error);
+                    });
+
+                    $mdDialog.hide();
+                };
+
+                function newVariable(variable) {
+                    alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
+                }
+
+                function querySearch (query) {
+                    self.notFoundText = "No variables matching " + query + " were found.";
+                    var results = query ? self.variables.filter( createFilterFor(query) ) : self.variables,
+                        deferred;
+                    if (self.simulateQuery) {
+                        deferred = $q.defer();
+                        results = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
+                        if(results && results.length){
+                            results = loadAll(results).filter(createFilterFor(query));
+                            if(results && results.length){
+                                deferred.resolve(results);
+                                return deferred.promise;
+                            }
+                        }
+
+                        quantimodoService.searchUserVariablesDeferred(query, {defaultUnitId:
+                        $rootScope.variableObject.defaultUnitId})
+                            .then(function(results){
+                                deferred.resolve(loadAll(results));
+                            });
+                        return deferred.promise;
+                    } else {
+                        return results;
+                    }
+                }
+
+                function searchTextChange(text) {
+                    $log.info('Text changed to ' + text);
+                }
+
+                function selectedItemChange(item) {
+                    self.selectedItem = item;
+                    self.buttonText = "Join Variable";
+                    quantimodoService.addVariableToLocalStorage(item.variable);
+                    $log.info('Item changed to ' + JSON.stringify(item));
+                }
+
+                /**
+                 * Build `variables` list of key/value pairs
+                 */
+                function loadAll(variables) {
+                    if(!variables){
+                        variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
+                    }
+
+                    if(variables){
+                        variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId));
+                    }
+
+                    if(variables){
+                        variables = variables.filter(excludeParentVariable());
+                    }
+
+                    return variables.map( function (variable) {
+                        return {
+                            value: variable.name.toLowerCase(),
+                            display: variable.name,
+                            variable: variable
+                        };
+                    });
+                }
+
+                /**
+                 * Create filter function for a query string
+                 */
+                function createFilterFor(query) {
+                    var lowercaseQuery = angular.lowercase(query);
+
+                    return function filterFn(item) {
+                        return (item.value.indexOf(lowercaseQuery) !== -1);
+                    };
+                }
+
+                /**
+                 * Create filter function for a query string
+                 */
+                function filterByProperty(filterPropertyName, allowedFilterValue) {
+                    return function filterFn(item) {
+                        return (item[filterPropertyName] === allowedFilterValue);
+                    };
+                }
+
+                /**
+                 * Create filter function for a query string
+                 */
+                function excludeParentVariable() {
+                    return function filterFn(item) {
+                        return (item.id !== $rootScope.variableObject.id);
+                    };
+                }
+            };
     });

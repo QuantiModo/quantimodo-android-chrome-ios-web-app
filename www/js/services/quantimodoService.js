@@ -8323,5 +8323,12 @@ angular.module('starter')
             }
         };
 
+        quantimodoService.addVariableToLocalStorage = function(variable){
+            if(variable.userId){
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variable);
+            }
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variable);
+        }
+
         return quantimodoService;
     });
