@@ -43,18 +43,18 @@ angular.module('starter')
                 $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
                 $state.go($stateParams.nextState, {causeVariableName: variableObject.name});
-            } else if ($stateParams.taggedVariableObject) {
-                if($stateParams.taggedVariableObject.abbreviatedUnitName !== '/5'){
+            } else if ($stateParams.userTaggedVariableObject) {
+                if($stateParams.userTaggedVariableObject.abbreviatedUnitName !== '/5'){
                     $state.go($stateParams.nextState, {
-                        taggedVariableObject: $stateParams.taggedVariableObject,
+                        userTaggedVariableObject: $stateParams.userTaggedVariableObject,
                         fromState: $stateParams.fromState,
-                        fromStateParams: {variableObject: $stateParams.taggedVariableObject},
-                        tagVariableObject: variableObject
+                        fromStateParams: {variableObject: $stateParams.userTaggedVariableObject},
+                        userTagVariableObject: variableObject
                     });
                 } else {
                     userTagData = {
-                        tagVariableId: variableObject.id,
-                        taggedVariableId: $stateParams.taggedVariableObject.id,
+                        userTagVariableId: variableObject.id,
+                        userTaggedVariableId: $stateParams.userTaggedVariableObject.id,
                         conversionFactor: 1
                     };
 
@@ -66,7 +66,7 @@ angular.module('starter')
                         $ionicLoading.hide();
                         if ($stateParams.fromState) {
                             $state.go($stateParams.fromState, {
-                                variableName: $stateParams.taggedVariableObject.name
+                                variableName: $stateParams.userTaggedVariableObject.name
                             });
                         } else {
                             $state.go(config.appSettings.defaultState);
@@ -74,19 +74,19 @@ angular.module('starter')
                     });
                 }
 
-            } else if($stateParams.tagVariableObject) {
+            } else if($stateParams.userTagVariableObject) {
 
-                if($stateParams.tagVariableObject.abbreviatedUnitName !== '/5'){
+                if($stateParams.userTagVariableObject.abbreviatedUnitName !== '/5'){
                     $state.go($stateParams.nextState, {
-                        taggedVariableObject: variableObject,
+                        userTaggedVariableObject: variableObject,
                         fromState: $stateParams.fromState,
-                        fromStateParams: {variableObject: $stateParams.tagVariableObject},
-                        tagVariableObject: $stateParams.tagVariableObject
+                        fromStateParams: {variableObject: $stateParams.userTagVariableObject},
+                        userTagVariableObject: $stateParams.userTagVariableObject
                     });
                 } else {
                     userTagData = {
-                        tagVariableId: $stateParams.tagVariableObject.id,
-                        taggedVariableId: variableObject.id,
+                        userTagVariableId: $stateParams.userTagVariableObject.id,
+                        userTaggedVariableId: variableObject.id,
                         conversionFactor: 1
                     };
 
@@ -98,7 +98,7 @@ angular.module('starter')
                         $ionicLoading.hide();
                         if ($stateParams.fromState) {
                             $state.go($stateParams.fromState, {
-                                variableName: $stateParams.tagVariableObject.name
+                                variableName: $stateParams.userTagVariableObject.name
                             });
                         } else {
                             $state.go(config.appSettings.defaultState);
@@ -325,24 +325,24 @@ angular.module('starter')
 
         // update data when view is navigated to
         function setHelpText() {
-            if ($stateParams.taggedVariableObject) {
+            if ($stateParams.userTaggedVariableObject) {
                 $scope.state.helpText = "Search for a variable like an ingredient, category, or duplicate variable " +
-                    "that you'd like to tag " + $stateParams.taggedVariableObject.name.toUpperCase() + " with.  Then " +
+                    "that you'd like to tag " + $stateParams.userTaggedVariableObject.name.toUpperCase() + " with.  Then " +
                     "when your tag variable is analyzed, measurements from " +
-                    $stateParams.taggedVariableObject.name.toUpperCase() + " will be included.";
+                    $stateParams.userTaggedVariableObject.name.toUpperCase() + " will be included.";
                 $rootScope.stateParams.helpText = " <br><br> Search for a variable " +
-                    "that you'd like to tag with " + $stateParams.taggedVariableObject.name.toUpperCase() + ".  Then " +
-                    "when " + $stateParams.taggedVariableObject.name.toUpperCase() +
+                    "that you'd like to tag with " + $stateParams.userTaggedVariableObject.name.toUpperCase() + ".  Then " +
+                    "when " + $stateParams.userTaggedVariableObject.name.toUpperCase() +
                     " is analyzed, measurements from your selected tagged variable will be included. <br><br> For instance, if " +
                     "your currently selected variable were Inflammatory Pain, you could search for and select Back Pain " +
                     "to be tagged with Inflammatory Pain since Inflammatory Pain includes Back Pain.  Then Back Pain " +
                     "measurements would be included when Inflammatory Pain is analyzed";
             }
 
-            if ($stateParams.tagVariableObject) {
+            if ($stateParams.userTagVariableObject) {
                 $scope.state.helpText = "Search for a child variable " +
-                    "that you'd like to tag with " + $stateParams.tagVariableObject.name.toUpperCase() + ".  Then " +
-                    "when " + $stateParams.tagVariableObject.name.toUpperCase() +
+                    "that you'd like to tag with " + $stateParams.userTagVariableObject.name.toUpperCase() + ".  Then " +
+                    "when " + $stateParams.userTagVariableObject.name.toUpperCase() +
                     " is analyzed, measurements from your selected tagged variable will be included.";
                 $rootScope.stateParams.helpText = $scope.state.helpText + " <br><br> For instance, if " +
                     "your currently selected variable were Sugar, you could search for Coke and tag it with 37 grams of " +

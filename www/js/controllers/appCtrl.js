@@ -394,14 +394,14 @@ angular.module('starter')
         $scope.addTag = function () {
             $state.go('app.tagSearch',  {
                 fromState: $state.current.name,
-                taggedVariableObject: $rootScope.variableObject
+                userTaggedVariableObject: $rootScope.variableObject
             });
         };
 
         $scope.tagAnotherVariable = function () {
             $state.go('app.tageeSearch',  {
                 fromState: $state.current.name,
-                tagVariableObject: $rootScope.variableObject
+                userTagVariableObject: $rootScope.variableObject
             });
         };
 
@@ -828,21 +828,21 @@ angular.module('starter')
             }
         };
 
-        $scope.editTag = function(tagVariable){
+        $scope.editTag = function(userTagVariable){
             $state.go('app.tagAdd', {
-                tagConversionFactor: tagVariable.tagConversionFactor,
-                taggedVariableObject: $rootScope.variableObject,
+                tagConversionFactor: userTagVariable.tagConversionFactor,
+                userTaggedVariableObject: $rootScope.variableObject,
                 fromState: $state.current.name,
-                tagVariableObject: tagVariable
+                userTagVariableObject: userTagVariable
             });
         };
 
-        $scope.editTagged = function(taggedVariable){
+        $scope.editTagged = function(userTaggedVariable){
             $state.go('app.tagAdd', {
-                tagConversionFactor: taggedVariable.tagConversionFactor,
-                taggedVariableObject: taggedVariable,
+                tagConversionFactor: userTaggedVariable.tagConversionFactor,
+                userTaggedVariableObject: userTaggedVariable,
                 fromState: $state.current.name,
-                tagVariableObject: $rootScope.variableObject
+                userTagVariableObject: $rootScope.variableObject
             });
         };
 
