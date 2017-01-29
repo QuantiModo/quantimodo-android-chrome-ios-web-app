@@ -847,7 +847,7 @@ angular.module('starter',
             url: "/tagee-search",
             cache: false,
             params: {
-                tagVariableObject: null,
+                userTagVariableObject: null,
                 title: "Select Tagee", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a variable to tag...",
                 variableCategoryName: null,
@@ -877,7 +877,7 @@ angular.module('starter',
             url: "/tag-search",
             cache: false,
             params: {
-                taggedVariableObject: null,
+                userTaggedVariableObject: null,
                 title: "Tags", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a tag...",
                 variableCategoryName: null,
@@ -911,8 +911,8 @@ angular.module('starter',
                 fromState : null,
                 fromStateParams: null,
                 fromUrl : null,
-                tagVariableObject : null,
-                taggedVariableObject : null,
+                userTagVariableObject : null,
+                userTaggedVariableObject : null,
                 variableObject: null,
                 helpText: "Say I want to track how much sugar I consume and see how that affects me.  I don't need to " +
                     "check the label every time.  I can just tag Candy Bar and Lollypop with the amount sugar. Then during " +

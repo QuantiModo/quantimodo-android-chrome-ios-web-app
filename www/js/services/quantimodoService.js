@@ -859,8 +859,8 @@ angular.module('starter')
         quantimodoService.postUserTagDeferred = function(tagData) {
             var deferred = $q.defer();
             quantimodoService.postUserTag(tagData, function(response){
-                quantimodoService.addVariableToLocalStorage(response.data.taggedVariable);
-                quantimodoService.addVariableToLocalStorage(response.data.tagVariable);
+                quantimodoService.addVariableToLocalStorage(response.data.userTaggedVariable);
+                quantimodoService.addVariableToLocalStorage(response.data.userTagVariable);
                 deferred.resolve(response);
             }, function(error){
                 deferred.reject(error);
@@ -930,8 +930,8 @@ angular.module('starter')
         quantimodoService.deleteUserTagDeferred = function(tagData) {
             var deferred = $q.defer();
             quantimodoService.deleteUserTag(tagData, function(response){
-                quantimodoService.addVariableToLocalStorage(response.data.taggedVariable);
-                quantimodoService.addVariableToLocalStorage(response.data.tagVariable);
+                quantimodoService.addVariableToLocalStorage(response.data.userTaggedVariable);
+                quantimodoService.addVariableToLocalStorage(response.data.userTagVariable);
                 deferred.resolve(response);
             }, function(error){
                 deferred.reject(error);

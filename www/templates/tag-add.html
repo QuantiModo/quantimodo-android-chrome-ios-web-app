@@ -3,14 +3,14 @@
     <ion-content style="background-color: white" ng-class="{ isBrowserView : isWeb == true }">
         <div class="card">
             <div class="item item-body" style="text-align: center">
-                If you tag {{stateParams.taggedVariableObject.name.toUpperCase()}} with {{stateParams.tagVariableObject.name.toUpperCase()}},
-                {{stateParams.taggedVariableObject.name.toUpperCase()}} measurements will converted as specified and included in the analysis of
-                {{stateParams.tagVariableObject.name.toUpperCase()}}.
+                If you tag {{stateParams.userTaggedVariableObject.name.toUpperCase()}} with {{stateParams.userTagVariableObject.name.toUpperCase()}},
+                {{stateParams.userTaggedVariableObject.name.toUpperCase()}} measurements will converted as specified and included in the analysis of
+                {{stateParams.userTagVariableObject.name.toUpperCase()}}.
             </div>
         </div>
-        <div class="card" style="overflow: visible" id="tagAddCard" ng-if="stateParams.tagVariableObject.abbreviatedUnitName !== '/5'">
+        <div class="card" style="overflow: visible" id="tagAddCard" ng-if="stateParams.userTagVariableObject.abbreviatedUnitName !== '/5'">
             <div class="item item-divider">
-                Tag {{stateParams.taggedVariableObject.name}} with {{stateParams.tagVariableObject.name}}
+                Tag {{stateParams.userTaggedVariableObject.name}} with {{stateParams.userTagVariableObject.name}}
             </div>
             <div class="list">
                 <label class="item item-input">
@@ -22,12 +22,12 @@
                            placeholder="Enter amount" >
                     <span style="text-align: right;"
                             class="input-label">
-                        {{stateParams.tagVariableObject.unitName}} of {{stateParams.tagVariableObject.name.toUpperCase()}}
+                        {{stateParams.userTagVariableObject.unitName}} of {{stateParams.userTagVariableObject.name.toUpperCase()}}
                     </span>
                 </label>
                 <label class="item"
                        style="text-align: center;">
-                    per 1 {{stateParams.taggedVariableObject.unitName}} of {{stateParams.taggedVariableObject.name.toUpperCase()}}
+                    per 1 {{stateParams.userTaggedVariableObject.unitName}} of {{stateParams.userTaggedVariableObject.name.toUpperCase()}}
                 </label>
             </div>
         </div>

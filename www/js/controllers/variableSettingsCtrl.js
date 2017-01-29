@@ -137,21 +137,21 @@ angular.module('starter')
                 var userTagData;
                 if($rootScope.variableObject.abbreviatedUnitName !== '/5'){
                     $state.go('app.tagAdd', {
-                        taggedVariableObject: $rootScope.variableObject,
+                        userTaggedVariableObject: $rootScope.variableObject,
                         fromState: $state.current.name,
                         fromStateParams: {variableObject: $rootScope.variableObject},
-                        tagVariableObject: self.selectedItem.variable
+                        userTagVariableObject: self.selectedItem.variable
                     });
                 } else {
                     userTagData = {
-                        tagVariableId: self.selectedItem.variable.id,
-                        taggedVariableId: $rootScope.variableObject.id,
+                        userTagVariableId: self.selectedItem.variable.id,
+                        userTaggedVariableId: $rootScope.variableObject.id,
                         conversionFactor: 1
                     };
 
                     $ionicLoading.show();
                     quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
-                        $rootScope.variableObject = response.data.taggedVariable;
+                        $rootScope.variableObject = response.data.userTaggedVariable;
                         $ionicLoading.hide();
                     });
                 }
