@@ -31,7 +31,7 @@
     "angular-clipboard": "^1.5.0",
     "angular-google-analytics": "^1.1.9",
     "angular-google-adsense": "^0.4.5",
-    "angular-material-datetimepicker": "^1.4.0",
+    "angular-material-datetimepicker": "git+https://github.com/mikepsinn/angular-material-datetimepicker.git#gh-pages",
     "angular-material": "^1.1.1",
     "angular-cache": "^4.6.0"
   },
