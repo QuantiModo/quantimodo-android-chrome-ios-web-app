@@ -38,13 +38,13 @@ var paths = {
 };
 
 if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.3.3.0';
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.3.4.0';
     console.log('Falling back to OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 }
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.4.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.5.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
