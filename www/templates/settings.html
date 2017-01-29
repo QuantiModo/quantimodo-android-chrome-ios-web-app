@@ -27,8 +27,6 @@
 
         <div ng-show="user" class="card sign-in" >
             <div class="item item-divider" ng-click="showHelpInfoPopup($event, 'locationAndWeatherTracking')">
-                <i class="icon ion-ios-download"></i>
-                &nbsp
                 Location and Weather Tracking &nbsp; <i class="icon ion-information-circled"></i>
             </div>
             <ion-toggle ng-model="trackLocation"
@@ -60,7 +58,7 @@
             <a href="" ng-click="exportPdf()" class="item ">
               Export as PDF File
             </a>
-           
+
             <a href="" ng-click="exportXls()" class="item ">
                 Export as XLS File
             </a>
