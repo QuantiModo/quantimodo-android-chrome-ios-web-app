@@ -8,13 +8,9 @@ ul > li {
 	font-size: 16px;
 }
 
-/*.loading-container .loading {
-    background-color: white;
-    color: #333;
-    border-width: 1px !important;
-    border-color: #999 !important;
-    border-style: solid !important;
-}*/
+.loading-container .loading {
+    background-color: rgba(0, 0, 0, 0);
+}
 
 .primary-outcome-variable-rating-buttons {
 	text-align: center;
@@ -120,11 +116,6 @@ div.dateDiv > input {
   height: 28px;
   stroke: #11C1F3;
   fill: #11C1F3;
-}
-
-
-.loading-container .loading {
-	background-color: white !important;
 }
 
 p.item-icon-left{
