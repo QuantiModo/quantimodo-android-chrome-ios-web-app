@@ -23,6 +23,12 @@ angular.module('starter')
             showMoreUnits: false
         };
 
+
+        $scope.$on('$ionicView.beforeEnter', function(){
+            $scope.init();
+            $rootScope.hideNavigationMenu = false;
+        });
+
         $scope.showMoreOptions = function(){
             $scope.state.showMoreOptions = true;
         };
@@ -806,9 +812,5 @@ angular.module('starter')
 
         };
 
-        $scope.$on('$ionicView.beforeEnter', function(){
-            $scope.init();
-            $rootScope.hideNavigationMenu = false;
-        });
 
 	});
