@@ -7624,6 +7624,7 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
+                    premiumFeature: true,
                     bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and" +
                         "devices that I can automatically pull data from!",
                     nextPageButtonText: "MAYBE LATER",
