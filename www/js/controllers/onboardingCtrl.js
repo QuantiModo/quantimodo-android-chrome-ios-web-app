@@ -2,15 +2,15 @@ angular.module('starter')
 .controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                   $rootScope, $stateParams, quantimodoService) {
 
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) {
+        console.debug("OnboardingCtrl beforeEnter");
         $rootScope.hideNavigationMenu = true;
         if(!$rootScope.user){
             quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
             $state.go('app.login');
             return;
         }
-
-        $rootScope.onboardingFooterText = null;
+        $scope.hideLoader();
         quantimodoService.setupOnboardingPages();
         if($rootScope.onboardingPages && $rootScope.user){
             $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
@@ -19,7 +19,6 @@ angular.module('starter')
         }
 
         $ionicLoading.hide();
-        //$rootScope.hideMenuButton = true;
     });
 
     $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
@@ -27,11 +26,14 @@ angular.module('starter')
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
-        quantimodoService.setupHelpCards();
+        console.debug("OnboardingCtrl afterEnter");
+        quantimodoService.setupHelpCards(true);
     });
 
     $scope.$on('$ionicView.beforeLeave', function(){
-        $rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
+        console.debug("OnboardingCtrl beforeLeave");
+        //Can't do this here because it makes menu show while searching for reminders
+        //$rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
     });
 
     $scope.$on('$ionicView.leave', function(){
@@ -54,7 +56,7 @@ angular.module('starter')
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         removeImportPage();
-        $rootScope.onboardingFooterText = "Done connecting data sources";
+        $rootScope.onboardingPages[0].nextPageButtonText = "Done connecting data sources";
         $state.go('app.import');
     };
 
@@ -67,7 +69,7 @@ angular.module('starter')
         $scope.onHelpButtonPress($rootScope.onboardingPages[0].title, $rootScope.onboardingPages[0].moreInfo);
     };
 
-    $rootScope.goToReminderSearchCategoryFromOnboarding = function(variableCategoryName) {
+    $rootScope.goToReminderSearchCategoryFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         if(!$rootScope.user){
@@ -77,7 +79,7 @@ angular.module('starter')
             return;
         }
 
-        $scope.goToReminderSearchCategory(variableCategoryName);
+        $scope.goToReminderSearchCategory($rootScope.onboardingPages[0].variableCategoryName);
     };
 
     $rootScope.enableLocationTracking = function () {
@@ -86,42 +88,10 @@ angular.module('starter')
     };
 
     $rootScope.doneOnboarding = function () {
+        $state.go('app.remindersInbox');
         $rootScope.hideMenuButton = false;
-        $rootScope.defaultHelpCards = null;
-        var getStartedHelpCard = {
-            id: "getStartedHelpCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideGetStartedHelpCard",
-            title: 'Reminder Inbox',
-            "backgroundColor": "#f09402",
-            circleColor: "#fab952",
-            iconClass: "icon positive ion-archive",
-            image: {
-                url: "img/variable_categories/vegetarian_food-96.png",
-                    height: "96",
-                    width: "96"
-            },
-            bodyText: "Scroll through the Inbox and press the appropriate button on each reminder notification. " +
-                "Each one only takes a few seconds. You'll be " +
-                "shocked at how much valuable data you can collect with just a few minutes in the Reminder Inbox each day!",
-                buttons: [
-                    {
-                        id: "hideRecordMeasurementInfoCardButton",
-                        clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
-                        buttonText: 'Got it!',
-                        buttonIconClass: "ion-checkmark",
-                        buttonClass: "button button-clear button-balanced"
-                    }
-                ]
-        };
-
-        $rootScope.defaultHelpCards = [getStartedHelpCard].concat($rootScope.defaultHelpCards);
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
-        $rootScope.onboardingPages = null;
-        if(!$rootScope.user.stripePlan){
-            $state.go('app.upgrade');
-        } else {
-            $state.go('app.remindersInbox');
-        }
+        //$rootScope.onboardingPages = null;
     };
 
     $rootScope.hideOnboardingPage = function () {

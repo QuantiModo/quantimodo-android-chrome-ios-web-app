@@ -38,7 +38,6 @@ angular.module('starter')
 
         $scope.$on('$ionicView.afterEnter', function(){
             $rootScope.hideNavigationMenu = true;
-            quantimodoService.setupHelpCards();
             if(navigator && navigator.splashscreen) {
                 console.debug('ReminderInbox: Hiding splash screen because app is ready');
                 navigator.splashscreen.hide();

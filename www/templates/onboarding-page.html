@@ -27,7 +27,7 @@
                      ng-src="{{onboardingPages[0].image.url}}">
             </div>
             <br>
-            <p ng-click="onboardingPages[0].titleClickFunctionCall()" style="font-size: 30px; line-height: 1;">
+            <p style="font-size: 30px; line-height: 1;">
                 {{onboardingPages[0].title}}
             </p>
             <br>
@@ -35,40 +35,79 @@
                 style="font-size: 16px; line-height: 1.5;">
             </span>
             <br>
-            <button class="button button-small button-clear button-light"
-                    ng-if="onboardingPages[0].moreInfo"
-                    ng-click="showMoreOnboardingInfo()">
+            <br>
+            <p style="cursor: pointer" ng-if="onboardingPages[0].moreInfo" ng-click="showMoreOnboardingInfo()">
                 MORE INFO
+            </p>
+            <br>
+            <button class="button"
+                    ng-if="onboardingPages[0].addButtonText"
+                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                    id="goToReminderSearchCategoryFromOnboarding"
+                    ng-click="goToReminderSearchCategoryFromOnboarding()">
+                <i class="ion-plus-round"> &nbsp; {{onboardingPages[0].addButtonText}} &nbsp;</i>
+            </button>
+            <button class="button"
+                    ng-show="onboardingPages[0].id === 'locationTrackingPage' && user.stripeActive"
+                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                    id="enableLocationTrackingButton"
+                    ng-click="enableLocationTracking()">
+                <i class="ion-ios-partlysunny"> &nbsp; Yes &nbsp;</i>
+            </button>
+            <button class="button"
+                    ng-show="onboardingPages[0].id === 'importDataPage' && user.stripeActive"
+                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                    id="importDataButton"
+                    ng-click="onboardingGoToImportPage()">
+                <i class="ion-android-download"> &nbsp; Connect &nbsp;</i>
+            </button>
+            <button class="button"
+                    ng-show="onboardingPages[0].premiumFeature && !user.stripeActive"
+                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                    id="goToUpgradePageButton"
+                    ng-click="goToState('app.upgrade')">
+                <i class="ion-android-star"> &nbsp;Upgrade &nbsp;</i>
+            </button>
+            <button class="button"
+                    ng-if="onboardingPages[0].nextPageButtonText"
+                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                    id="hideOnboardingPage"
+                    ng-click="hideOnboardingPage()">
+                <i class="ion-checkmark"> &nbsp; {{onboardingPages[0].nextPageButtonText}} &nbsp;</i>
+            </button>
+            <button class="button"
+                    ng-if="onboardingPages[0].id === 'allDoneCard'"
+                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                    id="goToInboxButton"
+                    ng-click="doneOnboarding()">
+                <i class="ion-ios-filing-outline"> &nbsp; GO TO INBOX &nbsp;</i>
             </button>
             <br>
-            <div ng-repeat="button in onboardingPages[0].buttons" >
-                <div class="button-bar">
-                    <button class="button"
-                            ng-hide="button.premiumFeature && !user.stripeActive"
-                            style="background-color: {{onboardingPages[0].backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                            id="{{button.id}}"
-                            ng-click="button.clickFunctionCall()">
-                        <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
-                    </button>
-                    <button class="button"
-                            ng-show="button.premiumFeature && !user.stripeActive"
-                            style="background-color: {{onboardingPages[0].backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                            id="goToUpgradePageButton"
-                            ng-click="goToState('app.upgrade')">
-                        <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
-                    </button>
-                </div>
-            </div>
-            <br>
-            <div ng-if="onboardingPages[0].id.indexOf('login') === -1" >
+<!--            <div ng-if="onboardingPages[0].id.indexOf('login') === -1" >
                 <div class="button-bar">
                     <button class="button"
                             style="background-color: {{onboardingPages[0].backgroundColor}};
@@ -82,7 +121,7 @@
                         &nbsp; SKIP SETUP &nbsp;</i>
                     </button>
                 </div>
-            </div>
+            </div>-->
         </div>
 
     </div>
