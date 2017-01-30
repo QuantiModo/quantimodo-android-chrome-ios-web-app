@@ -398,7 +398,7 @@ angular.module('starter')
             if(!$scope.state.helpText && $stateParams.variableCategoryName &&
                 $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular){
                 $scope.state.helpText = 'Enter a ' +
-                    $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular +
+                    $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular.toLowerCase() +
                     ' in the search box or select one from the list below.';
             }
 
