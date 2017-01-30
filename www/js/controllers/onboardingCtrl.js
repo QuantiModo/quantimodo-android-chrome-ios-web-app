@@ -27,7 +27,7 @@ angular.module('starter')
 
     $scope.$on('$ionicView.afterEnter', function(){
         console.debug("OnboardingCtrl afterEnter");
-        quantimodoService.setupHelpCards();
+        quantimodoService.setupHelpCards(true);
     });
 
     $scope.$on('$ionicView.beforeLeave', function(){
@@ -89,34 +89,6 @@ angular.module('starter')
 
     $rootScope.doneOnboarding = function () {
         $rootScope.hideMenuButton = false;
-        $rootScope.defaultHelpCards = null;
-        var getStartedHelpCard = {
-            id: "getStartedHelpCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideGetStartedHelpCard",
-            title: 'Reminder Inbox',
-            "backgroundColor": "#f09402",
-            circleColor: "#fab952",
-            iconClass: "icon positive ion-archive",
-            image: {
-                url: "img/variable_categories/vegetarian_food-96.png",
-                    height: "96",
-                    width: "96"
-            },
-            bodyText: "Scroll through the Inbox and press the appropriate button on each reminder notification. " +
-                "Each one only takes a few seconds. You'll be " +
-                "shocked at how much valuable data you can collect with just a few minutes in the Reminder Inbox each day!",
-                buttons: [
-                    {
-                        id: "hideRecordMeasurementInfoCardButton",
-                        clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
-                        buttonText: 'Got it!',
-                        buttonIconClass: "ion-checkmark",
-                        buttonClass: "button button-clear button-balanced"
-                    }
-                ]
-        };
-
-        $rootScope.defaultHelpCards = [getStartedHelpCard].concat($rootScope.defaultHelpCards);
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
         $rootScope.onboardingPages = null;
         $state.go('app.remindersInbox');
