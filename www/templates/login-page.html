@@ -41,41 +41,43 @@
                 MORE INFO
             </button>
             <br>
-            <div class="button-bar">
-                <button class="button"
-                        style="background-color: {{loginPage.backgroundColor}};
-                            border: none;
-                            outline: none;
-                            color: white;
-                            text-align: center"
-                        id="signUpButton"
-                        ng-click="register()">
-                    Sign Up
-                </button>
-            </div>
-            <div class="button-bar">
-                <button class="button"
-                        style="background-color: {{loginPage.backgroundColor}};
-                            border: none;
-                            outline: none;
-                            color: white;
-                            text-align: center"
-                        id="signInButton"
-                        ng-click="login()">
-                    Already Have Account
-                </button>
-            </div>
-            <div class="button-bar" ng-if="isAndroid">
-                <button class="button"
-                        style="background-color: {{loginPage.backgroundColor}};
-                            border: none;
-                            outline: none;
-                            color: white;
-                            text-align: center"
-                        id="signInWithGoogle"
-                        ng-click="googleLogin()">
-                    Sign In With Google
-                </button>
+            <div id="loginButtons" ng-if="loginPage.title !== 'Logging in...'">
+                <div class="button-bar">
+                    <button class="button"
+                            style="background-color: {{loginPage.backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                            id="signUpButton"
+                            ng-click="register()">
+                        Sign Up
+                    </button>
+                </div>
+                <div class="button-bar">
+                    <button class="button"
+                            style="background-color: {{loginPage.backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                            id="signInButton"
+                            ng-click="login()">
+                        Already Have Account
+                    </button>
+                </div>
+                <div class="button-bar" ng-if="isAndroid">
+                    <button class="button"
+                            style="background-color: {{loginPage.backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                            id="signInWithGoogle"
+                            ng-click="googleLogin()">
+                        Sign In With Google
+                    </button>
+                </div>
             </div>
         </div>
 
