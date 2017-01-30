@@ -2,7 +2,7 @@
     <ion-content scroll="true" overflow-scroll="true">
         <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
         <div class="card"
-             ng-show="onboardingFooterText"
+             ng-show="onboardingPages[0].nextPageButtonText"
              id="importHelpCard" >
             <div class="item item-avatar item-borderless">
                 <i class="{{defaultHelpCards[0].iconClass}}"
@@ -39,13 +39,13 @@
         </div>-->
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->
     </ion-content>
-    <div ng-show="onboardingFooterText"
+    <div ng-show="onboardingPages[0].nextPageButtonText"
          ng-click="goToState('app.onboarding')"
          style="cursor:pointer;"
          class="bar bar-footer bar-balanced">
         <div class="title">
             <i class="icon ion-reply"></i>
-            {{onboardingFooterText}}
+            {{onboardingPages[0].nextPageButtonText}}
         </div>
     </div>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>

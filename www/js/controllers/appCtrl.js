@@ -36,6 +36,89 @@ angular.module('starter')
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
         $rootScope.appDisplayName = config.appSettings.appDisplayName;
 
+        $scope.$on('$ionicView.loaded', function(){
+            console.debug('appCtrl loaded');
+            // This event will only happen once per view being created. If a view is cached but not active, this event
+            // will not fire again on a subsequent viewing.
+        });
+
+        $scope.$on('$ionicView.beforeEnter', function (e) {
+            console.debug('appCtrl beforeEnter');
+            quantimodoService.getAccessTokenFromUrlParameter();
+            if(!window.private_keys) {
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+            }
+            if($rootScope.urlParameters.refreshUser){
+                quantimodoService.clearLocalStorage();
+                window.localStorage.introSeen = true;
+                window.localStorage.isWelcomed = true;
+                $rootScope.user = null;
+                $rootScope.refreshUser = false;
+            }
+        });
+
+        // when view is changed
+        $scope.$on('$ionicView.enter', function (e) {
+            console.debug('appCtrl enter');
+            //$scope.showHelpInfoPopupIfNecessary(e);
+            if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
+                $scope.showCalendarButton = true;
+            } else {
+                $scope.showCalendarButton = false;
+            }
+
+            // Show "..." button on top right
+            if (e.targetScope && e.targetScope.controller_name &&
+                e.targetScope.controller_name === "MeasurementAddCtrl" ||
+                e.targetScope.controller_name === "ReminderAddCtrl" ||
+                e.targetScope.controller_name === "FavoriteAddCtrl" ||
+                e.targetScope.controller_name === "ChartsPageCtrl" ||
+                e.targetScope.controller_name === "VariableSettingsCtrl" ||
+                e.targetScope.controller_name === "RemindersInboxCtrl" ||
+                e.targetScope.controller_name === "RemindersManageCtrl" ||
+                e.targetScope.controller_name === "StudyCtrl" ||
+                e.targetScope.controller_name === "PredictorsCtrl" || $state.current.name === 'app.historyAllVariable'
+            ) {
+                $scope.showMoreMenuButton = true;
+            } else {
+                $scope.showMoreMenuButton = false;
+            }
+        });
+
+        // when view is changed
+        $scope.$on('$ionicView.afterEnter', function (e) {
+            console.debug('appCtrl afterEnter');
+            if($rootScope.user && $rootScope.user.trackLocation){
+                $ionicPlatform.ready(function() { //For Ionic
+                    quantimodoService.backgroundGeolocationInit();
+                });
+            }
+            //quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();  // Using background geolocation
+            $rootScope.hideNavigationMenuIfSetInUrlParameter();
+            quantimodoService.updateUserTimeZoneIfNecessary();
+            quantimodoService.shouldWeUseIonicLocalNotifications();
+            quantimodoService.setupBugsnag();
+            if($rootScope.user){
+                $rootScope.trackLocation = $rootScope.user.trackLocation;
+                console.debug('$rootScope.trackLocation  is '+ $rootScope.trackLocation);
+                if(!$rootScope.user.getPreviewBuilds){
+                    $rootScope.user.getPreviewBuilds = false;
+                }
+            }
+
+            if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
+                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
+                $ionicPlatform.ready(function () {
+                    console.debug("Setting on trigger and on click actions for notifications");
+                    quantimodoService.setOnTriggerActionForLocalNotifications();
+                    quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
+                    quantimodoService.setOnUpdateActionForLocalNotifications();
+                });
+            } else {
+                //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
+            }
+        });
+
         // Not used
         //$scope.ratingInfo = quantimodoService.getRatingInfo();
         $scope.closeMenu = function () {
@@ -471,8 +554,8 @@ angular.module('starter')
             if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
                 $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
                 $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
-                $rootScope.onboardingPages[0].buttons[0].buttonText = "Add Another";
-                $rootScope.onboardingPages[0].buttons[1].buttonText = "All Done";
+                $rootScope.onboardingPages[0].addButtonText = "Add Another";
+                $rootScope.onboardingPages[0].nextPageButtonText = "All Done";
                 $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
                     variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
                     variableObject.variableCategoryName.toLowerCase() + '?';
@@ -615,81 +698,6 @@ angular.module('starter')
         $scope.primaryOutcomeVariableTrackingQuestion = config.appSettings.primaryOutcomeVariableTrackingQuestion;
         $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
         /*Wrapper Config End*/
-
-
-        $scope.$on('$ionicView.beforeEnter', function (e) {
-            quantimodoService.getAccessTokenFromUrlParameter();
-            if(!window.private_keys) {
-                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
-            }
-            if($rootScope.urlParameters.refreshUser){
-                quantimodoService.clearLocalStorage();
-                window.localStorage.introSeen = true;
-                window.localStorage.isWelcomed = true;
-                $rootScope.user = null;
-                $rootScope.refreshUser = false;
-            }
-        });
-
-        // when view is changed
-        $scope.$on('$ionicView.enter', function (e) {
-            //$scope.showHelpInfoPopupIfNecessary(e);
-            if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
-                $scope.showCalendarButton = true;
-            } else {
-                $scope.showCalendarButton = false;
-            }
-
-            // Show "..." button on top right
-            if (e.targetScope && e.targetScope.controller_name &&
-                e.targetScope.controller_name === "MeasurementAddCtrl" ||
-                e.targetScope.controller_name === "ReminderAddCtrl" ||
-                e.targetScope.controller_name === "FavoriteAddCtrl" ||
-                e.targetScope.controller_name === "ChartsPageCtrl" ||
-                e.targetScope.controller_name === "VariableSettingsCtrl" ||
-                e.targetScope.controller_name === "RemindersInboxCtrl" ||
-                e.targetScope.controller_name === "RemindersManageCtrl" ||
-                e.targetScope.controller_name === "StudyCtrl" ||
-                e.targetScope.controller_name === "PredictorsCtrl" || $state.current.name === 'app.historyAllVariable'
-            ) {
-                $scope.showMoreMenuButton = true;
-            } else {
-                $scope.showMoreMenuButton = false;
-            }
-        });
-
-        // when view is changed
-        $scope.$on('$ionicView.afterEnter', function (e) {
-            if($rootScope.user && $rootScope.user.trackLocation){
-                $ionicPlatform.ready(function() { //For Ionic
-                    quantimodoService.backgroundGeolocationInit();
-                });
-            }
-            //quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();  // Using background geolocation
-            $rootScope.hideNavigationMenuIfSetInUrlParameter();
-            quantimodoService.updateUserTimeZoneIfNecessary();
-            quantimodoService.shouldWeUseIonicLocalNotifications();
-            quantimodoService.setupBugsnag();
-            if($rootScope.user){
-                $rootScope.trackLocation = $rootScope.user.trackLocation;
-                console.debug('$rootScope.trackLocation  is '+ $rootScope.trackLocation);
-                if(!$rootScope.user.getPreviewBuilds){
-                    $rootScope.user.getPreviewBuilds = false;
-                }
-            }
-
-            if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
-                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
-                $ionicPlatform.ready(function () {
-                    console.debug("Setting on trigger and on click actions for notifications");
-                    quantimodoService.setOnTriggerActionForLocalNotifications();
-                    quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
-                    quantimodoService.setOnUpdateActionForLocalNotifications();
-                });
-            } else {
-                //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
-            }
-        });
 
         $scope.highchartsReflow = function() {
             // Fixes chart width

@@ -22,6 +22,76 @@ angular.module('starter')
             variableSearchPlaceholderText: "Search for a variable here..."
         };
 
+        $scope.$on('$ionicView.beforeEnter', function(e) {
+            console.debug("VariableSearchCtrl beforeEnter");
+            $rootScope.stateParams = $stateParams;
+            if($stateParams.helpText){
+                $scope.state.helpText = $stateParams.helpText;
+            }
+
+            if($stateParams.title){
+                $scope.state.title = $stateParams.title;
+            }
+
+            if($stateParams.variableSearchPlaceholderText){
+                $scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;
+            }
+
+            if ($rootScope.variableCategoryName === 'Anything') {
+                $rootScope.variableCategoryName = null;
+            }
+
+            if(!$stateParams.variableSearchParameters){
+                $stateParams.variableSearchParameters = {};
+            }
+            if(!$stateParams.variableSearchParameters.variableCategoryName){
+                $stateParams.variableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;
+            }
+
+            if(!$stateParams.commonVariableSearchParameters){
+                $stateParams.commonVariableSearchParameters = $stateParams.variableSearchParameters;
+            }
+
+            if(!$stateParams.commonVariableSearchParameters.variableCategoryName){
+                $stateParams.commonVariableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;
+            }
+
+            if($stateParams.variableCategoryName){
+                $rootScope.variableCategoryName = $stateParams.variableCategoryName;
+            }
+
+            if ($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything') {
+                $scope.state.variableSearchPlaceholderText = "Search for a " +
+                    $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";
+                $scope.state.title = "Select " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1));
+                $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
+            }
+            setHelpText();
+        });
+
+        // update data when view is navigated to
+        $scope.$on('$ionicView.enter', function(e) {
+            console.debug("VariableSearchCtrl enter");
+            $scope.hideLoader();
+            if(!$stateParams.hideNavigationMenu){
+                $rootScope.hideNavigationMenu = false;
+            }
+
+            console.debug($state.current.name + ' initializing...');
+
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            $scope.showHelpInfoPopupIfNecessary();
+            if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+                $stateParams.variableSearchParameters.variableCategoryName = $stateParams.variableCategoryName;
+            }
+            if($scope.state.variableSearchResults.length < 10){
+                populateUserVariables();
+                populateCommonVariables();
+            }
+            setHelpText();
+        });
+
         $scope.selectVariable = function(variableObject) {
             console.debug($state.current.name + ": " + "$scope.selectVariable: " +
                 JSON.stringify(variableObject).substring(0, 140) + '...');
@@ -115,26 +185,6 @@ angular.module('starter')
 
         $scope.goToStateFromVariableSearch = function(stateName){
             $state.go(stateName, $stateParams);
-        };
-
-        $scope.init = function(){
-            if(!$stateParams.hideNavigationMenu){
-                $rootScope.hideNavigationMenu = false;
-            }
-
-            console.debug($state.current.name + ' initializing...');
-
-            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.showHelpInfoPopupIfNecessary();
-            if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-                $stateParams.variableSearchParameters.variableCategoryName = $stateParams.variableCategoryName;
-            }
-            if($scope.state.variableSearchResults.length < 10){
-                populateUserVariables();
-                populateCommonVariables();
-            }
-            setHelpText();
         };
 
         // when a query is searched in the search box
@@ -318,12 +368,6 @@ angular.module('starter')
         };
 
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            $scope.hideLoader();
-            $scope.init();
-        });
-
-        // update data when view is navigated to
         function setHelpText() {
             if ($stateParams.userTaggedVariableObject) {
                 $scope.state.helpText = "Search for a variable like an ingredient, category, or duplicate variable " +
@@ -350,53 +394,19 @@ angular.module('starter')
                     "If your current parent tag variable were Inflammatory Pain, you could search for Back Pain and then your " +
                     "Inflammatory Pain analysis would include Back Pain measurements as well.";
             }
+
+            if(!$scope.state.helpText && $stateParams.variableCategoryName &&
+                $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular){
+                $scope.state.helpText = 'Enter a ' +
+                    $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular +
+                    ' in the search box or select one from the list below.';
+            }
+
+            if(!$scope.state.helpText){
+                $scope.state.helpText = 'Enter a variable in the search box or select one from the list below.';
+            }
         }
 
-        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-            $rootScope.stateParams = $stateParams;
-            if($stateParams.helpText){
-                $scope.state.helpText = $stateParams.helpText;
-            }
-
-            if($stateParams.title){
-                $scope.state.title = $stateParams.title;
-            }
-
-            if($stateParams.variableSearchPlaceholderText){
-                $scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;
-            }
-
-            if ($rootScope.variableCategoryName === 'Anything') {
-                $rootScope.variableCategoryName = null;
-            }
-
-            if(!$stateParams.variableSearchParameters){
-                $stateParams.variableSearchParameters = {};
-            }
-            if(!$stateParams.variableSearchParameters.variableCategoryName){
-                $stateParams.variableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;
-            }
-
-            if(!$stateParams.commonVariableSearchParameters){
-                $stateParams.commonVariableSearchParameters = $stateParams.variableSearchParameters;
-            }
-
-            if(!$stateParams.commonVariableSearchParameters.variableCategoryName){
-                $stateParams.commonVariableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;
-            }
-
-            if($stateParams.variableCategoryName){
-                $rootScope.variableCategoryName = $stateParams.variableCategoryName;
-            }
-
-            if ($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything') {
-                $scope.state.variableSearchPlaceholderText = "Search for a " +
-                    $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";
-                $scope.state.title = "Select " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1));
-                $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
-            }
-            setHelpText();
-        });
 
         var checkNameExists = function (item) {
             if(!item.name){

@@ -30,7 +30,7 @@ angular.module('starter')
             }
 
             if(status === 401){
-                if(options.doNotSendToLogin){
+                if(options && options.doNotSendToLogin){
                     return;
                 } else {
                     console.warn('quantimodoService.errorHandler: Sending to login because we got 401 with request ' +
@@ -7527,69 +7527,6 @@ angular.module('starter')
 
             var onboardingPages = [
                 {
-                    id: "addTreatmentRemindersCard",
-                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
-                    title: 'Any Treatments?',
-                    "backgroundColor": "#f09402",
-                    circleColor: "#fab952",
-                    iconClass: "icon positive " + $rootScope.variableCategories.Treatments.icon,
-                    image: {
-                        url: $rootScope.variableCategories.Treatments.imageUrl,
-                        height: "96",
-                        width: "96"
-                    },
-                    bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
-                        'like meditation or psychotherapy? ',
-                    moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
-                    buttons: [
-                        {
-                            id: "goToReminderSearchCategoryTreatmentsButton",
-                            buttonText: 'Add Treatment',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced",
-                            clickFunctionCall: function(){$rootScope.goToReminderSearchCategoryFromOnboarding('Treatments');}
-                        },
-                        {
-                            id: "hideAddTreatmentRemindersCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
-                            buttonText: 'Nope',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive",
-                        }
-                    ]
-                },
-                {
-                    id: "addSymptomRemindersCard",
-                    ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
-                    title: 'Recurring Symptoms?',
-                    "backgroundColor": "#3467d6",
-                    circleColor: "#5b95f9",
-                    iconClass: "icon positive " + $rootScope.variableCategories.Symptoms.icon,
-                    image: {
-                        url: $rootScope.variableCategories.Symptoms.imageUrl,
-                        height: "96",
-                        width: "96"
-                    },
-                    bodyText: 'Got any recurring symptoms that vary in their severity?',
-                    moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
-                    buttons: [
-                        {
-                            id: "goToReminderSearchCategorySymptomsButton",
-                            clickFunctionCall: function(){$rootScope.goToReminderSearchCategoryFromOnboarding('Symptoms');},
-                            buttonText: 'Add Symptom',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced",
-                        },
-                        {
-                            id: "hideAddSymptomRemindersCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
-                            buttonText: 'Nope',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
-                },
-                {
                     id: "addEmotionRemindersCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
                     title: 'Varying Emotions?',
@@ -7601,24 +7538,28 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
+                    variableCategoryName: "Emotions",
+                    addButtonText: 'Add Emotion',
+                    nextPageButtonText: 'Maybe later',
                     bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
-                        "determine which factors are influencing them.",
-                    buttons: [
-                        {
-                            id: "goToReminderSearchCategoryEmotionsButton",
-                            clickFunctionCall: function(){$rootScope.goToReminderSearchCategoryFromOnboarding('Emotions');},
-                            buttonText: 'Add Emotion',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
-                            id: "hideAddEmotionRemindersCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
-                            buttonText: 'Nope',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
+                    "determine which factors are influencing them.",
+                },
+                {
+                    id: "addSymptomRemindersCard",
+                    title: 'Recurring Symptoms?',
+                    "backgroundColor": "#3467d6",
+                    circleColor: "#5b95f9",
+                    iconClass: "icon positive " + $rootScope.variableCategories.Symptoms.icon,
+                    image: {
+                        url: $rootScope.variableCategories.Symptoms.imageUrl,
+                        height: "96",
+                        width: "96"
+                    },
+                    variableCategoryName: "Symptoms",
+                    addButtonText: 'Add Symptom',
+                    nextPageButtonText: 'Maybe later',
+                    bodyText: 'Got any recurring symptoms that vary in their severity?',
+                    moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
                 },
                 {
                     id: "addFoodRemindersCard",
@@ -7632,27 +7573,31 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
+                    variableCategoryName: "Foods",
+                    addButtonText: 'Add Food or Drink',
+                    nextPageButtonText: 'Maybe later',
                     bodyText: "Add any foods or drinks that you consume more than a few times a week",
-                    buttons: [
-                        {
-                            id: "goToReminderSearchCategoryFoodsButton",
-                            clickFunctionCall: function(){$rootScope.goToReminderSearchCategoryFromOnboarding('Foods');},
-                            buttonText: 'Add Food or Drink',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced"
-                        },
-                        {
-                            id: "hideAddFoodRemindersCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
-                            buttonText: 'Nope',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
                 },
                 {
-                    id: "locationTrackingInfoCard",
-                    ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
+                    id: "addTreatmentRemindersCard",
+                    title: 'Any Treatments?',
+                    "backgroundColor": "#f09402",
+                    circleColor: "#fab952",
+                    iconClass: "icon positive " + $rootScope.variableCategories.Treatments.icon,
+                    image: {
+                        url: $rootScope.variableCategories.Treatments.imageUrl,
+                        height: "96",
+                        width: "96"
+                    },
+                    variableCategoryName: "Symptoms",
+                    addButtonText: 'Add Treatment',
+                    nextPageButtonText: 'Maybe later',
+                    bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
+                        'like meditation or psychotherapy? ',
+                    moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
+                },
+                {
+                    id: "locationTrackingPage",
                     title: 'Weather & Location Tracking',
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
@@ -7662,29 +7607,13 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
+                    premiumFeature: true,
                     bodyText: "Would you like to automatically log location and weather? ",
-                    moreInfo: $rootScope.variableCategories.Location.moreInfo + " <br> " + $rootScope.variableCategories.Environment.moreInfo,
-                    buttons: [
-                        {
-                            id: "enableLocationTrackingButton",
-                            clickFunctionCall: function(){$rootScope.enableLocationTracking();},
-                            buttonText: 'YES',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-balanced",
-                            premiumFeature: true
-                        },
-                        {
-                            id: "hideLocationTrackingInfoCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
-                            buttonText: 'NO',
-                            buttonIconClass: "ion-flash-off",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
+                    moreInfo: $rootScope.variableCategories.Location.moreInfo + " <br> " +
+                        $rootScope.variableCategories.Environment.moreInfo,
                     },
                 {
-                    id: "importDataCard",
-                    ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
+                    id: "importDataPage",
                     title: 'Import Your Data',
                     "backgroundColor": "#f09402",
                     circleColor: "#fab952",
@@ -7696,23 +7625,7 @@ angular.module('starter')
                     },
                     bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and" +
                         "devices that I can automatically pull data from!",
-                    buttons: [
-                        {
-                            id: "goToStateAppImportButton",
-                            clickFunctionCall: function(){$rootScope.onboardingGoToImportPage();},
-                            buttonText: 'Connect an app or device',
-                            buttonIconClass: "ion-plus-round",
-                            buttonClass: "button button-clear button-balanced",
-                            premiumFeature: true
-                        },
-                        {
-                            id: "hideImportDataCardButton",
-                            clickFunctionCall: function(){$rootScope.hideOnboardingPage();},
-                            buttonText: 'Done connecting data sources',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
+                    nextPageButtonText: "Maybe later",
                 },
                 {
                     id: "allDoneCard",
@@ -7727,16 +7640,7 @@ angular.module('starter')
                         width: "70"
                     },
                     bodyText: "You're all set up!  Let's take a minute to record your first measurements and then " +
-                        "you're done for the day! ",
-                    buttons: [
-                        {
-                            id: "goToInboxButton",
-                            clickFunctionCall: function(){$rootScope.doneOnboarding();},
-                            buttonText: 'GO TO INBOX',
-                            buttonIconClass: "ion-ios-filing-outline",
-                            buttonClass: "button button-clear button-assertive"
-                        }
-                    ]
+                        "you're done for the day! "
                 }
             ];
 

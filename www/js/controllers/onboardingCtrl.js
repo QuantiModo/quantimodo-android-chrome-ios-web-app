@@ -2,7 +2,8 @@ angular.module('starter')
 .controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                   $rootScope, $stateParams, quantimodoService) {
 
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) {
+        console.debug("OnboardingCtrl beforeEnter");
         $rootScope.hideNavigationMenu = true;
         if(!$rootScope.user){
             quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
@@ -10,7 +11,6 @@ angular.module('starter')
             return;
         }
 
-        $rootScope.onboardingFooterText = null;
         quantimodoService.setupOnboardingPages();
         if($rootScope.onboardingPages && $rootScope.user){
             $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
@@ -19,7 +19,6 @@ angular.module('starter')
         }
 
         $ionicLoading.hide();
-        //$rootScope.hideMenuButton = true;
     });
 
     $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
@@ -27,11 +26,14 @@ angular.module('starter')
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
+        console.debug("OnboardingCtrl afterEnter");
         quantimodoService.setupHelpCards();
     });
 
     $scope.$on('$ionicView.beforeLeave', function(){
-        $rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
+        console.debug("OnboardingCtrl beforeLeave");
+        //Can't do this here because it makes menu show while searching for reminders
+        //$rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
     });
 
     $scope.$on('$ionicView.leave', function(){
@@ -54,7 +56,7 @@ angular.module('starter')
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         removeImportPage();
-        $rootScope.onboardingFooterText = "Done connecting data sources";
+        $rootScope.onboardingPages[0].nextPageButtonText = "Done connecting data sources";
         $state.go('app.import');
     };
 
@@ -67,7 +69,7 @@ angular.module('starter')
         $scope.onHelpButtonPress($rootScope.onboardingPages[0].title, $rootScope.onboardingPages[0].moreInfo);
     };
 
-    $rootScope.goToReminderSearchCategoryFromOnboarding = function(variableCategoryName) {
+    $rootScope.goToReminderSearchCategoryFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         if(!$rootScope.user){
@@ -77,7 +79,7 @@ angular.module('starter')
             return;
         }
 
-        $scope.goToReminderSearchCategory(variableCategoryName);
+        $scope.goToReminderSearchCategory($rootScope.onboardingPages[0].variableCategoryName);
     };
 
     $rootScope.enableLocationTracking = function () {
