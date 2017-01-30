@@ -51,8 +51,7 @@ angular.module('starter')
         });
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("enter state " + $state.current.name);
-            hideInboxLoader();
-            $scope.hideLoader();
+
             console.debug($state.current.name + ' initializing...');
 
             $rootScope.bloodPressure = {
@@ -430,9 +429,7 @@ angular.module('starter')
 			$ionicLoading.hide();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
-            if($scope.state && $scope.loading){
-                $scope.loading = false;
-			}
+			$scope.loading = false;
 		};
 
 		var getFilteredTodayTrackingReminderNotifications = function(){
