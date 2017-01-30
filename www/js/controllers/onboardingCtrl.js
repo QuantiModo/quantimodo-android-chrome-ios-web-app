@@ -10,7 +10,7 @@ angular.module('starter')
             $state.go('app.login');
             return;
         }
-
+        $scope.hideLoader();
         quantimodoService.setupOnboardingPages();
         if($rootScope.onboardingPages && $rootScope.user){
             $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
