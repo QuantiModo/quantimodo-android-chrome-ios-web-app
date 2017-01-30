@@ -1,7 +1,7 @@
 angular.module('starter')
     // quantimodoService API implementation
     .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform,
-                                           $cordovaGeolocation, CacheFactory) {
+                                           $cordovaGeolocation, CacheFactory, $ionicLoading) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -1515,19 +1515,13 @@ angular.module('starter')
             if (register === true) {
                 loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");
             }
-            console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
-            var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
-            console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
-            if(afterLoginGoTo) {
-                quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
-                loginUrl += "redirect_uri=" + encodeURIComponent(afterLoginGoTo);
-            } else {
-                loginUrl += "redirect_uri=" +
-                    encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
-            }
+
             console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
             var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
             if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
+                $ionicLoading.show();
+                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href + '?loggingIn=true');
+                // Have to come back to login page and wait for user request to complete
                 window.location.replace(loginUrl);
             } else {
                 alert("API url doesn't match auth base url.  Please make use the same domain in config file");
