@@ -6992,7 +6992,7 @@ angular.module('starter')
                 return null;
             }
 
-            if(itemAsString == "undefined"){
+            if(itemAsString === "undefined"){
                 quantimodoService.reportError(localStorageItemName  + " local storage item is undefined!");
                 return null;
             }
@@ -7020,7 +7020,7 @@ angular.module('starter')
                 }
                 matchingElements = [];
                 for(i = 0; i < unfilteredElementArray.length; i++){
-                    if(unfilteredElementArray[i][filterPropertyName] == filterPropertyValue){
+                    if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
                         matchingElements.push(unfilteredElementArray[i]);
                     }
                 }
@@ -7954,7 +7954,7 @@ angular.module('starter')
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive",
-                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage();}
                         }
                     ]
                 },
@@ -7978,7 +7978,7 @@ angular.module('starter')
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive",
-                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage();}
                         }
                     ]
                 },
@@ -8003,7 +8003,7 @@ angular.module('starter')
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive",
-                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage();}
                         }
                     ]
                 },
@@ -8027,7 +8027,7 @@ angular.module('starter')
                             buttonText: 'Nope',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive",
-                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage();}
                         }
                     ]
                 },
@@ -8054,7 +8054,7 @@ angular.module('starter')
                             buttonText: 'NO',
                             buttonIconClass: "ion-flash-off",
                             buttonClass: "button button-clear button-assertive",
-                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage();}
                         }
                     ]
                 },
@@ -8078,7 +8078,7 @@ angular.module('starter')
                             buttonText: 'Done connecting data sources',
                             buttonIconClass: "ion-checkmark",
                             buttonClass: "button button-clear button-assertive",
-                            clickFunctionCall: function(){$rootScope.hideUpgradePage(card);}
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage();}
                         }
                     ]
                 },
