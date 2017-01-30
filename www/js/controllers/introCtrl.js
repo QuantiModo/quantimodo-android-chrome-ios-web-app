@@ -16,6 +16,11 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             console.debug('startApp: Going to welcome state...');
+            if(!$rootScope.user){ // Prevents onboarding page flicker
+                quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
+                $state.go('app.login');
+                return;
+            }
             $state.go('app.onboarding');
         },
 
@@ -70,8 +75,10 @@ angular.module('starter')
         if(navigator && navigator.splashscreen) {
             console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
-
         }
+
+        // Preemptive setup to avoid transition artifacts
+        quantimodoService.setupOnboardingPages();
     });
 
 });
