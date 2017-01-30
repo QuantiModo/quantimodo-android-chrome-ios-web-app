@@ -7540,9 +7540,9 @@ angular.module('starter')
                     },
                     variableCategoryName: "Emotions",
                     addButtonText: 'Add Emotion',
-                    nextPageButtonText: 'MAYBE LATER',
+                    nextPageButtonText: 'Maybe Later',
                     bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
-                    "determine which factors are influencing them.",
+                        "determine which factors are influencing them.",
                 },
                 {
                     id: "addSymptomRemindersCard",
@@ -7557,7 +7557,7 @@ angular.module('starter')
                     },
                     variableCategoryName: "Symptoms",
                     addButtonText: 'Add Symptom',
-                    nextPageButtonText: 'MAYBE LATER',
+                    nextPageButtonText: 'Maybe Later',
                     bodyText: 'Got any recurring symptoms that vary in their severity?',
                     moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
                 },
@@ -7575,7 +7575,7 @@ angular.module('starter')
                     },
                     variableCategoryName: "Foods",
                     addButtonText: 'Add Food or Drink',
-                    nextPageButtonText: 'MAYBE LATER',
+                    nextPageButtonText: 'Maybe Later',
                     bodyText: "Add any foods or drinks that you consume more than a few times a week",
                 },
                 {
@@ -7591,7 +7591,7 @@ angular.module('starter')
                     },
                     variableCategoryName: "Treatments",
                     addButtonText: 'Add Treatment',
-                    nextPageButtonText: 'MAYBE LATER',
+                    nextPageButtonText: 'Maybe Later',
                     bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
                         'like meditation or psychotherapy? ',
                     moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
@@ -7608,7 +7608,7 @@ angular.module('starter')
                         width: "96"
                     },
                     premiumFeature: true,
-                    nextPageButtonText: 'MAYBE LATER',
+                    nextPageButtonText: 'Maybe Later',
                     bodyText: "Would you like to automatically log location and weather? ",
                     moreInfo: $rootScope.variableCategories.Location.moreInfo + " <br> " +
                         $rootScope.variableCategories.Environment.moreInfo,
@@ -7627,7 +7627,7 @@ angular.module('starter')
                     premiumFeature: true,
                     bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and" +
                         "devices that I can automatically pull data from!",
-                    nextPageButtonText: "MAYBE LATER",
+                    nextPageButtonText: "Maybe Later",
                 },
                 {
                     id: "allDoneCard",

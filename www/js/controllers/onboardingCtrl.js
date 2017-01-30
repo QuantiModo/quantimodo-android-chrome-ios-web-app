@@ -119,11 +119,7 @@ angular.module('starter')
         $rootScope.defaultHelpCards = [getStartedHelpCard].concat($rootScope.defaultHelpCards);
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
         $rootScope.onboardingPages = null;
-        if(!$rootScope.user.stripePlan){
-            $state.go('app.upgrade');
-        } else {
-            $state.go('app.remindersInbox');
-        }
+        $state.go('app.remindersInbox');
     };
 
     $rootScope.hideOnboardingPage = function () {
