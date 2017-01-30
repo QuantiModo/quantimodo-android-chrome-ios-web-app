@@ -33,7 +33,7 @@ var loginPopupWindowParams = {
 };
 
 var reminderInboxPopupWindowParams = {
-    url: "/www/index.html#/app/reminders-inbox",
+    url: "/www/index.html",
     type: 'panel',
     top: screen.height - 800,
     left: screen.width - 455,
