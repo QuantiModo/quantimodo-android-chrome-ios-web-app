@@ -27,7 +27,7 @@
                      ng-src="{{onboardingPages[0].image.url}}">
             </div>
             <br>
-            <p ng-click="onboardingPages[0].titleClickFunctionCall()" style="font-size: 30px; line-height: 1;">
+            <p style="font-size: 30px; line-height: 1;">
                 {{onboardingPages[0].title}}
             </p>
             <br>
@@ -60,7 +60,7 @@
                                 text-align: center"
                     id="enableLocationTrackingButton"
                     ng-click="enableLocationTracking()">
-                <i class="ion-checkmark"> &nbsp; YES &nbsp;</i>
+                <i class="ion-ios-partlysunny"> &nbsp; YES &nbsp;</i>
             </button>
             <button class="button"
                     ng-show="onboardingPages[0].id === 'importDataPage' && user.stripeActive"
@@ -71,7 +71,7 @@
                                 text-align: center"
                     id="importDataButton"
                     ng-click="onboardingGoToImportPage()">
-                <i class="ion-checkmark"> &nbsp; Connect app or device &nbsp;</i>
+                <i class="ion-android-download"> &nbsp; CONNECT &nbsp;</i>
             </button>
             <button class="button"
                     ng-show="onboardingPages[0].premiumFeature && !user.stripeActive"
@@ -82,7 +82,7 @@
                                 text-align: center"
                     id="goToUpgradePageButton"
                     ng-click="goToState('app.upgrade')">
-                <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText.toUpperCase()}} &nbsp;</i>
+                <i class="ion-android-star"> &nbsp;UPGRADE &nbsp;</i>
             </button>
             <button class="button"
                     ng-if="onboardingPages[0].nextPageButtonText"
