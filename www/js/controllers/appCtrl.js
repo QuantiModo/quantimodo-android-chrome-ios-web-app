@@ -2458,13 +2458,14 @@ angular.module('starter')
                             .clickOutsideToClose(true)
                             .title('Thank you!')
                             .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
-                            .ariaLabel('Alert Dialog Demo')
+                            .ariaLabel('Thank you!')
                             .ok('Get Started')
                     )
                     .finally(function() {
-                        $state.go(config.appSettings.defaultState);
+                        $scope.goBack();
                     });
                 }, function (error) {
+                    quantimodoService.reportError(error);
                     $ionicLoading.hide();
                     $mdDialog.show(
                         $mdDialog.alert()
@@ -2472,10 +2473,9 @@ angular.module('starter')
                             .clickOutsideToClose(true)
                             .title('Error')
                             .textContent(JSON.stringify(error))
-                            .ariaLabel('Alert Dialog Demo')
-                            .ok('Get Started')
+                            .ariaLabel('Error')
+                            .ok('OK')
                     );
-                    console.debug(JSON.stringify(error));
                 });
             });
         };
