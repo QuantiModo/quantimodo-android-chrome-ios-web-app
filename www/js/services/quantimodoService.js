@@ -7589,7 +7589,7 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
-                    variableCategoryName: "Symptoms",
+                    variableCategoryName: "Treatments",
                     addButtonText: 'Add Treatment',
                     nextPageButtonText: 'MAYBE LATER',
                     bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
