@@ -233,11 +233,6 @@ angular.module('starter')
 
         // POST method with the added token
         quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler, options){
-
-            if(!canWeMakeRequestYet('POST', baseURL, options)){
-                return;
-            }
-
             if($rootScope.offlineConnectionErrorShowing){
                 $rootScope.offlineConnectionErrorShowing = false;
             }
@@ -746,7 +741,6 @@ angular.module('starter')
             }
 
             var options = {};
-            options.minimumSecondsBetweenRequests = 30;
             options.doNotSendToLogin = false;
             options.doNotShowOfflineError = true;
 
