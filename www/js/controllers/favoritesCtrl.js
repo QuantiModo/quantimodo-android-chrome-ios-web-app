@@ -30,7 +30,7 @@ angular.module('starter')
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Syncing...');
-				quantimodoService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+				quantimodoService.syncTrackingReminders().then(function () {
 					$scope.hideLoader();
 					quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 					//Stop the ion-refresher from spinning
