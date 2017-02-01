@@ -3583,7 +3583,7 @@ angular.module('starter')
             var deferred = $q.defer();
             var trackingReminderSyncQueue = quantimodoService.getLocalStorageItemAsObject('trackingReminderSyncQueue');
             if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
-                quantimodoService.postTrackingRemindersDeferred(JSON.parse(trackingReminderSyncQueue)).then(function (response) {
+                quantimodoService.postTrackingRemindersDeferred(trackingReminderSyncQueue).then(function (response) {
                     quantimodoService.deleteItemFromLocalStorage('trackingReminderSyncQueue');
                     deferred.resolve(response);
                 }, function(error) {
