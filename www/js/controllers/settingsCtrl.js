@@ -3,7 +3,9 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
 										  quantimodoService, ionicTimePicker, $stateParams, $ionicHistory,
-										  $ionicLoading, $ionicDeploy, $ionicPlatform) {
+										  $ionicLoading,
+										  //$ionicDeploy,
+										  $ionicPlatform) {
 
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
