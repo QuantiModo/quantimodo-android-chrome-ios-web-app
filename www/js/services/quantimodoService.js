@@ -1560,9 +1560,14 @@ angular.module('starter')
             console.debug('Getting favorites from local storage');
             $rootScope.favoritesArray = [];
             var favorites = quantimodoService.getElementsFromLocalStorageItemWithFilters('trackingReminders', 'reminderFrequency', 0);
-            var trackingReminderSyncQueue = quantimodoService.getElementsFromLocalStorageItemWithFilters('trackingReminderSyncQueue', 'reminderFrequency', 0);
-            favorites = favorites.concat(trackingReminderSyncQueue);
             if(!favorites){
+                favorites = [];
+            }
+            var trackingReminderSyncQueue = quantimodoService.getElementsFromLocalStorageItemWithFilters('trackingReminderSyncQueue', 'reminderFrequency', 0);
+            if(trackingReminderSyncQueue){
+                favorites = favorites.concat(trackingReminderSyncQueue);
+            }
+            if(!favorites || !favorites.length){
                 return false;
             }
             for(i = 0; i < favorites.length; i++){
