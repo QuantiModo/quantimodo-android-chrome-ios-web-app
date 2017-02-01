@@ -4,7 +4,9 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector,
                                     quantimodoService, ionicDatePicker, $cordovaOauth, clipboard,
-                                    $ionicActionSheet, $ionicDeploy, $locale, $mdDialog, $mdToast) {
+                                    $ionicActionSheet,
+                                    //$ionicDeploy,
+                                    $locale, $mdDialog, $mdToast) {
 
         $rootScope.appMigrationVersion = 1489;
         $rootScope.appVersion = "2.3.6.0";
