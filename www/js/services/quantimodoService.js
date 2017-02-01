@@ -3688,8 +3688,13 @@ angular.module('starter')
             var allReminders = [];
             var nonFavoriteReminders = [];
             var unfilteredReminders = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminders'));
+            if(!unfilteredReminders){
+                unfilteredReminders = [];
+            }
             var syncQueue = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminderSyncQueue'));
-            unfilteredReminders = unfilteredReminders.concat(syncQueue);
+            if(syncQueue){
+                unfilteredReminders = unfilteredReminders.concat(syncQueue);
+            }
             unfilteredReminders =
                 quantimodoService.attachVariableCategoryIcons(unfilteredReminders);
             if(unfilteredReminders) {
