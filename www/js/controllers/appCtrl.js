@@ -598,8 +598,7 @@ angular.module('starter')
                 return;
             }
 
-            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder)
                 .then(function() {
                     // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
                     $state.go(doneState,
@@ -609,14 +608,7 @@ angular.module('starter')
                             fromUrl: window.location.href
                         }
                     );
-                    quantimodoService.postTrackingRemindersDeferred(trackingReminder)
-                        .then(function () {
-                            $ionicLoading.hide();
-                            console.debug("Saved to reminders: " + JSON.stringify(trackingReminder));
-                        }, function(error) {
-                            $ionicLoading.hide();
-                            console.error('Failed to add reminders!' + JSON.stringify(error));
-                        });
+                    quantimodoService.syncTrackingReminders();
                 });
         };
 
@@ -650,8 +642,6 @@ angular.module('starter')
                 return;
             }
 
-            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-            //trackingReminder.defaultValue = 3;
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                 .then(function() {
                     // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
@@ -662,14 +652,7 @@ angular.module('starter')
                             fromUrl: window.location.href
                         }
                     );
-                    quantimodoService.postTrackingRemindersDeferred(trackingReminder)
-                        .then(function () {
-                            $ionicLoading.hide();
-                            console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
-                        }, function(error) {
-                            $ionicLoading.hide();
-                            console.error('Failed to add favorite!' + JSON.stringify(error));
-                        });
+                    quantimodoService.syncTrackingReminders();
                 });
 
         };
@@ -1137,15 +1120,13 @@ angular.module('starter')
                 //quantimodoService.syncPrimaryOutcomeVariableMeasurements();
                 if($rootScope.localNotificationsEnabled){
                     console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
-                    quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
+                    quantimodoService.syncTrackingReminders();
                 }
                 quantimodoService.getUserVariablesDeferred();
                 quantimodoService.getCommonVariablesDeferred();
                 quantimodoService.getUnits();
                 $rootScope.syncedEverything = true;
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-                quantimodoService.syncTrackingReminderSyncQueueToServer();
-                //quantimodoService.getConnectorsDeferred();
             }
         };
 

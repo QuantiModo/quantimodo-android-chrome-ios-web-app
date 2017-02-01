@@ -63,9 +63,8 @@ angular.module('starter')
 
 		$scope.refreshReminders = function () {
 			if($rootScope.syncingReminders !== true) {
-				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Syncing...');
-				quantimodoService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+				quantimodoService.syncTrackingReminders().then(function () {
 					$scope.hideLoader();
 					getTrackingReminders();
 				});
@@ -222,16 +221,9 @@ angular.module('starter')
 
 			quantimodoService.deleteTrackingReminderDeferred(reminder.trackingReminderId)
 				.then(function(){
-					quantimodoService.refreshTrackingReminderNotifications().then(function(){
-						console.debug('quantimodoService.deleteTrackingReminderDeferred successfully refreshed notifications');
-					}, function (error) {
-						console.error('quantimodoService.deleteTrackingReminderDeferred: ' + error);
-					});
 					console.debug("Reminder deleted");
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-					$ionicLoading.hide();
-					$scope.loading = false;
 					console.error('Failed to Delete Reminder!');
 				});
 	    };

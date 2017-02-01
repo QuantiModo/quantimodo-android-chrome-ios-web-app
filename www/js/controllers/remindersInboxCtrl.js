@@ -74,11 +74,6 @@ angular.module('starter')
             }
             $scope.refreshTrackingReminderNotifications();
 
-            if($rootScope.localNotificationsEnabled){
-                console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
-                quantimodoService.refreshTrackingRemindersAndScheduleAlarms();
-            }
-
             quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 
             // Triggered on a button click, or some other target

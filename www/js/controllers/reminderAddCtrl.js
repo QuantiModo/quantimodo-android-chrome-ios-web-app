@@ -464,26 +464,11 @@ angular.module('starter')
                 remindersArray[2] = configureReminderTimeSettings(remindersArray[2], $scope.state.thirdReminderStartTimeEpochTime);
             }
 
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-
-            $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders',
-                remindersArray)
-                .then(function(){
-                    quantimodoService.postTrackingRemindersDeferred(remindersArray)
-                        .then(function(){
-                            $scope.hideLoader();
-                            goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
-                        }, function(error){
-                            $scope.hideLoader();
-                            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
-                            // We need to do this again in case a reminder sync replaced our updated one before posting finished
-                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', remindersArray);
-                            goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
-                        });
-
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue',
+                remindersArray).then(function(){
+                    quantimodoService.syncTrackingReminders();
+                    goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                 }
-
             );
 
 	    };
@@ -699,13 +684,8 @@ angular.module('starter')
 
             quantimodoService.deleteTrackingReminderDeferred($scope.state.trackingReminder.id)
                 .then(function(){
-                    $ionicLoading.hide();
-                    $scope.loading = false;
                     console.debug('Reminder Deleted');
                 }, function(error){
-                    $ionicLoading.hide();
-                    $scope.loading = false;
-
                     console.error('ERROR: quantimodoService.deleteTrackingReminderDeferred Failed to Delete Reminder with id ' +
                         $scope.state.trackingReminder.id);
                 });
