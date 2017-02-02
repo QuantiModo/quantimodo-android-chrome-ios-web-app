@@ -1455,17 +1455,8 @@ angular.module('starter')
                 quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
                 $rootScope.sendReminderNotificationEmails = null;
             }
-            quantimodoService.removeOnboardingLoginPage();
             quantimodoService.afterLoginGoToUrlOrState();
-        };
-
-        quantimodoService.removeOnboardingLoginPage = function () {
-            if($rootScope.onboardingPages){
-                $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
-                    return obj.id !== 'loginOnboardingPage';
-                });
-            }
-            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
+            quantimodoService.updateUserTimeZoneIfNecessary();
         };
 
         quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
@@ -3096,13 +3087,17 @@ angular.module('starter')
         };
 
         quantimodoService.backgroundGeolocationInit = function () {
+            var deferred = $q.defer();
             console.debug('Starting quantimodoService.backgroundGeolocationInit');
             var bgGPS = window.localStorage.getItem('bgGPS');
             if (bgGPS === "1" || bgGPS === null) {
                 quantimodoService.backgroundGeolocationStart();
+                deferred.resolve();
             } else {
                 console.debug('quantimodoService.backgroundGeolocationInit failed because bgGPS is ' + bgGPS);
+                deferred.resolve();
             }
+            return deferred.promise;
         };
 
         quantimodoService.backgroundGeolocationStop = function () {
@@ -5751,8 +5746,10 @@ angular.module('starter')
         };
 
         quantimodoService.setOnUpdateActionForLocalNotifications = function(){
+            var deferred = $q.defer();
             if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
             cordova.plugins.notification.local.on("update", function(notification) {
                 console.debug("onUpdate: Just updated this notification: ", notification);
@@ -5760,11 +5757,15 @@ angular.module('starter')
                     console.debug("onUpdate: All notifications after update: ", notifications);
                 });
             });
+            deferred.resolve();
+            return deferred.promise;
         };
 
         quantimodoService.setOnClickActionForLocalNotifications = function(quantimodoService) {
+            var deferred = $q.defer();
             if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
             var params = {};
             var locationTrackingNotificationId = 666;
@@ -5823,11 +5824,15 @@ angular.module('starter')
                         "Should have already gone to remindersInbox page.");
                 }
             });
+            deferred.resolve();
+            return deferred.promise;
         };
 
         quantimodoService.updateBadgesAndTextOnAllNotifications = function () {
+            var deferred = $q.defer();
             if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
 
             if($rootScope.isIOS){
@@ -5862,13 +5867,17 @@ angular.module('starter')
                         }
                         cordova.plugins.notification.local.update(notificationSettings);
                     }
+                    deferred.resolve();
                 });
             });
+            return deferred.promise;
         };
 
         quantimodoService.setOnTriggerActionForLocalNotifications = function() {
+            var deferred = $q.defer();
             if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
             function getNotificationsFromApiAndClearOrUpdateLocalNotifications() {
                 var currentDateTimeInUtcStringPlus5Min = quantimodoService.getCurrentDateTimeInUtcStringPlusMin(5);
@@ -5998,6 +6007,9 @@ angular.module('starter')
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
                 }
             });
+
+            deferred.resolve();
+            return deferred.promise;
         };
 
         quantimodoService.decrementNotificationBadges = function(){
@@ -6022,8 +6034,10 @@ angular.module('starter')
         };
 
         quantimodoService.updateOrRecreateNotifications = function() {
+            var deferred = $q.defer();
             if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
 
             if($rootScope.isAndroid){
@@ -6031,15 +6045,17 @@ angular.module('starter')
                     "notifications for Android because Samsung limits number of notifications " +
                     "that can be scheduled in a day.");
                 this.updateBadgesAndTextOnAllNotifications();
+                deferred.resolve();
             }
             if($rootScope.isIOS){
                 console.warn('updateOrRecreateNotifications: Updating local notifications on iOS might ' +
                     'make duplicates and we cannot recreate here because we will lose the previously set interval');
                 this.updateBadgesAndTextOnAllNotifications();
-
+                deferred.resolve();
                 //console.debug("updateOrRecreateNotifications: iOS makes duplicates when updating for some reason so we just cancel all and schedule again");
                 //this.scheduleGenericNotification(notificationSettings);
             }
+            return deferred.promise;
         };
 
         quantimodoService.scheduleSingleMostFrequentNotification = function(trackingRemindersFromApi) {
@@ -6091,7 +6107,7 @@ angular.module('starter')
         };
 
         quantimodoService.cancelNotificationsForDeletedReminders = function(trackingRemindersFromApi) {
-
+            var deferred = $q.defer();
             function cancelChromeExtensionNotificationsForDeletedReminders(trackingRemindersFromApi) {
                 /** @namespace chrome.alarms */
                 chrome.alarms.getAll(function(scheduledTrackingReminders) {
@@ -6149,8 +6165,9 @@ angular.module('starter')
                     console.debug('cancelIonicNotificationsForDeletedReminders');
                     cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi);
                 }
+                deferred.resolve();
             });
-
+            return deferred.promise;
         };
 
         quantimodoService.scheduleNotificationByReminder = function(trackingReminder){
@@ -6159,7 +6176,6 @@ angular.module('starter')
                 console.warn("Not going to scheduleNotificationByReminder because $rootScope.user.combineNotifications === true");
                 return;
             }
-
 
             if(!$rootScope.user.earliestReminderTime){
                 console.error("Cannot schedule notifications because $rootScope.user.earliestReminderTime not set",
@@ -6174,8 +6190,11 @@ angular.module('starter')
             }
 
             function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
+                var deferred = $q.defer();
                 if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                    return;
+
+                    deferred.resolve();
+                    return deferred.promise;
                 }
                 cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
 
@@ -6199,7 +6218,10 @@ angular.module('starter')
                                     'notification updated', notificationSettings);
                             });
                     }
+
+                    deferred.resolve();
                 });
+                return deferred.promise;
             }
 
             function scheduleAndroidNotificationByTrackingReminder(trackingReminder) {
@@ -6351,12 +6373,13 @@ angular.module('starter')
         };
 
         quantimodoService.scheduleGenericNotification = function(notificationSettings){
-
+            var deferred = $q.defer();
             if(!notificationSettings.every){
                 console.error("scheduleGenericNotification: Called scheduleGenericNotification without providing " +
                     "notificationSettings.every " +
                     notificationSettings.every + ". Not going to scheduleGenericNotification.");
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
 
             if(!notificationSettings.at){
@@ -6409,7 +6432,8 @@ angular.module('starter')
             $ionicPlatform.ready(function () {
                 if (typeof cordova !== "undefined") {
                     if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                        return;
+                        deferred.resolve();
+                        return deferred.promise;
                     }
                     cordova.plugins.notification.local.getAll(function (notifications) {
                         console.debug("scheduleGenericNotification: All notifications before scheduling", notifications);
@@ -6434,13 +6458,16 @@ angular.module('starter')
             });
             if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
                 scheduleGenericChromeExtensionNotification(notificationSettings.every);
+                deferred.resolve();
             }
-
+            return deferred.promise;
         };
 
         quantimodoService.cancelIonicNotificationById = function(notificationId){
+            var deferred = $q.defer();
             if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
             $ionicPlatform.ready(function () {
                 if (typeof cordova !== "undefined") {
@@ -6449,28 +6476,35 @@ angular.module('starter')
                         console.debug("Canceled notification ", cancelledNotification);
                     });
                 }
+                deferred.resolve();
             });
+            return deferred.promise;
         };
 
         quantimodoService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes = function(trackingReminders){
+            var deferred = $q.defer();
             if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
 
             if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
                 console.debug('Not scheduling notifications because we are not mobile or Chrome extension');
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
 
             if($rootScope.isAndroid){
                 this.cancelAllNotifications();
                 console.debug('Not scheduling local notifications because Android uses push notifications');
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
 
             if(!trackingReminders || !trackingReminders[0]){
                 console.debug('Not scheduling notifications because we do not have any reminders');
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
 
             /** @namespace trackingReminders[0].localDailyReminderNotificationTimesForAllReminders */
@@ -6481,12 +6515,14 @@ angular.module('starter')
             if(localDailyReminderNotificationTimesFromApi.length < 1){
                 console.warn('Cannot schedule notifications because ' +
                     'trackingReminders[0].localDailyReminderNotificationTimes is empty.');
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
 
             if($rootScope.isMobile){
                 if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                    return;
+                    deferred.resolve();
+                    return deferred.promise;
                 }
                 $ionicPlatform.ready(function () {
                     cordova.plugins.notification.local.getAll(function (existingLocalNotifications) {
@@ -6587,6 +6623,7 @@ angular.module('starter')
                             }
                         }
                     });
+                    deferred.resolve();
                 });
             }
 
@@ -6635,7 +6672,9 @@ angular.module('starter')
                     }
 
                 });
+                deferred.resolve();
             }
+            return deferred.promise;
         };
 
         // cancel all existing notifications

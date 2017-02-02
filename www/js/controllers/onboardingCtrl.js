@@ -28,6 +28,7 @@ angular.module('starter')
     $scope.$on('$ionicView.afterEnter', function(){
         console.debug("OnboardingCtrl afterEnter");
         quantimodoService.setupHelpCards(true);
+        quantimodoService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
 
     $scope.$on('$ionicView.beforeLeave', function(){
