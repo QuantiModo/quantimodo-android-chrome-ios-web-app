@@ -3542,7 +3542,8 @@ angular.module('starter')
         quantimodoService.addRatingTimesToDailyReminders = function(reminders) {
             var index;
             for (index = 0; index < reminders.length; ++index) {
-                if (reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0 &&
+                if (reminders[index].valueAndFrequencyTextDescription &&
+                    reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0 &&
                     reminders[index].valueAndFrequencyTextDescription.indexOf(' at ') === -1 &&
                     reminders[index].valueAndFrequencyTextDescription.toLowerCase().indexOf('disabled') === -1) {
                     reminders[index].valueAndFrequencyTextDescription =
