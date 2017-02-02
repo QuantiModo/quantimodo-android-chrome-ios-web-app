@@ -73,17 +73,16 @@
   <plugin name="cordova-plugin-datepicker" version="0.9.3"/>
   <plugin name="cordova-plugin-device" spec="~1.1.2"/>
   <plugin name="cordova-plugin-geolocation" version="2.3.0"/>
-  <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
-    <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d" />
-  </plugin>
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1"/>
   <plugin name="cordova-plugin-inapppurchase" spec="~1.1.0" />
   <plugin name="cordova-plugin-mauron85-background-geolocation" spec="^2.2.0"/>
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
   <plugin name="cordova-plugin-statusbar" version="2.2.0"/>
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2"/>
-  <plugin name="ionic-plugin-deploy" spec="~0.6.5"/>
   <plugin name="ionic-plugin-keyboard" version="2.2.1"/>
+  <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
+    <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d" />
+  </plugin>
   <plugin name="phonegap-plugin-push" version="1.9.1">
     <variable name="SENDER_ID" value="1052648855194"/>
   </plugin>
