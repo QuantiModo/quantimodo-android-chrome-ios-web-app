@@ -18,7 +18,6 @@ angular.module('starter')
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $rootScope.hideNavigationMenu = false;
 
-
             console.debug($state.current.name + ' initializing...');
 
             $rootScope.stateParams = $stateParams;
@@ -34,6 +33,7 @@ angular.module('starter')
             }
 
             if($rootScope.urlParameters.userId){
+                $scope.state.requestParams.userId = $rootScope.urlParameters.userId;
                 getStudy();
                 return;
             }
