@@ -8,17 +8,10 @@ angular.module('starter')
                                     //$ionicDeploy,
                                     $locale, $mdDialog, $mdToast) {
 
+	    console.debug('Starting AppCtrl');
+
         $rootScope.appMigrationVersion = 1489;
         $rootScope.appVersion = "2.3.6.0";
-
-        if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
-            quantimodoService.getLocalStorageItemAsStringWithCallback('trackLocation', function(trackLocation){
-                $rootScope.user.trackLocation = trackLocation;
-                if($rootScope.user.trackLocation){
-                    quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
-                }
-            });
-        }
         $rootScope.placeName = null;
         $rootScope.lastLatitude = null;
         $rootScope.lastLongitude = null;
@@ -38,6 +31,49 @@ angular.module('starter')
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
         $rootScope.appDisplayName = config.appSettings.appDisplayName;
 
+        quantimodoService.getAccessTokenFromUrlParameter();
+
+        if($rootScope.user && $rootScope.user.trackLocation){
+            quantimodoService.backgroundGeolocationInit();
+        }
+
+        quantimodoService.setupBugsnag();
+
+        if(!window.private_keys) {
+            console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+        }
+        if($rootScope.urlParameters.refreshUser){
+            quantimodoService.clearLocalStorage();
+            window.localStorage.introSeen = true;
+            window.localStorage.isWelcomed = true;
+            $rootScope.user = null;
+            $rootScope.refreshUser = false;
+        }
+
+        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
+            $rootScope.hideNavigationMenu = true;
+        }
+
+        if($rootScope.user){
+            $rootScope.trackLocation = $rootScope.user.trackLocation;
+            console.debug('$rootScope.trackLocation  is '+ $rootScope.trackLocation);
+            if(!$rootScope.user.getPreviewBuilds){
+                $rootScope.user.getPreviewBuilds = false;
+            }
+        }
+
+        if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
+            console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
+            $ionicPlatform.ready(function () {
+                console.debug("Setting on trigger and on click actions for notifications");
+                quantimodoService.setOnTriggerActionForLocalNotifications();
+                quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
+                quantimodoService.setOnUpdateActionForLocalNotifications();
+            });
+        } else {
+            //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
+        }
+
         $scope.$on('$ionicView.loaded', function(){
             console.debug('appCtrl loaded');
             // This event will only happen once per view being created. If a view is cached but not active, this event
@@ -46,17 +82,7 @@ angular.module('starter')
 
         $scope.$on('$ionicView.beforeEnter', function (e) {
             console.debug('appCtrl beforeEnter');
-            quantimodoService.getAccessTokenFromUrlParameter();
-            if(!window.private_keys) {
-                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
-            }
-            if($rootScope.urlParameters.refreshUser){
-                quantimodoService.clearLocalStorage();
-                window.localStorage.introSeen = true;
-                window.localStorage.isWelcomed = true;
-                $rootScope.user = null;
-                $rootScope.refreshUser = false;
-            }
+
         });
 
         // when view is changed
@@ -90,35 +116,7 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.afterEnter', function (e) {
             console.debug('appCtrl afterEnter');
-            if($rootScope.user && $rootScope.user.trackLocation){
-                $ionicPlatform.ready(function() { //For Ionic
-                    quantimodoService.backgroundGeolocationInit();
-                });
-            }
-            //quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();  // Using background geolocation
-            $rootScope.hideNavigationMenuIfSetInUrlParameter();
-            quantimodoService.updateUserTimeZoneIfNecessary();
-            quantimodoService.shouldWeUseIonicLocalNotifications();
-            quantimodoService.setupBugsnag();
-            if($rootScope.user){
-                $rootScope.trackLocation = $rootScope.user.trackLocation;
-                console.debug('$rootScope.trackLocation  is '+ $rootScope.trackLocation);
-                if(!$rootScope.user.getPreviewBuilds){
-                    $rootScope.user.getPreviewBuilds = false;
-                }
-            }
 
-            if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
-                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
-                $ionicPlatform.ready(function () {
-                    console.debug("Setting on trigger and on click actions for notifications");
-                    quantimodoService.setOnTriggerActionForLocalNotifications();
-                    quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
-                    quantimodoService.setOnUpdateActionForLocalNotifications();
-                });
-            } else {
-                //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
-            }
         });
 
         // Not used
@@ -813,13 +811,6 @@ angular.module('starter')
         }).then(function (popover) {
             $scope.popover = popover;
         });
-
-        // when work on this activity is complete
-        $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
-            if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
-                $rootScope.hideNavigationMenu = true;
-            }
-        };
 
         $scope.editTag = function(userTagVariable){
             $state.go('app.tagAdd', {
