@@ -2194,7 +2194,7 @@ angular.module('starter')
                     "card_year": $scope.ccinfo.year,
                     "card_cvc": $scope.ccinfo.securityCode,
                     'plan': $scope.subscriptionPlanId,
-                    'coupon': $scope.coupon
+                    'coupon': $scope.ccinfo.coupon
                 };
 
                 $ionicLoading.show();
@@ -2241,7 +2241,11 @@ angular.module('starter')
                 $mdDialog.cancel();
             };
 
-            $scope.subscribe = function(answer) {
+            $scope.subscribe = function(subscriptionPlanId, coupon) {
+                var answer = {
+                    subscriptionPlanId: subscriptionPlanId,
+                    coupon: coupon
+                };
                 $mdDialog.hide(answer);
             };
         }
@@ -2262,7 +2266,7 @@ angular.module('starter')
                 fullscreen: false
             }).then(function(answer) {
                 if(purchaseDebugMode){
-                    alert('About to call makeInAppPurchase for ' + answer);
+                    alert('About to call makeInAppPurchase for ' + JSON.stringify(answer));
                 }
                 makeInAppPurchase(answer);
             }, function() {
@@ -2270,10 +2274,24 @@ angular.module('starter')
             });
         };
 
-        var makeInAppPurchase = function (productName) {
+        var makeInAppPurchase = function (answer) {
 
+            var productName = answer.subscriptionPlanId;
+            var subscriptionProvider = 'unknown';
+            if($rootScope.isAndroid){
+                subscriptionProvider = 'google';
+            }
+            if($rootScope.isIOS){
+                subscriptionProvider = 'apple';
+            }
             if(purchaseDebugMode){
                 alert('Called makeInAppPurchase for ' + productName);
+                quantimodoService.updateUserSettingsDeferred({
+                    subscriptionProvider: subscriptionProvider,
+                    stripePlan: productName,
+                    trialEndsAt: moment().add(14, 'days').toISOString(),
+                    coupon: answer.coupon
+                });
             }
             $ionicLoading.show();
             if($rootScope.isIOS){
@@ -2305,17 +2323,11 @@ angular.module('starter')
                              signature: ...
                              }
                              */
-                            var subscriptionProvider = 'unknown';
-                            if($rootScope.isAndroid){
-                                subscriptionProvider = 'google';
-                            }
-                            if($rootScope.isIOS){
-                                subscriptionProvider = 'apple';
-                            }
                             quantimodoService.updateUserSettingsDeferred({
                                 subscriptionProvider: subscriptionProvider,
                                 stripePlan: productName,
-                                trialEndsAt: moment().add(14, 'days').toISOString()
+                                trialEndsAt: moment().add(14, 'days').toISOString(),
+                                coupon: answer.coupon
                             });
                             $mdDialog.show(
                                 $mdDialog.alert()
