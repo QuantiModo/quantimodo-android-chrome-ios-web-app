@@ -1229,7 +1229,7 @@ angular.module('starter')
         };
 
         quantimodoService.generateV1OAuthUrl= function(register) {
-            var url = $rootScope.qmApiUrl + "/api/oauth2/authorize?";
+            var url = quantimodoService.getApiUrl() + "/api/oauth2/authorize?";
             // add params
             url += "response_type=code";
             url += "&client_id=" + quantimodoService.getClientId();
@@ -1438,8 +1438,7 @@ angular.module('starter')
                 user_id: user.id,
                 app_name: config.appSettings.appDisplayName,
                 app_version: $rootScope.appVersion,
-                platform: $rootScope.currentPlatform,
-                platform_version: $rootScope.currentPlatformVersion
+                platform: $rootScope.currentPlatform
             };
             */
 
@@ -1502,7 +1501,7 @@ angular.module('starter')
             }
 
             console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
-            var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
+            var apiUrlMatchesHostName = quantimodoService.getApiUrl().indexOf(window.location.hostname);
             if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
                 $ionicLoading.show();
                 loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href + '?loggingIn=true');
@@ -2544,42 +2543,27 @@ angular.module('starter')
         };
 
         quantimodoService.setPlatformVariables = function () {
-            if (window.cordova) {
-                $rootScope.currentPlatformVersion = ionic.Platform.version();
-                if (ionic.Platform.isIOS()){
-                    $rootScope.isIOS = true;
-                    $rootScope.isMobile = true;
-                    $rootScope.currentPlatform = "iOS";
-                }
-                if (ionic.Platform.isAndroid()){
-                    $rootScope.isAndroid = true;
-                    $rootScope.isMobile = true;
-                    $rootScope.currentPlatform = "Android";
-                }
-            } else if (window.location.href.indexOf('ms-appx') > -1) {
-                $rootScope.isWindows = true;
-                $rootScope.currentPlatform = "Windows";
-            } else {
-                $rootScope.isChrome = window.chrome ? true : false;
-                $rootScope.currentPlatformVersion = null;
-                var currentUrl =  window.location.href;
-                if (currentUrl.indexOf('chrome-extension') !== -1) {
-                    $rootScope.isChromeExtension = true;
-                    $rootScope.isChromeApp = false;
-                    $rootScope.currentPlatform = "ChromeExtension";
-                } else if ($rootScope.isChrome && chrome.identity) {
-                    $rootScope.isChromeExtension = false;
-                    $rootScope.isChromeApp = true;
-                    $rootScope.currentPlatform = "ChromeApp";
-                } else {
-                    $rootScope.isWeb = true;
-                    $rootScope.currentPlatform = "Web";
-                }
-            }
-            if($rootScope.isChromeExtension){
-                $rootScope.localNotificationsEnabled = true;
-            }
-            $rootScope.qmApiUrl = quantimodoService.getApiUrl();
+            console.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
+
+            $rootScope.deviceInformation = ionic.Platform.device();
+
+            $rootScope.isWebView = ionic.Platform.isWebView();
+            $rootScope.isIPad = ionic.Platform.isIPad();
+            $rootScope.isIOS = ionic.Platform.isIOS();
+            $rootScope.isAndroid = ionic.Platform.isAndroid();
+            $rootScope.isWindowsPhone = ionic.Platform.isWindowsPhone();
+            $rootScope.isChrome = window.chrome ? true : false;
+
+            $rootScope.currentPlatform = ionic.Platform.platform();
+            $rootScope.currentPlatformVersion = ionic.Platform.version();
+
+            $rootScope.isMobile = ($rootScope.isAndroid || $rootScope.isIOS);
+            $rootScope.isWindows = window.location.href.indexOf('ms-appx') > -1;
+            $rootScope.isWeb = !$rootScope.isMobile;
+
+            $rootScope.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
+            $rootScope.localNotificationsEnabled = $rootScope.isChromeExtension;
+
         };
 
         quantimodoService.getPermissionString = function(){
@@ -2623,7 +2607,7 @@ angular.module('starter')
                     "not contain window.private_keys");
                 return "https://app.quantimo.do";
             }
-            if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled') {
+            if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled' && window.location.origin) {
                 return window.location.origin;
             }
             if(window.private_keys.apiUrl){
@@ -2639,7 +2623,7 @@ angular.module('starter')
                 path += "?";
             }
 
-            return $rootScope.qmApiUrl + "/" + path;
+            return quantimodoService.getApiUrl() + "/" + path;
         };
 
         quantimodoService.convertToObjectIfJsonString = function (stringOrObject) {

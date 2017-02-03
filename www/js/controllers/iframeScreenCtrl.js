@@ -14,7 +14,7 @@ angular.module('starter')
         if($state.current.name === 'app.studyCreate')
         {
             $scope.iFrameStyle = "height:5000px; width:100%;";
-            iFrameUrl = $rootScope.qmApiUrl + '/api/v2/studies?hideMenu=true';
+            iFrameUrl = quantimodoService.getApiUrl() + '/api/v2/studies?hideMenu=true';
             $scope.title = 'Create Study';
         }
 
@@ -23,7 +23,7 @@ angular.module('starter')
         }
 
         if($stateParams.path) {
-            iFrameUrl = $rootScope.qmApiUrl + $stateParams.path;
+            iFrameUrl = quantimodoService.getApiUrl() + $stateParams.path;
         }
 
         if($stateParams.iFrameStyle) {
@@ -32,25 +32,25 @@ angular.module('starter')
 
         if(window.location.href.indexOf('search-variables') > -1 )
         {
-            iFrameUrl = $rootScope.qmApiUrl + '/embeddable/?plugin=search-variables';
+            iFrameUrl = quantimodoService.getApiUrl() + '/embeddable/?plugin=search-variables';
             $scope.title = 'Your Variables';
         }
 
         if(window.location.href.indexOf('search-common-relationships') > -1 )
         {
-            iFrameUrl = $rootScope.qmApiUrl + '/embeddable/?plugin=search-relationships&commonOrUser=common';
+            iFrameUrl = quantimodoService.getApiUrl() + '/embeddable/?plugin=search-relationships&commonOrUser=common';
             $scope.title = 'Common Variable Relationships';
         }
 
         if(window.location.href.indexOf('search-user-relationships') > -1 )
         {
-            iFrameUrl = $rootScope.qmApiUrl + '/embeddable/?plugin=search-relationships&commonOrUser=user';
+            iFrameUrl = quantimodoService.getApiUrl() + '/embeddable/?plugin=search-relationships&commonOrUser=user';
             $scope.title = 'Your Variable Relationships';
         }
 
         if(window.location.href.indexOf('import-data') > -1 )
         {
-            iFrameUrl = $rootScope.qmApiUrl + '/api/v1/connect/mobile';
+            iFrameUrl = quantimodoService.getApiUrl() + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
         console.debug('iframeScreen.init: Going to quantimodoService.getAccessTokenFromAnySource');
