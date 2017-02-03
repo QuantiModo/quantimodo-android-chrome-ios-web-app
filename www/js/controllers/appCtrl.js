@@ -669,8 +669,6 @@ angular.module('starter')
         $scope.loading = false;
         $ionicLoading.hide();
 
-        quantimodoService.setPlatformVariables();
-
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appDisplayName;
         $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;

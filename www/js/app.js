@@ -33,9 +33,10 @@ angular.module('starter',
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
+    quantimodoService.setPlatformVariables();
+
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-
 
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
@@ -321,7 +322,6 @@ angular.module('starter',
         $state.go(state, params);
     };
 
-
     $ionicPlatform.registerBackButtonAction(function (event) {
         if($ionicHistory.currentStateName() === config.appSettings.defaultState){
             ionic.Platform.exitApp();
@@ -445,6 +445,8 @@ angular.module('starter',
         };
 
         var lowercaseAppName = getAppNameFromUrl();
+        console.debug('Loading config ' + appsManager.getAppConfig(lowercaseAppName));
+        console.debug('Loading private config ' + appsManager.getPrivateConfig(lowercaseAppName));
         return $ocLazyLoad.load([appsManager.getAppConfig(lowercaseAppName), appsManager.getPrivateConfig(lowercaseAppName)]);
       }]
     };

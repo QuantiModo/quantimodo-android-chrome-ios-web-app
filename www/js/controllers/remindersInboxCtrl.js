@@ -36,7 +36,9 @@ angular.module('starter')
 			favoritesTitle: "Your Favorites"
 	    };
 		
-        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+        $scope.$on('$ionicView.beforeEnter', function(e) {
+
+        	console.debug("RemindersInboxCtrl beforeEnter ");
 
         	$scope.loading = true;
             if(!$rootScope.accessTokenInUrl && !$rootScope.user){
@@ -50,9 +52,9 @@ angular.module('starter')
             getTrackingReminderNotifications();
         });
 
-        $scope.$on('$ionicView.enter', function(e) { console.debug("enter state " + $state.current.name);
+        $scope.$on('$ionicView.enter', function(e) {
 
-            console.debug($state.current.name + ' initializing...');
+            console.debug("RemindersInboxCtrl enter");
 
             $rootScope.bloodPressure = {
                 systolicValue: null,
@@ -128,6 +130,7 @@ angular.module('starter')
         });
 
         $scope.$on('$ionicView.afterEnter', function(){
+            console.debug("RemindersInboxCtrl afterEnter");
             quantimodoService.syncPrimaryOutcomeVariableMeasurements();
             if ($stateParams.hideNavigationMenu !== true){
                 $rootScope.hideNavigationMenu = false;
@@ -135,6 +138,7 @@ angular.module('starter')
         });
 
         $scope.$on('$ionicView.afterLeave', function(){
+            console.debug("RemindersInboxCtrl afterLeave");
             $rootScope.hideHomeButton = false;
             $rootScope.hideBackButton = false;
         });
