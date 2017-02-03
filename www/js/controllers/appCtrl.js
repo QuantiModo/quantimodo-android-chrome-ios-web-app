@@ -2196,7 +2196,7 @@ angular.module('starter')
                     "card_year": $scope.ccinfo.year,
                     "card_cvc": $scope.ccinfo.securityCode,
                     'plan': $scope.subscriptionPlanId,
-                    'coupon': $scope.coupon
+                    'coupon': $scope.ccinfo.coupon
                 };
 
                 $ionicLoading.show();
