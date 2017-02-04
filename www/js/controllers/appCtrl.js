@@ -10,8 +10,6 @@ angular.module('starter')
 
 	    console.debug('Starting AppCtrl');
 
-        $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.3.6.0";
         $rootScope.placeName = null;
         $rootScope.lastLatitude = null;
         $rootScope.lastLongitude = null;
@@ -25,7 +23,6 @@ angular.module('starter')
             $rootScope.appSettings.ionNavBarClass = "bar-positive";
         }
         $scope.showTrackingSubMenu = false;
-        $rootScope.allowOffline = config.appSettings.allowOffline;
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
