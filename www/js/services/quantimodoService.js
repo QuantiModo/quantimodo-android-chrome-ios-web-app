@@ -2559,9 +2559,9 @@ angular.module('starter')
 
             $rootScope.isMobile = ($rootScope.isAndroid || $rootScope.isIOS);
             $rootScope.isWindows = window.location.href.indexOf('ms-appx') > -1;
-            $rootScope.isWeb = !$rootScope.isMobile;
-
             $rootScope.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
+            $rootScope.isWeb = !$rootScope.isMobile && !$rootScope.isChromeExtension && !$rootScope.isWindows;
+
             $rootScope.localNotificationsEnabled = $rootScope.isChromeExtension;
 
         };
