@@ -1,13 +1,17 @@
 angular.module('starter')
 
     // Handlers the Welcome Page
-    .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, quantimodoService) {
+    .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams,
+                                      $timeout, quantimodoService) {
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         $rootScope.showFilterBarSearchIcon = false;
+
+        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
         $scope.loginPage = {
             title: 'Sign In',
@@ -32,6 +36,21 @@ angular.module('starter')
             }
         };
 
+        var loggingIn = function () {
+            $ionicLoading.show();
+            $scope.loginPage.title = 'Logging in...';
+            $timeout(function () {
+                $ionicLoading.hide();
+                if(!$rootScope.user){
+                    $scope.loginPage.title = 'Please try logging in again';
+                    quantimodoService.reportError('Login failure');
+                }
+                if($rootScope.user && $state.current.name.indexOf('login') !== -1){
+                    quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
+                }
+            }, 30000);
+        };
+
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
             leaveIfLoggedIn();
             if($rootScope.appDisplayName !== "MoodiModo"){
@@ -43,13 +62,8 @@ angular.module('starter')
             leaveIfLoggedIn();
             console.debug($state.current.name + ' initializing...');
             if(quantimodoService.getUrlParameter(window.location.href, 'loggingIn')){
-                $ionicLoading.show();
-                $scope.loginPage.title = 'Logging in...';
+                loggingIn();
             }
-
-            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.hideLoader();
         });
 
         $scope.$on('$ionicView.afterEnter', function(){
@@ -74,7 +88,7 @@ angular.module('starter')
                 $scope.googleLogout();
             }
 
-            $scope.loginPage.title = 'Logging in...';
+            loggingIn();
             if($rootScope.isChromeApp){
                 quantimodoService.chromeAppLogin(register);
             } else if ($rootScope.isChromeExtension) {
@@ -179,7 +193,7 @@ angular.module('starter')
             var debugMode = false;
 
             $scope.hideGoogleLoginButton = true;
-            $ionicLoading.show();
+            loggingIn();
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
                 //I get called when everything's ready for the plugin to be called!
