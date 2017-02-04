@@ -66,7 +66,7 @@
                         Already Have Account
                     </button>
                 </div>
-                <div class="button-bar" ng-if="isAndroid">
+                <div class="button-bar" ng-if="isAndroid && !hideGoogleLoginButton">
                     <button class="button"
                             style="background-color: {{loginPage.backgroundColor}};
                                 border: none;

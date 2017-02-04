@@ -176,7 +176,9 @@ angular.module('starter')
 
         $scope.googleLogin = function(register) {
             var debugMode = false;
-            $scope.showLoader('Logging you in...');
+
+            $scope.hideGoogleLoginButton = true;
+            $ionicLoading.show();
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
                 //I get called when everything's ready for the plugin to be called!
@@ -190,7 +192,7 @@ angular.module('starter')
                     'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                 }, function (userData) {
                     quantimodoService.getTokensAndUserViaNativeGoogleLogin(userData).then(function (response) {
-                        $scope.hideLoader();
+                        $ionicLoading.hide();
                         if(debugMode){
                             alert('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
                                 JSON.stringify(response));
@@ -199,7 +201,7 @@ angular.module('starter')
                             JSON.stringify(response));
                         quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                     }, function (errorMessage) {
-                        $scope.hideLoader();
+                        $ionicLoading.hide();
                         if(debugMode){
                             alert("ERROR: googleLogin could not get userData!  Fallback to " +
                                 "quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
@@ -210,7 +212,7 @@ angular.module('starter')
                         quantimodoService.nonNativeMobileLogin(register);
                     });
                 }, function (errorMessage) {
-                    $scope.hideLoader();
+                    $ionicLoading.hide();
                     if(debugMode){
                         alert("ERROR: googleLogin could not get userData!  Fallback to " +
                             "quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
