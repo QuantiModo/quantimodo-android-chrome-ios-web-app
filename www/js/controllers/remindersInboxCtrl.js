@@ -378,7 +378,7 @@ angular.module('starter')
 			notificationsSyncQueue[0].hide = false;
 			quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications',
 				notificationsSyncQueue[0]);
-			quantimodoService.deleteElementOfLocalStorageItemByProperty('notificationsSyncQueue',
+			quantimodoService.deleteElementsOfLocalStorageItemByProperty('notificationsSyncQueue',
 				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
 			getTrackingReminderNotifications();
 		};
