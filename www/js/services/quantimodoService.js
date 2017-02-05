@@ -3158,8 +3158,10 @@ angular.module('starter')
         };
 
         var scheduleNotificationSync = function () {
-            if(!localStorage.getItem('trackingReminderNotificationSyncScheduled')){
-                localStorage.setItem('trackingReminderNotificationSyncScheduled', true);
+            var trackingReminderNotificationSyncScheduled = localStorage.getItem('trackingReminderNotificationSyncScheduled');
+            if(!trackingReminderNotificationSyncScheduled ||
+                parseInt(trackingReminderNotificationSyncScheduled) < new Date().getTime() - delayBeforePostingNotifications){
+                localStorage.setItem('trackingReminderNotificationSyncScheduled', new Date().getTime());
                 $timeout(function() {
                     localStorage.removeItem('trackingReminderNotificationSyncScheduled');
                     // Post notification queue in 5 minutes if it's still there
