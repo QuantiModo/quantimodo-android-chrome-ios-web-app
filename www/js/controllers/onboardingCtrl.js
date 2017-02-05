@@ -63,6 +63,7 @@ angular.module('starter')
 
     $rootScope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
+        window.localStorage.onboarded = true;
         $state.go(config.appSettings.defaultState);
     };
 
@@ -91,6 +92,7 @@ angular.module('starter')
     $rootScope.doneOnboarding = function () {
         $state.go('app.remindersInbox');
         $rootScope.hideMenuButton = false;
+        window.localStorage.onboarded = true;
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
         //$rootScope.onboardingPages = null;
     };

@@ -42,7 +42,7 @@ angular.module('starter')
         if($rootScope.urlParameters.refreshUser){
             quantimodoService.clearLocalStorage();
             window.localStorage.introSeen = true;
-            window.localStorage.isWelcomed = true;
+            window.localStorage.onboarded = true;
             $rootScope.user = null;
             $rootScope.refreshUser = false;
         }
@@ -482,28 +482,6 @@ angular.module('starter')
             $state.go('app.tageeSearch',  {
                 fromState: $state.current.name,
                 userTagVariableObject: $rootScope.variableObject
-            });
-        };
-
-        $scope.showHelpInfoPopupIfNecessary = function (e) {
-            quantimodoService.getLocalStorageItemAsStringWithCallback('isWelcomed', function (isWelcomed) {
-                if (isWelcomed === true || isWelcomed === "true") {
-                    if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
-                        quantimodoService.getLocalStorageItemAsStringWithCallback('notShowHelpPopup', function (val) {
-                            if (typeof val === "undefined" || val === "undefined") {
-                                $scope.notShowHelpPopup = false;
-                            } else {
-                                $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
-                            }
-
-                            // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
-                            //if (!$scope.notShowHelpPopup && e.targetScope !== $scope) {
-                            if (!$scope.notShowHelpPopup) {
-                                $scope.showHelpInfoPopup();
-                            }
-                        });
-                    }
-                }
             });
         };
 

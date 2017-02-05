@@ -110,8 +110,7 @@ angular.module('starter')
         };
 
         $scope.nativeSocialLogin = function(provider, accessToken){
-            quantimodoService.setLocalStorageItem('isWelcomed', true);
-            $rootScope.isWelcomed = true;
+
             console.debug('$scope.nativeSocialLogin: Going to try to quantimodoService.getTokensAndUserViaNativeSocialLogin for ' +
                 provider + ' provider');
 

@@ -76,7 +76,6 @@ angular.module('starter')
 				quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 				$scope.refreshFavorites();
 			}
-			$scope.showHelpInfoPopupIfNecessary();
 
 	    };
 

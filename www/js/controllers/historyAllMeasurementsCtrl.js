@@ -195,7 +195,7 @@ angular.module('starter')
 			if($rootScope.user){
 				$rootScope.trackLocation = $rootScope.user.trackLocation;
 			}
-			$scope.showHelpInfoPopupIfNecessary();
+
 			quantimodoService.getVariableCategories()
 				.then(function(variableCategories){
 					$scope.state.variableCategories = variableCategories;

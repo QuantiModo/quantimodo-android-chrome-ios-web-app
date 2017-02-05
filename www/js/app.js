@@ -375,7 +375,7 @@ angular.module('starter',
     $rootScope.getAllUrlParams();
     if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
         window.localStorage.introSeen = true;
-        window.localStorage.isWelcomed = true;
+        window.localStorage.onboarded = true;
     }
     console.debug('url params are ' + JSON.stringify($rootScope.urlParameters));
 })
@@ -1614,12 +1614,15 @@ angular.module('starter',
             }
         });
 
-    if (window.localStorage.introSeen) {
-        console.debug("Intro seen so going to inbox");
-        $urlRouterProvider.otherwise('/app/reminders-inbox');
-    } else {
+    if (!window.localStorage.introSeen) {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');
+    } else if (!window.localStorage.onboarded) {
+        console.debug("Not onboarded so going to onboarding");
+        $urlRouterProvider.otherwise('/app/onboarding');
+    } else {
+        console.debug("Intro seen so going to inbox");
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
     }
       // if none of the above states are matched, use this as the fallback
 
