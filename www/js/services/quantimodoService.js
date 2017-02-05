@@ -3157,6 +3157,17 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        var scheduleNotificationSync = function () {
+            if(!localStorage.getItem('trackingReminderNotificationSyncScheduled')){
+                localStorage.setItem('trackingReminderNotificationSyncScheduled', true);
+                $timeout(function() {
+                    localStorage.removeItem('trackingReminderNotificationSyncScheduled');
+                    // Post notification queue in 5 minutes if it's still there
+                    quantimodoService.postTrackingReminderNotificationsDeferred();
+                }, delayBeforePostingNotifications);
+            }
+        };
+
         quantimodoService.skipTrackingReminderNotificationDeferred = function(trackingReminderNotification){
             var deferred = $q.defer();
             $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
@@ -3164,23 +3175,8 @@ angular.module('starter')
                 trackingReminderNotification.id);
             trackingReminderNotification.action = 'skip';
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('notificationsSyncQueue', trackingReminderNotification);
-            $timeout(function() {
-                // Post notification queue in 5 minutes if it's still there
-                quantimodoService.postTrackingReminderNotificationsDeferred();
-            }, delayBeforePostingNotifications);
-            /*
-             quantimodoService.skipTrackingReminderNotification(body, function(response){
-             if(response.success) {
-             deferred.resolve();
-             }
-             else {
-             deferred.reject();
-             }
-             }, function(error){
-             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-             deferred.reject(error);
-             });
-             */
+            scheduleNotificationSync();
+
             return deferred.promise;
         };
 
@@ -3222,23 +3218,7 @@ angular.module('starter')
             quantimodoService.deleteElementOfLocalStorageItemById('trackingReminderNotifications', trackingReminderNotification.id);
             trackingReminderNotification.action = 'track';
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('notificationsSyncQueue', trackingReminderNotification);
-            $timeout(function() {
-                // Post notification queue in 5 minutes if it's still there
-                quantimodoService.postTrackingReminderNotificationsDeferred();
-            }, delayBeforePostingNotifications);
-            /*
-             quantimodoService.trackTrackingReminderNotification(body, function(response){
-             if(response.success) {
-             deferred.resolve();
-             }
-             else {
-             deferred.reject();
-             }
-             }, function(error){
-             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-             deferred.reject(error);
-             });
-             */
+            scheduleNotificationSync();
 
             return deferred.promise;
         };
@@ -3250,24 +3230,7 @@ angular.module('starter')
                 body.id);
             body.action = 'snooze';
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('notificationsSyncQueue', body);
-            $timeout(function() {
-                // Post notification queue in 5 minutes if it's still there
-                quantimodoService.postTrackingReminderNotificationsDeferred();
-            }, delayBeforePostingNotifications);
-
-            /*
-             quantimodoService.snoozeTrackingReminderNotification(body, function(response){
-             if(response.success) {
-             deferred.resolve();
-             }
-             else {
-             deferred.reject();
-             }
-             }, function(error){
-             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-             deferred.reject(error);
-             });
-             */
+            scheduleNotificationSync();
 
             return deferred.promise;
         };
