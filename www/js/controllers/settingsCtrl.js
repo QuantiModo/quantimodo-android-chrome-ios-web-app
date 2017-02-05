@@ -326,7 +326,8 @@ angular.module('starter')
 				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
 				}
-				quantimodoService.setLocalStorageItem('isWelcomed', false);
+                window.localStorage.introSeen = false;
+                window.localStorage.onboarded = false;
 				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
                 $state.go('app.intro');
 				//hard reload

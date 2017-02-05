@@ -78,7 +78,6 @@ angular.module('starter')
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.loading = true;
             $scope.showLoader('Getting variable details');
-            $scope.showHelpInfoPopupIfNecessary();
             if($stateParams.variableObject){
                 $scope.setupVariableByVariableObject($stateParams.variableObject);
             } else if ($stateParams.variableName) {
