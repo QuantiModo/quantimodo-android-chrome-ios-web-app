@@ -5,7 +5,7 @@
 var manifest = chrome.runtime.getManifest();
 console.log(manifest.name);
 console.log(manifest.version);
-var requestIdentificationParameters = "appName" + manifest.name + "&appVersion=" + manifest.version + "&client_id=chromeExtension";
+var requestIdentificationParameters = "appName=" + manifest.name + "&appVersion=" + manifest.version + "&client_id=chromeExtension";
 
 var v = null;
 var vid = null;
