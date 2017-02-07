@@ -6,7 +6,6 @@ angular.module('starter')
         $rootScope.showFilterBarSearchIcon = false;
 
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-            $rootScope.getAllUrlParams();
             $scope.state = {
                 title: 'Loading study...',
                 requestParams: {},

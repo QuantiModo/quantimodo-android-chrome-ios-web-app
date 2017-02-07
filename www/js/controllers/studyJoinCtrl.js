@@ -20,7 +20,6 @@ angular.module('starter')
         $scope.$on('$ionicView.beforeEnter', function(e) {
             $scope.studyJoinPage.loading = true;
             $rootScope.stateParams = $stateParams;
-            $rootScope.getAllUrlParams();
             if(!$rootScope.user){
                 quantimodoService.setLocalStorageItem('afterLoginGoToState', $state.current.name);
                 $state.go('app.login');

@@ -486,7 +486,6 @@ angular.module('starter')
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $rootScope.hideNavigationMenu = false;
             $rootScope.stateParams = $stateParams;
-            $rootScope.getAllUrlParams();
             if($rootScope.urlParameters.userEmail){
                 $scope.state.loading = true;
                 $ionicLoading.show({
