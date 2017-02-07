@@ -220,7 +220,6 @@ angular.module('starter')
 
         $scope.init = function(){
 
-            $rootScope.getAllUrlParams();
             if($rootScope.urlParameters.variableName){
                 $stateParams.variableName = $rootScope.urlParameters.variableName;
             }
