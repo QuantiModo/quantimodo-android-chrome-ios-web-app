@@ -351,7 +351,7 @@ angular.module('starter',
         }
     }, 500);
 
-    $rootScope.getAllUrlParams = function() {
+    var getAllUrlParams = function() {
         $rootScope.urlParameters = {};
         var queryString = document.location.toString().split('?')[1];
         var sURLVariables;
@@ -372,7 +372,8 @@ angular.module('starter',
         }
     };
 
-    $rootScope.getAllUrlParams();
+    getAllUrlParams();
+
     if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
         window.localStorage.introSeen = true;
         window.localStorage.onboarded = true;
