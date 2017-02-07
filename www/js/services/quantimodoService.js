@@ -1670,9 +1670,12 @@ angular.module('starter')
                 variableCategoryNameSingular: "Location",
                 measurementSynonymSingularLowercase : "location",
                 icon: "ion-ios-location",
-                moreInfo: "By automatically logging your location using GPS, we might be able to figure out how the " +
-                "amount of time spent at the gym or other locations may be affecting you. I promise that even if " +
-                "the NSA waterboards me, I will never divulge your location.",
+                moreInfo: "By automatically recording your location in the background using GPS, we might be able to figure out how the " +
+                "amount of time spent at the gym, restaurants, doctors, offices, home and work locations may be affecting you.  " +
+                "Logging location enables weather logging to determine how things like temperature and sunlight " +
+                "exposure might be affecting you.  Another benefit of enabling " +
+                "this option is that allows the app to run in the background and open instantly instead " +
+                "of taking a few seconds to load.  You can view your location history by going to Menu -> History -> Locations.",
                 imageUrl: "img/features/placeholder.png"
             },
             "Music" : {
@@ -7581,8 +7584,7 @@ angular.module('starter')
                     premiumFeature: true,
                     nextPageButtonText: 'Maybe Later',
                     bodyText: "Would you like to automatically log location and weather? ",
-                    moreInfo: $rootScope.variableCategories.Location.moreInfo + " <br> " +
-                        $rootScope.variableCategories.Environment.moreInfo,
+                    moreInfo: $rootScope.variableCategories.Location.moreInfo,
                     },
                 {
                     id: "importDataPage",
@@ -8015,10 +8017,7 @@ angular.module('starter')
                         width: "96"
                     },
                     bodyText: "Would you like to automatically log location and weather? ",
-                    moreInfo: "By automatically logging your location using GPS, we might be able to figure out how the " +
-                    "amount of time spent at the gym or other locations may be affecting you. I promise that even if " +
-                    "the NSA waterboards me, I will never divulge your location. <br> By recording your local weather " +
-                    "conditions, I might be able to figure out how the amount of sunlight or temperature is affecting you.",
+                    moreInfo: $rootScope.variableCategories.Location.moreInfo,
                     buttons: [
                         {
                             id: "hideLocationTrackingInfoCardButton",
@@ -8136,10 +8135,7 @@ angular.module('starter')
         quantimodoService.helpInfo = {
             locationAndWeatherTracking: {
                 title: "Location and Weather Tracking",
-                textContent: 'By automatically recording your location we can try to gain insights into the effects ' +
-                    ' of time spent at the gym, certain restaurants, or work.  Another benefit is that it keeps the ' +
-                    ' app running the background so it opens instantly instead of taking a few seconds to load.  ' +
-                    'You can view your location history by going to Menu -> History -> Locations.'
+                textContent: $rootScope.variableCategories.Location.moreInfo
             }
         };
 

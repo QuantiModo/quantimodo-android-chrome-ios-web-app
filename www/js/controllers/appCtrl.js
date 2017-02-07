@@ -2077,9 +2077,7 @@ angular.module('starter')
             if($rootScope.trackLocation && !skipPopup){
                 $ionicPopup.alert({
                     title: 'Location Tracking Enabled',
-                    template: 'By automatically recording your location we can try to gain insights into the effects ' +
-                        ' of time spent at the gym, certain restaurants, or work.  Another benefit is that it keeps the ' +
-                        ' app running the background so it opens instantly instead of taking a few seconds to load.'
+                    template: $rootScope.variableCategories.Location.moreInfo
                 });
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
             }
@@ -2100,6 +2098,22 @@ angular.module('starter')
 
         $scope.showAlert = function(title, template, subTitle) {
             quantimodoService.showAlert(title, template, subTitle);
+        };
+
+        $scope.showMaterialAlert = function(ev, title, textContent) {
+            // Appending dialog to document.body to cover sidenav in docs app
+            // Modal dialogs should fully cover application
+            // to prevent interaction outside of dialog
+            $mdDialog.show(
+                $mdDialog.alert()
+                    .parent(angular.element(document.querySelector('#popupContainer')))
+                    .clickOutsideToClose(true)
+                    .title(title)
+                    .textContent(textContent)
+                    .ariaLabel(title)
+                    .ok('Got it!')
+                    .targetEvent(ev)
+            );
         };
 
         if(!$scope.subscriptionPlanId){

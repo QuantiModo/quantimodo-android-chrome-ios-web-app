@@ -36,7 +36,8 @@
             </span>
             <br>
             <br>
-            <p style="cursor: pointer" ng-if="onboardingPages[0].moreInfo" ng-click="showMoreOnboardingInfo()">
+            <p style="cursor: pointer" ng-if="onboardingPages[0].moreInfo"
+               ng-click="showMaterialAlert($event, onboardingPages[0].title, onboardingPages[0].moreInfo)">
                 MORE INFO
             </p>
             <br>
