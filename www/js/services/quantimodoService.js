@@ -1400,14 +1400,7 @@ angular.module('starter')
             localStorage.user = JSON.stringify(user); // For Chrome Extension
             quantimodoService.saveAccessTokenInLocalStorage(user);
             $rootScope.user = user;
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.metaData = {
-                    user: {
-                        name: user.displayName,
-                        email: user.email
-                    }
-                };
-            }
+            quantimodoService.setupBugsnag();
 
             var date = new Date(user.userRegistered);
             var userRegistered = date.getTime()/1000;
@@ -2775,13 +2768,14 @@ angular.module('starter')
                 }
             }
             console.error('ERROR: ' + stringifiedExceptionOrError);
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.releaseStage = quantimodoService.getEnv();
+            quantimodoService.setupBugsnag().then(function () {
                 Bugsnag.notify(stringifiedExceptionOrError, stacktrace, {groupingHash: stringifiedExceptionOrError}, "error");
                 deferred.resolve();
-            } else {
-                deferred.reject('Bugsnag is not defined');
-            }
+            }, function (error) {
+                console.error(error);
+                deferred.reject(error);
+            });
+
             return deferred.promise;
         };
 
@@ -2792,11 +2786,24 @@ angular.module('starter')
                 //Bugsnag.notifyReleaseStages = ['Production','Staging'];
                 Bugsnag.releaseStage = quantimodoService.getEnv();
                 Bugsnag.appVersion = $rootScope.appVersion;
-                Bugsnag.metaData = {
-                    platform: ionic.Platform.platform(),
-                    platformVersion: ionic.Platform.version(),
-                    appDisplayName: config.appSettings.appDisplayName
-                };
+                if($rootScope.user){
+                    Bugsnag.metaData = {
+                        platform: ionic.Platform.platform(),
+                        platformVersion: ionic.Platform.version(),
+                        appDisplayName: config.appSettings.appDisplayName,
+                        user: {
+                            name: $rootScope.user.displayName,
+                            email: $rootScope.user.email
+                        }
+                    };
+                } else {
+                    Bugsnag.metaData = {
+                        platform: ionic.Platform.platform(),
+                        platformVersion: ionic.Platform.version(),
+                        appDisplayName: config.appSettings.appDisplayName
+                    };
+                }
+
                 deferred.resolve();
             } else {
                 deferred.reject('Bugsnag is not defined');
