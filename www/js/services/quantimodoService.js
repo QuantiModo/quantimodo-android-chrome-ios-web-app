@@ -6909,11 +6909,11 @@ angular.module('starter')
             } else {
                 try {
                     localStorage.setItem(keyIdentifier+key, value);
-                } catch(err) {
-                    quantimodoService.sendErrorWithLocalStorageList(err);
+                    deferred.resolve();
+                } catch(error) {
+                    quantimodoService.sendErrorWithLocalStorageList(error);
+                    deferred.reject(error);
                 }
-
-                deferred.resolve();
             }
             return deferred.promise;
         };
