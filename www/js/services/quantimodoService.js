@@ -5,142 +5,6 @@ angular.module('starter')
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
-        quantimodoService.successHandler = function(data, baseURL, status){
-            var maxLength = 140;
-            console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
-            if($rootScope.offlineConnectionErrorShowing){
-                $rootScope.offlineConnectionErrorShowing = false;
-            }
-            if(!data.success){
-                console.debug('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
-            }
-            if(data.message){
-                console.warn(data.message);
-            }
-            if(!$rootScope.user && baseURL.indexOf('user') === -1){
-                quantimodoService.refreshUser();
-            }
-        };
-
-        quantimodoService.errorHandler = function(data, status, headers, config, request, options){
-
-            if(status === 302){
-                console.warn('quantimodoService.errorHandler: Got 302 response from ' + JSON.stringify(request));
-                return;
-            }
-
-            if(status === 401){
-                if(options && options.doNotSendToLogin){
-                    return;
-                } else {
-                    console.warn('quantimodoService.errorHandler: Sending to login because we got 401 with request ' +
-                        JSON.stringify(request));
-                    quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-                    console.debug("set afterLoginGoTo to " + window.location.href);
-                    if (quantimodoService.getClientId() !== 'oAuthDisabled') {
-                        $rootScope.sendToLogin();
-                    } else {
-                        var register = true;
-                        quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
-                    }
-                    return;
-                }
-            }
-
-            if(status === 502){
-                quantimodoService.reportError('502 from ' + request.url);
-            }
-
-            if(status === 400){
-                quantimodoService.reportError('400 from ' + request.url);
-            }
-
-            if(status === 404){
-                quantimodoService.reportError('404 from ' + request.url);
-            }
-
-            var groupingHash;
-            if(!data){
-                if (typeof Bugsnag !== "undefined") {
-                    groupingHash = 'No data returned from this request';
-                    Bugsnag.notify(groupingHash,
-                        status + " response from url " + request.url,
-                        {groupingHash: groupingHash},
-                        "error");
-                }
-                var doNotShowOfflineError = false;
-                if(options && options.doNotShowOfflineError){
-                    doNotShowOfflineError = true;
-                }
-                if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
-                    console.error("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
-                    $rootScope.offlineConnectionErrorShowing = true;
-                    if($rootScope.isIOS){
-                        $ionicPopup.show({
-                            title: 'NOT CONNECTED',
-                            //subTitle: '',
-                            template: 'Either you are not connected to the internet or the quantimodoService server cannot be reached.',
-                            buttons:[
-                                {text: 'OK',
-                                    type: 'button-positive',
-                                    onTap: function(){
-                                        $rootScope.offlineConnectionErrorShowing = false;
-                                    }
-                                }
-                            ]
-                        });
-                    }
-                }
-                return;
-            }
-
-            if (typeof Bugsnag !== "undefined") {
-                groupingHash = "There was an error and the request object was not provided to the quantimodoService.errorHandler";
-                if(request){
-                    groupingHash = request.url + ' error';
-                }
-                if(data.error){
-                    groupingHash = JSON.stringify(data.error);
-                    if(data.error.message){
-                        groupingHash = JSON.stringify(data.error.message);
-                    }
-                }
-                Bugsnag.notify(groupingHash,
-                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data),
-                    {groupingHash: groupingHash},
-                    "error");
-            }
-            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data));
-
-            if(data.success){
-                console.error('Called error handler even though we have data.success');
-            }
-        };
-
-        // Handler when request is failed
-        var onRequestFailed = function(error){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-            console.error("Request error : " + error);
-        };
-
-        var canWeMakeRequestYet = function(type, baseURL, options){
-            if(!options || !options.minimumSecondsBetweenRequests){
-               return true;
-            }
-            var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
-            if(!$rootScope[requestVariableName]){
-                $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
-                return true;
-            }
-            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
-                console.debug('quantimodoService.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
-                    "we made the same request within the last " + options.minimumSecondsBetweenRequests + ' seconds');
-                return false;
-            }
-            $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
-            return true;
-        };
-
         // GET method with the added token
         quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler, options){
 
@@ -219,7 +83,7 @@ angular.module('starter')
                 console.debug('quantimodoService.get: ' + request.url);
 
                 $http(request)
-                    .success(function (data, status, headers, config) {
+                    .success(function (data, status, headers) {
                         if(!data) {
                             if (typeof Bugsnag !== "undefined") {
                                 var groupingHash = 'No data returned from this request';
@@ -229,16 +93,15 @@ angular.module('starter')
                                     "error");
                             }
                         } else if (data.error) {
-                            quantimodoService.errorHandler(data, status, headers, config, request, options);
+                            quantimodoService.errorHandler(data, status, headers, request, options);
                             errorHandler(data);
                         } else {
-
                             quantimodoService.successHandler(data, baseURL, status);
                             successHandler(data);
                         }
                     })
-                    .error(function (data, status, headers, config) {
-                        quantimodoService.errorHandler(data, status, headers, config, request, options);
+                    .error(function (data, status, headers) {
+                        quantimodoService.errorHandler(data, status, headers, request, options);
                         errorHandler(data);
                     }, onRequestFailed);
             });
@@ -304,12 +167,148 @@ angular.module('starter')
                 }
                 */
 
-                $http(request).success(successHandler).error(function(data, status, headers, config){
-                    quantimodoService.errorHandler(data, status, headers, config, request, options);
+                $http(request).success(successHandler).error(function(data, status, headers){
+                    quantimodoService.errorHandler(data, status, headers, request, options);
                     errorHandler(data);
                 });
 
             }, errorHandler);
+        };
+
+        quantimodoService.successHandler = function(data, baseURL, status){
+            var maxLength = 140;
+            console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
+            if($rootScope.offlineConnectionErrorShowing){
+                $rootScope.offlineConnectionErrorShowing = false;
+            }
+            if(!data.success){
+                console.debug('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
+            }
+            if(data.message){
+                console.warn(data.message);
+            }
+            if(!$rootScope.user && baseURL.indexOf('user') === -1){
+                quantimodoService.refreshUser();
+            }
+        };
+
+        quantimodoService.errorHandler = function(data, status, headers, request, options){
+
+            if(status === 302){
+                console.warn('quantimodoService.errorHandler: Got 302 response from ' + JSON.stringify(request));
+                return;
+            }
+
+            if(status === 401){
+                if(options && options.doNotSendToLogin){
+                    return;
+                } else {
+                    console.warn('quantimodoService.errorHandler: Sending to login because we got 401 with request ' +
+                        JSON.stringify(request));
+                    quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
+                    console.debug("set afterLoginGoTo to " + window.location.href);
+                    if (quantimodoService.getClientId() !== 'oAuthDisabled') {
+                        $rootScope.sendToLogin();
+                    } else {
+                        var register = true;
+                        quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
+                    }
+                    return;
+                }
+            }
+
+            if(status === 502){
+                quantimodoService.reportError('502 from ' + request.method + ' ' + request.url);
+            }
+
+            if(status === 400){
+                quantimodoService.reportError('400 from ' + request.method + ' ' + request.url);
+            }
+
+            if(status === 404){
+                quantimodoService.reportError('404 from ' + request.method + ' ' + request.url);
+            }
+
+            var groupingHash;
+            if(!data){
+                if (typeof Bugsnag !== "undefined") {
+                    groupingHash = 'No data returned from this request';
+                    Bugsnag.notify(groupingHash,
+                        status + " response from url " + request.url,
+                        {groupingHash: groupingHash},
+                        "error");
+                }
+                var doNotShowOfflineError = false;
+                if(options && options.doNotShowOfflineError){
+                    doNotShowOfflineError = true;
+                }
+                if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
+                    console.error("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
+                    $rootScope.offlineConnectionErrorShowing = true;
+                    if($rootScope.isIOS){
+                        $ionicPopup.show({
+                            title: 'NOT CONNECTED',
+                            //subTitle: '',
+                            template: 'Either you are not connected to the internet or the quantimodoService server cannot be reached.',
+                            buttons:[
+                                {text: 'OK',
+                                    type: 'button-positive',
+                                    onTap: function(){
+                                        $rootScope.offlineConnectionErrorShowing = false;
+                                    }
+                                }
+                            ]
+                        });
+                    }
+                }
+                return;
+            }
+
+            if (typeof Bugsnag !== "undefined") {
+                groupingHash = "There was an error and the request object was not provided to the quantimodoService.errorHandler";
+                if(request){
+                    groupingHash = request.url + ' error';
+                }
+                if(data.error){
+                    groupingHash = JSON.stringify(data.error);
+                    if(data.error.message){
+                        groupingHash = JSON.stringify(data.error.message);
+                    }
+                }
+                Bugsnag.notify(groupingHash,
+                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data),
+                    {groupingHash: groupingHash},
+                    "error");
+            }
+            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data));
+
+            if(data.success){
+                console.error('Called error handler even though we have data.success');
+            }
+        };
+
+        // Handler when request is failed
+        var onRequestFailed = function(error){
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            console.error("Request error : " + error);
+        };
+
+        var canWeMakeRequestYet = function(type, baseURL, options){
+            if(!options || !options.minimumSecondsBetweenRequests){
+                return true;
+            }
+            var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
+            if(!$rootScope[requestVariableName]){
+                $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+                return true;
+            }
+            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
+                console.debug('quantimodoService.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
+                    "we made the same request within the last " + options.minimumSecondsBetweenRequests + ' seconds');
+                return false;
+            }
+            $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+            return true;
         };
 
         function getCurrentFunctionName() {
