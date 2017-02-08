@@ -536,8 +536,10 @@ angular.module('starter')
             var measurementId = quantimodoService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
                 var measurementObject;
+                $ionicLoading.show();
                 quantimodoService.getMeasurementById(measurementId).then(
                     function(response) {
+                        $ionicLoading.hide();
                         $scope.state.measurementIsSetup = true;
                         console.debug($state.current.name + ": " + "Setting up tracking by this measurement ");
                         measurementObject = response;
@@ -545,6 +547,7 @@ angular.module('starter')
                         deferred.resolve();
                     },
                     function(response) {
+                        $ionicLoading.hide();
                         console.debug($state.current.name + ": " + "Error response");
                         deferred.resolve();
                     }
