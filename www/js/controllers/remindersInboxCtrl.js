@@ -39,6 +39,7 @@ angular.module('starter')
         $scope.$on('$ionicView.beforeEnter', function(e) {
 
         	console.debug("RemindersInboxCtrl beforeEnter ");
+        	$scope.defaultHelpCards = quantimodoService.setupHelpCards();
 
         	$scope.loading = true;
             if(!$rootScope.accessTokenInUrl && !$rootScope.user){
@@ -158,7 +159,6 @@ angular.module('starter')
 		if(typeof(config.appSettings.remindersInbox.showAddVitalSignButton) !== 'undefined'){
 			$scope.state.showAddVitalSignButton = config.appSettings.remindersInbox.showAddVitalSignButton;
 		}
-
 
 		var setPageTitle = function(){
 			if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
@@ -610,4 +610,13 @@ angular.module('starter')
 			}, 20000);
 
 		};
+
+        $scope.hideHelpCard = function () {
+            var card = $scope.defaultHelpCards[0];
+            card.hide = true;
+            $scope.defaultHelpCards = $scope.defaultHelpCards.filter(function( obj ) {
+                return obj.id !== card.id;
+            });
+            quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
+        };
 	});

@@ -7479,22 +7479,24 @@ angular.module('starter')
             ];
 
             var debugMode = false;
+            var helpCards;
             if(debugMode){
                 $rootScope.hideNavigationMenu = true;
-                $rootScope.defaultHelpCards = defaultHelpCards;
+                helpCards = defaultHelpCards;
             }
 
-            if(typeof $rootScope.defaultHelpCards === "undefined"){
+            if(!helpCards){
                 quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
                     if(defaultHelpCardsFromLocalStorage === null){
+                        helpCards = defaultHelpCards;
                         quantimodoService.setLocalStorageItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
                     } else {
-                        defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
+                        helpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
                     }
                 });
             }
 
-            $rootScope.defaultHelpCards = defaultHelpCards;
+            return helpCards;
         };
 
         quantimodoService.setupOnboardingPages = function () {

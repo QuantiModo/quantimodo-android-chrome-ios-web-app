@@ -363,15 +363,6 @@ angular.module('starter')
             quantimodoService.setLocalStorageItem(flagName, true);
         };
 
-        $rootScope.hideHelpCard = function () {
-            var card = $rootScope.defaultHelpCards[0];
-            card.hide = true;
-            $rootScope.defaultHelpCards = $rootScope.defaultHelpCards.filter(function( obj ) {
-                return obj.id !== card.id;
-            });
-            quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
-        };
-
         // open datepicker for "from" date
         $scope.openFromDatePicker = function () {
             ionicDatePicker.openDatePicker($scope.fromDatePickerObj);
