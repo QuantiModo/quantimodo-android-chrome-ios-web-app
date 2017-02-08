@@ -1670,9 +1670,12 @@ angular.module('starter')
                 variableCategoryNameSingular: "Location",
                 measurementSynonymSingularLowercase : "location",
                 icon: "ion-ios-location",
-                moreInfo: "By automatically logging your location using GPS, we might be able to figure out how the " +
-                "amount of time spent at the gym or other locations may be affecting you. I promise that even if " +
-                "the NSA waterboards me, I will never divulge your location.",
+                moreInfo: "By automatically recording your location in the background using GPS, we might be able to figure out how the " +
+                "amount of time spent at the gym, restaurants, doctors, offices, home and work locations may be affecting you.  " +
+                "Logging location enables weather logging to determine how things like temperature and sunlight " +
+                "exposure might be affecting you.  Another benefit of enabling " +
+                "this option is that allows the app to run in the background and open instantly instead " +
+                "of taking a few seconds to load.  You can view your location history by going to Menu -> History -> Locations.",
                 imageUrl: "img/features/placeholder.png"
             },
             "Music" : {
@@ -7406,15 +7409,8 @@ angular.module('starter')
                     bodyText: "Scroll through the Inbox and press the appropriate button on each reminder notification. " +
                     "Each one only takes a few seconds. You'll be " +
                     "shocked at how much valuable data you can collect with just a few minutes in the Reminder Inbox each day!",
-                    buttons: [
-                        {
-                            id: "hideRecordMeasurementInfoCardButton",
-                            clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
-                            buttonText: 'Got it!',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-balanced"
-                        }
-                    ]
+                    hideHelpCardText: "Got it!",
+                    hideHelpCardIcon: "ion-checkmark"
                 },
                 {
                     id: "recordMeasurementInfoCard",
@@ -7431,15 +7427,8 @@ angular.module('starter')
                     bodyText: "Want to just record a medication, food or symptom immediately instead of creating a reminder? " +
                     "Just go to the Record Measurement menu item and select the appropriate variable category. " +
                     "Alternatively, you can just press the little red button at the bottom of the screen.",
-                    buttons: [
-                        {
-                            id: "hideRecordMeasurementInfoCardButton",
-                            clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
-                            buttonText: 'Got it!',
-                            buttonIconClass: "ion-checkmark",
-                            buttonClass: "button button-clear button-balanced"
-                        }
-                    ]
+                    hideHelpCardText: "Got it!",
+                    hideHelpCardIcon: "ion-checkmark"
                 },
                 {
                     id: "chromeExtensionInfoCard",
@@ -7456,6 +7445,8 @@ angular.module('starter')
                     bodyText: "Did you know that you can easily track everything on your laptop and desktop with our " +
                     "Google Chrome browser extension?  Your data is synced between devices so you'll never have to " +
                     "track twice!",
+                    hideHelpCardText: "Dismiss",
+                    hideHelpCardIcon: "ion-close-circled",
                     buttons: [
                         {
                             id: "sendChromeEmailLinkButton",
@@ -7463,35 +7454,30 @@ angular.module('starter')
                             buttonText: 'Send Yourself a Link',
                             buttonIconClass: "ion-email",
                             buttonClass: "button button-clear button-balanced"
-                        },
-                        {
-                            id: "hideChromeExtensionInfoCardButton",
-                            clickFunctionCall: function(card){ $rootScope.hideHelpCard(card);},
-                            buttonText: 'Dismiss',
-                            buttonIconClass: "ion-close-circled",
-                            buttonClass: "button button-clear button-assertive"
                         }
                     ]
                 }
             ];
 
             var debugMode = false;
+            var helpCards;
             if(debugMode){
                 $rootScope.hideNavigationMenu = true;
-                $rootScope.defaultHelpCards = defaultHelpCards;
+                helpCards = defaultHelpCards;
             }
 
-            if(typeof $rootScope.defaultHelpCards === "undefined"){
+            if(!helpCards){
                 quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
                     if(defaultHelpCardsFromLocalStorage === null){
+                        helpCards = defaultHelpCards;
                         quantimodoService.setLocalStorageItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
                     } else {
-                        defaultHelpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
+                        helpCards = JSON.parse(defaultHelpCardsFromLocalStorage);
                     }
                 });
             }
 
-            $rootScope.defaultHelpCards = defaultHelpCards;
+            return helpCards;
         };
 
         quantimodoService.setupOnboardingPages = function () {
@@ -7581,8 +7567,7 @@ angular.module('starter')
                     premiumFeature: true,
                     nextPageButtonText: 'Maybe Later',
                     bodyText: "Would you like to automatically log location and weather? ",
-                    moreInfo: $rootScope.variableCategories.Location.moreInfo + " <br> " +
-                        $rootScope.variableCategories.Environment.moreInfo,
+                    moreInfo: $rootScope.variableCategories.Location.moreInfo,
                     },
                 {
                     id: "importDataPage",
@@ -8015,10 +8000,7 @@ angular.module('starter')
                         width: "96"
                     },
                     bodyText: "Would you like to automatically log location and weather? ",
-                    moreInfo: "By automatically logging your location using GPS, we might be able to figure out how the " +
-                    "amount of time spent at the gym or other locations may be affecting you. I promise that even if " +
-                    "the NSA waterboards me, I will never divulge your location. <br> By recording your local weather " +
-                    "conditions, I might be able to figure out how the amount of sunlight or temperature is affecting you.",
+                    moreInfo: $rootScope.variableCategories.Location.moreInfo,
                     buttons: [
                         {
                             id: "hideLocationTrackingInfoCardButton",
@@ -8136,10 +8118,7 @@ angular.module('starter')
         quantimodoService.helpInfo = {
             locationAndWeatherTracking: {
                 title: "Location and Weather Tracking",
-                textContent: 'By automatically recording your location we can try to gain insights into the effects ' +
-                    ' of time spent at the gym, certain restaurants, or work.  Another benefit is that it keeps the ' +
-                    ' app running the background so it opens instantly instead of taking a few seconds to load.  ' +
-                    'You can view your location history by going to Menu -> History -> Locations.'
+                textContent: $rootScope.variableCategories.Location.moreInfo
             }
         };
 

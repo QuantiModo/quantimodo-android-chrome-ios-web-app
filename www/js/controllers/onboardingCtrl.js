@@ -27,7 +27,6 @@ angular.module('starter')
 
     $scope.$on('$ionicView.afterEnter', function(){
         console.debug("OnboardingCtrl afterEnter");
-        quantimodoService.setupHelpCards(true);
         quantimodoService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
 
@@ -53,7 +52,7 @@ angular.module('starter')
         quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify(onboardingPages));
     };
 
-    $rootScope.onboardingGoToImportPage = function () {
+    $scope.onboardingGoToImportPage = function () {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         removeImportPage();
@@ -61,7 +60,7 @@ angular.module('starter')
         $state.go('app.import');
     };
 
-    $rootScope.skipOnboarding = function () {
+    $scope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
         $state.go(config.appSettings.defaultState);
@@ -71,7 +70,7 @@ angular.module('starter')
         $scope.onHelpButtonPress($rootScope.onboardingPages[0].title, $rootScope.onboardingPages[0].moreInfo);
     };
 
-    $rootScope.goToReminderSearchCategoryFromOnboarding = function() {
+    $scope.goToReminderSearchCategoryFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         if(!$rootScope.user){
@@ -84,20 +83,19 @@ angular.module('starter')
         $scope.goToReminderSearchCategory($rootScope.onboardingPages[0].variableCategoryName);
     };
 
-    $rootScope.enableLocationTracking = function () {
+    $scope.enableLocationTracking = function () {
         $rootScope.trackLocationChange(true, true);
         $rootScope.hideOnboardingPage();
     };
 
-    $rootScope.doneOnboarding = function () {
+    $scope.doneOnboarding = function () {
         $state.go('app.remindersInbox');
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
-        //$rootScope.onboardingPages = null;
     };
 
-    $rootScope.hideOnboardingPage = function () {
+    $scope.hideOnboardingPage = function () {
 
         $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
             return obj.id !== $rootScope.onboardingPages[0].id;

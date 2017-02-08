@@ -1,25 +1,26 @@
 angular.module('starter')
-	
-	// controls the Import Data page of the app
 	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService,
 									   $cordovaOauth, $ionicPopup, $stateParams) {
 
 		$scope.controller_name = "ImportCtrl";
-
         $rootScope.showFilterBarSearchIcon = false;
-		
-		/*// redirect if not logged in
-	    if(!$rootScope.user){
 
-	        $state.go(config.appSettings.welcomeState);
-	        // app wide signal to sibling controllers that the state has changed
-	        $rootScope.$broadcast('transition');
-	    }*/
+        $scope.$on('$ionicView.beforeEnter', function(e) {
+        	console.debug("ImportCtrl beforeEnter");
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            $ionicLoading.show();
+            if(true || $rootScope.isMobile || $stateParams.native){
+                loadNativeConnectorPage();
+            } else {
+                goToWebImportDataPage();
+            }
+        });
 
-	    // close the loader
-	    window.closeLoading = function(){
-	        $ionicLoading.hide();
-	    };
+        $scope.hideImportHelpCard = function () {
+			$scope.showImportHelpCard = false;
+			window.localStorage.showImportHelpCard = false;
+        };
 
 		var goToWebImportDataPage = function() {
 			console.debug('importCtrl.init: Going to quantimodoService.getAccessTokenFromAnySource');
@@ -63,6 +64,7 @@ angular.module('starter')
 		};
 
 		var loadNativeConnectorPage = function(){
+            $scope.showImportHelpCard = (window.localStorage.hideImportHelpCard !== true);
 			console.debug('importCtrl: $rootScope.isMobile so using native connector page');
 			quantimodoService.getConnectorsDeferred()
 				.then(function(connectors){
@@ -77,24 +79,5 @@ angular.module('starter')
 					$scope.refreshConnectors();
 				});
 		};
-
-	    // constructor
-	    var init = function(){
-			console.debug($state.current.name + ' initializing...');
-			$rootScope.stateParams = $stateParams;
-			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			$ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-
-			if(true || $rootScope.isMobile || $stateParams.native){
-				loadNativeConnectorPage();
-			} else {
-				goToWebImportDataPage();
-			}
-	    };
-
-	    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-			init();
-	    });
 
 	});
