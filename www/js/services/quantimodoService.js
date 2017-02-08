@@ -46,6 +46,19 @@ angular.module('starter')
                     return;
                 }
             }
+
+            if(status === 502){
+                quantimodoService.reportError('502 from ' + request.url);
+            }
+
+            if(status === 400){
+                quantimodoService.reportError('400 from ' + request.url);
+            }
+
+            if(status === 404){
+                quantimodoService.reportError('404 from ' + request.url);
+            }
+
             var groupingHash;
             if(!data){
                 if (typeof Bugsnag !== "undefined") {
