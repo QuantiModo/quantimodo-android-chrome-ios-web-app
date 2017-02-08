@@ -6907,10 +6907,29 @@ angular.module('starter')
                 chrome.storage.local.set(obj);
                 deferred.resolve();
             } else {
-                localStorage.setItem(keyIdentifier+key,value);
+                try {
+                    localStorage.setItem(keyIdentifier+key, value);
+                } catch(err) {
+                    quantimodoService.sendErrorWithLocalStorageList(err);
+                }
+
                 deferred.resolve();
             }
             return deferred.promise;
+        };
+
+        quantimodoService.sendErrorWithLocalStorageList = function(error){
+            var localStorageItemsArray = [];
+            for (var i = 0; i < localStorage.length; i++){
+                localStorage.getItem(localStorage.key(i));
+                localStorageItemsArray.push({
+                    name: localStorage.key(i),
+                    kB: Math.round(localStorage.getItem(localStorage.key(i)).length*16/(8*1024))
+                });
+            }
+
+            localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
+            quantimodoService.reportError(error + ' - localStorageItems are ' + JSON.stringify(localStorageItemsArray));
         };
 
         quantimodoService.getLocalStorageItemAsStringWithCallback = function(key, callback){
