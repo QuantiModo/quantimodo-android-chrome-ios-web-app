@@ -43,8 +43,7 @@ angular.module('starter')
         };
 
         $scope.editSettingsButtonClick = function() {
-            $rootScope.goToVariableSettingsForVariableObject($rootScope.variableObject);
-
+            $state.go('app.variableSettings', {variableObject: $rootScope.variableObject});
         };
 
 
@@ -296,7 +295,7 @@ angular.module('starter')
                             $scope.goToHistoryForVariableObject($rootScope.variableObject);
                         }
                         if (index === 4) {
-                            $rootScope.goToVariableSettingsForVariableObject($rootScope.variableObject);
+                            $state.go('app.variableSettings', {variableObject: $rootScope.variableObject});
                         }
                         if (index === 5) {
                             $scope.addTag($rootScope.variableObject);

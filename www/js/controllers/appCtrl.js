@@ -176,7 +176,7 @@ angular.module('starter')
 
         $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
             if(correlationObject.causeVariable){
-                $rootScope.goToVariableSettingsForVariableObject(correlationObject.causeVariable);
+                $state.go('app.variableSettings', {variableObject: correlationObject.causeVariable});
             } else {
                 $state.go('app.variableSettings', {variableName: correlationObject.causeVariableName});
             }
@@ -184,7 +184,7 @@ angular.module('starter')
 
         $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
             if(correlationObject.effectVariable){
-                $rootScope.goToVariableSettingsForVariableObject(correlationObject.effectVariable);
+                $state.go('app.variableSettings', {variableObject: correlationObject.effectVariable});
             } else {
                 $state.go('app.variableSettings', {variableName: correlationObject.effectVariableName});
             }
@@ -409,7 +409,6 @@ angular.module('starter')
             });
         };
 
-        var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
         $scope.showHelpInfoPopup = function (ev, id) {
             // Appending dialog to document.body to cover sidenav in docs app
@@ -1219,10 +1218,6 @@ angular.module('starter')
             });
         };
 
-        $rootScope.goToVariableSettingsForVariableObject = function (variableObject) {
-            $state.go('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});
-        };
-
         // Triggered on a button click, or some other target
         $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
 
@@ -1434,14 +1429,14 @@ angular.module('starter')
                 quantimodoService.deleteItemFromLocalStorage('lastStudy');
                 console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(params));
                 $ionicLoading.hide();
-                $rootScope.goBack();
+                $scope.goBack();
             }, function(error) {
                 $ionicLoading.hide();
                 console.error(error);
             });
         };
 
-        $rootScope.goBack = function () {
+        $scope.goBack = function () {
             if($ionicHistory.viewHistory().backView){
                 $ionicHistory.goBack();
             } else {
