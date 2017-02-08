@@ -2,10 +2,10 @@
     <ion-content scroll="true" overflow-scroll="true">
         <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
         <div class="card"
-             ng-show="onboardingPages[0].nextPageButtonText"
+             ng-show="showImportHelpCard"
              id="importHelpCard" >
             <div class="item item-avatar item-borderless">
-                <i class="{{defaultHelpCards[0].iconClass}}"
+                <i class="icon positive ion-ios-cloud-download-outline"
                    style="position: absolute;
 							top: 15px;
 							left: 15px;
@@ -28,6 +28,16 @@
                 Scroll down and press Connect for any apps or device you currently use.  Once you're finished, press
                 the Done bar at the bottom.
             </div>
+            <div class="row" >
+                <div class="button-bar">
+                    <button class="button button-clear button-assertive"
+                            style="font-size: 14px;"
+                            id="hideImportHelpCardButton"
+                            ng-click="hideImportHelpCard()">
+                        <i class="ion-checkmark"> &nbsp; Got it! &nbsp;</i>
+                    </button>
+                </div>
+            </div>
             <br>
         </div>
 
@@ -39,13 +49,12 @@
         </div>-->
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->
     </ion-content>
-    <div ng-show="onboardingPages[0].nextPageButtonText"
-         ng-click="goToState('app.onboarding')"
+    <div ng-click="goBack()"
          style="cursor:pointer;"
          class="bar bar-footer bar-balanced">
         <div class="title">
             <i class="icon ion-reply"></i>
-            {{onboardingPages[0].nextPageButtonText}}
+            Done connecting data sources
         </div>
     </div>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>

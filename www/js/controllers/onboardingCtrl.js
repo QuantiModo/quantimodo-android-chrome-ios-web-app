@@ -52,7 +52,7 @@ angular.module('starter')
         quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify(onboardingPages));
     };
 
-    $rootScope.onboardingGoToImportPage = function () {
+    $scope.onboardingGoToImportPage = function () {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         removeImportPage();
@@ -60,7 +60,7 @@ angular.module('starter')
         $state.go('app.import');
     };
 
-    $rootScope.skipOnboarding = function () {
+    $scope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
         $state.go(config.appSettings.defaultState);
@@ -88,12 +88,11 @@ angular.module('starter')
         $rootScope.hideOnboardingPage();
     };
 
-    $rootScope.doneOnboarding = function () {
+    $scope.doneOnboarding = function () {
         $state.go('app.remindersInbox');
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
-        //$rootScope.onboardingPages = null;
     };
 
     $scope.hideOnboardingPage = function () {
