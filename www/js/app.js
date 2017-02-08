@@ -706,7 +706,26 @@ angular.module('starter',
             }
         })
         .state('app.measurementAdd', {
-            url: "/measurement-add/:variableName",
+            url: "/measurement-add",
+            cache: false,
+            params: {
+                trackingReminder: null,
+                reminderNotification: null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null,
+                variableName: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/measurement-add.html",
+                    controller: 'MeasurementAddCtrl'
+                }
+            }
+        })
+        .state('app.measurementAddVariable', {
+            url: "/measurement-add-variable-name/:variableName",
             cache: false,
             params: {
                 trackingReminder: null,
