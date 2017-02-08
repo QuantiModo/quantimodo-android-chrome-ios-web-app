@@ -36,7 +36,7 @@ angular.module('starter')
             }
         };
 
-        var loggingIn = function () {
+        var loginTimeout = function () {
             $ionicLoading.show();
             $scope.loginPage.title = 'Logging in...';
             $timeout(function () {
@@ -62,7 +62,7 @@ angular.module('starter')
             leaveIfLoggedIn();
             console.debug($state.current.name + ' initializing...');
             if(quantimodoService.getUrlParameter(window.location.href, 'loggingIn')){
-                loggingIn();
+                loginTimeout();
             }
         });
 
@@ -87,8 +87,6 @@ angular.module('starter')
             if(window && window.plugins && window.plugins.googleplus){
                 $scope.googleLogout();
             }
-
-            loggingIn();
             if($rootScope.isChromeApp){
                 quantimodoService.chromeAppLogin(register);
             } else if ($rootScope.isChromeExtension) {
@@ -192,7 +190,7 @@ angular.module('starter')
             var debugMode = false;
 
             $scope.hideGoogleLoginButton = true;
-            loggingIn();
+            loginTimeout();
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
                 //I get called when everything's ready for the plugin to be called!
