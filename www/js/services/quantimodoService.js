@@ -1867,24 +1867,16 @@ angular.module('starter')
         quantimodoService.getMeasurements = function(){
             var deferred = $q.defer();
 
-            $rootScope.lastSyncTime = quantimodoService.getLocalStorageItemAsString('lastSyncTime');
-            if (!$rootScope.lastSyncTime) {
-                $rootScope.lastSyncTime = 0;
+            var lastSyncTime = quantimodoService.getLocalStorageItemAsString('lastSyncTime');
+            if (!lastSyncTime) {
+                lastSyncTime = 0;
             }
             var nowDate = new Date();
-            var lastSyncDate = new Date($rootScope.lastSyncTime);
-            var milliSecondsSinceLastSync = nowDate - lastSyncDate;
-            /*
-             if(milliSecondsSinceLastSync < 5 * 60 * 1000){
-             $rootScope.$broadcast('updateCharts');
-             deferred.resolve();
-             return deferred.promise;
-             }
-             */
+            var lastSyncDate = new Date(lastSyncTime);
 
             // send request
             var params;
-            var lastSyncTimeMinusFifteenMinutes = moment($rootScope.lastSyncTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
+            var lastSyncTimeMinusFifteenMinutes = moment(lastSyncTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
             params = {
                 variableName : config.appSettings.primaryOutcomeVariableDetails.name,
                 'updatedAt':'(ge)'+ lastSyncTimeMinusFifteenMinutes ,
@@ -1949,12 +1941,12 @@ angular.module('starter')
                         });
                     }
 
-                    if (response.length < 200 || params.offset > 1000) {
-                        $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
-                        quantimodoService.setLocalStorageItem('lastSyncTime', $rootScope.lastSyncTime);
-                        console.debug("Measurement sync completed and lastSyncTime set to " + $rootScope.lastSyncTime);
+                    if (response.length < 200 || params.offset > 799) {
+                        lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
+                        quantimodoService.setLocalStorageItem('lastSyncTime', lastSyncTime);
+                        console.debug("Measurement sync completed and lastSyncTime set to " + lastSyncTime);
                         deferred.resolve(response);
-                    } else if (response.length === 200 && params.offset < 1001) {
+                    } else if (response.length === 200 && params.offset < 800) {
                         // Keep querying
                         params = {
                             variableName: config.appSettings.primaryOutcomeVariableDetails.name,
