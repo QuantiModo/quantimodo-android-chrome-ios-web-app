@@ -2044,163 +2044,123 @@ angular.module('starter')
         };
 
         // post a single measurement
-        quantimodoService.postMeasurementDeferred = function(measurementInfo, usePromise){
-
-            var deferred = $q.defer();
-
-            // make sure startTimeEpoch isn't in milliseconds
-            var nowMilliseconds = new Date();
-            var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
-            if(measurementInfo.startTimeEpoch > oneWeekInFuture){
-                measurementInfo.startTimeEpoch = measurementInfo.startTimeEpoch / 1000;
-                console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
-            }
-
-            if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
-                // Primary outcome variable - update through measurementsQueue
-                var found = false;
-                if (measurementInfo.prevStartTimeEpoch) {
-                    quantimodoService.getLocalStorageItemAsObject('measurementsQueue',function(measurementsQueue) {
-                        var i = 0;
-                        while (!found && i < measurementsQueue.length) {
-                            if (measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch) {
-                                found = true;
-                                measurementsQueue[i].startTimeEpoch = measurementInfo.startTimeEpoch;
-                                measurementsQueue[i].value =  measurementInfo.value;
-                                measurementsQueue[i].note = measurementInfo.note;
-                            }
-                        }
-                        quantimodoService.setLocalStorageItem('measurementsQueue',JSON.stringify(measurementsQueue));
-                    });
-
-                } else if(measurementInfo.id) {
-                    var newAllMeasurements = [];
-                    quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeVariableMeasurements',function(oldAllMeasurements) {
-                        oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
-                        oldAllMeasurements.forEach(function (storedMeasurement) {
-                            // look for edited measurement based on IDs
-                            if (found || storedMeasurement.id !== measurementInfo.id) {
-                                // copy non-edited measurements to newAllMeasurements
-                                newAllMeasurements.push(storedMeasurement);
-                            }
-                            else {
-                                console.debug("edited measurement found in allMeasurements");
-                                // don't copy
-                                found = true;
-                            }
-                        });
-                    });
-                    console.debug("postTrackingMeasurement: newAllMeasurements length is " + newAllMeasurements.length);
-                    //console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
-                    quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements', JSON.stringify(newAllMeasurements));
-                    var editedMeasurement = {
-                        id: measurementInfo.id,
-                        variableName: measurementInfo.variableName,
-                        source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
-                        abbreviatedUnitName: measurementInfo.unit,
-                        startTimeEpoch:  measurementInfo.startTimeEpoch,
-                        value: measurementInfo.value,
-                        variableCategoryName : measurementInfo.variableCategoryName,
-                        note : measurementInfo.note,
-                        combinationOperation : measurementInfo.combinationOperation,
-                        latitude: $rootScope.lastLatitude,
-                        longitude: $rootScope.lastLongitude,
-                        location: $rootScope.lastLocationNameAndAddress
-                    };
-                    quantimodoService.addToMeasurementsQueue(editedMeasurement);
-
-                } else {
-                    // adding primary outcome variable measurement from record measurements page
-                    var newMeasurement = {
-                        id: null,
-                        variableName: measurementInfo.variableName,
-                        source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
-                        abbreviatedUnitName: measurementInfo.unit,
-                        startTimeEpoch:  measurementInfo.startTimeEpoch,
-                        value: measurementInfo.value,
-                        variableCategoryName : measurementInfo.variableCategoryName,
-                        note : measurementInfo.note,
-                        combinationOperation : measurementInfo.combinationOperation,
-                        latitude: $rootScope.lastLatitude,
-                        longitude: $rootScope.lastLongitude,
-                        location: $rootScope.lastLocationNameAndAddress
-                    };
-                    quantimodoService.addToMeasurementsQueue(newMeasurement);
-                }
-
-                quantimodoService.syncPrimaryOutcomeVariableMeasurements()
-                    .then(function() {
-                        if(usePromise) {
-                            deferred.resolve();
-                        }
-                    });
-            }
-            else {
-                // Non primary outcome variable, post immediately
-                var measurementSourceName = config.appSettings.appDisplayName;
-                if(measurementInfo.sourceName){
-                    measurementSourceName = measurementInfo.sourceName;
-                }
-                // measurements set
-                var measurements = [
-                    {
-                        variableName: measurementInfo.variableName,
-                        source: measurementSourceName,
-                        variableCategoryName: measurementInfo.variableCategoryName,
-                        abbreviatedUnitName: measurementInfo.abbreviatedUnitName,
-                        combinationOperation : measurementInfo.combinationOperation,
-                        measurements : [
-                            {
-                                id: measurementInfo.id,
-                                startTimeEpoch:  measurementInfo.startTimeEpoch,
-                                value: measurementInfo.value,
-                                note : measurementInfo.note,
-                                latitude: $rootScope.lastLatitude,
-                                longitude: $rootScope.lastLongitude,
-                                location: $rootScope.lastLocationNameAndAddress
-                            }
-                        ]
+        function storeEditedPrimaryOutcomeMeasurementInLocalStorage(measurementInfo) {
+            var found = false;
+            var newAllMeasurements = [];
+            quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeVariableMeasurements', function (oldAllMeasurements) {
+                oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
+                oldAllMeasurements.forEach(function (storedMeasurement) {
+                    // look for edited measurement based on IDs
+                    if (found || storedMeasurement.id !== measurementInfo.id) {
+                        // copy non-edited measurements to newAllMeasurements
+                        newAllMeasurements.push(storedMeasurement);
                     }
-                ];
-
-                // for local
-                var measurement = {
-                    variableName: measurementInfo.variableName,
-                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
-                    abbreviatedUnitName: measurementInfo.unit,
-                    startTimeEpoch:  measurementInfo.startTimeEpoch,
-                    value: measurementInfo.value,
-                    variableCategoryName : measurementInfo.variableCategoryName,
-                    note : measurementInfo.note,
-                    combinationOperation : measurementInfo.combinationOperation,
-                    latitude: $rootScope.lastLatitude,
-                    longitude: $rootScope.lastLongitude,
-                    location: $rootScope.lastLocationNameAndAddress
-                };
-
-                // send request
-                quantimodoService.postMeasurementsToApi(measurements, function(response){
-                    if(response.success) {
-                        console.debug("postMeasurementsV2 success " + JSON.stringify(response));
-                        if(usePromise) {
-                            deferred.resolve();
-                        }
-                    } else {
-                        console.debug("quantimodoService.postMeasurementsToApi error" + JSON.stringify(response));
-                        if(usePromise) {
-                            deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
-                        }
-                    }
-                }, function(response){
-                    console.debug("quantimodoService.postMeasurementsToApi error" + JSON.stringify(response));
-                    if(usePromise) {
-                        deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                    else {
+                        console.debug("edited measurement found in allMeasurements");
+                        // don't copy
+                        found = true;
                     }
                 });
-            }
-            if(usePromise) {
+            });
+            console.debug("postTrackingMeasurement: newAllMeasurements length is " + newAllMeasurements.length);
+            //console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
+            quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements', JSON.stringify(newAllMeasurements));
+            var editedMeasurement = {
+                id: measurementInfo.id,
+                variableName: measurementInfo.variableName,
+                source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
+                abbreviatedUnitName: measurementInfo.unit,
+                startTimeEpoch: measurementInfo.startTimeEpoch,
+                value: measurementInfo.value,
+                variableCategoryName: measurementInfo.variableCategoryName,
+                note: measurementInfo.note,
+                combinationOperation: measurementInfo.combinationOperation,
+                latitude: $rootScope.lastLatitude,
+                longitude: $rootScope.lastLongitude,
+                location: $rootScope.lastLocationNameAndAddress
+            };
+            quantimodoService.addToMeasurementsQueue(editedMeasurement);
+            return found;
+        }
+
+        function updatePrimaryOutcomeMeasurementInQueue(measurementInfo) {
+            var found = false;
+            quantimodoService.getLocalStorageItemAsObject('measurementsQueue', function (measurementsQueue) {
+                var i = 0;
+                while (!found && i < measurementsQueue.length) {
+                    if (measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch) {
+                        found = true;
+                        measurementsQueue[i].startTimeEpoch = measurementInfo.startTimeEpoch;
+                        measurementsQueue[i].value = measurementInfo.value;
+                        measurementsQueue[i].note = measurementInfo.note;
+                    }
+                }
+                quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify(measurementsQueue));
+            });
+        }
+
+        function addMeasurementToQueue(measurementInfo) {
+            var newMeasurement = {
+                id: null,
+                variableName: measurementInfo.variableName,
+                source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
+                abbreviatedUnitName: measurementInfo.unit,
+                startTimeEpoch: measurementInfo.startTimeEpoch,
+                value: measurementInfo.value,
+                variableCategoryName: measurementInfo.variableCategoryName,
+                note: measurementInfo.note,
+                combinationOperation: measurementInfo.combinationOperation,
+                latitude: $rootScope.lastLatitude,
+                longitude: $rootScope.lastLongitude,
+                location: $rootScope.lastLocationNameAndAddress
+            };
+            quantimodoService.addToMeasurementsQueue(newMeasurement);
+        }
+
+        quantimodoService.postMeasurementDeferred = function(measurementInfo){
+            var deferred = $q.defer();
+            if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                if (measurementInfo.prevStartTimeEpoch) {
+                    updatePrimaryOutcomeMeasurementInQueue(measurementInfo);
+                } else if(measurementInfo.id) {
+                    storeEditedPrimaryOutcomeMeasurementInLocalStorage(measurementInfo);
+                } else {
+                    addMeasurementToQueue(measurementInfo);
+                }
+                quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function() {
+                    deferred.resolve();
+                });
                 return deferred.promise;
             }
+
+            var measurementSet = [
+                {
+                    variableName: measurementInfo.variableName,
+                    source: config.appSettings.appDisplayName,
+                    variableCategoryName: measurementInfo.variableCategoryName,
+                    abbreviatedUnitName: measurementInfo.abbreviatedUnitName,
+                    combinationOperation : measurementInfo.combinationOperation,
+                    measurements : [
+                        {
+                            id: measurementInfo.id,
+                            startTimeEpoch:  measurementInfo.startTimeEpoch,
+                            value: measurementInfo.value,
+                            note : measurementInfo.note,
+                            latitude: $rootScope.lastLatitude,
+                            longitude: $rootScope.lastLongitude,
+                            location: $rootScope.lastLocationNameAndAddress
+                        }
+                    ]
+                }
+            ];
+
+            quantimodoService.postMeasurementsToApi(measurementSet, function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
         };
 
         quantimodoService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
