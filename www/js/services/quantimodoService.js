@@ -348,7 +348,7 @@ angular.module('starter')
             );
         };
 
-        quantimodoService.getMeasurementsFromApiDeferred = function(params, refresh){
+        quantimodoService.getMeasurementsDeferred = function(params, refresh){
             var deferred = $q.defer();
 
             if(!refresh){
