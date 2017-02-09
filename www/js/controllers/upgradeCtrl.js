@@ -28,6 +28,14 @@ angular.module('starter')
 
     });
 
+    $scope.useLitePlan = function () {
+        if($stateParams.litePlanState){
+            $state.go($stateParams.litePlanState);
+        } else {
+            $scope.goBack();
+        }
+    };
+
     $scope.hideUpgradePage = function () {
 
         $rootScope.upgradePages = $rootScope.upgradePages.filter(function( obj ) {

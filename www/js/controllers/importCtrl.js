@@ -9,7 +9,7 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             if(!$rootScope.user.stripeActive){
-                $state.go('app.upgrade');
+                $state.go('app.upgrade', {litePlanState: config.appSettings.defaultState});
                 return;
             }
 
