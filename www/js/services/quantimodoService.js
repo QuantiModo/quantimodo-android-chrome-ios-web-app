@@ -478,6 +478,7 @@ angular.module('starter')
         };
 
         quantimodoService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
+            var options = {};
             quantimodoService.get('api/v1/aggregatedCorrelations',
                 ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
@@ -1461,6 +1462,7 @@ angular.module('starter')
             }
             quantimodoService.afterLoginGoToUrlOrState();
             quantimodoService.updateUserTimeZoneIfNecessary();
+            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
         };
 
         quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
@@ -1900,8 +1902,8 @@ angular.module('starter')
             var defer = $q.defer();
 
             if(!$rootScope.user && !$rootScope.accessToken){
-                console.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
-                defer.reject('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
+                console.debug('Not going to syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
+                defer.reject('Not going to syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
                 return defer.promise;
             }
 
