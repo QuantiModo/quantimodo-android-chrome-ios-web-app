@@ -48,6 +48,12 @@ angular.module('starter',
         }
 
 
+        if($rootScope.isMobile){
+            if(typeof PushNotification === "undefined"){
+                quantimodoService.reportError('PushNotification is undefined');
+            }
+        }
+
          if (typeof PushNotification !== "undefined") {
              console.debug("Going to try to register push");
              var push = PushNotification.init({
