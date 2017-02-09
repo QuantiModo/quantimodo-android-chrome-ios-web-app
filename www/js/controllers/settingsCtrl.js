@@ -73,15 +73,17 @@ angular.module('starter')
 				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
 
-			$ionicPlatform.ready(function () {
-				var snapshotList;
-				$ionicDeploy.getSnapshots().then(function (snapshots) {
-					for (var i = 0; i < snapshots.length; i++) {
-						snapshotList = snapshotList + '\r\n' + snapshots[i];
-					}
-					template = template + '\r\n' + "Snapshots: " + snapshotList;
-				});
-			});
+			if(typeof $ionicDeploy !== "undefined"){
+                $ionicPlatform.ready(function () {
+                    var snapshotList;
+                    $ionicDeploy.getSnapshots().then(function (snapshots) {
+                        for (var i = 0; i < snapshots.length; i++) {
+                            snapshotList = snapshotList + '\r\n' + snapshots[i];
+                        }
+                        template = template + '\r\n' + "Snapshots: " + snapshotList;
+                    });
+                });
+            }
 
 			var emailBody = encodeURIComponent(template);
 			var emailAddress = 'mike@quantimo.do';

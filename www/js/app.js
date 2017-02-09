@@ -1593,7 +1593,9 @@ angular.module('starter',
         .state('app.upgrade', {
             url: "/upgrade",
             cache: true,
-            params: { },
+            params: {
+                litePlanState: null
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/upgrade-page-cards.html",
