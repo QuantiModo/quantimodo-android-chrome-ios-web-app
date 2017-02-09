@@ -1519,10 +1519,9 @@ angular.module('starter')
             }
         };
 
-        quantimodoService.refreshUserEmailPreferences = function(params){
+        quantimodoService.refreshUserEmailPreferencesDeferred = function(params){
             var deferred = $q.defer();
             quantimodoService.getUserEmailPreferences(params, function(user){
-                quantimodoService.setUserInLocalStorageBugsnagIntercomPush(user);
                 deferred.resolve(user);
             }, function(error){
                 deferred.reject(error);
