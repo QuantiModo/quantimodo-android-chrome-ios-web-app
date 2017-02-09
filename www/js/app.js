@@ -103,6 +103,7 @@ angular.module('starter',
                          ' matches localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
                          ' so not to localStorage to sync after login');
                  }
+                 
              });
 
              var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
