@@ -399,7 +399,7 @@ angular.module('starter')
 
         };
 
-        quantimodoService.getPrimaryOutcomeMeasurementsFromApiDailyFromApi = function(params, successHandler, errorHandler){
+        quantimodoService.getMeasurementsDailyFromApi = function(params, successHandler, errorHandler){
             quantimodoService.get('api/v1/measurements/daily',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
@@ -408,9 +408,9 @@ angular.module('starter')
             );
         };
 
-        quantimodoService.getPrimaryOutcomeMeasurementsFromApiDailyFromApiDeferred = function(params, successHandler, errorHandler){
+        quantimodoService.getMeasurementsDailyFromApiDeferred = function(params, successHandler, errorHandler){
             var deferred = $q.defer();
-            quantimodoService.getPrimaryOutcomeMeasurementsFromApiDailyFromApi(params, function(dailyHistory){
+            quantimodoService.getMeasurementsDailyFromApi(params, function(dailyHistory){
                 deferred.resolve(dailyHistory);
             }, function(error){
                 deferred.reject(error);
