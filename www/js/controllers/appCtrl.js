@@ -190,15 +190,6 @@ angular.module('starter')
             }
         };
 
-        $scope.goToState = function (state, stateParameters) {
-            if(!stateParameters){
-                stateParameters = {};
-            }
-            stateParameters.fromState = $state.current.name;
-            stateParameters.fromUrl = window.location.href;
-            $state.go(state, stateParameters);
-        };
-
         $scope.openUrl = function(url){
             if(typeof cordova !== "undefined"){
                 cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');

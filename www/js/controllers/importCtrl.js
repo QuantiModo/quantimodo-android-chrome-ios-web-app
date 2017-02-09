@@ -1,6 +1,5 @@
 angular.module('starter')
-	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService,
-									   $cordovaOauth, $ionicPopup, $stateParams) {
+	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService) {
 
 		$scope.controller_name = "ImportCtrl";
         $rootScope.showFilterBarSearchIcon = false;
@@ -9,17 +8,17 @@ angular.module('starter')
         	console.debug("ImportCtrl beforeEnter");
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $ionicLoading.show();
-            if(true || $rootScope.isMobile || $stateParams.native){
-                loadNativeConnectorPage();
-            } else {
-                goToWebImportDataPage();
+            if(!$rootScope.user.stripeActive){
+                $state.go('app.upgrade');
+                return;
             }
+
+            loadNativeConnectorPage();
         });
 
         $scope.hideImportHelpCard = function () {
 			$scope.showImportHelpCard = false;
-			window.localStorage.showImportHelpCard = false;
+			window.localStorage.hideImportHelpCard = true;
         };
 
 		var goToWebImportDataPage = function() {
@@ -64,8 +63,9 @@ angular.module('starter')
 		};
 
 		var loadNativeConnectorPage = function(){
-            $scope.showImportHelpCard = (window.localStorage.hideImportHelpCard !== true);
+            $scope.showImportHelpCard = (window.localStorage.hideImportHelpCard !== "true");
 			console.debug('importCtrl: $rootScope.isMobile so using native connector page');
+            $ionicLoading.show();
 			quantimodoService.getConnectorsDeferred()
 				.then(function(connectors){
 					$rootScope.connectors = connectors;
