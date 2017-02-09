@@ -6,7 +6,7 @@ angular.module('starter')
 	    $scope.controller_name = "FavoritesCtrl";
 
 		console.debug('Loading ' + $scope.controller_name);
-		
+
 	    $scope.state = {
 	    	selected1to5Value : false,
 			loading : true,
@@ -23,7 +23,7 @@ angular.module('starter')
         $rootScope.showFilterBarSearchIcon = false;
 
 		$scope.favoriteAddButtonClick = function () {
-			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
+			$state.go('app.favoriteSearch');
 		};
 
 		$scope.refreshFavorites = function () {
@@ -84,5 +84,5 @@ angular.module('starter')
 			$scope.hideLoader();
     		$scope.init();
     	});
-		
+
 	});
