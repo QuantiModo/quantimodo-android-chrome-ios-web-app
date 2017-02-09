@@ -39,6 +39,11 @@ angular.module('starter',
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
+        var user = quantimodoService.getLocalStorageItemAsString('user');
+        if(user){
+            $rootScope.user = JSON.parse(user);
+        }
+
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
@@ -46,7 +51,6 @@ angular.module('starter',
                 quantimodoService.reportError(errorMsg);
             };
         }
-
 
         if($rootScope.isMobile){
             if(typeof PushNotification === "undefined"){
@@ -79,6 +83,9 @@ angular.module('starter',
 
              push.on('registration', function(registerResponse) {
                  console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
+                 if(!registerResponse.registrationId){
+                     quantimodoService.reportError('No registerResponse.registrationId from push registration');
+                 }
                  // data.registrationId
                  var newDeviceToken = registerResponse.registrationId;
                  console.debug("Got device token for push notifications: " + registerResponse.registrationId);
@@ -88,7 +95,13 @@ angular.module('starter',
                  if(deviceTokenOnServer !== registerResponse.registrationId) {
                      $rootScope.deviceToken = newDeviceToken;
                      quantimodoService.setLocalStorageItem('deviceTokenToSync', newDeviceToken);
-                     console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
+                     quantimodoService.reportError('New push device token ' + registerResponse.registrationId +
+                         ' does not match localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
+                         ' so saving to localStorage to sync after login');
+                 } else {
+                     quantimodoService.reportError('New push device token ' + registerResponse.registrationId +
+                         ' matches localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
+                         ' so not to localStorage to sync after login');
                  }
              });
 
