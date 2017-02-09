@@ -80,7 +80,7 @@ angular.module('starter')
                 }
 			}
 
-	    	quantimodoService.getMeasurementsDeferred(params, refresh).then(function(history){
+	    	quantimodoService.getMeasurementsFromApiDeferred(params, refresh).then(function(history){
 	    		if (concat) {
 					$scope.state.history = $scope.state.history.concat(history);
 				}
