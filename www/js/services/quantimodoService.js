@@ -157,16 +157,6 @@ angular.module('starter')
                     };
                 }
 
-                /*   Commented because of CORS errors
-                if($rootScope.user){
-                    if($rootScope.user.trackLocation){
-                        request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
-                        request.headers.LATITUDE = $rootScope.lastLatitude;
-                        request.headers.LONGITUDE = $rootScope.lastLongitude;
-                    }
-                }
-                */
-
                 $http(request).success(successHandler).error(function(data, status, headers){
                     quantimodoService.errorHandler(data, status, headers, request, options);
                     errorHandler(data);
@@ -478,6 +468,7 @@ angular.module('starter')
         };
 
         quantimodoService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
+            var options = {};
             quantimodoService.get('api/v1/aggregatedCorrelations',
                 ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
@@ -7174,14 +7165,11 @@ angular.module('starter')
                         quantimodoService.refreshUser().then(function(user){
                             console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' +
                                 JSON.stringify(user));
-                            //$rootScope.hideNavigationMenu = false;
-                            $rootScope.$broadcast('callAppCtrlInit');
                         }, function(error){
                             console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                         });
                     }
-                })
-                .catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
+                }).catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
                     quantimodoService.setLocalStorageItem('user', null);
                 });
         };
@@ -8018,7 +8006,7 @@ angular.module('starter')
                 },
                 {
                     id: "locationTrackingInfoCard",
-                    ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !user.trackLocation",
                     title: 'Weather & Location Tracking',
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
