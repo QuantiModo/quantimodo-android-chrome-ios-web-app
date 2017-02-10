@@ -1900,12 +1900,6 @@ angular.module('starter')
                 measurementsQueue = JSON.parse(measurementsQueue);
                 if(!measurementsQueue || measurementsQueue.length < 1){
                     console.debug('No measurements to sync!');
-                    quantimodoService.getPrimaryOutcomeMeasurementsFromApi().then(function(){
-                        defer.resolve();
-                    }, function (error) {
-                        defer.reject(error);
-                        console.error(error);
-                    });
                     return defer.promise;
                 } 
                 
@@ -1921,16 +1915,18 @@ angular.module('starter')
                 ];
 
                 console.debug('Syncing measurements to server: ' + JSON.stringify(measurementsQueue));
-                quantimodoService.postMeasurementsToApi(measurements, function (response) {
-                    console.debug('Done posting measurementsQueue to API and getPrimaryOutcomeMeasurementsFromApi now');
-                    quantimodoService.getPrimaryOutcomeMeasurementsFromApi().then(function() {
-                        console.debug('Done with getPrimaryOutcomeMeasurementsFromApi and clearing measurementsQueue now');
-                        quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
-                        defer.resolve();
-                    }, function (error) {
-                        defer.reject(error);
-                        console.error(error);
-                    });
+                quantimodoService.postMeasurementsToApi(measurements, function () {
+                    console.debug('Done posting measurementsQueue to API');
+                    var primaryOutcomeVariableMeasurements = quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
+                    if(!primaryOutcomeVariableMeasurements) {
+                        primaryOutcomeVariableMeasurements = [];
+                    }
+                    var measurementsQueue = quantimodoService.getLocalStorageItemAsObject('measurementsQueue');
+                    if(measurementsQueue){
+                        primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.concat(measurementsQueue);
+                    }
+                    quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements', JSON.stringify(primaryOutcomeVariableMeasurements));
+                    quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
                 }, function (response) {
                     console.debug("error: " + JSON.stringify(response));
                     defer.resolve();

@@ -65,6 +65,7 @@ angular.module('starter')
         }
 
         if($rootScope.user){
+            quantimodoService.getPrimaryOutcomeMeasurementsFromApi();
             if(!$rootScope.user.getPreviewBuilds){
                 $rootScope.user.getPreviewBuilds = false;
             }
