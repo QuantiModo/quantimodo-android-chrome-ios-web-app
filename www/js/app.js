@@ -39,11 +39,6 @@ angular.module('starter',
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
-        var user = quantimodoService.getLocalStorageItemAsString('user');
-        if(user){
-            $rootScope.user = JSON.parse(user);
-        }
-
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;

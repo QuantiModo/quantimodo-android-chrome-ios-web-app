@@ -27,6 +27,23 @@ angular.module('starter')
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
         $rootScope.appDisplayName = config.appSettings.appDisplayName;
+        $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
+
+        if(!$rootScope.user){
+            $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user'));
+        }
+
+        if($rootScope.user && !$rootScope.user.trackLocation){
+            $rootScope.user.trackLocation = false;
+        }
+
+        if(!$rootScope.user){
+            quantimodoService.refreshUser().then(function(){
+                $scope.syncEverything();
+            }, function(error){
+                console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
+            });
+        }
 
         quantimodoService.getAccessTokenFromUrlParameter();
 
@@ -52,8 +69,6 @@ angular.module('starter')
         }
 
         if($rootScope.user){
-            $rootScope.trackLocation = $rootScope.user.trackLocation;
-            console.debug('$rootScope.trackLocation  is '+ $rootScope.trackLocation);
             if(!$rootScope.user.getPreviewBuilds){
                 $rootScope.user.getPreviewBuilds = false;
             }
@@ -369,7 +384,6 @@ angular.module('starter')
             $scope.updateDatesLocalStorage();
             $scope.updateDatePickerObjects();
             $scope.popover.hide();
-            $scope.init();
         };
 
         // update fromDate and toDate in datepicker objects
@@ -788,31 +802,6 @@ angular.module('starter')
             quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
         });
 
-        $scope.init = function () {
-
-            //if($rootScope.showUndoButton){
-                //$rootScope.showUndoButton = false;
-            //}
-
-            $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
-
-            if(!$rootScope.user){
-                $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user'));
-            }
-            if(!$rootScope.user){
-                quantimodoService.refreshUser().then(function(){
-                    $scope.syncEverything();
-                }, function(error){
-                    console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
-                });
-            }
-        };
-
-        $scope.$on('callAppCtrlInit', function () {
-            console.debug("calling init");
-            $scope.init();
-        });
-
         $scope.togglePrimaryOutcomeSubMenu = function () {
             $scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;
         };
@@ -863,12 +852,6 @@ angular.module('starter')
 
         $scope.toggleReminderSubMenu = function () {
             $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
-        };
-
-        $rootScope.updateOrRecreateNotifications = function () {
-            if($rootScope.localNotificationsEnabled){
-                quantimodoService.updateOrRecreateNotifications();
-            }
         };
 
         $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
@@ -2039,11 +2022,10 @@ angular.module('starter')
         };
 
         $rootScope.trackLocationChange = function(trackLocation, skipPopup) {
-            if(trackLocation !== null){
-                $rootScope.trackLocation = trackLocation;
+            if(trackLocation !== null && typeof trackLocation !== "undefined"){
+                $rootScope.user.trackLocation = trackLocation;
             }
-            console.debug('trackLocation', $rootScope.trackLocation);
-            $rootScope.user.trackLocation = $rootScope.trackLocation;
+            console.debug('trackLocation', $rootScope.user.trackLocation);
             quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
             if($rootScope.user && $rootScope.user.trackLocation){
                 console.debug('Going to execute quantimodoService.backgroundGeolocationInit if $ionicPlatform.ready');
@@ -2051,7 +2033,7 @@ angular.module('starter')
                     quantimodoService.backgroundGeolocationInit();
                 });
             }
-            if($rootScope.trackLocation && !skipPopup){
+            if($rootScope.user.trackLocation && !skipPopup){
                 $ionicPopup.alert({
                     title: 'Location Tracking Enabled',
                     template: $rootScope.variableCategories.Location.moreInfo
@@ -2059,7 +2041,7 @@ angular.module('starter')
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
             }
 
-            if(!$rootScope.trackLocation) {
+            if(!$rootScope.user.trackLocation) {
                 quantimodoService.backgroundGeolocationStop();
                 console.debug("Do not track location");
             }
@@ -2437,7 +2419,5 @@ angular.module('starter')
             clipboard.copyText($rootScope.variableObject.chartsUrl);
             $scope.showInfoToast('Copied link!');
         };
-
-        $scope.init();
 
     });
