@@ -69,6 +69,7 @@ angular.module('starter')
 				"Additional Information: " + '\r\n';
 			//template =  template + $rootScope.appSettings.appDisplayName + ' ' + $rootScope.appVersion + '\r\n';
 			template = template + "QuantiModo Client ID: " + quantimodoService.getClientId();
+            template = template + "Platform: " + $rootScope.currentPlatform;
 			if($rootScope.deviceToken){
 				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
