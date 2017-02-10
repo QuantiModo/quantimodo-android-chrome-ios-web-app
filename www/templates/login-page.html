@@ -66,7 +66,7 @@
                         Already Have Account
                     </button>
                 </div>
-                <div class="button-bar" ng-if="isAndroid && !hideGoogleLoginButton">
+                <div class="button-bar" ng-if="showGoogleLoginButton && !hideGoogleLoginButton">
                     <button class="button"
                             style="background-color: {{loginPage.backgroundColor}};
                                 border: none;
@@ -76,6 +76,18 @@
                             id="signInWithGoogle"
                             ng-click="googleLogin()">
                         Sign In With Google
+                    </button>
+                </div>
+                <div class="button-bar" ng-if="showFacebookLoginButton">
+                    <button class="button"
+                            style="background-color: {{loginPage.backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                            id="signInWithFacebook"
+                            ng-click="facebookLogin()">
+                        Sign In With Facebook
                     </button>
                 </div>
             </div>
