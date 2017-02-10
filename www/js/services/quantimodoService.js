@@ -1835,22 +1835,22 @@ angular.module('starter')
         };
 
         quantimodoService.getAllLocalMeasurements = function(){
-            var primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
-            if(!primaryOutcomeMeasurements) {
-                primaryOutcomeMeasurements = [];
+            var primaryOutcomeVariableMeasurements = quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
+            if(!primaryOutcomeVariableMeasurements) {
+                primaryOutcomeVariableMeasurements = [];
             }
             var measurementsQueue = quantimodoService.getLocalStorageItemAsObject('measurementsQueue');
             if(measurementsQueue){
-                primaryOutcomeMeasurements = primaryOutcomeMeasurements.concat(measurementsQueue);
+                primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.concat(measurementsQueue);
             }
-            primaryOutcomeMeasurements = primaryOutcomeMeasurements.sort(function(a,b){
+            primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.sort(function(a,b){
                 if(a.startTimeEpoch < b.startTimeEpoch){
                     return 1;}
                 if(a.startTimeEpoch> b.startTimeEpoch)
                 {return -1;}
                 return 0;
             });
-            return quantimodoService.addInfoAndImagesToMeasurements(primaryOutcomeMeasurements);
+            return quantimodoService.addInfoAndImagesToMeasurements(primaryOutcomeVariableMeasurements);
         };
 
         // get data from quantimodoService API
@@ -6893,6 +6893,12 @@ angular.module('starter')
                     deferred.resolve();
                 } catch(error) {
                     quantimodoService.sendErrorWithLocalStorageList(error);
+                    quantimodoService.deleteItemFromLocalStorage('primaryOutcomeVariableMeasurements').then(function () {
+                        localStorage.setItem(keyIdentifier+key, value);
+                        quantimodoService.deleteItemFromLocalStorage('lastSyncTime').then(function () {
+                            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+                        });
+                    });
                     deferred.reject(error);
                 }
             }
