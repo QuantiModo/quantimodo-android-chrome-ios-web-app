@@ -46,11 +46,7 @@ angular.module('starter')
         }
 
         quantimodoService.getAccessTokenFromUrlParameter();
-
-        if($rootScope.user && $rootScope.user.trackLocation){
-            quantimodoService.backgroundGeolocationInit();
-        }
-
+        quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
 
         if(!window.private_keys) {
@@ -2021,7 +2017,7 @@ angular.module('starter')
             console.debug('Opened ' + url);
         };
 
-        $rootScope.trackLocationChange = function(trackLocation, skipPopup) {
+        $rootScope.trackLocationChange = function(trackLocation, skipPopup, event) {
             if(trackLocation !== null && typeof trackLocation !== "undefined"){
                 $rootScope.user.trackLocation = trackLocation;
             }
@@ -2029,23 +2025,16 @@ angular.module('starter')
             quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
             if($rootScope.user && $rootScope.user.trackLocation){
                 console.debug('Going to execute quantimodoService.backgroundGeolocationInit if $ionicPlatform.ready');
-                $ionicPlatform.ready(function() { //For Ionic
-                    quantimodoService.backgroundGeolocationInit();
-                });
+                quantimodoService.backgroundGeolocationInit();
             }
             if($rootScope.user.trackLocation && !skipPopup){
-                $ionicPopup.alert({
-                    title: 'Location Tracking Enabled',
-                    template: $rootScope.variableCategories.Location.moreInfo
-                });
+                $scope.showMaterialAlert(event, 'Location Tracking Enabled', $rootScope.variableCategories.Location.moreInfo);
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
             }
-
             if(!$rootScope.user.trackLocation) {
                 quantimodoService.backgroundGeolocationStop();
                 console.debug("Do not track location");
             }
-
         };
 
         $scope.$on('$stateChangeSuccess', function() {
