@@ -52,7 +52,7 @@
          </div>
          <div ng-show="state.showLocationToggle" class="card sign-in" >
              <ion-toggle ng-model="user.trackLocation"
-                         ng-change="trackLocationChange()">
+                         ng-change="trackLocationChange($event)">
                  <i class="icon ion-map"></i>
                  &nbsp
                  Track my location

@@ -82,8 +82,8 @@ angular.module('starter')
         $scope.goToReminderSearchCategory($rootScope.onboardingPages[0].variableCategoryName);
     };
 
-    $scope.enableLocationTracking = function () {
-        $rootScope.trackLocationChange(true, true);
+    $scope.enableLocationTracking = function (event) {
+        $rootScope.trackLocationChange(true, true, event);
         $rootScope.hideOnboardingPage();
     };
 

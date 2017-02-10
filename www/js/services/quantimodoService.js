@@ -3030,7 +3030,7 @@ angular.module('starter')
         quantimodoService.backgroundGeolocationStart = function () {
 
             if(typeof backgroundGeoLocation === "undefined"){
-                console.debug('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
+                console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
                 return;
             }
 
@@ -3051,9 +3051,6 @@ angular.module('starter')
                 console.log(errorMessage);
                 quantimodoService.reportError(errorMessage);
             };
-
-            //save settings (background tracking is enabled) in local storage
-            window.localStorage.setItem('bgGPS', 1);
 
             backgroundGeoLocation.configure(callbackFn, failureFn, {
                 desiredAccuracy: 10,
@@ -3077,13 +3074,15 @@ angular.module('starter')
         quantimodoService.backgroundGeolocationInit = function () {
             var deferred = $q.defer();
             console.debug('Starting quantimodoService.backgroundGeolocationInit');
-            var bgGPS = window.localStorage.getItem('bgGPS');
-            if (bgGPS === "1" || bgGPS === null) {
-                quantimodoService.backgroundGeolocationStart();
+            if ($rootScope.user && $rootScope.user.trackLocation) {
+                $ionicPlatform.ready(function() { //For Ionic
+                    quantimodoService.backgroundGeolocationStart();
+                });
                 deferred.resolve();
             } else {
-                console.debug('quantimodoService.backgroundGeolocationInit failed because bgGPS is ' + bgGPS);
-                deferred.resolve();
+                var error = 'quantimodoService.backgroundGeolocationInit failed because $rootScope.user.trackLocation is not true';
+                console.debug(error);
+                deferred.reject(error);
             }
             return deferred.promise;
         };
