@@ -323,13 +323,13 @@ angular.module('starter')
             //return;
 
             // Measurement only - post measurement. This is for adding or editing
-            quantimodoService.postMeasurementDeferred(measurementInfo, true);
+            quantimodoService.postMeasurementDeferred(measurementInfo);
             $scope.goBack();
         };
 
         var postMeasurementAndGoToHistory = function (measurementInfo) {
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            quantimodoService.postMeasurementDeferred(measurementInfo, true).then(function () {
+            quantimodoService.postMeasurementDeferred(measurementInfo).then(function () {
                 $ionicLoading.hide();
                 $state.go('app.historyAllVariable', { variableName: $scope.state.measurement.variableName });
             }, function (error){

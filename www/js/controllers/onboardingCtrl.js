@@ -4,7 +4,6 @@ angular.module('starter')
 
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug("OnboardingCtrl beforeEnter");
-        $rootScope.hideNavigationMenu = true;
         if(!$rootScope.user){
             quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
             $state.go('app.login');
@@ -22,7 +21,7 @@ angular.module('starter')
     });
 
     $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-
+        $rootScope.hideNavigationMenu = true;
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
@@ -83,8 +82,8 @@ angular.module('starter')
         $scope.goToReminderSearchCategory($rootScope.onboardingPages[0].variableCategoryName);
     };
 
-    $scope.enableLocationTracking = function () {
-        $rootScope.trackLocationChange(true, true);
+    $scope.enableLocationTracking = function (event) {
+        $rootScope.trackLocationChange(true, true, event);
         $rootScope.hideOnboardingPage();
     };
 

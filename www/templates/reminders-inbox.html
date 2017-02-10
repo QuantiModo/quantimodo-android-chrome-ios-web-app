@@ -37,7 +37,7 @@
 									line-height: normal; ">Rate {{trackingReminderNotification.variableName}}
                                 </h2>
                                 <p style="white-space: normal;">
-                                    {{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDate}}
+                                    {{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}}
                                 </p>
                             </div>
                             <div ng-click="showActionSheet(trackingReminderNotification, event)" class="col col-10">
