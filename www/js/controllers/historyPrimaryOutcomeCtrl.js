@@ -5,53 +5,35 @@ angular.module('starter')
 													  $rootScope, quantimodoService, $stateParams) {
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
-		$scope.state = {
-			history : []
-		};
-		$scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
-
-		$scope.editMeasurement = function(measurement){
-			$state.go('app.measurementAdd', {
-				measurement: measurement,
-				fromState: $state.current.name,
-				fromUrl: window.location.href
-			});
-		};
-
+        $rootScope.hideNavigationMenu = false;
+		$scope.state = { history : [] };
         $rootScope.showFilterBarSearchIcon = false;
-
-		$scope.init = function(){
-            $rootScope.hideNavigationMenu = false;
-			console.debug($state.current.name + ' initializing...');
-			$rootScope.stateParams = $stateParams;
-			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			$scope.history = quantimodoService.getAllLocalMeasurements();
-			if($rootScope.user){
-				$scope.showLoader($scope.syncDisplayText);
-				quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-					$scope.hideLoader();
-					$scope.history = quantimodoService.getAllLocalMeasurements();
-					//Stop the ion-refresher from spinning
-					$scope.$broadcast('scroll.refreshComplete');
-				});
-			}
-			$scope.hideLoader();
-	    };
-
-        // when view is changed
-    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-    		//$scope.init();
-    	});
+        $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
 		$scope.$on('$ionicView.beforeEnter', function(){
-			$scope.init();
+            console.debug($state.current.name + ' initializing...');
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            $scope.history = quantimodoService.getAllLocalMeasurements();
+            $scope.hideLoader();
 		});
+
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+
+        });
 
 		$scope.$on('updatePrimaryOutcomeHistory', function(){
 			console.debug($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
 			$scope.history = quantimodoService.getAllLocalMeasurements();
 		});
+
+        $scope.editMeasurement = function(measurement){
+            $state.go('app.measurementAdd', {
+                measurement: measurement,
+                fromState: $state.current.name,
+                fromUrl: window.location.href
+            });
+        };
 
 		$scope.showActionSheet = function(measurement) {
 
