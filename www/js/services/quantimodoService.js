@@ -1896,7 +1896,7 @@ angular.module('starter')
                 return defer.promise;
             }
 
-            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue',function(measurementsQueue) {
+            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue', function(measurementsQueue) {
                 measurementsQueue = JSON.parse(measurementsQueue);
                 if(!measurementsQueue || measurementsQueue.length < 1){
                     console.debug('No measurements to sync!');
@@ -1922,7 +1922,9 @@ angular.module('starter')
 
                 console.debug('Syncing measurements to server: ' + JSON.stringify(measurementsQueue));
                 quantimodoService.postMeasurementsToApi(measurements, function (response) {
+                    console.debug('Done posting measurementsQueue to API and getPrimaryOutcomeMeasurementsFromApi now');
                     quantimodoService.getPrimaryOutcomeMeasurementsFromApi().then(function() {
+                        console.debug('Done with getPrimaryOutcomeMeasurementsFromApi and clearing measurementsQueue now');
                         quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
                         defer.resolve();
                     }, function (error) {
