@@ -1922,8 +1922,8 @@ angular.module('starter')
 
                 console.debug('Syncing measurements to server: ' + JSON.stringify(measurementsQueue));
                 quantimodoService.postMeasurementsToApi(measurements, function (response) {
-                    quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
                     quantimodoService.getPrimaryOutcomeMeasurementsFromApi().then(function() {
+                        quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
                         defer.resolve();
                     }, function (error) {
                         defer.reject(error);
