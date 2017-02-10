@@ -503,17 +503,11 @@ angular.module('starter')
                 return;
             }
 
-			if($rootScope.user){
-				$rootScope.trackLocation = $rootScope.user.trackLocation;
-			}
-
-			if(!$rootScope.user || typeof $rootScope.user.trackLocation === "undefined"){
+			if(!$rootScope.user){
 				quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
 				console.debug("set afterLoginGoTo to " + window.location.href);
 				$rootScope.sendToLogin();
 			}
-
-            quantimodoService.getLocationVariablesFromLocalStorage();
 
 		});
 
