@@ -7605,7 +7605,7 @@ angular.module('starter')
                         width: "96"
                     },
                     premiumFeature: true,
-                    bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and" +
+                    bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and " +
                         "devices that I can automatically pull data from!",
                     nextPageButtonText: "Maybe Later",
                 },
@@ -7732,11 +7732,8 @@ angular.module('starter')
         $rootScope.signUpQuestions = [
             {
                 question: "What do you do with my data?",
-                answer: "Your data belongs entirely to you. We do not sell or otherwise do anything with your data to put your privacy at risk."
-            },
-            {
-                question: "QuantiModo Privacy",
-                answer: "Your privacy is very important to us. You can delete your data at any time, all of it, or just a slice of it."
+                answer: "Your data belongs entirely to you. We do not sell or otherwise do anything with your data to " +
+                    "put your privacy at risk.  "
             },
             {
                 question: "Can I pause QuantiModo?",
@@ -7744,7 +7741,8 @@ angular.module('starter')
             },
             {
                 question: "QuantiModo Security",
-                answer: "Our customers have demanding security and privacy requirements. QuantiModo was designed for the most rigorous security standards, using the same technology used by online banks."
+                answer: "Our customers have demanding security and privacy requirements. QuantiModo was designed for " +
+                    "the most rigorous security standards, using the same technology used by online banks."
             },
         ];
 
@@ -7790,7 +7788,7 @@ angular.module('starter')
                 buttonClass: "button button-balanced"
             },
             {
-                title: 'QuantiModo Premium',
+                title: config.appSettings.appDisplayName + ' Plus',
                 headerColor: "#f0df9a",
                 backgroundColor: "#ffeda5",
                 subtitle: 'Perfect your life!',
@@ -7799,7 +7797,8 @@ angular.module('starter')
                         title: 'Import from Apps',
                         subtitle: 'Facebook, Google Calendar, Runkeeper, Github, Sleep as Android, MoodiModo, and even ' +
                         'the weather!',
-                        moreInfo: "Automatically import your data from Google Calendar, Facebook, Runkeeper, QuantiModo, Sleep as Android, MoodiModo, Github, and even the weather!",
+                        moreInfo: "Automatically import your data from Google Calendar, Facebook, Runkeeper, " +
+                            "QuantiModo, Sleep as Android, MoodiModo, Github, and even the weather!",
                         image: 'img/features/smartphone.svg'
                     },
                     {
@@ -7811,13 +7810,16 @@ angular.module('starter')
                     {
                         title: 'Sync Across Devices',
                         subtitle: 'Web, Chrome, Android, and iOS',
-                        moreInfo: "Any of your QuantiModo-supported apps will automatically sync with any other app on the web, Chrome, Android, and iOS",
+                        moreInfo: "Any of your QuantiModo-supported apps will automatically sync with any other app " +
+                            "on the web, Chrome, Android, and iOS",
                         image: 'img/features/devices.svg'
                     },
                     {
                         title: 'Unlimited History',
                         subtitle: 'Lite gets 3 months',
-                        moreInfo: "Premium accounts can see unlimited historical data (Free accounts can see only the most recent three months). This is great for seeing long-term trends in your productivity or getting totals for the entire year.",
+                        moreInfo: "Premium accounts can see unlimited historical data (Free accounts can see only " +
+                            "the most recent three months). This is great for seeing long-term trends in your " +
+                            "productivity or getting totals for the entire year.",
                         image: 'img/features/calendar.svg'
                     },
                     {
@@ -7884,20 +7886,6 @@ angular.module('starter')
         ];
 
         quantimodoService.setupUpgradePages = function () {
-            /*
-
-             Support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
-             Enjoy advanced analytics, secure cloud backup, sync between computer and mobile devices, automatically import from dozens of apps/devices!
-
-             Please support the development of the QuantiModo platform and help us abolish suffering by signing up for QuantiModo Plus!
-             With QuantiModo Plus, you'll enjoy these awesome features and more:
-             Import Data from Other Apps and Devices - Easily import your data from Fitbit, Withings, Jawbone, Facebook, Rescuetime, Sleep as Android, MoodiModo, Github, Google Calendar, Facebook, Runkeeper, and even the weather!
-             Discover Hidden Causes of Suffering - The QuantiModo Analytics Engine will identify the foods, treatments, and other factors most likely to improve or exacerbate your symptoms!
-             Secure Cloud Storage - Never worry about losing your self-tracking data as it will be highly encrypted and backed up in multiple secure databases.
-             Privacy - We will never share your data without your explicit permission.
-             Sync Data Across Devices - Any of your QuantiModo-supported apps will be able to automatically sync from any other app.
-
-             */
 
             var upgradePages = [
                 {
@@ -8048,7 +8036,7 @@ angular.module('starter')
                         width: "96"
                     },
                     bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and " +
-                    "devices that I can automatically pull data from!",
+                        "devices that I can automatically pull data from!",
                     buttons: [
                         {
                             id: "hideImportDataCardButton",

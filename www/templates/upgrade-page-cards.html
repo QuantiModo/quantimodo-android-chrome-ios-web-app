@@ -9,5 +9,40 @@
                 {{signUpQuestion.answer}}
             </div>
         </div>
+        <div class="card" style="text-align: center">
+            <div class="item item-divider">
+                Your Privacy
+            </div>
+            <div class="item item-text-wrap">
+                Your privacy is very important to us. You can delete your data at any time, all of it, or just some
+                of it.  See our <a href="https://quantimo.do/privacy-policy/" target="_blank">privacy policy</a>
+                and <a href="https://quantimo.do/organization/end-user-terms-of-service" target="_blank">terms of use</a>
+                for more information.
+            </div>
+        </div>
+        <div class="card" style="text-align: center" ng-if="isIOS">
+            <div class="item item-divider">
+                {{appDisplayName}} Premium Monthly
+            </div>
+            <div class="item item-text-wrap">
+                By signing up, you get all of the features above for $6.99 USD per month.
+                Payment will be charged to iTunes Account after the 1 week trial period following the confirmation of purchase.
+                Your subscription automatically renews unless auto-renew is turned off at least 24-hours before the end of the current period.
+                Your account will be charged $6.99 for renewal within 24-hours prior to the end of the current period.
+                You can manage your subscription and auto-renewal may be turned off by going to the your iTunes Account Settings after purchase.
+            </div>
+        </div>
+        <div class="card" style="text-align: center" ng-if="isIOS">
+            <div class="item item-divider">
+                {{appDisplayName}} Premium Yearly
+            </div>
+            <div class="item item-text-wrap">
+                By signing up, you get all of the features above for $59.99 USD per year.
+                Payment will be charged to iTunes Account after the 1 month trial period following the confirmation of purchase.
+                Your subscription automatically renews unless auto-renew is turned off at least 24-hours before the end of the current period.
+                Your account will be charged $59.99 for renewal within 24-hours prior to the end of the current period.
+                You can manage your subscription and auto-renewal may be turned off by going to the your iTunes Account Settings after purchase.
+            </div>
+        </div>
     </ion-content>
 </ion-view>

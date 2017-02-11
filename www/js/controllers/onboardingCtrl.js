@@ -84,7 +84,7 @@ angular.module('starter')
 
     $scope.enableLocationTracking = function (event) {
         $rootScope.trackLocationChange(true, true, event);
-        $rootScope.hideOnboardingPage();
+        $scope.hideOnboardingPage();
     };
 
     $scope.doneOnboarding = function () {
