@@ -2144,8 +2144,8 @@ angular.module('starter')
                             .parent(angular.element(document.querySelector('#popupContainer')))
                             .clickOutsideToClose(true)
                             .title('Thank you!')
-                            .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
-                            .ariaLabel('Thank you!')
+                            .textContent("Let's get started!")
+                            .ariaLabel('OK!')
                             .ok('Get Started')
                     )
                     .finally(function() {
@@ -2271,9 +2271,9 @@ angular.module('starter')
                                     .parent(angular.element(document.querySelector('#popupContainer')))
                                     .clickOutsideToClose(true)
                                     .title('Thank you!')
-                                    .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
+                                    .textContent("Let's get started!")
                                     .ariaLabel('Alert Dialog Demo')
-                                    .ok('Get Started')
+                                    .ok('OK!')
                             ).finally(function() {
                                 $scope.goBack();
                             });
