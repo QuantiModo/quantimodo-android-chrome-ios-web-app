@@ -2538,19 +2538,22 @@ angular.module('starter')
             $rootScope.deviceInformation = ionic.Platform.device();
 
             $rootScope.isWebView = ionic.Platform.isWebView();
-            $rootScope.isIPad = ionic.Platform.isIPad();
-            $rootScope.isIOS = ionic.Platform.isIOS();
-            $rootScope.isAndroid = ionic.Platform.isAndroid();
-            $rootScope.isWindowsPhone = ionic.Platform.isWindowsPhone();
+            $rootScope.isIPad = ionic.Platform.isIPad() && window.location.href.indexOf('app.quantimo.do') !== -1;
+            $rootScope.isIOS = ionic.Platform.isIOS() && window.location.href.indexOf('app.quantimo.do') !== -1;
+            $rootScope.isAndroid = ionic.Platform.isAndroid() && window.location.href.indexOf('app.quantimo.do') !== -1;
+            $rootScope.isWindowsPhone = ionic.Platform.isWindowsPhone() &&
+                window.location.href.indexOf('app.quantimo.do') !== -1;
             $rootScope.isChrome = window.chrome ? true : false;
 
             $rootScope.currentPlatform = ionic.Platform.platform();
             $rootScope.currentPlatformVersion = ionic.Platform.version();
 
-            $rootScope.isMobile = ($rootScope.isAndroid || $rootScope.isIOS);
+            $rootScope.isMobile = ($rootScope.isAndroid || $rootScope.isIOS) &&
+                window.location.href.indexOf('app.quantimo.do') !== -1;
             $rootScope.isWindows = window.location.href.indexOf('ms-appx') > -1;
             $rootScope.isChromeExtension = window.location.href.indexOf('chrome-extension') !== -1;
-            $rootScope.isWeb = !$rootScope.isMobile && !$rootScope.isChromeExtension && !$rootScope.isWindows;
+            $rootScope.isWeb = window.location.href.indexOf('app.quantimo.do') !== -1 ||
+                (!$rootScope.isMobile && !$rootScope.isChromeExtension && !$rootScope.isWindows);
 
             $rootScope.localNotificationsEnabled = $rootScope.isChromeExtension;
 
