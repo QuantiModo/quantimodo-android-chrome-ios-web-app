@@ -5,6 +5,11 @@ angular.module('starter')
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 
+        if(!$rootScope.user){ 
+            quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
+            $state.go('app.upgrade');
+            return;
+        }
         $scope.planFeaturesCard = $rootScope.planFeaturesCards[1];
         $rootScope.upgradeFooterText = null;
         $rootScope.hideNavigationMenu = true;
