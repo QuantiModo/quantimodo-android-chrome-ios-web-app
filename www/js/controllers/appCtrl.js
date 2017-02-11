@@ -1575,7 +1575,7 @@ angular.module('starter')
 
             if(connector.name === 'github') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1591,7 +1591,7 @@ angular.module('starter')
 
             if(connector.name === 'withings') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1606,7 +1606,7 @@ angular.module('starter')
 
             if(connector.name === 'fitbit') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1634,7 +1634,7 @@ angular.module('starter')
 
             if(connector.name === 'runkeeper') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1651,7 +1651,7 @@ angular.module('starter')
 
             if(connector.name === 'rescuetime') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1668,7 +1668,7 @@ angular.module('starter')
 
             if(connector.name === 'slice') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1686,7 +1686,7 @@ angular.module('starter')
 
             if(connector.name === 'facebook') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1702,7 +1702,7 @@ angular.module('starter')
 
             if(connector.name === 'googlefit') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1724,7 +1724,7 @@ angular.module('starter')
 
             if(connector.name === 'googlecalendar') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1744,7 +1744,7 @@ angular.module('starter')
 
             if(connector.name === 'sleepcloud') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1763,7 +1763,7 @@ angular.module('starter')
 
             if(connector.name === 'up') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
