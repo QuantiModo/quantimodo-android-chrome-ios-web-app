@@ -600,7 +600,7 @@ gulp.task('encryptPrivateConfig', [], function(){
 gulp.task('encryptAllPrivateConfigs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = 'energymodo';
     encryptPrivateConfig();
-    process.env.LOWERCASE_APP_NAME = 'medtlc';
+    process.env.LOWERCASE_APP_NAME = 'medimodo';
     encryptPrivateConfig();
     process.env.LOWERCASE_APP_NAME = 'mindfirst';
     encryptPrivateConfig();
@@ -1551,7 +1551,7 @@ gulp.task('setEnergyModoEnvs', [], function(callback){
 });
 
 gulp.task('setMedTlcEnvs', [], function(callback){
-    process.env.LOWERCASE_APP_NAME = "medtlc";
+    process.env.LOWERCASE_APP_NAME = "medimodo";
     runSequence(
         'decryptPrivateConfig',
         'loadConfigs',

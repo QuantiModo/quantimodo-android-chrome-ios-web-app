@@ -1,4 +1,4 @@
-app_identifier "com.quantimodo.medtlcapp" # The bundle identifier of your app
+app_identifier "com.quantimodo.medimodo" # The bundle identifier of your app
 apple_id "ios@quantimodo.com" # Your Apple email address
 
 team_id "YD2FK7S2S5"  # Developer Portal Team ID
