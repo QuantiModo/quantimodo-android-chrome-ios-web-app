@@ -265,9 +265,9 @@ if [ -z ${BUILD_ENERGYMODO} ];
 fi
 
 export APPLE_ID="1115037661"
-export APP_IDENTIFIER="com.quantimodo.medtlcapp"
-export APP_DISPLAY_NAME="MedTLC"
-export LOWERCASE_APP_NAME=medtlc
+export APP_IDENTIFIER="com.quantimodo.medimodo"
+export APP_DISPLAY_NAME="MediModo"
+export LOWERCASE_APP_NAME=medimodo
 export APP_DESCRIPTION=Medication Track Learn Connect
 export IONIC_APP_ID="e85b92b4"
 

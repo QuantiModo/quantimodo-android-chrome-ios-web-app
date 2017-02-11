@@ -1,9 +1,7 @@
 angular.module('starter')
-
-	// Controls the History Page of the App.
 	.controller('ReminderAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory,
-                                             quantimodoService, ionicTimePicker, $ionicPopup, ionicDatePicker) {
+                                             quantimodoService, ionicTimePicker, $ionicPopup) {
 
 	    $scope.controller_name = "ReminderAddCtrl";
 		console.debug('Loading ' + $scope.controller_name);
@@ -32,10 +30,6 @@ angular.module('starter')
         $scope.showMoreOptions = function(){
             $scope.state.showMoreOptions = true;
         };
-
-        if(!$rootScope.user){
-            $rootScope.user = quantimodoService.getLocalStorageItemAsObject('user');
-        }
 
         if($rootScope.user) {
             $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;

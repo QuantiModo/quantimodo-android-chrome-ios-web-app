@@ -14,7 +14,6 @@
                     <br/>
                     <ul>
                         <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariableName | lowercase }}!</li>
-                        <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariableName}} back in {{secondsLeft}} seconds</li>
                     </ul>
                 </div>
     		</div>
@@ -46,9 +45,9 @@
                 <div ng-if="distributionChartConfig">
                     <highchart id="chart1" config="distributionChartConfig"></highchart>
                 </div>
-    
+
                 <div ng-if="lineChartConfig">
-                    <highchart id="chart2" config="lineChartConfig"></highchart>    
+                    <highchart id="chart2" config="lineChartConfig"></highchart>
                 </div>
 
                 <div ng-if="weekdayChartConfig">

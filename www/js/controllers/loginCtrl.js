@@ -13,6 +13,20 @@ angular.module('starter')
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
+        if($rootScope.isMobile){
+            if(window && window.plugins && window.plugins.googleplus){
+                $scope.showGoogleLoginButton = true;
+            }
+            var $cordovaFacebook = {};
+            if ($rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
+                console.debug('Injecting $cordovaFacebook');
+                $cordovaFacebook = $injector.get('$cordovaFacebook');
+                $scope.showFacebookLoginButton = true;
+            } else {
+                console.debug("Could not inject $cordovaFacebook");
+            }
+        }
+
         $scope.loginPage = {
             title: 'Sign In',
             "backgroundColor": "#3467d6",
@@ -258,13 +272,7 @@ angular.module('starter')
         $scope.facebookLogin = function(){
             $scope.showLoader('Logging you in...');
             console.debug("$scope.facebookLogin about to try $cordovaFacebook.login");
-            var $cordovaFacebook = {};
-            if (($rootScope.isIOS || $rootScope.isAndroid) && $injector.has('$cordovaFacebook')) {
-                console.debug('Injecting $cordovaFacebook');
-                $cordovaFacebook = $injector.get('$cordovaFacebook');
-            } else {
-                console.debug("Could not inject $cordovaFacebook");
-            }
+
 
             var seconds  = 30;
             $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work

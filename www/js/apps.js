@@ -3,7 +3,7 @@ var appsManager = { // jshint ignore:line
 		"moodimodo" : "configs/moodimodo",
 		"energymodo" : "configs/energymodo",
 		"mindfirst" : "configs/mindfirst",
-		"medtlc" : "configs/medtlc",
+		"medimodo" : "configs/medimodo",
 		"quantimodo" : "configs/quantimodo",
 		"yourlowercaseappnamehere": "configs/yourlowercaseappnamehere"
 	},

@@ -192,10 +192,6 @@ angular.module('starter')
 				$rootScope.variableObject = $stateParams.variableObject;
 			}
 
-			if($rootScope.user){
-				$rootScope.trackLocation = $rootScope.user.trackLocation;
-			}
-
 			quantimodoService.getVariableCategories()
 				.then(function(variableCategories){
 					$scope.state.variableCategories = variableCategories;
