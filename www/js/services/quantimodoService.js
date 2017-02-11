@@ -7788,7 +7788,7 @@ angular.module('starter')
                 buttonClass: "button button-balanced"
             },
             {
-                title: config.appSettings.appDisplayName + ' Plus',
+                title: 'QuantiModo Plus',
                 headerColor: "#f0df9a",
                 backgroundColor: "#ffeda5",
                 subtitle: 'Perfect your life!',
