@@ -271,7 +271,7 @@ export LOWERCASE_APP_NAME=medimodo
 export APP_DESCRIPTION=Medication Track Learn Connect
 export IONIC_APP_ID="e85b92b4"
 
-if [ -z ${BUILD_MEDTLC} ];
+if [ -z ${BUILD_MEDIMODO} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else

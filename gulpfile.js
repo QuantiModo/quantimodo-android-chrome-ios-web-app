@@ -813,7 +813,7 @@ gulp.task('ionicUploadAllApps', function(callback){
         'setEnergyModoEnvs',
         'configureApp',
         'ionicUploadProduction',
-        'setMedTlcEnvs',
+        'setMediModoEnvs',
         'configureApp',
         'ionicUploadProduction',
         'setMindFirstEnvs',
@@ -1550,7 +1550,7 @@ gulp.task('setEnergyModoEnvs', [], function(callback){
         callback);
 });
 
-gulp.task('setMedTlcEnvs', [], function(callback){
+gulp.task('setMediModoEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "medimodo";
     runSequence(
         'decryptPrivateConfig',
@@ -1947,9 +1947,9 @@ gulp.task('buildMindFirst', function(callback){
         callback);
 });
 
-gulp.task('buildMedTlc', function(callback){
+gulp.task('buildMediModo', function(callback){
     runSequence(
-        'setMedTlcEnvs',
+        'setMediModoEnvs',
         'buildChromeExtension',
         'buildAndroidApp',
         'prepareIosApp',
@@ -1979,7 +1979,7 @@ gulp.task('buildAllChromeExtensions', function(callback){
     	'cleanBuildFolder',
         'setEnergyModoEnvs',
         'buildChromeExtension',
-        'setMedTlcEnvs',
+        'setMediModoEnvs',
         'buildChromeExtension',
         'setMindFirstEnvs',
         'buildChromeExtension',
@@ -1997,7 +1997,7 @@ gulp.task('buildAllChromeExtensionsAndAndroidApps', function(callback){
         'setEnergyModoEnvs',
         'buildChromeExtension',
 		'buildAndroidApp',
-        'setMedTlcEnvs',
+        'setMediModoEnvs',
         'buildChromeExtension',
         'buildAndroidApp',
         'setMindFirstEnvs',
