@@ -339,6 +339,12 @@ angular.module('starter',
     };
 
     $ionicPlatform.registerBackButtonAction(function (event) {
+        if($rootScope.backButtonState){
+            $state.go($rootScope.backButtonState);
+            $rootScope.backButtonState = null;
+            return;
+        }
+
         if($ionicHistory.currentStateName() === 'app.upgrade'){
             $rootScope.hideNavigationMenu = false;
             console.debug('registerBackButtonAction from upgrade: Going to default state...');
