@@ -14,6 +14,7 @@ angular.module('starter')
                 return;
 			}
 
+			// Check if user upgrade via web since last user refresh
 			$ionicLoading.show();
 			quantimodoService.refreshUser().then(function (user) {
                 $ionicLoading.hide();
