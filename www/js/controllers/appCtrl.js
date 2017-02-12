@@ -2080,15 +2080,17 @@ angular.module('starter')
 
         var mobilePurchaseDebug = false;
 
-        $scope.upgrade = function () {
+        $scope.upgrade = function (ev) {
             if($rootScope.isMobile || mobilePurchaseDebug){
                 mobileUpgrade();
             } else {
-                webUpgrade();
+                webUpgrade(ev);
             }
         };
 
-        var webUpgrade = function() {
+        var webUpgrade = function(ev) {
+            webUpgradeMaterial(ev);
+            return;
             var myPopup;
             $scope.currentYear = new Date().getFullYear();
             $scope.currentMonth = new Date().getMonth() + 1;
@@ -2170,6 +2172,14 @@ angular.module('starter')
         var purchaseDebugMode = false;
         function DialogController($scope, $mdDialog) {
             $scope.subscriptionPlanId = 'monthly7';
+            $scope.currentYear = new Date().getFullYear();
+            $scope.currentMonth = new Date().getMonth() + 1;
+            $scope.months = $locale.DATETIME_FORMATS.MONTH;
+            $scope.years = [];
+            for(var i = 0; i < 13; i++){
+                $scope.years.push($scope.currentYear + i);
+            }
+
             $scope.hide = function() {
                 $mdDialog.hide();
             };
@@ -2190,13 +2200,31 @@ angular.module('starter')
         var mobileUpgrade = function (ev) {
             if (!window.inAppPurchase && !mobilePurchaseDebug) {
                 console.error('inAppPurchase not available');
-                webUpgrade();
+                webUpgrade(ev);
                 return;
             }
 
             $mdDialog.show({
                 controller: DialogController,
                 templateUrl: 'templates/fragments/select-subscription-plan-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: false,
+                fullscreen: false
+            }).then(function(answer) {
+                if(purchaseDebugMode){
+                    alert('About to call makeInAppPurchase for ' + JSON.stringify(answer));
+                }
+                makeInAppPurchase(answer);
+            }, function() {
+                $scope.status = 'You cancelled the dialog.';
+            });
+        };
+
+        var webUpgradeMaterial = function (ev) {
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose: false,

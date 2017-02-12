@@ -1,0 +1,65 @@
+<md-dialog aria-label="Select My Plan">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 style="color: white">Select Plan</h2>
+                <span flex></span>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <md-radio-group ng-model="subscriptionPlanId">
+                    <md-radio-button value="monthly7">Monthly at $6.99/mo</md-radio-button>
+                    <md-radio-button value="yearly60" class="md-primary">Yearly at $59.99/yr ($4.99/mo avg)</md-radio-button>
+                </md-radio-group>
+                <md-input-container class="md-block">
+                    <md-icon md-svg-src="img/material-icons/ic_credit_card_black_24px.svg"></md-icon>
+                    <input ng-model="creditCardInfo.cardNumber" placeholder="Card Number" ng-required="true">
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <md-icon md-svg-src="img/material-icons/ic_security_black_24px.svg"></md-icon>
+                    <input ng-model="creditCardInfo.securityCode" placeholder="Security Code" ng-required="true">
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <md-icon md-svg-src="img/material-icons/ic_card_giftcard_24px.svg"></md-icon>
+                    <input ng-model="creditCardInfo.coupon" placeholder="Coupon Code (optional)" ng-required="false">
+                </md-input-container>
+                <md-input-container>
+                    <label>Month</label>
+                    <md-select ng-model="ccinfo.month" name="month" required>
+                        <md-option><em>Month</em></md-option>
+                        <md-option ng-repeat="month in months" value="{{$index+1}}" ng-disabled="$index === 0">
+                            {{month}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <label>Year</label>
+                    <md-select ng-model="ccinfo.year" name="year" required>
+                        <md-option><em>Year</em></md-option>
+                        <md-option ng-repeat="year in years" ng-value="ccinfo.year" ng-disabled="$index === 0">
+                            {{year}}
+                        </md-option>
+                    </md-select>
+                    <!--                    <md-select ng-model="ctrl.userState">
+                                            <md-option><em>None</em></md-option>
+                                            <md-option ng-repeat="month in ctrl.states" ng-value="state.abbrev" ng-disabled="$index === 1">
+                                                {{state.abbrev}}
+                                            </md-option>
+                                        </md-select>-->
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel()">
+                Cancel
+            </md-button>
+            <span flex></span>
+            <md-button ng-click="subscribeWeb(subscriptionPlanId, creditCardInfo)">
+                OK
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
