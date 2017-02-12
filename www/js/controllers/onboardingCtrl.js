@@ -4,6 +4,7 @@ angular.module('starter')
 
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug("OnboardingCtrl beforeEnter");
+        $rootScope.hideNavigationMenu = true;
         if(!$rootScope.user){
             quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
             $state.go('app.login');
