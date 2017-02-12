@@ -60,6 +60,11 @@ angular.module('starter')
         $state.go('app.import');
     };
 
+    $scope.goToUpgradePage = function () {
+        $rootScope.backButtonState = 'app.onboarding';
+        $state.go('app.upgrade');
+    };
+
     $scope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
