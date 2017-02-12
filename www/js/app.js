@@ -98,7 +98,7 @@ angular.module('starter',
                          ' matches localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
                          ' so not to localStorage to sync after login');
                  }
-                 
+
              });
 
              var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
@@ -339,25 +339,33 @@ angular.module('starter',
     };
 
     $ionicPlatform.registerBackButtonAction(function (event) {
+        if($ionicHistory.currentStateName() === 'app.upgrade'){
+            $rootScope.hideNavigationMenu = false;
+            console.debug('registerBackButtonAction from upgrade: Going to default state...');
+            $state.go(config.appSettings.defaultState);
+            return;
+        }
+
         if($ionicHistory.currentStateName() === config.appSettings.defaultState){
             ionic.Platform.exitApp();
+            return;
         }
-        else {
-            if($ionicHistory.backView()){
-                $ionicHistory.goBack();
-            } else if(localStorage.user){
-                $rootScope.hideNavigationMenu = false;
-                console.debug('registerBackButtonAction: Going to default state...');
-                $state.go(config.appSettings.defaultState);
-            } else {
-                /*
-                 console.debug('registerBackButtonAction: Going to welcome state...');
-                 $state.go(config.appSettings.welcomeState);
-                 */
-                console.debug('registerBackButtonAction: Closing the app');
-                ionic.Platform.exitApp();
-            }
+
+        if($ionicHistory.backView()){
+            $ionicHistory.goBack();
+            return;
         }
+
+        if(localStorage.user){
+            $rootScope.hideNavigationMenu = false;
+            console.debug('registerBackButtonAction: Going to default state...');
+            $state.go(config.appSettings.defaultState);
+            return;
+        }
+
+        console.debug('registerBackButtonAction: Closing the app');
+        ionic.Platform.exitApp();
+
     }, 100);
 
     var intervalChecker = setInterval(function(){
