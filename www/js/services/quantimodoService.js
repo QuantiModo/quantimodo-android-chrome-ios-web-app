@@ -2751,7 +2751,36 @@ angular.module('starter')
             return connectors;
         };
 
-        quantimodoService.reportError = function(exceptionOrError){
+        // Name: The error message associated with the error. Usually this will
+        // contain some information about this specific instance of the
+        // error and is not used to group the errors (optional, default
+        // none). (searchable)
+
+        // Message: The error message associated with the error. Usually this will
+        // contain some information about this specific instance of the
+        // error and is not used to group the errors (optional, default
+        // none). (searchable)
+
+        quantimodoService.bugsnagNotify = function(name, message, metaData, severity){
+            if(!metaData){ metaData = {}; }
+            metaData.groupingHash = name;
+            if(!metaData.stackTrace){ metaData.stackTrace = new Error().stack; }
+            var deferred = $q.defer();
+            if(!severity){ severity = "error"; }
+            if(!message){ message = name; }
+            console.error('NAME: ' + name + '. MESSAGE: ' + message + '. METADATA: ' + JSON.stringify(metaData));
+            quantimodoService.setupBugsnag().then(function () {
+                Bugsnag.notify(name, message, metaData, severity);
+                deferred.resolve();
+            }, function (error) {
+                console.error(error);
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        quantimodoService.reportError = function(exceptionOrError, metaDataObject, errorLevel){
             var deferred = $q.defer();
             var stringifiedExceptionOrError = 'No error or exception data provided to quantimodoService';
             var stacktrace = 'No stacktrace provided to quantimodoService';
@@ -2786,7 +2815,6 @@ angular.module('starter')
                     Bugsnag.metaData = {
                         platform: ionic.Platform.platform(),
                         platformVersion: ionic.Platform.version(),
-                        appDisplayName: config.appSettings.appDisplayName,
                         user: {
                             name: $rootScope.user.displayName,
                             email: $rootScope.user.email
@@ -2795,9 +2823,12 @@ angular.module('starter')
                 } else {
                     Bugsnag.metaData = {
                         platform: ionic.Platform.platform(),
-                        platformVersion: ionic.Platform.version(),
-                        appDisplayName: config.appSettings.appDisplayName
+                        platformVersion: ionic.Platform.version()
                     };
+                }
+
+                if(config){
+                    Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
                 }
 
                 deferred.resolve();
