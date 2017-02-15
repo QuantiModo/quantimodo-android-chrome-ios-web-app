@@ -2311,7 +2311,7 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    window.open("https://support.google.com/googleplay/answer/7018481", '_system', 'location=yes');
+                    window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
                     quantimodoService.postUnsubscribeDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
@@ -2332,7 +2332,7 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    window.open("https://support.apple.com/en-us/HT202039", '_system', 'location=yes');
+                    window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
                     //quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
                     quantimodoService.postUnsubscribeDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
