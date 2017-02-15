@@ -2089,95 +2089,82 @@ angular.module('starter')
         };
 
         var webUpgrade = function(ev) {
-            webUpgradeMaterial(ev);
-            return;
-            var myPopup;
-            $scope.currentYear = new Date().getFullYear();
-            $scope.currentMonth = new Date().getMonth() + 1;
-            $scope.months = $locale.DATETIME_FORMATS.MONTH;
-            $scope.ccinfo = {type:undefined};
-            $scope.popupSubtitle = '';
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: false,
+                fullscreen: false
+            }).then(function(answer) {
+                if (!answer.creditCardInfo.securityCode) {
+                    $scope.showAlert('Please enter security code');
+                    ev.preventDefault();
+                } else if (!answer.creditCardInfo.number) {
+                    $scope.showAlert('Please enter card number');
+                    ev.preventDefault();
+                } else if (!answer.creditCardInfo.month) {
+                    $scope.showAlert('Please select expiration month');
+                    ev.preventDefault();
+                } else if (!answer.creditCardInfo.year) {
+                    $scope.showAlert('Please select expiration year');
+                    ev.preventDefault();
+                } else {
+                    var body = {
+                        "card_number": answer.creditCardInfo.number,
+                        "card_month": answer.creditCardInfo.month,
+                        "card_year": answer.creditCardInfo.year,
+                        "card_cvc": answer.creditCardInfo.securityCode,
+                        'plan': answer.subscriptionPlanId,
+                        'coupon': answer.coupon
+                    };
 
-            myPopup = $ionicPopup.show({
-                templateUrl: 'templates/credit-card.html',
-                title: 'Select Plan',
-                subTitle: $scope.popupSubtitle,
-                scope: $scope,
-                buttons: [
-                    { text: 'Cancel' },
-                    {
-                        text: '<b>Save</b>',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            if (!$scope.ccinfo.securityCode) {
-                                $scope.showAlert('Please enter security code');
-                                e.preventDefault();
-                            } else if (!$scope.ccinfo.number) {
-                                $scope.showAlert('Please enter card number');
-                                e.preventDefault();
-                            } else {
-                                return $scope.ccinfo;
-                            }
-                        }
-                    }
-                ]
-            });
-
-            myPopup.then(function(result) {
-                if(!result){
-                    return;
-                }
-                var body = {
-                    "card_number": $scope.ccinfo.number,
-                    "card_month": $scope.ccinfo.month,
-                    "card_year": $scope.ccinfo.year,
-                    "card_cvc": $scope.ccinfo.securityCode,
-                    'plan': $scope.subscriptionPlanId,
-                    'coupon': $scope.ccinfo.coupon
-                };
-
-                $ionicLoading.show();
-
-                quantimodoService.postCreditCardDeferred(body).then(function (response) {
-                    $ionicLoading.hide();
-                    console.debug(JSON.stringify(response));
-                    $mdDialog.show(
-                        $mdDialog.alert()
-                            .parent(angular.element(document.querySelector('#popupContainer')))
-                            .clickOutsideToClose(true)
-                            .title('Thank you!')
-                            .textContent("Let's get started!")
-                            .ariaLabel('OK!')
-                            .ok('Get Started')
-                    )
-                    .finally(function() {
-                        $scope.goBack();
+                    $ionicLoading.show();
+                    quantimodoService.postCreditCardDeferred(body).then(function (response) {
+                        $ionicLoading.hide();
+                        console.debug(JSON.stringify(response));
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title('Thank you!')
+                                .textContent("Let's get started!")
+                                .ariaLabel('OK!')
+                                .ok('Get Started')
+                        ).finally(function() {
+                            $scope.goBack();
+                        });
+                    }, function (error) {
+                        quantimodoService.reportError(error);
+                        $ionicLoading.hide();
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title('Error')
+                                .textContent(JSON.stringify(error))
+                                .ariaLabel('Error')
+                                .ok('OK')
+                        );
                     });
-                }, function (error) {
-                    quantimodoService.reportError(error);
-                    $ionicLoading.hide();
-                    $mdDialog.show(
-                        $mdDialog.alert()
-                            .parent(angular.element(document.querySelector('#popupContainer')))
-                            .clickOutsideToClose(true)
-                            .title('Error')
-                            .textContent(JSON.stringify(error))
-                            .ariaLabel('Error')
-                            .ok('OK')
-                    );
-                });
+                }
+
+            }, function() {
+                $scope.status = 'You cancelled the dialog.';
             });
         };
 
         var purchaseDebugMode = false;
         function DialogController($scope, $mdDialog) {
             $scope.subscriptionPlanId = 'monthly7';
-            $scope.currentYear = new Date().getFullYear();
-            $scope.currentMonth = new Date().getMonth() + 1;
+            var currentYear = new Date().getFullYear();
+            $scope.creditCardInfo = {
+                year: null
+            };
             $scope.months = $locale.DATETIME_FORMATS.MONTH;
             $scope.years = [];
             for(var i = 0; i < 13; i++){
-                $scope.years.push($scope.currentYear + i);
+                $scope.years.push(currentYear + i);
             }
 
             $scope.hide = function() {
@@ -2188,10 +2175,11 @@ angular.module('starter')
                 $mdDialog.cancel();
             };
 
-            $scope.subscribe = function(subscriptionPlanId, coupon) {
+            $scope.subscribe = function(subscriptionPlanId, coupon, creditCardInfo) {
                 var answer = {
                     subscriptionPlanId: subscriptionPlanId,
-                    coupon: coupon
+                    coupon: coupon,
+                    creditCardInfo: creditCardInfo
                 };
                 $mdDialog.hide(answer);
             };
@@ -2220,25 +2208,7 @@ angular.module('starter')
                 $scope.status = 'You cancelled the dialog.';
             });
         };
-
-        var webUpgradeMaterial = function (ev) {
-            $mdDialog.show({
-                controller: DialogController,
-                templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose: false,
-                fullscreen: false
-            }).then(function(answer) {
-                if(purchaseDebugMode){
-                    alert('About to call makeInAppPurchase for ' + JSON.stringify(answer));
-                }
-                makeInAppPurchase(answer);
-            }, function() {
-                $scope.status = 'You cancelled the dialog.';
-            });
-        };
-
+        
         var makeInAppPurchase = function (answer) {
 
             var productName = answer.subscriptionPlanId;
@@ -2319,7 +2289,7 @@ angular.module('starter')
 
         var webDowngrade = function() {
             $ionicLoading.show();
-            quantimodoService.postUnsubscribeDeferred().then(function (response) {
+            quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                 $ionicLoading.hide();
                 console.debug(JSON.stringify(response));
                 $scope.showAlert('Successfully downgraded to QuantiModo Lite');
@@ -2339,7 +2309,7 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    quantimodoService.postUnsubscribeDeferred().then(function (response) {
+                    quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
                         console.error(JSON.stringify(error));
@@ -2360,7 +2330,7 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    quantimodoService.postUnsubscribeDeferred().then(function (response) {
+                    quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
                         console.error(JSON.stringify(error));

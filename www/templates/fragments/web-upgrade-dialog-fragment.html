@@ -27,18 +27,18 @@
                 </md-input-container>
                 <md-input-container>
                     <label>Month</label>
-                    <md-select ng-model="ccinfo.month" name="month" required>
+                    <md-select ng-model="creditCardInfo.month" required>
                         <md-option><em>Month</em></md-option>
-                        <md-option ng-repeat="month in months" value="{{$index+1}}" ng-disabled="$index === 0">
+                        <md-option ng-repeat="month in months" ng-value="$index+1">
                             {{month}}
                         </md-option>
                     </md-select>
                 </md-input-container>
                 <md-input-container>
                     <label>Year</label>
-                    <md-select ng-model="ccinfo.year" name="year" required>
+                    <md-select ng-model="creditCardInfo.year" required>
                         <md-option><em>Year</em></md-option>
-                        <md-option ng-repeat="year in years" ng-value="ccinfo.year" ng-disabled="$index === 0">
+                        <md-option ng-repeat="year in years" ng-value="year" >
                             {{year}}
                         </md-option>
                     </md-select>
@@ -57,7 +57,7 @@
                 Cancel
             </md-button>
             <span flex></span>
-            <md-button ng-click="subscribeWeb(subscriptionPlanId, creditCardInfo)">
+            <md-button ng-click="subscribe(subscriptionPlanId, coupon, creditCardInfo)">
                 OK
             </md-button>
         </md-dialog-actions>

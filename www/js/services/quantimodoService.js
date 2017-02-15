@@ -8136,7 +8136,7 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.postUnsubscribe = function(body, successHandler, errorHandler) {
+        quantimodoService.postDowngradeSubscription = function(body, successHandler, errorHandler) {
             quantimodoService.post('api/v2/account/unsubscribe',
                 [],
                 body,
@@ -8144,11 +8144,11 @@ angular.module('starter')
                 errorHandler);
         };
 
-        quantimodoService.postUnsubscribeDeferred = function(){
+        quantimodoService.postDowngradeSubscriptionDeferred = function(){
             var deferred = $q.defer();
             $rootScope.user.stripeActive = false;
             quantimodoService.reportError('User un-subscribed: ' + JSON.stringify($rootScope.user));
-            quantimodoService.postUnsubscribe({}, function(response){
+            quantimodoService.postDowngradeSubscription({}, function(response){
                 $rootScope.user = response.user;
                 quantimodoService.setLocalStorageItem('user', JSON.stringify($rootScope.user));
                 localStorage.user = JSON.stringify($rootScope.user); // For Chrome Extension
@@ -8224,7 +8224,6 @@ angular.module('starter')
                 }
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
-
             } else {
                 console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
                 window.location.href = emailUrl;
