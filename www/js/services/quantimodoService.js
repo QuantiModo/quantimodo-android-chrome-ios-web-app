@@ -8145,7 +8145,7 @@ angular.module('starter')
 
         quantimodoService.postUnsubscribeDeferred = function(){
             var deferred = $q.defer();
-
+            $rootScope.user.stripeActive = false;
             quantimodoService.reportError('User un-subscribed: ' + JSON.stringify($rootScope.user));
             quantimodoService.postUnsubscribe({}, function(response){
                 $rootScope.user = response.user;
