@@ -1,25 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
     <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } ">
         <div ng-include="'templates/fragments/plan-features-card-fragment.html'"></div>
-        <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
-            <div class="item item-divider">
-                {{signUpQuestion.question}}
-            </div>
-            <div class="item item-text-wrap">
-                {{signUpQuestion.answer}}
-            </div>
-        </div>
-        <div class="card" style="text-align: center">
-            <div class="item item-divider">
-                Your Privacy
-            </div>
-            <div class="item item-text-wrap">
-                Your privacy is very important to us. You can delete your data at any time, all of it, or just some
-                of it.  See our <a href="https://quantimo.do/privacy-policy/" target="_blank">privacy policy</a>
-                and <a href="https://quantimo.do/organization/end-user-terms-of-service" target="_blank">terms of use</a>
-                for more information.
-            </div>
-        </div>
         <div class="card" style="text-align: center" ng-if="isIOS">
             <div class="item item-divider">
                 {{appDisplayName}} Premium Monthly
@@ -44,5 +25,26 @@
                 You can manage your subscription and auto-renewal may be turned off by going to the your iTunes Account Settings after purchase.
             </div>
         </div>
+        <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
+            <div class="item item-divider">
+                {{signUpQuestion.question}}
+            </div>
+            <div class="item item-text-wrap">
+                {{signUpQuestion.answer}}
+            </div>
+        </div>
+        <div class="card" style="text-align: center">
+            <div class="item item-divider">
+                Your Privacy
+            </div>
+            <div class="item item-text-wrap">
+                Your privacy is very important to us. You can delete your data at any time, all of it, or just some
+                of it.  See our <a href="https://quantimo.do/privacy-policy/" target="_blank">privacy policy</a>
+                and <a href="https://quantimo.do/organization/end-user-terms-of-service" target="_blank">terms of use</a>
+                for more information.
+            </div>
+        </div>
+        <br>
+        <br>
     </ion-content>
 </ion-view>
