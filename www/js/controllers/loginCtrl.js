@@ -18,7 +18,7 @@ angular.module('starter')
                 $scope.showGoogleLoginButton = true;
             }
             var $cordovaFacebook = {};
-            if ($rootScope.isMobile && $injector.has('$cordovaFacebook')) {
+            if ($rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
                 console.debug('Injecting $cordovaFacebook');
                 $cordovaFacebook = $injector.get('$cordovaFacebook');
                 $scope.showFacebookLoginButton = true;

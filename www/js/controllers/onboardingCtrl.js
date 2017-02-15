@@ -3,7 +3,8 @@ angular.module('starter')
                                   $rootScope, $stateParams, quantimodoService) {
 
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        console.debug("OnboardingCtrl beforeEnter");
+        console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
+        $rootScope.hideNavigationMenu = true;
         if(!$rootScope.user){
             quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
             $state.go('app.login');
@@ -25,12 +26,12 @@ angular.module('starter')
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
-        console.debug("OnboardingCtrl afterEnter");
+        console.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
         quantimodoService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
 
     $scope.$on('$ionicView.beforeLeave', function(){
-        console.debug("OnboardingCtrl beforeLeave");
+        console.debug('OnboardingCtrl beforeLeave in state ' + $state.current.name);
         //Can't do this here because it makes menu show while searching for reminders
         //$rootScope.hideNavigationMenu = false; console.debug('$rootScope.hideNavigationMenu = false');
     });
@@ -59,6 +60,11 @@ angular.module('starter')
         $state.go('app.import');
     };
 
+    $scope.goToUpgradePage = function () {
+        $rootScope.backButtonState = 'app.onboarding';
+        $state.go('app.upgrade');
+    };
+
     $scope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
@@ -84,7 +90,7 @@ angular.module('starter')
 
     $scope.enableLocationTracking = function (event) {
         $rootScope.trackLocationChange(true, true, event);
-        $rootScope.hideOnboardingPage();
+        $scope.hideOnboardingPage();
     };
 
     $scope.doneOnboarding = function () {

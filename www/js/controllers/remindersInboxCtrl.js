@@ -15,7 +15,7 @@ angular.module('starter')
 	    	selected1to5Value : false,
 	    	allReminders : [
 	    	],
-	    	trackingRemindersNotifications : [
+	    	trackingReminderNotifications : [
 	    	],
 	    	filteredReminderNotifications : [
 	    	],

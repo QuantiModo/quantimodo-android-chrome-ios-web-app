@@ -12,16 +12,19 @@
                 <div ng-hide="hideNavigationMenu" class="item item-divider" style="">
                     {{divider.name}}
                 </div>
-                <div on-hold="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)" class="list card"
+                <div on-hold="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
+                     class="list card"
                      ng-show="!trackingReminderNotification.hide"
                      ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications"
                      ng-init="trackingReminderNotificationIndex = $index" >
                     <div class="item" style="padding-bottom:10px;">
-                        <div ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)" class="row">
+                        <div ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
+                             class="row">
                             <div class="col col-20" style="padding-top: 0px;">
                                 <i style="font-size: 40px;" class="icon positive {{trackingReminderNotification.icon}}"></i>
                             </div>
-                            <div ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)" class="col col-70">
+                            <div ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
+                                 class="col col-70">
                                 <h2 ng-if="trackingReminderNotification.defaultValue !== null && trackingReminderNotification.abbreviatedUnitName != '/5'"
                                     style="white-space: normal;
 									line-height: normal; ">
@@ -37,7 +40,7 @@
 									line-height: normal; ">Rate {{trackingReminderNotification.variableName}}
                                 </h2>
                                 <p style="white-space: normal;">
-                                    {{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}}
+                                    {{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTimeCompact}}
                                 </p>
                             </div>
                             <div ng-click="showActionSheet(trackingReminderNotification, event)" class="col col-10">

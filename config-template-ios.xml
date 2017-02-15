@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="2.3.8" ios-CFBundleVersion="20170118205921" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.quantimodo.moodimodoapp" version="2.3.9" ios-CFBundleVersion="20170118205921" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
   <description>
         The mood-tracking app from QuantiModo
@@ -86,7 +86,9 @@
     <variable name="APP_ID" value="225078261031461"/>
     <variable name="APP_NAME" value="QuantiModo"/>
   </plugin>
-
+  <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
+    <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d" />
+  </plugin>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="2.2.5.0" id="com.quantimodo.moodimodoapp"/>
   </vs:platformSpecificValues>

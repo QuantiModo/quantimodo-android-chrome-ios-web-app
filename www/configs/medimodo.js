@@ -1,11 +1,11 @@
 var config = {};
 
 config.appSettings  = {
-    appDisplayName : 'MedTLC',
-    lowercaseAppName : 'medtlc',
+    appDisplayName : 'MediModo',
+    lowercaseAppName : 'medimodo',
     appDescription : "Medication. Track. Learn. Connect.",
     appleId: "1115037661",
-    "appIdentifier": "com.quantimodo.medtlcapp",
+    "appIdentifier": "com.quantimodo.medimodo",
     ionicAppId: 'e85b92b4',
     apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
@@ -13,7 +13,7 @@ config.appSettings  = {
     allowOffline : false,
     shoppingCartEnabled : false,
     qmApiHostName: 'app.quantimo.do',
-    appStorageIdentifier: 'MedTLCData*',
+    appStorageIdentifier: 'MediModoData*',
 
     defaultState : 'app.remindersInbox',
 
@@ -119,7 +119,7 @@ config.appSettings  = {
 
                 firstParagraph : {
                     visible : true,
-                    content : 'Welcome to MedTLC',
+                    content : 'Welcome to MediModo',
                     classes : 'intro-header positive'
                 }, 
                 logoDiv : {

@@ -83,19 +83,19 @@ angular.module('starter')
         }
 
         $scope.$on('$ionicView.loaded', function(){
-            console.debug('appCtrl loaded');
+            console.debug('appCtrl loaded in state ' + $state.current.name);
             // This event will only happen once per view being created. If a view is cached but not active, this event
             // will not fire again on a subsequent viewing.
         });
 
         $scope.$on('$ionicView.beforeEnter', function (e) {
-            console.debug('appCtrl beforeEnter');
+            console.debug('appCtrl beforeEnter in state ' + $state.current.name);
 
         });
 
         // when view is changed
         $scope.$on('$ionicView.enter', function (e) {
-            console.debug('appCtrl enter');
+            console.debug('appCtrl enter in state ' + $state.current.name);
             //$scope.showHelpInfoPopupIfNecessary(e);
             if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
                 $scope.showCalendarButton = true;
@@ -123,7 +123,7 @@ angular.module('starter')
 
         // when view is changed
         $scope.$on('$ionicView.afterEnter', function (e) {
-            console.debug('appCtrl afterEnter');
+            console.debug('appCtrl afterEnter in state ' + $state.current.name);
 
         });
 
@@ -1554,7 +1554,7 @@ angular.module('starter')
 
             if(connector.name === 'github') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1570,7 +1570,7 @@ angular.module('starter')
 
             if(connector.name === 'withings') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1585,7 +1585,7 @@ angular.module('starter')
 
             if(connector.name === 'fitbit') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1613,7 +1613,7 @@ angular.module('starter')
 
             if(connector.name === 'runkeeper') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1630,7 +1630,7 @@ angular.module('starter')
 
             if(connector.name === 'rescuetime') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1647,7 +1647,7 @@ angular.module('starter')
 
             if(connector.name === 'slice') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1665,7 +1665,7 @@ angular.module('starter')
 
             if(connector.name === 'facebook') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1681,7 +1681,7 @@ angular.module('starter')
 
             if(connector.name === 'googlefit') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1703,7 +1703,7 @@ angular.module('starter')
 
             if(connector.name === 'googlecalendar') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1723,7 +1723,7 @@ angular.module('starter')
 
             if(connector.name === 'sleepcloud') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -1742,7 +1742,7 @@ angular.module('starter')
 
             if(connector.name === 'up') {
 
-                if($rootScope.isWeb){
+                if($rootScope.isWeb || $rootScope.isChromeExtension){
                     webConnect(connector);
                     return;
                 }
@@ -2144,8 +2144,8 @@ angular.module('starter')
                             .parent(angular.element(document.querySelector('#popupContainer')))
                             .clickOutsideToClose(true)
                             .title('Thank you!')
-                            .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
-                            .ariaLabel('Thank you!')
+                            .textContent("Let's get started!")
+                            .ariaLabel('OK!')
                             .ok('Get Started')
                     )
                     .finally(function() {
@@ -2271,9 +2271,9 @@ angular.module('starter')
                                     .parent(angular.element(document.querySelector('#popupContainer')))
                                     .clickOutsideToClose(true)
                                     .title('Thank you!')
-                                    .textContent("Now you can forever enjoy all the great features of QuantiModo Premium!")
+                                    .textContent("Let's get started!")
                                     .ariaLabel('Alert Dialog Demo')
-                                    .ok('Get Started')
+                                    .ok('OK!')
                             ).finally(function() {
                                 $scope.goBack();
                             });
@@ -2311,12 +2311,12 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    window.open("https://support.google.com/googleplay/answer/7018481", '_system', 'location=yes');
                     quantimodoService.postUnsubscribeDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
                         console.error(JSON.stringify(error));
                     });
+                    window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
                 } else {
                     console.log('You are not sure');
                 }
@@ -2332,14 +2332,13 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    window.open("https://support.apple.com/en-us/HT202039", '_system', 'location=yes');
-                    //quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
                     quantimodoService.postUnsubscribeDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
                         console.error(JSON.stringify(error));
                     });
-
+                    window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
+                    //quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
                 } else {
                     console.log('You are not sure');
                 }
