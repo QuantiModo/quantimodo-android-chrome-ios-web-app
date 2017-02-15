@@ -7400,18 +7400,20 @@ angular.module('starter')
                         note: data.daily.data[0].icon
                     }]}
                 );
-                measurementSets.push({
-                    variableCategoryName: "Environment",
-                    variableName: "Outdoor Visibility",
-                    combinationOperation: "MEAN",
-                    sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "miles",
-                    measurements: [{
-                        value: data.daily.data[0].visibility,
-                        startTimeEpoch: yesterdayNoonTimestamp,
-                        note: data.daily.data[0].icon
-                    }]}
-                );
+                if(data.daily.data[0].visibility){
+                    measurementSets.push({
+                        variableCategoryName: "Environment",
+                        variableName: "Outdoor Visibility",
+                        combinationOperation: "MEAN",
+                        sourceName: $rootScope.appSettings.appDisplayName,
+                        abbreviatedUnitName: "miles",
+                        measurements: [{
+                            value: data.daily.data[0].visibility,
+                            startTimeEpoch: yesterdayNoonTimestamp,
+                            note: data.daily.data[0].icon
+                        }]}
+                    );
+                }
                 measurementSets.push({
                     variableCategoryName: "Environment",
                     variableName: "Cloud Cover",
