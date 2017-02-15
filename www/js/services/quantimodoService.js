@@ -837,8 +837,8 @@ angular.module('starter')
             quantimodoService.joinStudy(body, function(response){
                 if(response){
                     if(response.trackingReminderNotifications){
-                        quantimodoService.setLocalStorageItem('trackingReminderNotifications',
-                            JSON.stringify(response.trackingReminderNotifications));
+                        putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(
+                            response.trackingReminderNotifications);
                     }
                     if(response.trackingReminders){
                         quantimodoService.setLocalStorageItem('trackingReminders',
@@ -3129,6 +3129,16 @@ angular.module('starter')
 
         var delayBeforePostingNotifications = 3 * 60 * 1000;
 
+        var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
+            trackingReminderNotifications = quantimodoService.attachVariableCategoryIcons(trackingReminderNotifications);
+            quantimodoService.setLocalStorageItem('trackingReminderNotifications',
+                JSON.stringify(trackingReminderNotifications)).then(function () {
+                $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
+            });
+            $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+            return trackingReminderNotifications;
+        };
+
         quantimodoService.postTrackingRemindersDeferred = function(trackingRemindersArray){
             var deferred = $q.defer();
 
@@ -3136,8 +3146,7 @@ angular.module('starter')
                 quantimodoService.postTrackingRemindersToApi(trackingRemindersArray, function(response){
                     if(response){
                         if(response.trackingReminderNotifications){
-                            quantimodoService.setLocalStorageItem('trackingReminderNotifications',
-                                JSON.stringify(response.trackingReminderNotifications));
+                            putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);
                         }
                         if(response.trackingReminders){
                             quantimodoService.setLocalStorageItem('trackingReminders',
@@ -3303,12 +3312,10 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
-                    var trackingRemindersNotifications =
-                        quantimodoService.attachVariableCategoryIcons(response.data);
-                    $rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
-                    deferred.resolve(trackingRemindersNotifications);
-                }
-                else {
+                    var trackingReminderNotifications =
+                        putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
+                    deferred.resolve(trackingReminderNotifications);
+                } else {
                     deferred.reject("error");
                 }
             }, function(error){
@@ -3361,17 +3368,14 @@ angular.module('starter')
                 params.sort = '-reminderTime';
                 quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                     if(response.success) {
-                        var trackingRemindersNotifications =
-                            quantimodoService.attachVariableCategoryIcons(response.data);
-                        $rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
+                        var trackingReminderNotifications =
+                            putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                         if (window.chrome && window.chrome.browserAction) {
                             chrome.browserAction.setBadgeText({text: "?"});
                             //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
-                        quantimodoService.setLocalStorageItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
                         $rootScope.refreshingTrackingReminderNotifications = false;
-                        $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
-                        deferred.resolve(trackingRemindersNotifications);
+                        deferred.resolve(trackingReminderNotifications);
                     }
                     else {
                         $rootScope.refreshingTrackingReminderNotifications = false;
@@ -5872,15 +5876,10 @@ angular.module('starter')
                 };
                 quantimodoService.getTrackingReminderNotificationsFromApi(params, function (response) {
                     if (response.success) {
-                        $rootScope.trackingReminderNotifications = response.data;
-                        $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
-                        $rootScope.trackingRemindersNotifications =
-                            quantimodoService.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
-                        if($rootScope.trackingRemindersNotifications.length > 1){
-                            quantimodoService.setLocalStorageItem('trackingReminderNotifications',
-                                JSON.stringify($rootScope.trackingRemindersNotifications));
+                        if(response.data.length > 1){
+                            var trackingReminderNotifications =
+                                putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                         }
-
                         /** @namespace window.chrome */
                         /** @namespace window.chrome.browserAction */
                         if (window.chrome && window.chrome.browserAction) {
@@ -5897,7 +5896,7 @@ angular.module('starter')
                                 console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications");
                             }, this);
                         } else {
-                            console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: notifications from API", $rootScope.trackingReminderNotifications);
+                            console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: notifications from API", trackingReminderNotifications);
                             $rootScope.updateOrRecreateNotifications();
                         }
                     }
