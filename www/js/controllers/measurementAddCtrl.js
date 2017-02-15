@@ -324,6 +324,10 @@ angular.module('starter')
 
             // Measurement only - post measurement. This is for adding or editing
             quantimodoService.postMeasurementDeferred(measurementInfo, true);
+            var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' +
+                $scope.state.measurement.abbreviatedUnitName;
+            toastMessage = toastMessage.replace(' /', '/');
+            $scope.showInfoToast(toastMessage);
             $scope.goBack();
         };
 

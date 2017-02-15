@@ -460,6 +460,11 @@ angular.module('starter')
 
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue',
                 remindersArray).then(function(){
+                    var toastMessage = $scope.state.trackingReminder.variableName + ' reminder saved';
+                    if($stateParams.favorite){
+                        toastMessage = $scope.state.trackingReminder.variableName + ' saved to favorites';
+                    }
+                    $scope.showInfoToast(toastMessage);
                     quantimodoService.syncTrackingReminders();
                     goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                 }
