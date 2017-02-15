@@ -3313,8 +3313,7 @@ angular.module('starter')
             quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
                     var trackingReminderNotifications =
-                        quantimodoService.attachVariableCategoryIcons(response.data);
-                    $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+                        putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     deferred.resolve(trackingReminderNotifications);
                 } else {
                     deferred.reject("error");
