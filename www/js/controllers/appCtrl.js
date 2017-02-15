@@ -83,19 +83,19 @@ angular.module('starter')
         }
 
         $scope.$on('$ionicView.loaded', function(){
-            console.debug('appCtrl loaded');
+            console.debug('appCtrl loaded in state ' + $state.current.name);
             // This event will only happen once per view being created. If a view is cached but not active, this event
             // will not fire again on a subsequent viewing.
         });
 
         $scope.$on('$ionicView.beforeEnter', function (e) {
-            console.debug('appCtrl beforeEnter');
+            console.debug('appCtrl beforeEnter in state ' + $state.current.name);
 
         });
 
         // when view is changed
         $scope.$on('$ionicView.enter', function (e) {
-            console.debug('appCtrl enter');
+            console.debug('appCtrl enter in state ' + $state.current.name);
             //$scope.showHelpInfoPopupIfNecessary(e);
             if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
                 $scope.showCalendarButton = true;
@@ -123,7 +123,7 @@ angular.module('starter')
 
         // when view is changed
         $scope.$on('$ionicView.afterEnter', function (e) {
-            console.debug('appCtrl afterEnter');
+            console.debug('appCtrl afterEnter in state ' + $state.current.name);
 
         });
 
@@ -2339,12 +2339,12 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    window.open("https://support.google.com/googleplay/answer/7018481", '_system', 'location=yes');
                     quantimodoService.postUnsubscribeDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
                         console.error(JSON.stringify(error));
                     });
+                    window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
                 } else {
                     console.log('You are not sure');
                 }
@@ -2360,14 +2360,13 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    window.open("https://support.apple.com/en-us/HT202039", '_system', 'location=yes');
-                    //quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
                     quantimodoService.postUnsubscribeDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
                         console.error(JSON.stringify(error));
                     });
-
+                    window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
+                    //quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
                 } else {
                     console.log('You are not sure');
                 }

@@ -18,13 +18,85 @@ angular.module('starter')
             showInstructionsField : false,
             selectedStopTrackingDate: null,
             showMoreOptions: false,
-            showMoreUnits: false
+            showMoreUnits: false,
+            trackingReminder: {
+                variableId : null,
+                variableName : null,
+                combinationOperation : null
+            }
         };
 
+        $scope.loading = true;
+
+        $scope.variables = {
+            variableCategories : [
+                { id : 1, name : 'Emotions' },
+                { id : 2, name : 'Symptoms' },
+                { id : 3, name : 'Treatments' },
+                { id : 4, name : 'Foods' },
+                { id : 5, name : 'Vital Signs' },
+                { id : 6, name : 'Physical Activity' },
+                { id : 7, name : 'Sleep' },
+                { id : 8, name : 'Miscellaneous' }
+            ],
+            frequencyVariables : [
+                { id : 1, name : 'Daily'},
+                { id : 2, name : 'Every 12 hours'},
+                { id : 3, name : 'Every 8 hours'},
+                { id : 4, name : 'Every 6 hours'},
+                { id : 5, name : 'Every 4 hours'},
+                { id : 6, name : 'Every 3 hours'},
+                { id : 7, name : 'Every 2 hours'},
+                { id : 8, name : 'Hourly'},
+                { id : 9, name : 'Every 30 minutes'},
+                { id : 10, name : 'Never'},
+                { id : 10, name : 'Weekly'},
+                { id : 10, name : 'Every 2 weeks'},
+                { id : 10, name : 'Every 4 weeks'}
+                //{ id : 11, name : 'Minutely'}
+            ]
+        };
 
         $scope.$on('$ionicView.beforeEnter', function(){
-            $scope.init();
             $rootScope.hideNavigationMenu = false;
+            console.debug('ReminderAddCtrl beforeEnter...');
+            if($stateParams.variableObject){
+                $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName;
+            }
+            if($stateParams.reminder){
+                $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName;
+            }
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            setTitle();
+            var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
+            $ionicLoading.show();
+            quantimodoService.getUnits(ignoreExpiration).then(function () {
+                $ionicLoading.hide();
+                refreshUnitsIfStale();
+                var reminderIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'variableId');
+                if ($stateParams.variableObject) {
+                    $rootScope.variableObject = $stateParams.variableObject;
+                    setupByVariableObject($stateParams.variableObject);
+                } else if ($stateParams.reminder && $stateParams.reminder !== null) {
+                    setupEditReminder($stateParams.reminder);
+                } else if(reminderIdUrlParameter) {
+                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                } else if(variableIdUrlParameter) {
+                    setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if($stateParams.variableCategoryName){
+                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+                } else {
+                    $ionicHistory.goBack();
+                }
+            });
+        });
+
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+            console.debug('ReminderAddCtrl enter...');
         });
 
         $scope.showMoreOptions = function(){
@@ -39,43 +111,6 @@ angular.module('starter')
         } else {
             quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!');
         }
-
-        $scope.state.trackingReminder = {
-            variableId : null,
-            variableName : null,
-            combinationOperation : null
-        };
-
-        $scope.loading = true;
-
-	    $scope.variables = {
-	    	variableCategories : [
-		    	{ id : 1, name : 'Emotions' },
-		    	{ id : 2, name : 'Symptoms' },
-		    	{ id : 3, name : 'Treatments' },
-		    	{ id : 4, name : 'Foods' },
-                { id : 5, name : 'Vital Signs' },
-                { id : 6, name : 'Physical Activity' },
-                { id : 7, name : 'Sleep' },
-                { id : 8, name : 'Miscellaneous' }
-	    	],
-	    	frequencyVariables : [
-                { id : 1, name : 'Daily'},
-	    		{ id : 2, name : 'Every 12 hours'},
-	    		{ id : 3, name : 'Every 8 hours'},
-	    		{ id : 4, name : 'Every 6 hours'},
-	    		{ id : 5, name : 'Every 4 hours'},
-	    		{ id : 6, name : 'Every 3 hours'},
-				{ id : 7, name : 'Every 2 hours'},
-				{ id : 8, name : 'Hourly'},
-	    		{ id : 9, name : 'Every 30 minutes'},
-	    		{ id : 10, name : 'Never'},
-                { id : 10, name : 'Weekly'},
-                { id : 10, name : 'Every 2 weeks'},
-                { id : 10, name : 'Every 4 weeks'}
-                //{ id : 11, name : 'Minutely'}
-	    	]
-	    };
 
         $scope.openReminderStartTimePicker = function(order) {
             var a = new Date();
@@ -460,13 +495,17 @@ angular.module('starter')
 
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue',
                 remindersArray).then(function(){
+                    var toastMessage = $scope.state.trackingReminder.variableName + ' reminder saved';
+                    if($stateParams.favorite){
+                        toastMessage = $scope.state.trackingReminder.variableName + ' saved to favorites';
+                    }
+                    $scope.showInfoToast(toastMessage);
                     quantimodoService.syncTrackingReminders();
                     goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                 }
             );
 
 	    };
-
 
 	    // setup editing view
 	    var setupEditReminder = function(trackingReminder){
@@ -628,48 +667,6 @@ angular.module('starter')
             quantimodoService.getUnits(ignoreExpiration);
         };
 
-        $scope.init = function(){
-            console.debug($state.current.name + ' initializing...');
-            if($stateParams.variableObject){
-                $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName;
-            }
-            if($stateParams.reminder){
-                $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName;
-            }
-            $rootScope.stateParams = $stateParams;
-            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            setTitle();
-            var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
-            $ionicLoading.show();
-            quantimodoService.getUnits(ignoreExpiration).then(function () {
-                $ionicLoading.hide();
-                refreshUnitsIfStale();
-                var reminderIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'reminderId');
-                var variableIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'variableId');
-                if ($stateParams.variableObject) {
-                    $rootScope.variableObject = $stateParams.variableObject;
-                    setupByVariableObject($stateParams.variableObject);
-                } else if ($stateParams.reminder && $stateParams.reminder !== null) {
-                    setupEditReminder($stateParams.reminder);
-                } else if(reminderIdUrlParameter) {
-                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-                } else if(variableIdUrlParameter) {
-                    setupReminderEditingFromVariableId(variableIdUrlParameter);
-                } else if($stateParams.variableCategoryName){
-                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
-                } else {
-                    $ionicHistory.goBack();
-                }
-            });
-	    };
-
-        // when view is changed
-    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            $scope.hideLoader();
-    	});
-
         $scope.deleteReminder = function(){
             quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id)
                 .then(function(){
@@ -684,7 +681,6 @@ angular.module('starter')
                         $scope.state.trackingReminder.id);
                 });
         };
-
 
         $scope.unitSelected = function(){
             if($scope.state.trackingReminder.abbreviatedUnitName === 'Show more units'){
@@ -785,6 +781,4 @@ angular.module('starter')
             });
 
         };
-
-
 	});

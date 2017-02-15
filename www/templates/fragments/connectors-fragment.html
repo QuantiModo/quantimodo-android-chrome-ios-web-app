@@ -37,10 +37,10 @@
             </button>
         </div>
         <div class="button-bar" ng-if="connector.connected && !connector.loadingText">
-            <button ng-if="connector.updateStatus !== 'ERROR'" class="button button-clear button-royal"
+            <button ng-if="connector.updateStatus === 'WAITING'" class="button button-clear button-royal"
                     style="text-overflow: clip;"
                     ng-click="">
-                <i class="ion-ios-cloud-download"> &nbsp; {{connector.updateStatus}}</i>
+                <i class="ion-ios-cloud-download"> &nbsp; Update Scheduled</i>
             </button>
             <button ng-if="connector.updateStatus === 'ERROR'" class="button button-clear button-balanced"
                     ng-click="editReminderSettingsByNotification(connector)"

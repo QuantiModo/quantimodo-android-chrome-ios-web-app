@@ -8,12 +8,25 @@ angular.module('starter')
         	console.debug("ImportCtrl beforeEnter");
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            if(!$rootScope.user.stripeActive){
-                $state.go('app.upgrade', {litePlanState: config.appSettings.defaultState});
-                return;
-            }
 
-            loadNativeConnectorPage();
+            if($rootScope.user.stripeActive){
+                loadNativeConnectorPage();
+                return;
+			}
+
+			// Check if user upgrade via web since last user refresh
+			$ionicLoading.show();
+			quantimodoService.refreshUser().then(function (user) {
+                $ionicLoading.hide();
+				if(user.stripeActive){
+                    loadNativeConnectorPage();
+					return;
+				}
+                $state.go('app.upgrade', {litePlanState: config.appSettings.defaultState});
+			}, function (error) {
+                $ionicLoading.hide();
+                $state.go('app.login');
+            });
         });
 
         $scope.hideImportHelpCard = function () {

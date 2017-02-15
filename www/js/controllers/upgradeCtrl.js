@@ -6,8 +6,8 @@ angular.module('starter')
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 
         if(!$rootScope.user){ 
-            quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
-            $state.go('app.upgrade');
+            quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.upgrade');
+            $state.go('app.login');
             return;
         }
         $scope.planFeaturesCard = $rootScope.planFeaturesCards[1];

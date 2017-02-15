@@ -38,13 +38,13 @@ var paths = {
 };
 
 if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.3.7.0';
+    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.3.9.0';
     console.log('Falling back to OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
     process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 }
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.3.8.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.4.0.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
@@ -813,7 +813,7 @@ gulp.task('ionicUploadAllApps', function(callback){
         'setEnergyModoEnvs',
         'configureApp',
         'ionicUploadProduction',
-        'setMedTlcEnvs',
+        'setMediModoEnvs',
         'configureApp',
         'ionicUploadProduction',
         'setMindFirstEnvs',
@@ -1550,7 +1550,7 @@ gulp.task('setEnergyModoEnvs', [], function(callback){
         callback);
 });
 
-gulp.task('setMedTlcEnvs', [], function(callback){
+gulp.task('setMediModoEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "medimodo";
     runSequence(
         'decryptPrivateConfig',
@@ -1947,9 +1947,9 @@ gulp.task('buildMindFirst', function(callback){
         callback);
 });
 
-gulp.task('buildMedTlc', function(callback){
+gulp.task('buildMediModo', function(callback){
     runSequence(
-        'setMedTlcEnvs',
+        'setMediModoEnvs',
         'buildChromeExtension',
         'buildAndroidApp',
         'prepareIosApp',
@@ -1979,7 +1979,7 @@ gulp.task('buildAllChromeExtensions', function(callback){
     	'cleanBuildFolder',
         'setEnergyModoEnvs',
         'buildChromeExtension',
-        'setMedTlcEnvs',
+        'setMediModoEnvs',
         'buildChromeExtension',
         'setMindFirstEnvs',
         'buildChromeExtension',
@@ -1997,7 +1997,7 @@ gulp.task('buildAllChromeExtensionsAndAndroidApps', function(callback){
         'setEnergyModoEnvs',
         'buildChromeExtension',
 		'buildAndroidApp',
-        'setMedTlcEnvs',
+        'setMediModoEnvs',
         'buildChromeExtension',
         'buildAndroidApp',
         'setMindFirstEnvs',

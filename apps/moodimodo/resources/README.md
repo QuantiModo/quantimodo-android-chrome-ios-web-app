@@ -17,7 +17,7 @@ daily values
 - Export and email your data to your healthcare provider
 - Create and publish studies using your data or aggregated user data
 
-Automatic Location and Weather Logging (Optional)
+### Automatic Location and Weather Logging (Optional)
 By automatically recording your location in the background using GPS, we might be able to figure out how the 
 amount of time spent at the gym, restaurants, doctors, offices, home, and work locations may be affecting you.   
 Logging location enables weather logging to determine how things like temperature and sunlight exposure might 

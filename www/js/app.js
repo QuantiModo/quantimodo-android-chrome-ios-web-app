@@ -33,7 +33,7 @@ angular.module('starter',
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
-    $rootScope.appVersion = "2.3.8.0";
+    $rootScope.appVersion = "2.4.0.0";
     quantimodoService.setPlatformVariables();
 
     $ionicPlatform.ready(function() {
@@ -79,7 +79,7 @@ angular.module('starter',
              push.on('registration', function(registerResponse) {
                  console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
                  if(!registerResponse.registrationId){
-                     quantimodoService.reportError('No registerResponse.registrationId from push registration');
+                     quantimodoService.bugsnagNotify('No registerResponse.registrationId from push registration');
                  }
                  // data.registrationId
                  var newDeviceToken = registerResponse.registrationId;
@@ -87,18 +87,27 @@ angular.module('starter',
                  var deviceTokenOnServer = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
                  $rootScope.deviceToken = deviceTokenOnServer;
                  console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
+                 var name;
+                 var message;
+                 var metaData = {};
+                 var severity = "error";
+                 metaData.registerResponse = registerResponse;
+                 metaData.deviceTokenOnServer = deviceTokenOnServer;
                  if(deviceTokenOnServer !== registerResponse.registrationId) {
                      $rootScope.deviceToken = newDeviceToken;
                      quantimodoService.setLocalStorageItem('deviceTokenToSync', newDeviceToken);
-                     quantimodoService.reportError('New push device token ' + registerResponse.registrationId +
+                     name = 'New push device token does not match localStorage.deviceTokenOnServer';
+                     message = 'New push device token ' + registerResponse.registrationId +
                          ' does not match localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
-                         ' so saving to localStorage to sync after login');
+                         ' so saving to localStorage to sync after login';
+                     quantimodoService.bugsnagNotify(name, message, metaData, severity);
                  } else {
-                     quantimodoService.reportError('New push device token ' + registerResponse.registrationId +
+                     name = 'New push device token does not matches localStorage.deviceTokenOnServer';
+                     message = 'New push device token ' + registerResponse.registrationId +
                          ' matches localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
-                         ' so not to localStorage to sync after login');
+                         ' so not to localStorage to sync after login';
+                     quantimodoService.bugsnagNotify(name, message, metaData, severity);
                  }
-                 
              });
 
              var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
@@ -339,25 +348,39 @@ angular.module('starter',
     };
 
     $ionicPlatform.registerBackButtonAction(function (event) {
+        if($rootScope.backButtonState){
+            $state.go($rootScope.backButtonState);
+            $rootScope.backButtonState = null;
+            return;
+        }
+
+        if($ionicHistory.currentStateName() === 'app.upgrade'){
+            $rootScope.hideNavigationMenu = false;
+            console.debug('registerBackButtonAction from upgrade: Going to default state...');
+            $state.go(config.appSettings.defaultState);
+            return;
+        }
+
         if($ionicHistory.currentStateName() === config.appSettings.defaultState){
             ionic.Platform.exitApp();
+            return;
         }
-        else {
-            if($ionicHistory.backView()){
-                $ionicHistory.goBack();
-            } else if(localStorage.user){
-                $rootScope.hideNavigationMenu = false;
-                console.debug('registerBackButtonAction: Going to default state...');
-                $state.go(config.appSettings.defaultState);
-            } else {
-                /*
-                 console.debug('registerBackButtonAction: Going to welcome state...');
-                 $state.go(config.appSettings.welcomeState);
-                 */
-                console.debug('registerBackButtonAction: Closing the app');
-                ionic.Platform.exitApp();
-            }
+
+        if($ionicHistory.backView()){
+            $ionicHistory.goBack();
+            return;
         }
+
+        if(localStorage.user){
+            $rootScope.hideNavigationMenu = false;
+            console.debug('registerBackButtonAction: Going to default state...');
+            $state.go(config.appSettings.defaultState);
+            return;
+        }
+
+        console.debug('registerBackButtonAction: Closing the app');
+        ionic.Platform.exitApp();
+
     }, 100);
 
     var intervalChecker = setInterval(function(){

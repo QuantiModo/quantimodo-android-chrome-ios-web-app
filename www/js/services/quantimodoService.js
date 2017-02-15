@@ -837,8 +837,8 @@ angular.module('starter')
             quantimodoService.joinStudy(body, function(response){
                 if(response){
                     if(response.trackingReminderNotifications){
-                        quantimodoService.setLocalStorageItem('trackingReminderNotifications',
-                            JSON.stringify(response.trackingReminderNotifications));
+                        putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(
+                            response.trackingReminderNotifications);
                     }
                     if(response.trackingReminders){
                         quantimodoService.setLocalStorageItem('trackingReminders',
@@ -2751,7 +2751,36 @@ angular.module('starter')
             return connectors;
         };
 
-        quantimodoService.reportError = function(exceptionOrError){
+        // Name: The error message associated with the error. Usually this will
+        // contain some information about this specific instance of the
+        // error and is not used to group the errors (optional, default
+        // none). (searchable)
+
+        // Message: The error message associated with the error. Usually this will
+        // contain some information about this specific instance of the
+        // error and is not used to group the errors (optional, default
+        // none). (searchable)
+
+        quantimodoService.bugsnagNotify = function(name, message, metaData, severity){
+            if(!metaData){ metaData = {}; }
+            metaData.groupingHash = name;
+            if(!metaData.stackTrace){ metaData.stackTrace = new Error().stack; }
+            var deferred = $q.defer();
+            if(!severity){ severity = "error"; }
+            if(!message){ message = name; }
+            console.error('NAME: ' + name + '. MESSAGE: ' + message + '. METADATA: ' + JSON.stringify(metaData));
+            quantimodoService.setupBugsnag().then(function () {
+                Bugsnag.notify(name, message, metaData, severity);
+                deferred.resolve();
+            }, function (error) {
+                console.error(error);
+                deferred.reject(error);
+            });
+
+            return deferred.promise;
+        };
+
+        quantimodoService.reportError = function(exceptionOrError, metaDataObject, errorLevel){
             var deferred = $q.defer();
             var stringifiedExceptionOrError = 'No error or exception data provided to quantimodoService';
             var stacktrace = 'No stacktrace provided to quantimodoService';
@@ -2786,7 +2815,6 @@ angular.module('starter')
                     Bugsnag.metaData = {
                         platform: ionic.Platform.platform(),
                         platformVersion: ionic.Platform.version(),
-                        appDisplayName: config.appSettings.appDisplayName,
                         user: {
                             name: $rootScope.user.displayName,
                             email: $rootScope.user.email
@@ -2795,9 +2823,12 @@ angular.module('starter')
                 } else {
                     Bugsnag.metaData = {
                         platform: ionic.Platform.platform(),
-                        platformVersion: ionic.Platform.version(),
-                        appDisplayName: config.appSettings.appDisplayName
+                        platformVersion: ionic.Platform.version()
                     };
+                }
+
+                if(config){
+                    Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
                 }
 
                 deferred.resolve();
@@ -3098,6 +3129,16 @@ angular.module('starter')
 
         var delayBeforePostingNotifications = 3 * 60 * 1000;
 
+        var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
+            trackingReminderNotifications = quantimodoService.attachVariableCategoryIcons(trackingReminderNotifications);
+            quantimodoService.setLocalStorageItem('trackingReminderNotifications',
+                JSON.stringify(trackingReminderNotifications)).then(function () {
+                $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
+            });
+            $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+            return trackingReminderNotifications;
+        };
+
         quantimodoService.postTrackingRemindersDeferred = function(trackingRemindersArray){
             var deferred = $q.defer();
 
@@ -3105,8 +3146,7 @@ angular.module('starter')
                 quantimodoService.postTrackingRemindersToApi(trackingRemindersArray, function(response){
                     if(response){
                         if(response.trackingReminderNotifications){
-                            quantimodoService.setLocalStorageItem('trackingReminderNotifications',
-                                JSON.stringify(response.trackingReminderNotifications));
+                            putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);
                         }
                         if(response.trackingReminders){
                             quantimodoService.setLocalStorageItem('trackingReminders',
@@ -3272,12 +3312,10 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
-                    var trackingRemindersNotifications =
-                        quantimodoService.attachVariableCategoryIcons(response.data);
-                    $rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
-                    deferred.resolve(trackingRemindersNotifications);
-                }
-                else {
+                    var trackingReminderNotifications =
+                        putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
+                    deferred.resolve(trackingReminderNotifications);
+                } else {
                     deferred.reject("error");
                 }
             }, function(error){
@@ -3330,17 +3368,14 @@ angular.module('starter')
                 params.sort = '-reminderTime';
                 quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                     if(response.success) {
-                        var trackingRemindersNotifications =
-                            quantimodoService.attachVariableCategoryIcons(response.data);
-                        $rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
+                        var trackingReminderNotifications =
+                            putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                         if (window.chrome && window.chrome.browserAction) {
                             chrome.browserAction.setBadgeText({text: "?"});
                             //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
-                        quantimodoService.setLocalStorageItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
                         $rootScope.refreshingTrackingReminderNotifications = false;
-                        $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
-                        deferred.resolve(trackingRemindersNotifications);
+                        deferred.resolve(trackingReminderNotifications);
                     }
                     else {
                         $rootScope.refreshingTrackingReminderNotifications = false;
@@ -3992,9 +4027,9 @@ angular.module('starter')
                  }
                  */
 
-                // if (measurements[index].abbreviatedUnitName === '%') {
-                //     measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
-                // }
+                if (measurements[index].abbreviatedUnitName === '%') {
+                    measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
+                }
 
                 if (measurements[index].roundedValue && measurements[index].variableDescription === 'positive') {
                     if (ratingInfo[measurements[index].roundedValue]) {
@@ -5841,15 +5876,10 @@ angular.module('starter')
                 };
                 quantimodoService.getTrackingReminderNotificationsFromApi(params, function (response) {
                     if (response.success) {
-                        $rootScope.trackingReminderNotifications = response.data;
-                        $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
-                        $rootScope.trackingRemindersNotifications =
-                            quantimodoService.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
-                        if($rootScope.trackingRemindersNotifications.length > 1){
-                            quantimodoService.setLocalStorageItem('trackingReminderNotifications',
-                                JSON.stringify($rootScope.trackingRemindersNotifications));
+                        if(response.data.length > 1){
+                            var trackingReminderNotifications =
+                                putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                         }
-
                         /** @namespace window.chrome */
                         /** @namespace window.chrome.browserAction */
                         if (window.chrome && window.chrome.browserAction) {
@@ -5866,7 +5896,7 @@ angular.module('starter')
                                 console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications");
                             }, this);
                         } else {
-                            console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: notifications from API", $rootScope.trackingReminderNotifications);
+                            console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: notifications from API", trackingReminderNotifications);
                             $rootScope.updateOrRecreateNotifications();
                         }
                     }
@@ -7370,18 +7400,20 @@ angular.module('starter')
                         note: data.daily.data[0].icon
                     }]}
                 );
-                measurementSets.push({
-                    variableCategoryName: "Environment",
-                    variableName: "Outdoor Visibility",
-                    combinationOperation: "MEAN",
-                    sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "miles",
-                    measurements: [{
-                        value: data.daily.data[0].visibility,
-                        startTimeEpoch: yesterdayNoonTimestamp,
-                        note: data.daily.data[0].icon
-                    }]}
-                );
+                if(data.daily.data[0].visibility){
+                    measurementSets.push({
+                        variableCategoryName: "Environment",
+                        variableName: "Outdoor Visibility",
+                        combinationOperation: "MEAN",
+                        sourceName: $rootScope.appSettings.appDisplayName,
+                        abbreviatedUnitName: "miles",
+                        measurements: [{
+                            value: data.daily.data[0].visibility,
+                            startTimeEpoch: yesterdayNoonTimestamp,
+                            note: data.daily.data[0].icon
+                        }]}
+                    );
+                }
                 measurementSets.push({
                     variableCategoryName: "Environment",
                     variableName: "Cloud Cover",
@@ -8114,7 +8146,7 @@ angular.module('starter')
 
         quantimodoService.postUnsubscribeDeferred = function(){
             var deferred = $q.defer();
-
+            $rootScope.user.stripeActive = false;
             quantimodoService.reportError('User un-subscribed: ' + JSON.stringify($rootScope.user));
             quantimodoService.postUnsubscribe({}, function(response){
                 $rootScope.user = response.user;
