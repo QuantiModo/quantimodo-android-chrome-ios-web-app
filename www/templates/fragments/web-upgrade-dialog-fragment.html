@@ -16,21 +16,28 @@
                 <md-input-container class="md-block">
                     <md-icon md-svg-src="img/material-icons/ic_credit_card_black_24px.svg"></md-icon>
                     <input ng-model="creditCardInfo.cardNumber"
-                           md-maxlength="19"
+                           maxlength="19"
                            minlength="15"
                            name="cardNumber"
                            placeholder="Card Number"
                            ng-required="true"
                            required md-no-asterisk >
                     <div ng-messages="upgradeForm.cardNumber.$error">
-                        <div ng-message="required">This is required.</div>
-                        <div ng-message="md-maxlength">The description must be less than 20 characters long.</div>
-                        <div ng-message="minlength">The description must be at least 15 characters long.</div>
+                        <div ng-message="required">Card Number is must 15 to 19 characters</div>
                     </div>
                 </md-input-container>
                 <md-input-container class="md-block">
                     <md-icon md-svg-src="img/material-icons/ic_security_black_24px.svg"></md-icon>
-                    <input ng-model="creditCardInfo.securityCode" placeholder="Security Code" ng-required="true">
+                    <input ng-model="creditCardInfo.securityCode"
+                           placeholder="Security Code"
+                           maxlength="4"
+                           minlength="3"
+                           name="securityCode"
+                           required md-no-asterisk
+                           ng-required="true">
+                    <div ng-messages="upgradeForm.securityCode.$error">
+                        <div ng-message="required">Security Code must be 3 to 4 characters long</div>
+                    </div>
                 </md-input-container>
                 <md-input-container class="md-block">
                     <md-icon md-svg-src="img/material-icons/ic_card_giftcard_24px.svg"></md-icon>
@@ -38,27 +45,31 @@
                 </md-input-container>
                 <md-input-container>
                     <label>Month</label>
-                    <md-select ng-model="creditCardInfo.month" required>
-                        <md-option><em>Month</em></md-option>
+                    <md-select name="month"
+                               ng-model="creditCardInfo.month"
+                               ng-required="true">
                         <md-option ng-repeat="month in months" ng-value="$index+1">
                             {{month}}
                         </md-option>
                     </md-select>
+                    <div ng-messages="upgradeForm.month.$error">
+                        <div ng-message="required">Month is required</div>
+                    </div>
                 </md-input-container>
                 <md-input-container>
                     <label>Year</label>
-                    <md-select ng-model="creditCardInfo.year" required>
+                    <md-select ng-model="creditCardInfo.year"
+                               name="year"
+                               required md-no-asterisk
+                               ng-required="true">
                         <md-option><em>Year</em></md-option>
                         <md-option ng-repeat="year in years" ng-value="year" >
                             {{year}}
                         </md-option>
                     </md-select>
-                    <!--                    <md-select ng-model="ctrl.userState">
-                                            <md-option><em>None</em></md-option>
-                                            <md-option ng-repeat="month in ctrl.states" ng-value="state.abbrev" ng-disabled="$index === 1">
-                                                {{state.abbrev}}
-                                            </md-option>
-                                        </md-select>-->
+                    <div ng-messages="upgradeForm.year.$error">
+                        <div ng-message="required">Year is required.</div>
+                    </div>
                 </md-input-container>
             </div>
         </md-dialog-content>
