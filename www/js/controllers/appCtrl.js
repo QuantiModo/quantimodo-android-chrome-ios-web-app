@@ -209,19 +209,16 @@ angular.module('starter')
             }
         };
 
-        $scope.shareStudy = function(correlationObject, url){
-            if(url.indexOf('userId') !== -1){
-                if(!correlationObject.shareUserMeasurements){
-                    showShareStudyConfirmation(correlationObject, url);
-                } else {
-                    $scope.openUrl(url);
-                }
-            } else {
-                $scope.openUrl(url);
+        $scope.shareStudy = function(correlationObject, mailToUrl){
+            var fallbackUrl = correlationObject.studyLinkDynamic;
+            if(mailToUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
+                showShareStudyConfirmation(correlationObject, mailToUrl);
+                return;
             }
+            quantimodoService.openMailToUrl(mailToUrl, fallbackUrl);
         };
 
-        var showShareStudyConfirmation = function(correlationObject, url) {
+        var showShareStudyConfirmation = function(correlationObject, mailToUrl) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
                 template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
@@ -242,8 +239,9 @@ angular.module('starter')
                     $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                     quantimodoService.postStudyDeferred(body).then(function () {
                         $ionicLoading.hide();
-                        if(url){
-                            $scope.openUrl(url);
+                        if(mailToUrl){
+                            var fallbackUrl = correlationObject.studyLinkDynamic;
+                            quantimodoService.openMailToUrl(mailToUrl, fallbackUrl);
                         }
                     }, function (error) {
                         $ionicLoading.hide();
@@ -292,7 +290,7 @@ angular.module('starter')
             }
         };
 
-        var showShareVariableConfirmation = function(variableObject, url) {
+        var showShareVariableConfirmation = function(variableObject, mailToUrl) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',
                 template: 'Are you absolutely sure you want to make your ' + variableObject.name +
@@ -310,8 +308,9 @@ angular.module('starter')
                     $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                     quantimodoService.postUserVariableDeferred(body).then(function () {
                         $ionicLoading.hide();
-                        if(url){
-                            $scope.openUrl(url);
+                        if(mailToUrl){
+                            var fallbackUrl = variableObject.chartsUrl;
+                            quantimodoService.openMailToUrl(mailToUrl, fallbackUrl);
                         }
                     }, function (error) {
                         $ionicLoading.hide();

@@ -8216,6 +8216,10 @@ angular.module('starter')
                 emailUrl = emailUrl + emailAddress;
             }
             emailUrl = emailUrl + '?subject=' + subjectLine + '&body=' + emailBody;
+            quantimodoService.openMailToUrl(emailUrl, fallbackUrl);
+        };
+
+        quantimodoService.openMailToUrl = function(emailUrl, fallbackUrl){
             if($rootScope.isChromeExtension){
                 console.debug('isChromeExtension so sending to website');
                 var newTab = window.open(fallbackUrl,'_blank');
