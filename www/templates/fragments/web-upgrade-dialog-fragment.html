@@ -1,5 +1,5 @@
 <md-dialog aria-label="Select My Plan">
-    <form ng-cloak>
+    <form ng-cloak name="upgradeForm">
         <md-toolbar>
             <div class="md-toolbar-tools">
                 <h2 style="color: white">Select Plan</h2>
@@ -15,7 +15,18 @@
                 </md-radio-group>
                 <md-input-container class="md-block">
                     <md-icon md-svg-src="img/material-icons/ic_credit_card_black_24px.svg"></md-icon>
-                    <input ng-model="creditCardInfo.cardNumber" placeholder="Card Number" ng-required="true">
+                    <input ng-model="creditCardInfo.cardNumber"
+                           md-maxlength="19"
+                           minlength="15"
+                           name="cardNumber"
+                           placeholder="Card Number"
+                           ng-required="true"
+                           required md-no-asterisk >
+                    <div ng-messages="upgradeForm.cardNumber.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="md-maxlength">The description must be less than 20 characters long.</div>
+                        <div ng-message="minlength">The description must be at least 15 characters long.</div>
+                    </div>
                 </md-input-container>
                 <md-input-container class="md-block">
                     <md-icon md-svg-src="img/material-icons/ic_security_black_24px.svg"></md-icon>
@@ -57,7 +68,7 @@
                 Cancel
             </md-button>
             <span flex></span>
-            <md-button ng-click="subscribe(subscriptionPlanId, coupon, creditCardInfo)">
+            <md-button ng-click="webSubscribe(subscriptionPlanId, coupon, creditCardInfo, $event)">
                 OK
             </md-button>
         </md-dialog-actions>

@@ -2097,57 +2097,44 @@ angular.module('starter')
                 clickOutsideToClose: false,
                 fullscreen: false
             }).then(function(answer) {
-                if (!answer.creditCardInfo.securityCode) {
-                    $scope.showAlert('Please enter security code');
-                    ev.preventDefault();
-                } else if (!answer.creditCardInfo.number) {
-                    $scope.showAlert('Please enter card number');
-                    ev.preventDefault();
-                } else if (!answer.creditCardInfo.month) {
-                    $scope.showAlert('Please select expiration month');
-                    ev.preventDefault();
-                } else if (!answer.creditCardInfo.year) {
-                    $scope.showAlert('Please select expiration year');
-                    ev.preventDefault();
-                } else {
-                    var body = {
-                        "card_number": answer.creditCardInfo.number,
-                        "card_month": answer.creditCardInfo.month,
-                        "card_year": answer.creditCardInfo.year,
-                        "card_cvc": answer.creditCardInfo.securityCode,
-                        'plan': answer.subscriptionPlanId,
-                        'coupon': answer.coupon
-                    };
 
-                    $ionicLoading.show();
-                    quantimodoService.postCreditCardDeferred(body).then(function (response) {
-                        $ionicLoading.hide();
-                        console.debug(JSON.stringify(response));
-                        $mdDialog.show(
-                            $mdDialog.alert()
-                                .parent(angular.element(document.querySelector('#popupContainer')))
-                                .clickOutsideToClose(true)
-                                .title('Thank you!')
-                                .textContent("Let's get started!")
-                                .ariaLabel('OK!')
-                                .ok('Get Started')
-                        ).finally(function() {
-                            $scope.goBack();
-                        });
-                    }, function (error) {
-                        quantimodoService.reportError(error);
-                        $ionicLoading.hide();
-                        $mdDialog.show(
-                            $mdDialog.alert()
-                                .parent(angular.element(document.querySelector('#popupContainer')))
-                                .clickOutsideToClose(true)
-                                .title('Error')
-                                .textContent(JSON.stringify(error))
-                                .ariaLabel('Error')
-                                .ok('OK')
-                        );
+                var body = {
+                    "card_number": answer.creditCardInfo.number,
+                    "card_month": answer.creditCardInfo.month,
+                    "card_year": answer.creditCardInfo.year,
+                    "card_cvc": answer.creditCardInfo.securityCode,
+                    'plan': answer.subscriptionPlanId,
+                    'coupon': answer.coupon
+                };
+
+                $ionicLoading.show();
+                quantimodoService.postCreditCardDeferred(body).then(function (response) {
+                    $ionicLoading.hide();
+                    console.debug(JSON.stringify(response));
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('Thank you!')
+                            .textContent("Let's get started!")
+                            .ariaLabel('OK!')
+                            .ok('Get Started')
+                    ).finally(function() {
+                        $scope.goBack();
                     });
-                }
+                }, function (error) {
+                    quantimodoService.reportError(error);
+                    $ionicLoading.hide();
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('Error')
+                            .textContent(JSON.stringify(error))
+                            .ariaLabel('Error')
+                            .ok('OK')
+                    );
+                });
 
             }, function() {
                 $scope.status = 'You cancelled the dialog.';
@@ -2156,6 +2143,19 @@ angular.module('starter')
 
         var purchaseDebugMode = false;
         function DialogController($scope, $mdDialog) {
+            var showAlert = function(title, textContent) {
+                $mdDialog.show(
+                    $mdDialog.alert()
+                        .parent(angular.element(document.querySelector('#popupContainer')))
+                        .clickOutsideToClose(true)
+                        .title(title)
+                        .textContent(textContent)
+                        .ariaLabel(title)
+                        .ok('OK')
+                        .targetEvent()
+                );
+            };
+
             $scope.subscriptionPlanId = 'monthly7';
             var currentYear = new Date().getFullYear();
             $scope.creditCardInfo = {
@@ -2176,6 +2176,39 @@ angular.module('starter')
             };
 
             $scope.subscribe = function(subscriptionPlanId, coupon, creditCardInfo) {
+                var answer = {
+                    subscriptionPlanId: subscriptionPlanId,
+                    coupon: coupon,
+                    creditCardInfo: creditCardInfo
+                };
+                $mdDialog.hide(answer);
+            };
+
+            $scope.webSubscribe = function(subscriptionPlanId, coupon, creditCardInfo, event) {
+                if (!creditCardInfo.securityCode) {
+                    // Can't show alert because it closes the existing one
+                    //showAlert('Missing Security Code', 'Please enter security code');
+                    //event.preventDefault();
+                    return;
+                }
+
+                if (!creditCardInfo.number) {
+                    //showAlert('Missing Number', 'Please enter card number');
+                    //event.preventDefault();
+                    return;
+                }
+
+                if (!creditCardInfo.month) {
+                    //showAlert('Missing Month', 'Please select expiration month');
+                    //event.preventDefault();
+                    return;
+                }
+
+                if (!creditCardInfo.year) {
+                    //showAlert('Missing Year', 'Please select expiration year');
+                    //event.preventDefault();
+                    return;
+                }
                 var answer = {
                     subscriptionPlanId: subscriptionPlanId,
                     coupon: coupon,
