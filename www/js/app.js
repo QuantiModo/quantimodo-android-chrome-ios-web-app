@@ -100,13 +100,13 @@ angular.module('starter',
                      message = 'New push device token ' + registerResponse.registrationId +
                          ' does not match localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
                          ' so saving to localStorage to sync after login';
-                     quantimodoService.bugsnagNotify(name, message, metaData, severity);
+                     //quantimodoService.bugsnagNotify(name, message, metaData, severity);
                  } else {
-                     name = 'New push device token does not matches localStorage.deviceTokenOnServer';
+                     name = 'New push device token matches localStorage.deviceTokenOnServer';
                      message = 'New push device token ' + registerResponse.registrationId +
                          ' matches localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
                          ' so not to localStorage to sync after login';
-                     quantimodoService.bugsnagNotify(name, message, metaData, severity);
+                     //quantimodoService.bugsnagNotify(name, message, metaData, severity);
                  }
              });
 
