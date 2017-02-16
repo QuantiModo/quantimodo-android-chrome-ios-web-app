@@ -2099,7 +2099,7 @@ angular.module('starter')
             }).then(function(answer) {
 
                 var body = {
-                    "card_number": answer.creditCardInfo.number,
+                    "card_number": answer.creditCardInfo.cardNumber,
                     "card_month": answer.creditCardInfo.month,
                     "card_year": answer.creditCardInfo.year,
                     "card_cvc": answer.creditCardInfo.securityCode,
@@ -2122,15 +2122,15 @@ angular.module('starter')
                     ).finally(function() {
                         $scope.goBack();
                     });
-                }, function (error) {
-                    quantimodoService.reportError(error);
+                }, function (response) {
+                    quantimodoService.reportError(response.error);
                     $ionicLoading.hide();
                     $mdDialog.show(
                         $mdDialog.alert()
                             .parent(angular.element(document.querySelector('#popupContainer')))
                             .clickOutsideToClose(true)
-                            .title('Error')
-                            .textContent(JSON.stringify(error))
+                            .title('Could not upgrade')
+                            .textContent(response.error + '  Please try again or contact mike@quantimo.do for help')
                             .ariaLabel('Error')
                             .ok('OK')
                     );
@@ -2143,18 +2143,6 @@ angular.module('starter')
 
         var purchaseDebugMode = false;
         function DialogController($scope, $mdDialog) {
-            var showAlert = function(title, textContent) {
-                $mdDialog.show(
-                    $mdDialog.alert()
-                        .parent(angular.element(document.querySelector('#popupContainer')))
-                        .clickOutsideToClose(true)
-                        .title(title)
-                        .textContent(textContent)
-                        .ariaLabel(title)
-                        .ok('OK')
-                        .targetEvent()
-                );
-            };
 
             $scope.subscriptionPlanId = 'monthly7';
             var currentYear = new Date().getFullYear();
@@ -2186,27 +2174,22 @@ angular.module('starter')
 
             $scope.webSubscribe = function(subscriptionPlanId, coupon, creditCardInfo, event) {
                 if (!creditCardInfo.securityCode) {
-                    // Can't show alert because it closes the existing one
-                    //showAlert('Missing Security Code', 'Please enter security code');
-                    //event.preventDefault();
+                    quantimodoService.reportError('Please enter card number');
                     return;
                 }
 
-                if (!creditCardInfo.number) {
-                    //showAlert('Missing Number', 'Please enter card number');
-                    //event.preventDefault();
+                if (!creditCardInfo.cardNumber) {
+                    quantimodoService.reportError('Please enter card number');
                     return;
                 }
 
                 if (!creditCardInfo.month) {
-                    //showAlert('Missing Month', 'Please select expiration month');
-                    //event.preventDefault();
+                    quantimodoService.reportError('Please enter card month');
                     return;
                 }
 
                 if (!creditCardInfo.year) {
-                    //showAlert('Missing Year', 'Please select expiration year');
-                    //event.preventDefault();
+                    quantimodoService.reportError('Please enter card year');
                     return;
                 }
                 var answer = {

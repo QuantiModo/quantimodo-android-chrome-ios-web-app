@@ -24,6 +24,7 @@ angular.module('starter',
         //'angular-google-adsense',
         'ngMaterialDatePicker',
         'ngMaterial',
+        'ngMessages',
         'angular-cache'
     ]
 )
