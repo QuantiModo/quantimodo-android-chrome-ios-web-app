@@ -2422,4 +2422,63 @@ angular.module('starter')
             $scope.showInfoToast('Copied link!');
         };
 
+        var verifyEmailAddressAndExecuteCallback = function (callback) {
+            if($rootScope.user.email || $rootScope.user.userEmail){
+                callback();
+                return;
+            }
+            $scope.updateEmailAndExecuteCallback(callback);
+
+        };
+
+        var sendCouponEmail = function () {
+            quantimodoService.sendEmailViaAPIDeferred('couponInstructions');
+            $scope.showMaterialAlert(event, 'Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email +
+                ' for instructions to redeem your coupon.');
+        };
+
+        $scope.sendCouponEmail = function() {
+            verifyEmailAddressAndExecuteCallback(sendCouponEmail);
+        };
+
+        $scope.updateEmailAndExecuteCallback = function (callback) {
+            if($rootScope.user.email){
+                $scope.data = {
+                    email: $rootScope.user.email
+                };
+            }
+
+            var myPopup = $ionicPopup.show({
+                template: '<label class="item item-input">' +
+                '<i class="icon ion-email placeholder-icon"></i>' +
+                '<input type="email" placeholder="Email" ng-model="data.email"></label>',
+                title: 'Update Email',
+                subTitle: 'Enter Your Email Address',
+                scope: $scope,
+                buttons: [
+                    { text: 'Cancel' },
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            if (!$scope.data.email) {
+                                //don't allow the user to close unless he enters email
+                                e.preventDefault();
+                            } else {
+                                return $scope.data;
+                            }
+                        }
+                    }
+                ]
+            });
+
+            myPopup.then(function(res) {
+                quantimodoService.updateUserSettingsDeferred({email: $scope.data.email});
+                $rootScope.user.email = $scope.data.email;
+                if(callback){
+                    callback();
+                }
+            });
+        };
+
     });

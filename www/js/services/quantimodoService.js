@@ -8235,7 +8235,31 @@ angular.module('starter')
                 quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variable);
             }
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variable);
-        }
+        };
+
+        quantimodoService.sendEmailViaAPI = function(emailType){
+            quantimodoService.post('api/v2/account/unsubscribe',
+                [],
+                {emailType: emailType});
+        };
+
+        quantimodoService.sendEmailViaAPI = function(body, successHandler, errorHandler){
+            quantimodoService.post('api/v1/email',
+                [],
+                body,
+                successHandler,
+                errorHandler);
+        };
+
+        quantimodoService.sendEmailViaAPIDeferred = function(emailType) {
+            var deferred = $q.defer();
+            quantimodoService.sendEmailViaAPI({emailType: emailType}, function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
 
         return quantimodoService;
     });
