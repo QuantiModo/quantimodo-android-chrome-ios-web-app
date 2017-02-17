@@ -2079,62 +2079,34 @@ angular.module('starter')
 
         var mobilePurchaseDebug = false;
 
-        $scope.upgrade = function () {
+        $scope.upgrade = function (ev) {
             if($rootScope.isMobile || mobilePurchaseDebug){
-                mobileUpgrade();
+                mobileUpgrade(ev);
             } else {
-                webUpgrade();
+                webUpgrade(ev);
             }
         };
 
-        var webUpgrade = function() {
-            var myPopup;
-            $scope.currentYear = new Date().getFullYear();
-            $scope.currentMonth = new Date().getMonth() + 1;
-            $scope.months = $locale.DATETIME_FORMATS.MONTH;
-            $scope.ccinfo = {type:undefined};
-            $scope.popupSubtitle = '';
+        var webUpgrade = function(ev) {
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: false,
+                fullscreen: false
+            }).then(function(answer) {
 
-            myPopup = $ionicPopup.show({
-                templateUrl: 'templates/credit-card.html',
-                title: 'Select Plan',
-                subTitle: $scope.popupSubtitle,
-                scope: $scope,
-                buttons: [
-                    { text: 'Cancel' },
-                    {
-                        text: '<b>Save</b>',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            if (!$scope.ccinfo.securityCode) {
-                                $scope.showAlert('Please enter security code');
-                                e.preventDefault();
-                            } else if (!$scope.ccinfo.number) {
-                                $scope.showAlert('Please enter card number');
-                                e.preventDefault();
-                            } else {
-                                return $scope.ccinfo;
-                            }
-                        }
-                    }
-                ]
-            });
-
-            myPopup.then(function(result) {
-                if(!result){
-                    return;
-                }
                 var body = {
-                    "card_number": $scope.ccinfo.number,
-                    "card_month": $scope.ccinfo.month,
-                    "card_year": $scope.ccinfo.year,
-                    "card_cvc": $scope.ccinfo.securityCode,
-                    'plan': $scope.subscriptionPlanId,
-                    'coupon': $scope.ccinfo.coupon
+                    "card_number": answer.creditCardInfo.cardNumber,
+                    "card_month": answer.creditCardInfo.month,
+                    "card_year": answer.creditCardInfo.year,
+                    "card_cvc": answer.creditCardInfo.securityCode,
+                    'plan': answer.subscriptionPlanId,
+                    'coupon': answer.coupon
                 };
 
                 $ionicLoading.show();
-
                 quantimodoService.postCreditCardDeferred(body).then(function (response) {
                     $ionicLoading.hide();
                     console.debug(JSON.stringify(response));
@@ -2146,29 +2118,42 @@ angular.module('starter')
                             .textContent("Let's get started!")
                             .ariaLabel('OK!')
                             .ok('Get Started')
-                    )
-                    .finally(function() {
+                    ).finally(function() {
                         $scope.goBack();
                     });
-                }, function (error) {
-                    quantimodoService.reportError(error);
+                }, function (response) {
+                    quantimodoService.reportError(response.error);
                     $ionicLoading.hide();
                     $mdDialog.show(
                         $mdDialog.alert()
                             .parent(angular.element(document.querySelector('#popupContainer')))
                             .clickOutsideToClose(true)
-                            .title('Error')
-                            .textContent(JSON.stringify(error))
+                            .title('Could not upgrade')
+                            .textContent(response.error + '  Please try again or contact mike@quantimo.do for help.')
                             .ariaLabel('Error')
                             .ok('OK')
                     );
                 });
+
+            }, function() {
+                $scope.status = 'You cancelled the dialog.';
             });
         };
 
         var purchaseDebugMode = false;
         function DialogController($scope, $mdDialog) {
+
             $scope.subscriptionPlanId = 'monthly7';
+            var currentYear = new Date().getFullYear();
+            $scope.creditCardInfo = {
+                year: null
+            };
+            $scope.months = $locale.DATETIME_FORMATS.MONTH;
+            $scope.years = [];
+            for(var i = 0; i < 13; i++){
+                $scope.years.push(currentYear + i);
+            }
+
             $scope.hide = function() {
                 $mdDialog.hide();
             };
@@ -2177,10 +2162,37 @@ angular.module('starter')
                 $mdDialog.cancel();
             };
 
-            $scope.subscribe = function(subscriptionPlanId, coupon) {
+            $scope.mobileUpgrade = function(subscriptionPlanId) {
+                var answer = {
+                    subscriptionPlanId: subscriptionPlanId
+                };
+                $mdDialog.hide(answer);
+            };
+
+            $scope.webSubscribe = function(subscriptionPlanId, coupon, creditCardInfo, event) {
+                if (!creditCardInfo.securityCode) {
+                    quantimodoService.reportError('Please enter card number');
+                    return;
+                }
+
+                if (!creditCardInfo.cardNumber) {
+                    quantimodoService.reportError('Please enter card number');
+                    return;
+                }
+
+                if (!creditCardInfo.month) {
+                    quantimodoService.reportError('Please enter card month');
+                    return;
+                }
+
+                if (!creditCardInfo.year) {
+                    quantimodoService.reportError('Please enter card year');
+                    return;
+                }
                 var answer = {
                     subscriptionPlanId: subscriptionPlanId,
-                    coupon: coupon
+                    coupon: coupon,
+                    creditCardInfo: creditCardInfo
                 };
                 $mdDialog.hide(answer);
             };
@@ -2189,7 +2201,7 @@ angular.module('starter')
         var mobileUpgrade = function (ev) {
             if (!window.inAppPurchase && !mobilePurchaseDebug) {
                 console.error('inAppPurchase not available');
-                webUpgrade();
+                webUpgrade(ev);
                 return;
             }
 
@@ -2209,7 +2221,7 @@ angular.module('starter')
                 $scope.status = 'You cancelled the dialog.';
             });
         };
-
+        
         var makeInAppPurchase = function (answer) {
 
             var productName = answer.subscriptionPlanId;
@@ -2290,7 +2302,7 @@ angular.module('starter')
 
         var webDowngrade = function() {
             $ionicLoading.show();
-            quantimodoService.postUnsubscribeDeferred().then(function (response) {
+            quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                 $ionicLoading.hide();
                 console.debug(JSON.stringify(response));
                 $scope.showAlert('Successfully downgraded to QuantiModo Lite');
@@ -2310,7 +2322,7 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    quantimodoService.postUnsubscribeDeferred().then(function (response) {
+                    quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
                         console.error(JSON.stringify(error));
@@ -2331,7 +2343,7 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
-                    quantimodoService.postUnsubscribeDeferred().then(function (response) {
+                    quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
                         console.error(JSON.stringify(error));
@@ -2405,6 +2417,65 @@ angular.module('starter')
             $scope.copyLinkText = 'Copied!';
             clipboard.copyText($rootScope.variableObject.chartsUrl);
             $scope.showInfoToast('Copied link!');
+        };
+
+        var verifyEmailAddressAndExecuteCallback = function (callback) {
+            if($rootScope.user.email || $rootScope.user.userEmail){
+                callback();
+                return;
+            }
+            $scope.updateEmailAndExecuteCallback(callback);
+
+        };
+
+        var sendCouponEmail = function () {
+            quantimodoService.sendEmailViaAPIDeferred('couponInstructions');
+            $scope.showMaterialAlert(event, 'Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email +
+                ' for instructions to redeem your coupon.');
+        };
+
+        $scope.sendCouponEmail = function() {
+            verifyEmailAddressAndExecuteCallback(sendCouponEmail);
+        };
+
+        $scope.updateEmailAndExecuteCallback = function (callback) {
+            if($rootScope.user.email){
+                $scope.data = {
+                    email: $rootScope.user.email
+                };
+            }
+
+            var myPopup = $ionicPopup.show({
+                template: '<label class="item item-input">' +
+                '<i class="icon ion-email placeholder-icon"></i>' +
+                '<input type="email" placeholder="Email" ng-model="data.email"></label>',
+                title: 'Update Email',
+                subTitle: 'Enter Your Email Address',
+                scope: $scope,
+                buttons: [
+                    { text: 'Cancel' },
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            if (!$scope.data.email) {
+                                //don't allow the user to close unless he enters email
+                                e.preventDefault();
+                            } else {
+                                return $scope.data;
+                            }
+                        }
+                    }
+                ]
+            });
+
+            myPopup.then(function(res) {
+                quantimodoService.updateUserSettingsDeferred({email: $scope.data.email});
+                $rootScope.user.email = $scope.data.email;
+                if(callback){
+                    callback();
+                }
+            });
         };
 
     });
