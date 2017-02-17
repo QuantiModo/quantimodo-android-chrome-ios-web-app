@@ -1,7 +1,7 @@
 angular.module('starter')
     // quantimodoService API implementation
     .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform,
-                                           $cordovaGeolocation, CacheFactory, $ionicLoading) {
+                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -1398,12 +1398,49 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        var setupGoogleAnalytics = function(user){
+            Analytics.registerScriptTags();
+            Analytics.registerTrackers();
+
+            // you can set any advanced configuration here
+            Analytics.set('&uid', user.id);
+
+            // Register a custom dimension for the default, unnamed account object
+            // e.g., ga('set', 'dimension1', 'Paid');
+            Analytics.set('dimension1', 'Paid');
+            Analytics.set('dimension2', user.id);
+
+            // Register a custom dimension for a named account object
+            // e.g., ga('accountName.set', 'dimension2', 'Paid');
+            //Analytics.set('dimension2', 'Paid', 'accountName');
+
+            Analytics.pageView(); // send data to Google Analytics
+            console.debug('Just set up Google Analytics');
+        };
+
+        quantimodoService.getUserAndSetupGoogleAnalytics = function(){
+            if(Analytics){
+                if($rootScope.user){
+                    setupGoogleAnalytics($rootScope.user);
+                    return;
+                }
+                quantimodoService.getLocalStorageItemAsStringWithCallback('user', function (userString) {
+                    if(userString){
+                        var user = JSON.parse(userString);
+                        setupGoogleAnalytics(user);
+                    }
+                });
+            }
+        };
+
         quantimodoService.setUserInLocalStorageBugsnagIntercomPush = function(user){
             quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
             localStorage.user = JSON.stringify(user); // For Chrome Extension
             quantimodoService.saveAccessTokenInLocalStorage(user);
             $rootScope.user = user;
             quantimodoService.setupBugsnag();
+
+            quantimodoService.getUserAndSetupGoogleAnalytics();
 
             var date = new Date(user.userRegistered);
             var userRegistered = date.getTime()/1000;

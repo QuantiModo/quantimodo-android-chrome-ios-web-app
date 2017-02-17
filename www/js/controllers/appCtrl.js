@@ -48,6 +48,7 @@ angular.module('starter')
         quantimodoService.getAccessTokenFromUrlParameter();
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
+        quantimodoService.getUserAndSetupGoogleAnalytics();
 
         if(!window.private_keys) {
             console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
