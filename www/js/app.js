@@ -423,7 +423,10 @@ angular.module('starter',
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
                  ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
 
-    AnalyticsProvider.setAccount('UA-39222734-25');
+    AnalyticsProvider.setAccount('UA-39222734-25')
+        .delayScriptTag(true)
+        .ignoreFirstPageLoad(true);
+
     // Track all routes (default is true).
     AnalyticsProvider.trackPages(true);
 
