@@ -346,7 +346,7 @@ angular.module('starter')
                 templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
                 parent: angular.element(document.body),
                 targetEvent: $event,
-                clickOutsideToClose:true
+                clickOutsideToClose: false // I think true causes auto-close on iOS
             });
         };
 
@@ -365,7 +365,7 @@ angular.module('starter')
 
             if ($stateParams.causeVariableName){
                 self.variableName = $stateParams.causeVariableName;
-                self.title = "Select a specific outcome";
+                self.title = "Specific Outcome";
                 self.helpText = "Search for an outcome that you think might be influenced by " +
                     self.variableName + ".";
                 self.placeholder = "Search for an outcome...";
@@ -373,7 +373,7 @@ angular.module('starter')
 
             if ($stateParams.effectVariableName) {
                 self.variableName = $stateParams.effectVariableName;
-                self.title = "Select a specific predictor";
+                self.title = "Specific Predictor";
                 self.helpText = "Search for a factor that you think might influence " +
                     self.variableName + ".";
                 self.placeholder = "Search for a predictor...";
@@ -381,11 +381,11 @@ angular.module('starter')
 
             self.helpText = self.helpText + "  Then you can see a study exploring the relationship between those variables.";
 
-            self.cancel = function($event) {
+            self.cancel = function() {
                 $mdDialog.cancel();
             };
 
-            self.finish = function($event) {
+            self.finish = function() {
                 $state.go('app.study', {correlationObject: self.correlationObject});
                 $mdDialog.hide();
             };
