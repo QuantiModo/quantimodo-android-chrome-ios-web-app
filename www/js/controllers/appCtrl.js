@@ -2344,6 +2344,7 @@ angular.module('starter')
 
             confirmPopup.then(function(res) {
                 if(res) {
+                    $rootScope.user.stripeActive = false;
                     quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
                     }, function (error) {
