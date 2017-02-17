@@ -2082,7 +2082,7 @@ angular.module('starter')
 
         $scope.upgrade = function (ev) {
             if($rootScope.isMobile || mobilePurchaseDebug){
-                mobileUpgrade();
+                mobileUpgrade(ev);
             } else {
                 webUpgrade(ev);
             }
@@ -2163,11 +2163,9 @@ angular.module('starter')
                 $mdDialog.cancel();
             };
 
-            $scope.subscribe = function(subscriptionPlanId, coupon, creditCardInfo) {
+            $scope.mobileUpgrade = function(subscriptionPlanId) {
                 var answer = {
-                    subscriptionPlanId: subscriptionPlanId,
-                    coupon: coupon,
-                    creditCardInfo: creditCardInfo
+                    subscriptionPlanId: subscriptionPlanId
                 };
                 $mdDialog.hide(answer);
             };
