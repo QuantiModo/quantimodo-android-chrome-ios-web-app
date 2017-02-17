@@ -209,7 +209,7 @@ angular.module('starter')
 
 		};
 
-		$scope.trackByValueField = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex){
+		$scope.trackByValueField = function(trackingReminderNotification, $event){
 
 			if(isGhostClick($event)){
 				return;
