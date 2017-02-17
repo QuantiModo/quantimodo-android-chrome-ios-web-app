@@ -7805,12 +7805,12 @@ angular.module('starter')
                     "put your privacy at risk.  "
             },
             {
-                question: "Can I pause QuantiModo?",
-                answer: "You can pause or quit QuantiModo at any time. You have complete control."
+                question: "Can I pause my account?",
+                answer: "You can pause or quit at any time. You have complete control."
             },
             {
-                question: "QuantiModo Security",
-                answer: "Our customers have demanding security and privacy requirements. QuantiModo was designed for " +
+                question: "Data Security",
+                answer: "Our customers have demanding security and privacy requirements. Our platform was designed using " +
                     "the most rigorous security standards, using the same technology used by online banks."
             },
         ];
