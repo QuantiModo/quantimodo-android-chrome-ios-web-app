@@ -396,6 +396,7 @@ angular.module('starter')
 			} else {
 				$scope.filteredTrackingReminderNotifications =
 					quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                console.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
 				getWeekdayChartIfNecessary();
 			}
 			hideInboxLoader();
@@ -412,7 +413,8 @@ angular.module('starter')
 			quantimodoService.getTodayTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-					$scope.filteredTrackingReminderNotifications = quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					$scope.filteredTrackingReminderNotifications =
+						quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 					getWeekdayChartIfNecessary();
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
