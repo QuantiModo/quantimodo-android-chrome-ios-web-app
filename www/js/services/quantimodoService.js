@@ -3374,7 +3374,8 @@ angular.module('starter')
         quantimodoService.getTrackingReminderNotificationsFromLocalStorage = function (variableCategoryName) {
             var trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
                 'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
-            if(trackingReminderNotifications && trackingReminderNotifications.length){
+            if(!trackingReminderNotifications){ trackingReminderNotifications = []; }
+            if(trackingReminderNotifications.length){
                 $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
                 if (window.chrome && window.chrome.browserAction && !variableCategoryName) {
                     //noinspection JSUnresolvedFunction
