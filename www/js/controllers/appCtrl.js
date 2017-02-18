@@ -1089,49 +1089,38 @@ angular.module('starter')
             }
             console.debug('Tracking reminder', trackingReminder);
             console.debug('modifiedReminderValue is ' + modifiedReminderValue);
-            for(var i = 0; i < $rootScope.favoritesArray.length; i++){
-                if($rootScope.favoritesArray[i].id === trackingReminder.id){
-                    if($rootScope.favoritesArray[i].abbreviatedUnitName !== '/5') {
-                        if(trackingReminder.combinationOperation === "SUM"){
-                            $rootScope.favoritesArray[i].total = $rootScope.favoritesArray[i].total + modifiedReminderValue;
-                        } else {
-                            $rootScope.favoritesArray[i].total = modifiedReminderValue;
-                        }
-                        $rootScope.favoritesArray[i].displayTotal = $rootScope.favoritesArray[i].total + " " + $rootScope.favoritesArray[i].abbreviatedUnitName;
-                    } else {
-                        $rootScope.favoritesArray[i].displayTotal = modifiedReminderValue + '/5';
-                    }
 
+            if(trackingReminder.abbreviatedUnitName !== '/5') {
+                if(trackingReminder.combinationOperation === "SUM"){
+                    trackingReminder.total = trackingReminder.total + modifiedReminderValue;
+                } else {
+                    trackingReminder.total = modifiedReminderValue;
                 }
+                trackingReminder.displayTotal = trackingReminder.total + " " + trackingReminder.abbreviatedUnitName;
+            } else {
+                trackingReminder.displayTotal = modifiedReminderValue + '/5';
             }
 
-            if(!$rootScope.favoritesTally){
-                $rootScope.favoritesTally = {};
-            }
-
-
-            if(!$rootScope.favoritesTally[trackingReminder.id] || !$rootScope.favoritesTally[trackingReminder.id].tally){
-                $rootScope.favoritesTally[trackingReminder.id] = {
-                    tally: 0
-                };
+            if(!trackingReminder.tally){
+                trackingReminder.tally = 0;
             }
 
             if(trackingReminder.combinationOperation === "SUM"){
-                $rootScope.favoritesTally[trackingReminder.id].tally += modifiedReminderValue;
+                trackingReminder.tally += modifiedReminderValue;
             } else {
-                $rootScope.favoritesTally[trackingReminder.id].tally = modifiedReminderValue;
+                trackingReminder.tally = modifiedReminderValue;
             }
 
-            console.debug('modified tally is ' + $rootScope.favoritesTally[trackingReminder.id].tally);
+            console.debug('modified tally is ' + trackingReminder.tally);
 
             console.debug('Setting trackByFavorite timeout');
             $timeout(function() {
-                if(typeof $rootScope.favoritesTally[trackingReminder.id] === "undefined"){
+                if(typeof trackingReminder === "undefined"){
                     console.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
                     return;
                 }
-                if($rootScope.favoritesTally[trackingReminder.id].tally) {
-                    quantimodoService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
+                if(trackingReminder.tally) {
+                    quantimodoService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
                         .then(function () {
                             console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function(error) {
@@ -1141,7 +1130,7 @@ angular.module('starter')
                             console.error(error);
                             console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                         });
-                    $rootScope.favoritesTally[trackingReminder.id].tally = 0;
+                    trackingReminder.tally = 0;
                 }
             }, 2000);
 
