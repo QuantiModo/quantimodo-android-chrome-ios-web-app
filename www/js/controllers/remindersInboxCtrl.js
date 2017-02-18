@@ -386,45 +386,18 @@ angular.module('starter')
 			getTrackingReminderNotifications();
 		};
 
-		var getFilteredTrackingReminderNotifications = function(){
-			quantimodoService.getTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
-				.then(function (trackingReminderNotifications) {
-/*                    trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
-                    	if(obj.variableName === 'Blood Pressure'){
-                    		console.debug('Removing Blood Pressure notification until I make the UI for it');
-						}
-                        return obj.variableName !== 'Blood Pressure';
-                    });*/
-					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-					if($state.current.name === "app.remindersInboxCompact"){
-                        $scope.trackingReminderNotifications = trackingReminderNotifications;
-					} else {
-                        $scope.filteredTrackingReminderNotifications =
-                            quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                        getWeekdayChartIfNecessary();
-					}
-
-					hideInboxLoader();
-				}, function(){
-					getWeekdayChartIfNecessary();
-					hideInboxLoader();
-					console.error("failed to get reminder notifications!");
-				});
-		};
-
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
-			var trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
-				'trackingReminderNotifications', 'variableCategoryName', $stateParams.variableCategoryName);
-/*            trackingReminderNotifications = trackingReminderNotifications.filter(function( obj ) {
-                if(obj.variableName === 'Blood Pressure'){
-                    console.debug('Removing Blood Pressure notification until I make the UI for it');
-                }
-                return obj.variableName !== 'Blood Pressure';
-            });*/
+            var trackingReminderNotifications =
+                quantimodoService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName);
 			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-			$scope.filteredTrackingReminderNotifications =
-				quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-            hideInboxLoader();
+			if($state.current.name === "app.remindersInboxCompact"){
+				$scope.trackingReminderNotifications = trackingReminderNotifications;
+			} else {
+				$scope.filteredTrackingReminderNotifications =
+					quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+				getWeekdayChartIfNecessary();
+			}
+			hideInboxLoader();
 		};
 
 		var hideInboxLoader = function(){
@@ -468,8 +441,7 @@ angular.module('starter')
 				getFilteredTodayTrackingReminderNotifications();
 			} else {
 				//$scope.showLoader("Getting reminder notifications...");
-				getFilteredTrackingReminderNotifications();
-
+				getFilteredTrackingReminderNotificationsFromLocalStorage();
 			}
 		};
 

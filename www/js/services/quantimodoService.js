@@ -3371,8 +3371,7 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getTrackingReminderNotificationsDeferred = function(variableCategoryName){
-            var deferred = $q.defer();
+        quantimodoService.getTrackingReminderNotificationsFromLocalStorage = function (variableCategoryName) {
             var trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
                 'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
             if(trackingReminderNotifications && trackingReminderNotifications.length){
@@ -3382,17 +3381,28 @@ angular.module('starter')
                     chrome.browserAction.setBadgeText({text: "?"});
                     //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                 }
-                deferred.resolve(trackingReminderNotifications);
-            } else {
-                $rootScope.numberOfPendingNotifications = 0;
-                quantimodoService.refreshTrackingReminderNotifications().then(function () {
-                    trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
-                        'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
-                    deferred.resolve(trackingReminderNotifications);
-                }, function(error){
-                    deferred.reject(error);
-                });
             }
+            return trackingReminderNotifications;
+        };
+
+        quantimodoService.getTrackingReminderNotificationsDeferred = function(variableCategoryName){
+            var deferred = $q.defer();
+            var trackingReminderNotifications =
+                quantimodoService.getTrackingReminderNotificationsFromLocalStorage(variableCategoryName);
+            if(trackingReminderNotifications && trackingReminderNotifications.length){
+                deferred.resolve(trackingReminderNotifications);
+                return deferred.promise;
+            }
+
+            $rootScope.numberOfPendingNotifications = 0;
+            quantimodoService.refreshTrackingReminderNotifications().then(function () {
+                trackingReminderNotifications = quantimodoService.getElementsFromLocalStorageItemWithFilters(
+                    'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
+                deferred.resolve(trackingReminderNotifications);
+            }, function(error){
+                deferred.reject(error);
+            });
+
             return deferred.promise;
         };
 
