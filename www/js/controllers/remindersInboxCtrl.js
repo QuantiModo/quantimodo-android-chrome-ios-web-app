@@ -389,6 +389,7 @@ angular.module('starter')
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
             var trackingReminderNotifications =
                 quantimodoService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName);
+            console.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
 			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 			if($state.current.name === "app.remindersInboxCompact"){
 				$scope.trackingReminderNotifications = trackingReminderNotifications;
@@ -466,10 +467,6 @@ angular.module('starter')
                     hideInboxLoader();
 				});
 			}
-		};
-
-	    $scope.init = function(){
-
 		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification){
