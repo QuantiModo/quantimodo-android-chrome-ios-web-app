@@ -3167,6 +3167,8 @@ angular.module('starter')
         var delayBeforePostingNotifications = 3 * 60 * 1000;
 
         var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
+
+            localStorage.setItem('lastGotNotificationsAt', new Date().getTime());
             trackingReminderNotifications = quantimodoService.attachVariableCategoryIcons(trackingReminderNotifications);
             quantimodoService.setLocalStorageItem('trackingReminderNotifications',
                 JSON.stringify(trackingReminderNotifications)).then(function () {
@@ -3174,6 +3176,12 @@ angular.module('starter')
             });
             $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
             return trackingReminderNotifications;
+        };
+
+        quantimodoService.getSecondsSinceWeLastGotNotifications = function () {
+            var lastGotNotificationsAt = localStorage.getItem('lastGotNotificationsAt');
+            if(!lastGotNotificationsAt){ lastGotNotificationsAt = 0; }
+            return parseInt((new Date().getTime() - lastGotNotificationsAt)/1000);
         };
 
         quantimodoService.postTrackingRemindersDeferred = function(trackingRemindersArray){

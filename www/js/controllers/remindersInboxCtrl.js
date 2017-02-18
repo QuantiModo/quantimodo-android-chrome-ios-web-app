@@ -75,7 +75,10 @@ angular.module('starter')
             } else {
                 $rootScope.variableCategoryName = null;
             }
-            $scope.refreshTrackingReminderNotifications();
+            var secondsSinceWeLastGotNotifications = quantimodoService.getSecondsSinceWeLastGotNotifications();
+            if(!$rootScope.numberOfPendingNotifications || secondsSinceWeLastGotNotifications > 600){
+                $scope.refreshTrackingReminderNotifications();
+			}
 
             quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 
