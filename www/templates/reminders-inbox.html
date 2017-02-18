@@ -72,14 +72,13 @@
                             </button>
                         </div>
                         <label ng-if="trackingReminderNotification.defaultValue === null &&
-										trackingReminderNotification.variableName !== 'Blood Pressure' &&
-										trackingReminderNotification.abbreviatedUnitName !== '/5'"
+										trackingReminderNotification.inputType === 'value'"
                                class="item item-input">
                             <input type="number" ng-model="trackingReminderNotification.total" id="defaultValueField"
                                    ng-click="onTextClick($event)"
                                    placeholder="Enter value"
                                    style="text-align: center; max-width: 125px; padding-right: 10px">
-                            <span on-tap="trackByValueField(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
+                            <span on-tap="trackByValueField(trackingReminderNotification, $event)"
                                   class="input-label">
 								{{trackingReminderNotification.abbreviatedUnitName}} &nbsp
 								<i style="font-size: 20px;"
@@ -88,8 +87,7 @@
 							</span>
                         </label>
                         <div class="row" ng-if="trackingReminderNotification.defaultValue !== null &&
-												trackingReminderNotification.variableName !== 'Blood Pressure' &&
-												trackingReminderNotification.abbreviatedUnitName !== '/5' " >
+												trackingReminderNotification.inputType === 'value' " >
                             <div class="button-bar">
                                 <button ng-show="trackingReminderNotification.defaultValue"
                                         class="button button-clear button-assertive"
@@ -116,7 +114,7 @@
                             </div>
                         </div>
                         <div class="primary-outcome-variable-reporting"
-                             ng-if="!trackingReminderNotification.description &&	trackingReminderNotification.abbreviatedUnitName === '/5'">
+                             ng-if="trackingReminderNotification.inputType === 'oneToFiveNumbers'">
                             <div class="primary-outcome-variable-rating-buttons" >
                                 <img ng-repeat="option in numericRatingOptions"
                                      ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
@@ -124,8 +122,7 @@
                             </div>
                         </div>
                         <div class="primary-outcome-variable-reporting"
-                             ng-if="trackingReminderNotification.abbreviatedUnitName === '/5' &&
-						 	trackingReminderNotification.description.toLowerCase().indexOf('positive') > -1">
+                             ng-if="trackingReminderNotification.inputType === 'happiestFaceIsFive'">
                             <div class="primary-outcome-variable-rating-buttons" >
                                 <img ng-repeat="option in positiveRatingOptions"
                                      ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
@@ -133,12 +130,43 @@
                             </div>
                         </div>
                         <div class="primary-outcome-variable-reporting"
-                             ng-if="trackingReminderNotification.abbreviatedUnitName === '/5' &&
-						 	trackingReminderNotification.description.toLowerCase().indexOf('negative') > -1">
+                             ng-if="trackingReminderNotification.inputType === 'saddestFaceIsFive'">
                             <div class="primary-outcome-variable-rating-buttons" >
                                 <img ng-repeat="option in negativeRatingOptions"
                                      ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
                                      ng-src="{{option.img}}">
+                            </div>
+                        </div>
+                        <div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName.indexOf('yes/no') !== -1 " >
+                            <div class="button-bar">
+                                <button class="button button-clear button-assertive"
+                                        style="text-overflow: clip; font-size: 14px;"
+                                        ng-click="track(trackingReminderNotification, 0, $event, dividerIndex, trackingReminderNotificationIndex)">
+                                    <i class="ion-android-done"> &nbsp; NO &nbsp</i>
+                                </button>
+                                <button class="button button-clear button-balanced"
+                                        style="text-overflow: clip; font-size: 14px;"
+                                        ng-click="track(trackingReminderNotification, 1, $event, dividerIndex, trackingReminderNotificationIndex)">
+                                    <i class="ion-android-done"> &nbsp; YES &nbsp</i>
+                                </button>
+                            </div>
+                        </div>
+                        <div  ng-if="trackingReminderNotification.inputType === 'oneToTen' ">
+                            <div class="row" >
+                                <div style="width: 100%" class="range range-positive">
+                                    1
+                                    <input ng-model="trackingReminderNotification.total" type="range" name="volume" min="1" max="10" value="5">
+                                    10
+                                </div>
+                            </div>
+                            <div class="row" ng-show="trackingReminderNotification.total">
+                                <div class="button-bar">
+                                    <button class="button button-clear button-calm"
+                                            style="text-overflow: clip; font-size: 16px;"
+                                            ng-click="trackByValueField(trackingReminderNotification, $event)">
+                                        <i class="ion-android-done"> &nbsp; Record {{trackingReminderNotification.total}}/10 &nbsp</i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

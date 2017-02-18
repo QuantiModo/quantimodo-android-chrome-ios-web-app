@@ -695,6 +695,15 @@ angular.module('starter')
                 $scope.state.trackingReminder.unitId =
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
             }
+
+            if($scope.state.trackingReminder.abbreviatedUnitName === '/5' ||
+                $scope.state.trackingReminder.abbreviatedUnitName === '/10' ||
+                $scope.state.trackingReminder.abbreviatedUnitName === 'yes/no'){
+                $scope.state.hideDefaultValueField = true;
+            } else {
+                $scope.state.hideDefaultValueField = false;
+            }
+
         };
 
         $scope.toggleShowUnits = function(){
