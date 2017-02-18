@@ -6855,14 +6855,11 @@ angular.module('starter')
         };
 
         // Local Storage Services
-
         quantimodoService.deleteItemFromLocalStorage  = function(key){
             var keyIdentifier = config.appSettings.appStorageIdentifier;
             if ($rootScope.isChromeApp) {
-
                 // Code running in a Chrome extension (content script, background page, etc.)
                 chrome.storage.local.remove(keyIdentifier+key);
-
             } else {
                 localStorage.removeItem(keyIdentifier+key);
             }
@@ -6961,14 +6958,11 @@ angular.module('starter')
                     localStorage.setItem(keyIdentifier+key, value);
                     deferred.resolve();
                 } catch(error) {
+                    quantimodoService.deleteItemFromLocalStorage('primaryOutcomeVariableMeasurements');
+                    quantimodoService.deleteItemFromLocalStorage('lastSyncTime');
                     quantimodoService.sendErrorWithLocalStorageList(error);
-                    quantimodoService.deleteItemFromLocalStorage('primaryOutcomeVariableMeasurements').then(function () {
-                        localStorage.setItem(keyIdentifier+key, value);
-                        quantimodoService.deleteItemFromLocalStorage('lastSyncTime').then(function () {
-                            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-                        });
-                    });
-                    deferred.reject(error);
+                    //localStorage.setItem(keyIdentifier+key, value);
+                    quantimodoService.syncPrimaryOutcomeVariableMeasurements();
                 }
             }
             return deferred.promise;
