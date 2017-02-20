@@ -126,8 +126,7 @@ angular.module('starter')
             console.debug('$scope.nativeSocialLogin: Going to try to quantimodoService.getTokensAndUserViaNativeSocialLogin for ' +
                 provider + ' provider');
 
-            quantimodoService.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
-                .then(function(response){
+            quantimodoService.getTokensAndUserViaNativeSocialLogin(provider, accessToken).then(function(response){
                     console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' +
                         JSON.stringify(response));
 
