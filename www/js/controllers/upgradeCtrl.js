@@ -10,6 +10,13 @@ angular.module('starter')
             $state.go('app.login');
             return;
         }
+
+        if($rootScope.isChromeExtension){
+            chrome.tabs.create({ url: 'https://app.quantimo.do/upgrade' });
+            window.close();
+            return;
+        }
+
         $scope.planFeaturesCard = $rootScope.planFeaturesCards[1];
         $rootScope.upgradeFooterText = null;
         $rootScope.hideNavigationMenu = true;
