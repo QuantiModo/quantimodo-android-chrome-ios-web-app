@@ -11,10 +11,11 @@
 - Click `Load unpacked...`
 - Select each extension folder in the `build` folder in the root of this repository
 - Make sure you can log in and out of the extension and that the basic functionality works
-- Log into the [Chrome Web Store Dashboard](https://chrome.google.com/webstore/developer/dashboard/u58d852d3c5dcff27d49e35858ae710cd) (get credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit#gid=2130660029))
+- If everything works, log into the [Chrome Web Store Dashboard](https://chrome.google.com/webstore/developer/dashboard/u58d852d3c5dcff27d49e35858ae710cd) (get credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit#gid=2130660029))
 - Click `Edit`
 - Click `Upload Updated Package`
 - Click `Publish Changes`
+- Great job!  :D
 
 ### Set Environmental Variables in Windows 10
 - Press Windows Start button
