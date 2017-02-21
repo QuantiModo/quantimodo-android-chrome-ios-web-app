@@ -1368,25 +1368,21 @@ angular.module('starter')
         };
 
         $scope.saveVariableSettings = function(variableObject){
-            var params = {
-                variableId: variableObject.id,
-                durationOfAction: variableObject.durationOfActionInHours*60*60,
-                fillingValue: variableObject.fillingValue,
-                //joinWith
-                maximumAllowedValue: variableObject.maximumAllowedValue,
-                minimumAllowedValue: variableObject.minimumAllowedValue,
-                onsetDelay: variableObject.onsetDelayInHours*60*60,
-                combinationOperation: variableObject.combinationOperation
-                //userVariableAlias: $scope.state.userVariableAlias
-                //experimentStartTime
-                //experimentEndTime
-            };
 
-            console.debug('Saving variable settings ' + JSON.stringify(params));
+            if(variableObject.onsetDelayInHours){
+                variableObject.onsetDelay =  variableObject.onsetDelayInHours*60*60;
+            }
+
+            if(variableObject.onsetDelayInHours){
+                variableObject.durationOfAction =  variableObject.durationOfActionInHours*60*60;
+            }
+
+            console.debug('Saving variable settings ' + JSON.stringify(variableObject));
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            quantimodoService.postUserVariableDeferred(params).then(function() {
+            quantimodoService.postUserVariableDeferred(variableObject).then(function(response) {
+                $rootScope.userVariable = response.userVariable;
                 quantimodoService.deleteItemFromLocalStorage('lastStudy');
-                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(params));
+                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(variableObject));
                 $ionicLoading.hide();
                 $scope.goBack();
             }, function(error) {

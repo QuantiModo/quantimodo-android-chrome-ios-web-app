@@ -5560,8 +5560,9 @@ angular.module('starter')
 
             var deferred = $q.defer();
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', userVariable);
-            quantimodoService.postUserVariableToApi(userVariable, function(userVariable) {
-                deferred.resolve(userVariable);
+            quantimodoService.postUserVariableToApi(userVariable, function(response) {
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.userVariable);
+                deferred.resolve(response);
             }, function(error){
                 deferred.reject(error);
             });
