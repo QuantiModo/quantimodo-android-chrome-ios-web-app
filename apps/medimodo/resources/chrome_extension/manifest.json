@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "MediModo Extension",
-  "description": "Medication - Track. Learn. Connect.",
+  "name": "MediModo",
+  "description": "Better health through data.",
   "version": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "options_page": "www/chrome_extension/options/options.html",
   "icons": {

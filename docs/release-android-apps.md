@@ -1,0 +1,29 @@
+### Release iOS Apps
+
+- Go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) (credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029))
+- Click `App Settings`
+- Click `BUILD SETTINGS -> Environment Variables`
+- Create variable called `LOWERCASE_APP_NAME`
+- Set the value to the app that you want to release
+- Go back to [main page](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394)
+- Click `Build Now` on the `develop` branch
+- Once your build is green, go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) on your Android phone
+- Install the latest version
+- Make sure you can log in by each login method and that the basic functionality works
+- If everything works, go back to [main page](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) on your computer
+- Click your latest build on the `develop` branch
+- Click the `Google Play` tab
+- Select `armv7Release`
+- Increase the version code by 1 (BE VERY CAREFUL HERE. DO NOT ADD AN ADDITIONAL DIGIT. IF WE INCREASE THE NUMBER TOO MUCH WE REACH THE MAXIMUM AND NOT BE ABLE TO RELEASE ANYMORE)
+- Click to upload to Production
+- Select `x86Release`
+- Increase the version code by 1 (BE VERY CAREFUL HERE. DO NOT ADD AN ADDITIONAL DIGIT. IF WE INCREASE THE NUMBER TOO MUCH WE REACH THE MAXIMUM AND NOT BE ABLE TO RELEASE ANYMORE)
+- Click to upload to Production
+- Go to the [Play Dashboard](https://play.google.com/apps/publish)
+- Select the app
+- Click the `APK` tab
+- Click to show Other APK's
+- Click `Move to Prod` for the two version codes that you just uploaded
+- Click `Deactivate` for the old versions
+- Click `Submit Update`
+- Great job!  :D

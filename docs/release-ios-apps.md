@@ -1,0 +1,29 @@
+### Release iOS Apps
+
+- Go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58545ef69a6d70010030ff46) (credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029))
+- Click `App Settings`
+- Click `BUILD SETTINGS -> Environment Variables`
+- Create variable called `LOWERCASE_APP_NAME`
+- Set the value to the app that you want to release
+- Go back to [main page](https://dashboard.buddybuild.com/apps/58545ef69a6d70010030ff46)
+- Click `Build Now` on the `develop` branch
+- Once your build is green, click on the specific build
+- Click the `iTunes Connect` tab
+- Click to upload
+- Go to [iTunes Connect](https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app)
+- Select the app
+- Click the `TestFlight` tab
+- Click `Internal Testing`
+- Click `Select Version to Test`
+- Select the most recent build
+- Install on device via the TestFlight app
+- Make sure you can log in by each login method and that the basic functionality works
+- If everything works, go to [iTunes Connect](https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app)
+- Select the app
+- Click `+ VERSION OR PLATFORM`
+- Select `iOS`
+- Copy the description into Release Notes
+- Add the most recent version in the `Build` section
+- Click to save and submit for review
+- Check `No` when it asks if you use an advertising identifier or special encryption
+- Great job!  :D

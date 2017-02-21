@@ -3,7 +3,7 @@ var config = {};
 config.appSettings  = {
     appDisplayName : 'MediModo',
     lowercaseAppName : 'medimodo',
-    appDescription : "Medication. Track. Learn. Connect.",
+    appDescription : "Better health through data.",
     appleId: "1115037661",
     "appIdentifier": "com.quantimodo.medimodo",
     ionicAppId: 'e85b92b4',
@@ -128,7 +128,7 @@ config.appSettings  = {
                 },
                 finalParagraph : {
                     visible : true,
-                    content : 'Medication - Track. Learn. Connect.',
+                    content : 'Better health through data.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
