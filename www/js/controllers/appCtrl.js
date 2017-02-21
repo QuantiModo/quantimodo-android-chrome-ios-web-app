@@ -1430,8 +1430,8 @@ angular.module('starter')
         $scope.resetVariableToDefaultSettings = function(variableObject) {
             // Populate fields with original settings for variable
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-            quantimodoService.resetUserVariableDeferred(variableObject.id).then(function() {
-                $scope.getUserVariableByName(variableObject.name);
+            quantimodoService.resetUserVariableDeferred(variableObject.id).then(function(userVariable) {
+                $rootScope.variableObject = userVariable;
             });
         };
 

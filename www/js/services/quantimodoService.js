@@ -5588,8 +5588,10 @@ angular.module('starter')
         quantimodoService.resetUserVariableDeferred = function(variableId) {
             var deferred = $q.defer();
             var body = {variableId: variableId};
-            quantimodoService.resetUserVariable(body, function(userVariable) {
-                deferred.resolve(userVariable);
+            quantimodoService.resetUserVariable(body, function(response) {
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+                    response.data.userVariable);
+                deferred.resolve(response.data.userVariable);
             }, function(error){
                 deferred.reject(error);
             });
