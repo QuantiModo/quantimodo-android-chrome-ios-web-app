@@ -1368,25 +1368,8 @@ angular.module('starter')
         };
 
         $scope.saveVariableSettings = function(variableObject){
-            var params = {
-                variableId: variableObject.id,
-                durationOfAction: variableObject.durationOfActionInHours*60*60,
-                fillingValue: variableObject.fillingValue,
-                //joinWith
-                maximumAllowedValue: variableObject.maximumAllowedValue,
-                minimumAllowedValue: variableObject.minimumAllowedValue,
-                onsetDelay: variableObject.onsetDelayInHours*60*60,
-                combinationOperation: variableObject.combinationOperation
-                //userVariableAlias: $scope.state.userVariableAlias
-                //experimentStartTime
-                //experimentEndTime
-            };
-
-            console.debug('Saving variable settings ' + JSON.stringify(params));
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            quantimodoService.postUserVariableDeferred(params).then(function() {
-                quantimodoService.deleteItemFromLocalStorage('lastStudy');
-                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(params));
+            quantimodoService.postUserVariableDeferred(variableObject).then(function() {
                 $ionicLoading.hide();
                 $scope.goBack();
             }, function(error) {
@@ -1447,8 +1430,8 @@ angular.module('starter')
         $scope.resetVariableToDefaultSettings = function(variableObject) {
             // Populate fields with original settings for variable
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
-            quantimodoService.resetUserVariableDeferred(variableObject.id).then(function() {
-                $scope.getUserVariableByName(variableObject.name);
+            quantimodoService.resetUserVariableDeferred(variableObject.id).then(function(userVariable) {
+                $rootScope.variableObject = userVariable;
             });
         };
 

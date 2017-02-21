@@ -203,7 +203,7 @@ angular.module('starter')
                 name:  variableName
             };
             $rootScope.variableName = variableName;
-            var params = [];
+            var params = {};
             if($rootScope.urlParameters.userId){
                 params.userId = $rootScope.urlParameters.userId;
             }
@@ -232,7 +232,9 @@ angular.module('starter')
             } else if ($stateParams.trackingReminder){
                 getStatisticsForVariable($stateParams.trackingReminder.variableName);
             } else if ($stateParams.variableName){
-                getStatisticsForVariable($stateParams.variableName);
+                if(!$rootScope.variableObject || $rootScope.variableObject.name !== $stateParams.variableName){
+                    getStatisticsForVariable($stateParams.variableName);
+                }
             } else {
                 console.error("ERROR: chartsPageCtrl.init No variable name provided!");
                 return;

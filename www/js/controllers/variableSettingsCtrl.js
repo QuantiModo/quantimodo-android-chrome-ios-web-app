@@ -1,12 +1,31 @@
 angular.module('starter')
-
-    // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
         function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $mdDialog, $ionicLoading,
                  $stateParams, $ionicHistory, $ionicActionSheet) {
 
         $scope.controller_name = "VariableSettingsCtrl";
         $rootScope.showFilterBarSearchIcon = false;
+
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            $scope.loading = true;
+            $scope.showLoader('Getting variable details');
+            if($stateParams.variableObject){
+                $scope.setupVariableByVariableObject($stateParams.variableObject);
+            } else if ($stateParams.variableName) {
+                $rootScope.variableName = $stateParams.variableName;
+                $scope.getUserVariableByName($rootScope.variableName);
+            } else if ($rootScope.variableObject) {
+                $scope.setupVariableByVariableObject($rootScope.variableObject);
+            } else {
+                console.error("Variable name not provided to variable settings controller!");
+                $state.go(config.appSettings.defaultState);
+                //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
+            }
+        });
 
         $scope.cancel = function(){
             $ionicHistory.goBack();
@@ -71,26 +90,7 @@ angular.module('starter')
 
         };
 
-        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            console.debug($state.current.name + ' initializing...');
-            $rootScope.stateParams = $stateParams;
-            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.loading = true;
-            $scope.showLoader('Getting variable details');
-            if($stateParams.variableObject){
-                $scope.setupVariableByVariableObject($stateParams.variableObject);
-            } else if ($stateParams.variableName) {
-                $rootScope.variableName = $stateParams.variableName;
-                $scope.getUserVariableByName($rootScope.variableName);
-            } else if ($rootScope.variableObject) {
-                $scope.setupVariableByVariableObject($rootScope.variableObject);
-            } else {
-                console.error("Variable name not provided to variable settings controller!");
-                $state.go(config.appSettings.defaultState);
-                //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
-            }
-        });
+
 
         $scope.openTagVariableSearchDialog = function($event) {
             $mdDialog.show({
