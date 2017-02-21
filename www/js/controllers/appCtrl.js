@@ -1368,21 +1368,8 @@ angular.module('starter')
         };
 
         $scope.saveVariableSettings = function(variableObject){
-
-            if(variableObject.onsetDelayInHours){
-                variableObject.onsetDelay =  variableObject.onsetDelayInHours*60*60;
-            }
-
-            if(variableObject.onsetDelayInHours){
-                variableObject.durationOfAction =  variableObject.durationOfActionInHours*60*60;
-            }
-
-            console.debug('Saving variable settings ' + JSON.stringify(variableObject));
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            quantimodoService.postUserVariableDeferred(variableObject).then(function(response) {
-                $rootScope.userVariable = response.userVariable;
-                quantimodoService.deleteItemFromLocalStorage('lastStudy');
-                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(variableObject));
+            quantimodoService.postUserVariableDeferred(variableObject).then(function() {
                 $ionicLoading.hide();
                 $scope.goBack();
             }, function(error) {
