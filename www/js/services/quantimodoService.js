@@ -5556,11 +5556,27 @@ angular.module('starter')
         };
 
         // post changes to user variable settings
-        quantimodoService.postUserVariableDeferred = function(userVariable) {
+        quantimodoService.postUserVariableDeferred = function(variableObject) {
+
+            var body = {
+                variableId: variableObject.id,
+                durationOfAction: variableObject.durationOfActionInHours*60*60,
+                fillingValue: variableObject.fillingValue,
+                //joinWith
+                maximumAllowedValue: variableObject.maximumAllowedValue,
+                minimumAllowedValue: variableObject.minimumAllowedValue,
+                onsetDelay: variableObject.onsetDelayInHours*60*60,
+                combinationOperation: variableObject.combinationOperation
+                //userVariableAlias: $scope.state.userVariableAlias
+                //experimentStartTime
+                //experimentEndTime
+            };
 
             var deferred = $q.defer();
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', userVariable);
-            quantimodoService.postUserVariableToApi(userVariable, function(userVariable) {
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);
+            quantimodoService.postUserVariableToApi(body, function(userVariable) {
+                quantimodoService.deleteItemFromLocalStorage('lastStudy');
+                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(variableObject));
                 deferred.resolve(userVariable);
             }, function(error){
                 deferred.reject(error);
@@ -5572,8 +5588,10 @@ angular.module('starter')
         quantimodoService.resetUserVariableDeferred = function(variableId) {
             var deferred = $q.defer();
             var body = {variableId: variableId};
-            quantimodoService.resetUserVariable(body, function(userVariable) {
-                deferred.resolve(userVariable);
+            quantimodoService.resetUserVariable(body, function(response) {
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+                    response.data.userVariable);
+                deferred.resolve(response.data.userVariable);
             }, function(error){
                 deferred.reject(error);
             });
