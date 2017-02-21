@@ -1,6 +1,6 @@
 # MediModo
 
-Medication - Track. Learn. Connect.
+Better health through data
 
 ## Description
 
