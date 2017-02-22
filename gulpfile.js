@@ -1860,6 +1860,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
     } else if (process.env.BUILD_ANDROID){
         console.log("process.env.BUILD_ANDROID is true so going to buildAndroid");
         runSequence(
+            'prepareRepositoryForAndroid',
         	'buildAndroidApp',
             //'buildQuantiModoAndroid',  // Had to do this previously because buildAndroid wasn't working
             callback);
