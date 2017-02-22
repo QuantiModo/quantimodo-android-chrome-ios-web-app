@@ -1951,6 +1951,7 @@ gulp.task('buildMediModo', function(callback){
     runSequence(
         'setMediModoEnvs',
         'buildChromeExtension',
+        'prepareRepositoryForAndroid',
         'buildAndroidApp',
         'prepareIosApp',
         callback);
@@ -1965,6 +1966,13 @@ gulp.task('buildQuantiModoAndroid', function(callback){
         callback);
 });
 
+gulp.task('buildMediModoAndroid', function(callback){
+    runSequence(
+        'setMediModoEnvs',
+        'prepareRepositoryForAndroid',
+        'buildAndroidApp',
+        callback);
+});
 
 gulp.task('buildEnergyModoAndroid', function(callback){
     runSequence(

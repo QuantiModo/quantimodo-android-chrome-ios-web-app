@@ -9,6 +9,8 @@ chmod -R a+x ./hooks
 chmod -R a+x ./package-hooks
 chmod -R a+x ./scripts
 
+echo "LOWERCASE_APP_NAME is ${LOWERCASE_APP_NAME}"
+
 if [ -z ${PREPARE_IOS_APP} ];
     then
         echo "NOT BUILDING IOS APP because PREPARE_IOS_APP env is ${PREPARE_IOS_APP}"
