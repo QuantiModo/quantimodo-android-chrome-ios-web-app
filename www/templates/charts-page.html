@@ -36,7 +36,7 @@
                     <highchart id="distributionChart" config="distributionChartConfig"></highchart>
                 </div>
             </div>
-            <div ng-hide="urlParameters && urlParameters.userId" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
+            <div ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
             <div class="card list" id="statisticsCard" ng-if="variableObject.numberOfRawMeasurements">
                 <label class="item item-content" ng-if="variableObject.numberOfRawMeasurements">
                     <span class="input-label left-text"># of measurements</span>

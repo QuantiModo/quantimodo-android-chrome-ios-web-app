@@ -210,16 +210,23 @@ angular.module('starter')
             }
         };
 
+        $scope.shareCharts = function(variableObject, sharingUrl){
+            if(!variableObject.shareUserMeasurements){
+                showShareVariableConfirmation(variableObject, sharingUrl);
+                return;
+            }
+            quantimodoService.openSharingUrl(sharingUrl);
+        };
+
         $scope.shareStudy = function(correlationObject, mailToUrl){
-            var fallbackUrl = correlationObject.studyLinkDynamic;
             if(mailToUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
                 showShareStudyConfirmation(correlationObject, mailToUrl);
                 return;
             }
-            quantimodoService.openMailToUrl(mailToUrl, fallbackUrl);
+            quantimodoService.openSharingUrl(mailToUrl);
         };
 
-        var showShareStudyConfirmation = function(correlationObject, mailToUrl) {
+        var showShareStudyConfirmation = function(correlationObject, sharingUrl) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
                 template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
@@ -241,8 +248,7 @@ angular.module('starter')
                     quantimodoService.postStudyDeferred(body).then(function () {
                         $ionicLoading.hide();
                         if(mailToUrl){
-                            var fallbackUrl = correlationObject.studyLinkDynamic;
-                            quantimodoService.openMailToUrl(mailToUrl, fallbackUrl);
+                            quantimodoService.openSharingUrl(sharingUrl);
                         }
                     }, function (error) {
                         $ionicLoading.hide();
@@ -291,7 +297,7 @@ angular.module('starter')
             }
         };
 
-        var showShareVariableConfirmation = function(variableObject, mailToUrl) {
+        var showShareVariableConfirmation = function(variableObject, sharingUrl) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',
                 template: 'Are you absolutely sure you want to make your ' + variableObject.name +
@@ -309,10 +315,7 @@ angular.module('starter')
                     $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                     quantimodoService.postUserVariableDeferred(body).then(function () {
                         $ionicLoading.hide();
-                        if(mailToUrl){
-                            var fallbackUrl = variableObject.chartsUrl;
-                            quantimodoService.openMailToUrl(mailToUrl, fallbackUrl);
-                        }
+                        quantimodoService.openSharingUrl(sharingUrl);
                     }, function (error) {
                         $ionicLoading.hide();
                         console.error(error);
@@ -1369,7 +1372,22 @@ angular.module('starter')
 
         $scope.saveVariableSettings = function(variableObject){
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            quantimodoService.postUserVariableDeferred(variableObject).then(function() {
+            var body = {
+                variableId: variableObject.id,
+                durationOfAction: variableObject.durationOfActionInHours*60*60,
+                fillingValue: variableObject.fillingValue,
+                //joinWith
+                maximumAllowedValue: variableObject.maximumAllowedValue,
+                minimumAllowedValue: variableObject.minimumAllowedValue,
+                onsetDelay: variableObject.onsetDelayInHours*60*60,
+                combinationOperation: variableObject.combinationOperation,
+                shareUserMeasurements: variableObject.shareUserMeasurements
+                //userVariableAlias: $scope.state.userVariableAlias
+                //experimentStartTime
+                //experimentEndTime
+            };
+
+            quantimodoService.postUserVariableDeferred(body).then(function() {
                 $ionicLoading.hide();
                 $scope.goBack();
             }, function(error) {

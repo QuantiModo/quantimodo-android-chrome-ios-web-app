@@ -5510,26 +5510,19 @@ angular.module('starter')
 
         // get user variables (without public)
         quantimodoService.searchUserVariablesDeferred = function(variableSearchQuery, params){
-
             var deferred = $q.defer();
-
-            if(!variableSearchQuery){
-                variableSearchQuery = '*';
-            }
-
+            if(!variableSearchQuery){ variableSearchQuery = '*'; }
             quantimodoService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
                 deferred.resolve(variables);
             }, function(error){
                 console.error(JSON.stringify(error));
                 deferred.reject(error);
             });
-
             return deferred.promise;
         };
 
         quantimodoService.getUserVariableByNameDeferred = function(name, params, refresh){
             var deferred = $q.defer();
-
             quantimodoService.getLocalStorageItemAsStringWithCallback('userVariables', function (userVariables) {
                 if(!refresh && userVariables){
                     userVariables = JSON.parse(userVariables);
@@ -5540,14 +5533,10 @@ angular.module('starter')
                         }
                     }
                 }
-
                 quantimodoService.getVariablesByNameFromApi(name, params, function(variable){
                     deferred.resolve(variable);
-                }, function(error){
-                    deferred.reject(error);
-                });
+                }, function(error){ deferred.reject(error); });
             });
-
             return deferred.promise;
         };
 
@@ -5555,41 +5544,19 @@ angular.module('starter')
             var deferred = $q.defer();
             quantimodoService.getPublicVariablesByNameFromApi(name, function(variable){
                 deferred.resolve(variable);
-            }, function(error){
-                deferred.reject(error);
-            });
-
+            }, function(error){ deferred.reject(error); });
             return deferred.promise;
-
         };
 
         // post changes to user variable settings
-        quantimodoService.postUserVariableDeferred = function(variableObject) {
-
-            var body = {
-                variableId: variableObject.id,
-                durationOfAction: variableObject.durationOfActionInHours*60*60,
-                fillingValue: variableObject.fillingValue,
-                //joinWith
-                maximumAllowedValue: variableObject.maximumAllowedValue,
-                minimumAllowedValue: variableObject.minimumAllowedValue,
-                onsetDelay: variableObject.onsetDelayInHours*60*60,
-                combinationOperation: variableObject.combinationOperation
-                //userVariableAlias: $scope.state.userVariableAlias
-                //experimentStartTime
-                //experimentEndTime
-            };
-
+        quantimodoService.postUserVariableDeferred = function(body) {
             var deferred = $q.defer();
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', body);
             quantimodoService.postUserVariableToApi(body, function(userVariable) {
                 quantimodoService.deleteItemFromLocalStorage('lastStudy');
-                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(variableObject));
+                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(userVariable));
                 deferred.resolve(userVariable);
-            }, function(error){
-                deferred.reject(error);
-            });
-
+            }, function(error){ deferred.reject(error); });
             return deferred.promise;
         };
 
@@ -5600,10 +5567,7 @@ angular.module('starter')
                 quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
                     response.data.userVariable);
                 deferred.resolve(response.data.userVariable);
-            }, function(error){
-                deferred.reject(error);
-            });
-
+            }, function(error){  deferred.reject(error); });
             return deferred.promise;
         };
 
@@ -8287,19 +8251,19 @@ angular.module('starter')
             }, false);
         };
 
-        quantimodoService.sendWithMailTo = function(subjectLine, emailBody, emailAddress, fallbackUrl){
+        quantimodoService.sendWithMailTo = function(subjectLine, emailBody, emailAddress){
             var emailUrl = 'mailto:';
             if(emailAddress){
                 emailUrl = emailUrl + emailAddress;
             }
             emailUrl = emailUrl + '?subject=' + subjectLine + '&body=' + emailBody;
-            quantimodoService.openMailToUrl(emailUrl, fallbackUrl);
+            quantimodoService.openSharingUrl(emailUrl);
         };
 
-        quantimodoService.openMailToUrl = function(emailUrl, fallbackUrl){
+        quantimodoService.openSharingUrl = function(sharingUrl){
             if($rootScope.isChromeExtension){
                 console.debug('isChromeExtension so sending to website');
-                var newTab = window.open(fallbackUrl,'_blank');
+                var newTab = window.open(sharingUrl,'_blank');
                 if(!newTab){
                     alert("Please unblock popups and refresh to access the Data Sharing page.");
                 }
@@ -8307,7 +8271,7 @@ angular.module('starter')
                 $state.go(config.appSettings.defaultState);
             } else {
                 console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-                window.location.href = emailUrl;
+                window.location.href = sharingUrl;
             }
         };
 
