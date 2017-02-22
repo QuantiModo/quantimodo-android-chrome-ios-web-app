@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Mind First Extension",
+  "name": "Mind First",
   "description": "Empowering a new approach to mind research",
   "version": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "options_page": "www/chrome_extension/options/options.html",

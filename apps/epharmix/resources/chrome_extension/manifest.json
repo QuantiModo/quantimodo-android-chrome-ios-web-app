@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Epharmix Extension",
+  "name": "Epharmix",
   "description": "Improving Health Outcomes",
   "version": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "options_page": "www/chrome_extension/options/options.html",
