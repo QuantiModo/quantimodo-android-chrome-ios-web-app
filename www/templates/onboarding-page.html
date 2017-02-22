@@ -43,7 +43,7 @@
             <br>
             <button class="button"
                     ng-if="onboardingPages[0].addButtonText"
-                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
@@ -54,7 +54,7 @@
             </button>
             <button class="button"
                     ng-show="onboardingPages[0].id === 'locationTrackingPage' && user.stripeActive"
-                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
@@ -65,7 +65,7 @@
             </button>
             <button class="button"
                     ng-show="onboardingPages[0].id === 'importDataPage' && user.stripeActive"
-                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
@@ -76,7 +76,7 @@
             </button>
             <button class="button"
                     ng-show="onboardingPages[0].premiumFeature && !user.stripeActive"
-                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
@@ -87,7 +87,7 @@
             </button>
             <button class="button"
                     ng-if="onboardingPages[0].nextPageButtonText"
-                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
@@ -98,7 +98,7 @@
             </button>
             <button class="button"
                     ng-if="onboardingPages[0].id === 'allDoneCard'"
-                    style="background-color: {{onboardingPages[0].backgroundColor}};
+                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
