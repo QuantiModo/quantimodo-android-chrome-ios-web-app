@@ -4248,6 +4248,10 @@ angular.module('starter')
             return averageValueByMonthlyArray;
         };
 
+        var exportOptions = {
+            enabled: true
+        };
+
         quantimodoService.configureDistributionChart = function(dataAndLabels, variableObject){
             var xAxisLabels = [];
             var xAxisTitle = 'Daily Values (' + variableObject.abbreviatedUnitName + ')';
@@ -4350,7 +4354,8 @@ angular.module('starter')
                 series: [{
                     name : variableObject.name + ' Distribution',
                     data: data
-                }]
+                }],
+                exporting: exportOptions
             };
         };
 
@@ -4520,7 +4525,8 @@ angular.module('starter')
                 series: [{
                     name : 'Average  ' + variableObject.name + ' by Day of Week',
                     data: averageValueByWeekdayArray
-                }]
+                }],
+                exporting: exportOptions
             };
         };
 
@@ -4598,7 +4604,8 @@ angular.module('starter')
                 series: [{
                     name : 'Average  ' + variableObject.name + ' by Month',
                     data: averageValueByMonthlyArray
-                }]
+                }],
+                exporting: exportOptions
             };
         };
 
@@ -5461,7 +5468,8 @@ angular.module('starter')
                             lineWidthPlus: 0
                         }
                     }
-                }]
+                }],
+                exporting: exportOptions
             };
         };
 
