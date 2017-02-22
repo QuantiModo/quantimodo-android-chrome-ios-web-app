@@ -13,7 +13,6 @@ var inquirer = require("inquirer");
 var change = require('gulp-change');
 var q = require('q');
 var fs = require('fs');
-var CodeGen = require('swagger-js-codegen').CodeGen;
 var glob = require('glob');
 var zip = require('gulp-zip');
 var unzip = require('gulp-unzip');
@@ -229,26 +228,6 @@ gulp.task('deleteNodeModules', function(){
 		'task again.');
 	return gulp.src("node_modules/*", { read: false }).pipe(clean());
 });
-
-gulp.task('swagger', function(){
-	var deferred = q.defer();
-	var file = '../../api/docs/swagger.json';
-	var swagger = JSON.parse(fs.readFileSync(file, 'UTF-8'));
-
-	var angularjsSourceCode = CodeGen.getAngularCode({ className: 'Test', swagger: swagger });
-	console.log(angularjsSourceCode);
-
-	fs.writeFile('./www/js/services/swaggerjs.js', angularjsSourceCode , function (err) {
-			if (err) {
-                return console.log(err);
-            }
-        console.log('Swagger code > /www/js/services/swaggerjs.js');
-			deferred.resolve();
-	});
-	return deferred.promise;
-});
-
-
 
 gulp.task('generatePrivateConfigFromEnvs', function(callback){
 	generatePrivateConfigFromEnvs(callback);

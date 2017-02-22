@@ -7577,6 +7577,20 @@ angular.module('starter')
             return helpCards;
         };
 
+
+        var green = {
+            backgroundColor: "#0f9d58",
+            circleColor: "#03c466"
+        };
+        var blue = {
+            backgroundColor: "#3467d6",
+            circleColor: "#5b95f9"
+        };
+        var yellow = {
+            backgroundColor: "#f09402",
+            circleColor: "#fab952"
+        };
+
         quantimodoService.setupOnboardingPages = function () {
 
             var onboardingPages = [
@@ -7584,8 +7598,7 @@ angular.module('starter')
                     id: "addEmotionRemindersCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
                     title: 'Varying Emotions?',
-                    "backgroundColor": "#0f9d58",
-                    circleColor: "#03c466",
+                    color: green,
                     iconClass: "icon positive " + $rootScope.variableCategories.Emotions.icon,
                     image: {
                         url: $rootScope.variableCategories.Emotions.imageUrl,
@@ -7601,8 +7614,7 @@ angular.module('starter')
                 {
                     id: "addSymptomRemindersCard",
                     title: 'Recurring Symptoms?',
-                    "backgroundColor": "#3467d6",
-                    circleColor: "#5b95f9",
+                    color: blue,
                     iconClass: "icon positive " + $rootScope.variableCategories.Symptoms.icon,
                     image: {
                         url: $rootScope.variableCategories.Symptoms.imageUrl,
@@ -7619,8 +7631,7 @@ angular.module('starter')
                     id: "addFoodRemindersCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
                     title: 'Common Foods or Drinks?',
-                    "backgroundColor": "#3467d6",
-                    circleColor: "#5b95f9",
+                    color: blue,
                     iconClass: "icon positive " + $rootScope.variableCategories.Foods.icon,
                     image: {
                         url: $rootScope.variableCategories.Foods.imageUrl,
@@ -7635,8 +7646,7 @@ angular.module('starter')
                 {
                     id: "addTreatmentRemindersCard",
                     title: 'Any Treatments?',
-                    "backgroundColor": "#f09402",
-                    circleColor: "#fab952",
+                    color: yellow,
                     iconClass: "icon positive " + $rootScope.variableCategories.Treatments.icon,
                     image: {
                         url: $rootScope.variableCategories.Treatments.imageUrl,
@@ -7653,8 +7663,7 @@ angular.module('starter')
                 {
                     id: "locationTrackingPage",
                     title: 'Weather & Location Tracking',
-                    "backgroundColor": "#0f9d58",
-                    circleColor: "#03c466",
+                    color: green,
                     iconClass: "icon positive " + $rootScope.variableCategories.Location.icon,
                     image: {
                         url: $rootScope.variableCategories.Environment.imageUrl,
@@ -7669,8 +7678,7 @@ angular.module('starter')
                 {
                     id: "importDataPage",
                     title: 'Import Your Data',
-                    "backgroundColor": "#f09402",
-                    circleColor: "#fab952",
+                    color: yellow,
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
                         url: "img/download_2-96.png",
@@ -7686,8 +7694,10 @@ angular.module('starter')
                     id: "allDoneCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                     title: 'Great job!',
-                    "backgroundColor": "#3467d6",
-                    circleColor: "#fefdfc",
+                    color: {
+                        "backgroundColor": "#3467d6",
+                        circleColor: "#fefdfc",
+                    },
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
                         url: "img/cute_robot_happy_transparent.png",
