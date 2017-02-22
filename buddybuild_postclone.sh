@@ -20,13 +20,13 @@ if [ -z ${PREPARE_IOS_APP} ];
         echo "Running sudo brew install imagemagick"
         brew install imagemagick
 
-        echo "Running npm install -g gulp bower ionic cordova"
+        #echo "Running npm install -g gulp bower ionic cordova"
         #sudo npm install -g gulp bower ionic cordova  # Done in gulpfile now
 
-        echo "Running npm install"
+        #echo "Running npm install"
         #npm install  # Done in gulpfile now
 
-        echo "gulp prepareIosApp"
+        #echo "gulp prepareIosApp"
         #gulp prepareIosApp  # Done in gulpfile now
 fi
 
@@ -42,9 +42,9 @@ if [ -z ${BUILD_ANDROID} ];
         echo "Running npm install -g gulp bower ionic cordova"
         npm install -g gulp bower ionic cordova
 
-        echo "Running npm install"
+        #echo "Running npm install"
         #npm install  # Done in gulpfile now
 
-        echo "gulp buildQuantiModoAndroid"
+        #echo "gulp buildQuantiModoAndroid"
         #gulp buildQuantiModoAndroid  # Done in gulpfile now
 fi
