@@ -1853,14 +1853,15 @@ gulp.task('zipChromeExtension', [], function(){
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function(callback){
     if (process.env.PREPARE_IOS_APP){
-    	console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
+    	console.log("process.env.PREPARE_IOS_APP is " + process.env.PREPARE_IOS_APP + " so going to prepareIosApp");
         runSequence(
             'prepareIosApp',
             callback);
     } else if (process.env.BUILD_ANDROID){
-        console.log("process.env.PREPARE_IOS_APP is true so going to prepareIosApp");
+        console.log("process.env.BUILD_ANDROID is true so going to buildAndroid");
         runSequence(
-            'buildQuantiModoAndroid',
+        	'buildAndroid',
+            //'buildQuantiModoAndroid',  // Had to do this previously because buildAndroid wasn't working
             callback);
     } else {
         runSequence(
