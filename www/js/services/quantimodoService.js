@@ -149,7 +149,7 @@ angular.module('starter')
                     data : JSON.stringify(body)
                 };
 
-                if(quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
+                if(accessToken && (quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl)) {
                     request.headers = {
                         "Authorization" : "Bearer " + accessToken,
                         'Content-Type': "application/json",
