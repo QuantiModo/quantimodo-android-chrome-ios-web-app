@@ -1574,6 +1574,16 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
         callback);
 });
 
+gulp.task('setAppEnvs', [], function(callback){
+    if(!process.env.LOWERCASE_APP_NAME){
+        process.env.LOWERCASE_APP_NAME = "quantimodo";
+    }
+    runSequence(
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
+});
+
 gulp.task('setQuantiModoEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "quantimodo";
     runSequence(
@@ -2184,7 +2194,7 @@ gulp.task('resizeIcons', function(callback){
 
 gulp.task('prepareRepositoryForAndroid', function(callback){
     runSequence(
-    	'setQuantiModoEnvs',
+    	'setAppEnvs',
         'setAndroidEnvs',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
