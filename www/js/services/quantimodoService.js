@@ -7723,7 +7723,117 @@ angular.module('starter')
 
             var introSlides = [
                 {
-                    "img" : {
+                    newIntroStyle: true,
+                    title: "Countless Factors",
+                    color: blue,
+                    image: {
+                        url: "img/patient-frown-factors.png",
+                        height: "120",
+                        width: "120"
+                    },
+                    bodyText: "Your symptoms can be worsened or improved by medical treatments, your sleep, exercise, " +
+                    "the hundreds of chemicals you consume through your diet, and even the weather!",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Only Human",
+                    color: green,
+                    image: {
+                        url: "img/brain.svg",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Human brains can only hold 7 numbers in working-memory at a time.  " +
+                        "So they're not able to determine which factors are most significant. ",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Treatment Determination",
+                    color: yellow,
+                    image: {
+                        url: "img/doctor-frown-factors.png",
+                        height: "120",
+                        width: "120"
+                    },
+                    bodyText: "Indeed, your doctor has access to less than 1% of the relevant information when they use " +
+                        "intuition to determine the best ways to treat your symptoms!",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Machine Learning",
+                    color: blue,
+                    image: {
+                        url: "img/crowdsourcing-utopia-brain.svg",
+                        height: "100",
+                        width: "100"
+                    },
+                    bodyText: "My brain can hold unlimited data on your symptoms and the factors that " +
+                    "could influence them.  I can then determine which factors are most significant " +
+                    "and their optimal daily values. You'll find these on the Relationships page.",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Automated Tracking",
+                    color: green,
+                    image: {
+                        url: "img/download_2-96.png",
+                        height: "100",
+                        width: "100"
+                    },
+                    bodyText: "Weight, blood pressure, heart rate, physical activity data can be collected automatically " +
+                    "and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, " +
+                    "work, or doctors offices can be collected via your phone's GPS.",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Effortless Tracking",
+                    color: yellow,
+                    image: {
+                        url: "img/inbox.svg",
+                        height: "90",
+                        width: "90"
+                    },
+                    bodyText: "By taking just a few minutes each day, you can easily record your symptoms," +
+                    " treatments, and diet in the Reminder Inbox.  The more data you give me, the smarter I get.  Your" +
+                    " data doesn't have to be perfect to be valuable, but it's important to track regularly. ",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Data Security",
+                    color: blue,
+                    image: {
+                        url: "img/lock.svg",
+                        height: "90",
+                        width: "90"
+                    },
+                    bodyText: "I use bank-level encryption to keep your data secure.  Human eyes will never see your " +
+                    "data unless you intentionally share it. ",
+                },
+                {
+                    newIntroStyle: true,
+                    image: {
+                        url: "img/brain.svg",
+                        height: "96",
+                        width: "96"
+                    },
+                    color: green,
+                    "textColor": "white",
+                    "content" : {
+                        "firstParagraph" : {
+                            "visible" : true,
+                            "content" : "HUMAN BRAINS",
+                            "classes" : "intro-header"
+                        },
+                        "finalParagraph" : {
+                            "visible" : true,
+                            "content" : "can only hold 7 numbers in memory.",
+                            "classes" : "intro-paragraph",
+                            "buttonBarVisible" : true
+                        }
+                    }
+                },
+                {
+                    "image" : {
                         "width" : "250",
                         "height" : "250",
                         "url" : "img/intro/intro_import.png"
@@ -7733,7 +7843,7 @@ angular.module('starter')
                     "content" : {
                         "firstParagraph" : {
                             "visible" : true,
-                            "content" : "Import Data",
+                            "content" : "SYMPTOM SEVERITY",
                             "classes" : "intro-header"
                         },
                         "logoDiv" : {
@@ -7742,14 +7852,41 @@ angular.module('starter')
                         },
                         "finalParagraph" : {
                             "visible" : true,
-                            "content" : "Import data from all your apps and devices",
+                            "content" : "can be influenced by hundreds of factors in life!",
                             "classes" : "intro-paragraph",
                             "buttonBarVisible" : true
                         }
                     }
                 },
                 {
-                    "img" : {
+                    "image" : {
+                        "width" : "250",
+                        "height" : "250",
+                        "url" : "img/brain.svg"
+                    },
+                    circleColor: "#3467d6",
+                    "textColor": "white",
+                    "backgroundColor": "#3467d6",
+                    "content" : {
+                        "firstParagraph" : {
+                            "visible" : true,
+                            "content" : "SYMPTOM SEVERITY",
+                            "classes" : "intro-header"
+                        },
+                        "logoDiv" : {
+                            "visible" : true,
+                            "id" : "logo"
+                        },
+                        "finalParagraph" : {
+                            "visible" : true,
+                            "content" : "can be influenced by hundreds of factors in life!",
+                            "classes" : "intro-paragraph",
+                            "buttonBarVisible" : true
+                        }
+                    }
+                },
+                {
+                    "image" : {
                         "width" : "250",
                         "height" : "250",
                         "url" : "img/intro/intro_track_anything.png"
@@ -7775,7 +7912,7 @@ angular.module('starter')
                     }
                 },
                 {
-                    "img" : {
+                    "image" : {
                         "width" : "250",
                         "height" : "250",
                         "url" : "img/intro/intro_make_discoveries.png"
