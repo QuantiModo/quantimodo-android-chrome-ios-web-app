@@ -1391,7 +1391,7 @@ angular.module('starter')
 
             quantimodoService.postUserVariableDeferred(body).then(function() {
                 $ionicLoading.hide();
-                $scope.goBack();
+                $scope.showInfoToast('Saved ' + variableObject.name + ' settings');
             }, function(error) {
                 $ionicLoading.hide();
                 console.error(error);
