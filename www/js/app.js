@@ -318,7 +318,7 @@ angular.module('starter',
         if(typeof analytics !== "undefined") {
             console.debug("Configuring Google Analytics");
             //noinspection JSUnresolvedFunction
-            analytics.startTrackerWithId("UA-39222734-24");
+            analytics.startTrackerWithId("UA-39222734-2");
         } else {
             //console.debug("Google Analytics Unavailable");
         }
@@ -423,7 +423,7 @@ angular.module('starter',
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
                  ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
 
-    AnalyticsProvider.setAccount('UA-39222734-25')
+    AnalyticsProvider.setAccount('UA-39222734-2')
         .delayScriptTag(true)
         .ignoreFirstPageLoad(true);
 
