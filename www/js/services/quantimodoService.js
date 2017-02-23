@@ -8271,18 +8271,8 @@ angular.module('starter')
         };
 
         quantimodoService.openSharingUrl = function(sharingUrl){
-            if($rootScope.isChromeExtension){
-                console.debug('isChromeExtension so sending to website');
-                var newTab = window.open(sharingUrl,'_blank');
-                if(!newTab){
-                    alert("Please unblock popups and refresh to access the Data Sharing page.");
-                }
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-            } else {
-                console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-                window.location.href = sharingUrl;
-            }
+            var newTab = window.open(sharingUrl,'_blank');
+            if(!newTab){ alert("Please unblock popups and press the share button again!"); }
         };
 
         quantimodoService.addVariableToLocalStorage = function(variable){
