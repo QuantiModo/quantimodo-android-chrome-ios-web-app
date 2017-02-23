@@ -5604,7 +5604,7 @@ angular.module('starter')
             var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
                 'userVariables', params);
 
-            if(userVariables && userVariables.length > 0){
+            if(userVariables && userVariables.length > 0 && userVariables[0].chartsLinkFacebook){
                 deferred.resolve(userVariables);
                 return deferred.promise;
             }
@@ -5615,7 +5615,7 @@ angular.module('starter')
             }
 
             userVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
-            if(userVariables && userVariables.length && typeof userVariables[0].manualTracking !== "undefined"){
+            if(userVariables && userVariables.length && typeof userVariables[0].chartsLinkFacebsharook !== "undefined"){
                 console.debug("We already have userVariables that didn't match filters so no need to refresh them");
                 deferred.resolve([]);
                 return deferred.promise;
@@ -8271,18 +8271,8 @@ angular.module('starter')
         };
 
         quantimodoService.openSharingUrl = function(sharingUrl){
-            if($rootScope.isChromeExtension){
-                console.debug('isChromeExtension so sending to website');
-                var newTab = window.open(sharingUrl,'_blank');
-                if(!newTab){
-                    alert("Please unblock popups and refresh to access the Data Sharing page.");
-                }
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-            } else {
-                console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-                window.location.href = sharingUrl;
-            }
+            var newTab = window.open(sharingUrl,'_blank');
+            if(!newTab){ alert("Please unblock popups and press the share button again!"); }
         };
 
         quantimodoService.addVariableToLocalStorage = function(variable){

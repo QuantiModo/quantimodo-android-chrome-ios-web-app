@@ -1802,6 +1802,7 @@ gulp.task('prepareIosApp', function(callback){
         'removeTransparentPsd',
         'useWhiteIcon',
 		'ionicResourcesIos',
+        'copyIconsToWwwImg',
 		callback);
 });
 
@@ -2205,6 +2206,7 @@ gulp.task('prepareAndroidApp', function(callback){
         'decryptAndroidKeystore',
         'generateAndroidResources',
 		'copyAndroidResources',
+        'copyIconsToWwwImg',
 		callback);
 });
 

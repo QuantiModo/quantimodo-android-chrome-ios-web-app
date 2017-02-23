@@ -66,6 +66,7 @@ angular.module('starter')
         }
 
         if($rootScope.user){
+            quantimodoService.getUserVariablesDeferred();  // For getting the new chartsUrl links
             if(!$rootScope.user.getPreviewBuilds){
                 $rootScope.user.getPreviewBuilds = false;
             }
