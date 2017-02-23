@@ -1382,7 +1382,8 @@ angular.module('starter')
                 minimumAllowedValue: variableObject.minimumAllowedValue,
                 onsetDelay: variableObject.onsetDelayInHours*60*60,
                 combinationOperation: variableObject.combinationOperation,
-                shareUserMeasurements: variableObject.shareUserMeasurements
+                shareUserMeasurements: variableObject.shareUserMeasurements,
+                defaultUnitId: variableObject.defaultUnitId
                 //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime
