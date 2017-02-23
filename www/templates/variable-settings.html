@@ -27,10 +27,16 @@
             </div>
         </div>
 
-        <md-card>
+        <md-card ng-cloak ng-show="variableObject">
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Display Settings</span>
+                    <span class="md-subhead">Modify how the data is displayed in charts and the history pages.</span>
+                </md-card-title-text>
+            </md-card-title>
             <md-card-content>
                 <div layout="row" layout-align="space-between center">
-                    <span>Default Display Unit</span>
+                    <span>Default Unit</span>
                     <md-select ng-model="variableObject.userVariableDefaultUnitId">
                         <md-option ng-repeat="unit in variableObject.availableDefaultUnits"
                                    ng-value="unit.id" >
