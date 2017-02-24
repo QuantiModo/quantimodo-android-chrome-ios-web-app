@@ -2083,7 +2083,7 @@ angular.module('starter')
 
         var webUpgrade = function(ev) {
             $mdDialog.show({
-                controller: DialogController,
+                controller: WebUpgradeDialogController,
                 templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
@@ -2135,7 +2135,7 @@ angular.module('starter')
         };
 
         var purchaseDebugMode = false;
-        function DialogController($scope, $mdDialog) {
+        function WebUpgradeDialogController($scope, $mdDialog) {
 
             $scope.subscriptionPlanId = 'monthly7';
             var currentYear = new Date().getFullYear();
@@ -2192,6 +2192,23 @@ angular.module('starter')
             };
         }
 
+        function MobileUpgradeDialogController($scope, $mdDialog) {
+            console.debug('$scope.subscriptionPlanId is ' + $scope.subscriptionPlanId);
+
+            $scope.subscriptionPlanId = 'monthly7';
+            $scope.hide = function() {
+                $mdDialog.hide();
+            };
+
+            $scope.cancel = function() {
+                $mdDialog.cancel();
+            };
+
+            $scope.answer = function(answer) {
+                $mdDialog.hide(answer);
+            };
+        }
+
         var mobileUpgrade = function (ev) {
             if (!window.inAppPurchase && !mobilePurchaseDebug) {
                 console.error('inAppPurchase not available');
@@ -2200,7 +2217,7 @@ angular.module('starter')
             }
 
             $mdDialog.show({
-                controller: DialogController,
+                controller: MobileUpgradeDialogController,
                 templateUrl: 'templates/fragments/select-subscription-plan-fragment.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
