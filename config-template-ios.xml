@@ -82,7 +82,7 @@
   <plugin name="phonegap-plugin-push" version="1.9.1">
     <variable name="SENDER_ID" value="1052648855194"/>
   </plugin>
-  <plugin name="cordova-plugin-facebook4" version="1.7.2">
+  <plugin name="cordova-plugin-facebook4" version="1.7.4">
     <variable name="APP_ID" value="225078261031461"/>
     <variable name="APP_NAME" value="QuantiModo"/>
   </plugin>

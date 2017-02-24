@@ -18,7 +18,8 @@ angular.module('starter')
                 $scope.showGoogleLoginButton = true;
             }
             var $cordovaFacebook = {};
-            if ($rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
+            var disableFacebookLogin = true;  // Causing failures on IPv6 networks according to iTunes reviewer
+            if (!disableFacebookLogin && $rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
                 console.debug('Injecting $cordovaFacebook');
                 $cordovaFacebook = $injector.get('$cordovaFacebook');
                 $scope.showFacebookLoginButton = true;

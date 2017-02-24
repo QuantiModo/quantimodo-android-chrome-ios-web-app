@@ -106,31 +106,29 @@ config.appSettings  = {
     backgroundColor: "white",
 
     intro : [
-        // screen 1
         {
             img : {
-                width : '150',
-                height : '150',
-                url : 'img/icons/icon.png'
+                "width" : "250",
+                "height" : "250",
+                "url" : "img/intro/intro_import.png"
             },
-            textColor: 'white',
-            backgroundColor: '#3467d6',
-            content : {
-
-                firstParagraph : {
-                    visible : true,
-                    content : 'Welcome to MediModo',
-                    classes : 'intro-header positive'
-                }, 
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
+            "textColor": "white",
+            "backgroundColor": "#3467d6",
+            "content" : {
+                "firstParagraph" : {
+                    "visible" : true,
+                    "content" : "Welcome to MediModo",
+                    "classes" : "intro-header"
                 },
-                finalParagraph : {
-                    visible : true,
-                    content : 'Better health through data.',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true   
+                "logoDiv" : {
+                    "visible" : true,
+                    "id" : "logo"
+                },
+                "finalParagraph" : {
+                    "visible" : true,
+                    "content" : "Better health through data.",
+                    "classes" : "intro-paragraph",
+                    "buttonBarVisible" : true
                 }
             }
         },
