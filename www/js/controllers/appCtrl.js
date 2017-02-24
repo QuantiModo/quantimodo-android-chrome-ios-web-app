@@ -1382,7 +1382,8 @@ angular.module('starter')
                 minimumAllowedValue: variableObject.minimumAllowedValue,
                 onsetDelay: variableObject.onsetDelayInHours*60*60,
                 combinationOperation: variableObject.combinationOperation,
-                shareUserMeasurements: variableObject.shareUserMeasurements
+                shareUserMeasurements: variableObject.shareUserMeasurements,
+                defaultUnitId: variableObject.defaultUnitId
                 //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime
@@ -1390,7 +1391,8 @@ angular.module('starter')
 
             quantimodoService.postUserVariableDeferred(body).then(function() {
                 $ionicLoading.hide();
-                $scope.goBack();
+                $scope.showInfoToast('Saved ' + variableObject.name + ' settings');
+                $scope.goBack();  // Temporary workaround to make tests pass
             }, function(error) {
                 $ionicLoading.hide();
                 console.error(error);
