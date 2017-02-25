@@ -8318,26 +8318,23 @@ angular.module('starter')
             monthly7: {
                 productId: 'monthly7',
                 name: 'QuantiModo Plus Monthly Subscription',
-                list: 'Upgrade Options',  // The list or collection to which the product belongs (e.g. Search Results)
-                brand: config.appSettings.appDisplayName,
                 category: 'Subscription/End-User',  //The category to which the product belongs (e.g. Apparel). Use / as a delimiter to specify up to 5-levels of hierarchy (e.g. Apparel/Men/T-Shirts).
                 variant: 'monthly', // The variant of the product (e.g. Black).
                 position: 1, // The product's position in a list or collection (e.g. 2)
-                price: 6.95,
+                price: 6.95
             },
             yearly60: {
                 productId: 'yearly60',
                 name: 'QuantiModo Plus Yearly Subscription',
-                list: $rootScope.currentPlatform + ' Upgrade Options',  // The list or collection to which the product belongs (e.g. Search Results)
-                brand: config.appSettings.appDisplayName,
                 category: 'Subscription/End-User',  //The category to which the product belongs (e.g. Apparel). Use / as a delimiter to specify up to 5-levels of hierarchy (e.g. Apparel/Men/T-Shirts).
                 variant: 'yearly', // The variant of the product (e.g. Black).
                 position: 2, // The product's position in a list or collection (e.g. 2)
-                price: 59.95,
-            },
-        }
+                price: 59.95
+            }
+        };
         
         quantimodoService.recordUpgradeProductImpression = function () {
+
             // id	text	Yes*	The product ID or SKU (e.g. P67890). *Either this field or name must be set.
             // name	text	Yes*	The name of the product (e.g. Android T-Shirt). *Either this field or id must be set.
             // list	text	No	The list or collection to which the product belongs (e.g. Search Results)
@@ -8348,13 +8345,13 @@ angular.module('starter')
             // price	currency	No	The price of a product (e.g. 29.20).
             // example: Analytics.addImpression(productId, name, list, brand, category, variant, position, price);
             Analytics.addImpression(upgradeSubscriptionProducts.monthly7.productId,
-                upgradeSubscriptionProducts.monthly7.name, upgradeSubscriptionProducts.monthly7.list,
-                upgradeSubscriptionProducts.monthly7.brand, upgradeSubscriptionProducts.monthly7.category,
+                upgradeSubscriptionProducts.monthly7.name, $rootScope.currentPlatform + ' Upgrade Options',
+                config.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
                 upgradeSubscriptionProducts.monthly7.variant, upgradeSubscriptionProducts.monthly7.position,
                 upgradeSubscriptionProducts.monthly7.price);
             Analytics.addImpression(upgradeSubscriptionProducts.yearly60.productId,
-                upgradeSubscriptionProducts.yearly60.name, upgradeSubscriptionProducts.yearly60.list,
-                upgradeSubscriptionProducts.yearly60.brand, upgradeSubscriptionProducts.yearly60.category,
+                upgradeSubscriptionProducts.yearly60.name, $rootScope.currentPlatform + ' Upgrade Options',
+                config.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
                 upgradeSubscriptionProducts.yearly60.variant, upgradeSubscriptionProducts.yearly60.position,
                 upgradeSubscriptionProducts.yearly60.price);
             Analytics.pageView();
@@ -8363,7 +8360,7 @@ angular.module('starter')
         quantimodoService.recordUpgradeProductPurchase = function (productId, transactionId, step, coupon) {
             //Analytics.addProduct(productId, name, category, brand, variant, price, quantity, coupon, position);
             Analytics.addProduct(productId, upgradeSubscriptionProducts[productId].name,
-                upgradeSubscriptionProducts[productId].category, upgradeSubscriptionProducts[productId].brand,
+                upgradeSubscriptionProducts[productId].category, config.appSettings.appDisplayName,
                 upgradeSubscriptionProducts[productId].variant, upgradeSubscriptionProducts[productId].price,
                 1, coupon, upgradeSubscriptionProducts[productId].position);
 
