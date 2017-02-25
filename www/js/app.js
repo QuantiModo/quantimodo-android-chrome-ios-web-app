@@ -423,30 +423,28 @@ angular.module('starter',
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
                  ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
 
-    AnalyticsProvider.setAccount('UA-39222734-2')
-        .delayScriptTag(true)
-        .ignoreFirstPageLoad(true);
+    var analyticsOptions = {tracker: 'UA-39222734-2', trackEvent: true};
+    if(ionic.Platform.isAndroid()){
+        var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
+        if(!clientId){
+            clientId = Math.floor((Math.random() * 9999999999) + 1000000000);
+            clientId = clientId+'.'+Math.floor((Math.random() * 9999999999) + 1000000000);
+            window.localStorage.setItem('GA_LOCAL_STORAGE_KEY', clientId);
+        }
+        analyticsOptions.fields = {storage: 'none', fields: clientId};
+    }
 
+    AnalyticsProvider.setAccount(analyticsOptions);
+    AnalyticsProvider.delayScriptTag(true);  // Needed to set user id later
     // Track all routes (default is true).
-    AnalyticsProvider.trackPages(true);
-
-    // Track all URL query params (default is false).
-    AnalyticsProvider.trackUrlParams(true);
-
-    // Ignore first page view (default is false).
-    // Helpful when using hashes and whenever your bounce rate looks obscenely low.
-    //AnalyticsProvider.ignoreFirstPageLoad(true);
-
-    // URL prefix (default is empty).
-    // Helpful when the app doesn't run in the root directory.
-    //AnalyticsProvider.trackPrefix('my-application');
-
-    // Change the default page event name.
-    // Helpful when using ui-router, which fires $stateChangeSuccess instead of $routeChangeSuccess.
-    AnalyticsProvider.setPageEvent('$stateChangeSuccess');
-
-    // Set hybrid mobile application support
-    AnalyticsProvider.setHybridMobileSupport(true);
+    AnalyticsProvider.trackPages(true); // Track all URL query params (default is false).
+    AnalyticsProvider.trackUrlParams(true);  // Ignore first page view (default is false).
+    AnalyticsProvider.ignoreFirstPageLoad(true);  // Helpful when using hashes and whenever your bounce rate looks obscenely low.
+    //AnalyticsProvider.trackPrefix('my-application'); // Helpful when the app doesn't run in the root directory. URL prefix (default is empty).
+    AnalyticsProvider.setPageEvent('$stateChangeSuccess'); // Change the default page event name. Helpful when using ui-router, which fires $stateChangeSuccess instead of $routeChangeSuccess.
+    AnalyticsProvider.setHybridMobileSupport(true);  // Set hybrid mobile application support
+    //AnalyticsProvider.enterDebugMode(true);
+    AnalyticsProvider.useECommerce(true, true) // Enable e-commerce module (ecommerce.js)
 
     /*  Trying to move to appCtrl
     $ionicCloudProvider.init({
