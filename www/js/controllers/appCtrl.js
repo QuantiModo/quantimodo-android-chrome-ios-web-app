@@ -2153,14 +2153,8 @@ angular.module('starter')
             };
 
             $scope.cancel = function() {
+                quantimodoService.reportError('User cancelled upgrade!  What happened?');
                 $mdDialog.cancel();
-            };
-
-            $scope.mobileUpgrade = function(subscriptionPlanId) {
-                var answer = {
-                    subscriptionPlanId: subscriptionPlanId
-                };
-                $mdDialog.hide(answer);
             };
 
             $scope.webSubscribe = function(subscriptionPlanId, coupon, creditCardInfo, event) {
@@ -2194,19 +2188,13 @@ angular.module('starter')
 
         function MobileUpgradeDialogController($scope, $mdDialog) {
             console.debug('$scope.subscriptionPlanId is ' + $scope.subscriptionPlanId);
-
             $scope.subscriptionPlanId = 'monthly7';
-            $scope.hide = function() {
-                $mdDialog.hide();
-            };
-
+            $scope.hide = function(){$mdDialog.hide();};
             $scope.cancel = function() {
+                quantimodoService.reportError('User cancelled upgrade!  What happened?');
                 $mdDialog.cancel();
             };
-
-            $scope.answer = function(answer) {
-                $mdDialog.hide(answer);
-            };
+            $scope.subscribe = function(answer) {$mdDialog.hide(answer);};
         }
 
         var mobileUpgrade = function (ev) {
@@ -2223,19 +2211,17 @@ angular.module('starter')
                 targetEvent: ev,
                 clickOutsideToClose: false,
                 fullscreen: false
-            }).then(function(answer) {
+            }).then(function(subscriptionPlanId) {
                 if(purchaseDebugMode){
-                    alert('About to call makeInAppPurchase for ' + JSON.stringify(answer));
+                    alert('About to call makeInAppPurchase for ' + JSON.stringify(subscriptionPlanId));
                 }
-                makeInAppPurchase(answer);
+                makeInAppPurchase(subscriptionPlanId);
             }, function() {
                 $scope.status = 'You cancelled the dialog.';
             });
         };
         
-        var makeInAppPurchase = function (answer) {
-
-            var productName = answer.subscriptionPlanId;
+        var makeInAppPurchase = function (subscriptionPlanId) {
             var subscriptionProvider = 'unknown';
             if($rootScope.isAndroid){
                 subscriptionProvider = 'google';
@@ -2244,20 +2230,20 @@ angular.module('starter')
                 subscriptionProvider = 'apple';
             }
             if(purchaseDebugMode){
-                alert('Called makeInAppPurchase for ' + productName);
+                alert('Called makeInAppPurchase for ' + subscriptionPlanId);
                 quantimodoService.updateUserSettingsDeferred({
                     subscriptionProvider: subscriptionProvider,
-                    stripePlan: productName,
+                    stripePlan: subscriptionPlanId,
                     trialEndsAt: moment().add(14, 'days').toISOString(),
-                    coupon: answer.coupon
+                    //coupon: answer.coupon
                 });
             }
             $ionicLoading.show();
             if($rootScope.isIOS){
-                productName = config.appSettings.lowercaseAppName + '_' + productName;
+                subscriptionPlanId = config.appSettings.lowercaseAppName + '_' + subscriptionPlanId;
             }
             inAppPurchase
-                .getProducts([productName])
+                .getProducts([subscriptionPlanId])
                 .then(function (products) {
                     console.debug('Available Products: ' + JSON.stringify(products));
                     if(purchaseDebugMode){
@@ -2267,13 +2253,13 @@ angular.module('starter')
                      [{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                      */
                     if(purchaseDebugMode){
-                        alert('About to subscribe to ' + JSON.stringify(productName));
+                        alert('About to subscribe to ' + JSON.stringify(subscriptionPlanId));
                     }
                     inAppPurchase
-                        .subscribe(productName)
+                        .subscribe(subscriptionPlanId)
                         .then(function (data) {
                             $ionicLoading.hide();
-                            quantimodoService.reportError("User subscribed to " + productName + ": " +
+                            quantimodoService.reportError("User subscribed to " + subscriptionPlanId + ": " +
                                 JSON.stringify(data));
                             /*
                              {
@@ -2284,9 +2270,9 @@ angular.module('starter')
                              */
                             quantimodoService.updateUserSettingsDeferred({
                                 subscriptionProvider: subscriptionProvider,
-                                stripePlan: productName,
+                                stripePlan: subscriptionPlanId,
                                 trialEndsAt: moment().add(14, 'days').toISOString(),
-                                coupon: answer.coupon
+                                //coupon: answer.coupon
                             });
                             $mdDialog.show(
                                 $mdDialog.alert()
@@ -2307,7 +2293,7 @@ angular.module('starter')
                 })
                 .catch(function (err) {
                     $ionicLoading.hide();
-                    quantimodoService.reportError("couldn't get product " + productName + ": " + JSON.stringify(err));
+                    quantimodoService.reportError("couldn't get product " + subscriptionPlanId + ": " + JSON.stringify(err));
                 });
         };
 
