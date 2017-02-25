@@ -8314,5 +8314,77 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        var upgradeSubscriptionProducts = {
+            monthly7: {
+                productId: 'monthly7',
+                name: 'QuantiModo Plus Monthly Subscription',
+                list: 'Upgrade Options',  // The list or collection to which the product belongs (e.g. Search Results)
+                brand: config.appSettings.appDisplayName,
+                category: 'Subscription/End-User',  //The category to which the product belongs (e.g. Apparel). Use / as a delimiter to specify up to 5-levels of hierarchy (e.g. Apparel/Men/T-Shirts).
+                variant: 'monthly', // The variant of the product (e.g. Black).
+                position: 1, // The product's position in a list or collection (e.g. 2)
+                price: 6.95,
+            },
+            yearly60: {
+                productId: 'yearly60',
+                name: 'QuantiModo Plus Yearly Subscription',
+                list: $rootScope.currentPlatform + ' Upgrade Options',  // The list or collection to which the product belongs (e.g. Search Results)
+                brand: config.appSettings.appDisplayName,
+                category: 'Subscription/End-User',  //The category to which the product belongs (e.g. Apparel). Use / as a delimiter to specify up to 5-levels of hierarchy (e.g. Apparel/Men/T-Shirts).
+                variant: 'yearly', // The variant of the product (e.g. Black).
+                position: 2, // The product's position in a list or collection (e.g. 2)
+                price: 59.95,
+            },
+        }
+        
+        quantimodoService.recordUpgradeProductImpression = function () {
+            // id	text	Yes*	The product ID or SKU (e.g. P67890). *Either this field or name must be set.
+            // name	text	Yes*	The name of the product (e.g. Android T-Shirt). *Either this field or id must be set.
+            // list	text	No	The list or collection to which the product belongs (e.g. Search Results)
+            // brand	text	No	The brand associated with the product (e.g. Google).
+            // category	text	No	The category to which the product belongs (e.g. Apparel). Use / as a delimiter to specify up to 5-levels of hierarchy (e.g. Apparel/Men/T-Shirts).
+            // variant	text	No	The variant of the product (e.g. Black).
+            // position	integer	No	The product's position in a list or collection (e.g. 2).
+            // price	currency	No	The price of a product (e.g. 29.20).
+            // example: Analytics.addImpression(productId, name, list, brand, category, variant, position, price);
+            Analytics.addImpression(upgradeSubscriptionProducts.monthly7.productId,
+                upgradeSubscriptionProducts.monthly7.name, upgradeSubscriptionProducts.monthly7.list,
+                upgradeSubscriptionProducts.monthly7.brand, upgradeSubscriptionProducts.monthly7.category,
+                upgradeSubscriptionProducts.monthly7.variant, upgradeSubscriptionProducts.monthly7.position,
+                upgradeSubscriptionProducts.monthly7.price);
+            Analytics.addImpression(upgradeSubscriptionProducts.yearly60.productId,
+                upgradeSubscriptionProducts.yearly60.name, upgradeSubscriptionProducts.yearly60.list,
+                upgradeSubscriptionProducts.yearly60.brand, upgradeSubscriptionProducts.yearly60.category,
+                upgradeSubscriptionProducts.yearly60.variant, upgradeSubscriptionProducts.yearly60.position,
+                upgradeSubscriptionProducts.yearly60.price);
+            Analytics.pageView();
+        };
+
+        quantimodoService.recordUpgradeProductPurchase = function (productId, transactionId, step, coupon) {
+            //Analytics.addProduct(productId, name, category, brand, variant, price, quantity, coupon, position);
+            Analytics.addProduct(productId, upgradeSubscriptionProducts[productId].name,
+                upgradeSubscriptionProducts[productId].category, upgradeSubscriptionProducts[productId].brand,
+                upgradeSubscriptionProducts[productId].variant, upgradeSubscriptionProducts[productId].price,
+                1, coupon, upgradeSubscriptionProducts[productId].position);
+
+            // id	text	Yes*	The transaction ID (e.g. T1234). *Required if the action type is purchase or refund.
+            // affiliation	text	No	The store or affiliation from which this transaction occurred (e.g. Google Store).
+            // revenue	currency	No	Specifies the total revenue or grand total associated with the transaction (e.g. 11.99). This value may include shipping, tax costs, or other adjustments to total revenue that you want to include as part of your revenue calculations. Note: if revenue is not set, its value will be automatically calculated using the product quantity and price fields of all products in the same hit.
+            // tax	currency	No	The total tax associated with the transaction.
+            // shipping	currency	No	The shipping cost associated with the transaction.
+            // coupon	text	No	The transaction coupon redeemed with the transaction.
+            // list	text	No	The list that the associated products belong to. Optional.
+            // step	integer	No	A number representing a step in the checkout process. Optional on checkout actions.
+            // option	text	No	Additional field for checkout and checkout_option actions that can describe option information on the checkout page, like selected payment method.
+
+            var revenue = upgradeSubscriptionProducts[productId].price;
+            var affiliation = config.appSettings.appDisplayName;
+            var tax = 0;
+            var shipping = 0;
+            var list = config.appSettings.appDisplayName;
+            var option = '';
+            Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
+        };
+
         return quantimodoService;
     });

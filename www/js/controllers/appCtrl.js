@@ -219,12 +219,12 @@ angular.module('starter')
             quantimodoService.openSharingUrl(sharingUrl);
         };
 
-        $scope.shareStudy = function(correlationObject, mailToUrl){
-            if(mailToUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
-                showShareStudyConfirmation(correlationObject, mailToUrl);
+        $scope.shareStudy = function(correlationObject, sharingUrl){
+            if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
+                showShareStudyConfirmation(correlationObject, sharingUrl);
                 return;
             }
-            quantimodoService.openSharingUrl(mailToUrl);
+            quantimodoService.openSharingUrl(sharingUrl);
         };
 
         var showShareStudyConfirmation = function(correlationObject, sharingUrl) {
@@ -248,7 +248,7 @@ angular.module('starter')
                     $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                     quantimodoService.postStudyDeferred(body).then(function () {
                         $ionicLoading.hide();
-                        if(mailToUrl){
+                        if(sharingUrl){
                             quantimodoService.openSharingUrl(sharingUrl);
                         }
                     }, function (error) {
@@ -2055,23 +2055,24 @@ angular.module('starter')
             );
         };
 
-        if(!$scope.subscriptionPlanId){
-            $scope.subscriptionPlanId = 'monthly7';
+        if(!$scope.productId){
+            $scope.productId = 'monthly7';
         }
 
         $scope.monthlySubscription = function () {
-            $scope.subscriptionPlanId = 'yearly60';
+            $scope.productId = 'yearly60';
             $scope.upgrade();
         };
 
         $scope.yearlySubscription = function () {
-            $scope.subscriptionPlanId = 'yearly60';
+            $scope.productId = 'yearly60';
             $scope.upgrade();
         };
 
         var mobilePurchaseDebug = false;
 
         $scope.upgrade = function (ev) {
+
             if($rootScope.isMobile || mobilePurchaseDebug){
                 mobileUpgrade(ev);
             } else {
@@ -2094,7 +2095,7 @@ angular.module('starter')
                     "card_month": answer.creditCardInfo.month,
                     "card_year": answer.creditCardInfo.year,
                     "card_cvc": answer.creditCardInfo.securityCode,
-                    'plan': answer.subscriptionPlanId,
+                    'productId': answer.productId,
                     'coupon': answer.coupon
                 };
 
@@ -2135,7 +2136,7 @@ angular.module('starter')
         var purchaseDebugMode = false;
         function WebUpgradeDialogController($scope, $mdDialog) {
 
-            $scope.subscriptionPlanId = 'monthly7';
+            $scope.productId = 'monthly7';
             var currentYear = new Date().getFullYear();
             $scope.creditCardInfo = {
                 year: null
@@ -2155,7 +2156,7 @@ angular.module('starter')
                 $mdDialog.cancel();
             };
 
-            $scope.webSubscribe = function(subscriptionPlanId, coupon, creditCardInfo, event) {
+            $scope.webSubscribe = function(productId, coupon, creditCardInfo, event) {
                 if (!creditCardInfo.securityCode) {
                     quantimodoService.reportError('Please enter card number');
                     return;
@@ -2176,7 +2177,7 @@ angular.module('starter')
                     return;
                 }
                 var answer = {
-                    subscriptionPlanId: subscriptionPlanId,
+                    productId: productId,
                     coupon: coupon,
                     creditCardInfo: creditCardInfo
                 };
@@ -2185,8 +2186,8 @@ angular.module('starter')
         }
 
         function MobileUpgradeDialogController($scope, $mdDialog) {
-            console.debug('$scope.subscriptionPlanId is ' + $scope.subscriptionPlanId);
-            $scope.subscriptionPlanId = 'monthly7';
+            console.debug('$scope.productId is ' + $scope.productId);
+            $scope.productId = 'monthly7';
             $scope.hide = function(){$mdDialog.hide();};
             $scope.cancel = function() {
                 quantimodoService.reportError('User cancelled upgrade!  What happened?');
@@ -2209,17 +2210,18 @@ angular.module('starter')
                 targetEvent: ev,
                 clickOutsideToClose: false,
                 fullscreen: false
-            }).then(function(subscriptionPlanId) {
+            }).then(function(productId) {
                 if(purchaseDebugMode){
-                    alert('About to call makeInAppPurchase for ' + JSON.stringify(subscriptionPlanId));
+                    alert('About to call makeInAppPurchase for ' + JSON.stringify(productId));
                 }
-                makeInAppPurchase(subscriptionPlanId);
+                makeInAppPurchase(productId);
             }, function() {
                 $scope.status = 'You cancelled the dialog.';
             });
         };
         
-        var makeInAppPurchase = function (subscriptionPlanId) {
+        var makeInAppPurchase = function (baseProductId) {
+            var productId = baseProductId;
             var subscriptionProvider = 'unknown';
             if($rootScope.isAndroid){
                 subscriptionProvider = 'google';
@@ -2228,20 +2230,22 @@ angular.module('starter')
                 subscriptionProvider = 'apple';
             }
             if(purchaseDebugMode){
-                alert('Called makeInAppPurchase for ' + subscriptionPlanId);
+                alert('Called makeInAppPurchase for ' + productId);
                 quantimodoService.updateUserSettingsDeferred({
                     subscriptionProvider: subscriptionProvider,
-                    stripePlan: subscriptionPlanId,
+                    productId: productId,
                     trialEndsAt: moment().add(14, 'days').toISOString(),
                     //coupon: answer.coupon
                 });
             }
             $ionicLoading.show();
             if($rootScope.isIOS){
-                subscriptionPlanId = config.appSettings.lowercaseAppName + '_' + subscriptionPlanId;
+                productId = config.appSettings.lowercaseAppName + '_' + productId;
             }
+
+            quantimodoService.recordUpgradeProductPurchase(baseProductId, null, 1);
             inAppPurchase
-                .getProducts([subscriptionPlanId])
+                .getProducts([productId])
                 .then(function (products) {
                     console.debug('Available Products: ' + JSON.stringify(products));
                     if(purchaseDebugMode){
@@ -2251,13 +2255,13 @@ angular.module('starter')
                      [{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                      */
                     if(purchaseDebugMode){
-                        alert('About to subscribe to ' + JSON.stringify(subscriptionPlanId));
+                        alert('About to subscribe to ' + JSON.stringify(productId));
                     }
                     inAppPurchase
-                        .subscribe(subscriptionPlanId)
+                        .subscribe(productId)
                         .then(function (data) {
                             $ionicLoading.hide();
-                            quantimodoService.reportError("User subscribed to " + subscriptionPlanId + ": " +
+                            quantimodoService.reportError("User subscribed to " + productId + ": " +
                                 JSON.stringify(data));
                             /*
                              {
@@ -2268,20 +2272,22 @@ angular.module('starter')
                              */
                             quantimodoService.updateUserSettingsDeferred({
                                 subscriptionProvider: subscriptionProvider,
-                                stripePlan: subscriptionPlanId,
+                                productId: productId,
                                 trialEndsAt: moment().add(14, 'days').toISOString(),
                                 //coupon: answer.coupon
-                            });
-                            $mdDialog.show(
-                                $mdDialog.alert()
-                                    .parent(angular.element(document.querySelector('#popupContainer')))
-                                    .clickOutsideToClose(true)
-                                    .title('Thank you!')
-                                    .textContent("Let's get started!")
-                                    .ariaLabel('Alert Dialog Demo')
-                                    .ok('OK!')
-                            ).finally(function() {
-                                $scope.goBack();
+                            }).then(function(response) {
+                                quantimodoService.recordUpgradeProductPurchase(baseProductId, response.transactionId, 2);
+                                $mdDialog.show(
+                                    $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .title('Thank you!')
+                                        .textContent("Let's get started!")
+                                        .ariaLabel('Alert Dialog Demo')
+                                        .ok('OK!')
+                                ).finally(function() {
+                                    $scope.goBack();
+                                });
                             });
                         })
                         .catch(function (err) {
@@ -2291,7 +2297,7 @@ angular.module('starter')
                 })
                 .catch(function (err) {
                     $ionicLoading.hide();
-                    quantimodoService.reportError("couldn't get product " + subscriptionPlanId + ": " + JSON.stringify(err));
+                    quantimodoService.reportError("couldn't get product " + productId + ": " + JSON.stringify(err));
                 });
         };
 
