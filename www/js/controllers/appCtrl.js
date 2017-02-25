@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector,
                                     quantimodoService, ionicDatePicker, $cordovaOauth, clipboard,
-                                    $ionicActionSheet,
+                                    $ionicActionSheet, Analytics,
                                     //$ionicDeploy,
                                     $locale, $mdDialog, $mdToast) {
 
@@ -2031,9 +2031,7 @@ angular.module('starter')
         };
 
         $scope.$on('$stateChangeSuccess', function() {
-            if($rootScope.offlineConnectionErrorShowing){
-                $rootScope.offlineConnectionErrorShowing = false;
-            }
+            if($rootScope.offlineConnectionErrorShowing){$rootScope.offlineConnectionErrorShowing = false;}
             $scope.closeMenu();
         });
 

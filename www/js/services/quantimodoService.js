@@ -1404,11 +1404,19 @@ angular.module('starter')
 
             // you can set any advanced configuration here
             Analytics.set('&uid', user.id);
+            Analytics.set('&ds', $rootScope.currentPlatform);
+            Analytics.set('&cn', $rootScope.appDisplayName);
+            Analytics.set('&cs', $rootScope.appDisplayName);
+            Analytics.set('&cm', $rootScope.currentPlatform);
+
+            Analytics.set('&an', $rootScope.appDisplayName);
+            Analytics.set('&aid', config.appSettings.appIdentifier);
+            Analytics.set('&av', $rootScope.appVersion);
 
             // Register a custom dimension for the default, unnamed account object
             // e.g., ga('set', 'dimension1', 'Paid');
             Analytics.set('dimension1', 'Paid');
-            Analytics.set('dimension2', user.id);
+            Analytics.set('dimension2', user.id.toString());
 
             // Register a custom dimension for a named account object
             // e.g., ga('accountName.set', 'dimension2', 'Paid');
