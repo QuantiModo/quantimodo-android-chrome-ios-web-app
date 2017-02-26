@@ -2080,6 +2080,7 @@ angular.module('starter')
         };
 
         var webUpgrade = function(ev) {
+            quantimodoService.recordUpgradeProductPurchase(productId, null, 1);
             $mdDialog.show({
                 controller: WebUpgradeDialogController,
                 templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
@@ -2125,6 +2126,7 @@ angular.module('starter')
                             .ariaLabel('Error')
                             .ok('OK')
                     );
+                    quantimodoService.recordUpgradeProductPurchase(productId, response.data.purchaseId, 2);
                 });
 
             }, function() {
@@ -2223,7 +2225,7 @@ angular.module('starter')
                         trialEndsAt: moment().add(14, 'days').toISOString()
                         //coupon: answer.coupon
                     }).then(function (response) {
-                        quantimodoService.recordUpgradeProductPurchase(baseProductId, response.transactionId, 2);
+                        quantimodoService.recordUpgradeProductPurchase(baseProductId, response.data.purchaseId, 2);
                     });
                 }).catch(function (err) {
                     $ionicLoading.hide();
