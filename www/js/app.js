@@ -444,7 +444,7 @@ angular.module('starter',
     AnalyticsProvider.setPageEvent('$stateChangeSuccess'); // Change the default page event name. Helpful when using ui-router, which fires $stateChangeSuccess instead of $routeChangeSuccess.
     AnalyticsProvider.setHybridMobileSupport(true);  // Set hybrid mobile application support
     //AnalyticsProvider.enterDebugMode(true);
-    AnalyticsProvider.useECommerce(true, true) // Enable e-commerce module (ecommerce.js)
+    AnalyticsProvider.useECommerce(true, true); // Enable e-commerce module (ecommerce.js)
 
     /*  Trying to move to appCtrl
     $ionicCloudProvider.init({
@@ -578,6 +578,19 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/intro-tour.html",
+                    controller: 'IntroCtrl'
+                }
+            }
+        })
+        .state('app.introNew', {
+            cache: false,
+            url: "/intro-new",
+            params: {
+                doNotRedirect: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/intro-tour-new.html",
                     controller: 'IntroCtrl'
                 }
             }

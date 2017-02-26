@@ -640,7 +640,6 @@ angular.module('starter')
         $ionicLoading.hide();
 
         /*Wrapper Config*/
-        $scope.viewTitle = config.appSettings.appDisplayName;
         $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
         $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
         $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
