@@ -7826,7 +7826,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Hi! I'm " + config.appSettings.appDisplayName + "!",
-                    color: yellow,
+                    color: green,
                     image: {
                         url: "img/quantimodo-robot-waving.svg",
                         height: "120",
@@ -7849,11 +7849,11 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Only Human",
-                    color: green,
+                    color: yellow,
                     image: {
-                        url: "img/brain.svg",
-                        height: "96",
-                        width: "96"
+                        url: "img/brain-pink.svg",
+                        height: "120",
+                        width: "120"
                     },
                     bodyText: "Human brains can only hold 7 numbers in working-memory at a time.  " +
                     "So they're not able to determine which factors are most significant. ",
@@ -7861,7 +7861,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Treatment Determination",
-                    color: yellow,
+                    color: green,
                     image: {
                         url: "img/doctor-frown-factors.png",
                         height: "120",
@@ -7922,8 +7922,8 @@ angular.module('starter')
                 },
             ];
 
-            if(config.appSettings.intro){
-                return config.appSettings.intro;
+            if(config.appSettings.introNew){
+                return config.appSettings.introNew;
             }
 
             return introSlides;
@@ -8441,7 +8441,7 @@ angular.module('starter')
                 price: 59.95
             }
         };
-        
+
         quantimodoService.recordUpgradeProductImpression = function () {
 
             // id	text	Yes*	The product ID or SKU (e.g. P67890). *Either this field or name must be set.
