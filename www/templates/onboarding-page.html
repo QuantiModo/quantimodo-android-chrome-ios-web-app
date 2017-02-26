@@ -61,6 +61,17 @@
                                 text-align: center"
                     id="enableLocationTrackingButton"
                     ng-click="enableLocationTracking($event)">
+                <i class="{{variableCategories.Location.icon}}"> &nbsp; Yes &nbsp;</i>
+            </button>
+            <button class="button"
+                    ng-show="onboardingPages[0].id === 'weatherTrackingPage' && user.stripeActive"
+                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
+                                border: none;
+                                outline: none;
+                                color: white;
+                                text-align: center"
+                    id="enableWeatherTrackingButton"
+                    ng-click="connectWeatherOnboarding()">
                 <i class="ion-ios-partlysunny"> &nbsp; Yes &nbsp;</i>
             </button>
             <button class="button"

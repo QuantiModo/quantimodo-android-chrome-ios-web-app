@@ -1716,7 +1716,7 @@ angular.module('starter')
                 "exposure might be affecting you.  Another benefit of enabling " +
                 "this option is that allows the app to run in the background and open instantly instead " +
                 "of taking a few seconds to load.  You can view your location history by going to Menu -> History -> Locations.",
-                imageUrl: "img/features/placeholder.png"
+                imageUrl: "img/variable_categories/location.svg"
             },
             "Music" : {
                 defaultAbbreviatedUnitName: "count",
@@ -7670,9 +7670,25 @@ angular.module('starter')
                 },
                 {
                     id: "locationTrackingPage",
-                    title: 'Weather & Location Tracking',
+                    title: 'Location Tracking',
                     color: green,
                     iconClass: "icon positive " + $rootScope.variableCategories.Location.icon,
+                    image: {
+                        url: $rootScope.variableCategories.Location.imageUrl,
+                        height: "96",
+                        width: "96"
+                    },
+                    premiumFeature: true,
+                    nextPageButtonText: 'Maybe Later',
+                    bodyText: "Would you like to automatically log location to see how time spent at restaurants, " +
+                        "the gym, work or doctors offices might be affecting you? ",
+                    moreInfo: $rootScope.variableCategories.Location.moreInfo,
+                },
+                {
+                    id: "weatherTrackingPage",
+                    title: 'Weather Tracking',
+                    color: green,
+                    iconClass: "icon positive " + $rootScope.variableCategories.Environment.icon,
                     image: {
                         url: $rootScope.variableCategories.Environment.imageUrl,
                         height: "96",
@@ -7680,9 +7696,10 @@ angular.module('starter')
                     },
                     premiumFeature: true,
                     nextPageButtonText: 'Maybe Later',
-                    bodyText: "Would you like to automatically log location and weather? ",
-                    moreInfo: $rootScope.variableCategories.Location.moreInfo,
-                    },
+                    bodyText: "Would you like to automatically record the weather to see how temperature or sunlight " +
+                        "exposure might be affecting you? ",
+                    moreInfo: $rootScope.variableCategories.Environment.moreInfo,
+                },
                 {
                     id: "importDataPage",
                     title: 'Import Your Data',
@@ -7702,15 +7719,12 @@ angular.module('starter')
                     id: "allDoneCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                     title: 'Great job!',
-                    color: {
-                        "backgroundColor": "#3467d6",
-                        circleColor: "#fefdfc",
-                    },
+                    color: green,
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
-                        url: "img/cute_robot_happy_transparent.png",
-                        height: "96",
-                        width: "70"
+                        url: "img/quantimodo-robot-waving-2.svg",
+                        height: "120",
+                        width: "120"
                     },
                     bodyText: "You're all set up!  Let's take a minute to record your first measurements and then " +
                         "you're done for the day! "
@@ -8202,7 +8216,7 @@ angular.module('starter')
                 {
                     id: "locationTrackingInfoCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !user.trackLocation",
-                    title: 'Weather & Location Tracking',
+                    title: 'Location Tracking',
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
                     iconClass: "icon positive ion-ios-location",
@@ -8211,7 +8225,31 @@ angular.module('starter')
                         height: "96",
                         width: "96"
                     },
-                    bodyText: "Would you like to automatically log location and weather? ",
+                    bodyText: "Would you like to automatically log location? ",
+                    moreInfo: $rootScope.variableCategories.Location.moreInfo,
+                    buttons: [
+                        {
+                            id: "hideLocationTrackingInfoCardButton",
+                            buttonText: 'NO',
+                            buttonIconClass: "ion-flash-off",
+                            buttonClass: "button button-clear button-assertive",
+                            clickFunctionCall: function(){$rootScope.hideUpgradePage();}
+                        }
+                    ]
+                },
+                {
+                    id: "weatherTrackingInfoCard",
+                    ngIfLogic: "stateParams.showHelpCards === true",
+                    title: 'Weather Tracking',
+                    "backgroundColor": "#0f9d58",
+                    circleColor: "#03c466",
+                    iconClass: "icon positive ion-ios-thunderstorm",
+                    image: {
+                        url: $rootScope.variableCategories.Environment.imageUrl,
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Would you like to automatically log the weather to see how it might be affecting you? ",
                     moreInfo: $rootScope.variableCategories.Location.moreInfo,
                     buttons: [
                         {
