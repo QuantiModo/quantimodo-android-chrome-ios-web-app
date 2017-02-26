@@ -8425,7 +8425,7 @@ angular.module('starter')
 
         var upgradeSubscriptionProducts = {
             monthly7: {
-                productId: 'monthly7',
+                baseProductId: 'monthly7',
                 name: 'QuantiModo Plus Monthly Subscription',
                 category: 'Subscription/End-User',  //The category to which the product belongs (e.g. Apparel). Use / as a delimiter to specify up to 5-levels of hierarchy (e.g. Apparel/Men/T-Shirts).
                 variant: 'monthly', // The variant of the product (e.g. Black).
@@ -8433,7 +8433,7 @@ angular.module('starter')
                 price: 6.95
             },
             yearly60: {
-                productId: 'yearly60',
+                baseProductId: 'yearly60',
                 name: 'QuantiModo Plus Yearly Subscription',
                 category: 'Subscription/End-User',  //The category to which the product belongs (e.g. Apparel). Use / as a delimiter to specify up to 5-levels of hierarchy (e.g. Apparel/Men/T-Shirts).
                 variant: 'yearly', // The variant of the product (e.g. Black).
@@ -8452,13 +8452,13 @@ angular.module('starter')
             // variant	text	No	The variant of the product (e.g. Black).
             // position	integer	No	The product's position in a list or collection (e.g. 2).
             // price	currency	No	The price of a product (e.g. 29.20).
-            // example: Analytics.addImpression(productId, name, list, brand, category, variant, position, price);
-            Analytics.addImpression(upgradeSubscriptionProducts.monthly7.productId,
+            // example: Analytics.addImpression(baseProductId, name, list, brand, category, variant, position, price);
+            Analytics.addImpression(upgradeSubscriptionProducts.monthly7.baseProductId,
                 upgradeSubscriptionProducts.monthly7.name, $rootScope.currentPlatform + ' Upgrade Options',
                 config.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
                 upgradeSubscriptionProducts.monthly7.variant, upgradeSubscriptionProducts.monthly7.position,
                 upgradeSubscriptionProducts.monthly7.price);
-            Analytics.addImpression(upgradeSubscriptionProducts.yearly60.productId,
+            Analytics.addImpression(upgradeSubscriptionProducts.yearly60.baseProductId,
                 upgradeSubscriptionProducts.yearly60.name, $rootScope.currentPlatform + ' Upgrade Options',
                 config.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
                 upgradeSubscriptionProducts.yearly60.variant, upgradeSubscriptionProducts.yearly60.position,
@@ -8466,12 +8466,12 @@ angular.module('starter')
             Analytics.pageView();
         };
 
-        quantimodoService.recordUpgradeProductPurchase = function (productId, transactionId, step, coupon) {
-            //Analytics.addProduct(productId, name, category, brand, variant, price, quantity, coupon, position);
-            Analytics.addProduct(productId, upgradeSubscriptionProducts[productId].name,
-                upgradeSubscriptionProducts[productId].category, config.appSettings.appDisplayName,
-                upgradeSubscriptionProducts[productId].variant, upgradeSubscriptionProducts[productId].price,
-                1, coupon, upgradeSubscriptionProducts[productId].position);
+        quantimodoService.recordUpgradeProductPurchase = function (baseProductId, transactionId, step, coupon) {
+            //Analytics.addProduct(baseProductId, name, category, brand, variant, price, quantity, coupon, position);
+            Analytics.addProduct(baseProductId, upgradeSubscriptionProducts[baseProductId].name,
+                upgradeSubscriptionProducts[baseProductId].category, config.appSettings.appDisplayName,
+                upgradeSubscriptionProducts[baseProductId].variant, upgradeSubscriptionProducts[baseProductId].price,
+                1, coupon, upgradeSubscriptionProducts[baseProductId].position);
 
             // id	text	Yes*	The transaction ID (e.g. T1234). *Required if the action type is purchase or refund.
             // affiliation	text	No	The store or affiliation from which this transaction occurred (e.g. Google Store).
@@ -8483,7 +8483,7 @@ angular.module('starter')
             // step	integer	No	A number representing a step in the checkout process. Optional on checkout actions.
             // option	text	No	Additional field for checkout and checkout_option actions that can describe option information on the checkout page, like selected payment method.
 
-            var revenue = upgradeSubscriptionProducts[productId].price;
+            var revenue = upgradeSubscriptionProducts[baseProductId].price;
             var affiliation = config.appSettings.appDisplayName;
             var tax = 0;
             var shipping = 0;
