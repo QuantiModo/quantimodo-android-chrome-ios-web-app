@@ -4,9 +4,6 @@ angular.module('starter')
     .controller('WelcomeCtrl', function($scope, $state, $rootScope, quantimodoService, $stateParams) {
         
         $scope.controller_name = "WelcomeCtrl";
-        $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-        $rootScope.isAndroid = ionic.Platform.isAndroid();
-        $rootScope.isChrome = window.chrome ? true : false;
         $rootScope.hideNavigationMenu = true;
         $scope.reportedVariableValue = false;
         $scope.headline = config.appSettings.headline;
