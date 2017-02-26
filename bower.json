@@ -29,7 +29,7 @@
     "quantimodo-sdk-angularjs-ionic": "4.7.5",
     "angular-wikipedia-api-factory": "^0.2.3",
     "angular-clipboard": "^1.5.0",
-    "angular-google-analytics": "^1.1.9",
+    "angular-google-analytics": "git+https://github.com/mikepsinn/angular-google-analytics.git#b4a9b7cccd227e5e8e0e8f16ab26aee684f24866",
     "angular-google-adsense": "^0.4.5",
     "angular-material-datetimepicker": "git+https://github.com/mikepsinn/angular-material-datetimepicker.git#59819305be646f3f353001e183f35d008f6bc6cc",
     "angular-material": "^1.1.1",
