@@ -2134,52 +2134,23 @@ angular.module('starter')
 
         var purchaseDebugMode = false;
         function WebUpgradeDialogController($scope, $mdDialog) {
-
             $scope.productId = 'monthly7';
             var currentYear = new Date().getFullYear();
-            $scope.creditCardInfo = {
-                year: null
-            };
+            $scope.creditCardInfo = { year: null };
             $scope.months = $locale.DATETIME_FORMATS.MONTH;
             $scope.years = [];
-            for(var i = 0; i < 13; i++){
-                $scope.years.push(currentYear + i);
-            }
-
-            $scope.hide = function() {
-                $mdDialog.hide();
-            };
-
+            for(var i = 0; i < 13; i++){  $scope.years.push(currentYear + i); }
+            $scope.hide = function() { $mdDialog.hide(); };
             $scope.cancel = function() {
                 quantimodoService.reportError('User cancelled upgrade!  What happened?');
                 $mdDialog.cancel();
             };
-
             $scope.webSubscribe = function(productId, coupon, creditCardInfo, event) {
-                if (!creditCardInfo.securityCode) {
-                    quantimodoService.reportError('Please enter card number');
-                    return;
-                }
-
-                if (!creditCardInfo.cardNumber) {
-                    quantimodoService.reportError('Please enter card number');
-                    return;
-                }
-
-                if (!creditCardInfo.month) {
-                    quantimodoService.reportError('Please enter card month');
-                    return;
-                }
-
-                if (!creditCardInfo.year) {
-                    quantimodoService.reportError('Please enter card year');
-                    return;
-                }
-                var answer = {
-                    productId: productId,
-                    coupon: coupon,
-                    creditCardInfo: creditCardInfo
-                };
+                if (!creditCardInfo.securityCode) { quantimodoService.reportError('Please enter card number'); return;}
+                if (!creditCardInfo.cardNumber) {quantimodoService.reportError('Please enter card number'); return; }
+                if (!creditCardInfo.month) { quantimodoService.reportError('Please enter card month'); return; }
+                if (!creditCardInfo.year) { quantimodoService.reportError('Please enter card year'); return; }
+                var answer = { productId: productId, coupon: coupon, creditCardInfo: creditCardInfo };
                 $mdDialog.hide(answer);
             };
         }
