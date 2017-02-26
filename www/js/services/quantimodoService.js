@@ -7836,6 +7836,115 @@ angular.module('starter')
             return introSlides;
         };
 
+        quantimodoService.getIntroSlidesNew = function () {
+
+            var introSlides = [
+                {
+                    newIntroStyle: true,
+                    title: "Hi! I'm " + config.appSettings.appDisplayName + "!",
+                    color: yellow,
+                    image: {
+                        url: "img/quantimodo-robot-waving.svg",
+                        height: "120",
+                        width: "120"
+                    },
+                    bodyText: "I've been programmed to reduce human suffering with data.",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Hidden Influences",
+                    color: blue,
+                    image: {
+                        url: "img/patient-frown-factors.png",
+                        height: "120",
+                        width: "120"
+                    },
+                    bodyText: "Your symptoms can be worsened or improved by medical treatments, your sleep, exercise, " +
+                    "the hundreds of chemicals you consume through your diet, and even the weather!",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Only Human",
+                    color: green,
+                    image: {
+                        url: "img/brain.svg",
+                        height: "96",
+                        width: "96"
+                    },
+                    bodyText: "Human brains can only hold 7 numbers in working-memory at a time.  " +
+                    "So they're not able to determine which factors are most significant. ",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Treatment Determination",
+                    color: yellow,
+                    image: {
+                        url: "img/doctor-frown-factors.png",
+                        height: "120",
+                        width: "120"
+                    },
+                    bodyText: "Indeed, your doctor has access to less than 1% of the relevant information when they use " +
+                    "intuition to determine the best ways to treat your symptoms!",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Machine Learning",
+                    color: blue,
+                    image: {
+                        url: "img/quantimodo-robot-brain.svg",
+                        height: "120",
+                        width: "120"
+                    },
+                    bodyText: "My brain can hold trillions of numbers!  I can also analyze it to determine which hidden " +
+                    "factors are most likely to improve or exacerbate your condition! "
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Automated Tracking",
+                    color: green,
+                    image: {
+                        url: "img/download_2-96.png",
+                        height: "100",
+                        width: "100"
+                    },
+                    bodyText: "Weight, blood pressure, heart rate, physical activity data can be collected automatically " +
+                    "and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, " +
+                    "work, or doctors offices can be collected via your phone's GPS.",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Effortless Tracking",
+                    color: yellow,
+                    image: {
+                        url: "img/inbox.svg",
+                        height: "90",
+                        width: "90"
+                    },
+                    bodyText: "By taking just a few minutes each day, you can easily record your symptoms," +
+                    " treatments, and diet in the Reminder Inbox.  The more data you give me, the smarter I get!  Your" +
+                    " data doesn't have to be perfect to be valuable, but it's important to track regularly. ",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Data Security",
+                    color: blue,
+                    image: {
+                        url: "img/lock.svg",
+                        height: "90",
+                        width: "90"
+                    },
+                    bodyText: "I use bank-level encryption to keep your data secure.  Human eyes will never see your " +
+                    "data unless you intentionally share it. ",
+                },
+            ];
+
+            if(config.appSettings.intro){
+                return config.appSettings.intro;
+            }
+
+            return introSlides;
+        };
+
         $rootScope.signUpQuestions = [
             {
                 question: "What do you do with my data?",
