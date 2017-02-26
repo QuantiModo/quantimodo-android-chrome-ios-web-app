@@ -2080,7 +2080,7 @@ angular.module('starter')
         };
 
         var webUpgrade = function(ev) {
-            quantimodoService.recordUpgradeProductPurchase(productId, null, 1);
+
             $mdDialog.show({
                 controller: WebUpgradeDialogController,
                 templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
@@ -2099,6 +2099,8 @@ angular.module('starter')
                     'coupon': answer.coupon
                 };
 
+                quantimodoService.recordUpgradeProductPurchase(answer.productId, null, 1);
+
                 $ionicLoading.show();
                 quantimodoService.postCreditCardDeferred(body).then(function (response) {
                     $ionicLoading.hide();
@@ -2113,20 +2115,23 @@ angular.module('starter')
                             .ok('Get Started')
                     ).finally(function() {
                         $scope.goBack();
+                        quantimodoService.recordUpgradeProductPurchase(productId, response.data.purchaseId, 2);
                     });
                 }, function (response) {
-                    quantimodoService.reportError(response.error);
+                    quantimodoService.reportError(response);
+                    var message = '';
+                    if(response.error){ message = response.error; }
                     $ionicLoading.hide();
                     $mdDialog.show(
                         $mdDialog.alert()
                             .parent(angular.element(document.querySelector('#popupContainer')))
                             .clickOutsideToClose(true)
                             .title('Could not upgrade')
-                            .textContent(response.error + '  Please try again or contact mike@quantimo.do for help.')
+                            .textContent(message + '  Please try again or contact mike@quantimo.do for help.')
                             .ariaLabel('Error')
                             .ok('OK')
                     );
-                    quantimodoService.recordUpgradeProductPurchase(productId, response.data.purchaseId, 2);
+
                 });
 
             }, function() {
