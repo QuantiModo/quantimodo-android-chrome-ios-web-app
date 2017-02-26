@@ -2120,7 +2120,7 @@ angular.module('starter')
                             .ok('Get Started')
                     ).finally(function() {
                         $scope.goBack();
-                        quantimodoService.recordUpgradeProductPurchase(productId, response.data.purchaseId, 2);
+                        quantimodoService.recordUpgradeProductPurchase(answer.productId, response.data.purchaseId, 2);
                     });
                 }, function (response) {
                     quantimodoService.reportError(response);
