@@ -2206,6 +2206,16 @@ angular.module('starter')
                 .subscribe(getProductId(baseProductId))
                 .then(function (data) {
                     $ionicLoading.hide();
+                    $rootScope.user.stripeActive = true;
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title( 'Thank you!')
+                            .textContent( "Let's get started!")
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK!')
+                    ).finally(function() { $scope.goBack(); });
                     quantimodoService.reportError("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
                     quantimodoService.updateUserSettingsDeferred({
                         subscriptionProvider: getSubscriptionProvider(),
@@ -2213,15 +2223,6 @@ angular.module('starter')
                         trialEndsAt: moment().add(14, 'days').toISOString()
                         //coupon: answer.coupon
                     }).then(function (response) {
-                        $mdDialog.show(
-                            $mdDialog.alert()
-                                .parent(angular.element(document.querySelector('#popupContainer')))
-                                .clickOutsideToClose(true)
-                                .title( 'Thank you!')
-                                .textContent( "Let's get started!")
-                                .ariaLabel('Alert Dialog Demo')
-                                .ok('OK!')
-                        ).finally(function() { $scope.goBack(); });
                         quantimodoService.recordUpgradeProductPurchase(baseProductId, response.transactionId, 2);
                     });
                 }).catch(function (err) {
