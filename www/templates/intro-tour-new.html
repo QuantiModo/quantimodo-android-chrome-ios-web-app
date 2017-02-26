@@ -1,0 +1,77 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
+    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
+        <ion-slide ng-repeat="introSlide in introSlides"
+                   ng-show="myIntro.ready"
+                   style="background-color: {{introSlide.color.backgroundColor}};">
+            <div ng-if="introSlide.newIntroStyle">
+                <div style="
+                    background-color: {{introSlide.color.backgroundColor}};
+                    text-align: center;
+                    color: white;
+                    padding: 10px;
+                    height: 100%" >
+                    <div>
+                        <div style="
+                box-shadow: 2px 2px 5px #434343;
+                margin: 0 auto;
+                border-radius: 50%;
+                width: 130px;
+                height: 130px;
+                background-color: {{introSlide.color.circleColor}};
+                ">
+                            <img style="
+                        position: relative;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width:{{introSlide.image.width}}px;
+                        height:{{introSlide.image.height}}px;"
+                                 ng-src="{{introSlide.image.url}}">
+                        </div>
+                        <br>
+                        <p style="font-size: 30px; line-height: 1;">{{introSlide.title}} </p>
+                        <span ng-bind-html="introSlide.bodyText"style="font-size: 16px; line-height: 1.5;"></span>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="!introSlide.newIntroStyle">
+                <div ng-if="!introSlide.newIntroStyle" class="content intro-content" >
+                    <div ng-if="introSlide.content.logoDiv" id="{{introSlide.content.logoDiv.id}}">
+                        <img style="width:{{introSlide.image.width}}px; height:{{introSlide.image.height}}px;" ng-src="{{introSlide.image.url}}">
+                    </div>
+                    <p ng-click="myIntro.startApp()"
+                       ng-if="introSlide.content.firstParagraph"
+                       class="{{introSlide.content.firstParagraph.classes}}"
+                       ng-bind-html="introSlide.content.firstParagraph.content"
+                       style="color: white">
+                    </p>
+                    <p ng-if="introSlide.content.finalParagraph"
+                       class="{{introSlide.content.finalParagraph.classes}}"
+                       style="color: white">
+                        <span ng-bind-html="introSlide.content.finalParagraph.content" style="color: white"></span>
+                    </p>
+                </div>
+            </div>
+            <a id="goButtonIntro" class="button"
+               style="background-color: {{introSlide.color.backgroundColor}}; color: white;"
+               ng-show="myIntro.slideIndex == introSlides.length-1"
+               ng-click="myIntro.startApp()">
+                GET STARTED
+            </a>
+            <div class="button-bar">
+                <a id="skipButtonIntro" class="button"
+                   ng-show="myIntro.slideIndex != introSlides.length-1 "
+                   style="background-color: {{introSlide.color.backgroundColor}}; color: white; text-align: center"
+                   ng-click="myIntro.startApp()">
+                    SKIP
+                </a>
+                <a id="nextButtonIntro" class="button"
+                   style="background-color: {{introSlide.color.backgroundColor}}; color: white; text-align: center"
+                   ng-show="myIntro.slideIndex != introSlides.length-1 && myIntro.slideIndex != introSlides.length-1"
+                   ng-click="myIntro.next()">
+                    NEXT
+                </a>
+            </div>
+        </ion-slide>
+    </ion-slide-box>
+</ion-view>
