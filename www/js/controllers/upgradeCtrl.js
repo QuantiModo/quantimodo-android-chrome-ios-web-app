@@ -1,7 +1,9 @@
 angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                                             $rootScope, $stateParams, quantimodoService) {
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        if(!$rootScope.user){ quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.upgrade');
+        if(!$rootScope.user){
+            console.debug('Setting afterLoginGoToState to ' + $state.current.name);
+            quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.upgrade');
             $state.go('app.login'); return; }
         if($rootScope.isChromeExtension){chrome.tabs.create({url: 'https://app.quantimo.do/upgrade'}); window.close(); return;}
         $scope.planFeaturesCard = $rootScope.planFeaturesCards[1];

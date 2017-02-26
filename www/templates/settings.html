@@ -34,14 +34,10 @@
 
         <div ng-show="user" class="card sign-in" >
             <div class="item item-divider" ng-click="showHelpInfoPopup($event, 'locationAndWeatherTracking')">
-                Location and Weather Tracking &nbsp; <i class="icon ion-information-circled"></i>
+                Location Tracking &nbsp; <i class="icon ion-information-circled"></i>
             </div>
-            <ion-toggle ng-model="user.trackLocation"
-                        ng-change="trackLocationChange($event)">
-                <div >
-                    <i class="icon ion-map"></i> &nbsp Record Location and Weather &nbsp
-
-                </div>
+            <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)">
+                <div><i class="icon ion-map"></i> &nbsp Record Location &nbsp</div>
             </ion-toggle>
         </div>
         <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>

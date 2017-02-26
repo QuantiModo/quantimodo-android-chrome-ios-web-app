@@ -1497,23 +1497,64 @@ angular.module('starter')
                 });
         };
 
+        var errorHandler = function(error){
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+        };
+
+        var connectWithParams = function(params, lowercaseConnectorName) {
+            quantimodoService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
+                .then(function(result){
+                    console.debug(JSON.stringify(result));
+                    $scope.refreshConnectors();
+                }, function (error) {
+                    errorHandler(error);
+                    $scope.refreshConnectors();
+                });
+        };
+
+        $scope.connectWeather = function () {
+            $scope.data = {};
+
+            var myPopup = $ionicPopup.show({
+                template: '<label class="item item-input">' +
+                '<i class="icon ion-location placeholder-icon"></i>' +
+                '<input type="text" placeholder="Zip Code or City, Country" ng-model="data.location"></label>',
+                title: 'Weather',
+                subTitle: 'Enter Your Zip Code or City, Country/State',
+                scope: $scope,
+                buttons: [
+                    { text: 'Cancel' },
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            if (!$scope.data.location) {
+                                //don't allow the user to close unless he enters wifi password
+                                e.preventDefault();
+                            } else {
+                                return $scope.data.location;
+                            }
+                        }
+                    }
+                ]
+            });
+
+            myPopup.then(function(res) {
+                var params = {
+                    location: String($scope.data.location)
+                };
+                connectWithParams(params, 'worldweatheronline');
+                $scope.showInfoToast('Weather logging activated');
+                console.debug('Entered zip code. Result: ', res);
+            });
+        };
+
         $scope.connect = function(connector){
 
             var scopes;
             var myPopup;
             var options;
             connector.loadingText = 'Connecting...';
-
-            var connectWithParams = function(params, lowercaseConnectorName) {
-                quantimodoService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
-                    .then(function(result){
-                        console.debug(JSON.stringify(result));
-                        $scope.refreshConnectors();
-                    }, function (error) {
-                        errorHandler(error);
-                        $scope.refreshConnectors();
-                    });
-            };
 
             var connectWithToken = function(response) {
                 console.debug("Response Object -> " + JSON.stringify(response));
@@ -1538,10 +1579,6 @@ angular.module('starter')
                     console.error("error on connectWithAuthCode for " + connector.name);
                     $scope.refreshConnectors();
                 });
-            };
-
-            var errorHandler = function(error){
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
             };
 
             if(connector.name === 'github') {
@@ -1654,7 +1691,6 @@ angular.module('starter')
                     });
             }
 
-
             if(connector.name === 'facebook') {
 
                 if($rootScope.isWeb || $rootScope.isChromeExtension){
@@ -1762,39 +1798,7 @@ angular.module('starter')
             }
 
             if(connector.name === 'worldweatheronline') {
-                $scope.data = {};
-
-                myPopup = $ionicPopup.show({
-                    template: '<label class="item item-input">' +
-                    '<i class="icon ion-location placeholder-icon"></i>' +
-                    '<input type="text" placeholder="Zip Code or City, Country" ng-model="data.location"></label>',
-                    title: connector.displayName,
-                    subTitle: 'Enter Your Zip Code or City, Country/State',
-                    scope: $scope,
-                    buttons: [
-                        { text: 'Cancel' },
-                        {
-                            text: '<b>Save</b>',
-                            type: 'button-positive',
-                            onTap: function(e) {
-                                if (!$scope.data.location) {
-                                    //don't allow the user to close unless he enters wifi password
-                                    e.preventDefault();
-                                } else {
-                                    return $scope.data.location;
-                                }
-                            }
-                        }
-                    ]
-                });
-
-                myPopup.then(function(res) {
-                    var params = {
-                        location: String($scope.data.location)
-                    };
-                    connectWithParams(params, connector.name);
-                    console.debug('Entered zip code. Result: ', res);
-                });
+                $scope.connectWeather();
             }
 
             if(connector.name === 'whatpulse') {
@@ -2009,7 +2013,7 @@ angular.module('starter')
             console.debug('Opened ' + url);
         };
 
-        $rootScope.trackLocationChange = function(trackLocation, skipPopup, event) {
+        $rootScope.trackLocationChange = function(event, trackLocation) {
             if(trackLocation !== null && typeof trackLocation !== "undefined"){
                 $rootScope.user.trackLocation = trackLocation;
             }
@@ -2019,11 +2023,12 @@ angular.module('starter')
                 console.debug('Going to execute quantimodoService.backgroundGeolocationInit if $ionicPlatform.ready');
                 quantimodoService.backgroundGeolocationInit();
             }
-            if($rootScope.user.trackLocation && !skipPopup){
-                $scope.showMaterialAlert(event, 'Location Tracking Enabled', $rootScope.variableCategories.Location.moreInfo);
+            if($rootScope.user.trackLocation){
+                $scope.showInfoToast('Location tracking enabled');
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
             }
             if(!$rootScope.user.trackLocation) {
+                $scope.showInfoToast('Location tracking disabled');
                 quantimodoService.backgroundGeolocationStop();
                 console.debug("Do not track location");
             }
@@ -2201,9 +2206,8 @@ angular.module('starter')
         }
 
         function getProductId(baseProductId) {
-            var productId = baseProductId;
-            if($rootScope.isIOS){ productId = config.appSettings.lowercaseAppName + '_' + productId; }
-            return productId;
+            if($rootScope.isIOS){ return config.appSettings.lowercaseAppName + '_' + baseProductId; }
+            return baseProductId;
         }
 
         function makeInAppPurchase(baseProductId) {

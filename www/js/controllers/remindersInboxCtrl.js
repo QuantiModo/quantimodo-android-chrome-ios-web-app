@@ -43,6 +43,7 @@ angular.module('starter')
 
         	$scope.loading = true;
             if(!$rootScope.accessTokenInUrl && !$rootScope.user){
+                console.debug('Setting afterLoginGoToState to ' + $state.current.name);
                 quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
                 $state.go('app.login');
             }

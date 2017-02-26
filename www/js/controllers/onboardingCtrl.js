@@ -6,6 +6,7 @@ angular.module('starter')
         console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
         $rootScope.hideNavigationMenu = true;
         if(!$rootScope.user){
+            console.debug('Setting afterLoginGoToState to ' + $state.current.name);
             quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
             $state.go('app.login');
             return;
@@ -89,7 +90,12 @@ angular.module('starter')
     };
 
     $scope.enableLocationTracking = function (event) {
-        $rootScope.trackLocationChange(true, true, event);
+        $rootScope.trackLocationChange(event, true);
+        $scope.hideOnboardingPage();
+    };
+
+    $scope.connectWeatherOnboarding = function (event) {
+        $scope.connectWeather();
         $scope.hideOnboardingPage();
     };
 

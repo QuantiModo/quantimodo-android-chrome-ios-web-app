@@ -21,6 +21,7 @@ angular.module('starter')
             $scope.studyJoinPage.loading = true;
             $rootScope.stateParams = $stateParams;
             if(!$rootScope.user){
+                console.debug('Setting afterLoginGoToState to ' + $state.current.name);
                 quantimodoService.setLocalStorageItem('afterLoginGoToState', $state.current.name);
                 $state.go('app.login');
             }

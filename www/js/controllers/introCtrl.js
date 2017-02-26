@@ -12,6 +12,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         slideIndex : 0,
         startApp : function() { // Called to navigate to the main app
             if(!$rootScope.user){ // Prevents onboarding page flicker
+                console.debug('Setting afterLoginGoToState to ' + $state.current.name);
                 quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
                 $state.go('app.login'); return;
             }

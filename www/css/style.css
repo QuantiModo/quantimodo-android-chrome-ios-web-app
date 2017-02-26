@@ -716,6 +716,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     margin: 0;
     padding: 0;
     line-height: normal;
+    overflow-x: hidden;
 }
 
 .popup-buttons .button
