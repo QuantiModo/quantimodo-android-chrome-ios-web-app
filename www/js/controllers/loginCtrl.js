@@ -31,11 +31,11 @@ angular.module('starter')
         $scope.loginPage = {
             title: 'Sign In',
             "backgroundColor": "#3467d6",
-            circleColor: "#fefdfc",
+            circleColor: "#5b95f9",
             image: {
-                url: "img/cute_robot_happy_transparent.png",
-                height: "96",
-                width: "70"
+                url: "img/quantimodo-robot-waving.svg",
+                height: "120",
+                width: "120"
             },
             bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
             // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +

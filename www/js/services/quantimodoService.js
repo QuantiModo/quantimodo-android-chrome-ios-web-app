@@ -7732,7 +7732,18 @@ angular.module('starter')
             var introSlides = [
                 {
                     newIntroStyle: true,
-                    title: "Countless Factors",
+                    title: "Hi! I'm " + config.appSettings.appDisplayName + "!",
+                    color: yellow,
+                    image: {
+                        url: "img/quantimodo-robot-waving.svg",
+                        height: "120",
+                        width: "120"
+                    },
+                    bodyText: "I've been programmed to reduce human suffering with data.",
+                },
+                {
+                    newIntroStyle: true,
+                    title: "Hidden Influences",
                     color: blue,
                     image: {
                         url: "img/patient-frown-factors.png",
@@ -7771,13 +7782,12 @@ angular.module('starter')
                     title: "Machine Learning",
                     color: blue,
                     image: {
-                        url: "img/crowdsourcing-utopia-brain.svg",
-                        height: "100",
-                        width: "100"
+                        url: "img/quantimodo-robot-brain.svg",
+                        height: "120",
+                        width: "120"
                     },
-                    bodyText: "My brain can hold unlimited data on your symptoms and the factors that " +
-                    "could influence them.  I can then determine which factors are most significant " +
-                    "and their optimal daily values. You'll find these on the Relationships page.",
+                    bodyText: "My brain can hold trillions of numbers!  I can also analyze it to determine which hidden " +
+                        "factors are most likely to improve or exacerbate your condition! "
                 },
                 {
                     newIntroStyle: true,
@@ -7802,7 +7812,7 @@ angular.module('starter')
                         width: "90"
                     },
                     bodyText: "By taking just a few minutes each day, you can easily record your symptoms," +
-                    " treatments, and diet in the Reminder Inbox.  The more data you give me, the smarter I get.  Your" +
+                    " treatments, and diet in the Reminder Inbox.  The more data you give me, the smarter I get!  Your" +
                     " data doesn't have to be perfect to be valuable, but it's important to track regularly. ",
                 },
                 {
@@ -7817,137 +7827,6 @@ angular.module('starter')
                     bodyText: "I use bank-level encryption to keep your data secure.  Human eyes will never see your " +
                     "data unless you intentionally share it. ",
                 },
-                {
-                    newIntroStyle: true,
-                    image: {
-                        url: "img/brain.svg",
-                        height: "96",
-                        width: "96"
-                    },
-                    color: green,
-                    "textColor": "white",
-                    "content" : {
-                        "firstParagraph" : {
-                            "visible" : true,
-                            "content" : "HUMAN BRAINS",
-                            "classes" : "intro-header"
-                        },
-                        "finalParagraph" : {
-                            "visible" : true,
-                            "content" : "can only hold 7 numbers in memory.",
-                            "classes" : "intro-paragraph",
-                            "buttonBarVisible" : true
-                        }
-                    }
-                },
-                {
-                    "image" : {
-                        "width" : "250",
-                        "height" : "250",
-                        "url" : "img/intro/intro_import.png"
-                    },
-                    "textColor": "white",
-                    "backgroundColor": "#3467d6",
-                    "content" : {
-                        "firstParagraph" : {
-                            "visible" : true,
-                            "content" : "SYMPTOM SEVERITY",
-                            "classes" : "intro-header"
-                        },
-                        "logoDiv" : {
-                            "visible" : true,
-                            "id" : "logo"
-                        },
-                        "finalParagraph" : {
-                            "visible" : true,
-                            "content" : "can be influenced by hundreds of factors in life!",
-                            "classes" : "intro-paragraph",
-                            "buttonBarVisible" : true
-                        }
-                    }
-                },
-                {
-                    "image" : {
-                        "width" : "250",
-                        "height" : "250",
-                        "url" : "img/brain.svg"
-                    },
-                    circleColor: "#3467d6",
-                    "textColor": "white",
-                    "backgroundColor": "#3467d6",
-                    "content" : {
-                        "firstParagraph" : {
-                            "visible" : true,
-                            "content" : "SYMPTOM SEVERITY",
-                            "classes" : "intro-header"
-                        },
-                        "logoDiv" : {
-                            "visible" : true,
-                            "id" : "logo"
-                        },
-                        "finalParagraph" : {
-                            "visible" : true,
-                            "content" : "can be influenced by hundreds of factors in life!",
-                            "classes" : "intro-paragraph",
-                            "buttonBarVisible" : true
-                        }
-                    }
-                },
-                {
-                    "image" : {
-                        "width" : "250",
-                        "height" : "250",
-                        "url" : "img/intro/intro_track_anything.png"
-                    },
-                    "textColor": "white",
-                    "backgroundColor": "#f09402",
-                    "content" : {
-                        "firstParagraph" : {
-                            "visible" : true,
-                            "content" : "Track Anything",
-                            "classes" : "intro-header"
-                        },
-                        "logoDiv" : {
-                            "visible" : true,
-                            "id" : "logo"
-                        },
-                        "finalParagraph" : {
-                            "visible" : true,
-                            "content" : "Log treatments, diet, symptoms, emotions, and anything else",
-                            "classes" : "intro-paragraph",
-                            "buttonBarVisible" : true
-                        }
-                    }
-                },
-                {
-                    "image" : {
-                        "width" : "250",
-                        "height" : "250",
-                        "url" : "img/intro/intro_make_discoveries.png"
-                    },
-                    "textColor": "white",
-                    "backgroundColor": "#0f9d58",
-                    "content" : {
-
-                        "firstParagraph" : {
-                            "visible" : true,
-                            "content" : "Make Discoveries",
-                            "classes" : "intro-header"
-                        },
-
-                        "logoDiv" : {
-                            "visible" : true,
-                            "id" : "logo"
-                        },
-                        "finalParagraph": {
-                            "visible" : true,
-                            "content" : "After I have about a month of data, I analyze it to discover the hidden factors " +
-                            "linked to your well-being",
-                            "classes" : "intro-paragraph",
-                            "buttonBarVisible" : true
-                        }
-                    }
-                }
             ];
 
             if(config.appSettings.intro){
