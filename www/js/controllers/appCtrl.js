@@ -2147,7 +2147,10 @@ angular.module('starter')
             }).then(function(baseProductId) {
                 //makeInAppPurchase(baseProductId);
                 getProductsAndMakeInAppPurchase(baseProductId);
-            }, function() { $scope.status = 'You cancelled the dialog.'; });
+            }, function() {
+                quantimodoService.reportError('User cancelled mobileUpgrade subscription selection');
+                $scope.status = 'You cancelled the dialog.';
+            });
         };
 
         function getSubscriptionProvider() {
@@ -2163,14 +2166,12 @@ angular.module('starter')
         }
 
         function makeInAppPurchase(baseProductId) {
-            if(purchaseDebugMode){  alert('About to subscribe to ' + JSON.stringify(getProductId(baseProductId))); }
             $ionicLoading.show();
             inAppPurchase
                 .subscribe(getProductId(baseProductId))
                 .then(function (data) {
-                    quantimodoService.reportError(JSON.stringify(data));
+                    quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
                     $ionicLoading.hide();
-                    $rootScope.user.stripeActive = true;
                     $mdDialog.show(
                         $mdDialog.alert()
                             .parent(angular.element(document.querySelector('#popupContainer')))
@@ -2179,7 +2180,10 @@ angular.module('starter')
                             .textContent( "Let's get started!")
                             .ariaLabel('Alert Dialog Demo')
                             .ok('OK!')
-                    ).finally(function() { $scope.goBack(); });
+                    ).finally(function() {
+                        $scope.goBack();
+                        $rootScope.user.stripeActive = true;
+                    });
                     quantimodoService.reportError("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
                     quantimodoService.updateUserSettingsDeferred({
                         subscriptionProvider: getSubscriptionProvider(),
@@ -2189,9 +2193,10 @@ angular.module('starter')
                     }).then(function (response) {
                         quantimodoService.recordUpgradeProductPurchase(baseProductId, response.data.purchaseId, 2);
                     });
-                }).catch(function (err) {
+                    $rootScope.user.stripeActive = true;
+                }).catch(function (error) {
                     $ionicLoading.hide();
-                    quantimodoService.reportError(JSON.stringify(err));
+                    quantimodoService.reportError('inAppPurchase.catch error ' + JSON.stringify(error));
                 });
         }
 
@@ -2206,11 +2211,11 @@ angular.module('starter')
                 });
             }
             $ionicLoading.show();
-            quantimodoService.recordUpgradeProductPurchase(baseProductId, null, 1);
+            //quantimodoService.recordUpgradeProductPurchase(baseProductId, null, 1);
             inAppPurchase
                 .getProducts([getProductId(baseProductId)])
                 .then(function (products) {
-                    quantimodoService.reportError('Available Products: ' + JSON.stringify(products));
+                    quantimodoService.reportError('inAppPurchase.getProducts response: ' + JSON.stringify(products));
                     if(purchaseDebugMode){alert('Available Products: ' + JSON.stringify(products));}
                      //[{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                     makeInAppPurchase(baseProductId);
