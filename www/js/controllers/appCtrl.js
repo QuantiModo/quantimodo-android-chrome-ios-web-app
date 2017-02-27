@@ -1065,7 +1065,7 @@ angular.module('starter')
         };
 
         $scope.favoriteValidationFailure = function (message) {
-            quantimodoService.showAlert(message);
+            $scope.showMaterialAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
         };
@@ -2043,7 +2043,7 @@ angular.module('starter')
             quantimodoService.showAlert(title, template, subTitle);
         };
 
-        $scope.showMaterialAlert = function(ev, title, textContent) {
+        $scope.showMaterialAlert = function(title, textContent, ev) {
             // Appending dialog to document.body to cover sidenav in docs app
             // Modal dialogs should fully cover application
             // to prevent interaction outside of dialog
@@ -2273,10 +2273,10 @@ angular.module('starter')
             quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                 $ionicLoading.hide();
                 console.debug(JSON.stringify(response));
-                $scope.showAlert('Successfully downgraded to QuantiModo Lite');
+                $scope.showMaterialAlert('Successfully downgraded to QuantiModo Lite');
             }, function (error) {
                 $ionicLoading.hide();
-                $scope.showAlert('An error occurred while downgrading.  Please email mike@quantimo.do');
+                $scope.showMaterialAlert('An error occurred while downgrading.', 'Please email mike@quantimo.do');
                 console.debug(JSON.stringify(error));
             });
         };
@@ -2399,8 +2399,8 @@ angular.module('starter')
 
         var sendCouponEmail = function () {
             quantimodoService.sendEmailViaAPIDeferred('couponInstructions');
-            $scope.showMaterialAlert(event, 'Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email +
-                ' for instructions to redeem your coupon.');
+            $scope.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email +
+                ' for instructions to redeem your coupon.', event);
         };
 
         $scope.sendCouponEmail = function() {

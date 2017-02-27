@@ -302,7 +302,7 @@ angular.module('starter')
         };
 
         var validationFailure = function (message) {
-            quantimodoService.showAlert(message);
+            $scope.showMaterialAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
                 Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
