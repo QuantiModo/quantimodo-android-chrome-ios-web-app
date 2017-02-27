@@ -2216,6 +2216,7 @@ angular.module('starter')
             inAppPurchase
                 .subscribe(getProductId(baseProductId))
                 .then(function (data) {
+                    quantimodoService.reportError(JSON.stringify(data));
                     $ionicLoading.hide();
                     $rootScope.user.stripeActive = true;
                     $mdDialog.show(
