@@ -17,7 +17,7 @@
                     <h2 style="line-height: normal">{{feature.title}} &nbsp;
                         <i style="color: darkgrey; text-align: right"
                            ng-if="feature.moreInfo"
-                           ng-click="showAlert(feature.title, feature.moreInfo, feature.subtitle)"
+                           ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)"
                            class="icon ion-help-circled">
                         </i>
                     </h2>

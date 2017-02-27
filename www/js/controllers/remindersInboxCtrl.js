@@ -115,7 +115,7 @@ angular.module('starter')
                                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                                 }
                                 console.error(error);
-                                quantimodoService.showAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
+                                $scope.showMaterialAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
                             });
                         return true;
                     }
@@ -373,20 +373,6 @@ angular.module('starter')
 				});
 	    };
 
-		$rootScope.undoInboxAction = function(){
-			//$rootScope.showUndoButton = false;
-			var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
-			if(!notificationsSyncQueue){
-				return false;
-			}
-			notificationsSyncQueue[0].hide = false;
-			quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications',
-				notificationsSyncQueue[0]);
-			quantimodoService.deleteElementsOfLocalStorageItemByProperty('notificationsSyncQueue',
-				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
-			getTrackingReminderNotifications();
-		};
-
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
             var trackingReminderNotifications =
                 quantimodoService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName);
@@ -573,7 +559,7 @@ angular.module('starter')
 								Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 							}
 							console.error(error);
-							quantimodoService.showAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
+							$scope.showMaterialAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
 						});
 					return true;
 				}

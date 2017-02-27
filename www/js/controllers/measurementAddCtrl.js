@@ -188,7 +188,7 @@ angular.module('starter')
         };
 
         var validationFailure = function (message) {
-            quantimodoService.showAlert(message);
+            $scope.showMaterialAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
                 Bugsnag.notify(message, "measurement is " + JSON.stringify($scope.state.measurement), {}, "error");
@@ -199,7 +199,8 @@ angular.module('starter')
 
             var message;
 
-            if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
+            if($scope.state.measurement.value === null || $scope.state.measurement.value === '' ||
+                typeof $scope.state.measurement.value === 'undefined'){
                 if($scope.state.measurement.abbreviatedUnitName === '/5'){
                     message = 'Please select a rating';
                 } else {

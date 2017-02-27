@@ -291,7 +291,7 @@ angular.module('starter')
                     var accessToken = response.authResponse.accessToken;
                     if(!accessToken){
                         quantimodoService.reportError('ERROR: facebookLogin could not get accessToken! response: ' + JSON.stringify(response));
-                        quantimodoService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                        $scope.showMaterialAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                     }
                     $scope.nativeSocialLogin('facebook', accessToken);
                 }, function (error) {

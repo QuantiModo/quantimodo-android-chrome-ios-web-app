@@ -1712,8 +1712,7 @@ angular.module('starter')
                 icon: "ion-ios-location",
                 moreInfo: "By automatically recording your location in the background using GPS, we might be able to figure out how the " +
                 "amount of time spent at the gym, restaurants, doctors, offices, home and work locations may be affecting you.  " +
-                "Logging location enables weather logging to determine how things like temperature and sunlight " +
-                "exposure might be affecting you.  Another benefit of enabling " +
+                "Another benefit of enabling " +
                 "this option is that allows the app to run in the background and open instantly instead " +
                 "of taking a few seconds to load.  You can view your location history by going to Menu -> History -> Locations.",
                 imageUrl: "img/variable_categories/location.svg"
@@ -4256,9 +4255,8 @@ angular.module('starter')
             return averageValueByMonthlyArray;
         };
 
-        var exportOptions = {
-            enabled: true
-        };
+        var exportOptions = { enabled: false };
+        if($rootScope.isWeb){ exportOptions.enabled = true; }
 
         quantimodoService.configureDistributionChart = function(dataAndLabels, variableObject){
             var xAxisLabels = [];
@@ -8018,14 +8016,14 @@ angular.module('starter')
                     {
                         title: 'Import from Devices',
                         subtitle: 'Fitbit, Jawbone Up, Withings...',
-                        moreInfo: "Automatically import your data from Fitbit, Withings, Jawbone",
+                        moreInfo: "Automatically import your data from Fitbit, Withings, Jawbone.",
                         image: 'img/features/smartwatch.svg'
                     },
                     {
                         title: 'Sync Across Devices',
                         subtitle: 'Web, Chrome, Android, and iOS',
                         moreInfo: "Any of your QuantiModo-supported apps will automatically sync with any other app " +
-                            "on the web, Chrome, Android, and iOS",
+                            "on the web, Chrome, Android, and iOS.",
                         image: 'img/features/devices.svg'
                     },
                     {
@@ -8057,7 +8055,8 @@ angular.module('starter')
                     {
                         title: 'Productivity Tracking',
                         subtitle: 'Passively track app usage',
-                        moreInfo: "Rescuetime — a program that runs on your computer & passively tracks of productivity and app usage.",
+                        moreInfo: "You can do this by installing and connecting Rescuetime on the Import Data page.  Rescuetime is a program" +
+                            " that runs on your computer & passively tracks of productivity and app usage.",
                         image: 'img/features/rescuetime.png',
                     },
                     {
@@ -8089,7 +8088,9 @@ angular.module('starter')
                     {
                         title: 'Advanced Analytics',
                         subtitle: 'See Top Predictors',
-                        moreInfo: "See a list of the strongest predictors for any outcome.  Dive deeper by checking out the full sties",
+                        moreInfo: "See a list of the strongest predictors for any outcome.  See the values for each " +
+                        "predictor that typically precede optimal outcomes.  Dive deeper by checking " +
+                        "out the full study on any predictor and outcome combination.",
                         image: 'img/features/calendar.svg'
                     },
                 ],

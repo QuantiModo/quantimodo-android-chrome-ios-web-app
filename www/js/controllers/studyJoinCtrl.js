@@ -48,7 +48,8 @@ angular.module('starter')
             }, function (error) {
                 $scope.studyJoinPage.loading = false;
                 quantimodoService.reportError(error);
-                $scope.showAlert("Could not join study.  Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
+                $scope.showMaterialAlert("Could not join study.", "Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
+
             });
 
         });
