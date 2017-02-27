@@ -8,7 +8,6 @@ angular.module('starter')
 
         var variableCategoryName = $stateParams.variableCategoryName;
         var variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
-        var currentTime = new Date();
         $rootScope.showFilterBarSearchIcon = false;
 
         $scope.state = {
@@ -19,8 +18,6 @@ angular.module('starter')
             unitCategories : [],
             variableCategoryName: variableCategoryName,
             variableCategoryObject : variableCategoryObject,
-            // variables
-            variableName : "",
             helpText: variableCategoryObject.helpText,
             abbreviatedUnitName : '',
             measurement : {},
@@ -350,7 +347,6 @@ angular.module('starter')
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
             setupVariableCategory(variableCategoryName);
-
         };
 
         // setup category view
@@ -624,13 +620,10 @@ angular.module('starter')
         }
 
         function setVariableObject() {
-            if (!$rootScope.variableObject) {
-                if ($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
+            if (!$rootScope.variableObject || $rootScope.variableObject !== $scope.state.measurement.variableName ) {
+                if ($stateParams.variableObject) {
                     $rootScope.variableObject = $stateParams.variableObject;
-                }
-                else {
-                    setVariableObjectFromMeasurement();
-                }
+                } else { setVariableObjectFromMeasurement(); }
             }
         }
 
