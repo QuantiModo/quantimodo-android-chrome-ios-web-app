@@ -1790,11 +1790,8 @@ angular.module('starter')
                 ];
 
                 $cordovaOauth.jawbone(window.private_keys.JAWBONE_CLIENT_ID, window.private_keys.JAWBONE_CLIENT_SECRET, scopes)
-                    .then(function(result) {
-                        connectWithToken(result);
-                    }, function(error) {
-                        errorHandler(error);
-                    });
+                    .then(function(result) { connectWithToken(result);
+                    }, function(error) { errorHandler(error); });
             }
 
             if(connector.name === 'worldweatheronline') {
@@ -1803,7 +1800,6 @@ angular.module('starter')
 
             if(connector.name === 'whatpulse') {
                 $scope.data = {};
-
                 myPopup = $ionicPopup.show({
                     template: '<label class="item item-input">' +
                     '<i class="icon ion-person placeholder-icon"></i>' +
@@ -1829,13 +1825,7 @@ angular.module('starter')
                 });
 
                 myPopup.then(function(res) {
-                    var params = {
-                        username: $scope.data.username
-                    };
-                    var body = {
-                        connectorCredentials: params,
-                        connector: connector
-                    };
+                    var params = { username: $scope.data.username };
                     connectWithParams(params, connector.name);
                 });
             }
@@ -1871,10 +1861,7 @@ angular.module('starter')
                 });
 
                 myPopup.then(function(res) {
-                    var params = {
-                        username: $scope.data.username,
-                        password: $scope.data.password
-                    };
+                    var params = { username: $scope.data.username, password: $scope.data.password };
                     connectWithParams(params, connector.name);
                 });
             }
@@ -1910,10 +1897,7 @@ angular.module('starter')
                 });
 
                 myPopup.then(function(res) {
-                    var params = {
-                        username: $scope.data.username,
-                        password: $scope.data.password
-                    };
+                    var params = { username: $scope.data.username, password: $scope.data.password };
                     connectWithParams(params, connector.name);
                 });
             }
@@ -1946,16 +1930,13 @@ angular.module('starter')
                 });
 
                 myPopup.then(function(res) {
-                    var params = {
-                        email: $scope.data.email
-                    };
+                    var params = { email: $scope.data.email };
                     connectWithParams(params, connector.name);
                 });
             }
 
             if(connector.name === 'moodscope') {
                 $scope.data = {};
-
                 myPopup = $ionicPopup.show({
                     template: '<label class="item item-input">' +
                     '<i class="icon ion-person placeholder-icon"></i>' +
@@ -1984,10 +1965,7 @@ angular.module('starter')
                 });
 
                 myPopup.then(function(res) {
-                    var params = {
-                        username: $scope.data.username,
-                        password: $scope.data.password
-                    };
+                    var params = { username: $scope.data.username, password: $scope.data.password };
                     connectWithParams(params, connector.name);
                 });
             }
@@ -1995,16 +1973,11 @@ angular.module('starter')
 
         $scope.disconnect = function (connector){
             connector.loadingText = 'Disconnecting...';
-            quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){
-                $scope.refreshConnectors();
-            }, function() {
-                console.error("error disconnecting " + connector.name);
-            });
+            quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){ $scope.refreshConnectors();
+            }, function() { console.error("error disconnecting " + connector.name); });
         };
 
-        $scope.getItHere = function (connector){
-            window.open(connector.getItUrl, '_blank');
-        };
+        $scope.getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
 
         var webConnect = function (connector) {
             var url = connector.connectInstructions.url;
@@ -2054,34 +2027,18 @@ angular.module('starter')
                     .title(title)
                     .textContent(textContent)
                     .ariaLabel(title)
-                    .ok('Got it!')
+                    .ok('OK')
                     .targetEvent(ev)
             );
         };
 
-        if(!$scope.productId){
-            $scope.productId = 'monthly7';
-        }
-
-        $scope.monthlySubscription = function () {
-            $scope.productId = 'yearly60';
-            $scope.upgrade();
-        };
-
-        $scope.yearlySubscription = function () {
-            $scope.productId = 'yearly60';
-            $scope.upgrade();
-        };
-
+        if(!$scope.productId){ $scope.productId = 'monthly7'; }
+        $scope.monthlySubscription = function () { $scope.productId = 'yearly60'; $scope.upgrade(); };
+        $scope.yearlySubscription = function () { $scope.productId = 'yearly60';  $scope.upgrade(); };
         var mobilePurchaseDebug = false;
-
         $scope.upgrade = function (ev) {
-
-            if($rootScope.isMobile || mobilePurchaseDebug){
-                mobileUpgrade(ev);
-            } else {
-                webUpgrade(ev);
-            }
+            if($rootScope.isMobile || mobilePurchaseDebug){  mobileUpgrade(ev);
+            } else { webUpgrade(ev); }
         };
 
         var webUpgrade = function(ev) {
@@ -2105,7 +2062,6 @@ angular.module('starter')
                 };
 
                 quantimodoService.recordUpgradeProductPurchase(answer.productId, null, 1);
-
                 $ionicLoading.show();
                 quantimodoService.postCreditCardDeferred(body).then(function (response) {
                     $ionicLoading.hide();
@@ -2136,12 +2092,8 @@ angular.module('starter')
                             .ariaLabel('Error')
                             .ok('OK')
                     );
-
                 });
-
-            }, function() {
-                $scope.status = 'You cancelled the dialog.';
-            });
+            }, function() {  $scope.status = 'You cancelled the dialog.'; });
         };
 
         var purchaseDebugMode = false;
@@ -2292,13 +2244,9 @@ angular.module('starter')
                 if(res) {
                     quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
-                    }, function (error) {
-                        console.error(JSON.stringify(error));
-                    });
+                    }, function (error) { console.error(JSON.stringify(error)); });
                     window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
-                } else {
-                    console.log('You are not sure');
-                }
+                } else { console.log('You are not sure'); }
             });
         };
 
@@ -2314,45 +2262,34 @@ angular.module('starter')
                     $rootScope.user.stripeActive = false;
                     quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
                         console.debug(JSON.stringify(response));
-                    }, function (error) {
-                        console.error(JSON.stringify(error));
-                    });
+                    }, function (error) { console.error(JSON.stringify(error)); });
                     window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
-                    //quantimodoService.updateUserSettingsDeferred({subscriptionProvider: null});
-                } else {
-                    console.log('You are not sure');
-                }
+                } else { console.log('You are not sure'); }
             });
         };
 
         var googleDowngradeDebug = false;
         $scope.downgrade = function () {
-            if ($rootScope.user.subscriptionProvider === 'google' || googleDowngradeDebug) {
-                androidDowngrade();
-            } else if ($rootScope.user.subscriptionProvider === 'apple') {
-                appleDowngrade();
-            } else {
-                webDowngrade();
-            }
-        };
-        var last = {
-            bottom: true,
-            top: false,
-            left: true,
-            right: false
+            if ($rootScope.user.subscriptionProvider === 'google' || googleDowngradeDebug) { androidDowngrade();
+            } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
+            } else { webDowngrade(); }
         };
 
-        $scope.toastPosition = angular.extend({},{
-            bottom: true,
-            top: false,
-            left: true,
-            right: false
-        });
-
+        var last = {bottom: true, top: false, left: true, right: false };
+        $scope.toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
         $scope.getToastPosition = function() {
-            return Object.keys($scope.toastPosition)
-                .filter(function(pos) { return $scope.toastPosition[pos]; })
-                .join(' ');
+            return Object.keys($scope.toastPosition).filter(function(pos) { return $scope.toastPosition[pos]; }).join(' ');
+        };
+
+        var undoInboxAction = function(){
+            var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
+            if(!notificationsSyncQueue){ return false; }
+            notificationsSyncQueue[0].hide = false;
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications',
+                notificationsSyncQueue[0]);
+            quantimodoService.deleteElementsOfLocalStorageItemByProperty('notificationsSyncQueue',
+                'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
+            $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
         };
 
         $scope.showUndoToast = function(lastAction) {
@@ -2363,13 +2300,7 @@ angular.module('starter')
                 .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
                 .hideDelay(10000)
                 .position($scope.getToastPosition());
-
-            $mdToast.show(toast).then(function(response) {
-                if ( response === 'ok' ) {
-                    //alert('You clicked the \'UNDO\' action.');
-                    $rootScope.undoInboxAction();
-                }
-            });
+            $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { undoInboxAction(); } });
         };
 
         $scope.showInfoToast = function(text) {
@@ -2394,7 +2325,6 @@ angular.module('starter')
                 return;
             }
             $scope.updateEmailAndExecuteCallback(callback);
-
         };
 
         var sendCouponEmail = function () {
@@ -2403,17 +2333,10 @@ angular.module('starter')
                 ' for instructions to redeem your coupon.', event);
         };
 
-        $scope.sendCouponEmail = function() {
-            verifyEmailAddressAndExecuteCallback(sendCouponEmail);
-        };
+        $scope.sendCouponEmail = function() { verifyEmailAddressAndExecuteCallback(sendCouponEmail); };
 
         $scope.updateEmailAndExecuteCallback = function (callback) {
-            if($rootScope.user.email){
-                $scope.data = {
-                    email: $rootScope.user.email
-                };
-            }
-
+            if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }
             var myPopup = $ionicPopup.show({
                 template: '<label class="item item-input">' +
                 '<i class="icon ion-email placeholder-icon"></i>' +
@@ -2441,9 +2364,7 @@ angular.module('starter')
             myPopup.then(function(res) {
                 quantimodoService.updateUserSettingsDeferred({email: $scope.data.email});
                 $rootScope.user.email = $scope.data.email;
-                if(callback){
-                    callback();
-                }
+                if(callback){ callback(); }
             });
         };
 

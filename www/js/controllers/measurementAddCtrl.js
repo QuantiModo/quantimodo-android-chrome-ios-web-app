@@ -199,7 +199,8 @@ angular.module('starter')
 
             var message;
 
-            if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
+            if($scope.state.measurement.value === null || $scope.state.measurement.value === '' ||
+                typeof $scope.state.measurement.value === 'undefined'){
                 if($scope.state.measurement.abbreviatedUnitName === '/5'){
                     message = 'Please select a rating';
                 } else {

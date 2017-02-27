@@ -373,20 +373,6 @@ angular.module('starter')
 				});
 	    };
 
-		$rootScope.undoInboxAction = function(){
-			//$rootScope.showUndoButton = false;
-			var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
-			if(!notificationsSyncQueue){
-				return false;
-			}
-			notificationsSyncQueue[0].hide = false;
-			quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications',
-				notificationsSyncQueue[0]);
-			quantimodoService.deleteElementsOfLocalStorageItemByProperty('notificationsSyncQueue',
-				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
-			getTrackingReminderNotifications();
-		};
-
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
             var trackingReminderNotifications =
                 quantimodoService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName);
