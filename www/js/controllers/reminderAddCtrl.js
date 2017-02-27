@@ -90,7 +90,7 @@ angular.module('starter')
                     $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
                     setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else {
-                    $ionicHistory.goBack();
+                    $scope.goBack();
                 }
             });
         });
