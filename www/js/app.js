@@ -570,7 +570,7 @@ angular.module('starter',
             }
         })
         .state('app.intro', {
-            cache: false,
+            cache: true,
             url: "/intro",
             params: {
                 doNotRedirect: true
@@ -583,7 +583,7 @@ angular.module('starter',
             }
         })
         .state('app.introNew', {
-            cache: false,
+            cache: true,
             url: "/intro-new",
             params: {
                 doNotRedirect: true
@@ -1164,7 +1164,7 @@ angular.module('starter',
                     correlationCoefficient: null
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1183,7 +1183,7 @@ angular.module('starter',
                     correlationCoefficient: null
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1203,7 +1203,7 @@ angular.module('starter',
                     correlationCoefficient: '(gt)0'
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1223,7 +1223,7 @@ angular.module('starter',
                     correlationCoefficient: '(gt)0'
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1243,7 +1243,7 @@ angular.module('starter',
                     correlationCoefficient: '(lt)0'
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1263,7 +1263,7 @@ angular.module('starter',
                     correlationCoefficient: '(lt)0'
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1282,7 +1282,7 @@ angular.module('starter',
                     correlationCoefficient: null
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1301,7 +1301,7 @@ angular.module('starter',
                     correlationCoefficient: null
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1310,7 +1310,7 @@ angular.module('starter',
             }
         })
         .state('app.study', {
-            cache: false,
+            cache: true,
             url: "/study",
             params: {
                 correlationObject: null
@@ -1412,7 +1412,7 @@ angular.module('starter',
         })
         .state('app.historyAll', {
             url: "/history-all/:variableCategoryName",
-            cache: false,
+            cache: true,
             params: {
                 variableCategoryName : null
             },
@@ -1425,7 +1425,7 @@ angular.module('starter',
         })
         .state('app.historyAllVariable', {
             url: "/history-all-variable/:variableName",
-            cache: false,
+            cache: true,
             params: {
                 variableName: null,
                 variableObject : null
