@@ -3134,16 +3134,16 @@ angular.module('starter')
                 desiredAccuracy: 10,
                 stationaryRadius: 20,
                 distanceFilter: 30,
-                locationService: 'ANDROID_DISTANCE_FILTER',
+                locationService: 'ANDROID_DISTANCE_FILTER',  // TODO: Decide on setting https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
                 debug: false,
                 stopOnTerminate: false,
                 notificationTitle: 'Recording Location',
                 notificationText: 'Tap to open inbox',
                 notificationIconLarge: null,
                 notificationIconSmall: 'ic_stat_icon_bw',
-                interval: 6000000,
-                fastestInterval: 500000,
-                activitiesInterval: 1000000
+                interval: 100 * 60 * 1000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+                fastestInterval: 500000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
+                activitiesInterval: 15 * 60 * 1000  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
             });
 
             backgroundGeoLocation.start();
