@@ -8,6 +8,7 @@ angular.module('starter')
         $scope.recordMeasurementButtonText = "Record Measurement";
         $scope.lineChartConfig = false;
         $scope.distributionChartConfig = false;
+        $rootScope.showFilterBarSearchIcon = false;
         $scope.state = {
             history : [],
             dailyHistory : [],
@@ -17,10 +18,113 @@ angular.module('starter')
             offset: 0,
             dailyHistoryOffset: 0
         };
-
         var maximumMeasurements = 2000;
 
-        $rootScope.showFilterBarSearchIcon = false;
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+            if($rootScope.urlParameters.variableName){
+                $stateParams.variableName = $rootScope.urlParameters.variableName;
+            }
+
+            $scope.stopGettingMeasurements = false;
+            $ionicLoading.hide();
+            //$scope.showLoader('Fetching measurements');
+            console.debug("variablePageCtrl: init");
+            if($stateParams.variableObject){
+                $rootScope.variableObject = $stateParams.variableObject;
+            } else if ($stateParams.trackingReminder){
+                getStatisticsForVariable($stateParams.trackingReminder.variableName);
+            } else if ($stateParams.variableName){
+                if(!$rootScope.variableObject || $rootScope.variableObject.name !== $stateParams.variableName){
+                    getStatisticsForVariable($stateParams.variableName);
+                }
+            } else {
+                console.error("ERROR: chartsPageCtrl.init No variable name provided!");
+                return;
+            }
+
+            $ionicLoading.hide();
+
+            if($rootScope.variableObject.name){
+                $rootScope.variableName = $rootScope.variableObject.name;
+                var params = {
+                    sort: "-startTimeEpoch",
+                    variableName: $rootScope.variableObject.name,
+                    limit: 0,
+                    offset: 0
+                };
+                if($rootScope.urlParameters.userId){
+                    params.userId = $rootScope.urlParameters.userId;
+                }
+                getDailyHistoryForVariable(params);
+                getHistoryForVariable(params);
+            } else {
+                console.error($state.current.name + ' ERROR: $rootScope.variableObject.name not defined! $rootScope.variableObject: ' +
+                    JSON.stringify($rootScope.variableObject));
+            }
+
+            $rootScope.showActionSheetMenu = function() {
+
+                console.debug("variablePageCtrl.showActionSheetMenu:  $rootScope.variableObject: ", $rootScope.variableObject);
+                var hideSheet = $ionicActionSheet.show({
+                    buttons: [
+                        { text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
+                        { text: '<i class="icon ion-compose"></i>Record Measurement'},
+                        { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
+                        { text: '<i class="icon ion-ios-list-outline"></i>History'},
+                        { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                        { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
+                        { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
+                    ],
+                    destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
+                    cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                    cancel: function() {
+                        console.debug('CANCELLED');
+                    },
+                    buttonClicked: function(index) {
+                        console.debug('BUTTON CLICKED', index);
+                        if(index === 0){
+                            $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
+                        }
+                        if(index === 1){
+                            $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
+                        }
+                        if(index === 2){
+                            $scope.goToAddReminderForVariableObject($rootScope.variableObject);
+                        }
+                        if(index === 3) {
+                            $scope.goToHistoryForVariableObject($rootScope.variableObject);
+                        }
+                        if (index === 4) {
+                            $state.go('app.variableSettings', {variableObject: $rootScope.variableObject});
+                        }
+                        if (index === 5) {
+                            $scope.addTag($rootScope.variableObject);
+                        }
+                        if(index === 6) {
+                            console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
+                            $scope.tagAnotherVariable($rootScope.variableObject);
+                        }
+
+                        return true;
+                    },
+                    destructiveButtonClicked: function() {
+                        $scope.showDeleteAllMeasurementsForVariablePopup();
+                        return true;
+                    }
+                });
+
+                console.debug('Setting hideSheet timeout');
+                $timeout(function() {
+                    hideSheet();
+                }, 20000);
+
+            };
+        });
+
+        $scope.$on('$ionicView.beforeLeave', function(){
+            console.debug('Leaving so setting $scope.stopGettingMeasurements to true');
+            $scope.stopGettingMeasurements = true;
+        });
 
         if (!clipboard.supported) {
             console.log('Sorry, copy to clipboard is not supported');
@@ -211,117 +315,5 @@ angular.module('starter')
                 $rootScope.variableObject = variableObject;
             });
         };
-
-        $scope.$on('$ionicView.beforeLeave', function(){
-            console.debug('Leaving so setting $scope.stopGettingMeasurements to true');
-            $scope.stopGettingMeasurements = true;
-        });
-
-        $scope.init = function(){
-
-            if($rootScope.urlParameters.variableName){
-                $stateParams.variableName = $rootScope.urlParameters.variableName;
-            }
-
-            $scope.stopGettingMeasurements = false;
-            $ionicLoading.hide();
-            //$scope.showLoader('Fetching measurements');
-            console.debug("variablePageCtrl: init");
-            if($stateParams.variableObject){
-                $rootScope.variableObject = $stateParams.variableObject;
-            } else if ($stateParams.trackingReminder){
-                getStatisticsForVariable($stateParams.trackingReminder.variableName);
-            } else if ($stateParams.variableName){
-                if(!$rootScope.variableObject || $rootScope.variableObject.name !== $stateParams.variableName){
-                    getStatisticsForVariable($stateParams.variableName);
-                }
-            } else {
-                console.error("ERROR: chartsPageCtrl.init No variable name provided!");
-                return;
-            }
-
-            $ionicLoading.hide();
-
-            if($rootScope.variableObject.name){
-                $rootScope.variableName = $rootScope.variableObject.name;
-                var params = {
-                    sort: "-startTimeEpoch",
-                    variableName: $rootScope.variableObject.name,
-                    limit: 0,
-                    offset: 0
-                };
-                if($rootScope.urlParameters.userId){
-                    params.userId = $rootScope.urlParameters.userId;
-                }
-                getDailyHistoryForVariable(params);
-                getHistoryForVariable(params);
-            } else {
-                console.error($state.current.name + ' ERROR: $rootScope.variableObject.name not defined! $rootScope.variableObject: ' +
-                    JSON.stringify($rootScope.variableObject));
-            }
-        };
-
-        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            $scope.init();
-
-            $rootScope.showActionSheetMenu = function() {
-
-                console.debug("variablePageCtrl.showActionSheetMenu:  $rootScope.variableObject: ", $rootScope.variableObject);
-                var hideSheet = $ionicActionSheet.show({
-                    buttons: [
-                        { text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
-                        { text: '<i class="icon ion-compose"></i>Record Measurement'},
-                        { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-                        { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                        { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-                        { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
-                        { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
-                    ],
-                    destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
-                    cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-                    cancel: function() {
-                        console.debug('CANCELLED');
-                    },
-                    buttonClicked: function(index) {
-                        console.debug('BUTTON CLICKED', index);
-                        if(index === 0){
-                            $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
-                        }
-                        if(index === 1){
-                            $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
-                        }
-                        if(index === 2){
-                            $scope.goToAddReminderForVariableObject($rootScope.variableObject);
-                        }
-                        if(index === 3) {
-                            $scope.goToHistoryForVariableObject($rootScope.variableObject);
-                        }
-                        if (index === 4) {
-                            $state.go('app.variableSettings', {variableObject: $rootScope.variableObject});
-                        }
-                        if (index === 5) {
-                            $scope.addTag($rootScope.variableObject);
-                        }
-                        if(index === 6) {
-                            console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
-                            $scope.tagAnotherVariable($rootScope.variableObject);
-                        }
-
-                        return true;
-                    },
-                    destructiveButtonClicked: function() {
-                        $scope.showDeleteAllMeasurementsForVariablePopup();
-                        return true;
-                    }
-                });
-
-                console.debug('Setting hideSheet timeout');
-                $timeout(function() {
-                    hideSheet();
-                }, 20000);
-
-            };
-        });
-
 
     });
