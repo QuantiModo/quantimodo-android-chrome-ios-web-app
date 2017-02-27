@@ -2193,8 +2193,8 @@ angular.module('starter')
                 clickOutsideToClose: false,
                 fullscreen: false
             }).then(function(baseProductId) {
-                makeInAppPurchase(baseProductId);
-                //getProductsAndMakeInAppPurchase(baseProductId);
+                //makeInAppPurchase(baseProductId);
+                getProductsAndMakeInAppPurchase(baseProductId);
             }, function() { $scope.status = 'You cancelled the dialog.'; });
         };
 
@@ -2258,8 +2258,8 @@ angular.module('starter')
             inAppPurchase
                 .getProducts([getProductId(baseProductId)])
                 .then(function (products) {
-                    console.debug('Available Products: ' + JSON.stringify(products));
-                    if(purchaseDebugMode){  alert('Available Products: ' + JSON.stringify(products)); }
+                    quantimodoService.reportError('Available Products: ' + JSON.stringify(products));
+                    if(purchaseDebugMode){alert('Available Products: ' + JSON.stringify(products));}
                      //[{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                     makeInAppPurchase(baseProductId);
                 }).catch(function (err) {
