@@ -3125,7 +3125,7 @@ angular.module('starter')
 
             var failureFn = function(error) {
                 var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
-                console.log(errorMessage);
+                console.error(errorMessage);
                 quantimodoService.reportError(errorMessage);
             };
 
@@ -3134,7 +3134,7 @@ angular.module('starter')
                 stationaryRadius: 20,
                 distanceFilter: 30,
                 locationService: 'ANDROID_DISTANCE_FILTER',  // TODO: Decide on setting https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
-                debug: false,
+                debug: true,
                 stopOnTerminate: false,
                 notificationTitle: 'Recording Location',
                 notificationText: 'Tap to open inbox',
