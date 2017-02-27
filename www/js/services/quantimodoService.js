@@ -4255,9 +4255,8 @@ angular.module('starter')
             return averageValueByMonthlyArray;
         };
 
-        var exportOptions = {
-            enabled: true
-        };
+        var exportOptions = { enabled: false };
+        if($rootScope.isWeb){ exportOptions.enabled = true; }
 
         quantimodoService.configureDistributionChart = function(dataAndLabels, variableObject){
             var xAxisLabels = [];
