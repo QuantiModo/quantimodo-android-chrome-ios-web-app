@@ -31,6 +31,7 @@ angular.module('starter')
             console.debug("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $rootScope.variableObject = $stateParams.variableObject;
+                refreshUserVariable($rootScope.variableObject.name);
             } else if ($stateParams.trackingReminder){
                 getStatisticsForVariable($stateParams.trackingReminder.variableName);
             } else if ($stateParams.variableName){
@@ -301,6 +302,12 @@ angular.module('starter')
             });
         };
 
+        var refreshUserVariable = function (variableName) {
+            quantimodoService.refreshUserVariableDeferred(variableName).then(function (variableObject) {
+                $rootScope.variableObject = variableObject;
+            });
+        };
+
         var getStatisticsForVariable = function (variableName) {
             $rootScope.variableObject = {
                 name:  variableName
@@ -312,6 +319,7 @@ angular.module('starter')
             }
             quantimodoService.getUserVariableByNameDeferred(variableName, params).then(function(variableObject){
                 $rootScope.variableObject = variableObject;
+                refreshUserVariable(variableName);
             });
         };
 
