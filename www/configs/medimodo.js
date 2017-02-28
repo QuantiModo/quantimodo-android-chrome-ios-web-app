@@ -105,7 +105,7 @@ config.appSettings  = {
     },
     backgroundColor: "white",
 
-    intro : [
+    introOld : [
         {
             img : {
                 "width" : "250",
