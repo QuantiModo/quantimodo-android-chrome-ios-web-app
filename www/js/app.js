@@ -523,7 +523,7 @@ angular.module('starter',
         .state('intro', {
             cache: false,
             url: '/',
-            templateUrl: 'templates/intro-tour.html',
+            templateUrl: 'templates/intro-tour-new.html',
             controller: 'IntroCtrl',
             resolve : config_resolver
         })
