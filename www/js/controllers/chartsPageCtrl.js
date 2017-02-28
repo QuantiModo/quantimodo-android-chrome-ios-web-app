@@ -49,7 +49,7 @@ angular.module('starter')
                 var params = {
                     sort: "-startTimeEpoch",
                     variableName: $rootScope.variableObject.name,
-                    limit: 0,
+                    limit: 2000,
                     offset: 0
                 };
                 if($rootScope.urlParameters.userId){
@@ -269,7 +269,6 @@ angular.module('starter')
             $scope.state.loadingDailyHistory = true;
             quantimodoService.getMeasurementsDailyFromApiDeferred(params).then(function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
-
                 if(params.limit > 0 && dailyHistory.length > 0 && $scope.state.dailyHistory.length < maximumMeasurements){
                     $scope.state.dailyHistoryOffset = $scope.state.dailyHistoryOffset + 200;
                     params = {
