@@ -8354,7 +8354,7 @@ angular.module('starter')
         quantimodoService.postDowngradeSubscriptionDeferred = function(){
             var deferred = $q.defer();
             $rootScope.user.stripeActive = false;
-            quantimodoService.reportError('User un-subscribed: ' + JSON.stringify($rootScope.user));
+            quantimodoService.reportError('User downgraded subscription: ' + JSON.stringify($rootScope.user));
             quantimodoService.postDowngradeSubscription({}, function(response){
                 $rootScope.user = response.user;
                 quantimodoService.setLocalStorageItem('user', JSON.stringify($rootScope.user));
