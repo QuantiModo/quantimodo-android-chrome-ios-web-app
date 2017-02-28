@@ -2,8 +2,8 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
                                                            $rootScope, $stateParams, quantimodoService) {
 
     $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
-    if($state.current.name === 'app.introNew'){ $scope.introSlides = quantimodoService.getIntroSlidesNew(); }
-    else { $scope.introSlides = quantimodoService.getIntroSlides(); }
+    if($state.current.name === 'app.introOld'){ $scope.introSlides = quantimodoService.getIntroSlidesOld(); }
+    else { $scope.introSlides = quantimodoService.getIntroSlidesNew(); }
     $rootScope.showFilterBarSearchIcon = false;
     $scope.myIntro = {
         ready : false,

@@ -569,22 +569,22 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.intro', {
+        .state('app.introOld', {
             cache: true,
-            url: "/intro",
+            url: "/intro-old",
             params: {
                 doNotRedirect: true
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/intro-tour.html",
+                    templateUrl: "templates/intro-tour-old.html",
                     controller: 'IntroCtrl'
                 }
             }
         })
-        .state('app.introNew', {
+        .state('app.intro', {
             cache: true,
-            url: "/intro-new",
+            url: "/intro",
             params: {
                 doNotRedirect: true
             },

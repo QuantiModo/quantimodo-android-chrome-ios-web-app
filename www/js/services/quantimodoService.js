@@ -7729,7 +7729,7 @@ angular.module('starter')
 
         };
 
-        quantimodoService.getIntroSlides = function () {
+        quantimodoService.getIntroSlidesOld = function () {
 
             var introSlides = [
                 {
