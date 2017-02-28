@@ -4258,18 +4258,17 @@ angular.module('starter')
         var exportOptions = { enabled: false };
         if($rootScope.isWeb){ exportOptions.enabled = true; }
 
+        var shouldWeUsePrimaryOutcomeLabels = function (variableObject) {
+            return variableObject.userVariableDefaultUnitId === 10 &&
+                variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name;
+        };
+
         quantimodoService.configureDistributionChart = function(dataAndLabels, variableObject){
             var xAxisLabels = [];
             var xAxisTitle = 'Daily Values (' + variableObject.abbreviatedUnitName + ')';
             var data = [];
-            if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
-                data = [0, 0, 0, 0, 0];
-            }
-
-            function isInt(n) {
-                return parseFloat(n) % 1 === 0;
-            }
-
+            if(shouldWeUsePrimaryOutcomeLabels(variableObject)){ data = [0, 0, 0, 0, 0]; }
+            function isInt(n) { return parseFloat(n) % 1 === 0; }
             var dataAndLabels2 = [];
             for(var propertyName in dataAndLabels) {
                 // propertyName is what you want
@@ -4277,29 +4276,20 @@ angular.module('starter')
                 if(dataAndLabels.hasOwnProperty(propertyName)){
                     dataAndLabels2.push({label: propertyName, value: dataAndLabels[propertyName]});
                     xAxisLabels.push(propertyName);
-                    if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
-                        if(isInt(propertyName)){
-                            data[parseInt(propertyName) - 1] = dataAndLabels[propertyName];
-                        }
-                    } else {
-                        data.push(dataAndLabels[propertyName]);
-                    }
+                    if(shouldWeUsePrimaryOutcomeLabels(variableObject)){
+                        if(isInt(propertyName)){ data[parseInt(propertyName) - 1] = dataAndLabels[propertyName]; }
+                    } else { data.push(dataAndLabels[propertyName]); }
                 }
             }
-
-            dataAndLabels2.sort(function(a, b) {
-                return a.label - b.label;
-            });
-
+            dataAndLabels2.sort(function(a, b) { return a.label - b.label; });
             xAxisLabels = [];
             data = [];
-
             for(var i = 0; i < dataAndLabels2.length; i++){
                 xAxisLabels.push(dataAndLabels2[i].label);
                 data.push(dataAndLabels2[i].value);
             }
 
-            if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name) {
+            if(shouldWeUsePrimaryOutcomeLabels(variableObject)) {
                 xAxisLabels = quantimodoService.getPrimaryOutcomeVariableOptionLabels();
                 xAxisTitle = '';
             }
