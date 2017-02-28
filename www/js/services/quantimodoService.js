@@ -3134,7 +3134,7 @@ angular.module('starter')
                 stationaryRadius: 20,
                 distanceFilter: 30,
                 locationService: 'ANDROID_DISTANCE_FILTER',  // TODO: Decide on setting https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
-                debug: true,
+                debug: false,  // Created notifications with location info
                 stopOnTerminate: false,
                 notificationTitle: 'Recording Location',
                 notificationText: 'Tap to open inbox',
