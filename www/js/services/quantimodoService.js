@@ -2562,20 +2562,12 @@ angular.module('starter')
         quantimodoService.getClientId = function(){
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 $rootScope.clientId = window.private_keys.client_ids.Chrome; //if chrome app
-            } else if ($rootScope.isIOS) {
-                $rootScope.clientId = window.private_keys.client_ids.iOS;
-            } else if ($rootScope.isAndroid) {
-                $rootScope.clientId = window.private_keys.client_ids.Android;
-            } else if ($rootScope.isChromeExtension) {
-                $rootScope.clientId = window.private_keys.client_ids.Chrome;
-            } else if ($rootScope.isWindows) {
-                $rootScope.clientId = window.private_keys.client_ids.Windows;
-            } else {
-                $rootScope.clientId = window.private_keys.client_ids.Web;
-            }
-            if(!$rootScope.clientId || $rootScope.clientId === "undefined"){
-                quantimodoService.reportError('clientId is undefined!');
-            }
+            } else if ($rootScope.isIOS) { $rootScope.clientId = window.private_keys.client_ids.iOS;
+            } else if ($rootScope.isAndroid) { $rootScope.clientId = window.private_keys.client_ids.Android;
+            } else if ($rootScope.isChromeExtension) { $rootScope.clientId = window.private_keys.client_ids.Chrome;
+            } else if ($rootScope.isWindows) { $rootScope.clientId = window.private_keys.client_ids.Windows;
+            } else { $rootScope.clientId = window.private_keys.client_ids.Web; }
+            if(!$rootScope.clientId || $rootScope.clientId === "undefined"){ quantimodoService.reportError('clientId is undefined!'); }
             return $rootScope.clientId;
         };
 
