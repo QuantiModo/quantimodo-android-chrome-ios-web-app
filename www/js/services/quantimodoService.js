@@ -2562,17 +2562,12 @@ angular.module('starter')
         quantimodoService.getClientId = function(){
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 $rootScope.clientId = window.private_keys.client_ids.Chrome; //if chrome app
-            } else if ($rootScope.isIOS) {
-                $rootScope.clientId = window.private_keys.client_ids.iOS;
-            } else if ($rootScope.isAndroid) {
-                $rootScope.clientId = window.private_keys.client_ids.Android;
-            } else if ($rootScope.isChromeExtension) {
-                $rootScope.clientId = window.private_keys.client_ids.Chrome;
-            } else if ($rootScope.isWindows) {
-                $rootScope.clientId = window.private_keys.client_ids.Windows;
-            } else {
-                $rootScope.clientId = window.private_keys.client_ids.Web;
-            }
+            } else if ($rootScope.isIOS) { $rootScope.clientId = window.private_keys.client_ids.iOS;
+            } else if ($rootScope.isAndroid) { $rootScope.clientId = window.private_keys.client_ids.Android;
+            } else if ($rootScope.isChromeExtension) { $rootScope.clientId = window.private_keys.client_ids.Chrome;
+            } else if ($rootScope.isWindows) { $rootScope.clientId = window.private_keys.client_ids.Windows;
+            } else { $rootScope.clientId = window.private_keys.client_ids.Web; }
+            if(!$rootScope.clientId || $rootScope.clientId === "undefined"){ quantimodoService.reportError('clientId is undefined!'); }
             return $rootScope.clientId;
         };
 
@@ -3134,7 +3129,7 @@ angular.module('starter')
                 stationaryRadius: 20,
                 distanceFilter: 30,
                 locationService: 'ANDROID_DISTANCE_FILTER',  // TODO: Decide on setting https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
-                debug: true,
+                debug: false,  // Created notifications with location info
                 stopOnTerminate: false,
                 notificationTitle: 'Recording Location',
                 notificationText: 'Tap to open inbox',
