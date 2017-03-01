@@ -5522,6 +5522,7 @@ angular.module('starter')
             quantimodoService.getVariablesByNameFromApi(variableName, {}, function(variable){
                 deferred.resolve(variable);
             }, function(error){ deferred.reject(error); });
+            return deferred.promise;
         };
 
         quantimodoService.getUserVariableByNameDeferred = function(name, params, refresh){
