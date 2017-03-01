@@ -2573,6 +2573,9 @@ angular.module('starter')
             } else {
                 $rootScope.clientId = window.private_keys.client_ids.Web;
             }
+            if(!$rootScope.clientId || $rootScope.clientId === "undefined"){
+                quantimodoService.reportError('clientId is undefined!');
+            }
             return $rootScope.clientId;
         };
 
