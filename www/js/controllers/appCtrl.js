@@ -2165,25 +2165,26 @@ angular.module('starter')
             return baseProductId;
         }
 
+        var upgradeCompletePopup = $mdDialog.show(
+            $mdDialog.alert()
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title( 'Thank you!')
+                .textContent( "Let's get started!")
+                .ariaLabel('Alert Dialog Demo')
+                .ok('OK!')
+        ).finally(function() {
+            $scope.goBack();
+            $rootScope.user.stripeActive = true;
+        });
+
         function makeInAppPurchase(baseProductId) {
             $ionicLoading.show();
-            inAppPurchase
-                .subscribe(getProductId(baseProductId))
+            inAppPurchase.subscribe(getProductId(baseProductId))
                 .then(function (data) {
                     quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
                     $ionicLoading.hide();
-                    $mdDialog.show(
-                        $mdDialog.alert()
-                            .parent(angular.element(document.querySelector('#popupContainer')))
-                            .clickOutsideToClose(true)
-                            .title( 'Thank you!')
-                            .textContent( "Let's get started!")
-                            .ariaLabel('Alert Dialog Demo')
-                            .ok('OK!')
-                    ).finally(function() {
-                        $scope.goBack();
-                        $rootScope.user.stripeActive = true;
-                    });
+                    upgradeCompletePopup();
                     quantimodoService.reportError("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
                     quantimodoService.updateUserSettingsDeferred({
                         subscriptionProvider: getSubscriptionProvider(),
@@ -2196,6 +2197,17 @@ angular.module('starter')
                     $rootScope.user.stripeActive = true;
                 }).catch(function (error) {
                     $ionicLoading.hide();
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title( error.errorMessage )
+                            .textContent("Please try again or contact mike@quantimo.do with Error Code: " +
+                                error.errorCode + ", Error Message: " + error.errorMessage + ", Product ID: " +
+                                getProductId(baseProductId))
+                            .ariaLabel(error.errorMessage)
+                            .ok('OK')
+                    ).finally(function() {});
                     quantimodoService.reportError('inAppPurchase.catch error ' + JSON.stringify(error));
                 });
         }
