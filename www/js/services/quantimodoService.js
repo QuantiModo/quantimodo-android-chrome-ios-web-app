@@ -7313,7 +7313,9 @@ angular.module('starter')
                     $state.go(config.appSettings.defaultState);
                 });
             } else if (quantimodoService.getClientId() !== 'oAuthDisabled') {
-                quantimodoService.oAuthBrowserLogin(register);
+                // Using timeout to avoid "$apply already in progress" error caused by window.open
+                if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);
+                } else { quantimodoService.oAuthBrowserLogin(register); }
             } else {
                 quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
             }
