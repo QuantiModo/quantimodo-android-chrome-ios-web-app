@@ -7306,21 +7306,6 @@ angular.module('starter')
             window.close();
         };
 
-        quantimodoService.browserLogin = function(register) {
-            console.debug("Browser Login");
-            if (window.private_keys.username) {
-                quantimodoService.refreshUser().then(function () {
-                    $state.go(config.appSettings.defaultState);
-                });
-            } else if (quantimodoService.getClientId() !== 'oAuthDisabled') {
-                // Using timeout to avoid "$apply already in progress" error caused by window.open
-                if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);
-                } else { quantimodoService.oAuthBrowserLogin(register); }
-            } else {
-                quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
-            }
-        };
-
         quantimodoService.oAuthBrowserLogin = function (register) {
             var url = quantimodoService.generateV1OAuthUrl(register);
             console.debug("Going to try logging in by opening new tab at url " + url);
