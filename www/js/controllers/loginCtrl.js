@@ -97,6 +97,21 @@ angular.module('starter')
             $scope.login(register);
         };
 
+        var browserLogin = function(register) {
+            console.debug("Browser Login");
+            if (window.private_keys.username) {
+                quantimodoService.refreshUser().then(function () {
+                    $state.go(config.appSettings.defaultState);
+                });
+            } else if (quantimodoService.getClientId() !== 'oAuthDisabled') {
+                // Using timeout to avoid "$apply already in progress" error caused by window.open
+                if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);
+                } else { quantimodoService.oAuthBrowserLogin(register); }
+            } else {
+                quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
+            }
+        };
+
         $scope.login = function(register) {
 
             if(window && window.plugins && window.plugins.googleplus){
@@ -113,7 +128,7 @@ angular.module('starter')
                 $ionicLoading.show();
                 $scope.loginPage.title = 'Logging in...';
                 console.debug("$scope.login: Not windows, android or is so assuming browser.");
-                quantimodoService.browserLogin(register);
+                browserLogin(register);
             }
 
             if($rootScope.user){
