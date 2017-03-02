@@ -188,6 +188,7 @@ angular.module('starter')
         };
 
         $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
+            /** @namespace correlationObject.causeVariable */
             if(correlationObject.causeVariable){
                 $state.go('app.variableSettings', {variableObject: correlationObject.causeVariable});
             } else {
@@ -196,6 +197,7 @@ angular.module('starter')
         };
 
         $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
+            /** @namespace correlationObject.effectVariable */
             if(correlationObject.effectVariable){
                 $state.go('app.variableSettings', {variableObject: correlationObject.effectVariable});
             } else {
@@ -652,7 +654,6 @@ angular.module('starter')
         $scope.highchartsReflow = function() {
             // Fixes chart width
             //$(window).resize(); This doesn't seem to do anything
-
             if(!$rootScope.reflowScheduled){
                 $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
                 var seconds = 0.1;
@@ -662,14 +663,13 @@ angular.module('starter')
                     $scope.$broadcast('highchartsng.reflow');
                     $rootScope.reflowScheduled = false;
                 }, seconds * 1000);
-
                 //$scope.$broadcast('highchartsng.reflow'); This doesn't seem to do anything
             } else {
                 console.debug('broadcast(highchartsng.reflow) already scheduled');
             }
-
         };
 
+/*
         $scope.autoUpdateApp = function () {
 
             var appUpdatesDisabled = true;
@@ -772,6 +772,7 @@ angular.module('starter')
         };
 
         $scope.autoUpdateApp();
+*/
 
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
@@ -1197,10 +1198,9 @@ angular.module('starter')
                 { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'}
             ];
 
-            if(config.appSettings.favoritesController){
-                if(config.appSettings.favoritesController.actionMenuButtons){
-                    actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
-                }
+            /** @namespace config.appSettings.favoritesController */
+            if(config.appSettings.favoritesController && config.appSettings.favoritesController.actionMenuButtons){
+                actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
             }
 
             if(bloodPressure){
@@ -1977,9 +1977,12 @@ angular.module('starter')
             }, function() { console.error("error disconnecting " + connector.name); });
         };
 
-        $scope.getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
+        $scope.getItHere = function (connector){
+            /** @namespace connector.getItUrl */
+            window.open(connector.getItUrl, '_blank'); };
 
         var webConnect = function (connector) {
+            /** @namespace connector.connectInstructions */
             var url = connector.connectInstructions.url;
             console.debug('targetUrl is ',  url);
             var ref = window.open(url,'', "width=600,height=800");
@@ -2076,6 +2079,7 @@ angular.module('starter')
                             .ok('Get Started')
                     ).finally(function() {
                         $scope.goBack();
+                        /** @namespace response.data.purchaseId */
                         quantimodoService.recordUpgradeProductPurchase(answer.productId, response.data.purchaseId, 2);
                     });
                 }, function (response) {
@@ -2339,6 +2343,7 @@ angular.module('starter')
         $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
         $scope.copyChartsUrlToClipboard = function () {
             $scope.copyLinkText = 'Copied!';
+            /** @namespace $rootScope.variableObject.chartsUrl */
             clipboard.copyText($rootScope.variableObject.chartsUrl);
             $scope.showInfoToast('Copied link!');
         };
