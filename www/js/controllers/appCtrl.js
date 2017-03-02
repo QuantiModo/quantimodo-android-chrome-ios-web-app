@@ -2149,8 +2149,8 @@ angular.module('starter')
                 clickOutsideToClose: false,
                 fullscreen: false
             }).then(function(baseProductId) {
-                //makeInAppPurchase(baseProductId);
-                getProductsAndMakeInAppPurchase(baseProductId);
+                makeInAppPurchase(baseProductId);
+                //getProductsAndMakeInAppPurchase(baseProductId);
             }, function() {
                 quantimodoService.reportError('User cancelled mobileUpgrade subscription selection');
                 $scope.status = 'You cancelled the dialog.';
@@ -2171,18 +2171,20 @@ angular.module('starter')
 
         function makeInAppPurchase(baseProductId) {
             $ionicLoading.show();
+            var getReceipt = false;
             inAppPurchase.subscribe(getProductId(baseProductId))
                 .then(function (data) {
-                    inAppPurchase.getReceipt()
-                        .then(function (receipt) {
-                            quantimodoService.reportError('inAppPurchase.getReceipt response: ' + JSON.stringify(receipt));
-                            console.debug("inAppPurchase.getReceipt " + receipt);
-                        }).catch(function (error) {
+                    if(getReceipt){
+                        inAppPurchase.getReceipt()
+                            .then(function (receipt) {
+                                quantimodoService.reportError('inAppPurchase.getReceipt response: ' + JSON.stringify(receipt));
+                                console.debug("inAppPurchase.getReceipt " + receipt);
+                            }).catch(function (error) {
                             quantimodoService.reportError('inAppPurchase.getReceipt error response: ' + JSON.stringify(error));
                         });
+                    }
                     quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
                     $ionicLoading.hide();
-
                     var alert;
                     // Internal method
                     function showAlert() {
