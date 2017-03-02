@@ -7238,7 +7238,8 @@ angular.module('starter')
                                 JSON.stringify(user));
                         }, function(error){
                             $ionicLoading.hide();
-                            console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
+                            quantimodoService.reportError($state.current.name + ' could not refresh user because ' +
+                                JSON.stringify(error));
                         });
                     }
                 }).catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
@@ -7358,6 +7359,9 @@ angular.module('starter')
 
                             } else {
                                 // TODO : display_error
+                                alert('Could not login.  Please contact mike@quantimo.do');
+                                quantimodoService.reportError("Error occurred validating redirect url. Closing the sibling tab." +
+                                    quantimodoService.getUrlParameter(iframe_url, 'error'));
                                 console.error("Error occurred validating redirect url. Closing the sibling tab.",
                                     quantimodoService.getUrlParameter(iframe_url, 'error'));
 
