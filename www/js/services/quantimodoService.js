@@ -5512,6 +5512,14 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        quantimodoService.refreshUserVariableDeferred = function (variableName) {
+            var deferred = $q.defer();
+            quantimodoService.getVariablesByNameFromApi(variableName, {}, function(variable){
+                deferred.resolve(variable);
+            }, function(error){ deferred.reject(error); });
+            return deferred.promise;
+        };
+
         quantimodoService.getUserVariableByNameDeferred = function(name, params, refresh){
             var deferred = $q.defer();
             quantimodoService.getLocalStorageItemAsStringWithCallback('userVariables', function (userVariables) {
