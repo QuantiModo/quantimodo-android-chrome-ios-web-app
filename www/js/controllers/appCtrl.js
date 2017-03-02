@@ -2165,19 +2165,6 @@ angular.module('starter')
             return baseProductId;
         }
 
-        var upgradeCompletePopup = $mdDialog.show(
-            $mdDialog.alert()
-                .parent(angular.element(document.querySelector('#popupContainer')))
-                .clickOutsideToClose(true)
-                .title( 'Thank you!')
-                .textContent( "Let's get started!")
-                .ariaLabel('Alert Dialog Demo')
-                .ok('OK!')
-        ).finally(function() {
-            $scope.goBack();
-            $rootScope.user.stripeActive = true;
-        });
-
         function makeInAppPurchase(baseProductId) {
             $ionicLoading.show();
             inAppPurchase.subscribe(getProductId(baseProductId))
@@ -2191,7 +2178,20 @@ angular.module('starter')
                         });
                     quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
                     $ionicLoading.hide();
-                    upgradeCompletePopup();
+
+                    var alert;
+                    // Internal method
+                    function showAlert() {
+                        alert = $mdDialog.alert({  title: 'Thank you!', textContent: "Let's get started!", ok: 'OK' });
+                        $mdDialog.show( alert )
+                            .finally(function() {
+                                $scope.goBack();
+                                $rootScope.user.stripeActive = true;
+                                alert = undefined;
+                            });
+                    }
+
+                    showAlert();
                     quantimodoService.reportError("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
                     quantimodoService.updateUserSettingsDeferred({
                         subscriptionProvider: getSubscriptionProvider(),
