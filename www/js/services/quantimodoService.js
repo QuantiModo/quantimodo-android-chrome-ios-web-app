@@ -1231,7 +1231,7 @@ angular.module('starter')
             return stringOrObject;
         };
 
-        quantimodoService.generateV1OAuthUrl= function(register) {
+        quantimodoService.generateV1OAuthUrl = function(register) {
             var url = quantimodoService.getApiUrl() + "/api/oauth2/authorize?";
             // add params
             url += "response_type=code";
@@ -7222,6 +7222,7 @@ angular.module('starter')
         quantimodoService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
             quantimodoService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
+                    $ionicLoading.hide();
                     if(response.error){
                         quantimodoService.reportError(response.error);
                         console.error("Error generating access token");
@@ -7230,14 +7231,18 @@ angular.module('starter')
                         console.debug("Access token received",response);
                         quantimodoService.saveAccessTokenInLocalStorage(response);
                         console.debug('get user details from server and going to defaultState...');
+                        $ionicLoading.show();
                         quantimodoService.refreshUser().then(function(user){
+                            $ionicLoading.hide();
                             console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' +
                                 JSON.stringify(user));
                         }, function(error){
+                            $ionicLoading.hide();
                             console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                         });
                     }
                 }).catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
+                    $ionicLoading.hide();
                     quantimodoService.setLocalStorageItem('user', null);
                 });
         };
@@ -7317,6 +7322,7 @@ angular.module('starter')
             var url = quantimodoService.generateV1OAuthUrl(register);
             console.debug("Going to try logging in by opening new tab at url " + url);
 
+            $ionicLoading.show();
             var ref = window.open(url, '_blank');
 
             if (!ref) {

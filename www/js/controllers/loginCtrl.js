@@ -110,6 +110,8 @@ angular.module('starter')
                 console.debug("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using quantimodoService.nonNativeMobileLogin");
                 quantimodoService.nonNativeMobileLogin(register);
             } else {
+                $ionicLoading.show();
+                $scope.loginPage.title = 'Logging in...';
                 console.debug("$scope.login: Not windows, android or is so assuming browser.");
                 quantimodoService.browserLogin(register);
             }
