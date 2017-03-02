@@ -2194,7 +2194,6 @@ angular.module('starter')
                                 alert = undefined;
                             });
                     }
-
                     showAlert();
                     quantimodoService.reportError("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
                     quantimodoService.updateUserSettingsDeferred({
@@ -2208,17 +2207,21 @@ angular.module('starter')
                     $rootScope.user.stripeActive = true;
                 }).catch(function (error) {
                     $ionicLoading.hide();
-                    $mdDialog.show(
-                        $mdDialog.alert()
-                            .parent(angular.element(document.querySelector('#popupContainer')))
-                            .clickOutsideToClose(true)
-                            .title( error.errorMessage )
-                            .textContent("Please try again or contact mike@quantimo.do with Error Code: " +
+                    var alert;
+                    // Internal method
+                    function showAlert() {
+                        alert = $mdDialog.alert({
+                            title: error.errorMessage,
+                            textContent: "Please try again or contact mike@quantimo.do with Error Code: " +
                                 error.errorCode + ", Error Message: " + error.errorMessage + ", Product ID: " +
-                                getProductId(baseProductId))
-                            .ariaLabel(error.errorMessage)
-                            .ok('OK')
-                    ).finally(function() {});
+                                getProductId(baseProductId),
+                            ok: 'OK' });
+                        $mdDialog.show(alert)
+                            .finally(function() {
+                                alert = undefined;
+                            });
+                    }
+                    showAlert();
                     quantimodoService.reportError('inAppPurchase.catch error ' + JSON.stringify(error));
                 });
         }
