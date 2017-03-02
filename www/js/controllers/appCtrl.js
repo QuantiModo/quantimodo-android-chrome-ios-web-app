@@ -2182,6 +2182,13 @@ angular.module('starter')
             $ionicLoading.show();
             inAppPurchase.subscribe(getProductId(baseProductId))
                 .then(function (data) {
+                    inAppPurchase.getReceipt()
+                        .then(function (receipt) {
+                            quantimodoService.reportError('inAppPurchase.getReceipt response: ' + JSON.stringify(receipt));
+                            console.debug("inAppPurchase.getReceipt " + receipt);
+                        }).catch(function (error) {
+                            quantimodoService.reportError('inAppPurchase.getReceipt error response: ' + JSON.stringify(error));
+                        });
                     quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
                     $ionicLoading.hide();
                     upgradeCompletePopup();
