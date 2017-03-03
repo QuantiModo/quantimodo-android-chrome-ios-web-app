@@ -2149,8 +2149,8 @@ angular.module('starter')
                 clickOutsideToClose: false,
                 fullscreen: false
             }).then(function(baseProductId) {
-                makeInAppPurchase(baseProductId);
-                //getProductsAndMakeInAppPurchase(baseProductId);
+                //makeInAppPurchase(baseProductId);  // iOS requires us to get products first or we get "unknown product id" error
+                getProductsAndMakeInAppPurchase(baseProductId);
             }, function() {
                 quantimodoService.reportError('User cancelled mobileUpgrade subscription selection');
                 $scope.status = 'You cancelled the dialog.';
