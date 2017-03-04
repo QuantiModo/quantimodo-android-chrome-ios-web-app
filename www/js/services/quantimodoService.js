@@ -6958,7 +6958,7 @@ angular.module('starter')
                     localStorage.setItem(keyIdentifier+key, value);
                     deferred.resolve();
                 } catch(error) {
-                    var metaData = { localStorageItems: quantimodoService.getLocalStorageList(error) };
+                    var metaData = { localStorageItems: quantimodoService.getLocalStorageList() };
                     var name = error;
                     var message = 'Error saving ' + key + ' to local storage';
                     var severity = 'error';
@@ -6973,7 +6973,7 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.getLocalStorageList = function(error){
+        quantimodoService.getLocalStorageList = function(){
             var localStorageItemsArray = [];
             for (var i = 0; i < localStorage.length; i++){
                 localStorage.getItem(localStorage.key(i));
