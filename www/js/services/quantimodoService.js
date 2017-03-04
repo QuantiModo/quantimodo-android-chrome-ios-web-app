@@ -6958,7 +6958,11 @@ angular.module('starter')
                     localStorage.setItem(keyIdentifier+key, value);
                     deferred.resolve();
                 } catch(error) {
-                    quantimodoService.sendErrorWithLocalStorageList(error);
+                    var metaData = { localStorageItems: quantimodoService.getLocalStorageList() };
+                    var name = error;
+                    var message = 'Error saving ' + key + ' to local storage';
+                    var severity = 'error';
+                    quantimodoService.bugsnagNotify(name, message, metaData, severity);
                     quantimodoService.deleteItemFromLocalStorage('primaryOutcomeVariableMeasurements');
                     quantimodoService.deleteItemFromLocalStorage('lastSyncTime');
                     quantimodoService.deleteItemFromLocalStorage('userVariables');
@@ -6969,7 +6973,7 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        quantimodoService.sendErrorWithLocalStorageList = function(error){
+        quantimodoService.getLocalStorageList = function(){
             var localStorageItemsArray = [];
             for (var i = 0; i < localStorage.length; i++){
                 localStorage.getItem(localStorage.key(i));
@@ -6980,7 +6984,6 @@ angular.module('starter')
             }
 
             localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
-            quantimodoService.reportError(error + ' - localStorageItems are ' + JSON.stringify(localStorageItemsArray));
         };
 
         quantimodoService.getLocalStorageItemAsStringWithCallback = function(key, callback){
