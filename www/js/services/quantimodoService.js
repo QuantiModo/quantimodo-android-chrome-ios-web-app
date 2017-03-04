@@ -6958,9 +6958,10 @@ angular.module('starter')
                     localStorage.setItem(keyIdentifier+key, value);
                     deferred.resolve();
                 } catch(error) {
+                    quantimodoService.sendErrorWithLocalStorageList(error);
                     quantimodoService.deleteItemFromLocalStorage('primaryOutcomeVariableMeasurements');
                     quantimodoService.deleteItemFromLocalStorage('lastSyncTime');
-                    quantimodoService.sendErrorWithLocalStorageList(error);
+                    quantimodoService.deleteItemFromLocalStorage('userVariables');
                     //localStorage.setItem(keyIdentifier+key, value);
                     quantimodoService.syncPrimaryOutcomeVariableMeasurements();
                 }
