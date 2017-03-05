@@ -5545,11 +5545,12 @@ angular.module('starter')
         // post changes to user variable settings
         quantimodoService.postUserVariableDeferred = function(body) {
             var deferred = $q.defer();
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', body);
-            quantimodoService.postUserVariableToApi(body, function(userVariable) {
+            quantimodoService.postUserVariableToApi(body, function(response) {
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.userVariable);
                 quantimodoService.deleteItemFromLocalStorage('lastStudy');
-                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(userVariable));
-                deferred.resolve(userVariable);
+                $rootScope.variableObject = response.userVariable;
+                console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(response.userVariable));
+                deferred.resolve(response.userVariable);
             }, function(error){ deferred.reject(error); });
             return deferred.promise;
         };

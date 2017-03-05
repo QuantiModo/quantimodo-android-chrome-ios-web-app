@@ -1382,7 +1382,7 @@ angular.module('starter')
                 onsetDelay: variableObject.onsetDelayInHours*60*60,
                 combinationOperation: variableObject.combinationOperation,
                 shareUserMeasurements: variableObject.shareUserMeasurements,
-                defaultUnitId: variableObject.defaultUnitId
+                defaultUnitId: variableObject.userVariableDefaultUnitId
                 //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime

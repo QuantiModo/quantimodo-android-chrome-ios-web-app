@@ -18,7 +18,7 @@
                                 value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
-                <label ng-if="state.measurement.abbreviatedUnitName !== '/5' && !bloodPressure.show" class="item item-input">
+                <label ng-if="showValueBox" class="item item-input">
                     <span class="input-label">{{state.defaultValueLabel}}</span>
                     <input type="number" ng-model="state.measurement.value" id="defaultValue"
                            ng-click="onTextClick($event)" placeholder={{state.defaultValuePlaceholderText}} >
@@ -65,7 +65,7 @@
                          ng-class="{'active-primary-outcome-variable-rating-button' :
                          option.numericValue === state.measurement.value}">
                 </div>
-                <label ng-if="(state.measurement.abbreviatedUnitName !== '/5' && !bloodPressure.show)" class="item item-input item-select">
+                <label ng-if="!bloodPressure.show" class="item item-input item-select">
                     <div class="input-label">
                         Unit
                     </div>

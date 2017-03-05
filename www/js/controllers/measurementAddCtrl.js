@@ -70,7 +70,7 @@ angular.module('starter')
                         // Note: will occur for new variable
                         console.warn('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
                     }
-                    $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
+                    $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.userVariableDefaultUnitAbbreviatedName;
                     //$scope.unitObject.abbreviatedName = $stateParams.variableObject.abbreviatedUnitName;
                 }
                 if($stateParams.reminderNotification) {
@@ -294,8 +294,6 @@ angular.module('starter')
             }
 
             $scope.state.selectedDate = moment($scope.state.selectedDate);
-
-            // Populate measurementInfo (formerly params)
             var measurementInfo = {
                 id : $scope.state.measurement.id,
                 variableName : $scope.state.measurement.variableName || jQuery('#variableName').val(),
@@ -477,6 +475,10 @@ angular.module('starter')
         var setupFromVariableStateParameter = function(){
             if($stateParams.variableObject) {
                 console.debug($state.current.name + ": " + 'setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
+                // Gets version from local storage in case we just updated unit in variable settings
+                var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
+                    'userVariables', {name: $stateParams.variableObject.name});
+                if(userVariables.length){ $stateParams.variableObject = userVariables[0]; }
                 $rootScope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variableName = $stateParams.variableObject.name;
@@ -504,7 +506,7 @@ angular.module('starter')
                 }
 
                 $scope.state.measurementIsSetup = true;
-                setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
+                setupValueFieldType($stateParams.variableObject.userVariableDefaultUnitAbbreviatedName, $stateParams.variableObject.description);
 
                 // Fill in default value as last value if not /5
                 /** @namespace $stateParams.variableObject.lastValue */
