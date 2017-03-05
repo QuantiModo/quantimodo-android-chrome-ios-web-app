@@ -3191,6 +3191,10 @@ angular.module('starter')
                             quantimodoService.setLocalStorageItem('trackingReminders',
                                 JSON.stringify(response.trackingReminders));
                         }
+                        if(response.data && response.data.userVariables){
+                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+                                response.data.userVariables);
+                        }
                     }
                     deferred.resolve();
                 }, function(error){
