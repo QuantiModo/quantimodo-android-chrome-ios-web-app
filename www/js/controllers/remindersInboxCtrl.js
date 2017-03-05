@@ -213,6 +213,13 @@ angular.module('starter')
 
 		};
 
+		var setLastAction = function(modifiedValue, abbreviatedUnitName){
+            var lastAction = 'Recorded ' + modifiedValue + ' ' + abbreviatedUnitName;
+            lastAction = lastAction.replace('1 yes/no', 'YES');
+            lastAction = lastAction.replace('0 yes/no', 'NO');
+            $scope.lastAction = lastAction.replace(' /', '/');
+		};
+
 		$scope.trackByValueField = function(trackingReminderNotification, $event){
 
 			if(isGhostClick($event)){
@@ -223,16 +230,9 @@ angular.module('starter')
 			$rootScope.numberOfPendingNotifications--;
             afterTrackingActions();
 			console.debug('modifiedReminderValue is ' + trackingReminderNotification.total);
-
             trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
-			var lastAction = 'Recorded ' + trackingReminderNotification.modifiedValue + ' ' +
-				trackingReminderNotification.abbreviatedUnitName;
-            $scope.lastAction = lastAction.replace(' /', '/');
-
-			if(!$rootScope.showUndoButton){
-				//$rootScope.showUndoButton = true;
-                $scope.showUndoToast($scope.lastAction);
-			}
+            setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.abbreviatedUnitName);
+			if(!$rootScope.showUndoButton){ $scope.showUndoToast($scope.lastAction); }
 			quantimodoService.trackTrackingReminderNotificationDeferred(trackingReminderNotification)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -291,40 +291,23 @@ angular.module('starter')
         };
 
 		var notificationAction = function(trackingReminderNotification){
-
 			trackingReminderNotification.hide = true;
             afterTrackingActions();
-			//if(!$rootScope.showUndoButton){
-				//$rootScope.showUndoButton = true;
-			//}
             $scope.showUndoToast($scope.lastAction);
             trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
 			return trackingReminderNotification;
 		};
 
 		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationIndex){
-			if(isGhostClick($event)){
-				return false;
-			}
-
-			if(modifiedReminderValue === null){
-				modifiedReminderValue = trackingReminderNotification.defaultValue;
-			}
-
-            var lastAction = 'Recorded ' + modifiedReminderValue + ' ' + trackingReminderNotification.abbreviatedUnitName;
-            $scope.lastAction = lastAction.replace(' /', '/');
-			var body = notificationAction(trackingReminderNotification, $event, dividerIndex,
-				trackingReminderNotificationIndex);
+			if(isGhostClick($event)){ return false; }
+			if(modifiedReminderValue === null){ modifiedReminderValue = trackingReminderNotification.defaultValue; }
+            setLastAction(modifiedReminderValue, trackingReminderNotification.abbreviatedUnitName);
+			var body = notificationAction(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
-
 	    	quantimodoService.trackTrackingReminderNotificationDeferred(body)
 				.then(function(){
-					if($rootScope.localNotificationsEnabled){
-						quantimodoService.decrementNotificationBadges();
-					}
-					if($scope.state.numberOfDisplayedNotifications < 2){
-						$scope.refreshTrackingReminderNotifications();
-					}
+					if($rootScope.localNotificationsEnabled){ quantimodoService.decrementNotificationBadges(); }
+					if($scope.state.numberOfDisplayedNotifications < 2){ $scope.refreshTrackingReminderNotifications(); }
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     hideInboxLoader();
@@ -332,9 +315,7 @@ angular.module('starter')
 	    };
 
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex){
-			if(isGhostClick($event)){
-				return;
-			}
+			if(isGhostClick($event)){ return; }
 			$scope.lastAction = 'Skipped';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
