@@ -27,9 +27,7 @@ angular.module('starter')
             }
         });
 
-        $scope.cancel = function(){
-            $ionicHistory.goBack();
-        };
+        $scope.cancel = function(){ $scope.goBack(); };
 
         $rootScope.showActionSheetMenu = function() {
             console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
@@ -46,35 +44,22 @@ angular.module('starter')
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-                cancel: function() {
-                    console.debug('CANCELLED');
-                },
+                cancel: function() { console.debug('CANCELLED'); },
                 buttonClicked: function(index) {
                     console.debug('variableSettingsCtrl BUTTON CLICKED: ' + index);
-                    if(index === 0){
-                        $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
-                    }
-                    if(index === 1){
-                        $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
-                    }
-                    if(index === 2){
-                        $scope.goToAddReminderForVariableObject($rootScope.variableObject);
-                    }
-                    if (index === 3) {
-                        $scope.goToChartsPageForVariableObject($rootScope.variableObject);
-                    }
+                    if(index === 0){ $scope.addToFavoritesUsingVariableObject($rootScope.variableObject); }
+                    if(index === 1){ $scope.goToAddMeasurementForVariableObject($rootScope.variableObject); }
+                    if(index === 2){ $scope.goToAddReminderForVariableObject($rootScope.variableObject); }
+                    if (index === 3) { $scope.goToChartsPageForVariableObject($rootScope.variableObject); }
                     if(index === 4) {
                         console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
                         $scope.goToHistoryForVariableObject($rootScope.variableObject);
                     }
-                    if (index === 5) {
-                        $scope.addTag($rootScope.variableObject);
-                    }
+                    if (index === 5) { $scope.addTag($rootScope.variableObject); }
                     if(index === 6) {
                         console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
                         $scope.tagAnotherVariable($rootScope.variableObject);
                     }
-
                     return true;
                 },
                 destructiveButtonClicked: function() {
@@ -84,13 +69,8 @@ angular.module('starter')
             });
 
             console.debug('Setting hideSheet timeout');
-            $timeout(function() {
-                hideSheet();
-            }, 20000);
-
+            $timeout(function() { hideSheet(); }, 20000);
         };
-
-
 
         $scope.openTagVariableSearchDialog = function($event) {
             $mdDialog.show({
@@ -107,10 +87,8 @@ angular.module('starter')
                                           quantimodoService, $q, $log) {
 
             var self = this;
-
             self.simulateQuery = true;
             self.isDisabled    = false;
-
             // list of `state` value/display objects
             self.variables        = loadAll();
             self.querySearch   = querySearch;
