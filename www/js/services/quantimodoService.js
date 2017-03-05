@@ -7,29 +7,19 @@ angular.module('starter')
 
         // GET method with the added token
         quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler, options){
-
-            if(!options){
-                options = {};
-            }
-
+            if(!options){ options = {}; }
             var cache = false;
             if(params && params.cache){
                 cache = params.cache;
                 params.cache = null;
             }
-
-            if(!canWeMakeRequestYet('GET', baseURL, options)){
-                return;
-            }
-
+            if(!canWeMakeRequestYet('GET', baseURL, options)){ return; }
             if($state.current.name === 'app.intro'){
                 console.warn('Not making request to ' + baseURL + ' user because we are in the intro state');
                 return;
             }
-
             console.debug('quantimodoService.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
-
                 allowedParams.push('limit');
                 allowedParams.push('offset');
                 allowedParams.push('sort');
@@ -67,11 +57,7 @@ angular.module('starter')
                         'Content-Type': "application/json"
                     },
                 };
-
-                if(cache){
-                    request.cache = cache;
-                }
-
+                if(cache){ request.cache = cache; }
                 if (accessToken) {
                     request.headers = {
                         "Authorization": "Bearer " + accessToken,
@@ -81,7 +67,6 @@ angular.module('starter')
 
                 //console.debug("Making this request: " + JSON.stringify(request));
                 console.debug('quantimodoService.get: ' + request.url);
-
                 $http(request)
                     .success(function (data, status, headers) {
                         if(!data) {
@@ -109,14 +94,10 @@ angular.module('starter')
 
         // POST method with the added token
         quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler, options){
-            if($rootScope.offlineConnectionErrorShowing){
-                $rootScope.offlineConnectionErrorShowing = false;
-            }
-
+            if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
             console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' +
                 JSON.stringify(body).substring(0, 140));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
-
                 //console.debug("Token : ", token.accessToken);
                 // configure params
                 for (var i = 0; i < body.length; i++)
@@ -134,9 +115,7 @@ angular.module('starter')
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
                 urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-
                 var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
-
                 // configure request
                 var request = {
                     method : 'POST',
@@ -168,27 +147,19 @@ angular.module('starter')
         quantimodoService.successHandler = function(data, baseURL, status){
             var maxLength = 140;
             console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
-            if($rootScope.offlineConnectionErrorShowing){
-                $rootScope.offlineConnectionErrorShowing = false;
-            }
+            if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
             if(!data.success){
                 console.debug('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
             }
-            if(data.message){
-                console.warn(data.message);
-            }
-            if(!$rootScope.user && baseURL.indexOf('user') === -1){
-                quantimodoService.refreshUser();
-            }
+            if(data.message){ console.warn(data.message); }
+            if(!$rootScope.user && baseURL.indexOf('user') === -1){ quantimodoService.refreshUser(); }
         };
 
         quantimodoService.errorHandler = function(data, status, headers, request, options){
-
             if(status === 302){
                 console.warn('quantimodoService.errorHandler: Got 302 response from ' + JSON.stringify(request));
                 return;
             }
-
             if(status === 401){
                 if(options && options.doNotSendToLogin){
                     return;
