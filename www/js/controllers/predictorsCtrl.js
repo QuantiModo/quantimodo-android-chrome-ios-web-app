@@ -22,6 +22,11 @@ angular.module('starter')
 
         $rootScope.showFilterBarSearchIcon = true;
 
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+            $scope.hideLoader();
+            $scope.init();
+        });
+
         $rootScope.toggleFilterBar = function () {
             //$ionicFilterBar.show();
             console.debug('clicked showFilterBar');
@@ -321,7 +326,6 @@ angular.module('starter')
 	    	// make url
 	    	name = name.split(' ').join('+');
             // launch inAppBrowser
-
             var url  = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
             $scope.openUrl(url);
 	    };
@@ -332,12 +336,6 @@ angular.module('starter')
                 correlationObject: correlationObject
             });
         };
-
-        // when view is changed
-        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-            $scope.hideLoader();
-            $scope.init();
-        });
 
         $rootScope.openCorrelationSearchDialog = function($event) {
             $mdDialog.show({
@@ -350,14 +348,11 @@ angular.module('starter')
             });
         };
 
-        var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter,
-                                          quantimodoService, $q, $log) {
+        var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log) {
 
             var self = this;
-
             self.simulateQuery = true;
             self.isDisabled    = false;
-
             self.correlations        = loadAll();
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
@@ -380,10 +375,7 @@ angular.module('starter')
             }
 
             self.helpText = self.helpText + "  Then you can see a study exploring the relationship between those variables.";
-
-            self.cancel = function() {
-                $mdDialog.cancel();
-            };
+            self.cancel = function() { $mdDialog.cancel(); };
 
             self.finish = function() {
                 $state.go('app.study', {correlationObject: self.correlationObject});
@@ -391,7 +383,6 @@ angular.module('starter')
             };
 
             function querySearch (query) {
-
                 self.notFoundText = "I don't have enough data to determine the relationship between " + query + " and " +
                     self.variableName + ".  I generally need about a month of overlapping data for each variable first.  " +
                     "Create some reminders and let's make some discoveries!";
@@ -408,17 +399,12 @@ angular.module('starter')
                 }
 
                 quantimodoService.getUserCorrelationsDeferred(requestParams)
-                    .then(function (results) {
-                        deferred.resolve(loadAll(results));
-                    }, function (error) {
-                        deferred.reject(error);
-                    });
+                    .then(function (results) { deferred.resolve(loadAll(results));
+                    }, function (error) { deferred.reject(error); });
                 return deferred.promise;
             }
 
-            function searchTextChange(text) {
-                $log.debug('Text changed to ' + text);
-            }
+            function searchTextChange(text) { $log.debug('Text changed to ' + text); }
 
             function selectedItemChange(item) {
                 self.selectedItem = item;
@@ -428,9 +414,7 @@ angular.module('starter')
             }
 
             function loadAll(correlations) {
-                if(!correlations){
-                    return;
-                }
+                if(!correlations){ return; }
                 return correlations.map( function (correlationObject) {
                     if($stateParams.effectVariableName){
                         return {
