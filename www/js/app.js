@@ -1335,6 +1335,19 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.studyCreation', {
+            cache: false,
+            url: "/study-creation",
+            params: {
+                correlationObject: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/study-creation-page.html",
+                    controller: 'StudyCreationCtrl'
+                }
+            }
+        })
         .state('app.settings', {
             url: "/settings",
             views: {

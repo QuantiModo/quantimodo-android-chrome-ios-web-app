@@ -351,8 +351,6 @@ angular.module('starter')
         var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log) {
 
             var self = this;
-            self.simulateQuery = true;
-            self.isDisabled    = false;
             self.correlations        = loadAll();
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
