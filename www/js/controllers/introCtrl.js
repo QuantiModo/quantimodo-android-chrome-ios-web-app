@@ -43,7 +43,16 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
             $scope.myIntro.ready = true;
             $rootScope.hideNavigationMenu = true;
         }
-        localStorage.setItem('introSeen', true);
+
+        try {
+            localStorage.setItem('introSeen', true);
+        } catch(error) {
+            var metaData = { localStorageItems: quantimodoService.getLocalStorageList() };
+            var name = error;
+            var message = 'Error saving introSeen to local storage';
+            var severity = 'error';
+            quantimodoService.bugsnagNotify(name, message, metaData, severity);
+        }
     });
 
     $scope.$on('$ionicView.afterEnter', function(){

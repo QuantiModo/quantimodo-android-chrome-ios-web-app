@@ -7373,8 +7373,8 @@ angular.module('starter')
                             } else {
                                 // TODO : display_error
                                 alert('Could not login.  Please contact mike@quantimo.do');
-                                quantimodoService.reportError("Error occurred validating redirect url. Closing the sibling tab." +
-                                    quantimodoService.getUrlParameter(iframe_url, 'error'));
+                                quantimodoService.reportError("Error occurred validating redirect " + iframe_url +
+                                    ". Closing the sibling tab." + quantimodoService.getUrlParameter(iframe_url, 'error'));
                                 console.error("Error occurred validating redirect url. Closing the sibling tab.",
                                     quantimodoService.getUrlParameter(iframe_url, 'error'));
 
