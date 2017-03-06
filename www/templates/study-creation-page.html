@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Get Started">
+<ion-view ng-controller="StudyCreationCtrl as ctrl" hide-nav-bar="hideNavigationMenu" view-title="Create Study">
     <div
          style="
             background-color: {{state.color.backgroundColor}};
@@ -10,26 +10,61 @@
              position: relative;
              top: 50%;
              transform: translateY(-50%);">
-            <div style="
-                box-shadow: 2px 2px 5px #434343;
-                margin: 0 auto;
-                border-radius: 50%;
-                width: 130px;
-                height: 130px;
-                background-color: {{state.color.circleColor}};
-                ">
-                <img style="
-                        position: relative;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        width:{{state.image.width}}px;
-                        height:{{state.image.height}}px;"
-                     ng-src="{{state.image.url}}">
-            </div>
-            <br>
             <p style="font-size: 30px; line-height: 1;">
                 {{state.title}}
             </p>
+            <div class="row">
+                <div  class="col col-50">
+                    <div ng-click="selectPredictorVariable($event)"
+                            style="
+                        box-shadow: 2px 2px 5px #434343;
+                        margin: 0 auto;
+                        border-radius: 50%;
+                        width: 130px;
+                        height: 130px;
+                        background-color: {{state.color.circleColor}};">
+                        <div style="
+                                cursor: pointer;
+                                position: relative;
+                                top: 50%;
+                                transform: translateY(-50%);"
+                             ng-if="!predictorVariable" > &nbsp; Select <br> Predictor <br> Variable &nbsp;</div>
+                        <img ng-if="predictorVariable" style="
+                                position: relative;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                width:{{state.image.width}}px;
+                                height:{{state.image.height}}px;"
+                             ng-src="{{predictorVariable.imageUrl}}">
+                    </div>
+                </div>
+                <div  class="col col-50">
+                    <div style="
+                        box-shadow: 2px 2px 5px #434343;
+                        margin: 0 auto;
+                        border-radius: 50%;
+                        width: 130px;
+                        height: 130px;
+                        background-color: {{state.color.circleColor}};">
+                        <img style="
+                                position: relative;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                width:{{state.image.width}}px;
+                                height:{{state.image.height}}px;"
+                              ng-src="{{state.image.url}}">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div  class="col col-50">
+                    <div ng-if="predictorVariable">{{predictorVariable.name}}</div>
+                </div>
+                <div  class="col col-50">
+
+                </div>
+            </div>
+
             <br>
             <span ng-bind-html="state.bodyText"
                 style="font-size: 16px; line-height: 1.5;">
@@ -49,7 +84,7 @@
                     id="selectPredictorVariableButton"
                     ng-click="selectPredictorVariable()">
                 <i ng-if="!predictorVariable" class="ion-plus-round"> &nbsp; Select Predictor Variable &nbsp;</i>
-                <span ng-if="predictorVariable">Predictor Variable: {{predictorVariable.name}}</span>
+                <div ng-if="predictorVariable">Predictor {{predictorVariable.name}}</div>
             </button>
             <br>
             <button class="button"

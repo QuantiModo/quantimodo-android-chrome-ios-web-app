@@ -1,5 +1,5 @@
 angular.module('starter')
-	.controller('StudyCreationCtrl', function($scope, $state, quantimodoService, $rootScope, $stateParams, $mdDialog) {
+	.controller('StudyCreationCtrl', function($scope, $state) {
 
         var green = {
             backgroundColor: "#0f9d58",
@@ -18,9 +18,9 @@ angular.module('starter')
             title: 'Create a Study',
             color: blue,
             image: {
-                url: "img/cute_robot_happy_transparent.png",
-                height: "96",
-                width: "70"
+                url: "img/quantimodo-robot-waving-2.svg",
+                height: "100",
+                width: "100"
             },
             bodyText: "One moment please...",
         };
