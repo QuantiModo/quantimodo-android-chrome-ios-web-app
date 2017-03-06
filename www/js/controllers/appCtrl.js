@@ -2493,7 +2493,7 @@ angular.module('starter')
             }).then(function(variable) {
                 $scope.outcomeVariable = variable;
             }, function() {
-                quantimodoService.reportError('User cancelled selection');
+                console.debug('User cancelled selection');
             });
         };
 
@@ -2517,7 +2517,7 @@ angular.module('starter')
             }).then(function(variable) {
                 $scope.predictorVariable = variable;
             }, function() {
-                quantimodoService.reportError('User cancelled selection');
+                console.debug('User cancelled selection');
             });
         };
 
