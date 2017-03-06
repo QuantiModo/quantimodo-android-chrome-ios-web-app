@@ -87,8 +87,6 @@ angular.module('starter')
                                           quantimodoService, $q, $log) {
 
             var self = this;
-            self.simulateQuery = true;
-            self.isDisabled    = false;
             // list of `state` value/display objects
             self.variables        = loadAll();
             self.querySearch   = querySearch;
@@ -236,9 +234,6 @@ angular.module('starter')
                                           quantimodoService, $q, $log) {
 
             var self = this;
-
-            self.simulateQuery = true;
-            self.isDisabled    = false;
 
             // list of `state` value/display objects
             self.variables        = loadAll();

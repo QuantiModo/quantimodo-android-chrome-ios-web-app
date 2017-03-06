@@ -2402,4 +2402,115 @@ angular.module('starter')
             });
         };
 
+        var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter,
+                                             quantimodoService, $q, $log, dataToPass) {
+
+            var self = this;
+            // list of `state` value/display objects
+            self.variables        = loadAll();
+            self.querySearch   = querySearch;
+            self.selectedItemChange = selectedItemChange;
+            self.searchTextChange   = searchTextChange;
+            self.title = dataToPass.title;
+            self.helpText = dataToPass.helpText;
+            self.placeholder = dataToPass.placeholder;
+            self.newVariable = newVariable;
+            self.cancel = function($event) { $mdDialog.cancel(); };
+            self.finish = function($event, variableName) {
+                $mdDialog.hide($scope.variable);
+            };
+
+            function newVariable(variable) {
+                alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
+            }
+
+            function querySearch (query) {
+                self.notFoundText = "No variables matching " + query + " were found.";
+                var deferred = $q.defer();
+                var requestParams = {includePublic: true};
+                quantimodoService.searchUserVariablesIncludingLocalDeferred(query, requestParams)
+                    .then(function(results){
+                        deferred.resolve(loadAll(results));
+                    });
+                return deferred.promise;
+            }
+
+            function searchTextChange(text) { $log.info('Text changed to ' + text); }
+
+            function selectedItemChange(item) {
+                $scope.variable = item.variable;
+                self.selectedItem = item;
+                self.buttonText = dataToPass.buttonText;
+                quantimodoService.addVariableToLocalStorage(item.variable);
+                $log.info('Item changed to ' + JSON.stringify(item));
+            }
+
+            /**
+             * Build `variables` list of key/value pairs
+             */
+            function loadAll(variables) {
+                if(!variables){ variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
+
+                return variables.map( function (variable) {
+                    return {
+                        value: variable.name.toLowerCase(),
+                        display: variable.name,
+                        variable: variable,
+                    };
+                });
+            }
+        };
+
+        $scope.selectOutcomeVariable = function (ev) {
+            $mdDialog.show({
+                controller: SelectVariableDialogController,
+                controllerAs: 'ctrl',
+                templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: false,
+                fullscreen: false,
+                locals: {
+                    dataToPass: {
+                        title: "Select Outcome",
+                        helpText: "Select an outcome variable to be optimized like Overall Mood or Sleep Quality",
+                        placeholder: "Search for an outcome...",
+                        buttonText: "Select Variable"
+                    }
+                },
+            }).then(function(variable) {
+                $scope.outcomeVariable = variable;
+            }, function() {
+                quantimodoService.reportError('User cancelled selection');
+            });
+        };
+
+        $scope.selectPredictorVariable = function (ev) {
+            $mdDialog.show({
+                controller: SelectVariableDialogController,
+                controllerAs: 'ctrl',
+                templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: false,
+                fullscreen: false,
+                locals: {
+                    dataToPass: {
+                        title: "Select Predictor",
+                        helpText: "Select a predictor variable to be optimized like Calories Burned or ",
+                        placeholder: "Search for a predictor...",
+                        buttonText: "Select Variable"
+                    }
+                },
+            }).then(function(variable) {
+                $scope.predictorVariable = variable;
+            }, function() {
+                quantimodoService.reportError('User cancelled selection');
+            });
+        };
+
+        $scope.goToStudy = function(predictorVariableName, outcomeVariableName){
+            $state.go('app.study', {causeVariableName: predictorVariableName, effectVariableName: outcomeVariableName});
+        };
+
     });

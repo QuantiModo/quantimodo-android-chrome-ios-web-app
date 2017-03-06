@@ -5478,6 +5478,29 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        // get user variables (without public)
+        quantimodoService.searchUserVariablesIncludingLocalDeferred = function(variableSearchQuery, params){
+            var deferred = $q.defer();
+            var variables = quantimodoService.searchLocalStorage('userVariables', 'name', variableSearchQuery);
+            if(variables){
+                deferred.resolve(variables);
+                return deferred.promise;
+            }
+            variables = quantimodoService.searchLocalStorage('commonVariables', 'name', variableSearchQuery);
+            if(variables){
+                deferred.resolve(variables);
+                return deferred.promise;
+            }
+            if(!variableSearchQuery){ variableSearchQuery = '*'; }
+            quantimodoService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
+                deferred.resolve(variables);
+            }, function(error){
+                console.error(JSON.stringify(error));
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
         quantimodoService.refreshUserVariableDeferred = function (variableName) {
             var deferred = $q.defer();
             quantimodoService.getVariablesByNameFromApi(variableName, {}, function(variable){
@@ -7067,6 +7090,27 @@ angular.module('starter')
                 }
             }
 
+            return matchingElements;
+        };
+
+        quantimodoService.searchLocalStorage = function (localStorageItemName, filterPropertyName, searchQuery) {
+            var keyIdentifier = config.appSettings.appStorageIdentifier;
+            var matchingElements = [];
+            var i;
+            var itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
+            if(!itemAsString){ return null; }
+            var unfilteredElementArray = JSON.parse(itemAsString);
+            if(unfilteredElementArray.length){
+                if(filterPropertyName && typeof unfilteredElementArray[0][filterPropertyName] === "undefined"){
+                    console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
+                    return null;
+                }
+            }
+            for(i = 0; i < unfilteredElementArray.length; i++){
+                if(unfilteredElementArray[i][filterPropertyName].indexOf(searchQuery) !== -1){
+                    matchingElements.push(unfilteredElementArray[i]);
+                }
+            }
             return matchingElements;
         };
 

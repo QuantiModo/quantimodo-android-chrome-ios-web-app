@@ -1313,7 +1313,9 @@ angular.module('starter',
             cache: true,
             url: "/study",
             params: {
-                correlationObject: null
+                correlationObject: null,
+                causeVariableName: null,
+                effectVariableName: null
             },
             views: {
                 'menuContent': {
@@ -1332,6 +1334,19 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/study-join-page.html",
                     controller: 'StudyJoinCtrl'
+                }
+            }
+        })
+        .state('app.studyCreation', {
+            cache: false,
+            url: "/study-creation",
+            params: {
+                correlationObject: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/study-creation-page.html",
+                    controller: 'StudyCreationCtrl'
                 }
             }
         })
