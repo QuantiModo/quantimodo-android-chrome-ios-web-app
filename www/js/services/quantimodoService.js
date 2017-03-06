@@ -5481,15 +5481,17 @@ angular.module('starter')
         // get user variables (without public)
         quantimodoService.searchUserVariablesIncludingLocalDeferred = function(variableSearchQuery, params){
             var deferred = $q.defer();
-            var variables = quantimodoService.searchLocalStorage('userVariables', 'name', variableSearchQuery);
+            var variables = quantimodoService.searchLocalStorage('userVariables', 'name', variableSearchQuery, params);
             if(variables){
                 deferred.resolve(variables);
                 return deferred.promise;
             }
-            variables = quantimodoService.searchLocalStorage('commonVariables', 'name', variableSearchQuery);
-            if(variables){
-                deferred.resolve(variables);
-                return deferred.promise;
+            if(params.includePublic){
+                variables = quantimodoService.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
+                if(variables){
+                    deferred.resolve(variables);
+                    return deferred.promise;
+                }
             }
             if(!variableSearchQuery){ variableSearchQuery = '*'; }
             quantimodoService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
@@ -7093,21 +7095,21 @@ angular.module('starter')
             return matchingElements;
         };
 
-        quantimodoService.searchLocalStorage = function (localStorageItemName, filterPropertyName, searchQuery) {
-            var keyIdentifier = config.appSettings.appStorageIdentifier;
+        quantimodoService.searchLocalStorage = function (localStorageItemName, filterPropertyName, searchQuery, requestParams) {
             var matchingElements = [];
-            var i;
-            var itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
-            if(!itemAsString){ return null; }
-            var unfilteredElementArray = JSON.parse(itemAsString);
-            if(unfilteredElementArray.length){
-                if(filterPropertyName && typeof unfilteredElementArray[0][filterPropertyName] === "undefined"){
-                    console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
-                    return null;
-                }
+            var unfilteredElementArray = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
+                localStorageItemName, requestParams);
+            if(!unfilteredElementArray || !unfilteredElementArray.length){
+                return null;
             }
-            for(i = 0; i < unfilteredElementArray.length; i++){
-                if(unfilteredElementArray[i][filterPropertyName].indexOf(searchQuery) !== -1){
+
+            if(filterPropertyName && typeof unfilteredElementArray[0][filterPropertyName] === "undefined"){
+                console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
+                return null;
+            }
+
+            for(var i = 0; i < unfilteredElementArray.length; i++){
+                if(unfilteredElementArray[i][filterPropertyName].toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1){
                     matchingElements.push(unfilteredElementArray[i]);
                 }
             }
