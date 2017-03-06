@@ -8544,5 +8544,18 @@ angular.module('starter')
             Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
         };
 
+        quantimodoService.getStudyLinks = function(predictorVariableName, outcomeVariableName){
+            var subjectLine = "Help us discover the effect of " + predictorVariableName + " on " + outcomeVariableName;
+            var studyLinkStatic = "https://app.quantimo.do/api/v2/study?causeVariableName=" +
+                encodeURIComponent(predictorVariableName) + '&effectVariableName=' + encodeURIComponent(outcomeVariableName);
+            var bodyText = "Please join my study at " + studyLinkStatic + " .  Have a great day!";
+            return {
+                studyLinkFacebook : "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(studyLinkStatic),
+                studyLinkTwitter : "https://twitter.com/home?status=" + encodeURIComponent(subjectLine + ' ' + studyLinkStatic + ' @quantimodo'),
+                studyLinkGoogle : "https://plus.google.com/share?url=" + encodeURIComponent(studyLinkStatic),
+                studyLinkEmail: "mailto:?subject=" + encodeURIComponent(subjectLine) + "&body=" + encodeURIComponent(bodyText)
+            };
+        };
+
         return quantimodoService;
     });

@@ -74,6 +74,7 @@
                 </div>
             </div>
             <br>
+            <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
             <button class="button"
                     ng-if="outcomeVariable && predictorVariable"
                     style="background-color: {{state.color.backgroundColor}};
@@ -82,8 +83,8 @@
                                 color: white;
                                 text-align: center"
                     id="goToStudyButton"
-                    ng-click="goToStudy(predictorVariable.name, outcomeVariable.name)">
-                <span> &nbsp; GO TO STUDY &nbsp;</i>
+                    ng-click="goToStudyPageWithVariableNames(predictorVariable.name, outcomeVariable.name)">
+                <span> &nbsp; GO TO STUDY &nbsp;</span>
             </button>
         </div>
     </div>

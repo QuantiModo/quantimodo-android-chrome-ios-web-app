@@ -330,13 +330,6 @@ angular.module('starter')
             $scope.openUrl(url);
 	    };
 
-        $scope.goToStudyPage = function(correlationObject) {
-            //console.debug('Going to study page for ' + JSON.stringify(correlationObject));
-            $state.go('app.study', {
-                correlationObject: correlationObject
-            });
-        };
-
         $rootScope.openCorrelationSearchDialog = function($event) {
             $mdDialog.show({
                 controller: CorrelationSearchCtrl,
