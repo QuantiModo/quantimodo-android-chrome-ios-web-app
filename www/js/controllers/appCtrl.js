@@ -2428,7 +2428,7 @@ angular.module('starter')
                 self.notFoundText = "No variables matching " + query + " were found.";
                 var deferred = $q.defer();
                 var requestParams = {includePublic: true};
-                quantimodoService.searchUserVariablesDeferred(query, requestParams)
+                quantimodoService.searchUserVariablesIncludingLocalDeferred(query, requestParams)
                     .then(function(results){
                         deferred.resolve(loadAll(results));
                     });
