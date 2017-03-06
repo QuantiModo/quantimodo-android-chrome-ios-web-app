@@ -8545,8 +8545,9 @@ angular.module('starter')
         };
 
         quantimodoService.getStudyLinks = function(predictorVariableName, outcomeVariableName){
-            var subjectLine = "Take 30 seconds a day to help us discover the relationship between " + predictorVariableName + " and " + outcomeVariableName;
-            var studyLinkStatic = "https://app.quantimo.do/api/v2/study?causeVariableName=" + predictorVariableName + '&effectVariableName=' + outcomeVariableName;
+            var subjectLine = "Help us discover the effect of " + predictorVariableName + " on " + outcomeVariableName;
+            var studyLinkStatic = "https://app.quantimo.do/api/v2/study?causeVariableName=" +
+                encodeURIComponent(predictorVariableName) + '&effectVariableName=' + encodeURIComponent(outcomeVariableName);
             var bodyText = "Please join my study at " + studyLinkStatic + " .  Have a great day!";
             return {
                 studyLinkFacebook : "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(studyLinkStatic),
