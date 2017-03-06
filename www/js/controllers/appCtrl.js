@@ -2441,6 +2441,7 @@ angular.module('starter')
                 var requestParams = {includePublic: true};
                 quantimodoService.searchUserVariablesIncludingLocalDeferred(query, requestParams)
                     .then(function(results){
+                        console.debug("Got " + results.length + " results matching " + query);
                         deferred.resolve(loadAll(results));
                     });
                 return deferred.promise;
@@ -2453,7 +2454,7 @@ angular.module('starter')
                 self.selectedItem = item;
                 self.buttonText = dataToPass.buttonText;
                 quantimodoService.addVariableToLocalStorage(item.variable);
-                $log.info('Item changed to ' + JSON.stringify(item));
+                $log.info('Item changed to ' + item.variable.name);
             }
 
             /**
