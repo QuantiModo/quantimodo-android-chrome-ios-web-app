@@ -14,7 +14,7 @@
                 {{state.title}}
             </p>
             <div class="row">
-                <div  class="col col-50">
+                <div  class="col col-40">
                     <div ng-click="selectPredictorVariable($event)"
                             style="
                         box-shadow: 2px 2px 5px #434343;
@@ -38,68 +38,53 @@
                              ng-src="{{predictorVariable.imageUrl}}">
                     </div>
                 </div>
-                <div  class="col col-50">
-                    <div style="
+                <div  class="col col-20"></div>
+                <div  class="col col-40">
+                    <div ng-click="selectOutcomeVariable($event)"
+                         style="
                         box-shadow: 2px 2px 5px #434343;
                         margin: 0 auto;
                         border-radius: 50%;
                         width: 130px;
                         height: 130px;
                         background-color: {{state.color.circleColor}};">
-                        <img style="
+                        <div style="
+                                cursor: pointer;
+                                position: relative;
+                                top: 50%;
+                                transform: translateY(-50%);"
+                             ng-if="!outcomeVariable" > &nbsp; Select <br> Outcome <br> Variable &nbsp;</div>
+                        <img ng-if="outcomeVariable" style="
                                 position: relative;
                                 top: 50%;
                                 transform: translateY(-50%);
                                 width:{{state.image.width}}px;
                                 height:{{state.image.height}}px;"
-                              ng-src="{{state.image.url}}">
+                             ng-src="{{outcomeVariable.imageUrl}}">
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div  class="col col-50">
+                <div  class="col col-40">
                     <div ng-if="predictorVariable">{{predictorVariable.name}}</div>
                 </div>
-                <div  class="col col-50">
-
+                <div  class="col col-20"></div>
+                <div  class="col col-40">
+                    <div ng-if="outcomeVariable">{{outcomeVariable.name}}</div>
                 </div>
             </div>
-
             <br>
-            <span ng-bind-html="state.bodyText"
-                style="font-size: 16px; line-height: 1.5;">
-            </span>
-            <br>
-            <br>
-            <p style="cursor: pointer" ng-if="state.moreInfo"
-               ng-click="showMaterialAlert(state.title, state.moreInfo, $event)">
-                MORE INFO
-            </p>
             <button class="button"
+                    ng-if="outcomeVariable && predictorVariable"
                     style="background-color: {{state.color.backgroundColor}};
                                 border: none;
                                 outline: none;
                                 color: white;
                                 text-align: center"
-                    id="selectPredictorVariableButton"
-                    ng-click="selectPredictorVariable()">
-                <i ng-if="!predictorVariable" class="ion-plus-round"> &nbsp; Select Predictor Variable &nbsp;</i>
-                <div ng-if="predictorVariable">Predictor {{predictorVariable.name}}</div>
-            </button>
-            <br>
-            <button class="button"
-                    style="background-color: {{state.color.backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                    id="selectOutcomeVariableButton"
-                    ng-click="selectOutcomeVariable()">
-                <i ng-if="!outcomeVariable" class="ion-plus-round"> &nbsp; Select Outcome Variable &nbsp;</i>
-                <span ng-if="outcomeVariable">Outcome Variable: {{outcomeVariable.name}}</span>
+                    id="goToStudyButton"
+                    ng-click="goToStudy(predictorVariable.name, outcomeVariable.name)">
+                <span> &nbsp; GO TO STUDY &nbsp;</i>
             </button>
         </div>
-
     </div>
-
 </ion-view>

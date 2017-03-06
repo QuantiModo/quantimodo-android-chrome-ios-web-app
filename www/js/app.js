@@ -1313,7 +1313,9 @@ angular.module('starter',
             cache: true,
             url: "/study",
             params: {
-                correlationObject: null
+                correlationObject: null,
+                causeVariableName: null,
+                effectVariableName: null
             },
             views: {
                 'menuContent': {

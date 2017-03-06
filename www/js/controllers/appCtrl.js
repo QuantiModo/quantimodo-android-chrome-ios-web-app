@@ -2509,4 +2509,8 @@ angular.module('starter')
             });
         };
 
+        $scope.goToStudy = function(predictorVariableName, outcomeVariableName){
+            $state.go('app.study', {causeVariableName: predictorVariableName, effectVariableName: outcomeVariableName});
+        };
+
     });

@@ -16,10 +16,7 @@ angular.module('starter')
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $rootScope.hideNavigationMenu = false;
-
             console.debug($state.current.name + ' initializing...');
-
-            $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
@@ -29,6 +26,14 @@ angular.module('starter')
 
             if($rootScope.urlParameters.effectVariableName){
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
+            }
+
+            if($stateParams.causeVariableName){
+                $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
+            }
+
+            if($stateParams.effectVariableName){
+                $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
             }
 
             if($rootScope.urlParameters.userId){
