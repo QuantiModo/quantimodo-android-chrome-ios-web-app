@@ -2418,7 +2418,7 @@ angular.module('starter')
 
             var self = this;
             // list of `state` value/display objects
-            self.variables        = loadAll();
+            self.items        = loadAll();
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
@@ -2436,7 +2436,7 @@ angular.module('starter')
             }
 
             function querySearch (query) {
-                self.notFoundText = "No variables matching " + query + " were found.";
+                self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
                 var requestParams = {includePublic: true};
                 quantimodoService.searchUserVariablesIncludingLocalDeferred(query, requestParams)
@@ -2485,7 +2485,7 @@ angular.module('starter')
                 locals: {
                     dataToPass: {
                         title: "Select Outcome",
-                        helpText: "Select an outcome variable to be optimized like Overall Mood or Sleep Quality",
+                        helpText: quantimodoService.helpText.outcomeSearch,
                         placeholder: "Search for an outcome...",
                         buttonText: "Select Variable"
                     }
@@ -2509,7 +2509,7 @@ angular.module('starter')
                 locals: {
                     dataToPass: {
                         title: "Select Predictor",
-                        helpText: "Select a predictor variable to be optimized like Calories Burned or ",
+                        helpText: quantimodoService.helpText.predictorSearch,
                         placeholder: "Search for a predictor...",
                         buttonText: "Select Variable"
                     }

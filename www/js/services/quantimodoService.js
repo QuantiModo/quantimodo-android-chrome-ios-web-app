@@ -5482,13 +5482,13 @@ angular.module('starter')
         quantimodoService.searchUserVariablesIncludingLocalDeferred = function(variableSearchQuery, params){
             var deferred = $q.defer();
             var variables = quantimodoService.searchLocalStorage('userVariables', 'name', variableSearchQuery, params);
-            if(variables){
+            if(variables && variables.length){
                 deferred.resolve(variables);
                 return deferred.promise;
             }
             if(params.includePublic){
                 variables = quantimodoService.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
-                if(variables){
+                if(variables && variables.length){
                     deferred.resolve(variables);
                     return deferred.promise;
                 }
@@ -8378,6 +8378,12 @@ angular.module('starter')
                 title: "Location and Weather Tracking",
                 textContent: $rootScope.variableCategories.Location.moreInfo
             }
+        };
+
+
+        quantimodoService.helpText = {
+            predictorSearch: "Search for a predictor like a food or treatment that you want to know the effects of...",
+            outcomeSearch: "Select an outcome variable to be optimized like overall mood or sleep quality..."
         };
 
         quantimodoService.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
