@@ -1388,21 +1388,32 @@ angular.module('starter')
                 //experimentEndTime
             };
 
-            quantimodoService.postUserVariableDeferred(body).then(function() {
+            quantimodoService.postUserVariableDeferred(body).then(function(userVariable) {
                 $ionicLoading.hide();
                 $scope.showInfoToast('Saved ' + variableObject.name + ' settings');
-                $scope.goBack();  // Temporary workaround to make tests pass
+                $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
             }, function(error) {
                 $ionicLoading.hide();
                 console.error(error);
             });
         };
 
-        $scope.goBack = function () {
+        $scope.goBack = function (stateParams) {
             if($ionicHistory.viewHistory().backView){
+                if(stateParams){
+                    var backView = $ionicHistory.backView();
+                    var stateId = backView.stateName;
+                    for (var key in stateParams) {
+                        if (stateParams[key] && stateParams[key] !== "") {
+                            stateId += "_" + key + "=" + stateParams[key];
+                        }
+                    }
+                    backView.stateParams = stateParams;
+                    backView.stateId = stateId;
+                }
                 $ionicHistory.goBack();
             } else {
-                $state.go(config.appSettings.defaultState);
+                $state.go(config.appSettings.defaultState, stateParams);
             }
         };
 
