@@ -229,6 +229,10 @@ angular.module('starter')
             quantimodoService.openSharingUrl(sharingUrl);
         };
 
+        $scope.openSharingUrl = function(sharingUrl){
+            quantimodoService.openSharingUrl(sharingUrl);
+        };
+
         var showShareStudyConfirmation = function(correlationObject, sharingUrl) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
@@ -2492,6 +2496,9 @@ angular.module('starter')
                 },
             }).then(function(variable) {
                 $scope.outcomeVariable = variable;
+                if($scope.predictorVariable){
+                    $scope.studyLinks = quantimodoService.getStudyLinks($scope.predictorVariable.name, $scope.outcomeVariable.name);
+                }
             }, function() {
                 console.debug('User cancelled selection');
             });
@@ -2516,13 +2523,25 @@ angular.module('starter')
                 },
             }).then(function(variable) {
                 $scope.predictorVariable = variable;
+                if($scope.outcomeVariable){
+                    $scope.studyLinks = quantimodoService.getStudyLinks($scope.predictorVariable.name, $scope.outcomeVariable.name);
+                }
             }, function() {
                 console.debug('User cancelled selection');
             });
         };
 
-        $scope.goToStudy = function(predictorVariableName, outcomeVariableName){
-            $state.go('app.study', {causeVariableName: predictorVariableName, effectVariableName: outcomeVariableName});
+        $scope.goToStudyPage = function(correlationObject) {
+            $state.go('app.study', {
+                correlationObject: correlationObject
+            });
+        };
+
+        $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
+            $state.go('app.study', {
+                causeVariableName: causeVariableName,
+                effectVariableName: effectVariableName
+            });
         };
 
     });
