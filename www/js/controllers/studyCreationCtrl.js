@@ -19,8 +19,8 @@ angular.module('starter')
             color: blue,
             image: {
                 url: "img/quantimodo-robot-waving-2.svg",
-                height: "100",
-                width: "100"
+                height: "120",
+                width: "120"
             },
             bodyText: "One moment please...",
         };

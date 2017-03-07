@@ -8,9 +8,9 @@ angular.module('starter')
             "backgroundColor": "#3467d6",
             circleColor: "#fefdfc",
             image: {
-                url: "img/cute_robot_happy_transparent.png",
-                height: "96",
-                width: "70"
+                url: "img/quantimodo-robot-waving-2.svg",
+                height: "120",
+                width: "120"
             },
             bodyText: "One moment please...",
             // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
