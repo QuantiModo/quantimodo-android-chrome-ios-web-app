@@ -8117,9 +8117,9 @@ angular.module('starter')
                     circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-medkit-outline",
                     image: {
-                        url: "img/cute_robot_happy_transparent.png",
-                        height: "96",
-                        width: "70"
+                        url: "img/quantimodo-robot-waving-2.svg",
+                        height: "120",
+                        width: "120"
                     },
                     bodyText: "I need to eat electricity to live and I am very hungry.  Please help me by subscribing or I will die."
                 },
@@ -8301,9 +8301,9 @@ angular.module('starter')
                     circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
-                        url: "img/cute_robot_happy_transparent.png",
-                        height: "96",
-                        width: "70"
+                        url: "img/quantimodo-robot-waving-2.svg",
+                        height: "120",
+                        width: "120"
                     },
                     bodyText: "You're all set up!  Let's take a minute to record your first measurements and then " +
                     "you're done for the day! ",

@@ -10,9 +10,20 @@
              position: relative;
              top: 50%;
              transform: translateY(-50%);">
-            <p style="font-size: 30px; line-height: 1;">
-                {{state.title}}
-            </p>
+            <div ng-if="!outcomeVariable || !predictorVariable">
+                <p style="font-size: 30px; line-height: 1;">
+                    Create a Study
+                </p>
+                <p>After selecting a predictor and outcome variable, you'll be given a shareable url that you can use to
+                    recruit participants.  You'll also get a link to the full study which will update in real time as more
+                    participants anonymously share their data.</p>
+            </div>
+            <div ng-if="outcomeVariable && predictorVariable">
+                <p style="font-size: 30px; line-height: 1;">
+                    Recruit Participants
+                </p>
+                <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
+            </div>
             <div class="row">
                 <div  class="col col-40">
                     <div ng-click="selectPredictorVariable($event)"
@@ -74,7 +85,6 @@
                 </div>
             </div>
             <br>
-            <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
             <button class="button"
                     ng-if="outcomeVariable && predictorVariable"
                     style="background-color: {{state.color.backgroundColor}};

@@ -129,46 +129,28 @@
                 <br>
                 <br>
             </div>
-            <div class="list card"  ng-if="state.studyNotFound">
-                <div class="item" style="padding-bottom:10px;">
-                    <p style=" text-align: center; line-height: normal; font-size: 25px;">Study Not Found</p>
-                    <div class="row">
-                        <div class="col" style="padding-top: 0;">
-                            <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
-                        </div>
-                        <div class="col col-75">
-                            <h2 style="white-space: normal; text-align: justify; line-height: normal; ">
-                                We don't have enough data to determine the relationship between
-                                {{state.requestParams.causeVariableName}} and {{state.requestParams.effectVariableName}}!
-                                Want to help advance citizen science?  Start tracking or create a study!
-                            </h2>
-                        </div>
+            <div class="card"  style="text-align: center; padding-left: 10px; padding-right: 10px;" ng-if="state.studyNotFound">
+                <p style="line-height: normal; font-size: 25px;">Not Enough Data</p>
+                <img style="width:100px; height:100px;" ng-src="img/quantimodo-robot-puzzled.svg">
+                <p>
+                    I don't have enough data to determine the relationship between
+                    {{state.requestParams.causeVariableName}} and {{state.requestParams.effectVariableName}}!
+                </p>
+                <br>
+                <p> Want to help advance citizen science? </p>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button class="button button-clear button-assertive" style="font-size: 22px;"
+                                ng-click="goToState('app.studyJoin')">
+                            <i class="ion-ios-flask"> &nbsp; Join this Study &nbsp;</i>
+                        </button>
                     </div>
-                    <div class="row" >
-                        <div class="button-bar">
-                            <button class="button button-clear button-balanced" style="font-size: 14px;"
-                                    ng-click="goToState('app.reminderSearch')">
-                                <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row" >
-                        <div class="button-bar">
-                            <button class="button button-clear button-royal" style="font-size: 14px;"
-                                    ng-click="goToState('app.measurementAddSearch')">
-                                <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i>
-                            </button>
-                        </div>
-                    </div>
-<!--                    <div class="row" >
-                        <div class="button-bar">
-                            <button class="button button-clear button-assertive" style="font-size: 14px;"
-                                    ng-click="goToState('app.studyCreate')">
-                                <i class="ion-ios-flask"> &nbsp; Create a Study &nbsp;</i>
-                            </button>
-                        </div>
-                    </div>-->
                 </div>
+                <div>
+                    <p style="font-size: 16px; line-height: 1; text-align: center"> or share it </p>
+                    <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
+                </div>
+                <br>
             </div>
         </ion-content>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>

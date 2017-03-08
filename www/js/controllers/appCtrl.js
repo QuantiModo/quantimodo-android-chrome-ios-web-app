@@ -229,8 +229,22 @@ angular.module('starter')
             quantimodoService.openSharingUrl(sharingUrl);
         };
 
-        $scope.openSharingUrl = function(sharingUrl){
-            quantimodoService.openSharingUrl(sharingUrl);
+        $scope.openSharingUrl = function(sharingUrl){ quantimodoService.openSharingUrl(sharingUrl); };
+        
+        $scope.openStudyLinkFacebook = function (predictorVariableName, outcomeVariableName) {
+            quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkFacebook);
+        };
+
+        $scope.openStudyLinkTwitter = function (predictorVariableName, outcomeVariableName) {
+            quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkTwitter);
+        };
+
+        $scope.openStudyLinkGoogle = function (predictorVariableName, outcomeVariableName) {
+            quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkGoogle);
+        };
+
+        $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName) {
+            quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
         };
 
         var showShareStudyConfirmation = function(correlationObject, sharingUrl) {
@@ -2496,9 +2510,7 @@ angular.module('starter')
                 },
             }).then(function(variable) {
                 $scope.outcomeVariable = variable;
-                if($scope.predictorVariable){
-                    $scope.studyLinks = quantimodoService.getStudyLinks($scope.predictorVariable.name, $scope.outcomeVariable.name);
-                }
+                $scope.outcomeVariableName = variable.name;
             }, function() {
                 console.debug('User cancelled selection');
             });
@@ -2523,9 +2535,7 @@ angular.module('starter')
                 },
             }).then(function(variable) {
                 $scope.predictorVariable = variable;
-                if($scope.outcomeVariable){
-                    $scope.studyLinks = quantimodoService.getStudyLinks($scope.predictorVariable.name, $scope.outcomeVariable.name);
-                }
+                $scope.predictorVariableName = variable.name;
             }, function() {
                 console.debug('User cancelled selection');
             });

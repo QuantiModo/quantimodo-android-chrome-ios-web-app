@@ -36,6 +36,9 @@ angular.module('starter')
                 $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
             }
 
+            $scope.predictorVariableName = $scope.state.requestParams.causeVariableName;
+            $scope.outcomeVariableName = $scope.state.requestParams.effectVariableName;
+
             if($rootScope.urlParameters.userId){
                 $scope.state.requestParams.userId = $rootScope.urlParameters.userId;
                 getStudy();
@@ -203,12 +206,8 @@ angular.module('starter')
         function getStudy() {
             $scope.loadingCharts = true;
             quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
-                if(data.userStudy){
-                    $rootScope.correlationObject = data.userStudy;
-                }
-                if(data.publicStudy){
-                    $rootScope.correlationObject = data.publicStudy;
-                }
+                if(data.userStudy){ $rootScope.correlationObject = data.userStudy; }
+                if(data.publicStudy){ $rootScope.correlationObject = data.publicStudy; }
                 quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($rootScope.correlationObject));
                 $scope.createUserCharts();
             }, function (error) {
@@ -216,7 +215,7 @@ angular.module('starter')
                 $scope.loadingCharts = false;
                 $scope.state.loading = false;
                 $scope.state.studyNotFound = true;
-                $scope.state.title = 'Study Not Found';
+                $scope.state.title = 'Not Enough Data, Yet';
             });
         }
 
