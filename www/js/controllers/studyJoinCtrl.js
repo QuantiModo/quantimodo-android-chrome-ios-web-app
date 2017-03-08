@@ -82,6 +82,7 @@ angular.module('starter')
                 quantimodoService.setLocalStorageItem('afterLoginGoToState', $state.current.name);
                 $ionicLoading.hide();
                 $state.go('app.login');
+                return;
             }
             $scope.state.title = "Joining study...";
             $scope.state.bodyText = "Thank you for helping us accelerate scientific discovery!";
