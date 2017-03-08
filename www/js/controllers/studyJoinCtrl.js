@@ -75,6 +75,7 @@ angular.module('starter')
 
         $scope.joinStudy = function () {
             $scope.hideJoinStudyButton = true;
+            $scope.state.image.url = "img/quantimodo-robot-happy.svg"
             $ionicLoading.show();
             if(!$rootScope.user){
                 console.debug('Setting afterLoginGoToState to ' + $state.current.name);
@@ -87,9 +88,7 @@ angular.module('starter')
             quantimodoService.joinStudyDeferred($scope.requestParams).then(function () {
                 $ionicLoading.hide();
                 $scope.state.title = "Thank you!";
-                $scope.state.bodyText = 'Thank you for helping us to discover the relationship between ' +
-                    $scope.requestParams.causeVariableName + ' and ' + $scope.requestParams.effectVariableName +
-                    "! <br> Now let's record your first measurements!";
+                $scope.state.bodyText = "Let's record your first measurements!";
                 $scope.showGetStartedButton = true;
             }, function (error) {
                 $ionicLoading.hide();
