@@ -2,57 +2,35 @@ angular.module('starter')
     // Parent Controller
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
-                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector,
-                                    quantimodoService, ionicDatePicker, $cordovaOauth, clipboard,
-                                    $ionicActionSheet, Analytics,
-                                    //$ionicDeploy,
+                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, quantimodoService,
+                                    ionicDatePicker, $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
                                     $locale, $mdDialog, $mdToast) {
 
 	    console.debug('Starting AppCtrl');
-
         $rootScope.placeName = null;
         $rootScope.lastLatitude = null;
         $rootScope.lastLongitude = null;
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $rootScope.appSettings = config.appSettings;
-        if (!$rootScope.appSettings.loaderImagePath) {
-            $rootScope.appSettings.loaderImagePath = 'img/circular_loader.gif';
-        }
-        if(!$rootScope.appSettings.ionNavBarClass){
-            $rootScope.appSettings.ionNavBarClass = "bar-positive";
-        }
+        if (!$rootScope.appSettings.loaderImagePath) { $rootScope.appSettings.loaderImagePath = 'img/circular_loader.gif'; }
+        if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
         $scope.showTrackingSubMenu = false;
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
         $rootScope.appDisplayName = config.appSettings.appDisplayName;
         $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
-
+        if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
+        if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
         if(!$rootScope.user){
-            $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user'));
+            quantimodoService.refreshUser().then(function(){ $scope.syncEverything(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
         }
-
-        if($rootScope.user && !$rootScope.user.trackLocation){
-            $rootScope.user.trackLocation = false;
-        }
-
-        if(!$rootScope.user){
-            quantimodoService.refreshUser().then(function(){
-                $scope.syncEverything();
-            }, function(error){
-                console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
-            });
-        }
-
         quantimodoService.getAccessTokenFromUrlParameter();
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
-
-        if(!window.private_keys) {
-            console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
-        }
+        if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
         if($rootScope.urlParameters.refreshUser){
             quantimodoService.clearLocalStorage();
             window.localStorage.introSeen = true;
@@ -60,18 +38,11 @@ angular.module('starter')
             $rootScope.user = null;
             $rootScope.refreshUser = false;
         }
-
-        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
-            $rootScope.hideNavigationMenu = true;
-        }
-
+        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
         if($rootScope.user){
             quantimodoService.getUserVariablesDeferred();  // For getting the new chartsUrl links
-            if(!$rootScope.user.getPreviewBuilds){
-                $rootScope.user.getPreviewBuilds = false;
-            }
+            if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
         }
-
         if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
             console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
             $ionicPlatform.ready(function () {
@@ -80,31 +51,19 @@ angular.module('starter')
                 quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
                 quantimodoService.setOnUpdateActionForLocalNotifications();
             });
-        } else {
-            //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
         }
-
         $scope.$on('$ionicView.loaded', function(){
             console.debug('appCtrl loaded in state ' + $state.current.name);
             // This event will only happen once per view being created. If a view is cached but not active, this event
             // will not fire again on a subsequent viewing.
         });
-
-        $scope.$on('$ionicView.beforeEnter', function (e) {
-            console.debug('appCtrl beforeEnter in state ' + $state.current.name);
-
-        });
-
-        // when view is changed
+        $scope.$on('$ionicView.beforeEnter', function (e) { console.debug('appCtrl beforeEnter in state ' + $state.current.name); });
         $scope.$on('$ionicView.enter', function (e) {
             console.debug('appCtrl enter in state ' + $state.current.name);
             //$scope.showHelpInfoPopupIfNecessary(e);
             if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
                 $scope.showCalendarButton = true;
-            } else {
-                $scope.showCalendarButton = false;
-            }
-
+            } else { $scope.showCalendarButton = false; }
             // Show "..." button on top right
             if (e.targetScope && e.targetScope.controller_name &&
                 e.targetScope.controller_name === "MeasurementAddCtrl" ||
@@ -116,27 +75,12 @@ angular.module('starter')
                 e.targetScope.controller_name === "RemindersManageCtrl" ||
                 e.targetScope.controller_name === "StudyCtrl" ||
                 e.targetScope.controller_name === "PredictorsCtrl" || $state.current.name === 'app.historyAllVariable'
-            ) {
-                $scope.showMoreMenuButton = true;
-            } else {
-                $scope.showMoreMenuButton = false;
-            }
+            ) { $scope.showMoreMenuButton = true;
+            } else { $scope.showMoreMenuButton = false; }
         });
-
-        // when view is changed
-        $scope.$on('$ionicView.afterEnter', function (e) {
-            console.debug('appCtrl afterEnter in state ' + $state.current.name);
-
-        });
-
-        // Not used
-        //$scope.ratingInfo = quantimodoService.getRatingInfo();
-        $scope.closeMenu = function () {
-            $ionicSideMenuDelegate.toggleLeft(false);
-        };
-
-        $scope.$watch(function () {
-            return $ionicSideMenuDelegate.getOpenRatio();
+        $scope.$on('$ionicView.afterEnter', function (e) {  console.debug('appCtrl afterEnter in state ' + $state.current.name); });
+        $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
+        $scope.$watch(function () { return $ionicSideMenuDelegate.getOpenRatio();
         }, function (ratio) {
             if (ratio == 1){
                 $scope.showCloseMenuButton = true;
@@ -147,16 +91,13 @@ angular.module('starter')
                 $scope.hideMenuButton = false;
             }
         });
-
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
         $rootScope.unitsIndexedByAbbreviatedName = [];
         $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
-
         //  Calendar and  Date picker
         // will update from showCalendarPopup
         $scope.fromDate = new Date();
         $scope.toDate = new Date();
-
         // "from" datepicker config
         $scope.fromDatePickerObj = {
             callback: function (val) {
@@ -171,7 +112,6 @@ angular.module('starter')
             from: new Date(2012, 8, 1),
             to: $scope.toDate // don't allow fromDate to be after toDate
         };
-
         // "to" datepicker config
         $scope.toDatePickerObj = {
             callback: function (val) {
@@ -186,33 +126,20 @@ angular.module('starter')
             from: $scope.fromDate, // don't allow toDate to be after fromDate
             to: new Date() //today
         };
-
         $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
             /** @namespace correlationObject.causeVariable */
-            if(correlationObject.causeVariable){
-                $state.go('app.variableSettings', {variableObject: correlationObject.causeVariable});
-            } else {
-                $state.go('app.variableSettings', {variableName: correlationObject.causeVariableName});
-            }
+            if(correlationObject.causeVariable){ $state.go('app.variableSettings', {variableObject: correlationObject.causeVariable});
+            } else { $state.go('app.variableSettings', {variableName: correlationObject.causeVariableName}); }
         };
-
         $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
             /** @namespace correlationObject.effectVariable */
-            if(correlationObject.effectVariable){
-                $state.go('app.variableSettings', {variableObject: correlationObject.effectVariable});
-            } else {
-                $state.go('app.variableSettings', {variableName: correlationObject.effectVariableName});
-            }
+            if(correlationObject.effectVariable){ $state.go('app.variableSettings', {variableObject: correlationObject.effectVariable});
+            } else { $state.go('app.variableSettings', {variableName: correlationObject.effectVariableName}); }
         };
-
         $scope.openUrl = function(url){
-            if(typeof cordova !== "undefined"){
-                cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
-            } else {
-                window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
-            }
+            if(typeof cordova !== "undefined"){ cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
+            } else { window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes'); }
         };
-
         $scope.shareCharts = function(variableObject, sharingUrl){
             if(!variableObject.shareUserMeasurements){
                 showShareVariableConfirmation(variableObject, sharingUrl);
@@ -220,7 +147,6 @@ angular.module('starter')
             }
             quantimodoService.openSharingUrl(sharingUrl);
         };
-
         $scope.shareStudy = function(correlationObject, sharingUrl){
             if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
                 showShareStudyConfirmation(correlationObject, sharingUrl);
@@ -228,25 +154,19 @@ angular.module('starter')
             }
             quantimodoService.openSharingUrl(sharingUrl);
         };
-
         $scope.openSharingUrl = function(sharingUrl){ quantimodoService.openSharingUrl(sharingUrl); };
-        
         $scope.openStudyLinkFacebook = function (predictorVariableName, outcomeVariableName) {
             quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkFacebook);
         };
-
         $scope.openStudyLinkTwitter = function (predictorVariableName, outcomeVariableName) {
             quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkTwitter);
         };
-
         $scope.openStudyLinkGoogle = function (predictorVariableName, outcomeVariableName) {
             quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkGoogle);
         };
-
         $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName) {
             quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
         };
-
         var showShareStudyConfirmation = function(correlationObject, sharingUrl) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
