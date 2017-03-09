@@ -2011,6 +2011,9 @@ angular.module('starter')
                     console.debug('Syncing measurements to server: ' + JSON.stringify(measurementObjects));
 
                     quantimodoService.postMeasurementsToApi(measurements, function (response) {
+                        if(response && response.data && response.data.userVariables){
+                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
+                        }
                         quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
                         quantimodoService.getMeasurements().then(function() {
                             defer.resolve();
@@ -2261,9 +2264,10 @@ angular.module('starter')
                 quantimodoService.postMeasurementsToApi(measurements, function(response){
                     if(response.success) {
                         console.debug("postMeasurementsV2 success " + JSON.stringify(response));
-                        if(usePromise) {
-                            deferred.resolve();
+                        if(response && response.data && response.data.userVariables){
+                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
                         }
+                        if(usePromise) { deferred.resolve(); }
                     } else {
                         console.debug("quantimodoService.postMeasurementsToApi error" + JSON.stringify(response));
                         if(usePromise) {
@@ -2317,6 +2321,9 @@ angular.module('starter')
             quantimodoService.postMeasurementsToApi(measurementSet, function(response){
                 if(response.success) {
                     console.debug("quantimodoService.postMeasurementsToApi success: " + JSON.stringify(response));
+                    if(response && response.data && response.data.userVariables){
+                        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
+                    }
                     deferred.resolve();
                 } else {
                     deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
@@ -2386,6 +2393,9 @@ angular.module('starter')
 
             quantimodoService.postMeasurementsToApi(measurementSets, function(response){
                 if(response.success) {
+                    if(response && response.data && response.data.userVariables){
+                        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
+                    }
                     console.debug("quantimodoService.postMeasurementsToApi success: " + JSON.stringify(response));
                     deferred.resolve(response);
                 } else {
@@ -6919,9 +6929,7 @@ angular.module('starter')
 
         quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront = function(localStorageItemName, replacementElementArray){
             var deferred = $q.defer();
-            if(replacementElementArray.constructor !== Array){
-                replacementElementArray = [replacementElementArray];
-            }
+            if(replacementElementArray.constructor !== Array){ replacementElementArray = [replacementElementArray]; }
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
             var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
             var localStorageItemArray = JSON.parse(quantimodoService.getLocalStorageItemAsString(localStorageItemName));
@@ -7480,8 +7488,11 @@ angular.module('starter')
                         note: data.daily.data[0].icon
                     }]}
                 );
-                quantimodoService.postMeasurementsToApi(measurementSets, function () {
+                quantimodoService.postMeasurementsToApi(measurementSets, function (response) {
                     console.debug("posted weather measurements");
+                    if(response && response.data && response.data.userVariables){
+                        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
+                    }
                     if(!lastPostedWeatherAt){
                         quantimodoService.setLocalStorageItem('lastPostedWeatherAt', nowTimestamp);
                     }
