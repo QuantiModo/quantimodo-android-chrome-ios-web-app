@@ -1338,13 +1338,15 @@ angular.module('starter')
 
         $scope.goBack = function (stateParams) {
             if($ionicHistory.viewHistory().backView){
+                var backView = $ionicHistory.backView();
+                var stateId = backView.stateName;
+                if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
+                    $state.go(config.appSettings.defaultState, stateParams);
+                    return;
+                }
                 if(stateParams){
-                    var backView = $ionicHistory.backView();
-                    var stateId = backView.stateName;
                     for (var key in stateParams) {
-                        if (stateParams[key] && stateParams[key] !== "") {
-                            stateId += "_" + key + "=" + stateParams[key];
-                        }
+                        if (stateParams[key] && stateParams[key] !== "") { stateId += "_" + key + "=" + stateParams[key]; }
                     }
                     backView.stateParams = stateParams;
                     backView.stateId = stateId;
