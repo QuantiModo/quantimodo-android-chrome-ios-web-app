@@ -13,7 +13,10 @@ angular.module('starter')
                 "aggregated form as is done in epidemiological studies."
         };
         $scope.$on('$ionicView.beforeEnter', function(e) {
-            if(!$rootScope.user){ $rootScope.hideNavigationMenu = true; }
+            if(!$rootScope.user){
+                console.debug('Hiding nav menu because we do not have a user');
+                $rootScope.hideNavigationMenu = true;
+            }
             $scope.requestParams = {
                 //causeVariableName: $rootScope.urlParameters.causeVariableName,
                 //effectVariableName: $rootScope.urlParameters.effectVariableName,
@@ -54,7 +57,7 @@ angular.module('starter')
             $scope.state.image.url = "img/quantimodo-robot-happy.svg"
             $ionicLoading.show();
             if(!$rootScope.user){
-                console.debug('Setting afterLoginGoToState to ' + $state.current.name);
+                console.debug('Setting afterLoginGoTo to ' + window.location.href + '&alreadyJoined=true');
                 quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href + '&alreadyJoined=true');
                 $ionicLoading.hide();
                 $state.go('app.login');

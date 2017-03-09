@@ -54,7 +54,9 @@ angular.module('starter')
         var loginTimeout = function () {
             $ionicLoading.show();
             $scope.loginPage.title = 'Logging in...';
+            console.debug('Setting login timeout...');
             $timeout(function () {
+                console.debug('Finished login timeout');
                 $ionicLoading.hide();
                 if(!$rootScope.user){
                     $scope.loginPage.title = 'Please try logging in again';
