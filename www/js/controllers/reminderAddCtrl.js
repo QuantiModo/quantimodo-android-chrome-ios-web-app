@@ -683,6 +683,7 @@ angular.module('starter')
         };
 
         $scope.unitSelected = function(){
+            $scope.state.showVariableCategorySelector = true;  // Need to show category selector in case someone picks a nutrient like Magnesium and changes the unit to pills
             if($scope.state.trackingReminder.abbreviatedUnitName === 'Show more units'){
                 $scope.state.showMoreUnits = true;
                 $scope.state.trackingReminder.abbreviatedUnitName = null;
