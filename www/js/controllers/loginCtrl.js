@@ -45,7 +45,7 @@ angular.module('starter')
         var leaveIfLoggedIn = function () {
             if($rootScope.user){
                 $scope.hideLoader();
-                console.debug("Already logged in on login page.  Going to default state...");
+                console.debug("Already logged in on login page.  goToDefaultStateIfNoAfterLoginUrlOrState...");
                 $rootScope.hideNavigationMenu = false;
                 quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
             }
@@ -54,7 +54,9 @@ angular.module('starter')
         var loginTimeout = function () {
             $ionicLoading.show();
             $scope.loginPage.title = 'Logging in...';
+            console.debug('Setting login timeout...');
             $timeout(function () {
+                console.debug('Finished login timeout');
                 $ionicLoading.hide();
                 if(!$rootScope.user){
                     $scope.loginPage.title = 'Please try logging in again';

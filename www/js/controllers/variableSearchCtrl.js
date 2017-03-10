@@ -85,10 +85,10 @@ angular.module('starter')
             if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
                 $stateParams.variableSearchParameters.variableCategoryName = $stateParams.variableCategoryName;
             }
-            if($scope.state.variableSearchResults.length < 10){
-                populateUserVariables();
-                populateCommonVariables();
-            }
+
+            // We always need to repopulate in case variable was updated in local storage and the search view was cached
+            populateUserVariables();
+            populateCommonVariables();
             setHelpText();
         });
 

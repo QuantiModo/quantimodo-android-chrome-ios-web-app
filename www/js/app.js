@@ -34,7 +34,7 @@ angular.module('starter',
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
-    $rootScope.appVersion = "2.4.4.0";
+    $rootScope.appVersion = "2.4.5.0";
     quantimodoService.setPlatformVariables();
 
     $ionicPlatform.ready(function() {
@@ -1718,13 +1718,13 @@ angular.module('starter',
         });
 
     if (!window.localStorage.introSeen) {
-        console.debug("Intro not seen so going to intro");
+        console.debug("Intro not seen so setting default route to intro");
         $urlRouterProvider.otherwise('/');
     } else if (!window.localStorage.onboarded) {
-        console.debug("Not onboarded so going to onboarding");
+        console.debug("Not onboarded so setting default route to onboarding");
         $urlRouterProvider.otherwise('/app/onboarding');
     } else {
-        console.debug("Intro seen so going to inbox");
+        console.debug("Intro seen so setting default route to inbox");
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     }
       // if none of the above states are matched, use this as the fallback
