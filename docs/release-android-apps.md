@@ -1,4 +1,4 @@
-### Release iOS Apps
+### Upload Alpha Builds to Play Store
 
 - Go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) (credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029))
 - Sign in with the credentials in this [spreadsheet](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029) (not your own)
@@ -20,10 +20,12 @@
 - Click the `Google Play` tab
 - Select `armv7Release`
 - Increase the version code by 1 (BE VERY CAREFUL HERE. DO NOT ADD AN ADDITIONAL DIGIT. IF WE INCREASE THE NUMBER TOO MUCH WE REACH THE MAXIMUM AND NOT BE ABLE TO RELEASE ANYMORE)
-- Click to upload to Production
+- Click to upload to `Alpha`
 - Select `x86Release`
 - Increase the version code by 1 (BE VERY CAREFUL HERE. DO NOT ADD AN ADDITIONAL DIGIT. IF WE INCREASE THE NUMBER TOO MUCH WE REACH THE MAXIMUM AND NOT BE ABLE TO RELEASE ANYMORE)
-- Click to upload to Production
+- Click to upload to `Alpha`
+
+### Promote from Alpha to Production Release
 - Go to the [Play Dashboard](https://play.google.com/apps/publish)
 - Select the app
 - Click the `APK` tab
