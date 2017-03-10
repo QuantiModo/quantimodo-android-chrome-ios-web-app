@@ -4,8 +4,8 @@
 - Sign in with the credentials in this [spreadsheet](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029) (not your own)
 - Click `App Settings`
 - Click `BUILD SETTINGS -> Environment Variables`
-- Create variable called `LOWERCASE_APP_NAME`
-- Set the value to the app that you want to release
+- Create variable with the NAME `LOWERCASE_APP_NAME` (delete the existing LOWERCASE_APP_NAME variable)
+- Set the VALUE to the lowercase app name of the app that you want to release (i.e. medimodo, quantimodo, moodimodo, etc.)
 - Go back to [main page](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394)
 - Click `Build Now` on the `develop` branch
 - Once your build is green, go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) on your Android phone
