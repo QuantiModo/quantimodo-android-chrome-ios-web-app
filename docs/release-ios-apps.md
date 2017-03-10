@@ -8,7 +8,8 @@
 - Create a new variable with `LOWERCASE_APP_NAME` in the `Name:` field
 - Set the `Value:` field of the new `LOWERCASE_APP_NAME` variable to the lowercase app name of the app that you want to release (i.e. `medimodo`, `quantimodo`, or `moodimodo`, etc.)
 - Go back to [main page](https://dashboard.buddybuild.com/apps/58545ef69a6d70010030ff46)
-- Click `Build Now` on the `develop` branch
+- Click `Build Now` on the `develop` branch.
+- Go get a cup of coffee.  Builds take about 30 minutes.
 - Once your build is green, click on the specific build
 - Click the `iTunes Connect` tab
 - Click to upload

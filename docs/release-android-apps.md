@@ -8,7 +8,8 @@
 - Create a new variable with `LOWERCASE_APP_NAME` in the `Name:` field
 - Set the `Value:` field of the new `LOWERCASE_APP_NAME` variable to the lowercase app name of the app that you want to release (i.e. `medimodo`, `quantimodo`, or `moodimodo`, etc.)
 - Go back to [main page](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394)
-- Click `Build Now` on the `develop` branch
+- Click `Build Now` on the `develop` branch.
+- Go get a cup of coffee.  Builds take about 30 minutes.
 - Once your build is green, go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) on your Android phone
 - Install the latest version
 - Make sure you can log in by each login method and that the basic functionality works
