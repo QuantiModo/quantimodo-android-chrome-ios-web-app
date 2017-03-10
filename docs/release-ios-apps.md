@@ -2,6 +2,7 @@
 
 - Go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58545ef69a6d70010030ff46) (credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029))
 - Sign in with the credentials in this [spreadsheet](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029) (not your own)
+- Make sure it says `IOS` at the top. If it says `ANDROID`, click and switch to `IOS`
 - Click `App Settings`
 - Click `BUILD SETTINGS -> Environment Variables`
 - Scroll down and delete the existing `LOWERCASE_APP_NAME` variable by clicking the trash can icon to its right
@@ -10,6 +11,7 @@
 - Go back to [main page](https://dashboard.buddybuild.com/apps/58545ef69a6d70010030ff46)
 - Click `Build Now` on the `develop` branch.
 - Go get a cup of coffee.  Builds take about 30 minutes.
+- Go to the [BuddyBuild](https://dashboard.buddybuild.com/apps/58545ef69a6d70010030ff46) (make sure it says IOS at the top)
 - Once your build is green, click on the specific build
 - Click the `iTunes Connect` tab
 - Click to upload

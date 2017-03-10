@@ -2,6 +2,7 @@
 
 - Go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) (credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029))
 - Sign in with the credentials in this [spreadsheet](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029) (not your own)
+- Make sure it says `ANDROID` at the top. If it says `IOS`, click and switch to `ANDROID`
 - Click `App Settings`
 - Click `BUILD SETTINGS -> Environment Variables`
 - Scroll down and delete the existing `LOWERCASE_APP_NAME` variable by clicking the trash can icon to its right
@@ -10,6 +11,7 @@
 - Go back to [main page](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394)
 - Click `Build Now` on the `develop` branch.
 - Go get a cup of coffee.  Builds take about 30 minutes.
+- Go back to BuddyBuild and make sure it says `ANDROID` at the top. If it says `IOS`, click and switch to `ANDROID`
 - Once your build is green, go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) on your Android phone
 - Install the latest version
 - Make sure you can log in by each login method and that the basic functionality works
