@@ -1,6 +1,7 @@
 ### Release iOS Apps
 
 - Go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58545ef69a6d70010030ff46) (credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029))
+- Sign in with the credentials in this [spreadsheet](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029) (not your own)
 - Click `App Settings`
 - Click `BUILD SETTINGS -> Environment Variables`
 - Create variable called `LOWERCASE_APP_NAME`
