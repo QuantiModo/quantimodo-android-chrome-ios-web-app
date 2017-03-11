@@ -569,6 +569,19 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.loginLocal', {
+            url: "/login-local",
+            params: {
+                fromState : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/login-local.html",
+                    controller: 'IntroCtrl'
+                }
+            }
+        })
         .state('app.introOld', {
             cache: true,
             url: "/intro-old",
