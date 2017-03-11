@@ -209,7 +209,7 @@ angular.module('starter')
             console.debug("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable).substring(0, 140) + '...');
 
 	    	if(!selectedVariable.variableCategoryName){
-	    		selectedVariable.variableCategoryName = selectedVariable.category;
+	    		selectedVariable.variableCategoryName = selectedVariable.variableCategoryName;
 	    	}
 	    	if (!selectedVariable.variableCategoryName) {
 	    		$scope.state.showAddVariableCard = true;

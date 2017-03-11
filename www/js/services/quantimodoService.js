@@ -1789,6 +1789,12 @@ angular.module('starter')
             }
         };
 
+        var variableCategoryNames = [];
+        for (var n in $rootScope.variableCategories) {
+            if(n !== "Anything"){ variableCategoryNames.push(n); }
+        }
+        $rootScope.variableCategoryNames = variableCategoryNames;
+
         quantimodoService.getVariableCategoryInfo = function (variableCategoryName) {
 
             var variableCategoryInfo = $rootScope.variableCategories;
@@ -2001,7 +2007,7 @@ angular.module('starter')
                         {
                             variableName: config.appSettings.primaryOutcomeVariableDetails.name,
                             source: config.appSettings.appDisplayName + " " + $rootScope.currentPlatform,
-                            variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
+                            variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.variableCategoryName,
                             combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
                             abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                             measurements: measurementObjects
@@ -2084,7 +2090,7 @@ angular.module('starter')
                 id: null,
                 variable: config.appSettings.primaryOutcomeVariableDetails.name,
                 variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
+                variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.variableCategoryName,
                 variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
                 startTimeEpoch: Math.floor(startTimeEpoch / 1000),
                 abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
