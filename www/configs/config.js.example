@@ -17,7 +17,7 @@ config.appSettings  = {
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
-        category : "Mood",
+        variableCategoryName : "Mood",
         abbreviatedUnitName : "/5",
         combinationOperation: "MEAN"
     },

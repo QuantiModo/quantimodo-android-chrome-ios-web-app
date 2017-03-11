@@ -1,7 +1,5 @@
-angular.module('starter')
-	.controller('ReminderAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
-                                             $ionicActionSheet, $ionicHistory,
-                                             quantimodoService, ionicTimePicker, $ionicPopup) {
+angular.module('starter').controller('ReminderAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
+                                             $ionicActionSheet, $ionicHistory, quantimodoService, ionicTimePicker, $ionicPopup) {
 
 	    $scope.controller_name = "ReminderAddCtrl";
 		console.debug('Loading ' + $scope.controller_name);
@@ -25,9 +23,7 @@ angular.module('starter')
                 combinationOperation : null
             }
         };
-
         $scope.loading = true;
-
         $scope.variables = {
             variableCategories : [
                 { id : 1, name : 'Emotions' },
@@ -60,12 +56,8 @@ angular.module('starter')
         $scope.$on('$ionicView.beforeEnter', function(){
             $rootScope.hideNavigationMenu = false;
             console.debug('ReminderAddCtrl beforeEnter...');
-            if($stateParams.variableObject){
-                $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName;
-            }
-            if($stateParams.reminder){
-                $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName;
-            }
+            if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
+            if($stateParams.reminder){ $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName; }
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
@@ -89,29 +81,17 @@ angular.module('starter')
                 } else if($stateParams.variableCategoryName){
                     $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
                     setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
-                } else {
-                    $scope.goBack();
-                }
+                } else { $scope.goBack(); }
             });
         });
 
-        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            console.debug('ReminderAddCtrl enter...');
-        });
-
-        $scope.showMoreOptions = function(){
-            $scope.state.showMoreOptions = true;
-        };
-
+        $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
         if($rootScope.user) {
             $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
             $scope.state.firstReminderStartTimeEpochTime =
                 quantimodoService.getEpochTimeFromLocalStringRoundedToHour('20:00:00');
             $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
-        } else {
-            quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!');
-        }
-
+        } else { quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!'); }
         $scope.openReminderStartTimePicker = function(order) {
             var a = new Date();
             if(order === 'first'){
@@ -119,14 +99,11 @@ angular.module('starter')
                 $scope.state.firstReminderStartTimeLocal = moment(a).format('HH:mm:ss');
                 $scope.state.firstReminderStartTimeMoment = moment(a);
             }
-
             if(order === 'second'){
-
                 $scope.state.secondReminderStartTimeEpochTime = a.getTime() / 1000;
                 $scope.state.secondReminderStartTimeLocal = moment(a).format('HH:mm:ss');
                 $scope.state.secondReminderStartTimeMoment = moment(a);
             }
-
             if(order === 'third'){
                 $scope.state.hideAdditionalReminderTimeButton = true;
                 $scope.state.thirdReminderStartTimeEpochTime = a.getTime() / 1000;
@@ -134,7 +111,6 @@ angular.module('starter')
                 $scope.state.thirdReminderStartTimeMoment = moment(a);
             }
         };
-
 		$scope.oldOpenReminderStartTimePicker = function(order) {
             var defaultStartTimeInSecondsSinceMidnightLocal =
                 quantimodoService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
@@ -144,24 +120,19 @@ angular.module('starter')
                         quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
                 }
             }
-
             if(order === 'second') {
                 if($scope.state.secondReminderStartTimeLocal){
                     defaultStartTimeInSecondsSinceMidnightLocal =
                         quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
                 }
             }
-
             if(order === 'third') {
                 if($scope.state.thirdReminderStartTimeLocal){
                     defaultStartTimeInSecondsSinceMidnightLocal =
                         quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
                 }
             }
-
-            defaultStartTimeInSecondsSinceMidnightLocal =
-                quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
-
+            defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
@@ -172,50 +143,36 @@ angular.module('starter')
                         a.setHours(selectedTime.getUTCHours());
                         a.setMinutes(selectedTime.getUTCMinutes());
                         a.setSeconds(0);
-
                         console.debug('Selected epoch is : ', val, 'and the time is ',
                             selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
-
                         if(order === 'first'){
                             $scope.state.firstReminderStartTimeEpochTime = a.getTime() / 1000;
                             $scope.state.firstReminderStartTimeLocal = moment(a).format('HH:mm:ss');
                             $scope.state.firstReminderStartTimeMoment = moment(a);
                         }
-
                         if(order === 'second'){
                             $scope.state.secondReminderStartTimeEpochTime = a.getTime() / 1000;
                             $scope.state.secondReminderStartTimeLocal = moment(a).format('HH:mm:ss');
                             $scope.state.secondReminderStartTimeMoment = moment(a);
                         }
-
                         if(order === 'third'){
                             $scope.state.hideAdditionalReminderTimeButton = true;
                             $scope.state.thirdReminderStartTimeEpochTime = a.getTime() / 1000;
                             $scope.state.thirdReminderStartTimeLocal = moment(a).format('HH:mm:ss');
                             $scope.state.thirdReminderStartTimeMoment = moment(a);
                         }
-
                     }
                 },
                 inputTime: defaultStartTimeInSecondsSinceMidnightLocal,
                 step: 15,
                 closeLabel: 'Cancel'
             };
-
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
-
 	    var setupByVariableObject = function(selectedVariable){
             console.debug("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable).substring(0, 140) + '...');
-
-	    	if(!selectedVariable.variableCategoryName){
-	    		selectedVariable.variableCategoryName = selectedVariable.category;
-	    	}
-	    	if (!selectedVariable.variableCategoryName) {
-	    		$scope.state.showAddVariableCard = true;
-	    	}
+	    	if (!selectedVariable.variableCategoryName) { $scope.state.showAddVariableCard = true; }
 	    	$rootScope.variableObject=selectedVariable;
-
             setupVariableCategory(selectedVariable.variableCategoryName);
             if (selectedVariable.abbreviatedUnitName) {
                 $scope.state.trackingReminder.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
@@ -232,7 +189,6 @@ angular.module('starter')
             if (selectedVariable.variableName) {
                 $scope.state.trackingReminder.variableName = selectedVariable.variableName;
             }
-
             if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 ||
                 $scope.state.trackingReminder.abbreviatedUnitName === '/5') {
                 $scope.state.hideDefaultValueField = true;
@@ -240,15 +196,10 @@ angular.module('starter')
             if (selectedVariable.description) {
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
             }
-
             $scope.state.showReminderFrequencyCard = true;
             showMoreUnitsIfNecessary();
 	    };
-
-	    $scope.cancel = function(){
-            $scope.goBack();
-	    };
-
+	    $scope.cancel = function(){ $scope.goBack(); };
 	    var getFrequencyChart = function(){
 	    	return {
 	    		"Every 12 hours" : 12*60*60,
@@ -269,7 +220,6 @@ angular.module('starter')
                 'Every 4 weeks': 28 * 86400
 	    	};
 	    };
-
         $scope.addToFavorites = function(){
             $scope.state.trackingReminder.reminderFrequency = 0;
             $scope.state.selectedFrequency = 'Never';
@@ -277,30 +227,20 @@ angular.module('starter')
             $stateParams.fromState = 'app.favorites';
             $scope.save();
         };
-
-
         $scope.showAdditionalReminderTime = function(){
             if(!$scope.state.secondReminderStartTimeEpochTime){
                 $scope.openReminderStartTimePicker('second');
                 return;
             }
-
-            if(!$scope.state.thirdReminderStartTimeEpochTime) {
-                $scope.openReminderStartTimePicker('third');
-            }
+            if(!$scope.state.thirdReminderStartTimeEpochTime) { $scope.openReminderStartTimePicker('third'); }
         };
-
         $scope.oldShowAdditionalReminderTime = function(){
             if(!$scope.state.secondReminderStartTimeEpochTime){
                 $scope.oldOpenReminderStartTimePicker('second');
                 return;
             }
-
-            if(!$scope.state.thirdReminderStartTimeEpochTime) {
-                $scope.oldOpenReminderStartTimePicker('third');
-            }
+            if(!$scope.state.thirdReminderStartTimeEpochTime) { $scope.oldOpenReminderStartTimePicker('third'); }
         };
-
         var validationFailure = function (message) {
             $scope.showMaterialAlert(message);
             console.error(message);
@@ -308,32 +248,25 @@ angular.module('starter')
                 Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
             }
         };
-
         var validReminderSettings = function(){
-
             if(!$scope.state.trackingReminder.variableCategoryName) {
                 validationFailure('Please select a variable category');
                 return false;
             }
-
             if(!$scope.state.trackingReminder.variableName) {
                 validationFailure('Please enter a variable name');
                 return false;
             }
-
             if(!$scope.state.trackingReminder.abbreviatedUnitName) {
                 validationFailure('Please select a unit');
                 return false;
             } else {
-                $scope.state.trackingReminder.unitId =
-                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
+                $scope.state.trackingReminder.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
             }
-
             if(!$stateParams.favorite && !$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
                 //validationFailure('Please enter a default value');
                 //return false;
             }
-
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName] &&
                 typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue !== "undefined" &&
                 $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue !== null)
@@ -347,8 +280,6 @@ angular.module('starter')
                     return false;
                 }
             }
-
-
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName] &&
                 typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue !== "undefined" &&
                 $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue !== null)
@@ -362,15 +293,12 @@ angular.module('starter')
                     return false;
                 }
             }
-
             if($scope.state.selectedStopTrackingDate && $scope.state.selectedStartTrackingDate){
                 if($scope.state.selectedStopTrackingDate < $scope.state.selectedStartTrackingDate){
                     validationFailure("Start date cannot be later than the end date");
                     return false;
                 }
             }
-
-
             return true;
         };
 

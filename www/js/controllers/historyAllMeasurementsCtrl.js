@@ -30,8 +30,7 @@ angular.module('starter')
 
 	    $scope.getVariableCategoryByUnit = function(unit){
 
-	    	if(!unit) {
-                return false;
+	    	if(!unit) { return false;
             }
 
 	    	var variableCategory = $scope.state.variableCategories.filter(function(vc){
