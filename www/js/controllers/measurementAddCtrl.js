@@ -415,8 +415,8 @@ angular.module('starter')
                     $rootScope.bloodPressure.show = true;
                 }
 
-                if($stateParams.variableObject.category){
-                    $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
+                if($stateParams.variableObject.variableCategoryName){
+                    $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
                     setupVariableCategory($scope.state.measurement.variableCategoryName);
                 } else if($stateParams.variableObject.variableCategoryName) {
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
