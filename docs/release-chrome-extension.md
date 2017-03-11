@@ -3,7 +3,7 @@
 #### Check If We Need To Release Yet
 - Use the credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit#gid=2130660029) log into the [Chrome Web Store Dashboard](https://chrome.google.com/webstore/developer/dashboard/u58d852d3c5dcff27d49e35858ae710cd)
 - Check the version numbers
-- See if any of them are less than the version number in [www/js/app.js](www/js/app.js)
+- See if any of them are less than the version number in [www/js/app.js](../www/js/app.js)
 - If so, move to the Build Them section.  Otherwise, you're done!
 
 #### Build Them
