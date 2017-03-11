@@ -5,30 +5,28 @@ angular.module('starter')
 
         $scope.controller_name = "VariableSettingsCtrl";
         $rootScope.showFilterBarSearchIcon = false;
-
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             console.debug($state.current.name + ' initializing...');
-            $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.loading = true;
             $scope.showLoader('Getting variable details');
             if($stateParams.variableObject){
                 $scope.setupVariableByVariableObject($stateParams.variableObject);
+                $scope.refreshUserVariable(true);
             } else if ($stateParams.variableName) {
                 $rootScope.variableName = $stateParams.variableName;
                 $scope.getUserVariableByName($rootScope.variableName);
+                $scope.refreshUserVariable(true);
             } else if ($rootScope.variableObject) {
                 $scope.setupVariableByVariableObject($rootScope.variableObject);
+                $scope.refreshUserVariable(true);
             } else {
                 console.error("Variable name not provided to variable settings controller!");
                 $state.go(config.appSettings.defaultState);
                 //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
             }
         });
-
-        $scope.cancel = function(){ $scope.goBack(); };
-
         $rootScope.showActionSheetMenu = function() {
             console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
@@ -67,11 +65,9 @@ angular.module('starter')
                     return true;
                 }
             });
-
             console.debug('Setting hideSheet timeout');
             $timeout(function() { hideSheet(); }, 20000);
         };
-
         $scope.openTagVariableSearchDialog = function($event) {
             $mdDialog.show({
                 controller: TagVariableSearchCtrl,
@@ -82,32 +78,21 @@ angular.module('starter')
                 clickOutsideToClose:true
             });
         };
-
-        var TagVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter,
-                                          quantimodoService, $q, $log) {
-
+        var TagVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log) {
             var self = this;
-            // list of `state` value/display objects
             self.variables        = loadAll();
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
-
             self.variableObject = $rootScope.variableObject;
-
             self.title = "Add a Tag";
             self.helpText = "Search for a variable like an ingredient or category " +
                 "that you'd like to tag " + $rootScope.variableObject.name.toUpperCase() + " with.  Then " +
                 "when your tag variable is analyzed, measurements from " +
                 $rootScope.variableObject.name.toUpperCase() + " will be included.";
             self.placeholder = "Search for a tag...";
-
             self.newVariable = newVariable;
-
-            self.cancel = function($event) {
-                $mdDialog.cancel();
-            };
-
+            self.cancel = function($event) { $mdDialog.cancel(); };
             self.finish = function($event) {
                 var userTagData;
                 if($rootScope.variableObject.abbreviatedUnitName !== '/5'){
@@ -130,56 +115,31 @@ angular.module('starter')
                         $ionicLoading.hide();
                     });
                 }
-
                 $mdDialog.hide();
             };
-
-            function newVariable(variable) {
-                alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
-            }
-
+            function newVariable(variable) { alert("Sorry! You'll need to create a Constitution for " + variable + " first!"); }
             function querySearch (query) {
                 self.notFoundText = "No variables matching " + query + " were found.";
                 var deferred = $q.defer();
                 var requestParams = {};
-                if($rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){
-                    requestParams = {defaultUnitId: $rootScope.variableObject.defaultUnitId};
-                }
-
-                quantimodoService.searchUserVariablesDeferred(query, requestParams)
-                    .then(function(results){
-                        deferred.resolve(loadAll(results));
-                    });
+                if($rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){ requestParams = {defaultUnitId: $rootScope.variableObject.defaultUnitId}; }
+                quantimodoService.searchUserVariablesDeferred(query, requestParams).then(function(results){ deferred.resolve(loadAll(results)); });
                 return deferred.promise;
             }
-
-            function searchTextChange(text) {
-                $log.info('Text changed to ' + text);
-            }
-
+            function searchTextChange(text) { $log.info('Text changed to ' + text); }
             function selectedItemChange(item) {
                 self.selectedItem = item;
                 self.buttonText = "Tag Variable";
                 quantimodoService.addVariableToLocalStorage(item.variable);
                 $log.info('Item changed to ' + JSON.stringify(item));
             }
-
             /**
              * Build `variables` list of key/value pairs
              */
             function loadAll(variables) {
-                if(!variables){
-                    variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
-                }
-
-                if(variables && $rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){
-                    variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId));
-                }
-
-                if(variables){
-                    variables = variables.filter(excludeParentVariable());
-                }
-
+                if(!variables){ variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
+                if(variables && $rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
+                if(variables){ variables = variables.filter(excludeParentVariable()); }
                 return variables.map( function (variable) {
                     return {
                         value: variable.name.toLowerCase(),
@@ -188,37 +148,20 @@ angular.module('starter')
                     };
                 });
             }
-
-            /**
-             * Create filter function for a query string
-             */
-            function createFilterFor(query) {
-                var lowercaseQuery = angular.lowercase(query);
-
-                return function filterFn(item) {
-                    return (item.value.indexOf(lowercaseQuery) !== -1);
-                };
-            }
-
             /**
              * Create filter function for a query string
              */
             function filterByProperty(filterPropertyName, allowedFilterValue) {
-                return function filterFn(item) {
-                    return (item[filterPropertyName] === allowedFilterValue);
-                };
+                return function filterFn(item) { return (item[filterPropertyName] === allowedFilterValue); };
             }
 
             /**
              * Create filter function for a query string
              */
             function excludeParentVariable() {
-                return function filterFn(item) {
-                    return (item.id !== $rootScope.variableObject.id);
-                };
+                return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
             }
         };
-
         $scope.openJoinVariableSearchDialog = function($event) {
             $mdDialog.show({
                 controller: JoinVariableSearchCtrl,
@@ -229,33 +172,20 @@ angular.module('starter')
                 clickOutsideToClose:true
             });
         };
-
-        var JoinVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter,
-                                          quantimodoService, $q, $log) {
-
+        var JoinVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log) {
             var self = this;
-
-            // list of `state` value/display objects
             self.variables        = loadAll();
             self.querySearch   = querySearch;
             self.selectedItemChange = selectedItemChange;
             self.searchTextChange   = searchTextChange;
-
             self.variableObject = $rootScope.variableObject;
-
             self.title = "Join a Variable";
             self.helpText = "Search for a duplicated or synonymous variable that you'd like to join to " +
                 self.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
                 self.variableObject.name + ".  You can only join variables that have the same unit " +
                 self.variableObject.abbreviatedUnitName + ".";
             self.placeholder = "What variable would you like to join?";
-
-            self.newVariable = newVariable;
-
-            self.cancel = function($event) {
-                $mdDialog.cancel();
-            };
-
+            self.cancel = function($event) { $mdDialog.cancel(); };
             self.finish = function($event) {
                 var variableData = {
                     parentVariableId: $rootScope.variableObject.id,
@@ -270,51 +200,29 @@ angular.module('starter')
                     $ionicLoading.hide();
                     console.error(error);
                 });
-
                 $mdDialog.hide();
             };
-
-            function newVariable(variable) {
-                alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
-            }
-
             function querySearch (query) {
                 self.notFoundText = "No variables matching " + query + " were found.";
                 var deferred = $q.defer();
                 quantimodoService.searchUserVariablesDeferred(query, {defaultUnitId: $rootScope.variableObject.defaultUnitId})
-                    .then(function(results){
-                        deferred.resolve(loadAll(results));
-                    });
+                    .then(function(results){ deferred.resolve(loadAll(results)); });
                 return deferred.promise;
             }
-
-            function searchTextChange(text) {
-                $log.info('Text changed to ' + text);
-            }
-
+            function searchTextChange(text) { $log.info('Text changed to ' + text); }
             function selectedItemChange(item) {
                 self.selectedItem = item;
                 self.buttonText = "Join Variable";
                 quantimodoService.addVariableToLocalStorage(item.variable);
                 $log.info('Item changed to ' + JSON.stringify(item));
             }
-
             /**
              * Build `variables` list of key/value pairs
              */
             function loadAll(variables) {
-                if(!variables){
-                    variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
-                }
-
-                if(variables){
-                    variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId));
-                }
-
-                if(variables){
-                    variables = variables.filter(excludeParentVariable());
-                }
-
+                if(!variables){variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
+                if(variables){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
+                if(variables){ variables = variables.filter(excludeParentVariable()); }
                 return variables.map( function (variable) {
                     return {
                         value: variable.name.toLowerCase(),
@@ -323,34 +231,17 @@ angular.module('starter')
                     };
                 });
             }
-
-            /**
-             * Create filter function for a query string
-             */
-            function createFilterFor(query) {
-                var lowercaseQuery = angular.lowercase(query);
-
-                return function filterFn(item) {
-                    return (item.value.indexOf(lowercaseQuery) !== -1);
-                };
-            }
-
             /**
              * Create filter function for a query string
              */
             function filterByProperty(filterPropertyName, allowedFilterValue) {
-                return function filterFn(item) {
-                    return (item[filterPropertyName] === allowedFilterValue);
-                };
+                return function filterFn(item) { return (item[filterPropertyName] === allowedFilterValue); };
             }
-
             /**
              * Create filter function for a query string
              */
             function excludeParentVariable() {
-                return function filterFn(item) {
-                    return (item.id !== $rootScope.variableObject.id);
-                };
+                return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
             }
         };
     });

@@ -16,14 +16,6 @@
                     <span class="input-label left-text">Variable Name</span>
                     <span class="input-label right-text " id="variableName">{{variableName}}</span>
                 </label>
-                <label class="item item-content" style="padding: 6px 10px 5px 16px;">
-                    <span class="input-label left-text">Variable Category</span>
-                    <span class="input-label right-text ">{{variableObject.variableCategoryName}}</span>
-                </label>
-<!--                <label class="item item-content" style="padding: 6px 10px 5px 16px;" ng-click="showExplanationsPopup('Combination Method')">
-                    <span class="input-label left-span" >Combination Method &nbsp; <i class="icon ion-help-circled"></i></span>
-                    <span class="input-label right-text ">{{variableObject.combinationOperation}}</span>
-                </label>-->
             </div>
         </div>
 
@@ -55,7 +47,7 @@
                 </div>
             </md-card-content>
         </md-card>
-        
+
         <div ng-include="'templates/fragments/variable-analysis-settings-fragment.html'"></div>
         <div ng-show="variableObject" ng-include="'templates/fragments/tags-fragment.html'"></div>
         <div ng-show="variableObject" ng-include="'templates/fragments/tagged-variables-fragment.html'"></div>
@@ -72,7 +64,7 @@
             <div class="col col-50">
                 <button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
                         id="cancelButton"
-                        ng-click="cancel()">
+                        ng-click="goBack()">
                     Cancel
                 </button>
             </div>

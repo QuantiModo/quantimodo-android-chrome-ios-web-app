@@ -1320,7 +1320,8 @@ angular.module('starter')
                 onsetDelay: variableObject.onsetDelayInHours*60*60,
                 combinationOperation: variableObject.combinationOperation,
                 shareUserMeasurements: variableObject.shareUserMeasurements,
-                defaultUnitId: variableObject.userVariableDefaultUnitId
+                defaultUnitId: variableObject.userVariableDefaultUnitId,
+                userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName
                 //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime
@@ -1366,15 +1367,13 @@ angular.module('starter')
             $scope.hideLoader() ;
         };
 
-        $scope.getUserVariableByName = function (variableName, refresh) {
+        $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
             if(!variableName){
                 quantimodoService.reportError('No variable name provided to $scope.getUserVariableByName');
                 return;
             }
-            if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){
-                $rootScope.variableObject = null;
-            }
-            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+            if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){ $rootScope.variableObject = null; }
+            if(!hideLoader){ $ionicLoading.show(); }
             var params = {includeTags : true};
             quantimodoService.getUserVariableByNameDeferred(variableName, params, refresh).then(function(variableObject){
                 //Stop the ion-refresher from spinning
@@ -1390,12 +1389,10 @@ angular.module('starter')
             });
         };
 
-        $scope.refreshUserVariable = function () {
+        $scope.refreshUserVariable = function (hideLoader) {
             var refresh = true;
-            if($rootScope.variableObject){
-                $rootScope.variableName = $rootScope.variableObject.name;
-            }
-            $scope.getUserVariableByName($rootScope.variableName, refresh);
+            if($rootScope.variableObject){ $rootScope.variableName = $rootScope.variableObject.name; }
+            $scope.getUserVariableByName($rootScope.variableName, refresh, hideLoader);
         };
 
         $scope.resetVariableToDefaultSettings = function(variableObject) {

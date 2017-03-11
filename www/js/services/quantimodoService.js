@@ -5540,6 +5540,7 @@ angular.module('starter')
                     }
                 }
                 quantimodoService.getVariablesByNameFromApi(name, params, function(variable){
+                    quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variable);
                     deferred.resolve(variable);
                 }, function(error){ deferred.reject(error); });
             });
