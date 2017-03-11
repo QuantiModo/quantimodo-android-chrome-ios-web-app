@@ -2120,6 +2120,33 @@ angular.module('starter')
             return baseProductId;
         }
 
+        function handleSubscribeResponse(baseProductId, data) {
+            quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
+            $ionicLoading.hide();
+            var alert;
+            // Internal method
+            function showAlert() {
+                alert = $mdDialog.alert({  title: 'Thank you!', textContent: "Let's get started!", ok: 'OK' });
+                $mdDialog.show( alert )
+                    .finally(function() {
+                        $scope.goBack();
+                        $rootScope.user.stripeActive = true;
+                        alert = undefined;
+                    });
+            }
+            showAlert();
+            quantimodoService.reportError("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
+            quantimodoService.updateUserSettingsDeferred({
+                subscriptionProvider: getSubscriptionProvider(),
+                productId: getProductId(baseProductId),
+                trialEndsAt: moment().add(14, 'days').toISOString()
+                //coupon: answer.coupon
+            }).then(function (response) {
+                quantimodoService.recordUpgradeProductPurchase(baseProductId, response.data.purchaseId, 2);
+            });
+            $rootScope.user.stripeActive = true;
+        }
+
         function makeInAppPurchase(baseProductId) {
             $ionicLoading.show();
             var getReceipt = false;
@@ -2134,35 +2161,12 @@ angular.module('starter')
                             quantimodoService.reportError('inAppPurchase.getReceipt error response: ' + JSON.stringify(error));
                         });
                     }
-                    quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
-                    $ionicLoading.hide();
-                    var alert;
-                    // Internal method
-                    function showAlert() {
-                        alert = $mdDialog.alert({  title: 'Thank you!', textContent: "Let's get started!", ok: 'OK' });
-                        $mdDialog.show( alert )
-                            .finally(function() {
-                                $scope.goBack();
-                                $rootScope.user.stripeActive = true;
-                                alert = undefined;
-                            });
-                    }
-                    showAlert();
-                    quantimodoService.reportError("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
-                    quantimodoService.updateUserSettingsDeferred({
-                        subscriptionProvider: getSubscriptionProvider(),
-                        productId: getProductId(baseProductId),
-                        trialEndsAt: moment().add(14, 'days').toISOString()
-                        //coupon: answer.coupon
-                    }).then(function (response) {
-                        quantimodoService.recordUpgradeProductPurchase(baseProductId, response.data.purchaseId, 2);
-                    });
-                    $rootScope.user.stripeActive = true;
+                    handleSubscribeResponse(baseProductId, data);
                 }).catch(function (error) {
                     $ionicLoading.hide();
                     var alert;
                     // Internal method
-                    function showAlert() {
+                    function showErrorAlert() {
                         alert = $mdDialog.alert({
                             title: error.errorMessage,
                             textContent: "Please try again or contact mike@quantimo.do with Error Code: " +
@@ -2174,7 +2178,9 @@ angular.module('starter')
                                 alert = undefined;
                             });
                     }
-                    showAlert();
+
+                    if($rootScope.isIOS){ showErrorAlert(); } // We want to alert the Apple Reviews about their stupid errors
+                    if($rootScope.isAndroid){ handleSubscribeResponse(baseProductId, error); } // Sometimes Android has an error message even though it actually succeeds
                     quantimodoService.reportError('inAppPurchase.catch error ' + JSON.stringify(error));
                 });
         }
