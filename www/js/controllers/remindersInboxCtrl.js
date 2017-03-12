@@ -13,12 +13,9 @@ angular.module('starter')
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
 	    	selected1to5Value : false,
-	    	allReminders : [
-	    	],
-	    	trackingReminderNotifications : [
-	    	],
-	    	filteredReminderNotifications : [
-	    	],
+	    	allReminders : [ ],
+	    	trackingReminderNotifications : [ ],
+	    	filteredReminderNotifications : [ ],
 	    	measurementDate : new Date(),
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
@@ -37,17 +34,14 @@ angular.module('starter')
 	    };
 		
         $scope.$on('$ionicView.beforeEnter', function(e) {
-
         	console.debug("RemindersInboxCtrl beforeEnter ");
         	$scope.defaultHelpCards = quantimodoService.setupHelpCards();
-
         	$scope.loading = true;
             if(!$rootScope.accessTokenInUrl && !$rootScope.user){
                 console.debug('Setting afterLoginGoToState to ' + $state.current.name);
                 quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
                 $state.go('app.login');
             }
-
             $rootScope.hideBackButton = true;
             $rootScope.hideHomeButton = true;
             setPageTitle();
