@@ -1,7 +1,17 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
     <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } ">
         <br>
-        <md-card>
+        <md-card ng-if="isWeb" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
+            <md-card-title>
+                <md-card-title-media>
+                    <div class="md-media-md card-media"><img ng-src="img/ivy-sad-bw-300-300.png" class="md-card-image" alt="Ivy"></div>
+                </md-card-title-media>
+                <md-card-title-text>
+                    <span style="text-align: center;" class="md-headline">Please subscribe to my daddy's app or I'll be cold and hungry...</span>
+                </md-card-title-text>
+            </md-card-title>
+        </md-card>
+        <md-card ng-if="!isWeb">
             <img ng-src="img/ivy-sad-bw.jpg" class="md-card-image" alt="Ivy">
             <md-card-title>
                 <md-card-title-text>
@@ -9,7 +19,6 @@
                 </md-card-title-text>
             </md-card-title>
         </md-card>
-
         <div class="card" style="text-align: center;" >
             <div class="list">
                 <div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}">

@@ -6,7 +6,14 @@
 - See if any of them are less than the version number in [www/js/app.js](../www/js/app.js)
 - If so, move to the Build Them section.  Otherwise, you're done!
 
-#### Build Them
+#### Download Them
+- Go to [CircleCI](https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/tree/develop)
+- Click the most recent green build (at the top)
+- Click the "Artifacts" tab
+- Download the zip files
+
+#### Build Them (Alternative to Downloading)
+- If you've already downloaded them, you can skip to the Test Them steps
 - Create folder in the root of the repository called `build` (if it doesn't already exist)
 - Run `npm install` in root of repo
 - Set ENCRYPTION_SECRET environmental variable (see [Environmental Variables](environmental-variables.md))
