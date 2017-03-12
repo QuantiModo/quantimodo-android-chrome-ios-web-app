@@ -80,11 +80,11 @@ angular.module('starter')
             if(quantimodoService.getUrlParameter(window.location.href, 'loggingIn')){
                 loginTimeout();
             }
+            $rootScope.hideNavigationMenu = true;
         });
 
         $scope.$on('$ionicView.afterEnter', function(){
             leaveIfLoggedIn();
-            $rootScope.hideNavigationMenu = true;
             if(navigator && navigator.splashscreen) {
                 console.debug('ReminderInbox: Hiding splash screen because app is ready');
                 navigator.splashscreen.hide();
@@ -133,7 +133,6 @@ angular.module('starter')
             }
 
             if($rootScope.user){
-                $rootScope.hideNavigationMenu = false;
                 quantimodoService.createDefaultReminders();
                 console.debug($scope.controller_name + ".login: Got user and going to default state");
                 quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
@@ -151,7 +150,6 @@ angular.module('starter')
 
                     if(response.user){
                         $scope.hideLoader();
-                        $rootScope.hideNavigationMenu = false;
                         quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                         return;
                     }
