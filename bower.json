@@ -17,7 +17,7 @@
     "angular-messages": "1.6.1",
     "angular-sanitize": "1.5.3",
     "angular-ui-router": "#0.2.13",
-    "angular-wikipedia-api-factory": "^0.2.3",
+    "angular-wikipedia-api-factory": "git+https://github.com/mikepsinn/angular-wikipedia-api-factory.git#7be0f6e33a0f366a653c4cbe67fd25fdee54617d",
     "bootstrap": "~3.3.5",
     "bugsnag": "3.0.2",
     "highcharts": "~4.1.8",
