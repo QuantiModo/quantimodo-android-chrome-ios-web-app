@@ -356,7 +356,6 @@ angular.module('starter',
         }
 
         if($ionicHistory.currentStateName() === 'app.upgrade'){
-            $rootScope.hideNavigationMenu = false;
             console.debug('registerBackButtonAction from upgrade: Going to default state...');
             $state.go(config.appSettings.defaultState);
             return;
