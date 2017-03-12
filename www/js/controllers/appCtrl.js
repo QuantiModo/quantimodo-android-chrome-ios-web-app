@@ -2301,11 +2301,18 @@ angular.module('starter')
 
         var sendCouponEmail = function () {
             quantimodoService.sendEmailViaAPIDeferred('couponInstructions');
-            $scope.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email +
-                ' for instructions to redeem your coupon.', event);
+            $scope.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.', event);
         };
 
-        $scope.sendCouponEmail = function() { verifyEmailAddressAndExecuteCallback(sendCouponEmail); };
+        var sendFitbitEmail = function () {
+            quantimodoService.sendEmailViaAPIDeferred('fitbit');
+            $scope.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
+        };
+
+        $scope.sendEmailAfterVerification = function(emailType) {
+            if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }
+            if(emailType === 'fitbit'){ verifyEmailAddressAndExecuteCallback(sendFitbitEmail); }
+        };
 
         $scope.updateEmailAndExecuteCallback = function (callback) {
             if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }

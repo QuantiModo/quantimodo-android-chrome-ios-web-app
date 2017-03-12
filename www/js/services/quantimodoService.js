@@ -7585,12 +7585,35 @@ angular.module('starter')
                     buttons: [
                         {
                             id: "sendChromeEmailLinkButton",
-                            clickFunctionCall: function(){ $rootScope.sendChromeEmailLink();},
+                            clickFunctionCall: function(){ $rootScope.sendChromeEmailLink('chrome');},
                             buttonText: 'Send Yourself a Link',
                             buttonIconClass: "ion-email",
                             buttonClass: "button button-clear button-balanced"
                         }
                     ]
+                },
+                {
+                    id: "getHelpInfoCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideGetHelpInfoCard",
+                    title: 'Need Help?',
+                    iconClass: "icon positive ion-help-circled",
+                    bodyText: "If you need help or have any suggestions, please click the question mark in the upper right corner.",
+                    hideHelpCardText: "Got it!",
+                    hideHelpCardIcon: "ion-checkmark"
+                },
+                {
+                    id: "getFitbitHelpInfoCard",
+                    ngIfLogic: "stateParams.showHelpCards === true && !hideGetFitbitHelpInfoCard",
+                    title: 'Automated Tracking',
+                    iconClass: "icon positive ion-wand",
+                    bodyText: "Want to automatically record your sleep, exercise, and heart rate?",
+                    hideHelpCardText: "No Thanks",
+                    hideHelpCardIcon: "ion-android-cancel",
+                    emailButton: {
+                        type: "fitbit",
+                        text: "Get Fitbit",
+                        icon: "ion-checkmark"
+                    }
                 }
             ];
 
