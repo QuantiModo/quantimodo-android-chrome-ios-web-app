@@ -7523,14 +7523,11 @@ angular.module('starter')
         };
 
         quantimodoService.setupHelpCards = function (force) {
-
             if(window.localStorage.getItem('helpCardsSetup') && !force){
                 console.debug('Help cards already set up');
-                return;
+                return quantimodoService.getLocalStorageItemAsObject('defaultHelpCards');
             }
-
             window.localStorage.setItem('helpCardsSetup', true);
-
             var defaultHelpCards = [
                 {
                     id: "getStartedHelpCard",

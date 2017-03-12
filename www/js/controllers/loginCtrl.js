@@ -77,9 +77,7 @@ angular.module('starter')
         $scope.$on('$ionicView.enter', function(){
             leaveIfLoggedIn();
             console.debug($state.current.name + ' initializing...');
-            if(quantimodoService.getUrlParameter(window.location.href, 'loggingIn')){
-                loginTimeout();
-            }
+            if(quantimodoService.getUrlParameter(window.location.href, 'loggingIn')){ loginTimeout(); }
             $rootScope.hideNavigationMenu = true;
         });
 
