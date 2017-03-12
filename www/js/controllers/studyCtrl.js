@@ -4,7 +4,6 @@ angular.module('starter')
 
 		$scope.controller_name = "StudyCtrl";
         $rootScope.showFilterBarSearchIcon = false;
-
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.state = {
                 title: 'Loading study...',
@@ -13,100 +12,69 @@ angular.module('starter')
                 loading: true
             };
         });
-
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $rootScope.hideNavigationMenu = false;
             console.debug($state.current.name + ' initializing...');
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
-            if($rootScope.urlParameters.causeVariableName){
-                $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
-            }
-
-            if($rootScope.urlParameters.effectVariableName){
-                $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
-            }
-
-            if($stateParams.causeVariableName){
-                $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
-            }
-
-            if($stateParams.effectVariableName){
-                $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
-            }
-
+            if($rootScope.urlParameters.causeVariableName){ $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName; }
+            if($rootScope.urlParameters.effectVariableName){ $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName; }
+            if($stateParams.causeVariableName){ $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName; }
+            if($stateParams.effectVariableName){ $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName; }
             $scope.predictorVariableName = $scope.state.requestParams.causeVariableName;
             $scope.outcomeVariableName = $scope.state.requestParams.effectVariableName;
-
             if($rootScope.urlParameters.userId){
                 $scope.state.requestParams.userId = $rootScope.urlParameters.userId;
                 getStudy();
                 return;
             }
-
             if($stateParams.correlationObject){
                 $rootScope.correlationObject = $stateParams.correlationObject;
                 $scope.state.loading = false;
                 quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($rootScope.correlationObject));
                 $ionicLoading.hide();
             }
-
             if($rootScope.correlationObject){
                 $scope.state.requestParams = {
                     causeVariableName: $rootScope.correlationObject.causeVariableName,
                     effectVariableName: $rootScope.correlationObject.effectVariableName
                 };
                 //addWikipediaInfo();
-                if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){
-                    getStudy();
-                }
+                if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){ getStudy(); }
                 return;
             }
-
-            if(!$scope.state.requestParams.effectVariableName){
-                quantimodoService.getLocalStorageItemAsStringWithCallback('lastStudy', function (lastStudy) {
-                    if(lastStudy){
-                        $rootScope.correlationObject = JSON.parse(lastStudy);
-                        $scope.highchartsReflow();  //Need callback to make sure we get the study before we reflow
-                    }
-                });
-                $scope.state.loading = false;
-                $scope.state.requestParams = {
-                    causeVariableName: $rootScope.correlationObject.causeVariableName,
-                    effectVariableName: $rootScope.correlationObject.effectVariableName
-                };
-
-                //addWikipediaInfo();
-                if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){
-                    getStudy();
-                }
-            } else {
+            if($scope.state.requestParams.effectVariableName) {
                 getStudy();
+                return;
             }
+            quantimodoService.getLocalStorageItemAsStringWithCallback('lastStudy', function (lastStudy) {
+                if(lastStudy){
+                    $rootScope.correlationObject = JSON.parse(lastStudy);
+                    $scope.highchartsReflow();  //Need callback to make sure we get the study before we reflow
+                }
+            });
+            $scope.state.loading = false;
+            $scope.state.requestParams = {
+                causeVariableName: $rootScope.correlationObject.causeVariableName,
+                effectVariableName: $rootScope.correlationObject.effectVariableName
+            };
+            //addWikipediaInfo();
+            if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){ getStudy(); }
         });
-
         $scope.refreshStudy = function() {
             quantimodoService.clearCorrelationCache();
             getStudy();
         };
-
-        $scope.joinStudy = function () {
-            $state.go('app.studyJoin', {correlationObject: $rootScope.correlationObject});
-        };
-
+        $scope.joinStudy = function () { $state.go('app.studyJoin', {correlationObject: $rootScope.correlationObject}); };
         if (!clipboard.supported) {
             console.debug('Sorry, copy to clipboard is not supported');
             $scope.hideClipboardButton = true;
         }
-
         $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
         $scope.copyStudyUrlToClipboard = function () {
             $scope.copyLinkText = 'Copied!';
             var studyLink;
-            if($rootScope.correlationObject.studyLinkStatic){
-                studyLink = $rootScope.correlationObject.studyLinkStatic;
-            }
+            if($rootScope.correlationObject.studyLinkStatic){ studyLink = $rootScope.correlationObject.studyLinkStatic; }
             if($rootScope.correlationObject.userStudy && $rootScope.correlationObject.userStudy.studyLinkStatic){
                 studyLink = $rootScope.correlationObject.userStudy.studyLinkStatic;
             }
@@ -115,18 +83,13 @@ angular.module('starter')
             }
             clipboard.copyText(studyLink);
         };
-
         function addWikipediaInfo() {
             $scope.causeWikiEntry = null;
             $scope.causeWikiImage = null;
             $scope.effectWikiEntry = null;
             $scope.effectWikiImage = null;
-
             var causeSearchTerm = $rootScope.correlationObject.causeVariableCommonAlias;
-            if(!causeSearchTerm){
-                causeSearchTerm = $scope.state.requestParams.causeVariableName;
-            }
-
+            if(!causeSearchTerm){ causeSearchTerm = $scope.state.requestParams.causeVariableName; }
             wikipediaFactory.searchArticlesByTitle({
                 term: causeSearchTerm, // Searchterm
                 //lang: '<LANGUAGE>', // (optional) default: 'en'
@@ -139,25 +102,15 @@ angular.module('starter')
                 if(causeData.data.query) {
                     $scope.causeWikiEntry = causeData.data.query.pages[0].extract;
                     //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
-                    if(causeData.data.query.pages[0].thumbnail){
-                        $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source;
-                    }
-                    //on success
+                    if(causeData.data.query.pages[0].thumbnail){ $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source; }
                 } else {
                     var error = 'Wiki not found for ' + causeSearchTerm;
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                     console.error(error);
                 }
-            }).catch(function (error) {
-                console.error(error);
-                //on error
-            });
-
+            }).catch(function (error) { console.error(error); });
             var effectSearchTerm = $rootScope.correlationObject.effectVariableCommonAlias;
-            if(!effectSearchTerm){
-                effectSearchTerm = $scope.state.requestParams.effectVariableName;
-            }
-
+            if(!effectSearchTerm){ effectSearchTerm = $scope.state.requestParams.effectVariableName; }
             wikipediaFactory.searchArticlesByTitle({
                 term: effectSearchTerm, // Searchterm
                 //lang: '<LANGUAGE>', // (optional) default: 'en'
@@ -170,25 +123,15 @@ angular.module('starter')
                 if(effectData.data.query){
                     $scope.effectWikiEntry = effectData.data.query.pages[0].extract;
                     //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + '<br>' + $scope.effectWikiEntry;
-                    if(effectData.data.query.pages[0].thumbnail){
-                        $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source;
-                    }
-
+                    if(effectData.data.query.pages[0].thumbnail){ $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source; }
                 } else {
                     var error = 'Wiki not found for ' + effectSearchTerm;
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                     console.error(error);
                 }
-
-                //on success
-            }).catch(function (error) {
-                console.error(error);
-                //on error
-            });
+            }).catch(function (error) { console.error(error); });
         }
-
         $scope.weightedPeriod = 5;
-
         $scope.createUserCharts = function() {
             $scope.loadingCharts = false;
             $scope.state.loading = false;
@@ -198,11 +141,9 @@ angular.module('starter')
             $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
                 $rootScope.correlationObject.effectProcessedDailyMeasurements,
                 {variableName: $scope.state.requestParams.effectVariableName});
-
             $scope.highchartsReflow();
             $ionicLoading.hide();
         };
-
         function getStudy() {
             $scope.loadingCharts = true;
             quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
@@ -218,9 +159,7 @@ angular.module('starter')
                 $scope.state.title = 'Not Enough Data, Yet';
             });
         }
-
         $rootScope.showActionSheetMenu = function() {
-
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-log-in"></i>' + $rootScope.correlationObject.causeVariableName.substring(0,15) + ' Settings' },
@@ -229,23 +168,12 @@ angular.module('starter')
                 ],
                 destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-                cancel: function() {
-                    console.debug($state.current.name + ": " + 'CANCELLED');
-                },
+                cancel: function() { console.debug($state.current.name + ": " + 'CANCELLED'); },
                 buttonClicked: function(index) {
                     console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
-                    if(index === 0){
-                        $state.go('app.variableSettings',
-                            {variableName: $rootScope.correlationObject.causeVariableName});
-                    }
-                    if(index === 1){
-                        $state.go('app.variableSettings',
-                            {variableName: $rootScope.correlationObject.effectVariableName});
-                    }
-                    if(index === 2){
-                        $scope.upVote($rootScope.correlationObject);
-                    }
-
+                    if(index === 0){ $state.go('app.variableSettings', {variableName: $rootScope.correlationObject.causeVariableName}); }
+                    if(index === 1){ $state.go('app.variableSettings', {variableName: $rootScope.correlationObject.effectVariableName}); }
+                    if(index === 2){ $scope.upVote($rootScope.correlationObject); }
                     return true;
                 },
                 destructiveButtonClicked: function() {
@@ -253,10 +181,7 @@ angular.module('starter')
                     return true;
                 }
             });
-
             console.debug('Setting hideSheet timeout');
-            $timeout(function() {
-                hideSheet();
-            }, 20000);
+            $timeout(function() { hideSheet(); }, 20000);
         };
 	});

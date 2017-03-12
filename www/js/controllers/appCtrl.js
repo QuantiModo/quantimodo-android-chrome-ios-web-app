@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, quantimodoService,
                                     ionicDatePicker, $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
-                                    $locale, $mdDialog, $mdToast) {
+                                    $locale, $mdDialog, $mdToast, wikipediaFactory) {
 
 	    console.debug('Starting AppCtrl');
         $rootScope.placeName = null;
@@ -1380,6 +1380,7 @@ angular.module('starter')
                 $scope.$broadcast('scroll.refreshComplete');
                 $ionicLoading.hide();
                 $rootScope.variableObject = variableObject;
+                //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
                 $scope.setupVariableByVariableObject(variableObject);
             }, function (error) {
                 //Stop the ion-refresher from spinning
@@ -1400,6 +1401,7 @@ angular.module('starter')
             $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
             quantimodoService.resetUserVariableDeferred(variableObject.id).then(function(userVariable) {
                 $rootScope.variableObject = userVariable;
+                //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             });
         };
 
@@ -2338,9 +2340,7 @@ angular.module('starter')
             });
         };
 
-        var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter,
-                                             quantimodoService, $q, $log, dataToPass) {
-
+        var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
             var self = this;
             // list of `state` value/display objects
             self.items        = loadAll();
@@ -2352,14 +2352,10 @@ angular.module('starter')
             self.placeholder = dataToPass.placeholder;
             self.newVariable = newVariable;
             self.cancel = function($event) { $mdDialog.cancel(); };
-            self.finish = function($event, variableName) {
-                $mdDialog.hide($scope.variable);
-            };
-
+            self.finish = function($event, variableName) { $mdDialog.hide($scope.variable); };
             function newVariable(variable) {
                 alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
             }
-
             function querySearch (query) {
                 self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
@@ -2371,9 +2367,7 @@ angular.module('starter')
                     });
                 return deferred.promise;
             }
-
             function searchTextChange(text) { $log.info('Text changed to ' + text); }
-
             function selectedItemChange(item) {
                 $scope.variable = item.variable;
                 self.selectedItem = item;
@@ -2387,7 +2381,6 @@ angular.module('starter')
              */
             function loadAll(variables) {
                 if(!variables){ variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
-
                 return variables.map( function (variable) {
                     return {
                         value: variable.name.toLowerCase(),
@@ -2458,6 +2451,98 @@ angular.module('starter')
             $state.go('app.study', {
                 causeVariableName: causeVariableName,
                 effectVariableName: effectVariableName
+            });
+        };
+
+        var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
+            var self = this;
+            // list of `state` value/display objects
+            self.items        = loadAll();
+            self.querySearch   = querySearch;
+            self.selectedItemChange = selectedItemChange;
+            self.searchTextChange   = searchTextChange;
+            self.title = dataToPass.title;
+            self.helpText = dataToPass.helpText;
+            self.placeholder = dataToPass.placeholder;
+            self.cancel = function($event) { $mdDialog.cancel(); };
+            self.finish = function($event, variableName) { $mdDialog.hide($scope.variable); };
+            function querySearch (query) {
+                self.notFoundText = "No articles matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
+                var deferred = $q.defer();
+                if(!query || !query.length){ query = dataToPass.variableName; }
+                wikipediaFactory.searchArticles({
+                    term: query, // Searchterm
+                    //lang: '<LANGUAGE>', // (optional) default: 'en'
+                    //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
+                    pithumbsize: '200', // (optional) default: 400
+                    //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
+                    exlimit: 'max', // (optional) 'max': extracts for all articles, otherwise only for the first
+                    //exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
+                }).then(function (repsonse) {
+                    if(repsonse.data.query) {
+                        deferred.resolve(loadAll(repsonse.data.query.pages));
+                        $scope.causeWikiEntry = repsonse.data.query.pages[0].extract;
+                        //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
+                        if(repsonse.data.query.pages[0].thumbnail){
+                            $scope.causeWikiImage = repsonse.data.query.pages[0].thumbnail.source;
+                        }
+                        //on success
+                    } else {
+                        var error = 'Wiki not found for ' + query;
+                        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
+                        console.error(error);
+                    }
+                }).catch(function (error) {
+                    console.error(error);
+                    //on error
+                });
+                return deferred.promise;
+            }
+            function searchTextChange(text) { $log.info('Text changed to ' + text); }
+            function selectedItemChange(item) {
+                $rootScope.variableObject.wikipediaPage = item.page;
+                $rootScope.variableObject.wikipediaExtract = item.page.extract;
+                self.selectedItem = item;
+                self.buttonText = dataToPass.buttonText;
+            }
+
+            /**
+             * Build `variables` list of key/value pairs
+             */
+            function loadAll(pages) {
+                if(!pages){ return null; }
+                return pages.map( function (page) {
+                    return {
+                        value: page.title,
+                        display: page.title,
+                        page: page,
+                    };
+                });
+            }
+        };
+
+        $scope.searchWikipediaArticle = function (ev) {
+            $mdDialog.show({
+                controller: SelectWikpdediaArticleController,
+                controllerAs: 'ctrl',
+                templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: false,
+                fullscreen: false,
+                locals: {
+                    dataToPass: {
+                        title: "Select Wikipedia Article",
+                        helpText: "Change the search query until you see a relevant article in the search results.  This article will be included in studies involving this variable.",
+                        placeholder: "Search for a Wikipedia article...",
+                        buttonText: "Select Article",
+                        variableName: $rootScope.variableObject.name
+                    }
+                },
+            }).then(function(page) {
+                $rootScope.variableObject.wikipediaPage = page;
+            }, function() {
+                console.debug('User cancelled selection');
             });
         };
 

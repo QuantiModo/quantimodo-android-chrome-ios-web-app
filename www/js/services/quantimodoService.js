@@ -1,7 +1,7 @@
 angular.module('starter')
     // quantimodoService API implementation
     .factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform,
-                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics) {
+                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
 
@@ -5555,6 +5555,15 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        quantimodoService.addWikipediaExtractAndThumbnail = function(variableObject){
+            quantimodoService.getWikipediaArticle(variableObject.name).then(function (page) {
+                if(page){
+                    variableObject.wikipediaExtract = page.extract;
+                    if(page.thumbnail){ variableObject.imageUrl = page.thumbnail; }
+                }
+            });
+        };
+
         // post changes to user variable settings
         quantimodoService.postUserVariableDeferred = function(body) {
             var deferred = $q.defer();
@@ -5562,6 +5571,7 @@ angular.module('starter')
                 quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.userVariable);
                 quantimodoService.deleteItemFromLocalStorage('lastStudy');
                 $rootScope.variableObject = response.userVariable;
+                //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
                 console.debug("quantimodoService.postUserVariableDeferred: success: " + JSON.stringify(response.userVariable));
                 deferred.resolve(response.userVariable);
             }, function(error){ deferred.reject(error); });
@@ -8573,6 +8583,34 @@ angular.module('starter')
                 studyLinkGoogle : "https://plus.google.com/share?url=" + encodeURIComponent(studyLinkStatic),
                 studyLinkEmail: "mailto:?subject=" + encodeURIComponent(subjectLine) + "&body=" + encodeURIComponent(bodyText)
             };
+        };
+
+        quantimodoService.getWikipediaArticle = function(title){
+            var deferred = $q.defer();
+            wikipediaFactory.getArticle({
+                term: title, // Searchterm
+                //lang: '<LANGUAGE>', // (optional) default: 'en'
+                //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
+                pithumbsize: '200', // (optional) default: 400
+                //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
+                exlimit: 'max', // (optional) 'max': extracts for all articles, otherwise only for the first
+                //exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
+                redirects: ''
+            }).then(function (repsonse) {
+                if(repsonse.data.query) {
+                    deferred.resolve(repsonse.data.query.pages[0]);
+                } else {
+                    var error = 'Wiki not found for ' + title;
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
+                    console.error(error);
+                    deferred.reject(error);
+                }
+            }).catch(function (error) {
+                console.error(error);
+                deferred.reject(error);
+                //on error
+            });
+            return deferred.promise;
         };
 
         return quantimodoService;
