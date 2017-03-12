@@ -46,7 +46,6 @@ angular.module('starter')
             if($rootScope.user){
                 $scope.hideLoader();
                 console.debug("Already logged in on login page.  goToDefaultStateIfNoAfterLoginUrlOrState...");
-                $rootScope.hideNavigationMenu = false;
                 quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
             }
         };
