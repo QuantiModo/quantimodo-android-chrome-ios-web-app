@@ -5419,17 +5419,29 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        function doWeHaveEnoughVariables(variables){
+            return variables && variables.length > 1;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
+        }
+        function doWeHaveExactMatch(variables, variableSearchQuery){
+            return variables && variables.length && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
+        }
+        function shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery){
+            var haveEnough = doWeHaveEnoughVariables(variables);
+            var exactMatch = doWeHaveExactMatch(variables, variableSearchQuery);
+            return !haveEnough && !exactMatch;
+        }
+
         // get user variables (without public)
         quantimodoService.searchUserVariablesIncludingLocalDeferred = function(variableSearchQuery, params){
             var deferred = $q.defer();
             var variables = quantimodoService.searchLocalStorage('userVariables', 'name', variableSearchQuery, params);
-            if(variables && variables.length){
+            if(!shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
                 deferred.resolve(variables);
                 return deferred.promise;
             }
             if(params.includePublic){
                 variables = quantimodoService.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
-                if(variables && variables.length){
+                if(!shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
                     deferred.resolve(variables);
                     return deferred.promise;
                 }
