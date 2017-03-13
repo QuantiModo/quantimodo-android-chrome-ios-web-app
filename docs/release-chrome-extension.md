@@ -9,7 +9,7 @@
 #### Download Them
 - Go to the develop branch on [CircleCI](https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/tree/develop)
 - Click the most recent green build (at the top)
-- Click the "Artifacts" tab
+- Click the "Artifacts" tab (if you don't see an "Artifacts" tab, append `#artifacts` to the end of the url for the specific build)
 - Download the zip files
 
 #### Build Them (Alternative to Downloading)

@@ -1,7 +1,4 @@
-angular.module('starter')
-
-    // Handlers the Welcome Page
-    .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams,
+angular.module('starter').controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams,
                                       $timeout, quantimodoService) {
 
         $scope.state = { loading: false};
@@ -9,23 +6,17 @@ angular.module('starter')
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         $rootScope.showFilterBarSearchIcon = false;
-
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
         if($rootScope.isMobile){
-            if(window && window.plugins && window.plugins.googleplus){
-                $scope.showGoogleLoginButton = true;
-            }
+            if(window && window.plugins && window.plugins.googleplus){ $scope.showGoogleLoginButton = true; }
             var $cordovaFacebook = {};
             var disableFacebookLogin = true;  // Causing failures on IPv6 networks according to iTunes reviewer
             if (!disableFacebookLogin && $rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
                 console.debug('Injecting $cordovaFacebook');
                 $cordovaFacebook = $injector.get('$cordovaFacebook');
                 $scope.showFacebookLoginButton = true;
-            } else {
-                console.debug("Could not inject $cordovaFacebook");
-            }
+            } else { console.debug("Could not inject $cordovaFacebook"); }
         }
 
         $scope.loginPage = {
@@ -33,7 +24,7 @@ angular.module('starter')
             "backgroundColor": "#3467d6",
             circleColor: "#5b95f9",
             image: {
-                url: "img/quantimodo-robot-waving.svg",
+                url: "img/quantimodo-robot-waving-2.svg",
                 height: "120",
                 width: "120"
             },

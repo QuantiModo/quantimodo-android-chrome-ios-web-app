@@ -2388,6 +2388,7 @@ angular.module('starter')
              */
             function loadAll(variables) {
                 if(!variables){ variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
+                if(!variables){ return null; }
                 return variables.map( function (variable) {
                     return {
                         value: variable.name.toLowerCase(),
