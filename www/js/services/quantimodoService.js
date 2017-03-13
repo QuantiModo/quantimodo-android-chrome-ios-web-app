@@ -8499,14 +8499,8 @@ angular.module('starter')
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variable);
         };
 
-        quantimodoService.sendEmailViaAPI = function(emailType){
-            quantimodoService.post('api/v2/account/unsubscribe',
-                [],
-                {emailType: emailType});
-        };
-
         quantimodoService.sendEmailViaAPI = function(body, successHandler, errorHandler){
-            quantimodoService.post('api/v1/email',
+            quantimodoService.post('api/v2/email',
                 [],
                 body,
                 successHandler,
