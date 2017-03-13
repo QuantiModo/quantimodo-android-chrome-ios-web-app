@@ -7582,15 +7582,7 @@ angular.module('starter')
                     "track twice!",
                     hideHelpCardText: "Dismiss",
                     hideHelpCardIcon: "ion-close-circled",
-                    buttons: [
-                        {
-                            id: "sendChromeEmailLinkButton",
-                            clickFunctionCall: function(){ $rootScope.sendChromeEmailLink('chrome');},
-                            buttonText: 'Send Yourself a Link',
-                            buttonIconClass: "ion-email",
-                            buttonClass: "button button-clear button-balanced"
-                        }
-                    ]
+                    chromeExtensionEmailButton: true
                 },
                 {
                     id: "getHelpInfoCard",
