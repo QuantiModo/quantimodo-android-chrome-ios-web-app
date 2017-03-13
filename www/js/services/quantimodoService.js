@@ -210,7 +210,7 @@ angular.module('starter')
                         $ionicPopup.show({
                             title: 'NOT CONNECTED',
                             //subTitle: '',
-                            template: 'Either you are not connected to the internet or the quantimodoService server cannot be reached.',
+                            template: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
                             buttons:[
                                 {text: 'OK',
                                     type: 'button-positive',
@@ -7639,15 +7639,15 @@ angular.module('starter')
         };
 
 
-        var green = {
+        quantimodoService.green = {
             backgroundColor: "#0f9d58",
             circleColor: "#03c466"
         };
-        var blue = {
+        quantimodoService.blue = {
             backgroundColor: "#3467d6",
             circleColor: "#5b95f9"
         };
-        var yellow = {
+        quantimodoService.yellow = {
             backgroundColor: "#f09402",
             circleColor: "#fab952"
         };
@@ -7659,7 +7659,7 @@ angular.module('starter')
                     id: "addEmotionRemindersCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
                     title: 'Varying Emotions?',
-                    color: green,
+                    color: quantimodoService.green,
                     iconClass: "icon positive " + $rootScope.variableCategories.Emotions.icon,
                     image: {
                         url: $rootScope.variableCategories.Emotions.imageUrl,
@@ -7675,7 +7675,7 @@ angular.module('starter')
                 {
                     id: "addSymptomRemindersCard",
                     title: 'Recurring Symptoms?',
-                    color: blue,
+                    color: quantimodoService.blue,
                     iconClass: "icon positive " + $rootScope.variableCategories.Symptoms.icon,
                     image: {
                         url: $rootScope.variableCategories.Symptoms.imageUrl,
@@ -7692,7 +7692,7 @@ angular.module('starter')
                     id: "addFoodRemindersCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
                     title: 'Common Foods or Drinks?',
-                    color: blue,
+                    color: quantimodoService.blue,
                     iconClass: "icon positive " + $rootScope.variableCategories.Foods.icon,
                     image: {
                         url: $rootScope.variableCategories.Foods.imageUrl,
@@ -7707,7 +7707,7 @@ angular.module('starter')
                 {
                     id: "addTreatmentRemindersCard",
                     title: 'Any Treatments?',
-                    color: yellow,
+                    color: quantimodoService.yellow,
                     iconClass: "icon positive " + $rootScope.variableCategories.Treatments.icon,
                     image: {
                         url: $rootScope.variableCategories.Treatments.imageUrl,
@@ -7724,7 +7724,7 @@ angular.module('starter')
                 {
                     id: "locationTrackingPage",
                     title: 'Location Tracking',
-                    color: green,
+                    color: quantimodoService.green,
                     iconClass: "icon positive " + $rootScope.variableCategories.Location.icon,
                     image: {
                         url: $rootScope.variableCategories.Location.imageUrl,
@@ -7740,7 +7740,7 @@ angular.module('starter')
                 {
                     id: "weatherTrackingPage",
                     title: 'Weather Tracking',
-                    color: green,
+                    color: quantimodoService.green,
                     iconClass: "icon positive " + $rootScope.variableCategories.Environment.icon,
                     image: {
                         url: $rootScope.variableCategories.Environment.imageUrl,
@@ -7756,7 +7756,7 @@ angular.module('starter')
                 {
                     id: "importDataPage",
                     title: 'Import Your Data',
-                    color: yellow,
+                    color: quantimodoService.yellow,
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
                         url: "img/download_2-96.png",
@@ -7772,7 +7772,7 @@ angular.module('starter')
                     id: "allDoneCard",
                     ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                     title: 'Great job!',
-                    color: green,
+                    color: quantimodoService.green,
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
                         url: "img/quantimodo-robot-waving-2.svg",
@@ -7893,7 +7893,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Hi! I'm " + config.appSettings.appDisplayName + "!",
-                    color: green,
+                    color: quantimodoService.green,
                     image: {
                         url: "img/quantimodo-robot-waving.svg",
                         height: "120",
@@ -7904,7 +7904,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Hidden Influences",
-                    color: blue,
+                    color: quantimodoService.blue,
                     image: {
                         url: "img/patient-frown-factors.png",
                         height: "120",
@@ -7916,7 +7916,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Only Human",
-                    color: yellow,
+                    color: quantimodoService.yellow,
                     image: {
                         url: "img/brain-pink.svg",
                         height: "120",
@@ -7928,7 +7928,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Treatment Determination",
-                    color: green,
+                    color: quantimodoService.green,
                     image: {
                         url: "img/doctor-frown-factors.png",
                         height: "120",
@@ -7940,7 +7940,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Machine Learning",
-                    color: blue,
+                    color: quantimodoService.blue,
                     image: {
                         url: "img/quantimodo-robot-brain.svg",
                         height: "120",
@@ -7952,7 +7952,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Automated Tracking",
-                    color: green,
+                    color: quantimodoService.green,
                     image: {
                         url: "img/download_2-96.png",
                         height: "100",
@@ -7965,7 +7965,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Effortless Tracking",
-                    color: yellow,
+                    color: quantimodoService.yellow,
                     image: {
                         url: "img/inbox.svg",
                         height: "90",
@@ -7978,7 +7978,7 @@ angular.module('starter')
                 {
                     newIntroStyle: true,
                     title: "Data Security",
-                    color: blue,
+                    color: quantimodoService.blue,
                     image: {
                         url: "img/lock.svg",
                         height: "90",
@@ -8625,6 +8625,16 @@ angular.module('starter')
                 //on error
             });
             return deferred.promise;
+        };
+
+        quantimodoService.goToLoginIfNecessary = function(){
+            if(!$rootScope.user){
+                console.debug('Setting afterLoginGoToState to ' + $state.current.name);
+                quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
+                $state.go('app.login');
+                return true;
+            }
+            return false;
         };
 
         return quantimodoService;
