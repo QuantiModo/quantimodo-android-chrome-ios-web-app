@@ -2,12 +2,6 @@
 	<ion-nav-title>{{stateParams.title}}</ion-nav-title>
 	<ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
 		<ion-refresher on-refresh="refreshReminders()"></ion-refresher>
-		<div ng-show="state.showButtons" class="list card" ng-click="addNewReminderButtonClick()">
-			<a id="addReminderButton" class="item item-icon-left">
-				<i class="icon ion-plus positive"></i>
-				{{stateParams.addButtonText}}
-			</a>
-		</div>
 		<div class="card" ng-if="state.showTreatmentInfoCard">
 			<div class="item item-avatar">
 				<i class="icon positive ion-ios-medkit-outline"
