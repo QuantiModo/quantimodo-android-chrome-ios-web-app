@@ -1639,6 +1639,16 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.remindersList', {
+            cache: false,
+            url: "/reminders-list/:variableCategoryName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-list.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            }
+        })
         .state('app.reminderAdd', {
             url: "/reminder-add",
             cache: false,
