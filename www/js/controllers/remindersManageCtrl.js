@@ -102,11 +102,11 @@ angular.module('starter')
 			}
 			else {
 				if(!$rootScope.stateParams.title){
-					$rootScope.stateParams.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
+					$rootScope.stateParams.title = $stateParams.variableCategoryName;
 				}
 				if(!$rootScope.stateParams.addButtonText) {
 					$rootScope.stateParams.addButtonText = 'Add new ' +
-						pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
+						pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1);
 				}
 			}
 
