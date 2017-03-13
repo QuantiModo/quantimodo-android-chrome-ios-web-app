@@ -349,58 +349,37 @@ config.appSettings  = {
 
     menu : [
         {
+            title : 'Your Medications',
+            href : '#/app/reminders-manage/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
             title : 'Reminder Inbox',
             href : '#/app/reminders-inbox',
             icon : 'ion-archive'
         },
         {
-            title : 'Medications',
-            click : 'toggleTreatmentsSubMenu',
-            icon : 'ion-ios-pulse',
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-medkit-outline',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
             title : 'Overdue',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
             href : '#/app/reminders-inbox/Treatments',
             icon : 'ion-clock'
         },
         {
             title : "Today's Schedule",
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
             href : '#/app/reminders-inbox-today/Treatments',
             icon : 'ion-android-sunny'
         },
         {
-            title : 'Manage Scheduled',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
-            href : '#/app/manage-scheduled-meds',
-            icon : 'ion-android-notifications-none'
-        },
-        {
             title : 'As-Needed Meds',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
             href : '#/app/as-needed-meds',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Record a Dose',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
             href : '#/app/measurement-add-search-category/Treatments',
             icon : 'ion-edit'
         },
         {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTreatmentsSubMenu',
+            title : 'Med History',
             href : '#/app/history-all/Treatments',
             icon : 'ion-ios-paper-outline'
         },
