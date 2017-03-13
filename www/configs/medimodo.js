@@ -20,9 +20,9 @@ config.appSettings  = {
     welcomeState : 'app.login',
 
     settingsPageOptions :
-    {
-        showReminderFrequencySelector : false
-    },
+        {
+            showReminderFrequencySelector : false
+        },
 
     headline : 'Medications - Track, Learn, Connect',
     features: [
@@ -220,8 +220,8 @@ config.appSettings  = {
 
     helpPopupMessages : {
         "#/app/example": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
-       },
-    
+    },
+
     wordAliases : {
         //"Treatments" : "Medications",
         //"treatments" : "medications",
@@ -236,7 +236,7 @@ config.appSettings  = {
         //"symptom" : "response",
         //"symptoms" : "responses"
     },
-    
+
     remindersInbox : {
         showAddNewMedicationButton : true,
         hideAddNewReminderButton : true,
@@ -892,6 +892,81 @@ config.appSettings  = {
         }
     ],
 
+    minimalMenu : [
+        {
+            title : 'Reminder Inbox',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-archive'
+        },
+        {
+            title : 'Your Medications',
+            href : '#/app/reminders-list/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Symptoms',
+            href : '#/app/reminders-list/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Vital Signs',
+            href : '#/app/reminders-list/Vital Signs',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Emotions',
+            href : '#/app/reminders-list/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            href : '#/app/reminders-list/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Physical Activity',
+            href : '#/app/reminders-list/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'History',
+            href : '#/app/history-all/Anything',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Import Data',
+            href : '#/app/import',
+            icon : 'ion-ios-cloud-download-outline'
+        },
+        {
+            title : 'Relationships',
+            click : 'togglePredictorSearchSubMenu',
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-analytics',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Predictor Search',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/predictor-search',
+            icon : 'ion-log-in'
+        },
+        {
+            title : 'Outcome Search',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/outcome-search',
+            icon : 'ion-log-out'
+        },
+        {
+            title : 'Settings',
+            href : '#/app/settings',
+            icon : 'ion-ios-gear-outline'
+        },
+    ],
+
     edsMenu : [
         {
             title : 'Reminder Inbox',
@@ -1043,6 +1118,8 @@ config.appSettings  = {
     ]
 
 };
+
+config.appSettings.menu = config.appSettings.minimalMenu;
 
 if(!module){
     var module = {};
