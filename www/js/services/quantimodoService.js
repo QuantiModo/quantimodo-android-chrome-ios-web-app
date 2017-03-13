@@ -1557,6 +1557,12 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        quantimodoService.filterByStringProperty = function(arrayToFilter, propertyName, allowedValue){
+            if(!allowedValue || allowedValue.toLowerCase() === "Anything"){ return arrayToFilter; }
+            function matches(value) {return value.toLowerCase() === allowedValue.toLowerCase();}
+            return arrayToFilter.filter(matches);
+        };
+
         quantimodoService.getFavoriteTrackingRemindersFromLocalStorage = function(variableCategoryName){
             console.debug('Getting favorites from local storage');
             $rootScope.favoritesArray = [];

@@ -34,7 +34,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		$scope.refreshReminders = function () {
 			$scope.showLoader('Syncing...');
 			quantimodoService.syncTrackingReminders().then(function (trackingReminders) {
-                $scope.state.trackingReminders = trackingReminders;
+                $scope.state.trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', $stateParams.variableCategoryName);
 				$scope.hideLoader();
 			});
 		};
