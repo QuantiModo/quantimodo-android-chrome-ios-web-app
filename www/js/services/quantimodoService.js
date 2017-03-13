@@ -3073,17 +3073,13 @@ angular.module('starter')
                 });
 
             });
-
             return deferred.promise;
         };
-
         quantimodoService.backgroundGeolocationStart = function () {
-
             if(typeof backgroundGeoLocation === "undefined"){
                 console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
                 return;
             }
-
             console.debug('Starting quantimodoService.backgroundGeolocationStart');
             var callbackFn = function(location) {
                 console.debug("background location is " + JSON.stringify(location));
@@ -3095,13 +3091,11 @@ angular.module('starter')
                 lookupGoogleAndFoursquareLocationAndPostMeasurement(null, isBackground);
                 backgroundGeoLocation.finish();
             };
-
             var failureFn = function(error) {
                 var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
                 console.error(errorMessage);
                 quantimodoService.reportError(errorMessage);
             };
-
             backgroundGeoLocation.configure(callbackFn, failureFn, {
                 desiredAccuracy: 10,
                 stationaryRadius: 20,
@@ -3117,10 +3111,8 @@ angular.module('starter')
                 fastestInterval: 500000,  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
                 activitiesInterval: 15 * 60 * 1000  // These might not work with locationService: 'ANDROID_DISTANCE_FILTER',
             });
-
             backgroundGeoLocation.start();
         };
-
         quantimodoService.backgroundGeolocationInit = function () {
             var deferred = $q.defer();
             console.debug('Starting quantimodoService.backgroundGeolocationInit');
@@ -3136,18 +3128,14 @@ angular.module('starter')
             }
             return deferred.promise;
         };
-
         quantimodoService.backgroundGeolocationStop = function () {
             if(typeof backgroundGeoLocation !== "undefined"){
                 window.localStorage.setItem('bgGPS', 0);
                 backgroundGeoLocation.stop();
             }
         };
-
         var delayBeforePostingNotifications = 3 * 60 * 1000;
-
         var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
-
             localStorage.setItem('lastGotNotificationsAt', new Date().getTime());
             trackingReminderNotifications = quantimodoService.attachVariableCategoryIcons(trackingReminderNotifications);
             quantimodoService.setLocalStorageItem('trackingReminderNotifications',
@@ -3158,44 +3146,29 @@ angular.module('starter')
             $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
             return trackingReminderNotifications;
         };
-
         quantimodoService.getSecondsSinceWeLastGotNotifications = function () {
             var lastGotNotificationsAt = localStorage.getItem('lastGotNotificationsAt');
             if(!lastGotNotificationsAt){ lastGotNotificationsAt = 0; }
             return parseInt((new Date().getTime() - lastGotNotificationsAt)/1000);
         };
-
         quantimodoService.postTrackingRemindersDeferred = function(trackingRemindersArray){
             var deferred = $q.defer();
-
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 quantimodoService.postTrackingRemindersToApi(trackingRemindersArray, function(response){
                     if(response){
-                        if(response.trackingReminderNotifications){
-                            putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);
-                        }
-                        if(response.trackingReminders){
-                            quantimodoService.setLocalStorageItem('trackingReminders',
-                                JSON.stringify(response.trackingReminders));
-                        }
-                        if(response.data && response.data.userVariables){
-                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
-                                response.data.userVariables);
-                        }
+                        if(response.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);}
+                        if(response.trackingReminders){quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));}
+                        if(response.data && response.data.userVariables){quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);}
                     }
-                    deferred.resolve();
-                }, function(error){
-                    deferred.reject(error);
-                });
+                    deferred.resolve(response.trackingReminders);
+                }, function(error){deferred.reject(error);});
             };
-
             quantimodoService.postTrackingReminderNotificationsDeferred().then(function () {
                 postTrackingRemindersToApiAndHandleResponse();
             }, function(error){
                 postTrackingRemindersToApiAndHandleResponse();
                 deferred.reject(error);
             });
-
             return deferred.promise;
         };
 
@@ -3314,19 +3287,13 @@ angular.module('starter')
 
         quantimodoService.getTrackingRemindersDeferred = function(variableCategoryName) {
             var deferred = $q.defer();
-            quantimodoService.getTrackingRemindersFromLocalStorage(variableCategoryName)
-                .then(function (trackingReminders) {
-                    if (trackingReminders) {
-                        deferred.resolve(trackingReminders);
-                    } else {
-                        quantimodoService.syncTrackingReminders().then(function () {
-                            quantimodoService.getTrackingRemindersFromLocalStorage(variableCategoryName)
-                                .then(function (trackingReminders) {
-                                    deferred.resolve(trackingReminders);
-                                });
-                        });
-                    }
-                });
+            quantimodoService.getTrackingRemindersFromLocalStorage(variableCategoryName).then(function (trackingReminders) {
+                if (trackingReminders) {
+                    deferred.resolve(trackingReminders);
+                } else {
+                    quantimodoService.syncTrackingReminders().then(function (trackingReminders) {deferred.resolve(trackingReminders);});
+                }
+            });
             return deferred.promise;
         };
 
@@ -3600,11 +3567,9 @@ angular.module('starter')
             }
             return moment().hours(localHour).minutes(minutes);
         };
-
         quantimodoService.addToTrackingReminderSyncQueue = function(trackingReminder) {
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder);
         };
-
         quantimodoService.syncTrackingReminders = function() {
             var deferred = $q.defer();
             var trackingReminderSyncQueue = quantimodoService.getLocalStorageItemAsObject('trackingReminderSyncQueue');
@@ -3612,17 +3577,13 @@ angular.module('starter')
                 quantimodoService.postTrackingRemindersDeferred(trackingReminderSyncQueue).then(function (response) {
                     quantimodoService.deleteItemFromLocalStorage('trackingReminderSyncQueue');
                     deferred.resolve(response);
-                }, function(error) {
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                });
+                }, function(error) { if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error); });
             } else {
                 quantimodoService.getTrackingRemindersFromApi({}, function(remindersResponse){
                     if(remindersResponse && remindersResponse.data) {
                         quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(remindersResponse.data));
                         deferred.resolve(remindersResponse.data);
-                    } else {
-                        deferred.reject("error in getTrackingRemindersFromApi");
-                    }
+                    } else { deferred.reject("error in getTrackingRemindersFromApi"); }
                 }, function(error){
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); }
                     deferred.reject(error);
@@ -3657,55 +3618,29 @@ angular.module('starter')
             var yesterday = reference.clone().subtract(1, 'days').startOf('day');
             var weekold = reference.clone().subtract(7, 'days').startOf('day');
             var monthold = reference.clone().subtract(30, 'days').startOf('day');
-
             var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                 /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
                 return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
             });
-
-            if (todayResult.length) {
-                result.push({name: "Today", trackingReminderNotifications: todayResult});
-            }
-
+            if (todayResult.length) {result.push({name: "Today", trackingReminderNotifications: todayResult});}
             var yesterdayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                 return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
             });
-
-            if (yesterdayResult.length) {
-                result.push({name: "Yesterday", trackingReminderNotifications: yesterdayResult});
-            }
-
+            if (yesterdayResult.length) {result.push({name: "Yesterday", trackingReminderNotifications: yesterdayResult});}
             var last7DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                 var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
-
-                return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true &&
-                    date.isSame(today, 'd') !== true;
+                return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
             });
-
-            if (last7DayResult.length) {
-                result.push({name: "Last 7 Days", trackingReminderNotifications: last7DayResult});
-            }
-
+            if (last7DayResult.length) {result.push({name: "Last 7 Days", trackingReminderNotifications: last7DayResult});}
             var last30DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
-
                 var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
-
-                return date.isAfter(monthold) === true && date.isBefore(weekold) === true &&
-                    date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+                return date.isAfter(monthold) === true && date.isBefore(weekold) === true && date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
             });
-
-            if (last30DayResult.length) {
-                result.push({name: "Last 30 Days", trackingReminderNotifications: last30DayResult});
-            }
-
+            if (last30DayResult.length) {result.push({name: "Last 30 Days", trackingReminderNotifications: last30DayResult});}
             var olderResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                 return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
             });
-
-            if (olderResult.length) {
-                result.push({name: "Older", trackingReminderNotifications: olderResult});
-            }
-
+            if (olderResult.length) {result.push({name: "Older", trackingReminderNotifications: olderResult});}
             return result;
         };
 
@@ -3714,31 +3649,19 @@ angular.module('starter')
             var allReminders = [];
             var nonFavoriteReminders = [];
             var unfilteredReminders = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminders'));
-            if(!unfilteredReminders){
-                unfilteredReminders = [];
-            }
+            if(!unfilteredReminders){unfilteredReminders = [];}
             var syncQueue = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminderSyncQueue'));
-            if(syncQueue){
-                unfilteredReminders = unfilteredReminders.concat(syncQueue);
-            }
-            unfilteredReminders =
-                quantimodoService.attachVariableCategoryIcons(unfilteredReminders);
+            if(syncQueue){unfilteredReminders = unfilteredReminders.concat(syncQueue);}
+            unfilteredReminders = quantimodoService.attachVariableCategoryIcons(unfilteredReminders);
             if(unfilteredReminders) {
                 for(var k = 0; k < unfilteredReminders.length; k++){
-                    if(unfilteredReminders[k].reminderFrequency !== 0){
-                        nonFavoriteReminders.push(unfilteredReminders[k]);
-                    }
+                    if(unfilteredReminders[k].reminderFrequency !== 0){nonFavoriteReminders.push(unfilteredReminders[k]);}
                 }
                 if(variableCategoryName && variableCategoryName !== 'Anything') {
                     for(var j = 0; j < nonFavoriteReminders.length; j++){
-                        if(variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
-                            allReminders.push(nonFavoriteReminders[j]);
-                        }
+                        if(variableCategoryName === nonFavoriteReminders[j].variableCategoryName){allReminders.push(nonFavoriteReminders[j]);}
                     }
-                } else {
-                    allReminders = nonFavoriteReminders;
-                }
-
+                } else {allReminders = nonFavoriteReminders;}
                 allReminders = quantimodoService.addRatingTimesToDailyReminders(allReminders); //We need to keep this in case we want offline reminders
                 deferred.resolve(allReminders);
             }
@@ -3747,18 +3670,18 @@ angular.module('starter')
 
         quantimodoService.createDefaultReminders = function () {
             var deferred = $q.defer();
-
             quantimodoService.getLocalStorageItemAsStringWithCallback('defaultRemindersCreated', function (defaultRemindersCreated) {
                 if(JSON.parse(defaultRemindersCreated) !== true) {
                     var defaultReminders = config.appSettings.defaultReminders;
                     if(defaultReminders && defaultReminders.length){
                         quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront(
                             'trackingReminderSyncQueue', defaultReminders).then(function () {
-                            quantimodoService.syncTrackingReminders();
+                            quantimodoService.syncTrackingReminders().then(function (trackingReminders){ deferred.resolve(trackingReminders);});
                         });
                         console.debug('Creating default reminders ' + JSON.stringify(defaultReminders));
                     }
                 } else {
+                    deferred.reject('Default reminders already created');
                     console.debug('Default reminders already created');
                 }
             });
@@ -3766,15 +3689,12 @@ angular.module('starter')
         };
 
         // ChartService
-
         var useLocalImages = function (correlationObjects) {
             for(var i = 0; i < correlationObjects.length; i++){
                 correlationObjects[i].gaugeImage = correlationObjects[i].gaugeImage.substring(correlationObjects[i].gaugeImage.lastIndexOf("/") + 1);
                 correlationObjects[i].gaugeImage = 'img/gauges/' + correlationObjects[i].gaugeImage;
-
                 correlationObjects[i].causeVariableImageUrl = correlationObjects[i].causeVariableImageUrl.substring(correlationObjects[i].causeVariableImageUrl.lastIndexOf("/") + 1);
                 correlationObjects[i].causeVariableImageUrl = 'img/variable_categories/' + correlationObjects[i].causeVariableImageUrl;
-
                 correlationObjects[i].effectVariableImageUrl = correlationObjects[i].effectVariableImageUrl.substring(correlationObjects[i].effectVariableImageUrl.lastIndexOf("/") + 1);
                 correlationObjects[i].effectVariableImageUrl = 'img/variable_categories/' + correlationObjects[i].effectVariableImageUrl;
             }

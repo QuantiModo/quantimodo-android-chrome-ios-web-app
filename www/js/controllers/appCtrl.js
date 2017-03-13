@@ -209,7 +209,6 @@ angular.module('starter')
                 ' and ' + correlationObject.effectVariableName + ' measurements private? <br><br> Links to studies you ' +
                 'previously shared with these variables will no longer work.'
             });
-
             confirmPopup.then(function(res) {
                 if(res) {
                     correlationObject.shareUserMeasurements = false;
@@ -219,10 +218,7 @@ angular.module('starter')
                         shareUserMeasurements: false
                     };
                     quantimodoService.postStudyDeferred(body).then(function () {
-
-                    }, function (error) {
-                        console.error(error);
-                    });
+                    }, function (error) {console.error(error);});
                 } else {
                     correlationObject.shareUserMeasurements = true;
                     console.log('You are not sure');
@@ -231,13 +227,9 @@ angular.module('starter')
         };
 
         $scope.toggleStudyShare = function (correlationObject) {
-            if(correlationObject.shareUserMeasurements){
-                showShareStudyConfirmation(correlationObject);
-            } else {
-                showUnshareStudyConfirmation(correlationObject);
-            }
+            if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject);
+            } else {showUnshareStudyConfirmation(correlationObject);}
         };
-
         var showShareVariableConfirmation = function(variableObject, sharingUrl) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',
@@ -245,14 +237,10 @@ angular.module('starter')
                 ' measurements publicly visible? <br><br> You can ' +
                 'make them private again at any time on this page.'
             });
-
             confirmPopup.then(function(res) {
                 if(res) {
                     variableObject.shareUserMeasurements = true;
-                    var body = {
-                        variableId: variableObject.id,
-                        shareUserMeasurements: true
-                    };
+                    var body = {variableId: variableObject.id, shareUserMeasurements: true};
                     $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                     quantimodoService.postUserVariableDeferred(body).then(function () {
                         $ionicLoading.hide();
@@ -267,7 +255,6 @@ angular.module('starter')
                 }
             });
         };
-
         var showUnshareVariableConfirmation = function(variableObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Variable',
@@ -275,57 +262,37 @@ angular.module('starter')
                 ' and ' + variableObject.name + ' measurements private? <br><br> Links to studies you ' +
                 'previously shared with this variable will no longer work.'
             });
-
             confirmPopup.then(function(res) {
                 if(res) {
                     variableObject.shareUserMeasurements = false;
-                    var body = {
-                        variableId: variableObject.id,
-                        shareUserMeasurements: true
-                    };
+                    var body = {variableId: variableObject.id, shareUserMeasurements: true};
                     quantimodoService.postUserVariableDeferred(body).then(function () {
-
-                    }, function (error) {
-                        console.error(error);
-                    });
+                    }, function (error) {console.error(error);});
                 } else {
                     variableObject.shareUserMeasurements = true;
                     console.log('You are not sure');
                 }
             });
         };
-
         $scope.toggleVariableShare = function (variableObject) {
-            if(variableObject.shareUserMeasurements){
-                showShareVariableConfirmation(variableObject);
-            } else {
-                showUnshareVariableConfirmation(variableObject);
-            }
+            if(variableObject.shareUserMeasurements){showShareVariableConfirmation(variableObject);
+            } else {showUnshareVariableConfirmation(variableObject);}
         };
-
         $rootScope.setLocalStorageFlagTrue = function (flagName) {
             console.debug('Set ' + flagName + ' to true');
             $rootScope[flagName] = true;
             quantimodoService.setLocalStorageItem(flagName, true);
         };
-
         // open datepicker for "from" date
-        $scope.openFromDatePicker = function () {
-            ionicDatePicker.openDatePicker($scope.fromDatePickerObj);
-        };
-
+        $scope.openFromDatePicker = function () {ionicDatePicker.openDatePicker($scope.fromDatePickerObj);};
         // open datepicker for "to" date
-        $scope.openToDatePicker = function () {
-            ionicDatePicker.openDatePicker($scope.toDatePickerObj);
-        };
-
+        $scope.openToDatePicker = function () {ionicDatePicker.openDatePicker($scope.toDatePickerObj);};
         // update dates selected from calendar
         $scope.saveDates = function () {
             $scope.updateDatesLocalStorage();
             $scope.updateDatePickerObjects();
             $scope.popover.hide();
         };
-
         // update fromDate and toDate in datepicker objects
         $scope.updateDatePickerObjects = function () {
             $scope.fromDatePickerObj.to = $scope.toDate;
@@ -333,14 +300,12 @@ angular.module('starter')
             $scope.fromDatePickerObj.inputDate = $scope.fromDate;
             $scope.toDatePickerObj.inputDate = $scope.toDate;
         };
-
         $scope.updateDatesLocalStorage = function () {
             var to = moment($scope.toDate).unix() * 1000;
             var from = moment($scope.fromDate).unix() * 1000;
             console.debug("$scope.updateDatesLocalStorage is calling quantimodoService.setDates");
             quantimodoService.setDates(to, from);
         };
-
         // show main calendar popup (from and to)
         $scope.showCalendarPopup = function ($event) {
             $scope.popover.show($event);
@@ -353,8 +318,6 @@ angular.module('starter')
                 });
             });
         };
-
-
         $scope.showHelpInfoPopup = function (ev, id) {
             // Appending dialog to document.body to cover sidenav in docs app
             // Modal dialogs should fully cover application
@@ -370,80 +333,35 @@ angular.module('starter')
                     .targetEvent(ev)
             );
         };
-
-        $scope.onGenericHelpButtonPress = function () {
-            $state.go('app.help');
-        };
-
+        $scope.onGenericHelpButtonPress = function () {$state.go('app.help');};
         $scope.onHelpButtonPress = function (title, helpText) {
-
-            if(!helpText){
-                helpText = $rootScope.stateParams.helpText;
-            }
-
-            if(!title){
-                title = $rootScope.stateParams.title;
-            }
-
+            if(!helpText){helpText = $rootScope.stateParams.helpText;}
+            if(!title){title = $rootScope.stateParams.title;}
             $rootScope.helpButtonPopup = $ionicPopup.show({
                 title: title,
                 //subTitle: '',
                 scope: $scope,
                 template: helpText,
                 buttons: [
-                    {
-                        text: 'OK',
-                        type: 'button-positive'
-                    },
-                    {
-                        text: 'More Help',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            $state.go('app.help');
-                        }
-                    }
+                    {text: 'OK', type: 'button-positive'},
+                    {text: 'More Help', type: 'button-positive', onTap: function(e) {$state.go('app.help');}}
                 ]
             });
         };
-
         $scope.addTag = function () {
-            $state.go('app.tagSearch',  {
-                fromState: $state.current.name,
-                userTaggedVariableObject: $rootScope.variableObject
-            });
+            $state.go('app.tagSearch',  {fromState: $state.current.name, userTaggedVariableObject: $rootScope.variableObject});
         };
-
         $scope.tagAnotherVariable = function () {
-            $state.go('app.tageeSearch',  {
-                fromState: $state.current.name,
-                userTagVariableObject: $rootScope.variableObject
-            });
+            $state.go('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: $rootScope.variableObject});
         };
-
         $scope.goToAddMeasurementForVariableObject = function (variableObject) {
-            $state.go('app.measurementAdd',
-                {
-                    variableObject: variableObject,
-                    fromState: $state.current.name,
-                    fromUrl: window.location.href
-                });
+            $state.go('app.measurementAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href});
         };
-
         $scope.goToHistoryForVariableObject = function (variableObject) {
-            $state.go('app.historyAllVariable',
-                {
-                    variableObject: variableObject,
-                    variableName: variableObject.name
-                });
+            $state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});
         };
-
         $scope.goToChartsPageForVariableObject = function (variableObject) {
-            $state.go('app.charts',
-                {
-                    variableObject: variableObject,
-                    fromState: $state.current.name,
-                    fromUrl: window.location.href
-                });
+            $state.go('app.charts', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href});
         };
 
         $scope.goToAddReminderForVariableObject = function (variableObject) {
@@ -457,10 +375,7 @@ angular.module('starter')
 
         $scope.addToRemindersUsingVariableObject = function (variableObject, options) {
             var doneState = config.appSettings.defaultState;
-            if(options.doneState){
-                doneState = options.doneState;
-            }
-
+            if(options.doneState){doneState = options.doneState;}
             if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
                 $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
                 $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
@@ -471,7 +386,6 @@ angular.module('starter')
                     variableObject.variableCategoryName.toLowerCase() + '?';
                 quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
             }
-
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.variableName = variableObject.name;
@@ -480,50 +394,27 @@ angular.module('starter')
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 86400;
             trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
-
             var skipReminderSettings = false;
-
-            if(variableObject.variableName === "Blood Pressure"){
-                skipReminderSettings = true;
-            }
-
+            if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
             if(options.skipReminderSettingsIfPossible){
-                if(variableObject.abbreviatedUnitName === '/5'){
-                    skipReminderSettings = true;
-                }
-
+                if(variableObject.abbreviatedUnitName === '/5'){skipReminderSettings = true;}
                 if(variableObject.abbreviatedUnitName === 'serving'){
                     skipReminderSettings = true;
                     trackingReminder.defaultValue = 1;
                 }
             }
-
             if (!skipReminderSettings) {
-                $state.go('app.reminderAdd',
-                    {
-                        variableObject: variableObject,
-                        doneState: doneState
-                    }
-                );
+                $state.go('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
                 return;
             }
-
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder)
                 .then(function() {
                     // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                    $state.go(doneState,
-                        {
-                            trackingReminder: trackingReminder,
-                            fromState: $state.current.name,
-                            fromUrl: window.location.href
-                        }
-                    );
+                    $state.go(doneState, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
                     quantimodoService.syncTrackingReminders();
                 });
         };
-
         $scope.addToFavoritesUsingVariableObject = function (variableObject) {
-
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.variableName = variableObject.name;
@@ -531,48 +422,25 @@ angular.module('starter')
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 0;
-
             if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
                 var message = 'Got deletion request before last reminder refresh completed';
                 console.debug(message);
                 $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
                 $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
-                $rootScope.syncingReminders = false;
             }
-
             if ((trackingReminder.abbreviatedUnitName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
-                $state.go('app.favoriteAdd',
-                    {
-                        variableObject: variableObject,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href,
-                        doneState: 'app.favorites'
-                    }
-                );
+                $state.go('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
                 return;
             }
-
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                 .then(function() {
                     // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                    $state.go('app.favorites',
-                        {
-                            trackingReminder: trackingReminder,
-                            fromState: $state.current.name,
-                            fromUrl: window.location.href
-                        }
-                    );
+                    $state.go('app.favorites', {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
                     quantimodoService.syncTrackingReminders();
                 });
-
         };
-
         $scope.closeMenuIfNeeded = function (menuItem) {
-            if (menuItem.click) {
-                $scope[menuItem.click] && $scope[menuItem.click]();
-            } else if (!menuItem.isSubMenuParent) {
-                $scope.closeMenu();
-            }
+            if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.isSubMenuParent) { $scope.closeMenu();}
         };
         $scope.showHistorySubMenu = false;
         $scope.shoppingCartEnabled = config.appSettings.shoppingCartEnabled;
