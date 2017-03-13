@@ -96,22 +96,14 @@ angular.module('starter')
 
 		$scope.contactUs = function() {
 			$scope.hideLoader();
-			if ($rootScope.isChromeApp) {
-				window.location = 'mailto:help@quantimo.do';
-			}
-			else {
-				window.location = '#app/feedback';
-			}
+			if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
+			else {window.location = '#app/feedback';}
 		};
 
 		$scope.postIdea = function() {
 			$scope.hideLoader();
-			if ($rootScope.isChromeApp) {
-				window.location = 'mailto:help@quantimo.do';
-			}
-			else {
-				window.open('http://help.quantimo.do/forums/211661-general', '_blank');
-			}
+			if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
+			} else {window.open('http://help.quantimo.do/forums/211661-general', '_blank');}
 		};
 
 		$scope.combineNotificationChange = function() {

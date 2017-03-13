@@ -34,8 +34,9 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		$scope.refreshReminders = function () {
 			$scope.showLoader('Syncing...');
 			quantimodoService.syncTrackingReminders().then(function (trackingReminders) {
-                $scope.state.trackingReminders = trackingReminders;
+                $scope.state.trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', $stateParams.variableCategoryName);
 				$scope.hideLoader();
+                $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
 			});
 		};
 		var getTrackingReminders = function(){
@@ -44,8 +45,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 					$scope.state.trackingReminders = trackingReminders;
 					showAppropriateHelpInfoCards();
 					$scope.hideLoader();
-					//Stop the ion-refresher from spinning
-					$scope.$broadcast('scroll.refreshComplete');
+					$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
 				});
 		};
 	    $scope.init = function(){

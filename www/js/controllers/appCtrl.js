@@ -837,10 +837,7 @@ angular.module('starter')
             */
             var seconds = 30;
             console.debug('Setting showLoader timeout for ' + seconds + ' seconds.  loadingText is ' + loadingText);
-            $timeout(function () {
-                $scope.hideLoader();
-            }, seconds * 1000);
-
+            $timeout(function () {$scope.hideLoader();}, seconds * 1000);
         };
 
         $scope.hideLoader = function () {

@@ -73,19 +73,13 @@ angular.module('starter')
         $scope.$on('$ionicView.enter', function(e) {
             console.debug("VariableSearchCtrl enter");
             $scope.hideLoader();
-            if(!$stateParams.hideNavigationMenu){
-                $rootScope.hideNavigationMenu = false;
-            }
-
+            if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
             console.debug($state.current.name + ' initializing...');
-
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
             if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
                 $stateParams.variableSearchParameters.variableCategoryName = $stateParams.variableCategoryName;
             }
-
             // We always need to repopulate in case variable was updated in local storage and the search view was cached
             populateUserVariables();
             populateCommonVariables();

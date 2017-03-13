@@ -25,9 +25,7 @@ angular.module('starter')
                     updateCharts();
                     $ionicLoading.hide();
                 });
-            } else {
-                console.debug($state.current.name + ' has no user or access token so we cannot syncPrimaryOutcomeVariableMeasurements');
-            }
+            } else {console.debug($state.current.name + ' has no user or access token so we cannot syncPrimaryOutcomeVariableMeasurements');}
         });
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
@@ -44,7 +42,6 @@ angular.module('starter')
                 quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     $scope.hideLoader();
                     updateCharts();
-                    $ionicLoading.hide();
                 });
             }
         };
