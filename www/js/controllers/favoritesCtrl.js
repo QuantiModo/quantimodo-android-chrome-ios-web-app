@@ -64,18 +64,13 @@ angular.module('starter')
 		};
 
 		$scope.refreshFavorites = function () {
-			if($rootScope.syncingReminders !== true) {
-				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-				$scope.showLoader('Syncing...');
-				quantimodoService.syncTrackingReminders().then(function () {
-					$scope.hideLoader();
-					quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
-					//Stop the ion-refresher from spinning
-					$scope.$broadcast('scroll.refreshComplete');
-				});
-			} else {
-				$scope.hideLoader();
-				$scope.$broadcast('scroll.refreshComplete');
-			}
+            console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+            $scope.showLoader('Syncing...');
+            quantimodoService.syncTrackingReminders().then(function (trackingReminders) {
+                $scope.hideLoader();
+                quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
 		};
 	});

@@ -138,9 +138,7 @@ angular.module('starter')
 					title: 'Enabled Multiple Notifications',
 					template: 'You will get a separate device notification for each reminder that you create.'
 				});
-				quantimodoService.cancelAllNotifications().then(function() {
-					quantimodoService.syncTrackingReminders();
-				});
+				quantimodoService.cancelAllNotifications().then(function() {quantimodoService.syncTrackingReminders();});
 			}
 
 		};
@@ -237,9 +235,7 @@ angular.module('starter')
 						} else if (newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
-							quantimodoService.updateUserSettingsDeferred(params).then(function(){
-								quantimodoService.syncTrackingReminders();
-							});
+							quantimodoService.updateUserSettingsDeferred(params).then(function(){quantimodoService.syncTrackingReminders();});
 							$ionicPopup.alert({
 								title: 'Earliest Notification Time Updated',
 								template: 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.'
@@ -281,9 +277,7 @@ angular.module('starter')
 						} else if (newLatestReminderTime !== $rootScope.user.latestReminderTime){
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
 							params.latestReminderTime = $rootScope.user.latestReminderTime;
-							quantimodoService.updateUserSettingsDeferred(params).then(function(){
-								quantimodoService.syncTrackingReminders();
-							});
+							quantimodoService.updateUserSettingsDeferred(params).then(function(){quantimodoService.syncTrackingReminders();});
 							$ionicPopup.alert({
 								title: 'Latest Notification Time Updated',
 								template: 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.'
