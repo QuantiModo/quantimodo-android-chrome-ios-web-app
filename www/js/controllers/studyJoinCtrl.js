@@ -25,9 +25,9 @@ angular.module('starter')
             };
             if($stateParams.correlationObject){ $scope.requestParams = $stateParams.correlationObject; }
             if(!$scope.requestParams.causeVariableName){ $scope.goBack(); }
-            $scope.state.title = "How does " + $scope.requestParams.causeVariableName + " affect " +
-                $scope.requestParams.effectVariableName +"?" ;
-            $scope.state.bodyText = "Please help us answer this question by answering just two questions a day.";
+            $scope.state.title = "Help us discover the effects of " + $scope.requestParams.causeVariableName + " on " +
+                $scope.requestParams.effectVariableName +"!" ;
+            $scope.state.bodyText = "It only takes a few seconds to answer two questions a day.";
             $scope.state.moreInfo = "By taking a few seconds to answer two questions a day and anonymously pooling your responses with thousands " +
                 "of other participants, you can help us discover the effects of " + $scope.requestParams.causeVariableName +
                 " on " + $scope.requestParams.effectVariableName + ".  After we accumulate a month or two of data, " +
