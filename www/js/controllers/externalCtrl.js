@@ -7,9 +7,7 @@ angular.module('starter')
         $rootScope.showFilterBarSearchIcon = false;
 	    
 	    // when page load completes
-	    window.closeLoading = function(){
-			$scope.hideLoader();
-	    };
+	    window.closeLoading = function(){$scope.hideLoader();};
 
 	    $scope.init = function(){
 			console.debug($state.current.name + ' initializing...');

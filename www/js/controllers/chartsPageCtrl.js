@@ -229,22 +229,16 @@ angular.module('starter')
                         variableName: $rootScope.variableObject.name,
                         limit: 0
                     };
-                    if($rootScope.urlParameters.userId){
-                        params.userId = $rootScope.urlParameters.userId;
-                    }
+                    if($rootScope.urlParameters.userId){params.userId = $rootScope.urlParameters.userId;}
                     updateCharts();
                     getHistoryForVariable(params);
                 } else {
                     $scope.state.loadingHistory = false;
                     $scope.hideLoader();
-                    if ($scope.state.history.length > 0) {
-                        updateCharts();
-                    }
+                    if ($scope.state.history.length > 0) {updateCharts();}
                 }
             }, function(error){
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                }
+                if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
                 console.error($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
                 $scope.state.loadingHistory = false;
                 $scope.hideLoader();
@@ -254,12 +248,10 @@ angular.module('starter')
         };
 
         var getDailyHistoryForVariable = function(params){
-
             if($scope.stopGettingMeasurements){
                 console.debug('Stopping getting of measurements');
                 return;
             }
-
             if(!params.variableName){
                 console.error("ERROR: params.variableName not provided to getHistoryForVariable");
                 console.error("params: " + JSON.stringify(params));

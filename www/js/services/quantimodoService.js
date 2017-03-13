@@ -1559,8 +1559,11 @@ angular.module('starter')
 
         quantimodoService.filterByStringProperty = function(arrayToFilter, propertyName, allowedValue){
             if(!allowedValue || allowedValue.toLowerCase() === "Anything"){ return arrayToFilter; }
-            function matches(value) {return value.toLowerCase() === allowedValue.toLowerCase();}
-            return arrayToFilter.filter(matches);
+            var filteredArray = [];
+            for(var i = 0; i < arrayToFilter.length; i++){
+                if(arrayToFilter[i][propertyName].toLowerCase() === allowedValue.toLowerCase()){filteredArray.push(arrayToFilter[i]);}
+            }
+            return filteredArray;
         };
 
         quantimodoService.getFavoriteTrackingRemindersFromLocalStorage = function(variableCategoryName){
@@ -1608,16 +1611,12 @@ angular.module('starter')
         };
 
         quantimodoService.attachVariableCategoryIcons = function(dataArray){
-            if(!dataArray){
-                return;
-            }
+            if(!dataArray){ return;}
             var variableCategoryInfo;
             for(var i = 0; i < dataArray.length; i++){
                 variableCategoryInfo = quantimodoService.getVariableCategoryInfo(dataArray[i].variableCategoryName);
-                if(variableCategoryInfo.icon){
-                    if(!dataArray[i].icon){
-                        dataArray[i].icon = variableCategoryInfo.icon;
-                    }
+                if(variableCategoryInfo.ionIcon){
+                    if(!dataArray[i].ionIcon){ dataArray[i].ionIcon = variableCategoryInfo.ionIcon;}
                 } else {
                     console.warn('Could not find icon for variableCategoryName ' + dataArray[i].variableCategoryName);
                     return 'ion-speedometer';
@@ -1637,7 +1636,7 @@ angular.module('starter')
                 variableCategoryName : '',
                 defaultValue : '',
                 measurementSynonymSingularLowercase : "measurement",
-                icon: "ion-speedometer"
+                ionIcon: "ion-speedometer"
             },
             "Activity": {
                 defaultAbbreviatedUnitName: 'min',
@@ -1645,7 +1644,7 @@ angular.module('starter')
                 variableCategoryName: "Activity",
                 variableCategoryNameSingular: "Activity",
                 measurementSynonymSingularLowercase : "activity",
-                icon: "ion-ios-body"
+                ionIcon: "ion-ios-body"
             },
             "Emotions": {
                 defaultAbbreviatedUnitName: "/5",
@@ -1653,7 +1652,7 @@ angular.module('starter')
                 variableCategoryName: "Emotions",
                 variableCategoryNameSingular: "Emotion",
                 measurementSynonymSingularLowercase : "rating",
-                icon: "ion-happy-outline",
+                ionIcon: "ion-happy-outline",
                 moreInfo: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
                 "determine which factors are influencing them.",
                 imageUrl: "img/variable_categories/theatre_mask-96.png"
@@ -1664,7 +1663,7 @@ angular.module('starter')
                 variableCategoryName: "Environment",
                 variableCategoryNameSingular: "Environment",
                 measurementSynonymSingularLowercase : "environmental measurement",
-                icon: "ion-ios-partlysunny-outline",
+                ionIcon: "ion-ios-partlysunny-outline",
                 moreInfo: "By recording your local weather conditions, I might be able to figure out how the " +
                 "amount of sunlight or temperature is affecting you.",
                 imageUrl: "img/variable_categories/chance_of_storm-96.png"
@@ -1675,7 +1674,7 @@ angular.module('starter')
                 variableCategoryName: "Foods",
                 variableCategoryNameSingular: "Food",
                 measurementSynonymSingularLowercase : "meal",
-                icon: "ion-fork",
+                ionIcon: "ion-fork",
                 moreInfo: "Diet can have a significant impact on your health. It's important to enter any foods that " +
                 "you regularly eat to see how they might be affecting you.",
                 imageUrl: "img/variable_categories/vegetarian_food-96.png"
@@ -1686,7 +1685,7 @@ angular.module('starter')
                 variableCategoryName: "Location",
                 variableCategoryNameSingular: "Location",
                 measurementSynonymSingularLowercase : "location",
-                icon: "ion-ios-location",
+                ionIcon: "ion-ios-location",
                 moreInfo: "By automatically recording your location in the background using GPS, we might be able to figure out how the " +
                 "amount of time spent at the gym, restaurants, doctors, offices, home and work locations may be affecting you.  " +
                 "Another benefit of enabling " +
@@ -1700,7 +1699,7 @@ angular.module('starter')
                 variableCategoryName: "Music",
                 variableCategoryNameSingular: "Music",
                 measurementSynonymSingularLowercase : "music",
-                icon: "ion-music-note"
+                ionIcon: "ion-music-note"
             },
             "Nutrients" : {
                 defaultAbbreviatedUnitName: "g",
@@ -1708,7 +1707,7 @@ angular.module('starter')
                 variableCategoryName: "Nutrients",
                 variableCategoryNameSingular: "Nutrient",
                 measurementSynonymSingularLowercase : "nutrient",
-                icon: "ion-fork"
+                ionIcon: "ion-fork"
             },
             "Payments" : {
                 defaultAbbreviatedUnitName: "$",
@@ -1716,7 +1715,7 @@ angular.module('starter')
                 variableCategoryName: "Payments",
                 variableCategoryNameSingular: "Payment",
                 measurementSynonymSingularLowercase : "payment",
-                icon: "ion-cash",
+                ionIcon: "ion-cash",
                 imageUrl: 'img/features/spending-receipt.jpg',
                 moreInfo: "Effortlessly see how supplements from Amazon might be influencing you, for example, by " +
                 "automatically logging spending by connecting the Slice app"
@@ -1727,7 +1726,7 @@ angular.module('starter')
                 variableCategoryName: "Physical Activity",
                 variableCategoryNameSingular: "Physical Activity",
                 measurementSynonymSingularLowercase : "activity",
-                icon: "ion-ios-body",
+                ionIcon: "ion-ios-body",
                 imageUrl: 'img/features/runner.png',
                 moreInfo: "I get steps from a variety of sources like Fitbit & Jawbone. Even if you " +
                 "don't have any fitness trackers, you can manually record any physical activity, like running, " +
@@ -1739,7 +1738,7 @@ angular.module('starter')
                 variableCategoryName: "Physique",
                 variableCategoryNameSingular: "Physique",
                 measurementSynonymSingularLowercase : "physique measurement",
-                icon: "ion-ios-body",
+                ionIcon: "ion-ios-body",
                 imageUrl: 'img/features/slim-down.png',
                 moreInfo: "I can gives you easy access to your weight and other vitals. You can manually " +
                 "enter weight, but I recommend using a Fitbit or Withings wifi scale for the most detailed data. I can " +
@@ -1753,7 +1752,7 @@ angular.module('starter')
                 variableCategoryName: "Sleep",
                 variableCategoryNameSingular: "Sleep",
                 measurementSynonymSingularLowercase : "Sleep Measurement",
-                icon: "ion-ios-moon-outline",
+                ionIcon: "ion-ios-moon-outline",
                 moreInfo: "I can talk to many of the most popular sleep trackers like Fitbit, Jawbone, Withings, and Sleep as Android",
                 imageUrl: "img/features/half-moon.png"
             },
@@ -1763,7 +1762,7 @@ angular.module('starter')
                 variableCategoryName: "Symptoms",
                 variableCategoryNameSingular: "Symptom",
                 measurementSynonymSingularLowercase : "rating",
-                icon: "ion-sad-outline",
+                ionIcon: "ion-sad-outline",
                 moreInfo: "Symptom severity can be influence by hundreds of factors in daily life. " +
                 "The human mind can only hold 7 numbers in working memory at a time.  I can hold a billion in my mind! " +
                 "If you regularly record your symptoms, add them so I can use this data " +
@@ -1778,7 +1777,7 @@ angular.module('starter')
                 defaultValueLabel : "Dosage",
                 defaultValuePlaceholderText : "Enter dose value here...",
                 measurementSynonymSingularLowercase : "dose",
-                icon: "ion-ios-medkit-outline",
+                ionIcon: "ion-ios-medkit-outline",
                 moreInfo: "Often the effects of medications and treatments aren't intuitively perceptible.  " +
                 "That's where I come in!  If you regularly recording your treatments,  I can analyze the data so" +
                 "we can get a better idea which ones are helping you, " +
@@ -1791,7 +1790,7 @@ angular.module('starter')
                 variableCategoryName: "Vital Signs",
                 variableCategoryNameSingular: "Vital Sign",
                 measurementSynonymSingularLowercase : "measurement",
-                icon: "ion-ios-pulse"
+                ionIcon: "ion-ios-pulse"
             }
         };
 
@@ -2525,8 +2524,8 @@ angular.module('starter')
 
         quantimodoService.getVariableCategoryIcon = function(variableCategoryName){
                 var variableCategoryInfo = quantimodoService.getVariableCategoryInfo(variableCategoryName);
-                if(variableCategoryInfo.icon){
-                    return variableCategoryInfo.icon;
+                if(variableCategoryInfo.ionIcon){
+                    return variableCategoryInfo.ionIcon;
                 } else {
                     console.warn('Could not find icon for variableCategoryName ' + variableCategoryName);
                     return 'ion-speedometer';
@@ -6211,7 +6210,7 @@ angular.module('starter')
                     ongoing: false,
                     title: "Track " + trackingReminder.variableName,
                     text: "Tap to record measurement",
-                    icon: 'ic_stat_icon_bw',
+                    ionIcon: 'ic_stat_icon_bw',
                     id: trackingReminder.id
                 };
 
@@ -6270,7 +6269,7 @@ angular.module('starter')
                     sound: "file://sound/silent.ogg",
                     title: "Track " + trackingReminder.variableName,
                     text: "Record a measurement",
-                    //icon: config.appSettings.mobileNotificationImage,  iOS doesn't recognize this property
+                    //ionIcon: config.appSettings.mobileNotificationImage,  iOS doesn't recognize this property
                     id: trackingReminder.id
                 };
 
@@ -6915,14 +6914,16 @@ angular.module('starter')
                     var message = 'Error saving ' + key + ' to local storage';
                     var severity = 'error';
                     quantimodoService.bugsnagNotify(name, message, metaData, severity);
-                    quantimodoService.deleteItemFromLocalStorage('primaryOutcomeVariableMeasurements');
-                    quantimodoService.deleteItemFromLocalStorage('lastSyncTime');
-                    quantimodoService.deleteItemFromLocalStorage('userVariables');
-                    //localStorage.setItem(keyIdentifier+key, value);
-                    quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+                    quantimodoService.deleteLargeLocalStorageItems(metaData.localStorageItems);
                 }
             }
             return deferred.promise;
+        };
+
+        quantimodoService.deleteLargeLocalStorageItems = function(localStorageItemsArray){
+            for (var i = 0; i < localStorageItemsArray.length; i++){
+                if(localStorageItemsArray[i].kB > 2000){ localStorage.removeItem(localStorageItemsArray[i].name); }
+            }
         };
 
         quantimodoService.getLocalStorageList = function(){
@@ -6934,8 +6935,7 @@ angular.module('starter')
                     kB: Math.round(localStorage.getItem(localStorage.key(i)).length*16/(8*1024))
                 });
             }
-
-            localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
+            return localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
         };
 
         quantimodoService.getLocalStorageItemAsStringWithCallback = function(key, callback){
@@ -7471,7 +7471,7 @@ angular.module('starter')
                     "Each one only takes a few seconds. You'll be " +
                     "shocked at how much valuable data you can collect with just a few minutes in the Reminder Inbox each day!",
                     hideHelpCardText: "Got it!",
-                    hideHelpCardIcon: "ion-checkmark"
+                    hideHelpCardionIcon: "ion-checkmark"
                 },
                 {
                     id: "recordMeasurementInfoCard",
@@ -7489,7 +7489,7 @@ angular.module('starter')
                     "Just go to the Record Measurement menu item and select the appropriate variable category. " +
                     "Alternatively, you can just press the little red button at the bottom of the screen.",
                     hideHelpCardText: "Got it!",
-                    hideHelpCardIcon: "ion-checkmark"
+                    hideHelpCardionIcon: "ion-checkmark"
                 },
                 {
                     id: "chromeExtensionInfoCard",
@@ -7507,7 +7507,7 @@ angular.module('starter')
                     "Google Chrome browser extension?  Your data is synced between devices so you'll never have to " +
                     "track twice!",
                     hideHelpCardText: "Dismiss",
-                    hideHelpCardIcon: "ion-close-circled",
+                    hideHelpCardionIcon: "ion-close-circled",
                     chromeExtensionEmailButton: true
                 },
                 {
@@ -7517,7 +7517,7 @@ angular.module('starter')
                     iconClass: "icon positive ion-help-circled",
                     bodyText: "If you need help or have any suggestions, please click the question mark in the upper right corner.",
                     hideHelpCardText: "Got it!",
-                    hideHelpCardIcon: "ion-checkmark"
+                    hideHelpCardionIcon: "ion-checkmark"
                 },
                 {
                     id: "getFitbitHelpInfoCard",
@@ -7526,11 +7526,11 @@ angular.module('starter')
                     iconClass: "icon positive ion-wand",
                     bodyText: "Want to automatically record your sleep, exercise, and heart rate?",
                     hideHelpCardText: "No Thanks",
-                    hideHelpCardIcon: "ion-android-cancel",
+                    hideHelpCardionIcon: "ion-android-cancel",
                     emailButton: {
                         type: "fitbit",
                         text: "Get Fitbit",
-                        icon: "ion-checkmark"
+                        ionIcon: "ion-checkmark"
                     }
                 }
             ];
@@ -7578,7 +7578,7 @@ angular.module('starter')
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
                     title: 'Varying Emotions?',
                     color: quantimodoService.green,
-                    iconClass: "icon positive " + $rootScope.variableCategories.Emotions.icon,
+                    iconClass: "icon positive " + $rootScope.variableCategories.Emotions.ionIcon,
                     image: {
                         url: $rootScope.variableCategories.Emotions.imageUrl,
                         height: "96",
@@ -7594,7 +7594,7 @@ angular.module('starter')
                     id: "addSymptomRemindersCard",
                     title: 'Recurring Symptoms?',
                     color: quantimodoService.blue,
-                    iconClass: "icon positive " + $rootScope.variableCategories.Symptoms.icon,
+                    iconClass: "icon positive " + $rootScope.variableCategories.Symptoms.ionIcon,
                     image: {
                         url: $rootScope.variableCategories.Symptoms.imageUrl,
                         height: "96",
@@ -7611,7 +7611,7 @@ angular.module('starter')
                     ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
                     title: 'Common Foods or Drinks?',
                     color: quantimodoService.blue,
-                    iconClass: "icon positive " + $rootScope.variableCategories.Foods.icon,
+                    iconClass: "icon positive " + $rootScope.variableCategories.Foods.ionIcon,
                     image: {
                         url: $rootScope.variableCategories.Foods.imageUrl,
                         height: "96",
@@ -7626,7 +7626,7 @@ angular.module('starter')
                     id: "addTreatmentRemindersCard",
                     title: 'Any Treatments?',
                     color: quantimodoService.yellow,
-                    iconClass: "icon positive " + $rootScope.variableCategories.Treatments.icon,
+                    iconClass: "icon positive " + $rootScope.variableCategories.Treatments.ionIcon,
                     image: {
                         url: $rootScope.variableCategories.Treatments.imageUrl,
                         height: "96",
@@ -7643,7 +7643,7 @@ angular.module('starter')
                     id: "locationTrackingPage",
                     title: 'Location Tracking',
                     color: quantimodoService.green,
-                    iconClass: "icon positive " + $rootScope.variableCategories.Location.icon,
+                    iconClass: "icon positive " + $rootScope.variableCategories.Location.ionIcon,
                     image: {
                         url: $rootScope.variableCategories.Location.imageUrl,
                         height: "96",
@@ -7659,7 +7659,7 @@ angular.module('starter')
                     id: "weatherTrackingPage",
                     title: 'Weather Tracking',
                     color: quantimodoService.green,
-                    iconClass: "icon positive " + $rootScope.variableCategories.Environment.icon,
+                    iconClass: "icon positive " + $rootScope.variableCategories.Environment.ionIcon,
                     image: {
                         url: $rootScope.variableCategories.Environment.imageUrl,
                         height: "96",
