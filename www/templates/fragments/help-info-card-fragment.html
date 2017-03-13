@@ -45,6 +45,16 @@
             </div>
         </div>
     </div>
+    <div class="row" ng-show="defaultHelpCards[0].chromeExtensionEmailButton">
+        <div class="button-bar">
+            <button class="button button-clear button-balanced"
+                    style="font-size: 14px;"
+                    id="chromeExtensionEmailButton"
+                    ng-click="sendChromeEmailLink()">
+                <i class="ion-email"> &nbsp; Send Yourself a Link &nbsp;</i>
+            </button>
+        </div>
+    </div>
     <div class="row" ng-show="defaultHelpCards[0].emailButton">
         <div class="button-bar">
             <button class="button button-clear button-balanced"
