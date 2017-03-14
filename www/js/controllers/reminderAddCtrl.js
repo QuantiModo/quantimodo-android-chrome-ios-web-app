@@ -653,7 +653,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             console.debug("ReminderAddCtrl.showActionSheetMenu:   $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
+                    //{ text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
                     { text: '<i class="icon ion-android-notifications-none"></i>Record Measurement'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
@@ -662,31 +662,14 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-                cancel: function() {
-                    console.debug('CANCELLED');
-                },
+                cancel: function() {console.debug('CANCELLED');},
                 buttonClicked: function(index) {
-                    console.debug('BUTTON CLICKED', index);
-
-                    if(index === 0){
-                        $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
-                    }
-                    if(index === 1){
-                        $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
-                    }
-                    if(index === 2){
-                        $scope.goToChartsPageForVariableObject($rootScope.variableObject);
-                    }
-                    if(index === 3) {
-                        $scope.goToHistoryForVariableObject($rootScope.variableObject);
-                    }
-                    if (index === 4) {
-                        $state.go('app.variableSettings',
-                            {variableName: $scope.state.trackingReminder.variableName});
-                    }
-                    if (index === 5) {
-                        $scope.state.showMoreUnits = true;
-                    }
+                    //if(index === 0){$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);}
+                    if(index === 0){$scope.goToAddMeasurementForVariableObject($rootScope.variableObject);}
+                    if(index === 1){$scope.goToChartsPageForVariableObject($rootScope.variableObject);}
+                    if(index === 2) {$scope.goToHistoryForVariableObject($rootScope.variableObject);}
+                    if(index === 3) {$state.go('app.variableSettings', {variableName: $scope.state.trackingReminder.variableName});}
+                    if(index === 4) {$scope.state.showMoreUnits = true;}
                     return true;
                 },
                 destructiveButtonClicked: function() {
