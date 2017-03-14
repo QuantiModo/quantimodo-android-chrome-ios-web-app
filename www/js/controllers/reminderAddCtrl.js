@@ -113,20 +113,14 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         };
 		$scope.oldOpenReminderStartTimePicker = function(order) {
             var defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
-		    if(order === 'first') {
-                if($scope.state.firstReminderStartTimeLocal){
-                    defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
-                }
+		    if(order === 'first'&& $scope.state.firstReminderStartTimeLocal){
+                defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
             }
-            if(order === 'second') {
-                if($scope.state.secondReminderStartTimeLocal){
-                    defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
-                }
+            if(order === 'second' && $scope.state.secondReminderStartTimeLocal){
+                defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
             }
-            if(order === 'third') {
-                if($scope.state.thirdReminderStartTimeLocal){
-                    defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
-                }
+            if(order === 'third' && $scope.state.thirdReminderStartTimeLocal){
+                defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
             }
             defaultStartTimeInSecondsSinceMidnightLocal = quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
             $scope.state.timePickerConfiguration = {
