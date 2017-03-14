@@ -1793,28 +1793,22 @@ angular.module('starter')
                 ionIcon: "ion-ios-pulse"
             }
         };
-
         var variableCategoryNames = [];
         for (var n in $rootScope.variableCategories) {
             if(n !== "Anything"){ variableCategoryNames.push(n); }
         }
         $rootScope.variableCategoryNames = variableCategoryNames;
-
         quantimodoService.getVariableCategoryInfo = function (variableCategoryName) {
-
             var variableCategoryInfo = $rootScope.variableCategories;
             var selectedVariableCategoryObject = variableCategoryInfo.Anything;
             if(variableCategoryName && variableCategoryInfo[variableCategoryName]){
                 selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
             }
-
             return selectedVariableCategoryObject;
         };
-
         quantimodoService.getPairs = function (params, successHandler, errorHandler){
             var options = {};
             options.minimumSecondsBetweenRequests = 0;
-
             quantimodoService.get('api/v1/pairs',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'causeVariableName', 'effectVariableName'],
                 params,

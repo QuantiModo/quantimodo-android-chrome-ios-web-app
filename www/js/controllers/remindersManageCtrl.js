@@ -22,7 +22,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			isDisabled : false,
 			loading : true,
 			showTreatmentInfoCard : false,
-			showSymptomInfoCard : false
+			showSymptomInfoCard : false,
+            noRemindersTitle: "No reminders!",
+			noRemindersText: "You don't have any reminders, yet.",
+            noRemindersIcon: "ion-android-notifications-none"
 	    };
 	    if(!$rootScope.reminderOrderParameter){ $rootScope.reminderOrderParameter = 'variableName'; }
 		function showAppropriateHelpInfoCards(){
@@ -35,6 +38,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			$scope.showLoader('Syncing...');
 			quantimodoService.syncTrackingReminders().then(function (trackingReminders) {
                 $scope.state.trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', $stateParams.variableCategoryName);
+                if(!$scope.state.trackingReminders || !$scope.state.trackingReminders.length){$scope.state.showNoRemindersCard = true;}
 				$scope.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
 			});
@@ -43,6 +47,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			quantimodoService.getTrackingRemindersDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminders) {
 					$scope.state.trackingReminders = trackingReminders;
+                    if(!$scope.state.trackingReminders || !$scope.state.trackingReminders.length){$scope.state.showNoRemindersCard = true;}
 					showAppropriateHelpInfoCards();
 					$scope.hideLoader();
 					$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
@@ -58,6 +63,9 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 				if(!$rootScope.stateParams.title) { $rootScope.stateParams.title = "Manage Reminders"; }
 				if(!$rootScope.stateParams.addButtonText) { $rootScope.stateParams.addButtonText = "Add new reminder"; }
 			} else {
+                $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + "!";
+				$scope.state.noRemindersText = "You don't have any " + $stateParams.variableCategoryName.toLowerCase() + ", yet.";
+                $scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
 				if(!$rootScope.stateParams.title){ $rootScope.stateParams.title = $stateParams.variableCategoryName; }
 				if(!$rootScope.stateParams.addButtonText) {
 					$rootScope.stateParams.addButtonText = 'Add new ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1);
