@@ -1629,7 +1629,7 @@ angular.module('starter')
             "Anything": {
                 defaultAbbreviatedUnitName: '',
                 helpText: "What do you want to record?",
-                variableCategoryNameSingular: "anything",
+                variableCategoryNameSingular: "Anything",
                 defaultValuePlaceholderText : "Enter most common value here...",
                 defaultValueLabel : 'Value',
                 addNewVariableCardText : 'Add a new variable',
