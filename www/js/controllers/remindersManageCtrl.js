@@ -22,7 +22,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			isDisabled : false,
 			loading : true,
 			showTreatmentInfoCard : false,
-			showSymptomInfoCard : false
+			showSymptomInfoCard : false,
+            noRemindersTitle: "No reminders!",
+			noRemindersText: "You don't have any reminders, yet.",
+            noRemindersIcon: "ion-android-notifications-none"
 	    };
 	    if(!$rootScope.reminderOrderParameter){ $rootScope.reminderOrderParameter = 'variableName'; }
 		function showAppropriateHelpInfoCards(){
@@ -35,6 +38,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			$scope.showLoader('Syncing...');
 			quantimodoService.syncTrackingReminders().then(function (trackingReminders) {
                 $scope.state.trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', $stateParams.variableCategoryName);
+                if(!$scope.state.trackingReminders || !$scope.state.trackingReminders.length){$scope.state.showNoRemindersCard = true;}
 				$scope.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
 			});
@@ -43,12 +47,13 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			quantimodoService.getTrackingRemindersDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminders) {
 					$scope.state.trackingReminders = trackingReminders;
+                    if(!$scope.state.trackingReminders || !$scope.state.trackingReminders.length){$scope.state.showNoRemindersCard = true;}
 					showAppropriateHelpInfoCards();
 					$scope.hideLoader();
 					$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
 				});
 		};
-	    $scope.init = function(){
+	    var init = function(){
             $rootScope.hideNavigationMenu = false;
 			console.debug($state.current.name + ' initializing...');
 			$rootScope.stateParams = $stateParams;
@@ -57,8 +62,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 				if(!$rootScope.stateParams.title) { $rootScope.stateParams.title = "Manage Reminders"; }
 				if(!$rootScope.stateParams.addButtonText) { $rootScope.stateParams.addButtonText = "Add new reminder"; }
-			}
-			else {
+			} else {
+                $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + "!";
+				$scope.state.noRemindersText = "You don't have any " + $stateParams.variableCategoryName.toLowerCase() + ", yet.";
+                $scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
 				if(!$rootScope.stateParams.title){ $rootScope.stateParams.title = $stateParams.variableCategoryName; }
 				if(!$rootScope.stateParams.addButtonText) {
 					$rootScope.stateParams.addButtonText = 'Add new ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1);
@@ -76,20 +83,18 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 						{ text: '<i class="icon ion-clock"></i>Sort by Time' }
 					],
 					cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-					cancel: function() {
-						console.debug('CANCELLED');
-					},
+					cancel: function() {console.debug('CANCELLED');},
 					buttonClicked: function(index) {
 						console.debug('BUTTON CLICKED', index);
 						if(index === 0){
 							console.debug("Sort by name");
 							$rootScope.reminderOrderParameter = 'variableName';
-							$scope.init();
+							init();
 						}
 						if(index === 1){
 							console.debug("Sort by time");
 							$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';
-							$scope.init();
+							init();
 						}
 						return true;
 					}
@@ -105,17 +110,9 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 				template: "It is possible to instead get a separate device notification for each tracking reminder that " +
 					"you create.  You can change this setting or update the notification frequency on the settings page.",
 				buttons:[
-					{
-						text: 'Settings',
-						type: 'button-positive',
-						onTap: function(e) { $state.go('app.settings'); }
-					},
-					{
-						text: 'OK',
-						type: 'button-assertive'
-					}
+					{text: 'Settings', type: 'button-positive', onTap: function(e) { $state.go('app.settings'); }},
+					{text: 'OK', type: 'button-assertive'}
 				]
-
 			});
 			moreNotificationInfoPopup.then(function(res) { console.debug('Tapped!', res); });
 		};
@@ -124,9 +121,15 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	    	$state.go('app.reminderAdd', { reminder : reminder, fromUrl: window.location.href });
 	    };
 	    $scope.addNewReminderButtonClick = function(){
-			if ($stateParams.variableCategoryName !== 'Anything') {$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
-			else {$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
+			if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
+				$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
+			else {$state.go('app.reminderSearch');}
 	    };
+		$scope.addNewMeasurementButtonClick = function(){
+			if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
+				$state.go('app.measurementAddSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
+			else { $state.go('app.measurementAddSearch'); }
+		};
 	    $scope.deleteReminder = function(reminder){
 			quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId) .then(function(){
 				quantimodoService.getTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function (trackingReminders) {
@@ -139,10 +142,9 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			});
 	    };
     	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-			$scope.hideLoader();
-    		$scope.init();
+    		init();
     	});
-		$scope.showActionSheet = function(trackingReminder, $index) {
+		$scope.showActionSheet = function(trackingReminder) {
 			var variableObject = {id : trackingReminder.variableId, name : trackingReminder.variableName};
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
