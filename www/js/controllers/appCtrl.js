@@ -1230,11 +1230,7 @@ angular.module('starter')
                 }
                 scopes = ['user', 'repo'];
                 $cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
-                    scopes).then(function(result) {
-                    connectWithToken(result);
-                }, function(error) {
-                    errorHandler(error);
-                });
+                    scopes).then(function(result) {connectWithToken(result);}, function(error) {errorHandler(error);});
             }
             if(connector.name === 'withings') {
                 if($rootScope.isWeb || $rootScope.isChromeExtension){
@@ -1242,11 +1238,7 @@ angular.module('starter')
                     return;
                 }
                 $cordovaOauth.withings(window.private_keys.WITHINGS_CLIENT_ID, window.private_keys.WITHINGS_CLIENT_SECRET)
-                    .then(function(result) {
-                        connectWithToken(result);
-                    }, function(error) {
-                        errorHandler(error);
-                    });
+                    .then(function(result) {connectWithToken(result);}, function(error) {errorHandler(error);});
             }
             if(connector.name === 'fitbit') {
                 if($rootScope.isWeb || $rootScope.isChromeExtension){
@@ -1266,11 +1258,7 @@ angular.module('starter')
                 ];
                 options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
                 $cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
-                    .then(function(authorizationCode) {
-                        connectWithAuthCode(authorizationCode, connector);
-                    }, function(error) {
-                        errorHandler(error);
-                    });
+                    .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {errorHandler(error);});
             }
             if(connector.name === 'runkeeper') {
                 if($rootScope.isWeb || $rootScope.isChromeExtension){
@@ -1280,11 +1268,7 @@ angular.module('starter')
                 scopes = [];
                 options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
                 $cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
-                    .then(function(authorizationCode) {
-                        connectWithAuthCode(authorizationCode, connector);
-                    }, function(error) {
-                        errorHandler(error);
-                    });
+                    .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {errorHandler(error);});
             }
             if(connector.name === 'rescuetime') {
                 if($rootScope.isWeb || $rootScope.isChromeExtension){
@@ -1294,11 +1278,7 @@ angular.module('starter')
                 scopes = ['time_data', 'category_data', 'productivity_data'];
                 options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
                 $cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
-                    .then(function(authorizationCode) {
-                        connectWithAuthCode(authorizationCode, connector);
-                    }, function(error) {
-                        errorHandler(error);
-                    });
+                    .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {errorHandler(error);});
             }
             if(connector.name === 'slice') {
                 if($rootScope.isWeb || $rootScope.isChromeExtension){
@@ -1308,11 +1288,7 @@ angular.module('starter')
                 scopes = [];
                 options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
                 $cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
-                    .then(function(authorizationCode) {
-                        connectWithAuthCode(authorizationCode, connector);
-                    }, function(error) {
-                        errorHandler(error);
-                    });
+                    .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {errorHandler(error);});
             }
             if(connector.name === 'facebook') {
                 if($rootScope.isWeb || $rootScope.isChromeExtension){
@@ -1321,11 +1297,7 @@ angular.module('starter')
                 }
                 scopes = ['user_likes', 'user_posts'];
                 $cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
-                    .then(function(result) {
-                        connectWithToken(result);
-                    }, function(error) {
-                        errorHandler(error);
-                    });
+                    .then(function(result) {connectWithToken(result);}, function(error) {errorHandler(error);});
             }
             if(connector.name === 'googlefit') {
                 if($rootScope.isWeb || $rootScope.isChromeExtension){
@@ -1419,9 +1391,7 @@ angular.module('starter')
                                 if (!$scope.data.username) {
                                     //don't allow the user to close unless he enters wifi password
                                     e.preventDefault();
-                                } else {
-                                    return $scope.data.username;
-                                }
+                                } else {return $scope.data.username;}
                             }
                         }
                     ]
@@ -1452,9 +1422,7 @@ angular.module('starter')
                                 if (!$scope.data.username || !$scope.data.password) {
                                     //don't allow the user to close unless he enters wifi password
                                     e.preventDefault();
-                                } else {
-                                    return $scope.data;
-                                }
+                                } else {return $scope.data;}
                             }
                         }
                     ]
@@ -1486,9 +1454,7 @@ angular.module('starter')
                                 if (!$scope.data.password || !$scope.data.username) {
                                     //don't allow the user to close unless he enters wifi password
                                     e.preventDefault();
-                                } else {
-                                    return $scope.data;
-                                }
+                                } else {return $scope.data;}
                             }
                         }
                     ]
@@ -1516,9 +1482,7 @@ angular.module('starter')
                                 if (!$scope.data.email) {
                                     //don't allow the user to close unless he enters wifi password
                                     e.preventDefault();
-                                } else {
-                                    return $scope.data;
-                                }
+                                } else {return $scope.data;}
                             }
                         }
                     ]
@@ -1549,9 +1513,7 @@ angular.module('starter')
                                 if (!$scope.data.password || !$scope.data.username) {
                                     //don't allow the user to close unless he enters wifi password
                                     e.preventDefault();
-                                } else {
-                                    return $scope.data;
-                                }
+                                } else {return $scope.data;}
                             }
                         }
                     ]
