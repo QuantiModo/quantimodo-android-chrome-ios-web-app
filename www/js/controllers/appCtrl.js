@@ -1537,10 +1537,8 @@ angular.module('starter')
             var ref = window.open(url,'', "width=600,height=800");
             console.debug('Opened ' + url);
         };
-        $rootScope.trackLocationChange = function(event, trackLocation) {
-            if(trackLocation !== null && typeof trackLocation !== "undefined"){
-                $rootScope.user.trackLocation = trackLocation;
-            }
+        $scope.trackLocationChange = function(event, trackLocation) {
+            if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}
             console.debug('trackLocation', $rootScope.user.trackLocation);
             quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
             if($rootScope.user && $rootScope.user.trackLocation){
