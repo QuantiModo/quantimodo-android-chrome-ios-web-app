@@ -38,7 +38,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			$scope.showLoader('Syncing...');
 			quantimodoService.syncTrackingReminders().then(function (trackingReminders) {
                 $scope.state.trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', $stateParams.variableCategoryName);
-                if(!$scope.state.trackingReminders || !$scope.state.trackingReminders.length){$scope.state.showNoRemindersCard = true;}
+                if(!$scope.state.trackingReminders || !$scope.state.trackingReminders.length){$scope.state.showNoRemindersCard = true;}else{$scope.state.showNoRemindersCard = false;}
 				$scope.hideLoader();
                 $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
 			});
@@ -47,7 +47,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			quantimodoService.getTrackingRemindersDeferred($stateParams.variableCategoryName)
 				.then(function (trackingReminders) {
 					$scope.state.trackingReminders = trackingReminders;
-                    if(!$scope.state.trackingReminders || !$scope.state.trackingReminders.length){$scope.state.showNoRemindersCard = true;}
+                    if(!$scope.state.trackingReminders || !$scope.state.trackingReminders.length){$scope.state.showNoRemindersCard = true;}else{$scope.state.showNoRemindersCard = false;}
 					showAppropriateHelpInfoCards();
 					$scope.hideLoader();
 					$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
