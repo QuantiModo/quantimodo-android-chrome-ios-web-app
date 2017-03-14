@@ -62,14 +62,16 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 				if(!$rootScope.stateParams.title) { $rootScope.stateParams.title = "Manage Reminders"; }
 				if(!$rootScope.stateParams.addButtonText) { $rootScope.stateParams.addButtonText = "Add new reminder"; }
+                $scope.state.addMeasurementButtonText = "Add Measurement";
 			} else {
                 $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + "!";
 				$scope.state.noRemindersText = "You don't have any " + $stateParams.variableCategoryName.toLowerCase() + ", yet.";
                 $scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
 				if(!$rootScope.stateParams.title){ $rootScope.stateParams.title = $stateParams.variableCategoryName; }
 				if(!$rootScope.stateParams.addButtonText) {
-					$rootScope.stateParams.addButtonText = 'Add new ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1);
+					$rootScope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
 				}
+                $scope.state.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
 			}
 			$scope.state.showButtons = true;
 			getTrackingReminders();
