@@ -128,7 +128,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			} else {quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});}
 		};
         $rootScope.showFilterBarSearchIcon = false;
-		$scope.showActionSheet = function(measurement) {
+		$scope.showActionSheetForMeasurement = function(measurement) {
 			$scope.state.measurement = measurement;
 			$rootScope.variableObject = measurement;
 			$rootScope.variableObject.id = measurement.variableId;
