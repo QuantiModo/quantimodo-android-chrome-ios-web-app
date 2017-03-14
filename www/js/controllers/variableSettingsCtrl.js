@@ -31,7 +31,7 @@ angular.module('starter')
             console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    { text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
+                    //{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
                     { text: '<i class="icon ion-compose"></i>Record Measurement'},
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
@@ -44,26 +44,16 @@ angular.module('starter')
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { console.debug('CANCELLED'); },
                 buttonClicked: function(index) {
-                    console.debug('variableSettingsCtrl BUTTON CLICKED: ' + index);
-                    if(index === 0){ $scope.addToFavoritesUsingVariableObject($rootScope.variableObject); }
-                    if(index === 1){ $scope.goToAddMeasurementForVariableObject($rootScope.variableObject); }
-                    if(index === 2){ $scope.goToAddReminderForVariableObject($rootScope.variableObject); }
-                    if (index === 3) { $scope.goToChartsPageForVariableObject($rootScope.variableObject); }
-                    if(index === 4) {
-                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
-                        $scope.goToHistoryForVariableObject($rootScope.variableObject);
-                    }
-                    if (index === 5) { $scope.addTag($rootScope.variableObject); }
-                    if(index === 6) {
-                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
-                        $scope.tagAnotherVariable($rootScope.variableObject);
-                    }
+                    //if(index === 0){ $scope.addToFavoritesUsingVariableObject($rootScope.variableObject); }
+                    if(index === 0){ $scope.goToAddMeasurementForVariableObject($rootScope.variableObject); }
+                    if(index === 1){ $scope.goToAddReminderForVariableObject($rootScope.variableObject); }
+                    if(index === 2) { $scope.goToChartsPageForVariableObject($rootScope.variableObject); }
+                    if(index === 3) {$scope.goToHistoryForVariableObject($rootScope.variableObject);}
+                    if(index === 4) { $scope.addTag($rootScope.variableObject); }
+                    if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
                     return true;
                 },
-                destructiveButtonClicked: function() {
-                    $scope.showDeleteAllMeasurementsForVariablePopup();
-                    return true;
-                }
+                destructiveButtonClicked: function() {$scope.showDeleteAllMeasurementsForVariablePopup(); return true;}
             });
             console.debug('Setting hideSheet timeout');
             $timeout(function() { hideSheet(); }, 20000);
