@@ -150,24 +150,24 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			var variableObject = {id : trackingReminder.variableId, name : trackingReminder.variableName};
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
-					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
-					{ text: '<i class="icon ion-ios-star"></i>Add ' + ' to Favorites' },
-					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
-					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+					{ text: '<i class="icon ion-android-notifications-none"></i>Edit'},
+					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
+					{ text: '<i class="icon ion-edit"></i>Record Measurement' },
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
+					{ text: '<i class="icon ion-ios-list-outline"></i>History'},
+					{ text: '<i class="icon ion-settings"></i>Analysis Settings'}
 				],
-				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
+				destructiveText: '<i class="icon ion-trash-a"></i>Delete',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {console.debug('CANCELLED');},
 				buttonClicked: function(index) {
 					console.debug('BUTTON CLICKED', index);
 					if(index === 0){$scope.edit(trackingReminder);}
-					if(index === 1){$scope.addToFavoritesUsingVariableObject(variableObject);}
-					if(index === 2){$scope.goToAddMeasurementForVariableObject(variableObject);}
-					if(index === 3){$scope.goToChartsPageForVariableObject(variableObject);}
-					if(index === 4){$scope.goToHistoryForVariableObject(variableObject);}
-					if (index === 5) {$state.go('app.variableSettings', {variableName: trackingReminder.variableName});}
+					//if(index === 1){$scope.addToFavoritesUsingVariableObject(variableObject);}
+					if(index === 1){$scope.goToAddMeasurementForVariableObject(variableObject);}
+					if(index === 2){$scope.goToChartsPageForVariableObject(variableObject);}
+					if(index === 3){$scope.goToHistoryForVariableObject(variableObject);}
+					if(index === 4) {$state.go('app.variableSettings', {variableName: trackingReminder.variableName});}
 					return true;
 				},
 				destructiveButtonClicked: function() {
