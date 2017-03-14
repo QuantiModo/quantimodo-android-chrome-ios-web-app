@@ -46,10 +46,11 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 { id : 8, name : 'Hourly'},
                 { id : 9, name : 'Every 30 minutes'},
                 { id : 10, name : 'Never'},
-                { id : 10, name : 'Weekly'},
-                { id : 10, name : 'Every 2 weeks'},
-                { id : 10, name : 'Every 4 weeks'}
-                //{ id : 11, name : 'Minutely'}
+                { id : 11, name : 'Every other day'},
+                { id : 12, name : 'Weekly'},
+                { id : 13, name : 'Every 2 weeks'},
+                { id : 14, name : 'Every 4 weeks'}
+                //{ id : 15, name : 'Minutely'}
             ]
         };
 
@@ -215,6 +216,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
 	    		"Twice a day" : 12*60*60,
 	    		"Three times a day": 8*60*60,
                 "Minutely": 60,
+                "Every other day": 172800,
                 'Weekly': 7 * 86400,
                 'Every 2 weeks': 14 * 86400,
                 'Every 4 weeks': 28 * 86400
@@ -458,6 +460,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 604800: 'Weekly',
                 1209600: 'Every 2 weeks',
                 2419200: 'Every 4 weeks',
+                172800: "Every other day",
 	    		86400: "Daily",
 	    		43200: "Every 12 hours",
 	    		28800: "Every 8 hours",
