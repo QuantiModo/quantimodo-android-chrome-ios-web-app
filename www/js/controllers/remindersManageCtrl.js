@@ -150,12 +150,12 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			var variableObject = {id : trackingReminder.variableId, name : trackingReminder.variableName};
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
-					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
+					{ text: '<i class="icon ion-android-notifications-none"></i>Edit'},
 					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
 					{ text: '<i class="icon ion-edit"></i>Record Measurement' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>History'},
-					{ text: '<i class="icon ion-settings"></i>Variable Settings'}
+					{ text: '<i class="icon ion-settings"></i>Analysis Settings'}
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
