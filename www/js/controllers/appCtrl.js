@@ -1615,16 +1615,13 @@ angular.module('starter')
                     .targetEvent(ev)
             );
         };
-
         if(!$scope.productId){ $scope.productId = 'monthly7'; }
         $scope.monthlySubscription = function () { $scope.productId = 'yearly60'; $scope.upgrade(); };
         $scope.yearlySubscription = function () { $scope.productId = 'yearly60';  $scope.upgrade(); };
         var mobilePurchaseDebug = false;
         $scope.upgrade = function (ev) {
-            if($rootScope.isMobile || mobilePurchaseDebug){  mobileUpgrade(ev);
-            } else { webUpgrade(ev); }
+            if($rootScope.isMobile || mobilePurchaseDebug){  mobileUpgrade(ev);} else { webUpgrade(ev); }
         };
-
         var webUpgrade = function(ev) {
             $mdDialog.show({
                 controller: WebUpgradeDialogController,
@@ -1634,7 +1631,6 @@ angular.module('starter')
                 clickOutsideToClose: false,
                 fullscreen: false
             }).then(function(answer) {
-
                 var body = {
                     "card_number": answer.creditCardInfo.cardNumber,
                     "card_month": answer.creditCardInfo.month,
@@ -1643,7 +1639,6 @@ angular.module('starter')
                     'productId': answer.productId,
                     'coupon': answer.coupon
                 };
-
                 quantimodoService.recordUpgradeProductPurchase(answer.productId, null, 1);
                 $ionicLoading.show();
                 quantimodoService.postCreditCardDeferred(body).then(function (response) {
@@ -1679,7 +1674,6 @@ angular.module('starter')
                 });
             }, function() {  $scope.status = 'You cancelled the dialog.'; });
         };
-
         var purchaseDebugMode = false;
         function WebUpgradeDialogController($scope, $mdDialog) {
             $scope.productId = 'monthly7';
@@ -1702,7 +1696,6 @@ angular.module('starter')
                 $mdDialog.hide(answer);
             };
         }
-
         function MobileUpgradeDialogController($scope, $mdDialog) {
             console.debug('$scope.productId is ' + $scope.productId);
             $scope.productId = 'monthly7';
@@ -1713,7 +1706,6 @@ angular.module('starter')
             };
             $scope.subscribe = function(answer) {$mdDialog.hide(answer);};
         }
-
         var mobileUpgrade = function (ev) {
             if (!window.inAppPurchase && !mobilePurchaseDebug) {
                 console.error('inAppPurchase not available');
@@ -1735,19 +1727,16 @@ angular.module('starter')
                 $scope.status = 'You cancelled the dialog.';
             });
         };
-
         function getSubscriptionProvider() {
             var subscriptionProvider = 'unknown';
             if($rootScope.isAndroid){ subscriptionProvider = 'google';}
             if($rootScope.isIOS){subscriptionProvider = 'apple';}
             return subscriptionProvider;
         }
-
         function getProductId(baseProductId) {
             if($rootScope.isIOS){ return config.appSettings.lowercaseAppName + '_' + baseProductId; }
             return baseProductId;
         }
-
         function handleSubscribeResponse(baseProductId, data) {
             quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
             $ionicLoading.hide();
@@ -1768,12 +1757,9 @@ angular.module('starter')
                 productId: getProductId(baseProductId),
                 trialEndsAt: moment().add(14, 'days').toISOString()
                 //coupon: answer.coupon
-            }).then(function (response) {
-                quantimodoService.recordUpgradeProductPurchase(baseProductId, response.data.purchaseId, 2);
-            });
+            }).then(function (response) {quantimodoService.recordUpgradeProductPurchase(baseProductId, response.data.purchaseId, 2);});
             $rootScope.user.stripeActive = true;
         }
-
         function makeInAppPurchase(baseProductId) {
             $ionicLoading.show();
             var getReceipt = false;
@@ -1801,7 +1787,6 @@ angular.module('starter')
                     quantimodoService.reportError('inAppPurchase.catch error ' + JSON.stringify(error));
                 });
         }
-
         var getProductsAndMakeInAppPurchase = function (baseProductId) {
             if(purchaseDebugMode){
                 alert('Called makeInAppPurchase for ' + getProductId(baseProductId));
@@ -1821,7 +1806,6 @@ angular.module('starter')
                     quantimodoService.reportError("couldn't get product " + getProductId(baseProductId) + ": " + JSON.stringify(err));
                 });
         };
-
         var webDowngrade = function() {
             $ionicLoading.show();
             quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
@@ -1834,14 +1818,12 @@ angular.module('starter')
                 console.debug(JSON.stringify(error));
             });
         };
-
         var androidDowngrade = function () {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Google Play',
                 template: "You subscribed through Google Play so I have to send you to a page that tells you how to " +
                     "unsubscribe from Play subscriptions"
             });
-
             confirmPopup.then(function(res) {
                 if(res) {
                     quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
@@ -1851,14 +1833,12 @@ angular.module('starter')
                 } else { console.log('You are not sure'); }
             });
         };
-
         var appleDowngrade = function () {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'App Store',
                 template: "You subscribed through the App Store so I have to send you to a page that tells you how to " +
                 "unsubscribe from App Store subscriptions"
             });
-
             confirmPopup.then(function(res) {
                 if(res) {
                     $rootScope.user.stripeActive = false;
@@ -1869,20 +1849,17 @@ angular.module('starter')
                 } else { console.log('You are not sure'); }
             });
         };
-
         var googleDowngradeDebug = false;
         $scope.downgrade = function () {
             if ($rootScope.user.subscriptionProvider === 'google' || googleDowngradeDebug) { androidDowngrade();
             } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
             } else { webDowngrade(); }
         };
-
         var last = {bottom: true, top: false, left: true, right: false };
         $scope.toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
         $scope.getToastPosition = function() {
             return Object.keys($scope.toastPosition).filter(function(pos) { return $scope.toastPosition[pos]; }).join(' ');
         };
-
         var undoInboxAction = function(){
             var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
             if(!notificationsSyncQueue){ return false; }
@@ -1893,7 +1870,6 @@ angular.module('starter')
                 'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
             $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
         };
-
         $scope.showUndoToast = function(lastAction) {
             var toast = $mdToast.simple()
                 .textContent(lastAction)
@@ -1904,16 +1880,9 @@ angular.module('starter')
                 .position($scope.getToastPosition());
             $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { undoInboxAction(); } });
         };
-
         $scope.showInfoToast = function(text) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .textContent(text)
-                    .position($scope.getToastPosition())
-                    .hideDelay(3000)
-            );
+            $mdToast.show($mdToast.simple().textContent(text).position($scope.getToastPosition()).hideDelay(3000));
         };
-
         $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
         $scope.copyChartsUrlToClipboard = function () {
             $scope.copyLinkText = 'Copied!';
@@ -1921,7 +1890,6 @@ angular.module('starter')
             clipboard.copyText($rootScope.variableObject.chartsUrl);
             $scope.showInfoToast('Copied link!');
         };
-
         var verifyEmailAddressAndExecuteCallback = function (callback) {
             if($rootScope.user.email || $rootScope.user.userEmail){
                 callback();
@@ -1929,22 +1897,18 @@ angular.module('starter')
             }
             $scope.updateEmailAndExecuteCallback(callback);
         };
-
         var sendCouponEmail = function () {
             quantimodoService.sendEmailViaAPIDeferred('couponInstructions');
             $scope.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.', event);
         };
-
         var sendFitbitEmail = function () {
             quantimodoService.sendEmailViaAPIDeferred('fitbit');
             $scope.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
         };
-
         $scope.sendEmailAfterVerification = function(emailType) {
             if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }
             if(emailType === 'fitbit'){ verifyEmailAddressAndExecuteCallback(sendFitbitEmail); }
         };
-
         $scope.updateEmailAndExecuteCallback = function (callback) {
             if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }
             var myPopup = $ionicPopup.show({
@@ -1970,7 +1934,6 @@ angular.module('starter')
                     }
                 ]
             });
-
             myPopup.then(function(res) {
                 quantimodoService.updateUserSettingsDeferred({email: $scope.data.email});
                 $rootScope.user.email = $scope.data.email;
@@ -2029,7 +1992,6 @@ angular.module('starter')
                 });
             }
         };
-
         $scope.selectOutcomeVariable = function (ev) {
             $mdDialog.show({
                 controller: SelectVariableDialogController,
@@ -2054,7 +2016,6 @@ angular.module('starter')
                 console.debug('User cancelled selection');
             });
         };
-
         $scope.selectPredictorVariable = function (ev) {
             $mdDialog.show({
                 controller: SelectVariableDialogController,
@@ -2079,18 +2040,11 @@ angular.module('starter')
                 console.debug('User cancelled selection');
             });
         };
-
         $scope.goToStudyPage = function(correlationObject) {
-            $state.go('app.study', {
-                correlationObject: correlationObject
-            });
+            $state.go('app.study', {correlationObject: correlationObject});
         };
-
         $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
-            $state.go('app.study', {
-                causeVariableName: causeVariableName,
-                effectVariableName: effectVariableName
-            });
+            $state.go('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
         };
 
         var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
@@ -2122,19 +2076,13 @@ angular.module('starter')
                         deferred.resolve(loadAll(repsonse.data.query.pages));
                         $scope.causeWikiEntry = repsonse.data.query.pages[0].extract;
                         //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
-                        if(repsonse.data.query.pages[0].thumbnail){
-                            $scope.causeWikiImage = repsonse.data.query.pages[0].thumbnail.source;
-                        }
-                        //on success
+                        if(repsonse.data.query.pages[0].thumbnail){$scope.causeWikiImage = repsonse.data.query.pages[0].thumbnail.source;}
                     } else {
                         var error = 'Wiki not found for ' + query;
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                         console.error(error);
                     }
-                }).catch(function (error) {
-                    console.error(error);
-                    //on error
-                });
+                }).catch(function (error) {console.error(error);});
                 return deferred.promise;
             }
             function searchTextChange(text) { $log.info('Text changed to ' + text); }
