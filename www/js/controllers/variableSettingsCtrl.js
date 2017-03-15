@@ -25,6 +25,9 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
             }
         });
+        function getTruncatedVariableName(variableName) {
+            if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
+        }
         $rootScope.showActionSheetMenu = function() {
             console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
@@ -32,9 +35,9 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                     //{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
                     { text: '<i class="icon ion-compose"></i>Record Measurement'},
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-                    { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
+                    { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Charts'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                    { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
+                    { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
                     { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
 
                 ],
