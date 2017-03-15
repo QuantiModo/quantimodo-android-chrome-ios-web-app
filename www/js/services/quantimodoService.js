@@ -1840,7 +1840,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.getEnv = function(){
             var env = "production";
-            if(window.location.origin.indexOf('local') !== -1){env = "development"; //On localhost}
+            if(window.location.origin.indexOf('local') !== -1){env = "development";}
             if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
             if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
             return env;
@@ -2266,7 +2266,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var deferred = $q.defer();
             console.debug('Starting quantimodoService.backgroundGeolocationInit');
             if ($rootScope.user && $rootScope.user.trackLocation) {
-                $ionicPlatform.ready(function() { //For IonicquantimodoService.backgroundGeolocationStart();});
+                $ionicPlatform.ready(function() { quantimodoService.backgroundGeolocationStart(); });
                 deferred.resolve();
             } else {
                 var error = 'quantimodoService.backgroundGeolocationInit failed because $rootScope.user.trackLocation is not true';
