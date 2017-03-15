@@ -121,11 +121,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		});
 		$scope.deleteMeasurement = function(measurement){
 			measurement.hide = true;
-			if(measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
-				quantimodoService.deleteMeasurementFromLocalStorage(measurement).then(function (){
-					quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});
-				});
-			} else {quantimodoService.deleteMeasurementFromServer(measurement).then(function (){});}
+            quantimodoService.deleteMeasurementFromServer(measurement);
 		};
         $rootScope.showFilterBarSearchIcon = false;
 		$scope.showActionSheetForMeasurement = function(measurement) {
