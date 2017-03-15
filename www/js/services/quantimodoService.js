@@ -4524,8 +4524,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             $ionicPlatform.ready(function () {
                 if(!$rootScope.numberOfPendingNotifications){$rootScope.numberOfPendingNotifications = 0;}
                 cordova.plugins.notification.local.getAll(function (notifications) {
-                    console.debug("onTrigger.updateBadgesAndTextOnAllNotifications: " +
-                        "All notifications ", notifications);
+                    console.debug("onTrigger.updateBadgesAndTextOnAllNotifications: " + "All notifications ", notifications);
                     for (var i = 0; i < notifications.length; i++) {
                         if(notifications[i].badge === $rootScope.numberOfPendingNotifications){
                             console.warn("updateBadgesAndTextOnAllNotifications: Not updating notification because $rootScope.numberOfPendingNotifications" +
@@ -4561,8 +4560,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.getTrackingReminderNotificationsFromApi(params, function (response) {
                     if (response.success) {
                         if(response.data.length > 1){
-                            var trackingReminderNotifications =
-                                putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
+                            var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                         }
                         /** @namespace window.chrome */
                         /** @namespace window.chrome.browserAction */
@@ -4571,17 +4569,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
                         if (!$rootScope.numberOfPendingNotifications) {
-                            if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {
-                                return;
-                            }
+                            if(!quantimodoService.shouldWeUseIonicLocalNotifications()) {return;}
                             console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications");
                             cordova.plugins.notification.local.clearAll(function () {
                                 console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications");
                             }, this);
-                        } else {
-                            console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: notifications from API", trackingReminderNotifications);
-                            $rootScope.updateOrRecreateNotifications();
-                        }
+                        } else {$rootScope.updateOrRecreateNotifications();}
                     }
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
