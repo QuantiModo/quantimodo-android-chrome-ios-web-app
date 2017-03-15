@@ -1,5 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Charts">
-    <ion-nav-title>{{variableObject.name}}</ion-nav-title>
+    <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
         <div ng-cloak>
             <div class="card"  ng-show="state.loadingHistory || state.loadingDailyHistory">
@@ -95,7 +95,7 @@
                 <a class="item item-icon-left">
                     <!--Find better icon in blue-->
                     <i class="icon ion-settings positive"></i>
-                    Edit {{variableObject.variableName}} Settings
+                    Analysis Settings
                 </a>
             </div>
         </div>

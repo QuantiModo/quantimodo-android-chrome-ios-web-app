@@ -13,15 +13,19 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             rangeLength : 0,
             averageValue : 0,
             offset: 0,
-            dailyHistoryOffset: 0
+            dailyHistoryOffset: 0,
+            title: "Charts"
         };
         var maximumMeasurements = 2000;
+        function getTruncatedVariableName(variableName) {
+            if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
+        }
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             if($rootScope.urlParameters.variableName){$stateParams.variableName = $rootScope.urlParameters.variableName;}
             $rootScope.hideNavigationMenu = false;
             $scope.stopGettingMeasurements = false;
             $ionicLoading.hide();
-            console.debug("variablePageCtrl: init");
+            console.debug("variablePageCtrl: enter");
             if($stateParams.variableObject){
                 $rootScope.variableObject = $stateParams.variableObject;
                 refreshUserVariable($rootScope.variableObject.name);
@@ -37,6 +41,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 $rootScope.variableName = $rootScope.variableObject.name;
                 var params = {sort: "-startTimeEpoch", variableName: $rootScope.variableObject.name, limit: maximumMeasurements, offset: 0};
                 if($rootScope.urlParameters.userId){params.userId = $rootScope.urlParameters.userId;}
+                $scope.state.title = getTruncatedVariableName($rootScope.variableObject.name);
                 getDailyHistoryForVariable(params);
                 getHistoryForVariable(params);
             } else {console.error($state.current.name + ' ERROR: $rootScope.variableObject.name not defined! $rootScope.variableObject: ' + JSON.stringify($rootScope.variableObject));}
@@ -48,7 +53,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                         { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                         { text: '<i class="icon ion-ios-list-outline"></i>History'},
                         { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-                        { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
+                        { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
                         { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '},
                         //{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
                     ],
