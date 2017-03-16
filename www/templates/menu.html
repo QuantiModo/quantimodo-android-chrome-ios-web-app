@@ -64,7 +64,7 @@
         <ion-header-bar class="bar-positive">
             <div style="cursor:pointer;"
                  ng-click="goToState('app.settings')"
-                 ng-if="user && user.displayName && user.stripeActive">
+                 ng-if="user && user.displayName && (user.stripeActive || appSettings.upgradeDisabled)">
                 <a ng-if="user && user.avatar"
                    class="button button-clear" >
                     <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
@@ -74,7 +74,7 @@
                 </h1>
             </div>
             <div style="cursor:pointer;"
-                 ng-if="user && user.displayName && !user.stripeActive"
+                 ng-if="user && user.displayName && !user.stripeActive && !appSettings.upgradeDisabled"
                  ng-click="goToState('app.upgrade')">
                 <button class="button button-icon ion-android-star-outline"></button>
                 <h1 class="title" style="position: fixed; bottom: 0;">

@@ -6,6 +6,7 @@ config.appSettings  = {
     "appDescription" : "Perfect your life!",
     "appleId": "1046797567",
     "appIdentifier": "com.quantimodo.moodimodoapp",
+    upgradeDisabled: true,
     "ionicAppId": "470c1f1b",
     "cordovaLocalNotificationsEnabled" : false,
     "linkToChromeExtension" : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",

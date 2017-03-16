@@ -53,7 +53,7 @@
                 <i class="ion-plus-round"> &nbsp; {{onboardingPages[0].addButtonText}} &nbsp;</i>
             </button>
             <button class="button"
-                    ng-show="onboardingPages[0].id === 'locationTrackingPage' && user.stripeActive"
+                    ng-show="onboardingPages[0].id === 'locationTrackingPage' && (user.stripeActive || appSettings.upgradeDisabled)"
                     style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
@@ -64,7 +64,7 @@
                 <i class="{{variableCategories.Location.ionIcon}}"> &nbsp; Yes &nbsp;</i>
             </button>
             <button class="button"
-                    ng-show="onboardingPages[0].id === 'weatherTrackingPage' && user.stripeActive"
+                    ng-show="onboardingPages[0].id === 'weatherTrackingPage' && (user.stripeActive || appSettings.upgradeDisabled)"
                     style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
@@ -75,7 +75,7 @@
                 <i class="ion-ios-partlysunny"> &nbsp; Yes &nbsp;</i>
             </button>
             <button class="button"
-                    ng-show="onboardingPages[0].id === 'importDataPage' && user.stripeActive"
+                    ng-show="onboardingPages[0].id === 'importDataPage' && (user.stripeActive || appSettings.upgradeDisabled)"
                     style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;
@@ -86,7 +86,7 @@
                 <i class="ion-android-download"> &nbsp; Connect &nbsp;</i>
             </button>
             <button class="button"
-                    ng-show="onboardingPages[0].premiumFeature && !user.stripeActive"
+                    ng-show="onboardingPages[0].premiumFeature && !user.stripeActive && !appSettings.upgradeDisabled"
                     style="background-color: {{onboardingPages[0].color.backgroundColor}};
                                 border: none;
                                 outline: none;

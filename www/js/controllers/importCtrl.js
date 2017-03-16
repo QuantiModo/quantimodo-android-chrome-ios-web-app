@@ -9,7 +9,7 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
-            if($rootScope.user.stripeActive){
+            if($rootScope.user.stripeActive || config.appSettings.upgradeDisabled){
                 loadNativeConnectorPage();
                 return;
 			}
@@ -18,7 +18,7 @@ angular.module('starter')
 			$ionicLoading.show();
 			quantimodoService.refreshUser().then(function (user) {
                 $ionicLoading.hide();
-				if(user.stripeActive){
+				if(user.stripeActive || config.appSettings.upgradeDisabled){
                     loadNativeConnectorPage();
 					return;
 				}
