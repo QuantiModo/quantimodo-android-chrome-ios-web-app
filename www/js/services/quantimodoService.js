@@ -120,7 +120,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 }
                 $http(request).success(successHandler).error(function(data, status, headers){
                     quantimodoService.errorHandler(data, status, headers, request, options);
-                    errorHandler(data);
+                    if(errorHandler){errorHandler(data);}
                 });
             }, errorHandler);
         };
