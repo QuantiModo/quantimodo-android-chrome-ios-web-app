@@ -116,8 +116,13 @@
                     <h3 ng-show="correlationObject.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
                        <p>{{correlationObject.dataAnalysis}}</p>
 
-                    <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
-                       <p ng-bind-html="correlationObject.dataSources"></p>
+                    <h3 ng-show="correlationObject.dataSourcesParagraphForCause" id="causeDataSources">{{correlationObject.causeVariableName}} Data Sources</h3>
+                       <p ng-bind-html="correlationObject.dataSourcesParagraphForCause"></p>
+                    <div style="max-width: 200px" ng-show="correlationObject.dataSourceImageHtmlForCause" ng-bind-html="correlationObject.dataSourceImageHtmlForCause"></div>
+
+                    <h3 ng-show="correlationObject.dataSourcesParagraphForEffect" id="effectDataSources">{{correlationObject.effectVariableName}} Data Sources</h3>
+                    <p ng-bind-html="correlationObject.dataSourcesParagraphForEffect"></p> <br>
+                    <div style="max-width: 200px"  ng-show="correlationObject.dataSourceImageHtmlForEffect" ng-bind-html="correlationObject.dataSourceImageHtmlForEffect"></div>
 
                     <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
                         <p>{{correlationObject.studyLimitations}}</p>
