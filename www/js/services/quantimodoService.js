@@ -120,7 +120,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 }
                 $http(request).success(successHandler).error(function(data, status, headers){
                     quantimodoService.errorHandler(data, status, headers, request, options);
-                    errorHandler(data);
+                    if(errorHandler){errorHandler(data);}
                 });
             }, errorHandler);
         };
@@ -2719,7 +2719,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var useLocalImages = function (correlationObjects) {
             for(var i = 0; i < correlationObjects.length; i++){
                 correlationObjects[i].gaugeImage = correlationObjects[i].gaugeImage.substring(correlationObjects[i].gaugeImage.lastIndexOf("/") + 1);
-                correlationObjects[i].gaugeImage = 'img/gauges/' + correlationObjects[i].gaugeImage;
+                correlationObjects[i].gaugeImage = 'img/gauges/246-120/' + correlationObjects[i].gaugeImage;
                 correlationObjects[i].causeVariableImageUrl = correlationObjects[i].causeVariableImageUrl.substring(correlationObjects[i].causeVariableImageUrl.lastIndexOf("/") + 1);
                 correlationObjects[i].causeVariableImageUrl = 'img/variable_categories/' + correlationObjects[i].causeVariableImageUrl;
                 correlationObjects[i].effectVariableImageUrl = correlationObjects[i].effectVariableImageUrl.substring(correlationObjects[i].effectVariableImageUrl.lastIndexOf("/") + 1);
