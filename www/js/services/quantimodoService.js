@@ -5875,7 +5875,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "Each one only takes a few seconds. You'll be " +
                     "shocked at how much valuable data you can collect with just a few minutes in the Reminder Inbox each day!",
                     hideHelpCardText: "Got it!",
-                    hideHelpCardionIcon: "ion-checkmark"
+                    hideHelpCardIonIcon: "ion-checkmark"
                 },
                 {
                     id: "recordMeasurementInfoCard",
@@ -5893,7 +5893,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "Just go to the Record Measurement menu item and select the appropriate variable category. " +
                     "Alternatively, you can just press the little red button at the bottom of the screen.",
                     hideHelpCardText: "Got it!",
-                    hideHelpCardionIcon: "ion-checkmark"
+                    hideHelpCardIonIcon: "ion-checkmark"
                 },
                 {
                     id: "chromeExtensionInfoCard",
@@ -5911,7 +5911,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "Google Chrome browser extension?  Your data is synced between devices so you'll never have to " +
                     "track twice!",
                     hideHelpCardText: "Dismiss",
-                    hideHelpCardionIcon: "ion-close-circled",
+                    hideHelpCardIonIcon: "ion-close-circled",
                     chromeExtensionEmailButton: true
                 },
                 {
@@ -5921,7 +5921,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     iconClass: "icon positive ion-help-circled",
                     bodyText: "If you need help or have any suggestions, please click the question mark in the upper right corner.",
                     hideHelpCardText: "Got it!",
-                    hideHelpCardionIcon: "ion-checkmark"
+                    hideHelpCardIonIcon: "ion-checkmark"
                 },
                 {
                     id: "getFitbitHelpInfoCard",
@@ -5930,7 +5930,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     iconClass: "icon positive ion-wand",
                     bodyText: "Want to automatically record your sleep, exercise, and heart rate?",
                     hideHelpCardText: "No Thanks",
-                    hideHelpCardionIcon: "ion-android-cancel",
+                    hideHelpCardIonIcon: "ion-android-cancel",
                     emailButton: {
                         type: "fitbit",
                         text: "Get Fitbit",
