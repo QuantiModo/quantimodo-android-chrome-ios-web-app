@@ -467,11 +467,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.joinStudyDeferred = function(body) {
             var deferred = $q.defer();
             quantimodoService.joinStudy(body, function(response){
-                if(response){
-                    if(response.trackingReminderNotifications){
-                        putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);
+                if(response && response.data){
+                    if(response.data.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);}
+                    if(response.data.trackingReminders){quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.data.trackingReminders));}
+                    if(response.data.causeUserVariable && response.data.effectUserVariable){
+                        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', [response.data.causeUserVariable, response.data.effectUserVariable]);
                     }
-                    if(response.trackingReminders){quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));}
                 }
                 deferred.resolve();
             }, function(error){deferred.reject(error);});
