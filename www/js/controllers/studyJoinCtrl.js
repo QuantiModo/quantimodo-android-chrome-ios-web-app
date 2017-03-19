@@ -7,7 +7,7 @@ angular.module('starter')
         $scope.state = {
             title: 'Join Our Study',
             color: blue,
-            image: { url: "img/quantimodo-robot-puzzled.svg", height: "100", width: "100" },
+            image: { url: "img/robots/quantimodo-robot-puzzled.svg", height: "100", width: "100" },
             bodyText: "One moment please...",
             moreInfo: "No personally identifiable data will be shared.  Data will only be used in an anonymous and " +
                 "aggregated form as is done in epidemiological studies."
@@ -54,7 +54,7 @@ angular.module('starter')
         }
         $scope.joinStudy = function () {
             $scope.hideJoinStudyButton = true;
-            $scope.state.image.url = "img/quantimodo-robot-happy.svg"
+            $scope.state.image.url = "img/robots/quantimodo-robot-happy.svg"
             $ionicLoading.show();
             if(!$rootScope.user){
                 console.debug('Setting afterLoginGoTo to ' + window.location.href + '&alreadyJoined=true');

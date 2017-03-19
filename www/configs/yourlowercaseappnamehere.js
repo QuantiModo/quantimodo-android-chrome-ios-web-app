@@ -9,7 +9,7 @@ config.appSettings  = {
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
     allowOffline : true,
-    loaderImagePath : 'img/pop_tart_cat.gif',
+    loaderImagePath : 'img/loaders/pop_tart_cat.gif',
     qmApiHostName: 'app.quantimo.do',
     settingsPageOptions :
     {
@@ -193,7 +193,7 @@ config.appSettings  = {
     },
 
     wordAliases : {
-        
+
     },
 
     floatingMaterialButton : {

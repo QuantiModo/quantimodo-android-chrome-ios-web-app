@@ -11,7 +11,7 @@ config.appSettings  = {
     "cordovaLocalNotificationsEnabled" : false,
     "linkToChromeExtension" : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     "allowOffline" : true,
-    "loaderImagePath": "img/pop_tart_cat.gif",
+    "loaderImagePath": "img/loaders/pop_tart_cat.gif",
     "shoppingCartEnabled" : true,
     "qmApiHostName": "app.quantimo.do",
     "settingsPageOptions" :

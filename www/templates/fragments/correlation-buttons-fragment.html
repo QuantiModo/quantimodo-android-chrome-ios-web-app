@@ -1,19 +1,19 @@
 <div class="voteButtons" style="cursor: pointer">
     <div ng-click="upVote(correlationObject, $index)" class="show-inline">
         <div class="tooltip" title="Relationship Seems Plausible">
-            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
-            <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumbs/thumb_up_white.png" height="32px" width="32px" />
+            <img ng-if="correlationObject.userVote === 1" src="img/thumbs/thumb_up_black.png" height="32px" width="32px" />
         </div>
     </div>
     &nbsp;&nbsp;
     <div ng-click="downVote(correlationObject, $index)" class="show-inline">
         <div class="tooltip" title="Relationship Seems Impossible">
             <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1"
-                 src="img/thumb_down_white.png"
+                 src="img/thumbs/thumb_down_white.png"
                  height="32px"
                  width="32px" />
             <img ng-if="correlationObject.userVote === 0"
-                 src="img/thumb_down_black.png"
+                 src="img/thumbs/thumb_down_black.png"
                  height="32px"
                  width="32px" />
         </div>

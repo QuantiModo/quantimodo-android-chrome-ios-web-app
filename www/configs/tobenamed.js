@@ -9,7 +9,7 @@ config.appSettings  = {
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     allowOffline : true,
-    loaderImagePath : 'img/pop-tart-cat.gif',
+    loaderImagePath : 'img/loaders/pop-tart-cat.gif',
     shoppingCartEnabled : true,
     qmApiHostName: 'app.quantimo.do',
     ionNavBarClass:'bar-positive',
