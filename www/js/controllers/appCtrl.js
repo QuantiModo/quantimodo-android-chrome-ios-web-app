@@ -12,7 +12,7 @@ angular.module('starter')
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $rootScope.appSettings = config.appSettings;
-        if (!$rootScope.appSettings.loaderImagePath) { $rootScope.appSettings.loaderImagePath = 'img/circular_loader.gif'; }
+        if (!$rootScope.appSettings.loaderImagePath) { $rootScope.appSettings.loaderImagePath = 'img/loaders/circular_loader.gif'; }
         if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
         $scope.showTrackingSubMenu = false;
         $rootScope.numberOfPendingNotifications = null;

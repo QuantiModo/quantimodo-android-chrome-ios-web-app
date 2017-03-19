@@ -24,7 +24,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             "backgroundColor": "#3467d6",
             circleColor: "#5b95f9",
             image: {
-                url: "img/quantimodo-robot-waving-2.svg",
+                url: "img/robots/quantimodo-robot-waving-2.svg",
                 height: "120",
                 width: "120"
             },

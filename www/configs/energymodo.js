@@ -10,7 +10,7 @@ config.appSettings  = {
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
     allowOffline : true,
-    loaderImagePath : 'img/pop_tart_cat.gif',
+    loaderImagePath : 'img/loaders/pop_tart_cat.gif',
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
     shoppingCartEnabled : true,
@@ -23,7 +23,7 @@ config.appSettings  = {
     },
 
     headline : 'Sync and Analyze Your Data',
-      
+
     primaryOutcomeVariableDetails : {
         id : 108092,
         name : "Energy Rating",
@@ -36,11 +36,11 @@ config.appSettings  = {
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
-        '1', 
-        '2', 
-        '3', 
-        '4', 
-        '5' 
+        '1',
+        '2',
+        '3',
+        '4',
+        '5'
     ],
 
     primaryOutcomeVariableRatingOptionLowercaseLabels : [
@@ -85,14 +85,14 @@ config.appSettings  = {
         "2": "2",
         "3": "3",
         "4": "4",
-        "5": "5" 
+        "5": "5"
     },
     ratingTextToValueConversionDataSet : {
         "1" : 1,
         "2" : 2,
         "3" : 3,
         "4" : 4,
-        "5" : 5 
+        "5" : 5
     },
 
     "intro" : null,
@@ -108,7 +108,7 @@ config.appSettings  = {
     wordAliases : {
 
     },
-    
+
     floatingMaterialButton : {
         button1 : {
             icon: 'ion-android-notifications-none',
@@ -131,7 +131,7 @@ config.appSettings  = {
             stateAndParameters: "'app.favorites'"
         }
     },
-    
+
     menu : [
         {
             title : 'Reminder Inbox',

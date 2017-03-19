@@ -10,7 +10,7 @@ config.appSettings  = {
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",
     allowOffline : true,
-    loaderImagePath : 'img/pop_tart_cat.gif',
+    loaderImagePath : 'img/loaders/pop_tart_cat.gif',
     defaultState : 'app.remindersInbox',
     qmApiHostName: 'app.quantimo.do',
     welcomeState : 'app.welcome',
@@ -28,7 +28,7 @@ config.appSettings  = {
         ' - Track diet, treatments, symptoms, and anything else',
         ' - Analyze your data to see the strongest predictors of your mood'
     ],
-      
+
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
@@ -90,14 +90,14 @@ config.appSettings  = {
         "2": "sad",
         "3": "ok",
         "4": "happy",
-        "5": "ecstatic" 
+        "5": "ecstatic"
     },
     ratingTextToValueConversionDataSet : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
         "happy" : 4,
-        "ecstatic": 5 
+        "ecstatic": 5
     },
 
     "intro" : null,

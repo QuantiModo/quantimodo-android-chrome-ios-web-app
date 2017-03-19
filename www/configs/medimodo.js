@@ -136,7 +136,7 @@ config.appSettings  = {
             img : {
                 width : '250',
                 height : '250',
-                url : 'img/pill_icon.png'
+                url : 'img/intro/pill_icon.png'
             },
             textColor: 'white',
             backgroundColor: '#0f9d58',
@@ -163,7 +163,7 @@ config.appSettings  = {
             img : {
                 width : '250',
                 height : '250',
-                url : 'img/symptoms_icon.png'
+                url : 'img/intro/symptoms_icon.png'
             },
             textColor: 'white',
             backgroundColor: '#f09402',
@@ -192,7 +192,7 @@ config.appSettings  = {
             img : {
                 width : '250',
                 height : '250',
-                url : 'img/doctor_icon.png'
+                url : 'img/intro/doctor_icon.png'
             },
             textColor: 'white',
             backgroundColor: '#3467d6',

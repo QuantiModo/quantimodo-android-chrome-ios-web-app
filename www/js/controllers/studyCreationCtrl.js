@@ -4,7 +4,7 @@ angular.module('starter')
         $scope.state = {
             title: 'Create a Study',
             color: quantimodoService.blue,
-            image: { url: "img/quantimodo-robot-waving-2.svg", height: "120", width: "120" },
+            image: { url: "img/robots/quantimodo-robot-waving-2.svg", height: "120", width: "120" },
             bodyText: "One moment please...",
         };
 

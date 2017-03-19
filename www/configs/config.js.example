@@ -128,7 +128,7 @@ config.appSettings  = {
             img : {
                 width : '200',
                 height : '150',
-                url : 'img/history_page.png'
+                url : 'img/screenshots/history_page.png'
             },
             content : {
                 firstParagraph : {
@@ -155,7 +155,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/mood_note.png'
+                url : 'img/screenshots/mood_note.png'
             },
             content : {
                 firstParagraph : {
@@ -180,7 +180,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '190',
-                url : 'img/track_foods.png'
+                url : 'img/screenshots/track_foods.png'
             },
             content : {
                 firstParagraph : {
@@ -205,7 +205,7 @@ config.appSettings  = {
             img : {
                 width : '190',
                 height : '250',
-                url : 'img/track_symptoms.png'
+                url : 'img/screenshots/track_symptoms.png'
             },
             content : {
 
@@ -233,7 +233,7 @@ config.appSettings  = {
             img : {
                 width : '210',
                 height : '250',
-                url : 'img/track_treatments.png'
+                url : 'img/screenshots/track_treatments.png'
             },
             content : {
                 firstParagraph : {
@@ -258,7 +258,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/positive_predictors.png'
+                url : 'img/screenshots/positive_predictors.png'
             },
             content : {
 
@@ -286,7 +286,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/negative_predictors.png'
+                url : 'img/screenshots/negative_predictors.png'
             },
             content : {
 
