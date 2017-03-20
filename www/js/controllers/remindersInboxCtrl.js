@@ -259,7 +259,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             $scope.width = window.innerWidth; //element.find('word-cloud')[0].offsetWidth;
             $scope.wordClicked = wordClicked;
             quantimodoService.getNotesDeferred(config.appSettings.primaryOutcomeVariableDetails.name).then(function (response) {
-                $scope.words = response.words;
+                $scope.words = response;
             });
         }
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
