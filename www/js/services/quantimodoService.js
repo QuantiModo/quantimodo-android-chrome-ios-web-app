@@ -3515,7 +3515,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 variableObject.abbreviatedUnitName = measurements[0].abbreviatedUnitName;
             }
             for (var i = 0; i < measurements.length; i++) {
-                lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
+                lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: measurements[i].note};
                 lineChartData.push(lineChartItem);
             }
             return quantimodoService.configureLineChart(lineChartData, variableObject);
@@ -4073,10 +4073,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var date = new Date();
             var timezoneOffsetHours = (date.getTimezoneOffset())/60;
             var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
-            data = data.sort(function(a, b){return a[0] - b[0];});
-            for (var i = 0; i < data.length; i++) {data[i][0] = data[i][0] - timezoneOffsetMilliseconds;}
-            var minimumTimeEpochMilliseconds = data[0][0] - timezoneOffsetMilliseconds;
-            var maximumTimeEpochMilliseconds = data[data.length-1][0] - timezoneOffsetMilliseconds;
+            data = data.sort(function(a, b){return a.x - b.x;});
+            for (var i = 0; i < data.length; i++) {data[i].x = data[i].x - timezoneOffsetMilliseconds;}
+            var minimumTimeEpochMilliseconds = data[0].x - timezoneOffsetMilliseconds;
+            var maximumTimeEpochMilliseconds = data[data.length-1].x - timezoneOffsetMilliseconds;
             var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
             if(millisecondsBetweenLatestAndEarliest < 86400*1000){
                 console.warn('Need at least a day worth of data for line chart');
@@ -4085,6 +4085,28 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return {
                 useHighStocks: true,
                 options : {
+                    tooltip: {
+                        shared: true,
+                        formatter: function(){
+                            var value = this;
+                            var string = '';
+
+                            string += '<h3><b>' + moment(value.x).format("h:mm a MMM Do YYYY") + '<b></h3><br/>';
+
+
+                            angular.forEach(value.points,function(point){
+                                //string += '<span>' + point.series.name + ':</span> ';
+                                string += '<span>' + point.point.y + variableObject.abbreviatedUnitName + '</span>';
+                                string += '<br/>';
+                                if(value.points["0"].point.name){
+                                    string += '<span>' + value.points["0"].point.name + '</span>';
+                                    string += '<br/>';
+                                }
+                            });
+                            return string;
+                        },
+                        useHtml: true
+                    },
                     legend : {
                         enabled : false
                     },
