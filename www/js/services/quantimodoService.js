@@ -5786,6 +5786,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
                     abbreviatedUnitName: "count",
+                    fillingValue: 0,
                     measurements: [{
                         value: 1,
                         startTimeEpoch: yesterdayNoonTimestamp,
