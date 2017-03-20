@@ -25,7 +25,8 @@ angular.module('starter',
         'ngMaterialDatePicker',
         'ngMaterial',
         'ngMessages',
-        'angular-cache'
+        'angular-cache',
+        'angular-d3-word-cloud'
     ]
 )
 
