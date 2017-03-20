@@ -1487,7 +1487,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 startTimeEpoch: Math.floor(startTimeEpoch / 1000),
                 abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                 value: numericRatingValue,
-                note: "",
+                note: null,
                 latitude: $rootScope.lastLatitude,
                 longitude: $rootScope.lastLongitude,
                 location: $rootScope.lastLocationNameAndAddress
@@ -2135,7 +2135,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var secondsAtLocation = currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds;
             var hoursAtLocation = Math.round(secondsAtLocation/3600 * 100) / 100;
             var sourceName = $rootScope.lastLocationResultType + ' on ' + $rootScope.appDisplayName + ' for ' + $rootScope.currentPlatform;
-            var note = $rootScope.lastLocationAddress;
             if(isBackground){sourceName = sourceName + " (Background Geolocation)";}
             if (variableName && variableName !== "undefined" && secondsAtLocation > 60) {
                 var newMeasurement = {
@@ -2145,7 +2144,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     sourceName: sourceName,
                     value: hoursAtLocation,
                     variableCategoryName: 'Location',
-                    note: note,
+                    location: $rootScope.lastLocationAddress,
                     combinationOperation: "SUM"
                 };
                 quantimodoService.postMeasurementDeferred(newMeasurement);
@@ -5783,6 +5782,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.log(data);
                 measurementSets.push({
                     variableCategoryName: "Environment",
+                    variableName: data.daily.data[0].icon.replace('-', ' '),
+                    combinationOperation: "MEAN",
+                    sourceName: $rootScope.appSettings.appDisplayName,
+                    abbreviatedUnitName: "count",
+                    measurements: [{
+                        value: 1,
+                        startTimeEpoch: yesterdayNoonTimestamp,
+                        //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
+                    }]}
+                );
+                measurementSets.push({
+                    variableCategoryName: "Environment",
                     variableName: "Outdoor Temperature",
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
@@ -5790,7 +5801,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     measurements: [{
                         value: (data.daily.data[0].temperatureMax +  data.daily.data[0].temperatureMin)/2,
                         startTimeEpoch: yesterdayNoonTimestamp,
-                        note: data.daily.data[0].icon
+                        //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                     }]}
                 );
                 measurementSets.push({
@@ -5802,7 +5813,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     measurements: [{
                         value: data.daily.data[0].pressure * 100,
                         startTimeEpoch: yesterdayNoonTimestamp,
-                        note: data.daily.data[0].icon
+                        //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                     }]}
                 );
                 measurementSets.push({
@@ -5814,7 +5825,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     measurements: [{
                         value: data.daily.data[0].humidity * 100,
                         startTimeEpoch: yesterdayNoonTimestamp,
-                        note: data.daily.data[0].icon
+                        //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                     }]}
                 );
                 if(data.daily.data[0].visibility){
@@ -5827,7 +5838,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         measurements: [{
                             value: data.daily.data[0].visibility,
                             startTimeEpoch: yesterdayNoonTimestamp,
-                            note: data.daily.data[0].icon
+                            //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                         }]}
                     );
                 }
@@ -5840,7 +5851,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     measurements: [{
                         value: data.daily.data[0].cloudCover * 100,
                         startTimeEpoch: yesterdayNoonTimestamp,
-                        note: data.daily.data[0].icon
+                        //note: data.daily.data[0].icon  // We shouldn't add icon as note because it messes up the note analysis
                     }]}
                 );
                 quantimodoService.postMeasurementsToApi(measurementSets, function (response) {
