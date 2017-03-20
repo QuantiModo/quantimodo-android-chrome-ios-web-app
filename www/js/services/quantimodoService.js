@@ -317,6 +317,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var options = {};
             quantimodoService.get('api/v1/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
         };
+        quantimodoService.getNotesFromApi = function(params, successHandler, errorHandler){
+            var options = {};
+            quantimodoService.get('api/v1/notes', ['variableName'], params, successHandler, errorHandler, options);
+        };
         quantimodoService.getUserCorrelationsFromApi = function (params, successHandler, errorHandler) {
             var options = {};
             //options.cache = getCache(getCurrentFunctionName(), 15);
@@ -2742,6 +2746,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 correlationObjects = useLocalImages(correlationObjects);
                 quantimodoService.storeCachedResponse('aggregatedCorrelations', params, correlationObjects);
                 deferred.resolve(correlationObjects);
+            }, function(error){
+                if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+        quantimodoService.getNotesDeferred = function(variableName){
+            var deferred = $q.defer();
+            quantimodoService.getNotesFromApi({variableName: variableName}, function(response){
+                deferred.resolve(response.data);
             }, function(error){
                 if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
                 deferred.reject(error);

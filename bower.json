@@ -35,10 +35,15 @@
     "ngCordova": "0.1.17-alpha",
     "oclazyload": "~1.0.4",
     "pluralize": "^1.2.1",
-    "quantimodo-sdk-angularjs-ionic": "4.7.5"
+    "quantimodo-sdk-angularjs-ionic": "4.7.5",
+    "d3": "^4.7.3",
+    "d3-cloud": "^1.2.4",
+    "angular-d3-word-cloud": "^0.3.0"
   },
   "resolutions": {
     "angular": "1.6.1",
-    "angular-material": "1.1.1"
+    "angular-material": "1.1.1",
+    "jquery": "~2.1.4",
+    "d3": "~4.6.0"
   }
 }

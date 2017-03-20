@@ -1,11 +1,6 @@
-angular.module('starter')
-
-	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService,
-											   $ionicLoading) {
-
+angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
+											   $ionicActionSheet, $timeout, quantimodoService, $ionicLoading) {
 	    $scope.controller_name = "RemindersInboxCtrl";
-
 		console.debug('Loading ' + $scope.controller_name);
         $rootScope.showFilterBarSearchIcon = false;
 	    $scope.state = {
@@ -32,7 +27,6 @@ angular.module('starter')
 			numberOfDisplayedNotifications: 0,
 			favoritesTitle: "Your Favorites"
 	    };
-		
         $scope.$on('$ionicView.beforeEnter', function(e) {
         	console.debug("RemindersInboxCtrl beforeEnter ");
         	$scope.defaultHelpCards = quantimodoService.setupHelpCards();
@@ -47,18 +41,10 @@ angular.module('starter')
             setPageTitle();
             getTrackingReminderNotifications();
         });
-
         $scope.$on('$ionicView.enter', function(e) {
             console.debug("RemindersInboxCtrl enter");
-            $rootScope.bloodPressure = {
-                systolicValue: null,
-                diastolicValue: null,
-                displayTotal: "Blood Pressure"
-            };
+            $rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
             $rootScope.stateParams = $stateParams;
-            //if($rootScope.showUndoButton){
-            //$rootScope.showUndoButton = false;
-            //}
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){$rootScope.variableCategoryName = $stateParams.variableCategoryName;
@@ -264,9 +250,20 @@ angular.module('starter')
                     hideInboxLoader();
 				});
 	    };
+        function wordClicked(word){
+            alert(word.text + " appears " + word.count + " times and the average " + config.appSettings.primaryOutcomeVariableDetails.name +
+                " value when it is written is " + word.average + config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName + '.' );
+        }
+        function createWordCloudFromNotes() {
+            $scope.height = window.innerHeight * 0.5;
+            $scope.width = window.innerWidth; //element.find('word-cloud')[0].offsetWidth;
+            $scope.wordClicked = wordClicked;
+            quantimodoService.getNotesDeferred(config.appSettings.primaryOutcomeVariableDetails.name).then(function (response) {
+                $scope.words = response;
+            });
+        }
 		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
-            var trackingReminderNotifications =
-                quantimodoService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName);
+            var trackingReminderNotifications = quantimodoService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName);
             console.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
 			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 			if($state.current.name === "app.remindersInboxCompact"){
