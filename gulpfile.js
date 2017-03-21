@@ -1886,7 +1886,6 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
 });
 
 gulp.task('configureApp', [], function(callback){
-
 	runSequence(
 		'copyAppResources',
 		'generatePrivateConfigFromEnvs',
@@ -1905,7 +1904,6 @@ gulp.task('configureApp', [], function(callback){
 		//'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
         'deleteUnusedFiles',
 		callback);
-
 });
 
 gulp.task('buildChromeExtension', [], function(callback){
