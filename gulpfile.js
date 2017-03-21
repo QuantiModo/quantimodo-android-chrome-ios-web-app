@@ -599,6 +599,30 @@ gulp.task('decryptPrivateConfigToDefault', [], function(callback){
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 
+gulp.task('deleteUnusedFiles', function(){
+    var unusedFiles = [
+        'www/lib/angular-material/angular-material.js',
+        'www/lib/momentjs/min/tests.js',
+        'www/lib/moment/min/tests.js',
+        'www/lib/angular/angular.js',
+        'www/lib/Ionicons/cheatsheet.html',
+        'www/lib/ionic/js/ionic.bundle.js',
+        'www/lib/highstock-release/highstock.src.js',
+        'www/lib/angular-material/angular-material.css',
+        'www/lib/highcharts/highcharts.src.js',
+        'www/lib/angular-material/layouts/angular-material.layout-attributes.css',
+        'www/lib/angular-material/modules/layouts/angular-material.layouts.css',
+        'www/lib/angular-material/modules/closure/core/core.css',
+        'www/lib/angular-material/modules/js/core/core.css',
+        'www/lib/angular-material/layouts/angular-material.layouts.css',
+        'www/lib/ionic/js/ionic.js',
+        'www/lib/ionic/js/ionic-angular.js',
+        'www/lib/d3/d3.js',
+        'www/lib/angular-material/CHANGELOG.md'
+    ];
+    return gulp.src(unusedFiles, { read: false }).pipe(clean());
+});
+
 gulp.task('deleteFacebookPlugin', function(callback){
     console.log("If this doesn't work, just use gulp cleanPlugins");
     executeCommand("cordova plugin rm phonegap-facebook-plugin", callback);
@@ -1879,6 +1903,7 @@ gulp.task('configureApp', [], function(callback){
 		//'generateConfigXmlFromTemplate',  Can't do this here because it will overwrite iOS config on BuildBuddy
 		'setVersionNumberInFiles',
 		//'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
+        'deleteUnusedFiles',
 		callback);
 
 });
