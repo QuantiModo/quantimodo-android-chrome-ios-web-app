@@ -27,6 +27,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			numberOfDisplayedNotifications: 0,
 			favoritesTitle: "Your Favorites"
 	    };
+    	//createWordCloudFromNotes();
         $scope.$on('$ionicView.beforeEnter', function(e) {
         	console.debug("RemindersInboxCtrl beforeEnter ");
         	$scope.defaultHelpCards = quantimodoService.setupHelpCards();
