@@ -6127,7 +6127,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     color: quantimodoService.green,
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
-                        url: "img/robots/quantimodo-robot-waving-2.svg",
+                        url: "img/robots/quantimodo-robot-waving.svg",
                         height: "120",
                         width: "120"
                     },
@@ -6496,7 +6496,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-medkit-outline",
                     image: {
-                        url: "img/robots/quantimodo-robot-waving-2.svg",
+                        url: "img/robots/quantimodo-robot-waving.svg",
                         height: "120",
                         width: "120"
                     },
@@ -6680,7 +6680,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     circleColor: "#fefdfc",
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
-                        url: "img/robots/quantimodo-robot-waving-2.svg",
+                        url: "img/robots/quantimodo-robot-waving.svg",
                         height: "120",
                         width: "120"
                     },
