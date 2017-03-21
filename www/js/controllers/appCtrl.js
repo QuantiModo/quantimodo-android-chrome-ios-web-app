@@ -1866,7 +1866,8 @@ angular.module('starter')
             quantimodoService.sendEmailViaAPIDeferred('fitbit');
             $scope.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
         };
-        $scope.sendEmailAfterVerification = function(emailType) {
+        $scope.sendEmailAfterVerification = function(emailType, helpCards) {
+            if(helpCards){helpCards.splice(0, 1);}
             if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }
             if(emailType === 'fitbit'){ verifyEmailAddressAndExecuteCallback(sendFitbitEmail); }
         };
