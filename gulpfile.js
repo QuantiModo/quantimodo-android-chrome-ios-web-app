@@ -1869,17 +1869,20 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
     if (process.env.PREPARE_IOS_APP){
     	console.log("process.env.PREPARE_IOS_APP is " + process.env.PREPARE_IOS_APP + " so going to prepareIosApp");
         runSequence(
+        	'deleteUnusedFiles',
             'prepareIosApp',
             callback);
     } else if (process.env.BUILD_ANDROID){
         console.log("process.env.BUILD_ANDROID is true so going to buildAndroid");
         runSequence(
+            'deleteUnusedFiles',
             'prepareRepositoryForAndroid',
         	'buildAndroidApp',
             //'buildQuantiModoAndroid',  // Had to do this previously because buildAndroid wasn't working
             callback);
     } else {
         runSequence(
+            'deleteUnusedFiles',
             'configureApp',
             callback);
     }
