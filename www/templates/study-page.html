@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
     <ion-nav-title>Study</ion-nav-title>
         <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
-            <ion-refresher ng-if="!isWeb" on-refresh="refreshStudy()"></ion-refresher>
+            <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
             <div ng-show="state.loading && !state.studyNotFound" style="text-align: center">
                 <br>
                 <br>
@@ -82,7 +82,7 @@
                         <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
                     </label>
                 </div>
-                <div id="studyBody" >
+                <div id="studyBody" style="padding-left: 20px; padding-right: 20px;">
                     <h3 ng-if="causeWikiEntry || effectWikiEntry || correlationObject.studyBackground"
                         id="studyBackground">
                         Study Background
@@ -118,11 +118,23 @@
 
                     <h3 ng-show="correlationObject.dataSourcesParagraphForCause" id="causeDataSources">{{correlationObject.causeVariableName}} Data Sources</h3>
                        <p ng-bind-html="correlationObject.dataSourcesParagraphForCause"></p>
-                    <div style="max-width: 200px" ng-show="correlationObject.dataSourceImageHtmlForCause" ng-bind-html="correlationObject.dataSourceImageHtmlForCause"></div>
 
+                    <div style="display:block; margin: 0 auto;" ng-show="correlationObject.dataSourceImageForCause">
+                        <a href="{{correlationObject.dataSourceUrlForCause}}">
+                            <img style="max-width: 100px;" title="dataSourceImageForCause" ng-src="{{correlationObject.dataSourceImageForCause}}"
+                                 alt="dataSourceImageForCause">
+                        </a>
+                    </div>
+                    
                     <h3 ng-show="correlationObject.dataSourcesParagraphForEffect" id="effectDataSources">{{correlationObject.effectVariableName}} Data Sources</h3>
                     <p ng-bind-html="correlationObject.dataSourcesParagraphForEffect"></p> <br>
-                    <div style="max-width: 200px"  ng-show="correlationObject.dataSourceImageHtmlForEffect" ng-bind-html="correlationObject.dataSourceImageHtmlForEffect"></div>
+
+                    <div style="display:block; margin: 0 auto;" ng-show="correlationObject.dataSourceImageForEffect">
+                        <a href="{{correlationObject.dataSourceUrlForEffect}}">
+                            <img style="max-width: 100px;" title="dataSourceImageForEffect" ng-src="{{correlationObject.dataSourceImageForEffect}}" 
+                                 alt="dataSourceImageForEffect">
+                        </a>
+                    </div>
 
                     <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
                         <p>{{correlationObject.studyLimitations}}</p>
