@@ -343,7 +343,7 @@ config.appSettings = {
         }
     ],
 
-    "menu" : [
+    "extendedMenu" : [
         {
             "title" : "Reminder Inbox",
             "href" : "#/app/reminders-inbox",
@@ -624,8 +624,144 @@ config.appSettings = {
             "href" : "#/app/feedback",
             "icon" : "ion-ios-help-outline"
         }
+    ],
+
+    minimalMenu : [
+        {
+            title : 'Reminder Inbox',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-archive'
+        },
+        {
+            title : 'Your Medications',
+            href : '#/app/reminders-list/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Symptoms',
+            href : '#/app/reminders-list/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Vital Signs',
+            href : '#/app/reminders-list/Vital Signs',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Emotions',
+            href : '#/app/reminders-list/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            href : '#/app/reminders-list/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Physical Activity',
+            href : '#/app/reminders-list/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'History',
+            click : 'toggleHistorySubMenu',
+            showSubMenuVariable : 'showHistorySubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-list-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Anything',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Treatments',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Physical Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Vital Signs',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Vital Signs',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Locations',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Location',
+            icon : 'ion-ios-location-outline'
+        },
+        {
+            title : 'Import Data',
+            href : '#/app/import',
+            icon : 'ion-ios-cloud-download-outline'
+        },
+        {
+            title : 'Relationships',
+            click : 'togglePredictorSearchSubMenu',
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-analytics',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Predictor Search',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/predictor-search',
+            icon : 'ion-log-in'
+        },
+        {
+            title : 'Outcome Search',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/outcome-search',
+            icon : 'ion-log-out'
+        },
+        {
+            title : 'Settings',
+            href : '#/app/settings',
+            icon : 'ion-ios-gear-outline'
+        },
     ]
 };
+
+config.appSettings.menu = config.appSettings.minimalMenu;
 
 if(!module){
     var module = {};
