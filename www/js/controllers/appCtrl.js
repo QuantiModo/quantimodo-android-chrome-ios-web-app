@@ -67,7 +67,8 @@ angular.module('starter')
                 e.targetScope.controller_name === "RemindersInboxCtrl" ||
                 e.targetScope.controller_name === "RemindersManageCtrl" ||
                 e.targetScope.controller_name === "StudyCtrl" ||
-                e.targetScope.controller_name === "PredictorsCtrl" || $state.current.name === 'app.historyAllVariable'
+                e.targetScope.controller_name === "PredictorsCtrl" ||
+                e.targetScope.controller_name === "historyAllMeasurementsCtrl"
             ) { $scope.showMoreMenuButton = true;
             } else { $scope.showMoreMenuButton = false; }
         });
