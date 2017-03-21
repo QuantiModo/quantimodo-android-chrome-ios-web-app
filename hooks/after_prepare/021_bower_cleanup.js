@@ -54,6 +54,11 @@ for (var i in platformsDirectories) {
     for (var j in unusedFiles) {
         var pathToDelete = path.join(rootdir, platformsDirectories[i] + unusedFiles[j]);
         console.log('Deleting unused file ' + pathToDelete );
-        deleteFolderRecursive(pathToDelete);
+        try {
+            deleteFolderRecursive(pathToDelete);
+        } catch (error) {
+            console.error(error.message);
+        }
+
     }
 }
