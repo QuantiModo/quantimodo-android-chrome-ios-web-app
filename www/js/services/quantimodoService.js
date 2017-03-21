@@ -6111,7 +6111,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     color: quantimodoService.yellow,
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
-                        url: "img/download_2-96.png",
+                        url: "img/intro/download_2-96.png",
                         height: "96",
                         width: "96"
                     },
@@ -6656,7 +6656,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     circleColor: "#fab952",
                     iconClass: "icon positive ion-ios-cloud-download-outline",
                     image: {
-                        url: "img/download_2-96.png",
+                        url: "img/intro/download_2-96.png",
                         height: "96",
                         width: "96"
                     },
