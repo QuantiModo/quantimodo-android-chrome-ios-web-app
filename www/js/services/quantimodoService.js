@@ -3479,7 +3479,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 variableObject.abbreviatedUnitName = measurements[0].abbreviatedUnitName;
             }
             for (var i = 0; i < measurements.length; i++) {
-                lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: measurements[i].note + " (" + measurements[i].sourceName + ")"};
+                lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: "(" + measurements[i].sourceName + ")"};
+                if(measurements[i].note){
+                    lineChartItem.name = measurements[i].note + " " + lineChartItem.name;
+                }
                 lineChartData.push(lineChartItem);
             }
             return quantimodoService.configureLineChart(lineChartData, variableObject);
