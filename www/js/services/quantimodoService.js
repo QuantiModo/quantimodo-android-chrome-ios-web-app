@@ -3998,15 +3998,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return {
                 useHighStocks: true,
                 options : {
+                    turboThreshold: 0, // Disables 1000 data point limitation http://api.highcharts.com/highcharts/plotOptions.series.turboThreshold
                     tooltip: {
                         shared: true,
                         formatter: function(){
                             var value = this;
                             var string = '';
-
                             string += '<h3><b>' + moment(value.x).format("h:mm a MMM Do YYYY") + '<b></h3><br/>';
-
-
                             angular.forEach(value.points,function(point){
                                 //string += '<span>' + point.series.name + ':</span> ';
                                 string += '<span>' + point.point.y + variableObject.abbreviatedUnitName + '</span>';
