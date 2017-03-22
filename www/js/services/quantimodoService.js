@@ -3106,8 +3106,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             return averageValueByMonthlyArray;
         };
-        var exportOptions = { enabled: false };
-        if($rootScope.isWeb){ exportOptions.enabled = true; }
         var shouldWeUsePrimaryOutcomeLabels = function (variableObject) {
             return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name;
         };
@@ -3192,14 +3190,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     credits: {
                         enabled: false
                     },
-
-                    colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
+                    colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
+                    exporting: {
+                        enabled: $rootScope.isWeb
+                    }
                 },
                 series: [{
                     name : variableObject.name + ' Distribution',
                     data: data
-                }],
-                exporting: exportOptions
+                }]
             };
         };
         quantimodoService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
@@ -3295,37 +3294,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         height : 300,
                         type : 'column',
                         renderTo : 'BarContainer',
-                        animation: {
-                            duration: 1000
-                        }
+                        animation: {duration: 1000}
                     },
-                    title : {
-                        text : 'Average  ' + variableObject.name + ' by Day of Week'
-                    },
-                    xAxis : {
-                        categories : xAxisLabels
-                    },
+                    title : {text : 'Average  ' + variableObject.name + ' by Day of Week'},
+                    xAxis : {categories : xAxisLabels},
                     yAxis : {
-                        title : {
-                            text : 'Average Value (' + variableObject.unitName + ')'
-                        },
+                        title : {text : 'Average Value (' + variableObject.unitName + ')'},
                         min : minimum,
                         max : maximum
                     },
-                    lang: {
-                        loading: ''
-                    },
+                    lang: {loading: ''},
                     loading: {
-                        style: {
-                            background: 'url(/res/loading3.gif) no-repeat center'
-                        },
+                        style: {background: 'url(/res/loading3.gif) no-repeat center'},
                         hideDuration: 10,
                         showDuration: 10
                     },
-                    legend : {
-                        enabled : false
-                    },
-
+                    legend : {enabled : false},
                     plotOptions : {
                         column : {
                             pointPadding : 0.2,
@@ -3335,17 +3319,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             colorByPoint : true
                         }
                     },
-                    credits: {
-                        enabled: false
-                    },
-
-                    colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
+                    credits: {enabled: false},
+                    colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
+                    exporting: {
+                        enabled: $rootScope.isWeb
+                    }
                 },
                 series: [{
                     name : 'Average  ' + variableObject.name + ' by Day of Week',
                     data: averageValueByWeekdayArray
-                }],
-                exporting: exportOptions
+                }]
             };
         };
         quantimodoService.configureMonthlyChart = function(averageValueByMonthlyArray, variableObject){
@@ -3357,12 +3340,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var minimum = 99999999999999999999999999999999;
             var xAxisLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             for(var i = 0; i < averageValueByMonthlyArray.length; i++){
-                if(averageValueByMonthlyArray[i] > maximum){
-                    maximum = averageValueByMonthlyArray[i];
-                }
-                if(averageValueByMonthlyArray[i] < minimum){
-                    minimum = averageValueByMonthlyArray[i];
-                }
+                if(averageValueByMonthlyArray[i] > maximum){maximum = averageValueByMonthlyArray[i];}
+                if(averageValueByMonthlyArray[i] < minimum){minimum = averageValueByMonthlyArray[i];}
             }
             return {
                 options: {
@@ -3370,37 +3349,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         height : 300,
                         type : 'column',
                         renderTo : 'BarContainer',
-                        animation: {
-                            duration: 1000
-                        }
+                        animation: {duration: 1000}
                     },
-                    title : {
-                        text : 'Average  ' + variableObject.name + ' by Month'
-                    },
-                    xAxis : {
-                        categories : xAxisLabels
-                    },
+                    title : {text : 'Average  ' + variableObject.name + ' by Month'},
+                    xAxis : {categories : xAxisLabels},
                     yAxis : {
-                        title : {
-                            text : 'Average Value (' + variableObject.unitName + ')'
-                        },
+                        title : {text : 'Average Value (' + variableObject.unitName + ')'},
                         min : minimum,
                         max : maximum
                     },
-                    lang: {
-                        loading: ''
-                    },
+                    lang: {loading: ''},
                     loading: {
-                        style: {
-                            background: 'url(/res/loading3.gif) no-repeat center'
-                        },
+                        style: {background: 'url(/res/loading3.gif) no-repeat center'},
                         hideDuration: 10,
                         showDuration: 10
                     },
-                    legend : {
-                        enabled : false
-                    },
-
+                    legend : {enabled : false},
                     plotOptions : {
                         column : {
                             pointPadding : 0.2,
@@ -3410,17 +3374,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             colorByPoint : true
                         }
                     },
-                    credits: {
-                        enabled: false
-                    },
-
-                    colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
+                    credits: {enabled: false},
+                    colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
+                    exporting: {
+                        enabled: $rootScope.isWeb
+                    }
                 },
                 series: [{
                     name : 'Average  ' + variableObject.name + ' by Month',
                     data: averageValueByMonthlyArray
-                }],
-                exporting: exportOptions
+                }]
             };
         };
         quantimodoService.configureHourlyChart = function(averageValueByHourArray, variableObject){
@@ -3470,33 +3433,20 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             duration: 1000
                         }
                     },
-                    title : {
-                        text : 'Average  ' + variableObject.name + ' by Hour of Day'
-                    },
-                    xAxis : {
-                        categories : xAxisLabels
-                    },
+                    title : {text : 'Average  ' + variableObject.name + ' by Hour of Day'},
+                    xAxis : {categories : xAxisLabels},
                     yAxis : {
-                        title : {
-                            text : 'Average Value (' + variableObject.unitName + ')'
-                        },
+                        title : {text : 'Average Value (' + variableObject.unitName + ')'},
                         min : minimum,
                         max : maximum
                     },
-                    lang: {
-                        loading: ''
-                    },
+                    lang: {loading: ''},
                     loading: {
-                        style: {
-                            background: 'url(/res/loading3.gif) no-repeat center'
-                        },
+                        style: {background: 'url(/res/loading3.gif) no-repeat center'},
                         hideDuration: 10,
                         showDuration: 10
                     },
-                    legend : {
-                        enabled : false
-                    },
-
+                    legend : {enabled : false},
                     plotOptions : {
                         column : {
                             pointPadding : 0.2,
@@ -3506,11 +3456,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             colorByPoint : true
                         }
                     },
-                    credits: {
-                        enabled: false
-                    },
-
-                    colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"]
+                    credits: {enabled: false},
+                    colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"],
+                    exporting: {
+                        enabled: $rootScope.isWeb
+                    }
                 },
                 series: [{
                     name : 'Average  ' + variableObject.name + ' by Hour of Day',
@@ -3529,7 +3479,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 variableObject.abbreviatedUnitName = measurements[0].abbreviatedUnitName;
             }
             for (var i = 0; i < measurements.length; i++) {
-                lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: measurements[i].note};
+                lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: "(" + measurements[i].sourceName + ")"};
+                if(measurements[i].note){
+                    lineChartItem.name = measurements[i].note + " " + lineChartItem.name;
+                }
                 lineChartData.push(lineChartItem);
             }
             return quantimodoService.configureLineChart(lineChartData, variableObject);
@@ -3548,30 +3501,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var forwardPearsonCorrelationSeries = {
                 name : 'Pearson Correlation Coefficient',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var smoothedPearsonCorrelationSeries = {
                 name : 'Smoothed Pearson Correlation Coefficient',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var forwardSpearmanCorrelationSeries = {
                 name : 'Spearman Correlation Coefficient',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var qmScoreSeries = {
                 name : 'QM Score',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var xAxis = [];
             var excludeSpearman = false;
@@ -3607,28 +3552,20 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     //text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
                     //x: -20
                 },
-                legend : {
-                    enabled : false
-                },
+                legend : {enabled : false},
                 xAxis: {
-                    title: {
-                        text: 'Assumed Duration Of Action'
-                    },
+                    title: {text: 'Assumed Duration Of Action'},
                     categories: xAxis
                 },
                 yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
+                    title: {text: 'Value'},
                     plotLines: [{
                         value: 0,
                         width: 1,
                         color: '#EA4335'
                     }]
                 },
-                tooltip: {
-                    valueSuffix: ''
-                },
+                tooltip: {valueSuffix: ''},
                 series : seriesToChart
             };
             return config;
@@ -3638,30 +3575,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var forwardPearsonCorrelationSeries = {
                 name : 'Pearson Correlation Coefficient',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var smoothedPearsonCorrelationSeries = {
                 name : 'Smoothed Pearson Correlation Coefficient',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var forwardSpearmanCorrelationSeries = {
                 name : 'Spearman Correlation Coefficient',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var qmScoreSeries = {
                 name : 'QM Score',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var xAxis = [];
             var excludeSpearman = false;
@@ -3697,28 +3626,20 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     //text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
                     //x: -20
                 },
-                legend : {
-                    enabled : false
-                },
+                legend : {enabled : false},
                 xAxis: {
-                    title: {
-                        text: 'Assumed Onset Delay'
-                    },
+                    title: {text: 'Assumed Onset Delay'},
                     categories: xAxis
                 },
                 yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
+                    title: {text: 'Value'},
                     plotLines: [{
                         value: 0,
                         width: 1,
                         color: '#EA4335'
                     }]
                 },
-                tooltip: {
-                    valueSuffix: ''
-                },
+                tooltip: {valueSuffix: ''},
                 series : seriesToChart
             };
             return config;
@@ -3728,16 +3649,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var predictorSeries = {
                 name : correlationObject.causeVariableName,
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var outcomeSeries = {
                 name : correlationObject.effectVariableName,
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                }
+                tooltip: {valueDecimals: 2}
             };
             var xAxis = [];
             for (var i = 0; i < pairs.length; i++) {
@@ -3765,13 +3682,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     //text: 'Effect of ' + correlations[0].causeVariableName + ' on ' + correlations[0].effectVariableName + ' Over Time',
                     //x: -20
                 },
-                legend : {
-                    enabled : false
-                },
+                legend : {enabled : false},
                 xAxis: {
-                    title: {
-                        text: 'Date'
-                    },
+                    title: {text: 'Date'},
                     categories: xAxis
                 },
                 options: {
@@ -3788,9 +3701,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         }
                     }]
                 },
-                tooltip: {
-                    valueSuffix: ''
-                },
+                tooltip: {valueSuffix: ''},
                 series: [ {
                     name: correlationObject.causeVariableName,
                     type: 'spline',
@@ -3800,19 +3711,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         enabled: false
                     },
                     dashStyle: 'shortdot',
-                    tooltip: {
-                        valueSuffix: '' + correlationObject.causeAbbreviatedUnitName
-                    }
-
+                    tooltip: {valueSuffix: '' + correlationObject.causeAbbreviatedUnitName}
                 }, {
                     name: correlationObject.effectVariableName,
                     color: '#EA4335',
                     type: 'spline',
                     yAxis: 1,
                     data: outcomeSeries.data,
-                    tooltip: {
-                        valueSuffix: '' + correlationObject.effectAbbreviatedUnitName
-                    }
+                    tooltip: {valueSuffix: '' + correlationObject.effectAbbreviatedUnitName}
                 }]
             };
             return config;
@@ -3881,9 +3787,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             },
                             states: {
                                 hover: {
-                                    marker: {
-                                        enabled: false
-                                    }
+                                    marker: {enabled: false}
                                 }
                             },
                             tooltip: {
@@ -3892,8 +3796,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             }
                         }
                     },
-                    credits: {
-                        enabled: false
+                    credits: {enabled: false},
+                    exporting: {
+                        enabled: $rootScope.isWeb
                     }
                 },
                 xAxis: {
@@ -3906,21 +3811,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     showLastLabel: true
                 },
                 yAxis: {
-                    title: {
-                        text: correlationObject.effectVariableName + ' (' + correlationObject.effectAbbreviatedUnitName + ')'
-                    }
+                    title: {text: correlationObject.effectVariableName + ' (' + correlationObject.effectAbbreviatedUnitName + ')'}
                 },
                 series: [{
                     name: correlationObject.effectVariableName + ' by ' + correlationObject.causeVariableName,
                     color: 'rgba(223, 83, 83, .5)',
                     data: xyVariableValues
                 }],
-                title: {
-                    text: title + ' (R = ' + calculatePearsonsCorrelation(xyVariableValues).toFixed(2) + ')'
-                },
-                subtitle: {
-                    text: ''
-                },
+                title: {text: title + ' (R = ' + calculatePearsonsCorrelation(xyVariableValues).toFixed(2) + ')'},
+                subtitle: {text: ''},
                 loading: false
             };
             return scatterplotOptions;
@@ -4163,6 +4062,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                                 year: '%Y'
                             }
                         }
+                    },
+                    exporting: {
+                        enabled: $rootScope.isWeb
                     }
                 },
                 series :[{
@@ -4181,8 +4083,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             lineWidthPlus: 0
                         }
                     }
-                }],
-                exporting: exportOptions
+                }]
             };
         };
 
