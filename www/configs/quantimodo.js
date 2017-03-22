@@ -761,7 +761,7 @@ config.appSettings = {
     ]
 };
 
-config.appSettings.menu = config.appSettings.minimalMenu;
+config.appSettings.menu = config.appSettings.extendedMenu;
 
 if(!module){
     var module = {};
