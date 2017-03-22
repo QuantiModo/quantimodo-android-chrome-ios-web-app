@@ -44,6 +44,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         });
         $scope.$on('$ionicView.enter', function(e) {
             console.debug("RemindersInboxCtrl enter");
+            if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}
             $rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -92,7 +93,6 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         $scope.$on('$ionicView.afterEnter', function(){
             console.debug("RemindersInboxCtrl afterEnter");
             quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-            if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}
         });
         $scope.$on('$ionicView.afterLeave', function(){
             console.debug("RemindersInboxCtrl afterLeave");
