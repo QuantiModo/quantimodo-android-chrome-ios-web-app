@@ -1,6 +1,5 @@
 angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, quantimodoService,
-                                               ionicTimePicker, ionicDatePicker, $ionicLoading) {
+                                               $ionicActionSheet, $ionicHistory, quantimodoService, ionicTimePicker, ionicDatePicker, $ionicLoading) {
         $scope.controller_name = "MeasurementAddCtrl";
         var variableCategoryName = $stateParams.variableCategoryName;
         var variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
@@ -136,9 +135,8 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             } else {
                 if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
                     if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' +
-                            $scope.state.measurement.abbreviatedUnitName + ' and $rootScope.unitsIndexedByAbbreviatedName are ' +
-                            JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
+                        Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.abbreviatedUnitName +
+                            ' and $rootScope.unitsIndexedByAbbreviatedName are ' + JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
                     }
                 } else {$scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;}
             }
@@ -326,9 +324,8 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if($stateParams.variableObject) {
                 console.debug($state.current.name + ": " + 'setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
                 // Gets version from local storage in case we just updated unit in variable settings
-                var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
-                    'userVariables', {name: $stateParams.variableObject.name});
-                if(userVariables.length){ $stateParams.variableObject = userVariables[0]; }
+                var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', {name: $stateParams.variableObject.name});
+                if(userVariables && userVariables.length){ $stateParams.variableObject = userVariables[0]; }
                 $rootScope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variableName = $stateParams.variableObject.name;
