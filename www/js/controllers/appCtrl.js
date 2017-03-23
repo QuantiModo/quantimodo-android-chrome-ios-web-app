@@ -1033,10 +1033,10 @@ angular.module('starter')
                 combinationOperation: variableObject.combinationOperation,
                 shareUserMeasurements: variableObject.shareUserMeasurements,
                 defaultUnitId: variableObject.userVariableDefaultUnitId,
-                userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName
+                userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName,
                 //userVariableAlias: $scope.state.userVariableAlias
-                //experimentStartTime
-                //experimentEndTime
+                experimentStartTimeString: (variableObject.experimentStartTimeString) ? variableObject.experimentStartTimeString.toString() : null,
+                experimentEndTimeString: (variableObject.experimentEndTimeString) ? variableObject.experimentEndTimeString.toString() : null,
             };
             quantimodoService.postUserVariableDeferred(body).then(function(userVariable) {
                 $ionicLoading.hide();
