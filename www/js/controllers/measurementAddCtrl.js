@@ -257,6 +257,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 $scope.state.measurement.unitName = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name;
                 $scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
             }
+            setupValueFieldType($scope.state.measurement.abbreviatedUnitName, $scope.state.measurement.variableDescription);
         };
         var refreshUnitsIfStale = function () {
             var ignoreExpiration = false;
