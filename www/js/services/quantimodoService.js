@@ -4002,12 +4002,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         },
                         useHtml: true
                     },
-                    legend : {
-                        enabled : false
-                    },
-                    title: {
-                        text: variableObject.name + ' Over Time (' + variableObject.abbreviatedUnitName + ')'
-                    },
+                    legend : {enabled : false},
+                    title: {text: variableObject.name + ' Over Time (' + variableObject.abbreviatedUnitName + ')'},
                     xAxis : {
                         type: 'datetime',
                         dateTimeLabelFormats : {
@@ -4023,12 +4019,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         min: minimumTimeEpochMilliseconds,
                         max: maximumTimeEpochMilliseconds
                     },
-                    credits: {
-                        enabled: false
-                    },
-                    rangeSelector: {
-                        enabled: true
-                    },
+                    credits: {enabled: false},
+                    rangeSelector: {enabled: true},
                     navigator: {
                         enabled: true,
                         xAxis: {
@@ -4045,9 +4037,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             }
                         }
                     },
-                    exporting: {
-                        enabled: $rootScope.isWeb
-                    }
+                    exporting: {enabled: $rootScope.isWeb}
                 },
                 series :[{
                     name : variableObject.name + ' Over Time',
@@ -4056,14 +4046,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         enabled: true,
                         radius: 2
                     },
-                    tooltip: {
-                        valueDecimals: 2
-                    },
+                    tooltip: {valueDecimals: 2},
                     lineWidth: 0,
                     states: {
-                        hover: {
-                            lineWidthPlus: 0
-                        }
+                        hover: {lineWidthPlus: 0}
                     }
                 }]
             };
