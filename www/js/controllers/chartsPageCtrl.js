@@ -35,7 +35,10 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 if(!$rootScope.variableObject || $rootScope.variableObject.name !== $stateParams.variableName){
                     getStatisticsForVariable($stateParams.variableName);
                 }
-            } else { $scope.goBack();}
+            } else {
+                $scope.goBack();
+                return;
+            }
             $ionicLoading.hide();
             if($rootScope.variableObject.name){
                 $rootScope.variableName = $rootScope.variableObject.name;
