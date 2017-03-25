@@ -1420,26 +1420,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         // used when adding a new measurement from record measurement OR updating a measurement through the queue
         quantimodoService.addToMeasurementsQueue = function(measurementObject){
-            console.debug("added to measurementsQueue: id = " + measurementObject.id);
             var deferred = $q.defer();
             quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue',function(measurementsQueue) {
                 measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
-                // add to queue
-                measurementsQueue.push({
-                    id: measurementObject.id,
-                    variable: config.appSettings.primaryOutcomeVariableDetails.name,
-                    variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                    variableCategoryName: measurementObject.variableCategoryName,
-                    variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
-                    startTimeEpoch: measurementObject.startTimeEpoch,
-                    abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
-                    value: measurementObject.value,
-                    note: measurementObject.note,
-                    latitude: $rootScope.lastLatitude,
-                    longitude: $rootScope.lastLongitude,
-                    location: $rootScope.lastLocationNameAndAddress
-                });
-                //resave queue
+                if(!measurementObject.latitude){measurementObject.latitude = $rootScope.lastLatitude;}
+                if(!measurementObject.longitude){measurementObject.latitude = $rootScope.lastLongitude;}
+                if(!measurementObject.location){measurementObject.latitude = $rootScope.lastLocationNameAndAddress;}
+                measurementsQueue.push(measurementObject);
                 quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify(measurementsQueue));
             });
             return deferred.promise;
