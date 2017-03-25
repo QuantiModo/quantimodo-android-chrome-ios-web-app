@@ -300,13 +300,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         // post new Measurements for user
         quantimodoService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
-            if(!measurementSet[0].measurements && !measurementSet[0].value){
-                console.error("No measurementSet.measurements provided to quantimodoService.postMeasurementsToApi");
-            } else {
-                quantimodoService.post('api/measurements/v2',
-                    //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
-                    [], measurementSet, successHandler, errorHandler);
-            }
+            quantimodoService.post('api/v1/measurements',
+                //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
+                [], measurementSet, successHandler, errorHandler);
+
         };
         quantimodoService.logoutOfApi = function(successHandler, errorHandler){
             //TODO: Fix this
