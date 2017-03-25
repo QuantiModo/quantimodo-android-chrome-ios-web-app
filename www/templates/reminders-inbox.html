@@ -53,13 +53,13 @@
                                 <i class="ion-android-cancel"> &nbsp; Skip</i>
                             </button>
                             <button class="button button-clear button-royal"
-                                    ng-if="trackingReminderNotification.abbreviatedUnitName != '/5'"
+                                    ng-if="trackingReminderNotification.unitAbbreviatedName != '/5'"
                                     style="text-overflow: clip; font-size: 12px;"
                                     ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
                                 <i class="ion-android-notifications-off"> &nbsp; Snooze</i>
                             </button>
                             <button class="button button-clear button-royal"
-                                    ng-if="trackingReminderNotification.abbreviatedUnitName == '/5'"
+                                    ng-if="trackingReminderNotification.unitAbbreviatedName == '/5'"
                                     style="text-overflow: clip; font-size: 12px;"
                                     ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
                                 <i class="ion-edit"> &nbsp; Note</i>
@@ -79,7 +79,7 @@
                                    style="text-align: center; max-width: 125px; padding-right: 10px">
                             <span on-tap="trackByValueField(trackingReminderNotification, $event)"
                                   class="input-label">
-								{{trackingReminderNotification.abbreviatedUnitName}} &nbsp
+								{{trackingReminderNotification.unitAbbreviatedName}} &nbsp
 								<i style="font-size: 20px;"
                                    class="icon positive ion-checkmark-round">
 								</i>
@@ -102,7 +102,7 @@
                             </div>
                         </div>
                         <div class="row" ng-if="(trackingReminderNotification.defaultValue !== null &&
-												trackingReminderNotification.abbreviatedUnitName !== '/5') ||
+												trackingReminderNotification.unitAbbreviatedName !== '/5') ||
 												trackingReminderNotification.variableName === 'Blood Pressure'" >
                             <div class="button-bar">
                                 <button class="button button-clear button-calm"
@@ -136,7 +136,7 @@
                                      ng-src="{{option.img}}">
                             </div>
                         </div>
-                        <div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName.indexOf('yes/no') !== -1 " >
+                        <div class="row" ng-if="trackingReminderNotification.unitAbbreviatedName.indexOf('yes/no') !== -1 " >
                             <div class="button-bar">
                                 <button class="button button-clear button-assertive"
                                         style="text-overflow: clip; font-size: 14px;"

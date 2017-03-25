@@ -37,7 +37,7 @@ config.appSettings  = {
         name : "Overall Mood",
         variableName: "Overall Mood",
         variableCategoryName : "Mood",
-        abbreviatedUnitName : "/5",
+        unitAbbreviatedName : "/5",
         unitId : 10,
         combinationOperation: "MEAN",
         description: 'positive',
@@ -246,7 +246,7 @@ config.appSettings  = {
         {
             variableName : 'Heart Rate (Pulse)',
             defaultValue :  null,
-            abbreviatedUnitName: 'bpm',
+            unitAbbreviatedName: 'bpm',
             reminderFrequency : 0,
             icon: 'ion-heart',
             variableCategoryName : 'Vital Signs'
@@ -254,7 +254,7 @@ config.appSettings  = {
         {
             variableName: 'Blood Pressure',
             icon: 'ion-heart',
-            abbreviatedUnitName: 'mmHg',
+            unitAbbreviatedName: 'mmHg',
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Vital Signs'
@@ -262,7 +262,7 @@ config.appSettings  = {
         {
             variableName: 'Core Body Temperature',
             icon: null,
-            abbreviatedUnitName: 'C',
+            unitAbbreviatedName: 'C',
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Vital Signs'
@@ -270,7 +270,7 @@ config.appSettings  = {
         {
             variableName: 'Oxygen Saturation',
             icon: null,
-            abbreviatedUnitName: '%',
+            unitAbbreviatedName: '%',
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Vital Signs'
@@ -278,7 +278,7 @@ config.appSettings  = {
         {
             variableName: 'Respiratory Rate (Ventilation/Breath/RR/Respiration)',
             icon: null,
-            abbreviatedUnitName: '/minute',
+            unitAbbreviatedName: '/minute',
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Vital Signs'
@@ -286,7 +286,7 @@ config.appSettings  = {
         {
             variableName: 'Weight',
             icon: null,
-            abbreviatedUnitName: 'lb',
+            unitAbbreviatedName: 'lb',
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Physique'
@@ -294,7 +294,7 @@ config.appSettings  = {
         {
             variableName: 'Height',
             icon: null,
-            abbreviatedUnitName: 'cm',
+            unitAbbreviatedName: 'cm',
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Physique'
@@ -302,7 +302,7 @@ config.appSettings  = {
         {
             variableName: 'Body Mass Index or BMI',
             icon: null,
-            abbreviatedUnitName: 'index',
+            unitAbbreviatedName: 'index',
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Physique'
@@ -310,7 +310,7 @@ config.appSettings  = {
         {
             variableName: 'Blood Glucose Sugar',
             icon: null,
-            abbreviatedUnitName: 'mg/dL',
+            unitAbbreviatedName: 'mg/dL',
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Vital Signs'

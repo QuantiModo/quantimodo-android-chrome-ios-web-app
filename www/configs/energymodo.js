@@ -29,7 +29,7 @@ config.appSettings  = {
         name : "Energy Rating",
         variableName: "Energy Rating",
         variableCategoryName : "Emotions",
-        abbreviatedUnitName : "/5",
+        unitAbbreviatedName : "/5",
         combinationOperation: "MEAN",
         positiveOrNegative: 'positive',
         unitName: '1 to 5 Rating'

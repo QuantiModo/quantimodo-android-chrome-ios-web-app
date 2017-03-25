@@ -86,7 +86,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             self.cancel = function($event) { $mdDialog.cancel(); };
             self.finish = function($event) {
                 var userTagData;
-                if($rootScope.variableObject.abbreviatedUnitName !== '/5'){
+                if($rootScope.variableObject.unitAbbreviatedName !== '/5'){
                     $state.go('app.tagAdd', {
                         userTaggedVariableObject: $rootScope.variableObject,
                         fromState: $state.current.name,
@@ -174,7 +174,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             self.helpText = "Search for a duplicated or synonymous variable that you'd like to join to " +
                 self.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
                 self.variableObject.name + ".  You can only join variables that have the same unit " +
-                self.variableObject.abbreviatedUnitName + ".";
+                self.variableObject.unitAbbreviatedName + ".";
             self.placeholder = "What variable would you like to join?";
             self.cancel = function($event) { $mdDialog.cancel(); };
             self.finish = function($event) {

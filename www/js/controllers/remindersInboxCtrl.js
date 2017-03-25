@@ -145,8 +145,8 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				return false;
 			}
 		};
-		var setLastAction = function(modifiedValue, abbreviatedUnitName){
-            var lastAction = 'Recorded ' + modifiedValue + ' ' + abbreviatedUnitName;
+		var setLastAction = function(modifiedValue, unitAbbreviatedName){
+            var lastAction = 'Recorded ' + modifiedValue + ' ' + unitAbbreviatedName;
             lastAction = lastAction.replace('1 yes/no', 'YES');
             lastAction = lastAction.replace('0 yes/no', 'NO');
             $scope.lastAction = lastAction.replace(' /', '/');
@@ -159,7 +159,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             afterTrackingActions();
 			console.debug('modifiedReminderValue is ' + trackingReminderNotification.total);
             trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
-            setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.abbreviatedUnitName);
+            setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
 			if(!$rootScope.showUndoButton){ $scope.showUndoToast($scope.lastAction); }
 			quantimodoService.trackTrackingReminderNotificationDeferred(trackingReminderNotification)
 				.then(function(){
@@ -212,7 +212,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationIndex){
 			if(isGhostClick($event)){ return false; }
 			if(modifiedReminderValue === null){ modifiedReminderValue = trackingReminderNotification.defaultValue; }
-            setLastAction(modifiedReminderValue, trackingReminderNotification.abbreviatedUnitName);
+            setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
 			var body = notificationAction(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
 	    	quantimodoService.trackTrackingReminderNotificationDeferred(body)
@@ -253,7 +253,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	    };
         function wordClicked(word){
             alert(word.text + " appears " + word.count + " times and the average " + config.appSettings.primaryOutcomeVariableDetails.name +
-                " value when it is written is " + word.average + config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName + '.' );
+                " value when it is written is " + word.average + config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName + '.' );
         }
         function createWordCloudFromNotes() {
             $scope.height = window.innerHeight * 0.5;

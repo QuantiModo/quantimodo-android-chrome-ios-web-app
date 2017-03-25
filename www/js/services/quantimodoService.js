@@ -304,7 +304,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.error("No measurementSet.measurements provided to quantimodoService.postMeasurementsToApi");
             } else {
                 quantimodoService.post('api/measurements/v2',
-                    //['measurements', 'variableName', 'source', 'variableCategoryName', 'abbreviatedUnitName'],
+                    //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
                     [], measurementSet, successHandler, errorHandler);
             }
         };
@@ -1085,7 +1085,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
 
         $rootScope.variableCategories = {
             "Anything": {
-                defaultAbbreviatedUnitName: '',
+                defaultunitAbbreviatedName: '',
                 helpText: "What do you want to record?",
                 variableCategoryNameSingular: "Anything",
                 defaultValuePlaceholderText : "Enter most common value here...",
@@ -1097,7 +1097,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ionIcon: "ion-speedometer"
             },
             "Activity": {
-                defaultAbbreviatedUnitName: 'min',
+                defaultunitAbbreviatedName: 'min',
                 helpText: "What activity do you want to record?",
                 variableCategoryName: "Activity",
                 variableCategoryNameSingular: "Activity",
@@ -1105,7 +1105,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ionIcon: "ion-ios-body"
             },
             "Emotions": {
-                defaultAbbreviatedUnitName: "/5",
+                defaultunitAbbreviatedName: "/5",
                 helpText: "What emotion do you want to rate?",
                 variableCategoryName: "Emotions",
                 variableCategoryNameSingular: "Emotion",
@@ -1116,7 +1116,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/theatre_mask-96.png"
             },
             "Environment": {
-                defaultAbbreviatedUnitName: '',
+                defaultunitAbbreviatedName: '',
                 helpText: "What environmental variable do you want to record?",
                 variableCategoryName: "Environment",
                 variableCategoryNameSingular: "Environment",
@@ -1127,7 +1127,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/chance_of_storm-96.png"
             },
             "Foods" : {
-                defaultAbbreviatedUnitName: "serving",
+                defaultunitAbbreviatedName: "serving",
                 helpText: "What did you eat?",
                 variableCategoryName: "Foods",
                 variableCategoryNameSingular: "Food",
@@ -1138,7 +1138,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/vegetarian_food-96.png"
             },
             "Location" : {
-                defaultAbbreviatedUnitName: "min",
+                defaultunitAbbreviatedName: "min",
                 helpText: "What location do you want to record?",
                 variableCategoryName: "Location",
                 variableCategoryNameSingular: "Location",
@@ -1152,7 +1152,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/location.svg"
             },
             "Music" : {
-                defaultAbbreviatedUnitName: "count",
+                defaultunitAbbreviatedName: "count",
                 helpText: "What music did you listen to?",
                 variableCategoryName: "Music",
                 variableCategoryNameSingular: "Music",
@@ -1160,7 +1160,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ionIcon: "ion-music-note"
             },
             "Nutrients" : {
-                defaultAbbreviatedUnitName: "g",
+                defaultunitAbbreviatedName: "g",
                 helpText: "What nutrient do you want to track?",
                 variableCategoryName: "Nutrients",
                 variableCategoryNameSingular: "Nutrient",
@@ -1168,7 +1168,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ionIcon: "ion-fork"
             },
             "Payments" : {
-                defaultAbbreviatedUnitName: "$",
+                defaultunitAbbreviatedName: "$",
                 helpText: "What did you pay for?",
                 variableCategoryName: "Payments",
                 variableCategoryNameSingular: "Payment",
@@ -1179,7 +1179,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "automatically logging spending by connecting the Slice app"
             },
             "Physical Activity": {
-                defaultAbbreviatedUnitName: '',
+                defaultunitAbbreviatedName: '',
                 helpText: "What physical activity do you want to record?",
                 variableCategoryName: "Physical Activity",
                 variableCategoryNameSingular: "Physical Activity",
@@ -1191,7 +1191,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "cycling, or going to the gym.",
             },
             "Physique": {
-                defaultAbbreviatedUnitName: '',
+                defaultunitAbbreviatedName: '',
                 helpText: "What aspect of your physique do you want to record?",
                 variableCategoryName: "Physique",
                 variableCategoryNameSingular: "Physique",
@@ -1205,7 +1205,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "support body fat percent. ",
             },
             "Sleep": {
-                defaultAbbreviatedUnitName: "",
+                defaultunitAbbreviatedName: "",
                 helpText: "What aspect of sleep do you want to record?",
                 variableCategoryName: "Sleep",
                 variableCategoryNameSingular: "Sleep",
@@ -1215,7 +1215,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/features/half-moon.png"
             },
             "Symptoms": {
-                defaultAbbreviatedUnitName: "/5",
+                defaultunitAbbreviatedName: "/5",
                 helpText: "What symptom do you want to record?",
                 variableCategoryName: "Symptoms",
                 variableCategoryNameSingular: "Symptom",
@@ -1228,7 +1228,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/dizzy_person_2-96.png",
             },
             "Treatments": {
-                defaultAbbreviatedUnitName : "mg",
+                defaultunitAbbreviatedName : "mg",
                 helpText : "What treatment do you want to record?",
                 variableCategoryName : "Treatments",
                 variableCategoryNameSingular : "Treatment",
@@ -1243,7 +1243,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/pill-96.png",
             },
             "Vital Signs": {
-                defaultAbbreviatedUnitName: '',
+                defaultunitAbbreviatedName: '',
                 helpText: "What vital sign do you want to record?",
                 variableCategoryName: "Vital Signs",
                 variableCategoryNameSingular: "Vital Sign",
@@ -1409,7 +1409,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.variableCategoryName,
                 variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
                 startTimeEpoch: Math.floor(startTimeEpoch / 1000),
-                abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
+                unitAbbreviatedName: config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName,
                 value: numericRatingValue,
                 note: null
             };
@@ -1463,7 +1463,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             measurementInfo = addLocationAndSourceDataToMeasurement(measurementInfo);
             if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name &&
-                measurementInfo.abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName) {
+                measurementInfo.unitAbbreviatedName === config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName) {
                 if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
                     updateMeasurementInQueue(measurementInfo);
                 } else if(measurementInfo.id) {
@@ -1502,7 +1502,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     variableName: trackingReminder.variableName,
                     source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
                     variableCategoryName: trackingReminder.variableCategoryName,
-                    abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
+                    unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                     measurements : [
                         {
                             startTimeEpoch:  startTimeEpochSeconds,
@@ -1582,26 +1582,26 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return deferred.promise;
         };
         function addUnitsToRootScope(units) {
-            if(typeof $rootScope.abbreviatedUnitNames === "undefined"){$rootScope.abbreviatedUnitNames = [];}
+            if(typeof $rootScope.unitAbbreviatedNames === "undefined"){$rootScope.unitAbbreviatedNames = [];}
             $rootScope.unitObjects = units;
-            $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
-            $rootScope.nonAdvancedAbbreviatedUnitNames = [];
+            $rootScope.unitAbbreviatedNamesIndexedByUnitId = [];
+            $rootScope.nonAdvancedunitAbbreviatedNames = [];
             $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = [];
-            $rootScope.nonAdvancedAbbreviatedUnitNamesIndexedByUnitId = [];
+            $rootScope.nonAdvancedunitAbbreviatedNamesIndexedByUnitId = [];
             $rootScope.nonAdvancedUnitObjects = [];
             for (var i = 0; i < units.length; i++) {
-                $rootScope.abbreviatedUnitNames[i] = units[i].abbreviatedName;
+                $rootScope.unitAbbreviatedNames[i] = units[i].abbreviatedName;
                 $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-                $rootScope.abbreviatedUnitNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
+                $rootScope.unitAbbreviatedNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
                 if(!units[i].advanced){
-                    $rootScope.nonAdvancedAbbreviatedUnitNames.push(units[i].abbreviatedName);
+                    $rootScope.nonAdvancedunitAbbreviatedNames.push(units[i].abbreviatedName);
                     $rootScope.nonAdvancedUnitObjects.push(units[i]);
                     $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-                    $rootScope.nonAdvancedAbbreviatedUnitNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
+                    $rootScope.nonAdvancedunitAbbreviatedNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
                 }
             }
             var showMoreUnitsObject = {name: "Show more units", abbreviatedName: "Show more units"};
-            $rootScope.nonAdvancedAbbreviatedUnitNames.push(showMoreUnitsObject.abbreviatedName);
+            $rootScope.nonAdvancedunitAbbreviatedNames.push(showMoreUnitsObject.abbreviatedName);
             $rootScope.nonAdvancedUnitObjects.push(showMoreUnitsObject);
             $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName["Show more units"] = showMoreUnitsObject;
         }
@@ -1632,7 +1632,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.refreshUnits = function(){
             var deferred = $q.defer();
             quantimodoService.getUnitsFromApi(function(unitObjects){
-                if(typeof $rootScope.abbreviatedUnitNames === "undefined"){$rootScope.abbreviatedUnitNames = [];}
+                if(typeof $rootScope.unitAbbreviatedNames === "undefined"){$rootScope.unitAbbreviatedNames = [];}
                 quantimodoService.setLocalStorageItem('units', JSON.stringify(unitObjects));
                 addUnitsToRootScope(unitObjects);
                 deferred.resolve(unitObjects);
@@ -1971,7 +1971,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if (variableName && variableName !== "undefined" && secondsAtLocation > 60) {
                 var newMeasurement = {
                     variableName: variableName,
-                    abbreviatedUnitName: 'h',
+                    unitAbbreviatedName: 'h',
                     startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
                     sourceName: sourceName,
                     value: hoursAtLocation,
@@ -2782,14 +2782,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if(measurements[index].variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                     measurements[index].variableDescription = config.appSettings.primaryOutcomeVariableDetails.description;
                 }
-                if (measurements[index].abbreviatedUnitName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
-                if (measurements[index].abbreviatedUnitName.charAt(0) === '/') {
+                if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
+                if (measurements[index].unitAbbreviatedName.charAt(0) === '/') {
                     // don't add space between value and unit
-                    measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
                 }
                 else {
                     // add space between value and unit
-                    measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
                 }
                 // Don't truncate
                 /*
@@ -2797,7 +2797,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                  measurements[index].valueUnitVariableName =  measurements[index].valueUnitVariableName.substring(0, 29)+'...';
                  }
                  */
-                if (measurements[index].abbreviatedUnitName === '%') {
+                if (measurements[index].unitAbbreviatedName === '%') {
                     measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
                 }
                 if (measurements[index].roundedValue && measurements[index].variableDescription === 'positive') {
@@ -2939,7 +2939,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.configureDistributionChart = function(dataAndLabels, variableObject){
             var xAxisLabels = [];
-            var xAxisTitle = 'Daily Values (' + variableObject.abbreviatedUnitName + ')';
+            var xAxisTitle = 'Daily Values (' + variableObject.unitAbbreviatedName + ')';
             var data = [];
             if(shouldWeUsePrimaryOutcomeLabels(variableObject)){ data = [0, 0, 0, 0, 0]; }
             function isInt(n) { return parseFloat(n) % 1 === 0; }
@@ -3043,7 +3043,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.error("Please provide unit name with variable object!");
             }
             if(!variableObject.unitName){
-                variableObject.unitName = measurements[0].abbreviatedUnitName;
+                variableObject.unitName = measurements[0].unitAbbreviatedName;
                 console.error("Please provide unit name with variable object!");
             }
             var weekdayMeasurementArray = this.generateWeekdayMeasurementArray(measurements);
@@ -3064,7 +3064,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.error("Please provide unit name with variable object!");
             }
             if(!variableObject.unitName){
-                variableObject.unitName = measurements[0].abbreviatedUnitName;
+                variableObject.unitName = measurements[0].unitAbbreviatedName;
                 console.error("Please provide unit name with variable object!");
             }
             var monthlyMeasurementArray = this.generateMonthlyMeasurementArray(measurements);
@@ -3077,7 +3077,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
             if(!variableObject.unitName){variableObject.unitName = measurements[0].unitName;}
-            if(!variableObject.unitName){variableObject.unitName = measurements[0].abbreviatedUnitName;}
+            if(!variableObject.unitName){variableObject.unitName = measurements[0].unitAbbreviatedName;}
             var hourlyMeasurementArray = this.generateHourlyMeasurementArray(measurements);
             var count = 0;
             for(var i = 0; i < hourlyMeasurementArray.length; ++i){
@@ -3100,7 +3100,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
             if(!variableObject.unitName){variableObject.unitName = measurements[0].unitName;}
-            if(!variableObject.unitName){variableObject.unitName = measurements[0].abbreviatedUnitName;}
+            if(!variableObject.unitName){variableObject.unitName = measurements[0].unitAbbreviatedName;}
             var distributionArray = this.generateDistributionArray(measurements);
             return this.configureDistributionChart(distributionArray, variableObject);
         };
@@ -3303,8 +3303,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             var lineChartData = [];
             var lineChartItem;
-            if(!variableObject.abbreviatedUnitName){
-                variableObject.abbreviatedUnitName = measurements[0].abbreviatedUnitName;
+            if(!variableObject.unitAbbreviatedName){
+                variableObject.unitAbbreviatedName = measurements[0].unitAbbreviatedName;
             }
             for (var i = 0; i < measurements.length; i++) {
                 lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: "(" + measurements[i].sourceName + ")"};
@@ -3519,13 +3519,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     yAxis: [{
                         lineWidth: 1,
                         title: {
-                            text: correlationObject.causeVariableName + ' (' + correlationObject.causeAbbreviatedUnitName + ')'
+                            text: correlationObject.causeVariableName + ' (' + correlationObject.causeunitAbbreviatedName + ')'
                         }
                     }, {
                         lineWidth: 1,
                         opposite: true,
                         title: {
-                            text: correlationObject.effectVariableName + ' (' + correlationObject.effectAbbreviatedUnitName + ')'
+                            text: correlationObject.effectVariableName + ' (' + correlationObject.effectunitAbbreviatedName + ')'
                         }
                     }]
                 },
@@ -3539,14 +3539,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         enabled: false
                     },
                     dashStyle: 'shortdot',
-                    tooltip: {valueSuffix: '' + correlationObject.causeAbbreviatedUnitName}
+                    tooltip: {valueSuffix: '' + correlationObject.causeunitAbbreviatedName}
                 }, {
                     name: correlationObject.effectVariableName,
                     color: '#EA4335',
                     type: 'spline',
                     yAxis: 1,
                     data: outcomeSeries.data,
-                    tooltip: {valueSuffix: '' + correlationObject.effectAbbreviatedUnitName}
+                    tooltip: {valueSuffix: '' + correlationObject.effectunitAbbreviatedName}
                 }]
             };
             return config;
@@ -3594,8 +3594,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 /** @namespace pairs[i].effectMeasurementValue */
                 xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
             }
-            /** @namespace correlationObject.causeAbbreviatedUnitName */
-            /** @namespace correlationObject.effectAbbreviatedUnitName */
+            /** @namespace correlationObject.causeunitAbbreviatedName */
+            /** @namespace correlationObject.effectunitAbbreviatedName */
             var scatterplotOptions = {
                 options: {
                     chart: {
@@ -3620,7 +3620,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             },
                             tooltip: {
                                 //headerFormat: '<b>{series.name}</b><br>',
-                                pointFormat: '{point.x}' + correlationObject.causeAbbreviatedUnitName + ', {point.y}' + correlationObject.effectAbbreviatedUnitName
+                                pointFormat: '{point.x}' + correlationObject.causeunitAbbreviatedName + ', {point.y}' + correlationObject.effectunitAbbreviatedName
                             }
                         }
                     },
@@ -3632,14 +3632,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 xAxis: {
                     title: {
                         enabled: true,
-                        text: correlationObject.causeVariableName + ' (' + correlationObject.causeAbbreviatedUnitName + ')'
+                        text: correlationObject.causeVariableName + ' (' + correlationObject.causeunitAbbreviatedName + ')'
                     },
                     startOnTick: true,
                     endOnTick: true,
                     showLastLabel: true
                 },
                 yAxis: {
-                    title: {text: correlationObject.effectVariableName + ' (' + correlationObject.effectAbbreviatedUnitName + ')'}
+                    title: {text: correlationObject.effectVariableName + ' (' + correlationObject.effectunitAbbreviatedName + ')'}
                 },
                 series: [{
                     name: correlationObject.effectVariableName + ' by ' + correlationObject.causeVariableName,
@@ -3653,13 +3653,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return scatterplotOptions;
         };
         quantimodoService.configureLineChartForCause  = function(correlationObject, pairs) {
-            var variableObject = {abbreviatedUnitName: correlationObject.causeAbbreviatedUnitName, name: correlationObject.causeVariableName};
+            var variableObject = {unitAbbreviatedName: correlationObject.causeunitAbbreviatedName, name: correlationObject.causeVariableName};
             var data = [];
             for (var i = 0; i < pairs.length; i++) {data[i] = [pairs[i].timestamp * 1000, pairs[i].causeMeasurementValue];}
             return quantimodoService.configureLineChart(data, variableObject);
         };
         quantimodoService.configureLineChartForEffect  = function(correlationObject, pairs) {
-            var variableObject = {abbreviatedUnitName: correlationObject.effectAbbreviatedUnitName, name: correlationObject.effectVariableName};
+            var variableObject = {unitAbbreviatedName: correlationObject.effectunitAbbreviatedName, name: correlationObject.effectVariableName};
             var data = [];
             for (var i = 0; i < pairs.length; i++) {data[i] = [pairs[i].timestamp * 1000, pairs[i].effectMeasurementValue];}
             return quantimodoService.configureLineChart(data, variableObject);
@@ -3774,7 +3774,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 series: [
                     {
                         yAxis: 0,
-                        name : params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')',
+                        name : params.causeVariableName + ' (' + pairs[0].causeunitAbbreviatedName + ')',
                         type: tlGraphType,
                         color: inputColor,
                         data: causeSeries,
@@ -3782,7 +3782,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     },
                     {
                         yAxis: 1,
-                        name : params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')',
+                        name : params.effectVariableName + ' (' + pairs[0].effectunitAbbreviatedName + ')',
                         type: tlGraphType,
                         color: outputColor,
                         data: effectSeries,
@@ -3835,7 +3835,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             string += '<h3><b>' + moment(value.x).format("MMM Do YYYY") + '<b></h3><br/>';
                             angular.forEach(value.points,function(point){
                                 //string += '<span>' + point.series.name + ':</span> ';
-                                string += '<span>' + point.point.y + variableObject.abbreviatedUnitName + '</span>';
+                                string += '<span>' + point.point.y + variableObject.unitAbbreviatedName + '</span>';
                                 string += '<br/>';
                                 if(value.points["0"].point.name){
                                     string += '<span>' + value.points["0"].point.name + '</span>';
@@ -3847,7 +3847,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         useHtml: true
                     },
                     legend : {enabled : false},
-                    title: {text: variableObject.name + ' Over Time (' + variableObject.abbreviatedUnitName + ')'},
+                    title: {text: variableObject.name + ' Over Time (' + variableObject.unitAbbreviatedName + ')'},
                     xAxis : {
                         type: 'datetime',
                         dateTimeLabelFormats : {
@@ -4167,7 +4167,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 trackingReminderId: trackingReminder.id,
                 variableName: trackingReminder.variableName,
                 defaultValue: trackingReminder.defaultValue,
-                abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
+                unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                 periodInMinutes: trackingReminder.reminderFrequency / 60,
                 reminderStartTime: trackingReminder.reminderStartTime,
                 startTrackingDate: trackingReminder.startTrackingDate,
@@ -5534,7 +5534,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     variableName: data.daily.data[0].icon.replace('-', ' '),
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "count",
+                    unitAbbreviatedName: "count",
                     fillingValue: 0,
                     measurements: [{
                         value: 1,
@@ -5547,7 +5547,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     variableName: "Outdoor Temperature",
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "F",
+                    unitAbbreviatedName: "F",
                     measurements: [{
                         value: (data.daily.data[0].temperatureMax +  data.daily.data[0].temperatureMin)/2,
                         startTimeEpoch: yesterdayNoonTimestamp,
@@ -5559,7 +5559,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     variableName: "Barometric Pressure",
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "Pa",
+                    unitAbbreviatedName: "Pa",
                     measurements: [{
                         value: data.daily.data[0].pressure * 100,
                         startTimeEpoch: yesterdayNoonTimestamp,
@@ -5571,7 +5571,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     variableName: "Outdoor Humidity",
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "%",
+                    unitAbbreviatedName: "%",
                     measurements: [{
                         value: data.daily.data[0].humidity * 100,
                         startTimeEpoch: yesterdayNoonTimestamp,
@@ -5584,7 +5584,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         variableName: "Outdoor Visibility",
                         combinationOperation: "MEAN",
                         sourceName: $rootScope.appSettings.appDisplayName,
-                        abbreviatedUnitName: "miles",
+                        unitAbbreviatedName: "miles",
                         measurements: [{
                             value: data.daily.data[0].visibility,
                             startTimeEpoch: yesterdayNoonTimestamp,
@@ -5597,7 +5597,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     variableName: "Cloud Cover",
                     combinationOperation: "MEAN",
                     sourceName: $rootScope.appSettings.appDisplayName,
-                    abbreviatedUnitName: "%",
+                    unitAbbreviatedName: "%",
                     measurements: [{
                         value: data.daily.data[0].cloudCover * 100,
                         startTimeEpoch: yesterdayNoonTimestamp,

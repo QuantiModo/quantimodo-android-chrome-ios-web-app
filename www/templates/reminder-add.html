@@ -23,7 +23,7 @@
                         Unit
                     </div>
                     <select id="unitSelector"
-                            ng-model="state.trackingReminder.abbreviatedUnitName"
+                            ng-model="state.trackingReminder.unitAbbreviatedName"
                             ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects"
                             ng-change="unitSelected()">
                     </select>
@@ -35,7 +35,7 @@
                     </div>
                     <select
                             id="advancedUnitSelector"
-                            ng-model="state.trackingReminder.abbreviatedUnitName"
+                            ng-model="state.trackingReminder.unitAbbreviatedName"
                             ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
                             ng-change="unitSelected()">
                     </select>
