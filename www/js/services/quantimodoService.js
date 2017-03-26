@@ -3039,14 +3039,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.error("ERROR: No variable name provided to processDataAndConfigureWeekdayChart");
                 return;
             }
-            if(!variableObject.unitName){
-                variableObject.unitName = measurements[0].unitName;
-                console.error("Please provide unit name with variable object!");
-            }
-            if(!variableObject.unitName){
-                variableObject.unitName = measurements[0].unitAbbreviatedName;
-                console.error("Please provide unit name with variable object!");
-            }
             var weekdayMeasurementArray = this.generateWeekdayMeasurementArray(measurements);
             var averageValueByWeekdayArray = this.calculateAverageValueByWeekday(weekdayMeasurementArray);
             return this.configureWeekdayChart(averageValueByWeekdayArray, variableObject);
@@ -3060,14 +3052,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.error("ERROR: No variable name provided to processDataAndConfigureMonthlyChart");
                 return;
             }
-            if(!variableObject.unitName){
-                variableObject.unitName = measurements[0].unitName;
-                console.error("Please provide unit name with variable object!");
-            }
-            if(!variableObject.unitName){
-                variableObject.unitName = measurements[0].unitAbbreviatedName;
-                console.error("Please provide unit name with variable object!");
-            }
             var monthlyMeasurementArray = this.generateMonthlyMeasurementArray(measurements);
             var averageValueByMonthlyArray = this.calculateAverageValueByMonthly(monthlyMeasurementArray);
             return this.configureMonthlyChart(averageValueByMonthlyArray, variableObject);
@@ -3077,8 +3061,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
                 return;
             }
-            if(!variableObject.unitName){variableObject.unitName = measurements[0].unitName;}
-            if(!variableObject.unitName){variableObject.unitName = measurements[0].unitAbbreviatedName;}
             var hourlyMeasurementArray = this.generateHourlyMeasurementArray(measurements);
             var count = 0;
             for(var i = 0; i < hourlyMeasurementArray.length; ++i){
@@ -3100,8 +3082,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
                 return;
             }
-            if(!variableObject.unitName){variableObject.unitName = measurements[0].unitName;}
-            if(!variableObject.unitName){variableObject.unitName = measurements[0].unitAbbreviatedName;}
             var distributionArray = this.generateDistributionArray(measurements);
             return this.configureDistributionChart(distributionArray, variableObject);
         };
@@ -3128,7 +3108,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     title : {text : 'Average  ' + variableObject.name + ' by Day of Week'},
                     xAxis : {categories : xAxisLabels},
                     yAxis : {
-                        title : {text : 'Average Value (' + variableObject.unitName + ')'},
+                        title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
                         min : minimum,
                         max : maximum
                     },
@@ -3183,7 +3163,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     title : {text : 'Average  ' + variableObject.name + ' by Month'},
                     xAxis : {categories : xAxisLabels},
                     yAxis : {
-                        title : {text : 'Average Value (' + variableObject.unitName + ')'},
+                        title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
                         min : minimum,
                         max : maximum
                     },
@@ -3265,7 +3245,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     title : {text : 'Average  ' + variableObject.name + ' by Hour of Day'},
                     xAxis : {categories : xAxisLabels},
                     yAxis : {
-                        title : {text : 'Average Value (' + variableObject.unitName + ')'},
+                        title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
                         min : minimum,
                         max : maximum
                     },
