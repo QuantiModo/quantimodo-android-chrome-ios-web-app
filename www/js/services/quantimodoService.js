@@ -1466,13 +1466,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify(measurementsQueue));
             });
         }
-        quantimodoService.postMeasurementDeferred = function(measurementInfo){
+        function isStartTimeInMilliseconds(measurementInfo){
             var nowMilliseconds = new Date();
             var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
             if(measurementInfo.startTimeEpoch > oneWeekInFuture){
                 measurementInfo.startTimeEpoch = measurementInfo.startTimeEpoch / 1000;
                 console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
+                return true;
             }
+            return false;
+        }
+        quantimodoService.postMeasurementDeferred = function(measurementInfo){
+            isStartTimeInMilliseconds(measurementInfo);
             measurementInfo = addLocationAndSourceDataToMeasurement(measurementInfo);
             if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
                 updateMeasurementInQueue(measurementInfo);
@@ -1483,7 +1488,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.addToMeasurementsQueue(measurementInfo);
             }
             if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
-                quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function() {deferred.resolve();});
+                quantimodoService.syncPrimaryOutcomeVariableMeasurements();
             } else {
                 quantimodoService.postMeasurementQueueToServer();
             }
