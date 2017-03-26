@@ -413,7 +413,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
 	    };
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
             $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultunitAbbreviatedName;
+            $scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
             setupVariableCategory(variableCategoryName);
@@ -431,7 +431,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
             if (!$scope.state.trackingReminder.unitAbbreviatedName) {
-            	$scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultunitAbbreviatedName;
+            	$scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             }
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){

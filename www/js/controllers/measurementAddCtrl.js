@@ -208,7 +208,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
             $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.measurement.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultunitAbbreviatedName;
+            $scope.state.measurement.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
             setupVariableCategory(variableCategoryName);
@@ -219,8 +219,8 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if(!variableCategoryName){ variableCategoryName = ''; }
             $scope.state.measurement.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
-            if(!$scope.state.measurement.unitAbbreviatedName && $scope.state.variableCategoryObject.defaultunitAbbreviatedName){
-                $scope.state.measurement.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultunitAbbreviatedName;
+            if(!$scope.state.measurement.unitAbbreviatedName && $scope.state.variableCategoryObject.defaultUnitAbbreviatedName){
+                $scope.state.measurement.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             }
             $scope.state.title = "Add Measurement";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
@@ -230,7 +230,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
                 $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
             }
-            setupValueFieldType($scope.state.variableCategoryObject.defaultunitAbbreviatedName, null);
+            setupValueFieldType($scope.state.variableCategoryObject.defaultUnitAbbreviatedName, null);
         };
         $scope.unitSelected = function(){
             $scope.state.showVariableCategorySelector = true;  // Need to show category selector in case someone picks a nutrient like Magnesium and changes the unit to pills
