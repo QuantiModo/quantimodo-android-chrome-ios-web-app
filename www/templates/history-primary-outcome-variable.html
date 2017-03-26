@@ -4,7 +4,6 @@
          <div class="list card"  ng-hide="hideHistoryPageInstructionsCard">
              <div class="item" >
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">Past Data</p>
-
                  <div class="row">
                      <div class="col" style="padding-top: 0px;">
                          <i style="font-size: 60px;" class="icon positive ion-calendar"></i>
@@ -25,6 +24,7 @@
          </div>
       <ion-list>
           <div collection-repeat="historyItem in history" data-measurementid="{{historyItem.id}}"
+               ng-hide="historyItem.hide"
                on-hold="showActionSheet(historyItem, $index)" divider-collection-repeat>
               <ion-item ng-click="editMeasurement(historyItem)" >
                   <div style="display:inline-block;float:left;margin-right:15px;">

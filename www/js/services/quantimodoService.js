@@ -1082,7 +1082,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
 
         $rootScope.variableCategories = {
             "Anything": {
-                defaultunitAbbreviatedName: '',
+                defaultUnitAbbreviatedName: '',
                 helpText: "What do you want to record?",
                 variableCategoryNameSingular: "Anything",
                 defaultValuePlaceholderText : "Enter most common value here...",
@@ -1094,7 +1094,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ionIcon: "ion-speedometer"
             },
             "Activity": {
-                defaultunitAbbreviatedName: 'min',
+                defaultUnitAbbreviatedName: 'min',
                 helpText: "What activity do you want to record?",
                 variableCategoryName: "Activity",
                 variableCategoryNameSingular: "Activity",
@@ -1102,7 +1102,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ionIcon: "ion-ios-body"
             },
             "Emotions": {
-                defaultunitAbbreviatedName: "/5",
+                defaultUnitAbbreviatedName: "/5",
                 helpText: "What emotion do you want to rate?",
                 variableCategoryName: "Emotions",
                 variableCategoryNameSingular: "Emotion",
@@ -1113,7 +1113,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/theatre_mask-96.png"
             },
             "Environment": {
-                defaultunitAbbreviatedName: '',
+                defaultUnitAbbreviatedName: '',
                 helpText: "What environmental variable do you want to record?",
                 variableCategoryName: "Environment",
                 variableCategoryNameSingular: "Environment",
@@ -1124,7 +1124,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/chance_of_storm-96.png"
             },
             "Foods" : {
-                defaultunitAbbreviatedName: "serving",
+                defaultUnitAbbreviatedName: "serving",
                 helpText: "What did you eat?",
                 variableCategoryName: "Foods",
                 variableCategoryNameSingular: "Food",
@@ -1135,7 +1135,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/vegetarian_food-96.png"
             },
             "Location" : {
-                defaultunitAbbreviatedName: "min",
+                defaultUnitAbbreviatedName: "min",
                 helpText: "What location do you want to record?",
                 variableCategoryName: "Location",
                 variableCategoryNameSingular: "Location",
@@ -1149,7 +1149,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/location.svg"
             },
             "Music" : {
-                defaultunitAbbreviatedName: "count",
+                defaultUnitAbbreviatedName: "count",
                 helpText: "What music did you listen to?",
                 variableCategoryName: "Music",
                 variableCategoryNameSingular: "Music",
@@ -1157,7 +1157,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ionIcon: "ion-music-note"
             },
             "Nutrients" : {
-                defaultunitAbbreviatedName: "g",
+                defaultUnitAbbreviatedName: "g",
                 helpText: "What nutrient do you want to track?",
                 variableCategoryName: "Nutrients",
                 variableCategoryNameSingular: "Nutrient",
@@ -1165,7 +1165,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ionIcon: "ion-fork"
             },
             "Payments" : {
-                defaultunitAbbreviatedName: "$",
+                defaultUnitAbbreviatedName: "$",
                 helpText: "What did you pay for?",
                 variableCategoryName: "Payments",
                 variableCategoryNameSingular: "Payment",
@@ -1176,7 +1176,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "automatically logging spending by connecting the Slice app"
             },
             "Physical Activity": {
-                defaultunitAbbreviatedName: '',
+                defaultUnitAbbreviatedName: '',
                 helpText: "What physical activity do you want to record?",
                 variableCategoryName: "Physical Activity",
                 variableCategoryNameSingular: "Physical Activity",
@@ -1188,7 +1188,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "cycling, or going to the gym.",
             },
             "Physique": {
-                defaultunitAbbreviatedName: '',
+                defaultUnitAbbreviatedName: '',
                 helpText: "What aspect of your physique do you want to record?",
                 variableCategoryName: "Physique",
                 variableCategoryNameSingular: "Physique",
@@ -1202,7 +1202,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "support body fat percent. ",
             },
             "Sleep": {
-                defaultunitAbbreviatedName: "",
+                defaultUnitAbbreviatedName: "",
                 helpText: "What aspect of sleep do you want to record?",
                 variableCategoryName: "Sleep",
                 variableCategoryNameSingular: "Sleep",
@@ -1212,7 +1212,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/features/half-moon.png"
             },
             "Symptoms": {
-                defaultunitAbbreviatedName: "/5",
+                defaultUnitAbbreviatedName: "/5",
                 helpText: "What symptom do you want to record?",
                 variableCategoryName: "Symptoms",
                 variableCategoryNameSingular: "Symptom",
@@ -1225,7 +1225,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/dizzy_person_2-96.png",
             },
             "Treatments": {
-                defaultunitAbbreviatedName : "mg",
+                defaultUnitAbbreviatedName : "mg",
                 helpText : "What treatment do you want to record?",
                 variableCategoryName : "Treatments",
                 variableCategoryNameSingular : "Treatment",
@@ -1240,7 +1240,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 imageUrl: "img/variable_categories/pill-96.png",
             },
             "Vital Signs": {
-                defaultunitAbbreviatedName: '',
+                defaultUnitAbbreviatedName: '',
                 helpText: "What vital sign do you want to record?",
                 variableCategoryName: "Vital Signs",
                 variableCategoryNameSingular: "Vital Sign",

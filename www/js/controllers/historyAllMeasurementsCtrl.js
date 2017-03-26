@@ -14,6 +14,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			loadingText: "Fetching measurements..."
 	    };
 	    $scope.editMeasurement = function(measurement){
+	        measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
 	    	$state.go('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
 	    };
 	    $scope.getVariableCategoryByUnit = function(unit){
