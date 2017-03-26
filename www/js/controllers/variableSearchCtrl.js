@@ -108,7 +108,7 @@ angular.module('starter')
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
                 $state.go($stateParams.nextState, {causeVariableName: variableObject.name});
             } else if ($stateParams.userTaggedVariableObject) {
-                if($stateParams.userTaggedVariableObject.unitAbbreviatedName !== '/5'){
+                if($stateParams.userTaggedvariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
                     $state.go($stateParams.nextState, {
                         userTaggedVariableObject: $stateParams.userTaggedVariableObject,
                         fromState: $stateParams.fromState,
@@ -140,7 +140,7 @@ angular.module('starter')
 
             } else if($stateParams.userTagVariableObject) {
 
-                if($stateParams.userTagVariableObject.unitAbbreviatedName !== '/5'){
+                if($stateParams.userTagvariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
                     $state.go($stateParams.nextState, {
                         userTaggedVariableObject: variableObject,
                         fromState: $stateParams.fromState,
