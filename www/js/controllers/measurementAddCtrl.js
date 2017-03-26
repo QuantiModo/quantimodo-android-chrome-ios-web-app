@@ -13,7 +13,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             variableCategoryName: variableCategoryName,
             variableCategoryObject : variableCategoryObject,
             helpText: variableCategoryObject.helpText,
-            abbreviatedUnitName : '',
+            unitAbbreviatedName : '',
             measurement : {},
             searchedUnits : [],
             defaultValueLabel : 'Value',
@@ -49,9 +49,9 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 refreshUnitsIfStale();
                 console.debug($state.current.name + ": " + "got units in init function");
                 if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
-                    $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.userVariableDefaultUnitAbbreviatedName;
+                    $scope.state.measurement.unitAbbreviatedName = $stateParams.variableObject.userVariableDefaultUnitAbbreviatedName;
                 }
-                if($stateParams.reminderNotification) {$scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;}
+                if($stateParams.reminderNotification) {$scope.state.measurement.unitAbbreviatedName = $stateParams.reminderNotification.unitAbbreviatedName;}
                 $scope.state.selectedDate = moment();
                 if(!$scope.state.measurementIsSetup) { setupFromUrlParameters(); }
                 if(!$scope.state.measurementIsSetup) { setupFromMeasurementStateParameter(); }
@@ -114,7 +114,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             var message;
             if($scope.state.measurement.value === null || $scope.state.measurement.value === '' ||
                 typeof $scope.state.measurement.value === 'undefined'){
-                if($scope.state.measurement.abbreviatedUnitName === '/5'){message = 'Please select a rating';} else {message = 'Please enter a value';}
+                if($scope.state.measurement.unitAbbreviatedName === '/5'){message = 'Please select a rating';} else {message = 'Please enter a value';}
                 validationFailure(message);
                 return false;
             }
@@ -128,39 +128,39 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 validationFailure(message);
                 return false;
             }
-            if(!$scope.state.measurement.abbreviatedUnitName){
+            if(!$scope.state.measurement.unitAbbreviatedName){
                 message = 'Please select a unit';
                 validationFailure(message);
                 return false;
             } else {
-                if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
+                if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName]){
                     if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.abbreviatedUnitName +
+                        Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' + $scope.state.measurement.unitAbbreviatedName +
                             ' and $rootScope.unitsIndexedByAbbreviatedName are ' + JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
                     }
-                } else {$scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;}
+                } else {$scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].id;}
             }
-            if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName] &&
-                typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue !== "undefined" &&
-                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue !== null)
+            if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName] &&
+                typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].minimumValue !== "undefined" &&
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].minimumValue !== null)
             {
                 if($scope.state.measurement.value <
-                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue){
-                    message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue +
+                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].minimumValue){
+                    message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].minimumValue +
                         ' is the smallest possible value for the unit ' +
-                        $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
+                        $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].name +
                         ".  Please select another unit or value.";
                     validationFailure(message);
                     return false;
                 }
             }
-            if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName] &&
-                typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue !== "undefined" &&
-                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue !== null)
+            if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName] &&
+                typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].maximumValue !== "undefined" &&
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].maximumValue !== null)
             {
-                if($scope.state.measurement.value > $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue){
-                    message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue +
-                        ' is the largest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
+                if($scope.state.measurement.value > $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].maximumValue){
+                    message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].maximumValue +
+                        ' is the largest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].name +
                         ".  Please select another unit or value.";
                     validationFailure(message);
                     return false;
@@ -192,7 +192,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 note : $scope.state.measurement.note || jQuery('#note').val(),
                 prevStartTimeEpoch : $scope.state.measurement.prevStartTimeEpoch,
                 startTimeEpoch : parseInt($scope.state.selectedDate.format("X")),
-                abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
+                unitAbbreviatedName : $scope.state.measurement.unitAbbreviatedName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 combinationOperation : $rootScope.variableObject.combinationOperation
             };
@@ -200,26 +200,15 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if(!measurementInfo.value && measurementInfo.value !== 0){ measurementInfo.value = jQuery('#measurementValue').val(); }
             console.debug($state.current.name + ": " + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo));
             // Measurement only - post measurement. This is for adding or editing
-            quantimodoService.postMeasurementDeferred(measurementInfo, true);
-            var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.abbreviatedUnitName;
+            quantimodoService.postMeasurementDeferred(measurementInfo);
+            var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
             toastMessage = toastMessage.replace(' /', '/');
             $scope.showInfoToast(toastMessage);
             $scope.goBack();
         };
-        var postMeasurementAndGoToHistory = function (measurementInfo) {
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            quantimodoService.postMeasurementDeferred(measurementInfo, true).then(function () {
-                $ionicLoading.hide();
-                $state.go('app.historyAllVariable', { variableName: $scope.state.measurement.variableName });
-            }, function (error){
-                $ionicLoading.hide();
-                console.error("postMeasurementAndGoToHistory error: " + error);
-                $state.go('app.historyAllVariable', { variableName: $scope.state.measurement.variableName });
-            });
-        };
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
             $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            $scope.state.measurement.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultunitAbbreviatedName;
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
             setupVariableCategory(variableCategoryName);
@@ -230,8 +219,8 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if(!variableCategoryName){ variableCategoryName = ''; }
             $scope.state.measurement.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
-            if(!$scope.state.measurement.abbreviatedUnitName && $scope.state.variableCategoryObject.defaultAbbreviatedUnitName){
-                $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            if(!$scope.state.measurement.unitAbbreviatedName && $scope.state.variableCategoryObject.defaultunitAbbreviatedName){
+                $scope.state.measurement.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultunitAbbreviatedName;
             }
             $scope.state.title = "Add Measurement";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
@@ -241,21 +230,21 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
                 $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
             }
-            setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
+            setupValueFieldType($scope.state.variableCategoryObject.defaultunitAbbreviatedName, null);
         };
         $scope.unitSelected = function(){
             $scope.state.showVariableCategorySelector = true;  // Need to show category selector in case someone picks a nutrient like Magnesium and changes the unit to pills
-            if($scope.state.measurement.abbreviatedUnitName === 'Show more units'){
+            if($scope.state.measurement.unitAbbreviatedName === 'Show more units'){
                 $scope.state.showMoreUnits = true;
-                $scope.state.measurement.abbreviatedUnitName = null;
+                $scope.state.measurement.unitAbbreviatedName = null;
                 $scope.state.measurement.unitName = null;
                 $scope.state.measurement.unitId = null;
             } else {
-                console.debug("selecting_unit", $scope.state.measurement.abbreviatedUnitName);
-                $scope.state.measurement.unitName = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name;
-                $scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
+                console.debug("selecting_unit", $scope.state.measurement.unitAbbreviatedName);
+                $scope.state.measurement.unitName = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].name;
+                $scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].id;
             }
-            setupValueFieldType($scope.state.measurement.abbreviatedUnitName, $scope.state.measurement.variableDescription);
+            setupValueFieldType($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.variableDescription);
         };
         var refreshUnitsIfStale = function () {
             var ignoreExpiration = false;
@@ -280,7 +269,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             var value = quantimodoService.getUrlParameter(location.href, 'value', true);
             if (unit || variableName || startTimeEpoch || value) {
                 var measurementObject = {};
-                measurementObject.abbreviatedUnitName = unit;
+                measurementObject.unitAbbreviatedName = unit;
                 measurementObject.variableName = variableName;
                 measurementObject.startTimeEpoch = startTimeEpoch;
                 measurementObject.value = value;
@@ -343,7 +332,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 setupValueFieldType($stateParams.variableObject.userVariableDefaultUnitAbbreviatedName, $stateParams.variableObject.description);
                 // Fill in default value as last value if not /5
                 /** @namespace $stateParams.variableObject.lastValue */
-                if ($scope.state.measurement.abbreviatedUnitName !== '/5' && !$scope.state.measurement.value &&
+                if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value &&
                     typeof $stateParams.variableObject.lastValue !== "undefined") {
                     $scope.state.measurement.value = Number($stateParams.variableObject.lastValue);
                 }
@@ -398,18 +387,18 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             });
         };
         var showMoreUnitsIfNecessary = function () {
-            if($scope.state.measurement.abbreviatedUnitName &&
-                !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
+            if($scope.state.measurement.unitAbbreviatedName &&
+                !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName]){
                 $scope.state.showMoreUnits = true;
             }
         };
-        function setupValueFieldType(abbreviatedUnitName, variableDescription) {
-            if(!abbreviatedUnitName){
-                console.error('No abbreviatedUnitName provided to setupValueFieldType');
+        function setupValueFieldType(unitAbbreviatedName, variableDescription) {
+            if(!unitAbbreviatedName){
+                console.error('No unitAbbreviatedName provided to setupValueFieldType');
                 return false;
             }
             showMoreUnitsIfNecessary();
-            if (abbreviatedUnitName === '/5') {
+            if (unitAbbreviatedName === '/5') {
                 if (!variableDescription) {
                     $scope.showNumericRatingNumberButtons = true;
                     $scope.showNegativeRatingFaceButtons = false;
@@ -435,7 +424,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         }
         function setVariableObjectFromMeasurement() {
             $rootScope.variableObject = {
-                abbreviatedUnitName: $scope.state.measurement.abbreviatedUnitName,
+                unitAbbreviatedName: $scope.state.measurement.unitAbbreviatedName,
                 variableCategoryName: $scope.state.measurement.variableCategoryName ? $scope.state.measurement.variableCategoryName : null,
                 id: $scope.state.measurement.variableId ? $scope.state.measurement.variableId : null,
                 name: $scope.state.measurement.variableName,
@@ -454,14 +443,14 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             $scope.state.selectedDate = moment(measurementObject.startTimeEpoch * 1000);
             $scope.state.measurement = measurementObject;
             $scope.state.measurementIsSetup = true;
-            setupValueFieldType($scope.state.measurement.abbreviatedUnitName, $scope.state.measurement.variableDescription);
+            setupValueFieldType($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.variableDescription);
             if ($scope.state.measurement.variable) { $scope.state.measurement.variableName = $scope.state.measurement.variable; }
             setVariableObject();
         };
         var setupTrackingByReminderNotification = function(){
             if($stateParams.reminderNotification){
                 $scope.state.title = "Record Measurement";
-                if(!$scope.state.measurement.abbreviatedUnitName){$scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;}
+                if(!$scope.state.measurement.unitAbbreviatedName){$scope.state.measurement.unitAbbreviatedName = $stateParams.reminderNotification.unitAbbreviatedName;}
                 $scope.state.hideRemindMeButton = true;
                 $scope.state.measurement.value = $stateParams.reminderNotification.defaultValue;
                 $scope.state.measurement.variableName = $stateParams.reminderNotification.variableName;
@@ -471,7 +460,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                     $scope.state.selectedDate = moment($stateParams.reminderNotification.trackingReminderNotificationTimeEpoch * 1000);
                 }
                 $scope.state.measurementIsSetup = true;
-                setupValueFieldType($stateParams.reminderNotification.abbreviatedUnitName, $stateParams.reminderNotification.variableDescription);
+                setupValueFieldType($stateParams.reminderNotification.unitAbbreviatedName, $stateParams.reminderNotification.variableDescription);
                 setVariableObject();
             }
             // Create variableObject
@@ -480,7 +469,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                     $rootScope.variableObject = $stateParams.variableObject;
                 } else if ($stateParams.reminderNotification) {
                     $rootScope.variableObject = {
-                        abbreviatedUnitName : $stateParams.reminderNotification.abbreviatedUnitName,
+                        unitAbbreviatedName : $stateParams.reminderNotification.unitAbbreviatedName,
                         combinationOperation : $stateParams.reminderNotification.combinationOperation,
                         userId : $stateParams.reminderNotification.userId,
                         variableCategoryName : $stateParams.reminderNotification.variableCategoryName,

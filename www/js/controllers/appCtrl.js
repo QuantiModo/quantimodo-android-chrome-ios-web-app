@@ -86,7 +86,7 @@ angular.module('starter')
         });
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
         $rootScope.unitsIndexedByAbbreviatedName = [];
-        $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
+        $rootScope.unitAbbreviatedNamesIndexedByUnitId = [];
         //  Calendar and  Date picker
         // will update from showCalendarPopup
         $scope.fromDate = new Date();
@@ -375,7 +375,7 @@ angular.module('starter')
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.variableName = variableObject.name;
-            trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
+            trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 86400;
@@ -383,8 +383,8 @@ angular.module('starter')
             var skipReminderSettings = false;
             if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
             if(options.skipReminderSettingsIfPossible){
-                if(variableObject.abbreviatedUnitName === '/5'){skipReminderSettings = true;}
-                if(variableObject.abbreviatedUnitName === 'serving'){
+                if(variableObject.unitAbbreviatedName === '/5'){skipReminderSettings = true;}
+                if(variableObject.unitAbbreviatedName === 'serving'){
                     skipReminderSettings = true;
                     trackingReminder.defaultValue = 1;
                 }
@@ -404,7 +404,7 @@ angular.module('starter')
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.variableName = variableObject.name;
-            trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
+            trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 0;
@@ -414,7 +414,7 @@ angular.module('starter')
                 $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
                 $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
             }
-            if ((trackingReminder.abbreviatedUnitName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
+            if ((trackingReminder.unitAbbreviatedName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
                 $state.go('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
                 return;
             }
@@ -793,7 +793,7 @@ angular.module('starter')
                 $scope.favoriteValidationFailure('Please specify a value for ' + $rootScope.favoritesArray[$index].variableName);
                 return;
             }
-            $rootScope.favoritesArray[$index].displayTotal = "Recorded " + $rootScope.favoritesArray[$index].total + " " + $rootScope.favoritesArray[$index].abbreviatedUnitName;
+            $rootScope.favoritesArray[$index].displayTotal = "Recorded " + $rootScope.favoritesArray[$index].total + " " + $rootScope.favoritesArray[$index].unitAbbreviatedName;
             quantimodoService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
                 .then(function () {
                     console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
@@ -807,9 +807,9 @@ angular.module('starter')
             if(!modifiedReminderValue){modifiedReminderValue = trackingReminder.defaultValue;}
             console.debug('Tracking reminder', trackingReminder);
             console.debug('modifiedReminderValue is ' + modifiedReminderValue);
-            if(trackingReminder.abbreviatedUnitName !== '/5') {
+            if(trackingReminder.unitAbbreviatedName !== '/5') {
                 if(trackingReminder.combinationOperation === "SUM"){trackingReminder.total = trackingReminder.total + modifiedReminderValue;} else {trackingReminder.total = modifiedReminderValue;}
-                trackingReminder.displayTotal = trackingReminder.total + " " + trackingReminder.abbreviatedUnitName;
+                trackingReminder.displayTotal = trackingReminder.total + " " + trackingReminder.unitAbbreviatedName;
             } else {trackingReminder.displayTotal = modifiedReminderValue + '/5';}
             if(!trackingReminder.tally){trackingReminder.tally = 0;}
             if(trackingReminder.combinationOperation === "SUM"){trackingReminder.tally += modifiedReminderValue;} else {trackingReminder.tally = modifiedReminderValue;}

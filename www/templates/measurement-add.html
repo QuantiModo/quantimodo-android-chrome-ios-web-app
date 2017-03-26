@@ -23,7 +23,7 @@
                     <input type="number" ng-model="state.measurement.value" id="defaultValue"
                            ng-click="onTextClick($event)" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
-                <label ng-if="state.measurement.abbreviatedUnitName !== '/5' && bloodPressure.show" class="item item-input">
+                <label ng-if="state.measurement.unitAbbreviatedName !== '/5' && bloodPressure.show" class="item item-input">
                     <input type="number" ng-model="bloodPressure.systolicValue" id="systolicValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter systolic value"
@@ -32,7 +32,7 @@
                         mmHg
                     </span >
                 </label>
-                <label ng-if="state.measurement.abbreviatedUnitName !== '/5' && bloodPressure.show" class="item item-input">
+                <label ng-if="state.measurement.unitAbbreviatedName !== '/5' && bloodPressure.show" class="item item-input">
                     <input type="number" ng-model="bloodPressure.diastolicValue" id="diastolicValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter diastolic value"
@@ -71,13 +71,13 @@
                     </div>
                     <select ng-if="!state.showMoreUnits"
                             id="unitSelector"
-                            ng-model="state.measurement.abbreviatedUnitName"
+                            ng-model="state.measurement.unitAbbreviatedName"
                             ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects"
                             ng-change="unitSelected()">
                     </select>
                     <select ng-if="state.showMoreUnits"
                             id="advancedUnitSelector"
-                            ng-model="state.measurement.abbreviatedUnitName"
+                            ng-model="state.measurement.unitAbbreviatedName"
                             ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
                             ng-change="unitSelected()">
                     </select>
