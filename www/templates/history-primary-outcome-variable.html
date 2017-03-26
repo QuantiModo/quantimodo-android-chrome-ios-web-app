@@ -28,11 +28,11 @@
                on-hold="showActionSheet(historyItem, $index)" divider-collection-repeat>
               <ion-item ng-click="editMeasurement(historyItem)" >
                   <div style="display:inline-block;float:left;margin-right:15px;">
-                    <img ng-src="{{historyItem.image}}" style="width:80px;" />
+                    <img ng-src="{{historyItem.pngPath}}" style="width:80px;" />
                   </div>
                   <div class="history-block">
                       <p ng-hide="true">{{historyItem.id}}</p>
-                      <h2 class="" >{{historyItem.value | percentage}}% {{historyItem.roundedValue | PrimaryOutcomeVariableByNumber}}</h2>
+                      <h2 class="" >{{historyItem.value}}{{historyItem.unitAbbreviatedName}} {{appSettings.primaryOutcomeVariableDetails.name}}</h2>
                       <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | timeOfDayDayOfWeek) track by $index">
                           {{line}}
                       </h2>
@@ -44,7 +44,7 @@
                   </div>
               </ion-item>
           </div>
-      </ion-list> 
+      </ion-list>
     </ion-content>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>

@@ -200,22 +200,11 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if(!measurementInfo.value && measurementInfo.value !== 0){ measurementInfo.value = jQuery('#measurementValue').val(); }
             console.debug($state.current.name + ": " + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo));
             // Measurement only - post measurement. This is for adding or editing
-            quantimodoService.postMeasurementDeferred(measurementInfo, true);
+            quantimodoService.postMeasurementDeferred(measurementInfo);
             var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
             toastMessage = toastMessage.replace(' /', '/');
             $scope.showInfoToast(toastMessage);
             $scope.goBack();
-        };
-        var postMeasurementAndGoToHistory = function (measurementInfo) {
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            quantimodoService.postMeasurementDeferred(measurementInfo, true).then(function () {
-                $ionicLoading.hide();
-                $state.go('app.historyAllVariable', { variableName: $scope.state.measurement.variableName });
-            }, function (error){
-                $ionicLoading.hide();
-                console.error("postMeasurementAndGoToHistory error: " + error);
-                $state.go('app.historyAllVariable', { variableName: $scope.state.measurement.variableName });
-            });
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
             $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);

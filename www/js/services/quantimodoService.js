@@ -1299,19 +1299,27 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.geLocalPrimaryOutcomeMeasurements = function(){
             var primaryOutcomeVariableMeasurements = quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
             if(!primaryOutcomeVariableMeasurements) {primaryOutcomeVariableMeasurements = [];}
-            var measurementsQueue = quantimodoService.getLocalStorageItemAsObject('measurementsQueue');
-            if(measurementsQueue){
-                primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.concat(measurementsQueue);
-            }
+            var measurementsQueue = getPrimaryOutcomeMeasurementsFromQueue();
+            if(measurementsQueue){primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.concat(measurementsQueue);}
             primaryOutcomeVariableMeasurements = primaryOutcomeVariableMeasurements.sort(function(a,b){
-                if(a.startTimeEpoch < b.startTimeEpoch){
-                    return 1;}
-                if(a.startTimeEpoch> b.startTimeEpoch)
-                {return -1;}
+                if(a.startTimeEpoch < b.startTimeEpoch){return 1;}
+                if(a.startTimeEpoch> b.startTimeEpoch){return -1;}
                 return 0;
             });
             return quantimodoService.addInfoAndImagesToMeasurements(primaryOutcomeVariableMeasurements);
         };
+        function getPrimaryOutcomeMeasurementsFromQueue() {
+            var measurementsQueue = quantimodoService.getLocalStorageItemAsObject('measurementsQueue');
+            var primaryOutcomeMeasurements = [];
+            if(measurementsQueue){
+                for(var i = 0; i < measurementsQueue.length; i++){
+                    if(measurementsQueue[i].variableName === config.appSettings.primaryOutcomeVariableDetails.name){
+                        primaryOutcomeMeasurements.push(measurementsQueue[i]);
+                    }
+                }
+            }
+            return primaryOutcomeMeasurements;
+        }
         quantimodoService.getAndStorePrimaryOutcomeMeasurements = function(){
             var deferred = $q.defer();
             if(!$rootScope.user && !$rootScope.accessToken){
@@ -1329,6 +1337,32 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }, function(error){deferred.reject(error);});
             return deferred.promise;
         };
+        quantimodoService.postMeasurementQueueToServer = function(successHandler, errorHandler){
+            var defer = $q.defer();
+            if(!$rootScope.user && !$rootScope.accessToken){
+                defer.reject('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
+                return defer.promise;
+            }
+            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue', function(measurementsQueue) {
+                measurementsQueue = JSON.parse(measurementsQueue);
+                if(!measurementsQueue || measurementsQueue.length < 1){
+                    if(successHandler){successHandler();}
+                    return;
+                }
+                quantimodoService.postMeasurementsToApi(measurementsQueue, function (response) {
+                    if(response && response.data && response.data.userVariables){
+                        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
+                    }
+                    quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
+                    if(successHandler){successHandler();}
+                    defer.resolve();
+                }, function (error) {
+                    if(errorHandler){errorHandler();}
+                    defer.reject(error);
+                });
+            });
+            return defer.promise;
+        };
         quantimodoService.syncPrimaryOutcomeVariableMeasurements = function(){
             var defer = $q.defer();
             if(!$rootScope.user && !$rootScope.accessToken){
@@ -1336,30 +1370,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 defer.resolve();
                 return defer.promise;
             }
-            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue',function(measurementsQueue) {
-                measurementsQueue = JSON.parse(measurementsQueue);
-                if(!measurementsQueue || measurementsQueue.length < 1){
-                    console.debug('No measurements to sync!');
-                    quantimodoService.getAndStorePrimaryOutcomeMeasurements().then(function(primaryOutcomeMeasurementsFromApi){
-                        defer.resolve(primaryOutcomeMeasurementsFromApi);
-                    });
-                } else {
-                    quantimodoService.postMeasurementsToApi(measurementsQueue, function (response) {
-                        if(response && response.data && response.data.userVariables){
-                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
-                        }
-                        quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
-                        quantimodoService.getAndStorePrimaryOutcomeMeasurements().then(function(primaryOutcomeMeasurementsFromApi) {
-                            defer.resolve(primaryOutcomeMeasurementsFromApi);
-                        });
-                    }, function (error) {
-                        console.error("error: " + JSON.stringify(error));
-                        defer.resolve(JSON.stringify(error));
-                    });
-                }
+            quantimodoService.postMeasurementQueueToServer(function(){
+                quantimodoService.getAndStorePrimaryOutcomeMeasurements().then(function(primaryOutcomeMeasurementsFromApi){
+                    defer.resolve(primaryOutcomeMeasurementsFromApi);
+                }, function(error){defer.reject(error);});
             });
             return defer.promise;
         };
+
         // date setter from - to
         quantimodoService.setDates = function(to, from){
             var oldFromDate = quantimodoService.getLocalStorageItemAsString('fromDate');
@@ -1448,10 +1466,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify(measurementsQueue));
             });
         }
-
         quantimodoService.postMeasurementDeferred = function(measurementInfo){
-            var deferred = $q.defer();
-            // make sure startTimeEpoch isn't in milliseconds
             var nowMilliseconds = new Date();
             var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
             if(measurementInfo.startTimeEpoch > oneWeekInFuture){
@@ -1459,35 +1474,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
             }
             measurementInfo = addLocationAndSourceDataToMeasurement(measurementInfo);
-            if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name &&
-                measurementInfo.unitAbbreviatedName === config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName) {
-                if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
-                    updateMeasurementInQueue(measurementInfo);
-                } else if(measurementInfo.id) {
-                    quantimodoService.deleteElementOfLocalStorageItemById('primaryOutcomeVariableMeasurements', measurementInfo.id);
-                    quantimodoService.addToMeasurementsQueue(measurementInfo);
-                } else {
-                    quantimodoService.addToMeasurementsQueue(measurementInfo);
-                }
+            if (measurementInfo.prevStartTimeEpoch) { // Primary outcome variable - update through measurementsQueue
+                updateMeasurementInQueue(measurementInfo);
+            } else if(measurementInfo.id) {
+                quantimodoService.deleteElementOfLocalStorageItemById('primaryOutcomeVariableMeasurements', measurementInfo.id);
+                quantimodoService.addToMeasurementsQueue(measurementInfo);
+            } else {
+                quantimodoService.addToMeasurementsQueue(measurementInfo);
+            }
+            if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
                 quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function() {deferred.resolve();});
             } else {
-                // Non primary outcome variable, post immediately
-                quantimodoService.postMeasurementsToApi(measurementInfo, function(response){
-                    if(response.success) {
-                        if(response && response.data && response.data.userVariables){
-                            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
-                        }
-                        deferred.resolve();
-                    } else {
-                        console.debug("quantimodoService.postMeasurementsToApi error" + JSON.stringify(response));
-                        deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
-                    }
-                }, function(response){
-                    console.debug("quantimodoService.postMeasurementsToApi error" + JSON.stringify(response));
-                    deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
-                });
+                quantimodoService.postMeasurementQueueToServer();
             }
-            return deferred.promise;
         };
         quantimodoService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
             var value = trackingReminder.defaultValue;
