@@ -375,7 +375,7 @@ angular.module('starter')
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.variableName = variableObject.name;
-            trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
+            trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 86400;
@@ -383,8 +383,8 @@ angular.module('starter')
             var skipReminderSettings = false;
             if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
             if(options.skipReminderSettingsIfPossible){
-                if(variableObject.unitAbbreviatedName === '/5'){skipReminderSettings = true;}
-                if(variableObject.unitAbbreviatedName === 'serving'){
+                if(variableObject.userVariableDefaultUnitAbbreviatedName === '/5'){skipReminderSettings = true;}
+                if(variableObject.userVariableDefaultUnitAbbreviatedName === 'serving'){
                     skipReminderSettings = true;
                     trackingReminder.defaultValue = 1;
                 }
@@ -404,7 +404,7 @@ angular.module('starter')
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.variableName = variableObject.name;
-            trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
+            trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 0;
