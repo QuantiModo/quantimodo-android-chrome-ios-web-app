@@ -16,7 +16,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             dailyHistoryOffset: 0,
             title: "Charts"
         };
-        var maximumMeasurements = 2000;
+        var maximumMeasurements = 999; // Highcharts will only show 1000 measurements with notes
         function getTruncatedVariableName(variableName) {
             if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
         }
