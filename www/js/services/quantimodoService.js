@@ -1440,15 +1440,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         // used when adding a new measurement from record measurement OR updating a measurement through the queue
         quantimodoService.addToMeasurementsQueue = function(measurementObject){
-            var deferred = $q.defer();
             measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
-            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue',function(measurementsQueue) {
-                measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
-                measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
-                measurementsQueue.push(measurementObject);
-                quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify(measurementsQueue));
+            quantimodoService.addToLocalStorage('measurementsQueue', measurementObject);
+
+        };
+        quantimodoService.addToLocalStorage = function(localStorageItemName, elementToAdd){
+            quantimodoService.getLocalStorageItemAsStringWithCallback(localStorageItemName, function(localStorageItem) {
+                localStorageItem = localStorageItem ? JSON.parse(localStorageItem) : [];
+                localStorageItem.push(elementToAdd);
+                quantimodoService.setLocalStorageItem(localStorageItemName, JSON.stringify(localStorageItem));
             });
-            return deferred.promise;
         };
         // post a single measurement
         function updateMeasurementInQueue(measurementInfo) {
@@ -1488,6 +1489,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.addToMeasurementsQueue(measurementInfo);
             }
             if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                quantimodoService.addToLocalStorage('primaryOutcomeVariableMeasurements', measurementInfo);
                 quantimodoService.syncPrimaryOutcomeVariableMeasurements();
             } else {
                 quantimodoService.postMeasurementQueueToServer();
@@ -1531,7 +1533,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.deleteMeasurementFromServer = function(measurement){
             var deferred = $q.defer();
             quantimodoService.deleteElementOfLocalStorageItemById('primaryOutcomeVariableMeasurements', measurement.id);
-            quantimodoService.deleteElementsOfLocalStorageItemByProperty('measurementQueue', 'startTimeEpoch', measurement.startTimeEpoch);
+            quantimodoService.deleteElementsOfLocalStorageItemByProperty('measurementsQueue', 'startTimeEpoch', measurement.startTimeEpoch);
             quantimodoService.deleteV1Measurements(measurement, function(response){
                 deferred.resolve(response);
                 console.debug("deleteMeasurementFromServer success " + JSON.stringify(response));
