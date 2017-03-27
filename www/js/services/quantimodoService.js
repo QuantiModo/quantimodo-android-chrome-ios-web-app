@@ -3286,10 +3286,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             var lineChartData = [];
             var lineChartItem;
-            for (var i = 0; i < measurements.length; i++) {
-                lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: "(" + measurements[i].sourceName + ")"};
-                if(measurements[i].note){
-                    lineChartItem.name = measurements[i].note + " " + lineChartItem.name;
+            var numberOfMeasurements = measurements.length;
+            if(numberOfMeasurements > 1000){console.warn('Highstock cannot show tooltips because we have more than 100 measurements');}
+            for (var i = 0; i < numberOfMeasurements; i++) {
+                if(numberOfMeasurements < 1000){
+                    lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: "(" + measurements[i].sourceName + ")"};
+                    if(measurements[i].note){lineChartItem.name = measurements[i].note + " " + lineChartItem.name;}
+                } else {
+                    lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value]
                 }
                 lineChartData.push(lineChartItem);
             }
@@ -3806,7 +3810,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return {
                 useHighStocks: true,
                 options : {
-                    turboThreshold: 0, // Disables 1000 data point limitation http://api.highcharts.com/highcharts/plotOptions.series.turboThreshold
+                    //turboThreshold: 0, // DOESN'T SEEM TO WORK -Disables 1000 data point limitation http://api.highcharts.com/highcharts/plotOptions.series.turboThreshold
                     tooltip: {
                         shared: true,
                         formatter: function(){
