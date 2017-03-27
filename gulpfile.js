@@ -1370,7 +1370,7 @@ gulp.task('setVersionNumberInFiles', function(callback){
 
 	var filesToUpdate = [
 		'www/js/controllers/appCtrl.js',
-		'www/js/app.js',
+		//'www/js/app.js',
 		'gulp.js',
 		'.travis.yml',
 		//'config.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements

@@ -1892,10 +1892,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             });
             return deferred.promise;
         };
-        quantimodoService.reportException = function(exception){
+        quantimodoService.reportException = function(exception, name, metaData){
             console.error('ERROR: ' + exception.message);
             quantimodoService.setupBugsnag().then(function () {
-                Bugsnag.notifyException(exception);
+                Bugsnag.notifyException(exception, name, metaData);
             }, function (error) {console.error(error);});
         };
         quantimodoService.setupBugsnag = function(){

@@ -139,7 +139,7 @@ angular.module('starter',
              });
 
              push.on('error', function(e) {
-                 quantimodoService.reportException(e);
+                 quantimodoService.reportException(e, e.message, pushConfig);
                  //alert(e.message);
              });
 
