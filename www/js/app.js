@@ -138,7 +138,8 @@ angular.module('starter',
              });
 
              push.on('error', function(e) {
-                 alert(e.message);
+                 quantimodoService.reportException(e);
+                 //alert(e.message);
              });
 
              var finishPush = function (data) {
