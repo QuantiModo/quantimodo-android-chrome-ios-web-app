@@ -258,7 +258,7 @@ angular.module('starter')
             confirmPopup.then(function(res) {
                 if(res) {
                     variableObject.shareUserMeasurements = false;
-                    var body = {variableId: variableObject.id, shareUserMeasurements: true};
+                    var body = {variableId: variableObject.id, shareUserMeasurements: false};
                     quantimodoService.postUserVariableDeferred(body).then(function () {
                     }, function (error) {console.error(error);});
                 } else {
