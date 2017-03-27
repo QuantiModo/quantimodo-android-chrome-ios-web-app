@@ -1052,7 +1052,8 @@ angular.module('starter')
                 var backView = $ionicHistory.backView();
                 var stateId = backView.stateName;
                 if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
-                    $state.go(config.appSettings.defaultState, stateParams);
+                    $ionicHistory.goBack(-2);
+                    //$state.go(config.appSettings.defaultState, stateParams);
                     return;
                 }
                 if(stateParams){
