@@ -2803,21 +2803,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if (measurements[index].unitAbbreviatedName === '%') {
                     measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
                 }
-                if (measurements[index].roundedValue && measurements[index].variableDescription === 'positive') {
-                    if (ratingInfo[measurements[index].roundedValue]) {
-                        measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
-                    }
+                if (measurements[index].roundedValue && measurements[index].variableDescription === 'positive' && ratingInfo[measurements[index].roundedValue]) {
+                    measurements[index].image = measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
                 }
-                if (measurements[index].roundedValue && measurements[index].variableDescription === 'negative') {
-                    if (ratingInfo[measurements[index].roundedValue]) {
-                        measurements[index].image = ratingInfo[measurements[index].roundedValue].negativeImage;
-                    }
+                if (measurements[index].roundedValue && measurements[index].variableDescription === 'negative' && ratingInfo[measurements[index].roundedValue]) {
+                    measurements[index].image = ratingInfo[measurements[index].roundedValue].negativeImage;
                 }
-                if (!measurements[index].image && measurements[index].roundedValue) {
-                    if (ratingInfo[measurements[index].roundedValue]) {
-                        measurements[index].image = ratingInfo[measurements[index].roundedValue].numericImage;
-                    }
+                if (!measurements[index].image && measurements[index].roundedValue && ratingInfo[measurements[index].roundedValue]) {
+                    measurements[index].image = ratingInfo[measurements[index].roundedValue].numericImage;
                 }
+                if(measurements[index].image){ measurements[index].pngPath = measurements[index].image; }
                 if (measurements[index].variableCategoryName){
                     measurements[index].icon = quantimodoService.getVariableCategoryIcon(measurements[index].variableCategoryName);
                 }
