@@ -1442,11 +1442,28 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.addToMeasurementsQueue = function(measurementObject){
             measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
             quantimodoService.addToLocalStorage('measurementsQueue', measurementObject);
-
         };
+        function removeArrayElementsWithSameId(localStorageItem, elementToAdd) {
+            if(elementToAdd.id){
+                localStorageItem = localStorageItem.filter(function( obj ) {
+                    return obj.id !== elementToAdd.id;
+                });
+            }
+            return localStorageItem;
+        }
+        function removeArrayElementsWithVariableNameAndStartTime(localStorageItem, elementToAdd) {
+            if(elementToAdd.startTimeEpoch && elementToAdd.variableName){
+                localStorageItem = localStorageItem.filter(function( obj ) {
+                    return !(obj.startTimeEpoch === elementToAdd.startTimeEpoch && obj.variableName === elementToAdd.variableName);
+                });
+            }
+            return localStorageItem;
+        }
         quantimodoService.addToLocalStorage = function(localStorageItemName, elementToAdd){
             quantimodoService.getLocalStorageItemAsStringWithCallback(localStorageItemName, function(localStorageItem) {
                 localStorageItem = localStorageItem ? JSON.parse(localStorageItem) : [];
+                localStorageItem = removeArrayElementsWithSameId(localStorageItem, elementToAdd);
+                localStorageItem = removeArrayElementsWithVariableNameAndStartTime(localStorageItem, elementToAdd);
                 localStorageItem.push(elementToAdd);
                 quantimodoService.setLocalStorageItem(localStorageItemName, JSON.stringify(localStorageItem));
             });
@@ -1489,7 +1506,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.addToMeasurementsQueue(measurementInfo);
             }
             if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
-                quantimodoService.addToLocalStorage('primaryOutcomeVariableMeasurements', measurementInfo);
+                //quantimodoService.addToLocalStorage('primaryOutcomeVariableMeasurements', measurementInfo);
                 quantimodoService.syncPrimaryOutcomeVariableMeasurements();
             } else {
                 quantimodoService.postMeasurementQueueToServer();
