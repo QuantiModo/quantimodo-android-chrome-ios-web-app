@@ -55,28 +55,29 @@ angular.module('starter',
             }
         }
 
-         if (typeof PushNotification !== "undefined") {
-             console.debug("Going to try to register push");
-             var push = PushNotification.init({
-                 android: {
-                     senderID: "1052648855194",
-                     badge: true,
-                     sound: false,
-                     vibrate: false,
-                     icon: 'ic_stat_icon_bw',
-                     clearBadge: true
-                 },
-                 browser: {
-                     pushServiceURL: 'http://push.api.phonegap.com/v1/push'
-                 },
-                 ios: {
-                     alert: "false",
-                     badge: "true",
-                     sound: "false",
-                     clearBadge: true
-                 },
-                 windows: {}
-             });
+        if (typeof PushNotification !== "undefined") {
+            var pushConfig = {
+                android: {
+                    senderID: "1052648855194",
+                    badge: true,
+                    sound: false,
+                    vibrate: false,
+                    icon: 'ic_stat_icon_bw',
+                    clearBadge: true
+                },
+                browser: {
+                    pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+                },
+                ios: {
+                    alert: "false",
+                    badge: "true",
+                    sound: "false",
+                    clearBadge: true
+                },
+                windows: {}
+            };
+            console.debug("Going to try to register push with " + JSON.stringify(pushConfig));
+            var push = PushNotification.init(pushConfig);
 
              push.on('registration', function(registerResponse) {
                  console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
