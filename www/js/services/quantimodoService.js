@@ -35,6 +35,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
                 if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
                 if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
+                if($rootScope.urlParameters.userId){urlParams.push(encodeURIComponent('userId') + '=' + $rootScope.urlParameters.userId);}
                 //We can't append access token to Ionic requests for some reason
                 //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
                 // configure request
