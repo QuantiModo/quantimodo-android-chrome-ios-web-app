@@ -43,7 +43,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             if($rootScope.variableObject.name){
                 $rootScope.variableName = $rootScope.variableObject.name;
                 var params = {sort: "-startTimeEpoch", variableName: $rootScope.variableObject.name, limit: maximumMeasurements, offset: 0};
-                if($rootScope.urlParameters.userId){params.userId = $rootScope.urlParameters.userId;}
                 $scope.state.title = getTruncatedVariableName($rootScope.variableObject.name);
                 getDailyHistoryForVariable(params);
                 getHistoryForVariable(params);
@@ -184,7 +183,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             $rootScope.variableObject = {name:  variableName};
             $rootScope.variableName = variableName;
             var params = {};
-            if($rootScope.urlParameters.userId){params.userId = $rootScope.urlParameters.userId;}
             quantimodoService.getUserVariableByNameDeferred(variableName, params).then(function(variableObject){
                 $rootScope.variableObject = variableObject;
                 refreshUserVariable(variableName);
