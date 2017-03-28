@@ -1343,13 +1343,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 defer.reject('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
                 return defer.promise;
             }
-            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue', function(measurementsQueue) {
-                measurementsQueue = JSON.parse(measurementsQueue);
-                if(!measurementsQueue || measurementsQueue.length < 1){
+            quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue', function(measurementsQueueString) {
+                quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
+                var parsedMeasurementsQueue = JSON.parse(measurementsQueueString);
+                if(!parsedMeasurementsQueue || parsedMeasurementsQueue.length < 1){
                     if(successHandler){successHandler();}
                     return;
                 }
-                quantimodoService.postMeasurementsToApi(measurementsQueue, function (response) {
+                quantimodoService.postMeasurementsToApi(parsedMeasurementsQueue, function (response) {
                     if(response && response.data && response.data.userVariables){
                         quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
                     }
@@ -1357,6 +1358,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     if(successHandler){successHandler();}
                     defer.resolve();
                 }, function (error) {
+                    quantimodoService.setLocalStorageItem('measurementsQueue', measurementsQueueString);
                     if(errorHandler){errorHandler();}
                     defer.reject(error);
                 });
