@@ -3818,10 +3818,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var date = new Date();
             var timezoneOffsetHours = (date.getTimezoneOffset())/60;
             var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
-            data = data.sort(function(a, b){return a.x - b.x;});
-            for (var i = 0; i < data.length; i++) {data[i].x = data[i].x - timezoneOffsetMilliseconds;}
-            var minimumTimeEpochMilliseconds = data[0].x - timezoneOffsetMilliseconds;
-            var maximumTimeEpochMilliseconds = data[data.length-1].x - timezoneOffsetMilliseconds;
+            var minimumTimeEpochMilliseconds, maximumTimeEpochMilliseconds, i;
+            var numberOfMeasurements = data.length;
+            if(numberOfMeasurements < 1000){
+                data = data.sort(function(a, b){return a.x - b.x;});
+                for (i = 0; i < numberOfMeasurements; i++) {data[i].x = data[i].x - timezoneOffsetMilliseconds;}
+                minimumTimeEpochMilliseconds = data[0].x - timezoneOffsetMilliseconds;
+                maximumTimeEpochMilliseconds = data[data.length-1].x - timezoneOffsetMilliseconds;
+            } else {
+                data = data.sort(function(a, b){return a[0] - b[0];});
+                for (i = 0; i < numberOfMeasurements; i++) {data[i][0] = data[i][0] - timezoneOffsetMilliseconds;}
+                minimumTimeEpochMilliseconds = data[0][0] - timezoneOffsetMilliseconds;
+                maximumTimeEpochMilliseconds = data[data.length-1][0] - timezoneOffsetMilliseconds;
+            }
             var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
             if(millisecondsBetweenLatestAndEarliest < 86400*1000){
                 console.warn('Need at least a day worth of data for line chart');
@@ -3953,7 +3962,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return !haveEnough && !exactMatch;
         }
         // get user variables (without public)
-        quantimodoService.searchUserVariablesIncludingLocalDeferred = function(variableSearchQuery, params){
+        quantimodoService.searchVariablesIncludingLocalDeferred = function(variableSearchQuery, params){
             var deferred = $q.defer();
             var variables = quantimodoService.searchLocalStorage('userVariables', 'name', variableSearchQuery, params);
             if(!shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
