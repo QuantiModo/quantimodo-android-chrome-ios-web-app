@@ -1585,6 +1585,7 @@ angular.module('starter')
             if($rootScope.isMobile || mobilePurchaseDebug){  mobileUpgrade(ev);} else { webUpgrade(ev); }
         };
         var webUpgrade = function(ev) {
+            quantimodoService.reportError('User clicked upgrade button');
             $mdDialog.show({
                 controller: WebUpgradeDialogController,
                 templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
@@ -1593,6 +1594,7 @@ angular.module('starter')
                 clickOutsideToClose: false,
                 fullscreen: false
             }).then(function(answer) {
+                quantimodoService.reportError('User submitted credit card info');
                 var body = {
                     "card_number": answer.creditCardInfo.cardNumber,
                     "card_month": answer.creditCardInfo.month,
@@ -1604,6 +1606,7 @@ angular.module('starter')
                 quantimodoService.recordUpgradeProductPurchase(answer.productId, null, 1);
                 $ionicLoading.show();
                 quantimodoService.postCreditCardDeferred(body).then(function (response) {
+                    quantimodoService.reportError('Got successful upgrade response from API');
                     $ionicLoading.hide();
                     console.debug(JSON.stringify(response));
                     $mdDialog.show(
