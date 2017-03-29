@@ -1,6 +1,4 @@
-angular.module('starter')
-	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService) {
-
+angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService) {
 		$scope.controller_name = "ImportCtrl";
         $rootScope.showFilterBarSearchIcon = false;
 
@@ -8,12 +6,16 @@ angular.module('starter')
         	console.debug("ImportCtrl beforeEnter");
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
+            if(!$rootScope.user){
+                console.debug('Setting afterLoginGoToState to ' + $state.current.name);
+                quantimodoService.setLocalStorageItem('afterLoginGoToState', $state.current.name);
+                $state.go('app.login');
+                return;
+            }
             if($rootScope.user.stripeActive || config.appSettings.upgradeDisabled){
                 loadNativeConnectorPage();
                 return;
 			}
-
 			// Check if user upgrade via web since last user refresh
 			$ionicLoading.show();
 			quantimodoService.refreshUser().then(function (user) {
