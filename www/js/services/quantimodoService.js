@@ -618,7 +618,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // if not logged in, returns rejects
         quantimodoService.getAccessTokenFromAnySource = function () {
             var deferred = $q.defer();
-            var accessToken = quantimodoService.getUrlParameter(window.location.href, 'accessToken');
+            var accessToken = quantimodoService.getUrlParameter('accessToken');
             if(accessToken){
                 deferred.resolve(accessToken);
                 return deferred.promise;
@@ -753,8 +753,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.debug('extracting authorization code from event: ' + JSON.stringify(event));
             var authorizationUrl = event.url;
             if(!authorizationUrl) {authorizationUrl = event.data;}
-            var authorizationCode = quantimodoService.getUrlParameter(authorizationUrl, 'code');
-            if(!authorizationCode) {authorizationCode = quantimodoService.getUrlParameter(authorizationUrl, 'token');}
+            var authorizationCode = quantimodoService.getUrlParameter('code', authorizationUrl);
+            if(!authorizationCode) {authorizationCode = quantimodoService.getUrlParameter('token', authorizationUrl);}
             return authorizationCode;
         };
         quantimodoService.getAccessTokenFromAuthorizationCode = function (authorizationCode) {
@@ -1781,7 +1781,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // returns bool | string
         // if search param is found: returns its value
         // returns false if not found
-        quantimodoService.getUrlParameter = function (url, parameterName, shouldDecode) {
+        quantimodoService.getUrlParameter = function (parameterName, url, shouldDecode) {
+            if(!url){url = window.location.href;}
             if(url.split('?').length > 1){
                 var queryString = url.split('?')[1];
                 var parameterKeyValuePairs = queryString.split('&');
@@ -5439,13 +5440,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.debug('quantimodoService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + quantimodoService.getRedirectUri());
                 if(quantimodoService.startsWith(event.url, quantimodoService.getRedirectUri())) {
                     console.debug('quantimodoService.nonNativeMobileLogin: event.url starts with ' + quantimodoService.getRedirectUri());
-                    if(!quantimodoService.getUrlParameter(event.url,'error')) {
+                    if(!quantimodoService.getUrlParameter('error', event.url)) {
                         var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
                         ref.close();
                         console.debug('quantimodoService.nonNativeMobileLogin: Going to get an access token using authorization code.');
                         quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
                     } else {
-                        var errorMessage = "quantimodoService.nonNativeMobileLogin: error occurred:" + quantimodoService.getUrlParameter(event.url, 'error');
+                        var errorMessage = "quantimodoService.nonNativeMobileLogin: error occurred:" + quantimodoService.getUrlParameter('error', event.url);
                         quantimodoService.reportError(errorMessage);
                         ref.close();
                     }
@@ -5490,7 +5491,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         // validate if the url is same as we wanted it to be
                         if (quantimodoService.startsWith(iframe_url, quantimodoService.getRedirectUri())) {
                             // if there is no error
-                            if (!quantimodoService.getUrlParameter(iframe_url, 'error')) {
+                            if (!quantimodoService.getUrlParameter('error', iframe_url)) {
                                 var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
                                 // get access token from authorization code
                                 quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
@@ -5500,9 +5501,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                                 // TODO : display_error
                                 alert('Could not login.  Please contact mike@quantimo.do');
                                 quantimodoService.reportError("Error occurred validating redirect " + iframe_url +
-                                    ". Closing the sibling tab." + quantimodoService.getUrlParameter(iframe_url, 'error'));
+                                    ". Closing the sibling tab." + quantimodoService.getUrlParameter('error', iframe_url));
                                 console.error("Error occurred validating redirect url. Closing the sibling tab.",
-                                    quantimodoService.getUrlParameter(iframe_url, 'error'));
+                                    quantimodoService.getUrlParameter('error', iframe_url));
                                 // close the sibling tab
                                 ref.close();
                             }

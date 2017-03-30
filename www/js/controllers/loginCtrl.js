@@ -61,7 +61,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         $scope.$on('$ionicView.enter', function(){
             leaveIfLoggedIn();
             console.debug($state.current.name + ' initializing...');
-            if(quantimodoService.getUrlParameter(window.location.href, 'loggingIn')){ loginTimeout(); }
+            if(quantimodoService.getUrlParameter('loggingIn')){ loginTimeout(); }
             $rootScope.hideNavigationMenu = true;
         });
         $scope.$on('$ionicView.afterEnter', function(){
@@ -128,7 +128,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                         console.debug('nativeSocialLogin: loadstart event is ' + JSON.stringify(event));
                         console.debug('nativeSocialLogin: check if changed url is the same as redirection url.');
                         if(quantimodoService.startsWith(event.url, quantimodoService.getRedirectUri())) {
-                            if(!quantimodoService.getUrlParameter(event.url,'error')) {
+                            if(!quantimodoService.getUrlParameter('error', event.url)) {
                                 var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
                                 console.debug('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                                 ref.close();
@@ -136,7 +136,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                                 // get access token from authorization code
                                 quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
                             } else {
-                                var errorMessage = "nativeSocialLogin: error occurred: " + quantimodoService.getUrlParameter(event.url, 'error');
+                                var errorMessage = "nativeSocialLogin: error occurred: " + quantimodoService.getUrlParameter('error', event.url);
                                 quantimodoService.reportError(errorMessage);
                                 // close inAppBrowser
                                 ref.close();

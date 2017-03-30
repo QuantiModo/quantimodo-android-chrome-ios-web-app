@@ -67,8 +67,8 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             quantimodoService.getUnits(ignoreExpiration).then(function () {
                 $ionicLoading.hide();
                 refreshUnitsIfStale();
-                var reminderIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'reminderId');
-                var variableIdUrlParameter = quantimodoService.getUrlParameter(window.location.href, 'variableId');
+                var reminderIdUrlParameter = quantimodoService.getUrlParameter('reminderId');
+                var variableIdUrlParameter = quantimodoService.getUrlParameter('variableId');
                 if ($stateParams.variableObject) {
                     $rootScope.variableObject = $stateParams.variableObject;
                     setupByVariableObject($stateParams.variableObject);
