@@ -426,7 +426,6 @@ angular.module('starter',
     if ($rootScope.urlParameters.accessToken) {
         quantimodoService.clearLocalStorage();
         localStorage.accessToken = $rootScope.urlParameters.accessToken;
-        //quantimodoService.setAccessTokenInLocalStorageAndRefreshUser($rootScope.urlParameters.accessToken);
     }
     console.debug('url params are ' + JSON.stringify($rootScope.urlParameters));
 })

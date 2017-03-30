@@ -615,11 +615,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 successHandler,
                 errorHandler);
         };
-        quantimodoService.setAccessTokenInLocalStorageAndRefreshUser = function(accessToken){
-            quantimodoService.clearLocalStorage();
-            localStorage.accessToken = accessToken;
-            quantimodoService.refreshUser();
-        };
         // if not logged in, returns rejects
         quantimodoService.getAccessTokenFromAnySource = function () {
             var deferred = $q.defer();
