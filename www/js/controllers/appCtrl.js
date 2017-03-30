@@ -1849,7 +1849,7 @@ angular.module('starter')
         $scope.copyChartsUrlToClipboard = function () {
             $scope.copyLinkText = 'Copied!';
             /** @namespace $rootScope.variableObject.chartsUrl */
-            clipboard.copyText($rootScope.variableObject.chartsUrl);
+            clipboard.copyText($rootScope.variableObject.chartsLinkStatic);
             $scope.showInfoToast('Copied link!');
         };
         var verifyEmailAddressAndExecuteCallback = function (callback) {
