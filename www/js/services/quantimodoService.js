@@ -618,8 +618,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // if not logged in, returns rejects
         quantimodoService.getAccessTokenFromAnySource = function () {
             var deferred = $q.defer();
-            if($rootScope.urlParameters.accessToken){
-                deferred.resolve($rootScope.urlParameters.accessToken);
+            var accessToken = quantimodoService.getUrlParameter(window.location.href, 'accessToken');
+            if(accessToken){
+                deferred.resolve(accessToken);
                 return deferred.promise;
             }
             var now = new Date().getTime();
@@ -1780,16 +1781,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // returns bool | string
         // if search param is found: returns its value
         // returns false if not found
-        quantimodoService.getUrlParameter = function (url, sParam, shouldDecode) {
+        quantimodoService.getUrlParameter = function (url, parameterName, shouldDecode) {
             if(url.split('?').length > 1){
-                var sPageURL = url.split('?')[1];
-                var sURLVariables = sPageURL.split('&');
-                for (var i = 0; i < sURLVariables.length; i++)
-                {
-                    var sParameterName = sURLVariables[i].split('=');
-                    if (sParameterName[0] === sParam)
-                    {
-                        if(typeof shouldDecode !== "undefined")  {return decodeURIComponent(sParameterName[1]);} else {return sParameterName[1];}
+                var queryString = url.split('?')[1];
+                var parameterKeyValuePairs = queryString.split('&');
+                for (var i = 0; i < parameterKeyValuePairs.length; i++) {
+                    var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
+                    if (currentParameterKeyValuePair[0] === parameterName || currentParameterKeyValuePair[0].toCamel() === parameterName) {
+                        if(typeof shouldDecode !== "undefined")  {
+                            return decodeURIComponent(currentParameterKeyValuePair[1]);
+                        } else {
+                            return currentParameterKeyValuePair[1];
+                        }
                     }
                 }
                 return false;
