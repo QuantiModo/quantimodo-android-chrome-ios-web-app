@@ -423,15 +423,6 @@ angular.module('starter',
         window.localStorage.introSeen = true;
         window.localStorage.onboarded = true;
     }
-    if ($rootScope.urlParameters.accessToken) {
-        if(localStorage.getItem('accessToken') !== $rootScope.urlParameters.accessToken){
-            console.debug('Clearing local storage and setting accessToken to ' + $rootScope.urlParameters.accessToken);
-            quantimodoService.clearLocalStorage();
-            localStorage.setItem('accessToken', $rootScope.urlParameters.accessToken);
-        } else {
-            console.debug("Url access token already in local storage");
-        }
-    } else {console.debug("No access token in url " + window.location.href);}
     console.debug('url params are ' + JSON.stringify($rootScope.urlParameters) + ' and localStorage.accessToken is: ' + localStorage.getItem('accessToken'));
 })
 
@@ -483,22 +474,29 @@ angular.module('starter',
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
         var getAppNameFromUrl = function () {
-            var sPageURL = document.location.toString().split('?')[1];
-            if(!sPageURL) {
-                return false;
+            var appName = false;
+            var accessTokenInUrl;
+            var queryString = document.location.toString().split('?')[1];
+            if(!queryString) {return false;}
+            var queryParameterStrings = queryString.split('&');
+            if(!queryParameterStrings) {return false;}
+            for (var i = 0; i < queryParameterStrings.length; i++) {
+                var queryKeyValuePair = queryParameterStrings[i].split('=');
+                if (queryKeyValuePair[0] === 'app') {appName = queryKeyValuePair[1].split('#')[0];}
+                if (queryKeyValuePair[0].toCamel() === 'accessToken') {accessTokenInUrl = queryKeyValuePair[1];}
             }
-            var sURLVariables = sPageURL.split('&');
-            if(!sURLVariables) {
-                return false;
-            }
-            for (var i = 0; i < sURLVariables.length; i++)
-            {
-                var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] === 'app') {
-                    return sParameterName[1].split('#')[0];
+            if(accessTokenInUrl){
+                if(localStorage.getItem('accessToken') !== accessTokenInUrl){
+                    console.debug('Clearing local storage and setting accessToken to ' + accessTokenInUrl);
+                    localStorage.clear();
+                    localStorage.setItem('accessToken', accessTokenInUrl);
+                } else {
+                    console.debug("Url access token already in local storage");
                 }
+            } else {
+                console.debug('No access token in url: ' + window.location.href);
             }
-            return false;
+            return appName;
         };
 
         var lowercaseAppName = getAppNameFromUrl();
