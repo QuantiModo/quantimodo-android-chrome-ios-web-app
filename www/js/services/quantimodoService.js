@@ -615,12 +615,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 successHandler,
                 errorHandler);
         };
-        quantimodoService.getAccessTokenFromUrlParameter = function () {
-            var accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'accessToken');
-            if (!accessTokenInUrl) {accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'access_token');}
-            if(accessTokenInUrl){localStorage.accessToken = accessTokenInUrl;}
-            return accessTokenInUrl;
-        };
         quantimodoService.setAccessTokenInLocalStorageAndRefreshUser = function(accessToken){
             quantimodoService.clearLocalStorage();
             localStorage.accessToken = accessToken;
