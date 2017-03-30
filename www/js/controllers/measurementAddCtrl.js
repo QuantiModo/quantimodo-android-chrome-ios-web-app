@@ -368,11 +368,10 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                         measurementObject = response;
                         setupTrackingByMeasurement(measurementObject);
                         deferred.resolve();
-                    },
-                    function(response) {
+                    }, function(error) {
                         $ionicLoading.hide();
-                        console.debug($state.current.name + ": " + "Error response");
-                        deferred.resolve();
+                        console.error($state.current.name + ": " + "Error response: " + error);
+                        deferred.reject(error);
                     }
                 );
             }
