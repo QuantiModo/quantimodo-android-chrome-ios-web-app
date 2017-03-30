@@ -626,6 +626,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     localStorage.clear();
                     localStorage.setItem('accessToken', accessToken);
                 }
+                var user = JSON.parse(localStorage.getItem('user'));
+                if(!user && $rootScope.user){user = $rootScope.user;}
+                if(user && accessToken !== user.accessToken){
+                    $rootScope.user = null;
+                    localStorage.clear();
+                    localStorage.setItem('accessToken', accessToken);
+                    quantimodoService.refreshUser();
+                }
                 deferred.resolve(accessToken);
                 return deferred.promise;
             }
