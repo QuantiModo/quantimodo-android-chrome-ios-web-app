@@ -423,7 +423,6 @@ angular.module('starter',
         window.localStorage.introSeen = true;
         window.localStorage.onboarded = true;
     }
-    console.debug('url params are ' + JSON.stringify($rootScope.urlParameters) + ' and localStorage.accessToken is: ' + localStorage.getItem('accessToken'));
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
