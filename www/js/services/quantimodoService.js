@@ -59,6 +59,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.debug('quantimodoService.get: ' + request.url);
                 $http(request)
                     .success(function (data, status, headers) {
+                        console.debug("success response from " + request.url);
                         if(!data) {
                             if (typeof Bugsnag !== "undefined") {
                                 var groupingHash = 'No data returned from this request';
@@ -73,6 +74,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         }
                     })
                     .error(function (data, status, headers) {
+                        console.error("error response from " + request.url);
                         quantimodoService.errorHandler(data, status, headers, request, options);
                         errorHandler(data);
                     }, onRequestFailed);
