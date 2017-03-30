@@ -489,18 +489,12 @@ angular.module('starter',
                     console.debug('Clearing local storage and setting accessToken to ' + accessTokenInUrl);
                     localStorage.clear();
                     localStorage.setItem('accessToken', accessTokenInUrl);
-                } else {
-                    console.debug("Url access token already in local storage");
                 }
-            } else {
-                console.debug('No access token in url: ' + window.location.href);
             }
             return appName;
         };
-
         var lowercaseAppName = getAppNameFromUrl();
-        console.debug('Loading config ' + appsManager.getAppConfig(lowercaseAppName));
-        console.debug('Loading private config ' + appsManager.getPrivateConfig(lowercaseAppName));
+        console.debug('Loading config ' + appsManager.getAppConfig(lowercaseAppName) + ' and private config ' + appsManager.getPrivateConfig(lowercaseAppName));
         return $ocLazyLoad.load([appsManager.getAppConfig(lowercaseAppName), appsManager.getPrivateConfig(lowercaseAppName)]);
       }]
     };
