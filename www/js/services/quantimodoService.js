@@ -616,19 +616,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 successHandler,
                 errorHandler);
         };
-        function setAccessTokenInLocalStorage(accessToken){
-            quantimodoService.setLocalStorageItem('accessToken', accessToken);
-            localStorage.accessToken = accessToken;  // This is for Chrome extension
-        }
         quantimodoService.getAccessTokenFromUrlParameter = function () {
             var accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'accessToken');
             if (!accessTokenInUrl) {accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'access_token');}
-            if(accessTokenInUrl){setAccessTokenInLocalStorage(accessTokenInUrl);}
+            if(accessTokenInUrl){localStorage.accessToken = accessTokenInUrl;}
             return accessTokenInUrl;
         };
         quantimodoService.setAccessTokenInLocalStorageAndRefreshUser = function(accessToken){
             quantimodoService.clearLocalStorage();
-            setAccessTokenInLocalStorage(accessToken);
+            localStorage.accessToken = accessToken;
             quantimodoService.refreshUser(accessToken);
         };
         // if not logged in, returns rejects
@@ -639,9 +635,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return deferred.promise;
             }
             var now = new Date().getTime();
-            var expiresAtMilliseconds = quantimodoService.getLocalStorageItemAsString('expiresAtMilliseconds');
-            var refreshToken = quantimodoService.getLocalStorageItemAsString('refreshToken');
-            accessToken = quantimodoService.getLocalStorageItemAsString('accessToken');
+            var expiresAtMilliseconds = localStorage.expiresAtMilliseconds;
+            var refreshToken = localStorage.refreshToken;
+            var accessToken = localStorage.accessToken;
             console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
                 expiresAtMilliseconds: expiresAtMilliseconds,
                 refreshToken: refreshToken,
@@ -700,13 +696,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var accessToken = accessResponse.accessToken || accessResponse.access_token;
             if (accessToken) {
                 $rootScope.accessToken = accessToken;
-                setAccessTokenInLocalStorage(accessToken);
+                localStorage.accessToken = accessToken;
             } else {
                 console.error('No access token provided to quantimodoService.saveAccessTokenInLocalStorage');
                 return;
             }
             var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-            if (refreshToken) {quantimodoService.setLocalStorageItem('refreshToken', refreshToken);}
+            if (refreshToken) {localStorage.refreshToken = refreshToken;}
             var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
             var expiresAtMilliseconds;
             var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
@@ -1019,9 +1015,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             $ionicHistory.clearCache();
         };
         quantimodoService.clearTokensFromLocalStorage = function(){
-            quantimodoService.deleteItemFromLocalStorage('accessToken');
-            quantimodoService.deleteItemFromLocalStorage('refreshToken');
-            quantimodoService.deleteItemFromLocalStorage('expiresAtMilliseconds');
+            localStorage.accessToken = null;  // This is for Chrome extension
+            localStorage.refreshToken = null;
+            localStorage.expiresAtMilliseconds = null;
         };
         quantimodoService.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
