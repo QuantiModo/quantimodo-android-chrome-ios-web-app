@@ -32,7 +32,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         if($scope.introSlides[0].backgroundColor){ $scope.myIntro.backgroundColor = $scope.introSlides[0].backgroundColor; }
         if($scope.introSlides[0].textColor){ $scope.myIntro.textColor = $scope.introSlides[0].textColor; }
-        if($rootScope.urlParameters.accessToken){
+        if(quantimodoService.getUrlParameter('accessToken')){
             console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {
