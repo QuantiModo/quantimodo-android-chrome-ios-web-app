@@ -646,6 +646,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled') {
                 console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
                 quantimodoService.refreshAccessToken(refreshToken, deferred);
+            } else if(accessToken){
+                deferred.resolve(accessToken);
             } else if(quantimodoService.getClientId() === 'oAuthDisabled') {
                     //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
