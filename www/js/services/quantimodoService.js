@@ -1,5 +1,5 @@
 angular.module('starter').factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform,
-                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory) {
+                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
         // GET method with the added token
@@ -634,7 +634,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return $rootScope.accessTokenInUrl;
         };
         quantimodoService.setAccessTokenInLocalStorageAndRefreshUser = function(accessToken){
-            quantimodoService.completelyResetAppState();
+            quantimodoService.clearLocalStorage();
             setAccessTokenInLocalStorage(accessToken);
             quantimodoService.refreshUser(accessToken);
         };
@@ -3330,7 +3330,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: "(" + measurements[i].sourceName + ")"};
                     if(measurements[i].note){lineChartItem.name = measurements[i].note + " " + lineChartItem.name;}
                 } else {
-                    lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value]
+                    lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
                 }
                 lineChartData.push(lineChartItem);
             }
