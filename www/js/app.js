@@ -474,7 +474,6 @@ angular.module('starter',
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
         var getAppNameFromUrl = function () {
             var appName = false;
-            var accessTokenInUrl;
             var queryString = document.location.toString().split('?')[1];
             if(!queryString) {return false;}
             var queryParameterStrings = queryString.split('&');
@@ -482,14 +481,6 @@ angular.module('starter',
             for (var i = 0; i < queryParameterStrings.length; i++) {
                 var queryKeyValuePair = queryParameterStrings[i].split('=');
                 if (queryKeyValuePair[0] === 'app') {appName = queryKeyValuePair[1].split('#')[0];}
-                if (queryKeyValuePair[0].toCamel() === 'accessToken') {accessTokenInUrl = queryKeyValuePair[1];}
-            }
-            if(accessTokenInUrl){
-                if(localStorage.getItem('accessToken') !== accessTokenInUrl){
-                    console.debug('Clearing local storage and setting accessToken to ' + accessTokenInUrl);
-                    localStorage.clear();
-                    localStorage.setItem('accessToken', accessTokenInUrl);
-                }
             }
             return appName;
         };
