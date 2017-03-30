@@ -626,7 +626,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var now = new Date().getTime();
             var expiresAtMilliseconds = localStorage.expiresAtMilliseconds;
             var refreshToken = localStorage.refreshToken;
-            var accessToken = localStorage.accessToken;
+            accessToken = localStorage.accessToken;
             console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
                 expiresAtMilliseconds: expiresAtMilliseconds,
                 refreshToken: refreshToken,
