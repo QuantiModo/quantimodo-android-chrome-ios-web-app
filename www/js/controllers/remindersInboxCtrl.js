@@ -32,7 +32,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         	console.debug("RemindersInboxCtrl beforeEnter ");
         	$scope.defaultHelpCards = quantimodoService.setupHelpCards();
         	$scope.loading = true;
-            if(!$rootScope.accessTokenInUrl && !$rootScope.user){
+            if(!$rootScope.urlParameters.accessToken && !$rootScope.user){
                 console.debug('Setting afterLoginGoToState to ' + $state.current.name);
                 quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
                 $state.go('app.login');

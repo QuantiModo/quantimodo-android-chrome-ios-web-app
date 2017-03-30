@@ -25,7 +25,6 @@ angular.module('starter')
         if(!$rootScope.user){
             quantimodoService.refreshUser().then(function(){ $scope.syncEverything(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
         }
-        quantimodoService.getAccessTokenFromUrlParameter();
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
@@ -720,12 +719,7 @@ angular.module('starter')
             });
         }
         $rootScope.sendToLogin = function(){
-            quantimodoService.deleteItemFromLocalStorage('user');
-            quantimodoService.deleteItemFromLocalStorage('accessToken');
-            quantimodoService.deleteItemFromLocalStorage('accessTokenInUrl');
-            $rootScope.accessToken = null;
-            console.debug('appCtrl.sendToLogin just set $rootScope.user to null');
-            $rootScope.user = null;
+            quantimodoService.completelyResetAppState();
             $state.go('app.login');
         };
         $scope.safeApply = function(fn) {
@@ -738,22 +732,8 @@ angular.module('starter')
             $rootScope.isSyncing = true;
             $rootScope.syncDisplayText = loadingText;
             console.debug('Showing Loader');
-            if(!loadingText){
-                loadingText = '';
-            }
+            if(!loadingText){loadingText = '';}
             $scope.loading = true;
-/*            $ionicLoading.show({
-                template: loadingText+ '<br><br><img src={{appSettings.loaderImagePath}}>',
-                content: 'Loading',
-                animation: 'fade-in',
-                showBackdrop: false,
-                maxWidth: 1000,
-                showDelay: 0,
-                noBackdrop: true,
-                hideOnStateChange: true,
-                duration: 15000
-            });
-            */
             var seconds = 30;
             console.debug('Setting showLoader timeout for ' + seconds + ' seconds.  loadingText is ' + loadingText);
             $timeout(function () {$scope.hideLoader();}, seconds * 1000);

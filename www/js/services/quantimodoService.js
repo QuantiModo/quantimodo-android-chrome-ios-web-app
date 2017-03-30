@@ -1,5 +1,5 @@
 angular.module('starter').factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform,
-                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory) {
+                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory) {
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
         // GET method with the added token
@@ -112,7 +112,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     },
                     data : JSON.stringify(body)
                 };
-                if(accessToken && (quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl)) {
+                if(accessToken && (quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.urlParameters.accessToken)) {
                     request.headers = {
                         "Authorization" : "Bearer " + accessToken,
                         'Content-Type': "application/json",
@@ -615,45 +615,30 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 successHandler,
                 errorHandler);
         };
-        quantimodoService.getAccessTokenFromUrlParameter = function () {
-            $rootScope.accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'accessToken');
-            if (!$rootScope.accessTokenInUrl) {
-                $rootScope.accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'access_token');
-            }
-            if($rootScope.accessTokenInUrl){
-                quantimodoService.setLocalStorageItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
-                quantimodoService.setLocalStorageItem('accessToken', $rootScope.accessTokenInUrl);
-                localStorage.accessToken = $rootScope.accessTokenInUrl;  // This is for Chrome extension
-                $rootScope.accessToken = $rootScope.accessTokenInUrl;
-            } else {quantimodoService.deleteItemFromLocalStorage('accessTokenInUrl');}
-            return $rootScope.accessTokenInUrl;
-        };
         // if not logged in, returns rejects
         quantimodoService.getAccessTokenFromAnySource = function () {
             var deferred = $q.defer();
-            if(!$rootScope.accessTokenInUrl){
-                $rootScope.accessTokenInUrl = quantimodoService.getAccessTokenFromUrlParameter();
-            }
-            if($rootScope.accessTokenInUrl){
-                deferred.resolve($rootScope.accessTokenInUrl);
+            var accessToken = quantimodoService.getUrlParameter('accessToken');
+            if(accessToken){
+                if(accessToken !== localStorage.getItem('accessToken')){
+                    localStorage.clear();
+                    localStorage.setItem('accessToken', accessToken);
+                }
+                deferred.resolve(accessToken);
                 return deferred.promise;
             }
             var now = new Date().getTime();
-            var expiresAtMilliseconds = quantimodoService.getLocalStorageItemAsString('expiresAtMilliseconds');
-            var refreshToken = quantimodoService.getLocalStorageItemAsString('refreshToken');
-            var accessToken = quantimodoService.getLocalStorageItemAsString('accessToken');
+            var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
+            var refreshToken = localStorage.getItem("refreshToken");
+            accessToken = localStorage.getItem("accessToken");
             console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
                 expiresAtMilliseconds: expiresAtMilliseconds,
                 refreshToken: refreshToken,
                 accessToken: accessToken
             }));
             if(refreshToken && !expiresAtMilliseconds){
-                var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds +
-                    '.  How did this happen?';
-                Bugsnag.notify(errorMessage,
-                    quantimodoService.getLocalStorageItemAsString('user'),
-                    {groupingHash: errorMessage},
-                    "error");
+                var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
+                Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");
             }
             if (accessToken && now < expiresAtMilliseconds) {
                 console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
@@ -661,12 +646,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled') {
                 console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
                 quantimodoService.refreshAccessToken(refreshToken, deferred);
+            } else if(accessToken){
+                deferred.resolve(accessToken);
             } else if(quantimodoService.getClientId() === 'oAuthDisabled') {
                     //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
                     return deferred.promise;
             } else {
-                console.warn('Could not get or refresh access token');
+                console.warn('Could not get or refresh access token at ' + window.location.href);
                 deferred.resolve();
             }
             return deferred.promise;
@@ -700,14 +687,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var accessToken = accessResponse.accessToken || accessResponse.access_token;
             if (accessToken) {
                 $rootScope.accessToken = accessToken;
-                quantimodoService.setLocalStorageItem('accessToken', accessToken);
-                localStorage.accessToken = accessToken;   // This is for Chrome extension
+                localStorage.setItem('accessToken', accessToken);
             } else {
                 console.error('No access token provided to quantimodoService.saveAccessTokenInLocalStorage');
                 return;
             }
             var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-            if (refreshToken) {quantimodoService.setLocalStorageItem('refreshToken', refreshToken);}
+            if (refreshToken) {localStorage.refreshToken = refreshToken;}
             var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
             var expiresAtMilliseconds;
             var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
@@ -773,8 +759,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.debug('extracting authorization code from event: ' + JSON.stringify(event));
             var authorizationUrl = event.url;
             if(!authorizationUrl) {authorizationUrl = event.data;}
-            var authorizationCode = quantimodoService.getUrlParameter(authorizationUrl, 'code');
-            if(!authorizationCode) {authorizationCode = quantimodoService.getUrlParameter(authorizationUrl, 'token');}
+            var authorizationCode = quantimodoService.getUrlParameter('code', authorizationUrl);
+            if(!authorizationCode) {authorizationCode = quantimodoService.getUrlParameter('token', authorizationUrl);}
             return authorizationCode;
         };
         quantimodoService.getAccessTokenFromAuthorizationCode = function (authorizationCode) {
@@ -1009,10 +995,20 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             quantimodoService.getUserEmailPreferences(params, function(user){deferred.resolve(user);}, function(error){deferred.reject(error);});
             return deferred.promise;
         };
+        quantimodoService.completelyResetAppState = function(){
+            $rootScope.user = null;
+            // Getting token so we can post as the new user if they log in again
+            $rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
+            quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
+            quantimodoService.clearLocalStorage();
+            quantimodoService.cancelAllNotifications();
+            $ionicHistory.clearHistory();
+            $ionicHistory.clearCache();
+        };
         quantimodoService.clearTokensFromLocalStorage = function(){
-            quantimodoService.deleteItemFromLocalStorage('accessToken');
-            quantimodoService.deleteItemFromLocalStorage('refreshToken');
-            quantimodoService.deleteItemFromLocalStorage('expiresAtMilliseconds');
+            localStorage.setItem('accessToken', null);
+            localStorage.setItem('refreshToken', null);
+            localStorage.setItem('expiresAtMilliseconds', null);
         };
         quantimodoService.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
@@ -1791,16 +1787,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // returns bool | string
         // if search param is found: returns its value
         // returns false if not found
-        quantimodoService.getUrlParameter = function (url, sParam, shouldDecode) {
+        quantimodoService.getUrlParameter = function (parameterName, url, shouldDecode) {
+            if(!url){url = window.location.href;}
             if(url.split('?').length > 1){
-                var sPageURL = url.split('?')[1];
-                var sURLVariables = sPageURL.split('&');
-                for (var i = 0; i < sURLVariables.length; i++)
-                {
-                    var sParameterName = sURLVariables[i].split('=');
-                    if (sParameterName[0] === sParam)
-                    {
-                        if(typeof shouldDecode !== "undefined")  {return decodeURIComponent(sParameterName[1]);} else {return sParameterName[1];}
+                var queryString = url.split('?')[1];
+                var parameterKeyValuePairs = queryString.split('&');
+                for (var i = 0; i < parameterKeyValuePairs.length; i++) {
+                    var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
+                    if (currentParameterKeyValuePair[0] === parameterName || currentParameterKeyValuePair[0].toCamel() === parameterName) {
+                        if(typeof shouldDecode !== "undefined")  {
+                            return decodeURIComponent(currentParameterKeyValuePair[1]);
+                        } else {
+                            return currentParameterKeyValuePair[1];
+                        }
                     }
                 }
                 return false;
@@ -3314,7 +3313,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: "(" + measurements[i].sourceName + ")"};
                     if(measurements[i].note){lineChartItem.name = measurements[i].note + " " + lineChartItem.name;}
                 } else {
-                    lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value]
+                    lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
                 }
                 lineChartData.push(lineChartItem);
             }
@@ -5447,13 +5446,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.debug('quantimodoService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + quantimodoService.getRedirectUri());
                 if(quantimodoService.startsWith(event.url, quantimodoService.getRedirectUri())) {
                     console.debug('quantimodoService.nonNativeMobileLogin: event.url starts with ' + quantimodoService.getRedirectUri());
-                    if(!quantimodoService.getUrlParameter(event.url,'error')) {
+                    if(!quantimodoService.getUrlParameter('error', event.url)) {
                         var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
                         ref.close();
                         console.debug('quantimodoService.nonNativeMobileLogin: Going to get an access token using authorization code.');
                         quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
                     } else {
-                        var errorMessage = "quantimodoService.nonNativeMobileLogin: error occurred:" + quantimodoService.getUrlParameter(event.url, 'error');
+                        var errorMessage = "quantimodoService.nonNativeMobileLogin: error occurred:" + quantimodoService.getUrlParameter('error', event.url);
                         quantimodoService.reportError(errorMessage);
                         ref.close();
                     }
@@ -5498,7 +5497,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         // validate if the url is same as we wanted it to be
                         if (quantimodoService.startsWith(iframe_url, quantimodoService.getRedirectUri())) {
                             // if there is no error
-                            if (!quantimodoService.getUrlParameter(iframe_url, 'error')) {
+                            if (!quantimodoService.getUrlParameter('error', iframe_url)) {
                                 var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
                                 // get access token from authorization code
                                 quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
@@ -5508,9 +5507,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                                 // TODO : display_error
                                 alert('Could not login.  Please contact mike@quantimo.do');
                                 quantimodoService.reportError("Error occurred validating redirect " + iframe_url +
-                                    ". Closing the sibling tab." + quantimodoService.getUrlParameter(iframe_url, 'error'));
+                                    ". Closing the sibling tab." + quantimodoService.getUrlParameter('error', iframe_url));
                                 console.error("Error occurred validating redirect url. Closing the sibling tab.",
-                                    quantimodoService.getUrlParameter(iframe_url, 'error'));
+                                    quantimodoService.getUrlParameter('error', iframe_url));
                                 // close the sibling tab
                                 ref.close();
                             }
