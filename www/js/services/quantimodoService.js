@@ -1336,7 +1336,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.postMeasurementQueueToServer = function(successHandler, errorHandler){
             var defer = $q.defer();
-            if(!$rootScope.user && !$rootScope.accessToken){
+            if(!$rootScope.user && !$rootScope.urlParameters.accessToken){
                 defer.reject('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
                 return defer.promise;
             }
@@ -1364,7 +1364,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.syncPrimaryOutcomeVariableMeasurements = function(){
             var defer = $q.defer();
-            if(!$rootScope.user && !$rootScope.accessToken){
+            if(!$rootScope.user && !$rootScope.urlParameters.accessToken){
                 console.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
                 defer.resolve();
                 return defer.promise;
