@@ -424,10 +424,15 @@ angular.module('starter',
         window.localStorage.onboarded = true;
     }
     if ($rootScope.urlParameters.accessToken) {
-        quantimodoService.clearLocalStorage();
-        localStorage.accessToken = $rootScope.urlParameters.accessToken;
-    }
-    console.debug('url params are ' + JSON.stringify($rootScope.urlParameters));
+        if(localStorage.getItem('accessToken') !== $rootScope.urlParameters.accessToken){
+            console.debug('Clearing local storage and setting accessToken to ' + $rootScope.urlParameters.accessToken);
+            quantimodoService.clearLocalStorage();
+            localStorage.setItem('accessToken', $rootScope.urlParameters.accessToken);
+        } else {
+            console.debug("Url access token already in local storage");
+        }
+    } else {console.debug("No access token in url " + window.location.href);}
+    console.debug('url params are ' + JSON.stringify($rootScope.urlParameters) + ' and localStorage.accessToken is: ' + localStorage.getItem('accessToken'));
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,

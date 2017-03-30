@@ -681,7 +681,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var accessToken = accessResponse.accessToken || accessResponse.access_token;
             if (accessToken) {
                 $rootScope.accessToken = accessToken;
-                localStorage.accessToken = accessToken;
+                localStorage.setItem('accessToken', accessToken);
             } else {
                 console.error('No access token provided to quantimodoService.saveAccessTokenInLocalStorage');
                 return;
@@ -1000,9 +1000,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             $ionicHistory.clearCache();
         };
         quantimodoService.clearTokensFromLocalStorage = function(){
-            localStorage.accessToken = null;  // This is for Chrome extension
-            localStorage.refreshToken = null;
-            localStorage.expiresAtMilliseconds = null;
+            localStorage.setItem('accessToken', null);
+            localStorage.setItem('refreshToken', null);
+            localStorage.setItem('expiresAtMilliseconds', null);
         };
         quantimodoService.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
