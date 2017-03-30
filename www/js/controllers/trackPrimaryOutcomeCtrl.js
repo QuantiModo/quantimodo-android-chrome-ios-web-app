@@ -17,7 +17,7 @@ angular.module('starter')
             updateCharts();
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
-            if($rootScope.user || $rootScope.accessToken){
+            if($rootScope.user || quantimodoService.getUrlParameter('accessToken')){
                 $scope.showLoader(syncDisplayText);
                 console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
                 quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
