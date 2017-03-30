@@ -392,6 +392,10 @@ angular.module('starter',
         }
     }, 500);
 
+    String.prototype.toCamel = function(){
+        return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
+    };
+
     var getAllUrlParams = function() {
         $rootScope.urlParameters = {};
         var queryString = document.location.toString().split('?')[1];
@@ -404,9 +408,9 @@ angular.module('starter',
             for (var i = 0; i < sURLVariables.length; i++) {
                 parameterNameValueArray = sURLVariables[i].split('=');
                 if(parameterNameValueArray[1].indexOf('http') > -1){
-                    $rootScope.urlParameters[parameterNameValueArray[0]] = parameterNameValueArray[1];
+                    $rootScope.urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];
                 } else {
-                    $rootScope.urlParameters[parameterNameValueArray[0]] = decodeURIComponent(parameterNameValueArray[1]);
+                    $rootScope.urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);
                 }
 
             }

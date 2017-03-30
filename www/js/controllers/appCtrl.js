@@ -25,7 +25,6 @@ angular.module('starter')
         if(!$rootScope.user){
             quantimodoService.refreshUser().then(function(){ $scope.syncEverything(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
         }
-        quantimodoService.getAccessTokenFromUrlParameter();
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
@@ -722,7 +721,6 @@ angular.module('starter')
         $rootScope.sendToLogin = function(){
             quantimodoService.deleteItemFromLocalStorage('user');
             quantimodoService.deleteItemFromLocalStorage('accessToken');
-            quantimodoService.deleteItemFromLocalStorage('accessTokenInUrl');
             $rootScope.accessToken = null;
             console.debug('appCtrl.sendToLogin just set $rootScope.user to null');
             $rootScope.user = null;

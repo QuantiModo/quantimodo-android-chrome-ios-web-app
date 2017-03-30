@@ -112,7 +112,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     },
                     data : JSON.stringify(body)
                 };
-                if(accessToken && (quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl)) {
+                if(accessToken && (quantimodoService.getClientId() !== 'oAuthDisabled' || $rootScope.urlParameters.accessToken)) {
                     request.headers = {
                         "Authorization" : "Bearer " + accessToken,
                         'Content-Type': "application/json",
@@ -621,17 +621,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             localStorage.accessToken = accessToken;  // This is for Chrome extension
         }
         quantimodoService.getAccessTokenFromUrlParameter = function () {
-            $rootScope.accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'accessToken');
-            if (!$rootScope.accessTokenInUrl) {
-                $rootScope.accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'access_token');
-            }
-            if($rootScope.accessTokenInUrl){
-                quantimodoService.setLocalStorageItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
-                quantimodoService.setLocalStorageItem('accessToken', $rootScope.accessTokenInUrl);
-                localStorage.accessToken = $rootScope.accessTokenInUrl;  // This is for Chrome extension
-                $rootScope.accessToken = $rootScope.accessTokenInUrl;
-            } else {quantimodoService.deleteItemFromLocalStorage('accessTokenInUrl');}
-            return $rootScope.accessTokenInUrl;
+            var accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'accessToken');
+            if (!accessTokenInUrl) {accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'access_token');}
+            if(accessTokenInUrl){setAccessTokenInLocalStorage(accessTokenInUrl);}
+            return accessTokenInUrl;
         };
         quantimodoService.setAccessTokenInLocalStorageAndRefreshUser = function(accessToken){
             quantimodoService.clearLocalStorage();
