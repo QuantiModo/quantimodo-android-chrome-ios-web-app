@@ -16,7 +16,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
             console.debug('quantimodoService.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
-            quantimodoService.getAccessTokenFromAnySource(options.accessToken).then(function(accessToken) {
+            quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
                 allowedParams.push('limit');
                 allowedParams.push('offset');
                 allowedParams.push('sort');
@@ -407,12 +407,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var params = {noRedirect: true, code: code};
             quantimodoService.get('api/v1/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
         };
-        quantimodoService.getUserFromApi = function(accessToken, successHandler, errorHandler){
+        quantimodoService.getUserFromApi = function(successHandler, errorHandler){
             if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
             var options = {};
             options.minimumSecondsBetweenRequests = 10;
             options.doNotSendToLogin = true;
-            options.accessToken = accessToken;
             quantimodoService.get('api/user/me', [], {}, successHandler, errorHandler, options);
         };
         quantimodoService.getUserEmailPreferences = function(params, successHandler, errorHandler){
@@ -625,13 +624,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.setAccessTokenInLocalStorageAndRefreshUser = function(accessToken){
             quantimodoService.clearLocalStorage();
             localStorage.accessToken = accessToken;
-            quantimodoService.refreshUser(accessToken);
+            quantimodoService.refreshUser();
         };
         // if not logged in, returns rejects
-        quantimodoService.getAccessTokenFromAnySource = function (accessToken) {
+        quantimodoService.getAccessTokenFromAnySource = function () {
             var deferred = $q.defer();
-            if(accessToken){
-                deferred.resolve(accessToken);
+            if($rootScope.urlParameters.accessToken){
+                deferred.resolve($rootScope.urlParameters.accessToken);
                 return deferred.promise;
             }
             var now = new Date().getTime();
@@ -644,12 +643,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 accessToken: accessToken
             }));
             if(refreshToken && !expiresAtMilliseconds){
-                var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds +
-                    '.  How did this happen?';
-                Bugsnag.notify(errorMessage,
-                    quantimodoService.getLocalStorageItemAsString('user'),
-                    {groupingHash: errorMessage},
-                    "error");
+                var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
+                Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");
             }
             if (accessToken && now < expiresAtMilliseconds) {
                 console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
@@ -977,9 +972,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             return false;
         };
-        quantimodoService.refreshUser = function(accessToken){
+        quantimodoService.refreshUser = function(){
             var deferred = $q.defer();
-            quantimodoService.getUserFromApi(accessToken, function(user){
+            quantimodoService.getUserFromApi(function(user){
                 quantimodoService.setUserInLocalStorageBugsnagIntercomPush(user);
                 deferred.resolve(user);
             }, function(error){deferred.reject(error);});
