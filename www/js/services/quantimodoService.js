@@ -1337,7 +1337,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.postMeasurementQueueToServer = function(successHandler, errorHandler){
             var defer = $q.defer();
             if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
-                defer.reject('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
+                var errorMessage = 'Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user or access token in url';
+                console.error(errorMessage);
+                defer.reject(errorMessage);
                 return defer.promise;
             }
             quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue', function(measurementsQueueString) {
