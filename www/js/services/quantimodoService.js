@@ -1319,8 +1319,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         quantimodoService.getAndStorePrimaryOutcomeMeasurements = function(){
             var deferred = $q.defer();
-            if(!$rootScope.user && !$rootScope.accessToken){
-                deferred.reject('Cannot sync because we do not have a user');
+            if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
+                var errorMessage = 'Cannot sync because we do not have a user or access token in url';
+                console.error(errorMessage)
+                deferred.reject(errorMessage);
                 return deferred.promise;
             }
             var params = {variableName : config.appSettings.primaryOutcomeVariableDetails.name, sort : '-startTimeEpoch', limit:900};
