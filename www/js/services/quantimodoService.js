@@ -646,7 +646,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     deferred.resolve();
                     return deferred.promise;
             } else {
-                console.warn('Could not get or refresh access token');
+                console.warn('Could not get or refresh access token at ' + window.location.href);
                 deferred.resolve();
             }
             return deferred.promise;
