@@ -620,6 +620,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var deferred = $q.defer();
             var accessToken = quantimodoService.getUrlParameter('accessToken');
             if(accessToken){
+                if(accessToken !== localStorage.getItem('accessToken')){
+                    localStorage.clear();
+                    localStorage.setItem('accessToken', accessToken);
+                }
                 deferred.resolve(accessToken);
                 return deferred.promise;
             }
