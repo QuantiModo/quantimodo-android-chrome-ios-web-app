@@ -22,10 +22,13 @@
 
              </div>
          </div>
-      <ion-list>
-          <div collection-repeat="historyItem in history" data-measurementid="{{historyItem.id}}"
+      <ion-list id="historyList">
+          <div id="historyItem"
+               collection-repeat="historyItem in history"
+               data-measurementid="{{historyItem.id}}"
                ng-hide="historyItem.hide"
-               on-hold="showActionSheet(historyItem, $index)" divider-collection-repeat>
+               on-hold="showActionSheet(historyItem, $index)"
+               divider-collection-repeat>
               <ion-item ng-click="editMeasurement(historyItem)" >
                   <div style="display:inline-block;float:left;margin-right:15px;">
                     <img ng-src="{{historyItem.pngPath}}" style="width:80px;" />

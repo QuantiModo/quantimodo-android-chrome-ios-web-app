@@ -59,6 +59,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.debug('quantimodoService.get: ' + request.url);
                 $http(request)
                     .success(function (data, status, headers) {
+                        console.debug("success response from " + request.url);
                         if(!data) {
                             if (typeof Bugsnag !== "undefined") {
                                 var groupingHash = 'No data returned from this request';
@@ -73,6 +74,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         }
                     })
                     .error(function (data, status, headers) {
+                        console.error("error response from " + request.url);
                         quantimodoService.errorHandler(data, status, headers, request, options);
                         errorHandler(data);
                     }, onRequestFailed);
@@ -1319,8 +1321,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         quantimodoService.getAndStorePrimaryOutcomeMeasurements = function(){
             var deferred = $q.defer();
-            if(!$rootScope.user && !$rootScope.accessToken){
-                deferred.reject('Cannot sync because we do not have a user');
+            if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
+                var errorMessage = 'Cannot sync because we do not have a user or access token in url';
+                console.error(errorMessage)
+                deferred.reject(errorMessage);
                 return deferred.promise;
             }
             var params = {variableName : config.appSettings.primaryOutcomeVariableDetails.name, sort : '-startTimeEpoch', limit:900};
