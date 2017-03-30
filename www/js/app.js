@@ -415,9 +415,12 @@ angular.module('starter',
 
     getAllUrlParams();
 
-    if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
+    if ($rootScope.urlParameters.accessToken || $rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
         window.localStorage.introSeen = true;
         window.localStorage.onboarded = true;
+    }
+    if ($rootScope.urlParameters.accessToken) {
+        quantimodoService.setAccessTokenInLocalStorageAndRefreshUser($rootScope.urlParameters.accessToken);
     }
     console.debug('url params are ' + JSON.stringify($rootScope.urlParameters));
 })

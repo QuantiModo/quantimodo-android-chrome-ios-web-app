@@ -16,7 +16,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
             console.debug('quantimodoService.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
-            quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
+            quantimodoService.getAccessTokenFromAnySource(options.accessToken).then(function(accessToken) {
                 allowedParams.push('limit');
                 allowedParams.push('offset');
                 allowedParams.push('sort');
@@ -407,11 +407,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var params = {noRedirect: true, code: code};
             quantimodoService.get('api/v1/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
         };
-        quantimodoService.getUserFromApi = function(successHandler, errorHandler){
+        quantimodoService.getUserFromApi = function(accessToken, successHandler, errorHandler){
             if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
             var options = {};
             options.minimumSecondsBetweenRequests = 10;
             options.doNotSendToLogin = true;
+            options.accessToken = accessToken;
             quantimodoService.get('api/user/me', [], {}, successHandler, errorHandler, options);
         };
         quantimodoService.getUserEmailPreferences = function(params, successHandler, errorHandler){
@@ -615,6 +616,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 successHandler,
                 errorHandler);
         };
+        function setAccessTokenInLocalStorage(accessToken){
+            quantimodoService.setLocalStorageItem('accessToken', accessToken);
+            localStorage.accessToken = accessToken;  // This is for Chrome extension
+        }
         quantimodoService.getAccessTokenFromUrlParameter = function () {
             $rootScope.accessTokenInUrl = quantimodoService.getUrlParameter(location.href, 'accessToken');
             if (!$rootScope.accessTokenInUrl) {
@@ -628,20 +633,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             } else {quantimodoService.deleteItemFromLocalStorage('accessTokenInUrl');}
             return $rootScope.accessTokenInUrl;
         };
+        quantimodoService.setAccessTokenInLocalStorageAndRefreshUser = function(accessToken){
+            quantimodoService.completelyResetAppState();
+            setAccessTokenInLocalStorage(accessToken);
+            quantimodoService.refreshUser(accessToken);
+        };
         // if not logged in, returns rejects
-        quantimodoService.getAccessTokenFromAnySource = function () {
+        quantimodoService.getAccessTokenFromAnySource = function (accessToken) {
             var deferred = $q.defer();
-            if(!$rootScope.accessTokenInUrl){
-                $rootScope.accessTokenInUrl = quantimodoService.getAccessTokenFromUrlParameter();
-            }
-            if($rootScope.accessTokenInUrl){
-                deferred.resolve($rootScope.accessTokenInUrl);
+            if(accessToken){
+                deferred.resolve(accessToken);
                 return deferred.promise;
             }
             var now = new Date().getTime();
             var expiresAtMilliseconds = quantimodoService.getLocalStorageItemAsString('expiresAtMilliseconds');
             var refreshToken = quantimodoService.getLocalStorageItemAsString('refreshToken');
-            var accessToken = quantimodoService.getLocalStorageItemAsString('accessToken');
+            accessToken = quantimodoService.getLocalStorageItemAsString('accessToken');
             console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
                 expiresAtMilliseconds: expiresAtMilliseconds,
                 refreshToken: refreshToken,
@@ -700,8 +707,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var accessToken = accessResponse.accessToken || accessResponse.access_token;
             if (accessToken) {
                 $rootScope.accessToken = accessToken;
-                quantimodoService.setLocalStorageItem('accessToken', accessToken);
-                localStorage.accessToken = accessToken;   // This is for Chrome extension
+                setAccessTokenInLocalStorage(accessToken);
             } else {
                 console.error('No access token provided to quantimodoService.saveAccessTokenInLocalStorage');
                 return;
@@ -982,9 +988,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             return false;
         };
-        quantimodoService.refreshUser = function(){
+        quantimodoService.refreshUser = function(accessToken){
             var deferred = $q.defer();
-            quantimodoService.getUserFromApi(function(user){
+            quantimodoService.getUserFromApi(accessToken, function(user){
                 quantimodoService.setUserInLocalStorageBugsnagIntercomPush(user);
                 deferred.resolve(user);
             }, function(error){deferred.reject(error);});
@@ -1008,6 +1014,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var deferred = $q.defer();
             quantimodoService.getUserEmailPreferences(params, function(user){deferred.resolve(user);}, function(error){deferred.reject(error);});
             return deferred.promise;
+        };
+        quantimodoService.completelyResetAppState = function(){
+            $rootScope.user = null;
+            // Getting token so we can post as the new user if they log in again
+            $rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
+            quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
+            quantimodoService.clearLocalStorage();
+            quantimodoService.cancelAllNotifications();
+            $ionicHistory.clearHistory();
+            $ionicHistory.clearCache();
         };
         quantimodoService.clearTokensFromLocalStorage = function(){
             quantimodoService.deleteItemFromLocalStorage('accessToken');

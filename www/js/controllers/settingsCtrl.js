@@ -287,15 +287,8 @@ angular.module('starter')
 
         $scope.logout = function() {
 
-			var completelyResetAppState = function(){
-				$rootScope.user = null;
-				// Getting token so we can post as the new user if they log in again
-				$rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
-				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
-				quantimodoService.clearLocalStorage();
-				quantimodoService.cancelAllNotifications();
-				$ionicHistory.clearHistory();
-				$ionicHistory.clearCache();
+			var completelyResetAppStateAndLogout = function(){
+                quantimodoService.completelyResetAppState();
 				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
 				}
@@ -336,7 +329,7 @@ angular.module('starter')
                         {
                             text: 'Yes',
                             type: 'button-positive',
-                            onTap: completelyResetAppState
+                            onTap: completelyResetAppStateAndLogout
                         }
                     ]
 
