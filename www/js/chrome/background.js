@@ -197,7 +197,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
 function pushMeasurements(measurements, onDoneListener)
 {
 	var xhr = new XMLHttpRequest();
-	var url = "https://app.quantimo.do/api/measurements/v2?" + requestIdentificationParameters;
+	var url = "https://app.quantimo.do/api/v1/measurements?" + requestIdentificationParameters;
 	if(localStorage.accessToken){
 		url = url + '?access_token=' + localStorage.accessToken;
 	}
