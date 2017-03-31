@@ -1,10 +1,6 @@
-angular.module('starter')
-    .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter,
-                                               quantimodoService, $timeout, $ionicLoading) {
-
+angular.module('starter').controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $timeout, $ionicLoading) {
         $scope.controller_name = "VariableSearchCtrl";
         $rootScope.showFilterBarSearchIcon = false;
-
         $scope.state = {
             showAddVariableButton: false,
             showVariableCategorySelector: false,
@@ -21,54 +17,25 @@ angular.module('starter')
             title : "Select Variable",
             variableSearchPlaceholderText: "Search for a variable here..."
         };
-
         $scope.$on('$ionicView.beforeEnter', function(e) {
             console.debug("VariableSearchCtrl beforeEnter");
             $rootScope.stateParams = $stateParams;
-            if($stateParams.helpText){
-                $scope.state.helpText = $stateParams.helpText;
-            }
-
-            if($stateParams.title){
-                $scope.state.title = $stateParams.title;
-            }
-
-            if($stateParams.variableSearchPlaceholderText){
-                $scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;
-            }
-
-            if ($rootScope.variableCategoryName === 'Anything') {
-                $rootScope.variableCategoryName = null;
-            }
-
-            if(!$stateParams.variableSearchParameters){
-                $stateParams.variableSearchParameters = {};
-            }
-            if(!$stateParams.variableSearchParameters.variableCategoryName){
-                $stateParams.variableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;
-            }
-
-            if(!$stateParams.commonVariableSearchParameters){
-                $stateParams.commonVariableSearchParameters = $stateParams.variableSearchParameters;
-            }
-
-            if(!$stateParams.commonVariableSearchParameters.variableCategoryName){
-                $stateParams.commonVariableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;
-            }
-
-            if($stateParams.variableCategoryName){
-                $rootScope.variableCategoryName = $stateParams.variableCategoryName;
-            }
-
+            if($stateParams.helpText){$scope.state.helpText = $stateParams.helpText;}
+            if($stateParams.title){$scope.state.title = $stateParams.title;}
+            if($stateParams.variableSearchPlaceholderText){$scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;}
+            if ($rootScope.variableCategoryName === 'Anything') {$rootScope.variableCategoryName = null;}
+            if(!$stateParams.variableSearchParameters){$stateParams.variableSearchParameters = {};}
+            if(!$stateParams.variableSearchParameters.variableCategoryName){$stateParams.variableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;}
+            if(!$stateParams.commonVariableSearchParameters){$stateParams.commonVariableSearchParameters = $stateParams.variableSearchParameters;}
+            if(!$stateParams.commonVariableSearchParameters.variableCategoryName){$stateParams.commonVariableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;}
+            if($stateParams.variableCategoryName){$rootScope.variableCategoryName = $stateParams.variableCategoryName;}
             if ($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything') {
-                $scope.state.variableSearchPlaceholderText = "Search for a " +
-                    $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";
+                $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = "Select " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1));
                 $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
             }
             setHelpText();
         });
-
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', function(e) {
             console.debug("VariableSearchCtrl enter");
@@ -85,23 +52,15 @@ angular.module('starter')
             populateCommonVariables();
             setHelpText();
         });
-
         $scope.selectVariable = function(variableObject) {
-            console.debug($state.current.name + ": " + "$scope.selectVariable: " +
-                JSON.stringify(variableObject).substring(0, 140) + '...');
-            if(variableObject.lastValue !== null){
-                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);
-            }
+            console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject).substring(0, 140) + '...');
+            if(variableObject.lastValue !== null){quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);}
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variableObject);
-
             var userTagData;
             if($state.current.name === 'app.favoriteSearch') {
                 $scope.addToFavoritesUsingVariableObject(variableObject);
             } else if (window.location.href.indexOf('reminder-search') !== -1) {
-                var options = {
-                    skipReminderSettingsIfPossible: $stateParams.skipReminderSettingsIfPossible,
-                    doneState: $stateParams.doneState
-                };
+                var options = {skipReminderSettingsIfPossible: $stateParams.skipReminderSettingsIfPossible, doneState: $stateParams.doneState};
                 $scope.addToRemindersUsingVariableObject(variableObject, options);
             } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
                 $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
@@ -116,30 +75,18 @@ angular.module('starter')
                         userTagVariableObject: variableObject
                     });
                 } else {
-                    userTagData = {
-                        userTagVariableId: variableObject.id,
-                        userTaggedVariableId: $stateParams.userTaggedVariableObject.id,
-                        conversionFactor: 1
-                    };
-
-                    $ionicLoading.show({
-                        template: '<ion-spinner></ion-spinner>'
-                    });
-
+                    userTagData = {userTagVariableId: variableObject.id, userTaggedVariableId: $stateParams.userTaggedVariableObject.id, conversionFactor: 1};
+                    $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
                     quantimodoService.postUserTagDeferred(userTagData).then(function () {
                         $ionicLoading.hide();
                         if ($stateParams.fromState) {
-                            $state.go($stateParams.fromState, {
-                                variableName: $stateParams.userTaggedVariableObject.name
-                            });
+                            $state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
                         } else {
                             $state.go(config.appSettings.defaultState);
                         }
                     });
                 }
-
             } else if($stateParams.userTagVariableObject) {
-
                 if($stateParams.userTagvariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
                     $state.go($stateParams.nextState, {
                         userTaggedVariableObject: variableObject,
@@ -148,39 +95,24 @@ angular.module('starter')
                         userTagVariableObject: $stateParams.userTagVariableObject
                     });
                 } else {
-                    userTagData = {
-                        userTagVariableId: $stateParams.userTagVariableObject.id,
-                        userTaggedVariableId: variableObject.id,
-                        conversionFactor: 1
-                    };
-
-                    $ionicLoading.show({
-                        template: '<ion-spinner></ion-spinner>'
-                    });
-
+                    userTagData = {userTagVariableId: $stateParams.userTagVariableObject.id, userTaggedVariableId: variableObject.id, conversionFactor: 1};
+                    $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
                     quantimodoService.postUserTagDeferred(userTagData).then(function () {
                         $ionicLoading.hide();
                         if ($stateParams.fromState) {
-                            $state.go($stateParams.fromState, {
-                                variableName: $stateParams.userTagVariableObject.name
-                            });
+                            $state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});
                         } else {
                             $state.go(config.appSettings.defaultState);
                         }
                     });
                 }
-
             } else {
                 $rootScope.stateParams.variableName = variableObject.name;
                 $rootScope.stateParams.variableObject = variableObject;
                 $state.go($stateParams.nextState, $rootScope.stateParams);
             }
         };
-
-        $scope.goToStateFromVariableSearch = function(stateName){
-            $state.go(stateName, $stateParams);
-        };
-
+        $scope.goToStateFromVariableSearch = function(stateName){$state.go(stateName, $stateParams);};
         // when a query is searched in the search box
         function showAddVariableButtonIfNecessary(variables) {
             if($stateParams.doNotShowAddVariableButton){
@@ -213,19 +145,15 @@ angular.module('starter')
                 }
             }
         }
-
         function showNoVariablesFoundCardIfNecessary() {
-
             if ($scope.state.variableSearchResults.length) {
                 $scope.state.noVariablesFoundCard.show = false;
                 return;
             }
-
             if (!$stateParams.doNotShowAddVariableButton) {
                 $scope.state.noVariablesFoundCard.show = false;
                 return;
             }
-
             $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
             if($stateParams.noVariablesFoundCard && $stateParams.noVariablesFoundCard.body){
                 $scope.state.noVariablesFoundCard.body =
@@ -236,7 +164,6 @@ angular.module('starter')
             }
             $scope.state.noVariablesFoundCard.show = true;
         }
-
         $scope.onVariableSearch = function(){
             $scope.state.noVariablesFoundCard.show = false;
             $scope.state.showAddVariableButton = false;
@@ -256,12 +183,10 @@ angular.module('starter')
                 populateUserVariables();
             }
         };
-
         $scope.$on('populateUserVariables', function(){
             console.debug('populateUserVariables broadcast received..');
             populateUserVariables();
         });
-
         $scope.$on('populateCommonVariables', function(){
             console.debug('populateUserVariables broadcast received..');
             populateUserVariables();
@@ -274,18 +199,11 @@ angular.module('starter')
                 }
             }
         }
-
         var populateCommonVariables = function(){
-            if(!$stateParams.variableSearchParameters.includePublic) {
-                return;
-            }
-            if($scope.state.variableSearchQuery.name.length > 2){
-                return;
-            }
+            if(!$stateParams.variableSearchParameters.includePublic) {return;}
+            if($scope.state.variableSearchQuery.name.length > 2){return;}
             $scope.state.showAddVariableButton = false;
-            if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
-                $scope.state.searching = true;
-            }
+            if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
             quantimodoService.getCommonVariablesDeferred($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
                 if(commonVariables && commonVariables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3) {
@@ -298,7 +216,6 @@ angular.module('starter')
                 console.error(error);
             });
         };
-
         function arrayUniqueId(array) {
             var a = array.concat();
             for(var i=0; i<a.length; ++i) {
@@ -308,19 +225,12 @@ angular.module('starter')
                     }
                 }
             }
-
             return a;
         }
-
         var populateUserVariables = function(){
-            if($scope.state.variableSearchQuery.name.length > 2){
-                return;
-            }
+            if($scope.state.variableSearchQuery.name.length > 2){return;}
             $scope.state.showAddVariableButton = false;
-            if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
-                $scope.state.searching = true;
-            }
-
+            if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
             quantimodoService.getUserVariablesDeferred($stateParams.variableSearchParameters).then(function (userVariables) {
                 if(userVariables && userVariables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3) {

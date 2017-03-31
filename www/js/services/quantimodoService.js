@@ -4004,14 +4004,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }, function(error){ deferred.reject(error); });
             return deferred.promise;
         };
-        quantimodoService.getVariablesFromLocalStorage = function(includePublic){
+        quantimodoService.getVariablesFromLocalStorage = function(requestParams){
             var variables;
             if(!variables){ variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
-            if(includePublic){
+            if(requestParams.includePublic){
                 if(!variables){variables = [];}
                 var commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
                 variables = variables.concat(commonVariables);
             }
+            if(requestParams && requestParams.sort){variables = quantimodoService.sortByProperty(variables, requestParams.sort);}
             return variables;
         };
         quantimodoService.getUserVariableByNameDeferred = function(name, params, refresh){
@@ -5342,7 +5343,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     matchingElements.push(unfilteredElementArray[i]);
                 }
             }
+            if(requestParams && requestParams.sort){matchingElements = quantimodoService.sortByProperty(matchingElements, requestParams.sort);}
             return matchingElements;
+        };
+        quantimodoService.sortByProperty = function(arrayToSort, propertyName){
+            if(propertyName.indexOf('-') > -1){
+                arrayToSort.sort(function(a, b){return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];});
+            } else {
+                arrayToSort.sort(function(a, b){return a[propertyName] - b[propertyName];});
+            }
+            return arrayToSort;
         };
         quantimodoService.getLocalStorageItemAsObject = function(key) {
             var keyIdentifier = config.appSettings.appStorageIdentifier;

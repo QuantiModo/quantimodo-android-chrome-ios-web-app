@@ -1154,15 +1154,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.studyCreate', {
-            url: "/study-create",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/iframe-embed.html",
-                    controller: 'IframeScreenCtrl'
-                }
-            }
-        })
         .state('app.predictorsAll', {
             url: "/predictors/:effectVariableName",
             params: {

@@ -28,6 +28,7 @@ angular.module('starter')
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
+        quantimodoService.refreshCommonVariables();
         if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
         if($rootScope.urlParameters.refreshUser){
             quantimodoService.clearLocalStorage();
@@ -753,7 +754,6 @@ angular.module('starter')
                     quantimodoService.syncTrackingReminders();
                 }
                 quantimodoService.getUserVariablesDeferred();
-                quantimodoService.getCommonVariablesDeferred();
                 quantimodoService.getUnits();
                 $rootScope.syncedEverything = true;
                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
@@ -939,24 +939,6 @@ angular.module('starter')
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                 });
-        };
-        $scope.refreshVariables = function () {
-            quantimodoService.refreshCommonVariables().then(function () {
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-            }, function (error) {
-                console.error(error);
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-            });
-            quantimodoService.refreshUserVariables().then(function () {
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-            }, function (error) {
-                console.error(error);
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-            });
         };
         $scope.showExplanationsPopup = function(settingName) {
             var explanationText = {
@@ -1912,6 +1894,11 @@ angular.module('starter')
             function querySearch (query) {
                 self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
+                if(!query){
+                    console.error("Why are we searching without a query?");
+                    deferred.resolve(self.items);
+                    return deferred.promise;
+                }
                 quantimodoService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
                     .then(function(results){
                         console.debug("Got " + results.length + " results matching " + query);
@@ -1933,7 +1920,7 @@ angular.module('starter')
              * Build `variables` list of key/value pairs
              */
             function loadAll(variables) {
-                if(!variables){variables = quantimodoService.getVariablesFromLocalStorage(dataToPass.requestParams.includePublic);}
+                if(!variables){variables = quantimodoService.getVariablesFromLocalStorage(dataToPass.requestParams);}
                 if(!variables){ return null; }
                 return variables.map( function (variable) {
                     return {
@@ -1959,7 +1946,7 @@ angular.module('starter')
                         helpText: quantimodoService.helpText.outcomeSearch,
                         placeholder: "Search for an outcome...",
                         buttonText: "Select Variable",
-                        requestParams: {includePublic: true}
+                        requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
                     }
                 },
             }).then(function(variable) {
@@ -1984,7 +1971,7 @@ angular.module('starter')
                         helpText: quantimodoService.helpText.predictorSearch,
                         placeholder: "Search for a predictor...",
                         buttonText: "Select Variable",
-                        requestParams: {includePublic: true}
+                        requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}
                     }
                 },
             }).then(function(variable) {
