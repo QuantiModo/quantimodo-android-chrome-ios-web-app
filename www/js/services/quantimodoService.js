@@ -3979,16 +3979,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.searchVariablesIncludingLocalDeferred = function(variableSearchQuery, params){
             var deferred = $q.defer();
             var variables = quantimodoService.searchLocalStorage('userVariables', 'name', variableSearchQuery, params);
+            if(params.includePublic){
+                if(!variables){variables = [];}
+                var commonVariables = quantimodoService.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
+                variables = variables.concat(commonVariables);
+            }
             if(!shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
                 deferred.resolve(variables);
                 return deferred.promise;
-            }
-            if(params.includePublic){
-                variables = quantimodoService.searchLocalStorage('commonVariables', 'name', variableSearchQuery, params);
-                if(!shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery)) {
-                    deferred.resolve(variables);
-                    return deferred.promise;
-                }
             }
             if(!variableSearchQuery){ variableSearchQuery = '*'; }
             quantimodoService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
@@ -4005,6 +4003,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 deferred.resolve(variable);
             }, function(error){ deferred.reject(error); });
             return deferred.promise;
+        };
+        quantimodoService.getVariablesFromLocalStorage = function(includePublic){
+            var variables;
+            if(!variables){ variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
+            if(includePublic){
+                if(!variables){variables = [];}
+                var commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
+                variables = variables.concat(commonVariables);
+            }
+            return variables;
         };
         quantimodoService.getUserVariableByNameDeferred = function(name, params, refresh){
             var deferred = $q.defer();

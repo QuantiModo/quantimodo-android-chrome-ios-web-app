@@ -71,15 +71,20 @@ angular.module('starter')
             $scope.hideClipboardButton = true;
         }
         $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
-        $scope.copyStudyUrlToClipboard = function () {
+        $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
             $scope.copyLinkText = 'Copied!';
             var studyLink;
-            if($rootScope.correlationObject.studyLinkStatic){ studyLink = $rootScope.correlationObject.studyLinkStatic; }
-            if($rootScope.correlationObject.userStudy && $rootScope.correlationObject.userStudy.studyLinkStatic){
-                studyLink = $rootScope.correlationObject.userStudy.studyLinkStatic;
+            if(causeVariableName && effectVariableName){
+                studyLink = 'https://app.quantimo.do/api/v2/study?causeVariableName=' + encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
             }
-            if($rootScope.correlationObject.publicStudy && $rootScope.correlationObject.publicStudy.studyLinkStatic){
-                studyLink = $rootScope.correlationObject.publicStudy.studyLinkStatic;
+            if($rootScope.correlationObject){
+                if($rootScope.correlationObject.studyLinkStatic){ studyLink = $rootScope.correlationObject.studyLinkStatic; }
+                if($rootScope.correlationObject.userStudy && $rootScope.correlationObject.userStudy.studyLinkStatic){
+                    studyLink = $rootScope.correlationObject.userStudy.studyLinkStatic;
+                }
+                if($rootScope.correlationObject.publicStudy && $rootScope.correlationObject.publicStudy.studyLinkStatic){
+                    studyLink = $rootScope.correlationObject.publicStudy.studyLinkStatic;
+                }
             }
             clipboard.copyText(studyLink);
         };
