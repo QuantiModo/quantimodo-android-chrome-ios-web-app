@@ -1912,8 +1912,7 @@ angular.module('starter')
             function querySearch (query) {
                 self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
-                var requestParams = {includePublic: true};
-                quantimodoService.searchVariablesIncludingLocalDeferred(query, requestParams)
+                quantimodoService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
                     .then(function(results){
                         console.debug("Got " + results.length + " results matching " + query);
                         deferred.resolve(loadAll(results));
@@ -1922,9 +1921,10 @@ angular.module('starter')
             }
             function searchTextChange(text) { $log.info('Text changed to ' + text); }
             function selectedItemChange(item) {
-                $scope.variable = item.variable;
+                if(!item){return;}
                 self.selectedItem = item;
                 self.buttonText = dataToPass.buttonText;
+                $scope.variable = item.variable;
                 quantimodoService.addVariableToLocalStorage(item.variable);
                 $log.info('Item changed to ' + item.variable.name);
             }
@@ -1933,7 +1933,7 @@ angular.module('starter')
              * Build `variables` list of key/value pairs
              */
             function loadAll(variables) {
-                if(!variables){ variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
+                if(!variables){variables = quantimodoService.getVariablesFromLocalStorage(dataToPass.requestParams.includePublic);}
                 if(!variables){ return null; }
                 return variables.map( function (variable) {
                     return {
@@ -1958,7 +1958,8 @@ angular.module('starter')
                         title: "Select Outcome",
                         helpText: quantimodoService.helpText.outcomeSearch,
                         placeholder: "Search for an outcome...",
-                        buttonText: "Select Variable"
+                        buttonText: "Select Variable",
+                        requestParams: {includePublic: true}
                     }
                 },
             }).then(function(variable) {
@@ -1982,7 +1983,8 @@ angular.module('starter')
                         title: "Select Predictor",
                         helpText: quantimodoService.helpText.predictorSearch,
                         placeholder: "Search for a predictor...",
-                        buttonText: "Select Variable"
+                        buttonText: "Select Variable",
+                        requestParams: {includePublic: true}
                     }
                 },
             }).then(function(variable) {
