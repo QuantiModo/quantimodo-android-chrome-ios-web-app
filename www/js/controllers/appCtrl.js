@@ -1898,8 +1898,14 @@ angular.module('starter')
             self.helpText = dataToPass.helpText;
             self.placeholder = dataToPass.placeholder;
             self.newVariable = newVariable;
-            self.cancel = function($event) { $mdDialog.cancel(); };
-            self.finish = function($event, variableName) { $mdDialog.hide($scope.variable); };
+            self.cancel = function() {
+                self.items = null;
+                $mdDialog.cancel();
+            };
+            self.finish = function() {
+                self.items = null;
+                $mdDialog.hide($scope.variable);
+            };
             function newVariable(variable) {
                 alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
             }
