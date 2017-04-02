@@ -2264,7 +2264,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.getTrackingRemindersDeferred = function(variableCategoryName) {
             var deferred = $q.defer();
             quantimodoService.getTrackingRemindersFromLocalStorage(variableCategoryName).then(function (trackingReminders) {
-                if (trackingReminders) {deferred.resolve(trackingReminders);
+                if (trackingReminders && trackingReminders.length) {deferred.resolve(trackingReminders);
                 } else {quantimodoService.syncTrackingReminders().then(function (trackingReminders) {deferred.resolve(trackingReminders);});}
             });
             return deferred.promise;
