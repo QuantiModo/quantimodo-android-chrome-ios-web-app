@@ -10,7 +10,6 @@ config.appSettings  = {
     apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
-    shoppingCartEnabled : false,
     appStorageIdentifier: 'MediModoData*',
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.login',

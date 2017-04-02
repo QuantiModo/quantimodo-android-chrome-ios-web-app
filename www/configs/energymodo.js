@@ -11,7 +11,6 @@ config.appSettings  = {
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
-    shoppingCartEnabled : true,
     appStorageIdentifier: 'EnergyModoData*',
     headline : 'Sync and Analyze Your Data',
     primaryOutcomeVariableName : "Energy Rating",
