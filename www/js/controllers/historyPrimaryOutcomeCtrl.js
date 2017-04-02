@@ -52,7 +52,6 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 				buttonClicked: function(index) {
 					console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
 					if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
-					//if(index === 1){$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);}
 					if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
 					if(index === 2) {$state.go('app.track');}
 					if(index === 3){$state.go('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
