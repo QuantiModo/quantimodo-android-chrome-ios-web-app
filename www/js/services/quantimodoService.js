@@ -7373,5 +7373,30 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 'img/rating/ic_5.png'
             ]
         };
+        quantimodoService.addToFavoritesUsingVariableObject = function (variableObject) {
+            var trackingReminder = {};
+            trackingReminder.variableId = variableObject.id;
+            trackingReminder.variableName = variableObject.name;
+            trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
+            trackingReminder.variableDescription = variableObject.description;
+            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+            trackingReminder.reminderFrequency = 0;
+            if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+                var message = 'Got deletion request before last reminder refresh completed';
+                console.debug(message);
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+            }
+            if ((trackingReminder.unitAbbreviatedName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
+                $state.go('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
+                return;
+            }
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                .then(function() {
+                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+                    $state.go('app.favorites', {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
+                    quantimodoService.syncTrackingReminders();
+                });
+        };
         return quantimodoService;
     });

@@ -58,7 +58,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variableObject);
             var userTagData;
             if($state.current.name === 'app.favoriteSearch') {
-                $scope.addToFavoritesUsingVariableObject(variableObject);
+                quantimodoService.addToFavoritesUsingVariableObject(variableObject);
             } else if (window.location.href.indexOf('reminder-search') !== -1) {
                 var options = {skipReminderSettingsIfPossible: $stateParams.skipReminderSettingsIfPossible, doneState: $stateParams.doneState};
                 $scope.addToRemindersUsingVariableObject(variableObject, options);

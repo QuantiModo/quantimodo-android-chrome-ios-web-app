@@ -45,11 +45,11 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { console.debug('CANCELLED'); },
                 buttonClicked: function(index) {
-                    if(index === 0){ $scope.goToAddMeasurementForVariableObject($rootScope.variableObject); }
-                    if(index === 1){ $scope.goToAddReminderForVariableObject($rootScope.variableObject); }
-                    if(index === 2) { $scope.goToChartsPageForVariableObject($rootScope.variableObject); }
-                    if(index === 3) {$scope.goToHistoryForVariableObject($rootScope.variableObject);}
-                    if(index === 4) { $scope.addTag($rootScope.variableObject); }
+                    if(index === 0){$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject});}
+                    if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject});}
+                    if(index === 2) {$state.go('app.charts', {variableObject: $rootScope.variableObject});}
+                    if(index === 3) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
+                    if(index === 4) {$state.go('app.tagSearch',  {fromState: $state.current.name, userTaggedVariableObject: $rootScope.variableObject}); }
                     if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
                     return true;
                 },

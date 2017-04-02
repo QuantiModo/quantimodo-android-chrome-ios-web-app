@@ -147,8 +147,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 					console.debug('BUTTON CLICKED', index);
 					if(index === 0){$scope.edit(trackingReminder);}
 					if(index === 1){$state.go('app.measurementAdd', {reminderNotification: trackingReminder});}
-					if(index === 2){$scope.goToChartsPageForVariableObject(variableObject);}
-					if(index === 3){$scope.goToHistoryForVariableObject(variableObject);}
+					if(index === 2){$state.go('app.charts', {variableObject: $rootScope.variableObject});}
+					if(index === 3){$state.go('app.historyAllVariable', {variableObject: variableObject});}
 					if(index === 4){$state.go('app.variableSettings', {variableName: trackingReminder.variableName});}
 					return true;
 				},
