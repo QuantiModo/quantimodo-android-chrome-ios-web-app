@@ -488,9 +488,9 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {console.debug($state.current.name + ": " + 'CANCELLED');},
                 buttonClicked: function(index) {
-                    if(index === 0){ $scope.goToAddReminderForVariableObject($rootScope.variableObject); }
-                    if(index === 1){ $scope.goToChartsPageForVariableObject($rootScope.variableObject); }
-                    if(index === 2) { $scope.goToHistoryForVariableObject($rootScope.variableObject); }
+                    if(index === 0){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject});}
+                    if(index === 1){$state.go('app.charts', {variableObject: $rootScope.variableObject});}
+                    if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
                     if(index === 3) {$state.go('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
                     if(index === 4) { $scope.state.showMoreUnits = true; }
                     return true;

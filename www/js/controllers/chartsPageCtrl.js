@@ -64,12 +64,10 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                     cancel: function() {console.debug('CANCELLED');},
                     buttonClicked: function(index) {
                         console.debug('BUTTON CLICKED', index);
-                        if(index === 0){$scope.goToAddMeasurementForVariableObject($rootScope.variableObject);}
-                        if(index === 1){$scope.goToAddReminderForVariableObject($rootScope.variableObject);}
-                        if(index === 2) {$scope.goToHistoryForVariableObject($rootScope.variableObject);}
+                        if(index === 0){$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject});}
+                        if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject});}
+                        if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
                         if(index === 3) {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject});}
-                        if(index === 4) {$scope.addTag($rootScope.variableObject);}
-                        if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
                         return true;
                     },
                     destructiveButtonClicked: function() {
