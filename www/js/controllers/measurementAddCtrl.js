@@ -493,8 +493,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {console.debug($state.current.name + ": " + 'CANCELLED');},
                 buttonClicked: function(index) {
-                    console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
-                    //if(index === 0){ $scope.addToFavoritesUsingVariableObject($rootScope.variableObject); }
                     if(index === 0){ $scope.goToAddReminderForVariableObject($rootScope.variableObject); }
                     if(index === 1){ $scope.goToChartsPageForVariableObject($rootScope.variableObject); }
                     if(index === 2) { $scope.goToHistoryForVariableObject($rootScope.variableObject); }

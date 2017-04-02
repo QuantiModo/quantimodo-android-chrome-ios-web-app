@@ -163,7 +163,6 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 				buttonClicked: function(index) {
 					console.debug('BUTTON CLICKED', index);
 					if(index === 0){$scope.edit(trackingReminder);}
-					//if(index === 1){$scope.addToFavoritesUsingVariableObject(variableObject);}
 					if(index === 1){$scope.goToAddMeasurementForVariableObject(variableObject);}
 					if(index === 2){$scope.goToChartsPageForVariableObject(variableObject);}
 					if(index === 3){$scope.goToHistoryForVariableObject(variableObject);}

@@ -70,7 +70,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                         if(index === 3) {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject});}
                         if(index === 4) {$scope.addTag($rootScope.variableObject);}
                         if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
-                        //if(index === 0){$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);}
                         return true;
                     },
                     destructiveButtonClicked: function() {

@@ -45,7 +45,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() { console.debug('CANCELLED'); },
                 buttonClicked: function(index) {
-                    //if(index === 0){ $scope.addToFavoritesUsingVariableObject($rootScope.variableObject); }
                     if(index === 0){ $scope.goToAddMeasurementForVariableObject($rootScope.variableObject); }
                     if(index === 1){ $scope.goToAddReminderForVariableObject($rootScope.variableObject); }
                     if(index === 2) { $scope.goToChartsPageForVariableObject($rootScope.variableObject); }
