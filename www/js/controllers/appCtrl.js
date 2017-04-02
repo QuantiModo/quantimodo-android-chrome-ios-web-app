@@ -437,8 +437,6 @@ angular.module('starter')
         $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
         $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
         $scope.welcomeText = config.appSettings.welcomeText;
-        $scope.primaryOutcomeVariableTrackingQuestion = config.appSettings.primaryOutcomeVariableTrackingQuestion;
-        $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
         /*Wrapper Config End*/
         $scope.highchartsReflow = function() {
             // Fixes chart width

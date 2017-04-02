@@ -22,9 +22,6 @@ config.appSettings  = {
         ' 3. Create Reports of Your Responses and Choose to Connect With Your Doctors'
     ],
     welcomeText:"Let's start off by adding your first medication!",
-    primaryOutcomeVariableTrackingQuestion:"How are you",
-    primaryOutcomeVariableAverageText:"Your average mood is ",
-    mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
     intro : [
         // screen 1

@@ -7331,6 +7331,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "ratingOptionLabels" : ["Depressed", "Sad", "OK", "Happy", "Ecstatic"],
                     "ratingValueToTextConversionDataSet": {1: "depressed", 2: "sad", 3: "ok", 4: "happy", 5: "ecstatic"},
                     "ratingTextToValueConversionDataSet" : {"depressed" : 1, "sad" : 2, "ok" : 3, "happy" : 4, "ecstatic": 5},
+                    trackingQuestion: "How are you?",
+                    averageText:"Your average mood is ",
                 },
                 "Energy Rating" : {
                     id : 108092,
@@ -7344,6 +7346,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     ratingOptionLabels : ['1', '2', '3', '4', '5'],
                     ratingValueToTextConversionDataSet: {1: "1", 2: "2", 3: "3", 4: "4", 5: "5"},
                     ratingTextToValueConversionDataSet : {"1" : 1, "2" : 2, "3" : 3, "4" : 4, "5" : 5},
+                    trackingQuestion:"How is your energy level right now?",
+                    averageText:"Your average energy level is ",
                 }
             };
             if(config.appSettings.primaryOutcomeVariableName){return variables[config.appSettings.primaryOutcomeVariableName];}

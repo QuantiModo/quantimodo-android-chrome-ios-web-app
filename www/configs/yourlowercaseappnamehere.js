@@ -19,9 +19,6 @@ config.appSettings  = {
     ],
     primaryOutcomeVariableName : "Overall Mood",
     welcomeText : "Let's start off by reporting your first mood below",
-    primaryOutcomeVariableTrackingQuestion : "How are you?",
-    primaryOutcomeVariableAverageText : "Your average mood is ",
-    mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
     backgroundColor: '#3467d6',  // TODO: Make background color configurable
     intro : [
@@ -110,12 +107,8 @@ config.appSettings  = {
     helpPopupMessages : {
         "#/app/example" :'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Mood for the average user.',
     },
-    remindersInbox : {
-
-    },
-    wordAliases : {
-
-    },
+    remindersInbox : {},
+    wordAliases : {},
     floatingMaterialButton : {
         button1 : {
             icon: 'ion-android-notifications-none',

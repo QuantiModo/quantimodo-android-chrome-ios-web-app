@@ -21,9 +21,6 @@ config.appSettings  = {
         " - Analyze your data to see the strongest predictors of your mood"
     ],
     "welcomeText" : "Let's start off by reporting your first mood below",
-    "primaryOutcomeVariableTrackingQuestion" : "How are you?",
-    "primaryOutcomeVariableAverageText" : "Your average mood is ",
-    "mobileNotificationImage" : "file://img/icons/icon_128.png",
     "mobileNotificationText" : "Time to track!",
     "backgroundColor": "#3467d6",
     "intro" : null,
