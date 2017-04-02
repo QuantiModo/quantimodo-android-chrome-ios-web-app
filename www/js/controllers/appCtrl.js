@@ -10,7 +10,7 @@ angular.module('starter')
         $rootScope.lastLatitude = null;
         $rootScope.lastLongitude = null;
         $scope.controller_name = "AppCtrl";
-        $scope.menu = config.appSettings.menu;
+        $scope.menu = quantimodoService.getMenu(config.appSettings.menuType);
         $rootScope.appSettings = config.appSettings;
         if (!$rootScope.appSettings.loaderImagePath) { $rootScope.appSettings.loaderImagePath = 'img/loaders/circular_loader.gif'; }
         if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
@@ -84,7 +84,7 @@ angular.module('starter')
                 $scope.hideMenuButton = false;
             }
         });
-        $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
+        $scope.floatingMaterialButton = quantimodoService.getFloatingMaterialButton();
         $rootScope.unitsIndexedByAbbreviatedName = [];
         $rootScope.unitAbbreviatedNamesIndexedByUnitId = [];
         //  Calendar and  Date picker

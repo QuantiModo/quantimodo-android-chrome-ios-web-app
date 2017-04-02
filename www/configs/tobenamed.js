@@ -26,7 +26,6 @@ config.appSettings  = {
         ' - Track diet, treatments, symptoms, and anything else',
         ' - Analyze your data to see the strongest predictors of your mood'
     ],
-
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
@@ -37,7 +36,6 @@ config.appSettings  = {
         description: 'positive',
         unitName: '1 to 5 Rating'
     },
-
     primaryOutcomeVariableRatingOptionLabels : [
         'Depressed',
         'Sad',
@@ -45,7 +43,6 @@ config.appSettings  = {
         'Happy',
         'Ecstatic'
     ],
-
     primaryOutcomeVariableRatingOptionLowercaseLabels : [
         'depressed',
         'sad',
@@ -53,33 +50,7 @@ config.appSettings  = {
         'happy',
         'ecstatic'
     ],
-
-    positiveRatingImages : [
-        'img/rating/ic_face_depressed.png',
-        'img/rating/ic_face_sad.png',
-        'img/rating/ic_face_ok.png',
-        'img/rating/ic_face_happy.png',
-        'img/rating/ic_face_ecstatic.png'
-    ],
-
-    negativeRatingImages : [
-        'img/rating/ic_face_ecstatic.png',
-        'img/rating/ic_face_happy.png',
-        'img/rating/ic_face_ok.png',
-        'img/rating/ic_face_sad.png',
-        'img/rating/ic_face_depressed.png'
-    ],
-
-    numericRatingImages : [
-        'img/rating/ic_1.png',
-        'img/rating/ic_2.png',
-        'img/rating/ic_3.png',
-        'img/rating/ic_4.png',
-        'img/rating/ic_5.png'
-    ],
-
     /* END NEW STUFF */
-
     welcomeText:"Let's start off by adding your first medication!",
     primaryOutcomeVariableTrackingQuestion : "How are you",
     primaryOutcomeVariableAverageText : "Your average mood is ",
@@ -99,21 +70,12 @@ config.appSettings  = {
         "happy" : 4,
         "ecstatic": 5
     },
-
     "intro" : null,
-
     helpPopupMessages : {
         "#/app/example" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
     },
-
-    remindersInbox : {
-
-    },
-
-    wordAliases : {
-
-    },
-
+    remindersInbox : {},
+    wordAliases : {},
     floatingMaterialButton : {
         button1 : {
             icon: 'ion-android-notifications-none',
@@ -136,9 +98,7 @@ config.appSettings  = {
             stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Symptoms'}"
         }
     },
-
     //****modified default reminders
-
     defaultVariables : [
         {   id:0,
             variableName : "Pulse",
@@ -319,313 +279,7 @@ config.appSettings  = {
             show:true
         }
     ],
-
-
-
-    menu : [
-        {
-            title : 'Reminder Inbox',
-            href : '#/app/reminders-inbox',
-            icon : 'ion-archive'
-        },
-        {
-            title : 'Favorites',
-            href : '#/app/favorites',
-            icon : 'ion-ios-star'
-        },
-        {
-            title : 'Measurements Variable Icons',
-            href : '#/app/measurements-variable-button-icons',
-            icon : 'ion-speedometer'
-        },
-        {
-            title : 'Measurement Variable Button Details',
-            href : '#/app/measurement-variable-button-details/:measurementId',
-            icon : 'ion-info'
-        },
-        {
-            title : 'Overall Mood',
-            click : 'togglePrimaryOutcomeSubMenu',
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-happy-outline',
-            expandedIcon : 'ion-chevron-down'
-        },
-
-        {
-            title : 'Charts',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/track',
-            icon : 'ion-arrow-graph-up-right'
-        },
-        {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/history',
-            icon : 'ion-ios-list-outline'
-        },
-        {
-            title : 'Positive Predictors',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/predictors-positive',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Negative Predictors',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/predictors-negative',
-            icon : 'ion-sad-outline'
-        },
-        {
-            title : 'Manage Reminders',
-            click : 'toggleReminderSubMenu',
-            showSubMenuVariable : 'showReminderSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-android-notifications-none',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'All Reminders',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage/Anything',
-            icon : 'ion-android-globe'
-        },
-        {
-            title : 'Emotions',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Foods',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage/Foods',
-            icon : 'ion-ios-nutrition-outline'
-        },
-        {
-            title : 'Physical Activity',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage/Physical Activity',
-            icon : 'ion-ios-body-outline'
-        },
-        {
-            title : 'Symptoms',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage/Symptoms',
-            icon : 'ion-sad-outline'
-        },
-        {
-            title : 'Treatments',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Vital Signs',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage/Vital Signs',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Record Measurement',
-            click : 'toggleTrackingSubMenu',
-            showSubMenuVariable : 'showTrackingSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-compose',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'Track Anything',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/measurement-add-search',
-            icon : 'ion-android-globe'
-        },
-        {
-            title : 'Record a Meal',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/measurement-add-search-category/Foods',
-            icon : 'ion-ios-nutrition-outline'
-        },
-        {
-            title : 'Rate an Emotion',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/measurement-add-search-category/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Rate a Symptom',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/measurement-add-search-category/Symptoms',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Record a Treatment',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/measurement-add-search-category/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Record Activity',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/measurement-add-search-category/Physical Activity',
-            icon : 'ion-ios-body-outline'
-        },
-        {
-            title : 'Record Vital Sign',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/measurement-add-search-category/Vital Signs',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'History',
-            click : 'toggleHistorySubMenu',
-            showSubMenuVariable : 'showHistorySubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-list-outline',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'All Measurements',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all/Anything',
-            icon : 'ion-android-globe'
-        },
-        {
-            title : 'Emotions',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Foods',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all/Foods',
-            icon : 'ion-ios-nutrition-outline'
-        },
-        {
-            title : 'Symptoms',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all/Symptoms',
-            icon : 'ion-sad-outline'
-        },
-        {
-            title : 'Treatments',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Physical Activity',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all/Physical Activity',
-            icon : 'ion-ios-body-outline'
-        },
-        {
-            title : 'Vital Signs',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all/Vital Signs',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Locations',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all/Location',
-            icon : 'ion-ios-location-outline'
-        },
-        {
-            title : 'Import Data',
-            href : '#/app/import',
-            icon : 'ion-ios-cloud-download-outline'
-        },
-        {
-            title : 'Charts',
-            href : '#/app/search-variables',
-            icon : 'ion-arrow-graph-up-right'
-        },
-        {
-            title : 'Strongest Predictors',
-            click : 'togglePredictorSearchSubMenu',
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-analytics',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'Predictor Search',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/predictor-search',
-            icon : 'ion-search'
-        },
-        /*        {
-         title : 'For Everyone',
-         isSubMenuChild : true,
-         showSubMenuVariable : 'showPredictorSearchSubMenu',
-         href : '#/app/search-common-relationships',
-         icon : 'ion-ios-people'
-         },
-         {
-         title : 'For You',
-         isSubMenuChild : true,
-         showSubMenuVariable : 'showPredictorSearchSubMenu',
-         href : '#/app/search-user-relationships',
-         icon : 'ion-person'
-         },*/
-        {
-            title : 'Positive Mood',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/predictors-positive',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Negative Mood',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/predictors-negative',
-            icon : 'ion-sad-outline'
-        },
-        {
-            title : 'Settings',
-            href : '#/app/settings',
-            icon : 'ion-ios-gear-outline'
-        },
-        {
-            title : 'Help & Feedback',
-            href : "#/app/feedback",
-            icon : 'ion-ios-help-outline'
-        }
-    ]
+    menuType : 'minimal'
 };
-
-if(!module){
-    var module = {};
-}
-
+if(!module){var module = {};}
 module.exports = config.appSettings;
