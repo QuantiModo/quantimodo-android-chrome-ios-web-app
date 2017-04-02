@@ -35,7 +35,7 @@ angular.module('starter',
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
-    $rootScope.appVersion = "2.5.0.0";
+    $rootScope.appVersion = "2.5.1.0";
     quantimodoService.setPlatformVariables();
 
     $ionicPlatform.ready(function() {
