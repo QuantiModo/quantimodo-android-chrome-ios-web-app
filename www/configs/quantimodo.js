@@ -10,12 +10,6 @@ config.appSettings = {
     "ionNavBarClass" : "bar-positive",
     "cordovaLocalNotificationsEnabled" : false,
     "linkToChromeExtension" : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
-    "allowOffline" : true,
-    "loaderImagePath" : "img/loaders/pop_tart_cat.gif",
-    "qmApiHostName": "app.quantimo.do",
-    "settingsPageOptions" : {
-        "showReminderFrequencySelector" : true
-    },
     "defaultState" : "app.remindersInbox",
     "welcomeState" : "app.welcome",
     "appStorageIdentifier": "QuantiModoData*",
@@ -30,12 +24,8 @@ config.appSettings = {
     "primaryOutcomeVariableAverageText" : "Your average mood is ",
     "mobileNotificationImage" : "file://img/icons/icon_128.png",
     "mobileNotificationText" : "Time to track!",
-
     "backgroundColor": "#3467d6",
     "intro" : null,
-    "helpPopupMessages" : {
-        "#/app/example" :"Positive Predictors are the factors most predictive of <span class=\"positive\">IMPROVING</span> Mood for the average user."
-    },
     "remindersInbox" : {},
     "wordAliases" : {},
     "menuType" : 'extended'

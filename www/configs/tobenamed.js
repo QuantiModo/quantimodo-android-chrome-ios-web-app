@@ -8,15 +8,8 @@ config.appSettings  = {
     ionicAppId: null,
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
-    allowOffline : true,
-    loaderImagePath : 'img/loaders/pop-tart-cat.gif',
     shoppingCartEnabled : true,
-    qmApiHostName: 'app.quantimo.do',
     ionNavBarClass:'bar-positive',
-    settingsPageOptions :
-        {
-            showReminderFrequencySelector : true
-        },
     defaultState : 'app.measurements-variable-button-icons',
     welcomeState : 'app.welcome',
     appStorageIdentifier: 'MoodiModoData*',
@@ -26,40 +19,14 @@ config.appSettings  = {
         ' - Track diet, treatments, symptoms, and anything else',
         ' - Analyze your data to see the strongest predictors of your mood'
     ],
-    /* END NEW STUFF */
     welcomeText:"Let's start off by adding your first medication!",
     primaryOutcomeVariableTrackingQuestion : "How are you",
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
     "intro" : null,
-    helpPopupMessages : {
-        "#/app/example" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
-    },
     remindersInbox : {},
     wordAliases : {},
-    floatingMaterialButton : {
-        button1 : {
-            icon: 'ion-android-notifications-none',
-            label: 'Add a Reminder',
-            stateAndParameters: "'app.reminderSearch'"
-        },
-        button2 : {
-            icon: 'ion-compose',
-            label: 'Record a Measurement',
-            stateAndParameters: "'app.measurementAddSearch'"
-        },
-        button3 : {
-            icon: 'ion-ios-medkit-outline',
-            label: 'Record a Dose',
-            stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Treatments'}"
-        },
-        button4 : {
-            icon: 'ion-sad-outline',
-            label: 'Rate a Symptom',
-            stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Symptoms'}"
-        }
-    },
     //****modified default reminders
     defaultVariables : [
         {   id:0,

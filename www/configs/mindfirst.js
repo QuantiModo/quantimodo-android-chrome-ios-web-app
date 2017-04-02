@@ -9,14 +9,8 @@ config.appSettings  = {
     ionicAppId: '6d8e312f',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",
-    allowOffline : true,
-    loaderImagePath : 'img/loaders/pop_tart_cat.gif',
     defaultState : 'app.remindersInbox',
-    qmApiHostName: 'app.quantimo.do',
     welcomeState : 'app.welcome',
-    settingsPageOptions : {
-        showReminderFrequencySelector : true
-    },
     appStorageIdentifier: 'MindFirstData*',
     headline : 'Sync and Analyze Your Data',
     features: [
@@ -30,13 +24,8 @@ config.appSettings  = {
     mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
     "intro" : null,
-    helpPopupMessages : {
-        "#/app/example" : 'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
-    },
-    remindersInbox : {
-    },
-    wordAliases : {
-    },
+    remindersInbox : {},
+    wordAliases : {},
     menuType : 'extended'
 };
 

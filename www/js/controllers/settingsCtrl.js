@@ -5,7 +5,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
         $rootScope.showFilterBarSearchIcon = false;
-		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }

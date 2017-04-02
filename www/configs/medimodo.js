@@ -10,16 +10,10 @@ config.appSettings  = {
     apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
-    allowOffline : false,
     shoppingCartEnabled : false,
-    qmApiHostName: 'app.quantimo.do',
     appStorageIdentifier: 'MediModoData*',
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.login',
-    settingsPageOptions :
-        {
-            showReminderFrequencySelector : false
-        },
     headline : 'Medications - Track, Learn, Connect',
     features: [
         ' Follow These Quick Steps to Improve Your Health',
@@ -33,9 +27,6 @@ config.appSettings  = {
     mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
     backgroundColor: "white",
-    helpPopupMessages : {
-        "#/app/example": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
-    },
     wordAliases : {
     },
     remindersInbox : {
