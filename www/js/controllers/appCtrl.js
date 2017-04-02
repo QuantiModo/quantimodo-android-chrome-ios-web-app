@@ -346,47 +346,6 @@ angular.module('starter')
         $scope.goToChartsPageForVariableObject = function (variableObject) {
             $state.go('app.charts', {variableObject: variableObject});
         };
-        $scope.addToRemindersUsingVariableObject = function (variableObject, options) {
-            var doneState = config.appSettings.defaultState;
-            if(options.doneState){doneState = options.doneState;}
-            if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
-                $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
-                $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
-                $rootScope.onboardingPages[0].addButtonText = "Add Another";
-                $rootScope.onboardingPages[0].nextPageButtonText = "All Done";
-                $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
-                    variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
-                    variableObject.variableCategoryName.toLowerCase() + '?';
-                quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
-            }
-            var trackingReminder = {};
-            trackingReminder.variableId = variableObject.id;
-            trackingReminder.variableName = variableObject.name;
-            trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
-            trackingReminder.variableDescription = variableObject.description;
-            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
-            trackingReminder.reminderFrequency = 86400;
-            trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
-            var skipReminderSettings = false;
-            if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
-            if(options.skipReminderSettingsIfPossible){
-                if(variableObject.userVariableDefaultUnitAbbreviatedName === '/5'){skipReminderSettings = true;}
-                if(variableObject.userVariableDefaultUnitAbbreviatedName === 'serving'){
-                    skipReminderSettings = true;
-                    trackingReminder.defaultValue = 1;
-                }
-            }
-            if (!skipReminderSettings) {
-                $state.go('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
-                return;
-            }
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder)
-                .then(function() {
-                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                    $state.go(doneState, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
-                    quantimodoService.syncTrackingReminders();
-                });
-        };
         $scope.closeMenuIfNeeded = function (menuItem) {
             if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.isSubMenuParent) { $scope.closeMenu();}
         };
@@ -520,7 +479,6 @@ angular.module('starter')
 
         $scope.autoUpdateApp();
 */
-
         $ionicPopover.fromTemplateUrl('templates/popover.html', {scope: $scope}).then(function (popover) {$scope.popover = popover;});
         $scope.editTag = function(userTagVariable){
             $state.go('app.tagAdd', {
@@ -764,9 +722,7 @@ angular.module('starter')
                         .then(function () {
                             console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function(error) {
-                            if (typeof Bugsnag !== "undefined") {
-                                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                            }
+                            if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
                             console.error(error);
                             console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                         });
@@ -825,7 +781,6 @@ angular.module('starter')
                 actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
             }
             if(bloodPressure){actionMenuButtons = [];}
-            // Show the action sheet
             var hideSheet = $ionicActionSheet.show({
                 buttons: actionMenuButtons,
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
@@ -855,13 +810,9 @@ angular.module('starter')
                             }, function(error){
                                 console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify(favorite));
                             });
-                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', favorite.id)
-                            .then(function(){
-                                //$scope.init();
-                            });
+                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', favorite.id);
                         return true;
                     }
-
                     if(bloodPressure){
                         quantimodoService.deleteTrackingReminderDeferred($rootScope.bloodPressureReminderId)
                             .then(function(){
@@ -878,12 +829,7 @@ angular.module('starter')
                     }
                 }
             });
-
-            console.debug('Setting hideSheet timeout');
-            $timeout(function() {
-                hideSheet();
-            }, 20000);
-
+            $timeout(function() {hideSheet();}, 20000);
         };
         $scope.trackBloodPressure = function(){
             if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
@@ -1827,7 +1773,6 @@ angular.module('starter')
                 if(callback){ callback(); }
             });
         };
-
         var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
             var self = this;
             // list of `state` value/display objects
@@ -1847,9 +1792,7 @@ angular.module('starter')
                 self.items = null;
                 $mdDialog.hide($scope.variable);
             };
-            function newVariable(variable) {
-                alert("Sorry! You'll need to create a Constitution for " + variable + " first!");
-            }
+            function newVariable(variable) {alert("Sorry! You'll need to create a Constitution for " + variable + " first!");}
             function querySearch (query) {
                 self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
                 var deferred = $q.defer();
@@ -1907,13 +1850,11 @@ angular.module('starter')
                         buttonText: "Select Variable",
                         requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
                     }
-                },
+                }
             }).then(function(variable) {
                 $scope.outcomeVariable = variable;
                 $scope.outcomeVariableName = variable.name;
-            }, function() {
-                console.debug('User cancelled selection');
-            });
+            }, function() {console.debug('User cancelled selection');});
         };
         $scope.selectPredictorVariable = function (ev) {
             $mdDialog.show({
@@ -1932,7 +1873,7 @@ angular.module('starter')
                         buttonText: "Select Variable",
                         requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}
                     }
-                },
+                }
             }).then(function(variable) {
                 $scope.predictorVariable = variable;
                 $scope.predictorVariableName = variable.name;
@@ -1940,13 +1881,10 @@ angular.module('starter')
                 console.debug('User cancelled selection');
             });
         };
-        $scope.goToStudyPage = function(correlationObject) {
-            $state.go('app.study', {correlationObject: correlationObject});
-        };
+        $scope.goToStudyPage = function(correlationObject) {$state.go('app.study', {correlationObject: correlationObject});};
         $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
             $state.go('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
         };
-
         var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
             var self = this;
             // list of `state` value/display objects
@@ -1992,7 +1930,6 @@ angular.module('starter')
                 self.selectedItem = item;
                 self.buttonText = dataToPass.buttonText;
             }
-
             /**
              * Build `variables` list of key/value pairs
              */
@@ -2007,7 +1944,6 @@ angular.module('starter')
                 });
             }
         };
-
         $scope.searchWikipediaArticle = function (ev) {
             $mdDialog.show({
                 controller: SelectWikpdediaArticleController,
@@ -2032,5 +1968,4 @@ angular.module('starter')
                 console.debug('User cancelled selection');
             });
         };
-
     });
