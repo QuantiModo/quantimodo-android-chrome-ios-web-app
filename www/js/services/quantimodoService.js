@@ -1029,7 +1029,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return deferred.promise;
         };
         quantimodoService.filterByStringProperty = function(arrayToFilter, propertyName, allowedValue){
-            if(!allowedValue || allowedValue.toLowerCase() === "Anything"){ return arrayToFilter; }
+            if(!allowedValue || allowedValue.toLowerCase() === "anything"){ return arrayToFilter; }
             var filteredArray = [];
             for(var i = 0; i < arrayToFilter.length; i++){
                 if(arrayToFilter[i][propertyName].toLowerCase() === allowedValue.toLowerCase()){filteredArray.push(arrayToFilter[i]);}
