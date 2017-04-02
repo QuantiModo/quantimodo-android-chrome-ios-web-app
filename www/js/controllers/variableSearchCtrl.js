@@ -61,7 +61,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 quantimodoService.addToFavoritesUsingVariableObject(variableObject);
             } else if (window.location.href.indexOf('reminder-search') !== -1) {
                 var options = {skipReminderSettingsIfPossible: $stateParams.skipReminderSettingsIfPossible, doneState: $stateParams.doneState};
-                $scope.addToRemindersUsingVariableObject(variableObject, options);
+                quantimodoService.addToRemindersUsingVariableObject(variableObject, options);
             } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
                 $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
             } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
