@@ -268,14 +268,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 validationFailure(updatedTrackingReminder.reminderStartTimeLocal + " is later than your latest allowed " +
                     "notification time.  You can change your latest notification time on the settings page.");
             }
-            if(updatedTrackingReminder.reminderFrequency === 86400){
-                if(updatedTrackingReminder.unitAbbreviatedName === '/5'){
-                    updatedTrackingReminder.valueAndFrequencyTextDescription = 'Daily at ' + quantimodoService.humanFormat(updatedTrackingReminder.reminderStartTimeLocal);
-                } else {
-                    updatedTrackingReminder.valueAndFrequencyTextDescription = updatedTrackingReminder.defaultValue +
-                        ' ' + updatedTrackingReminder.unitAbbreviatedName + ' daily at ' + quantimodoService.humanFormat(updatedTrackingReminder.reminderStartTimeLocal);
-                }
-            }
+            updatedTrackingReminder.valueAndFrequencyTextDescriptionWithTime = quantimodoService.getValueAndFrequencyTextDescriptionWithTime(updatedTrackingReminder);
             updatedTrackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString(updatedTrackingReminder.reminderStartTimeLocal);
             updatedTrackingReminder.reminderStartTimeEpochSeconds = reminderStartTimeEpochTime;
             updatedTrackingReminder.nextReminderTimeEpochSeconds = reminderStartTimeEpochTime;
@@ -319,15 +312,14 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 remindersArray[2].id = null;
                 remindersArray[2] = configureReminderTimeSettings(remindersArray[2], $scope.state.thirdReminderStartTimeEpochTime);
             }
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue',
-                remindersArray).then(function(){
-                    var toastMessage = $scope.state.trackingReminder.variableName + ' reminder saved';
-                    if($stateParams.favorite){toastMessage = $scope.state.trackingReminder.variableName + ' saved to favorites';}
-                    $scope.showInfoToast(toastMessage);
-                    quantimodoService.syncTrackingReminders();
-                    $scope.goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
-                }
-            );
+            if($scope.state.trackingReminder.id){quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id);}
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', remindersArray).then(function(){
+                var toastMessage = $scope.state.trackingReminder.variableName + ' reminder saved';
+                if($stateParams.favorite){toastMessage = $scope.state.trackingReminder.variableName + ' saved to favorites';}
+                $scope.showInfoToast(toastMessage);
+                quantimodoService.syncTrackingReminders();
+                $scope.goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
+            });
 	    };
 	    var setupEditReminder = function(trackingReminder){
             $scope.state.trackingReminder = trackingReminder;

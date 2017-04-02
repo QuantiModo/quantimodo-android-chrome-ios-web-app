@@ -4,7 +4,7 @@ angular.module('starter')
 	    return function(time){
 	    	if(time){
 	    		if(typeof time === "number") {
-					return moment(time * 1000).format("MMM Do YYYY, hh:mm a").split(/,/g);
+					return moment(time * 1000).format("MMM Do YYYY, h:mm a").split(/,/g);
                 }
 				return moment.utc(time).local().format("dddd, MMMM Do YYYY, h:mm:ss a").split(/,/g);
 	    	} else {
@@ -135,7 +135,7 @@ angular.module('starter')
 			if(reminderStartTime){
 				var reminderStartTimeStringUtc = reminderStartTime + " +0000";
 				var reminderStartTimeFormat = "HH:mm:ss Z";
-				var localStartTimeString = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("hh:mm a");
+				var localStartTimeString = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("h:mm a");
 				return localStartTimeString;
 			} else {
 				return "";

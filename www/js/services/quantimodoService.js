@@ -2459,6 +2459,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             return reminders;
         };
+        quantimodoService.getValueAndFrequencyTextDescriptionWithTime = function(trackingReminder){
+            if(trackingReminder.reminderFrequency === 86400){
+                if(trackingReminder.variableCategoryName === 'Rating'){return 'Daily at ' + quantimodoService.humanFormat(trackingReminder.reminderStartTimeLocal);}
+                return trackingReminder.defaultValue + ' ' + trackingReminder.unitAbbreviatedName + ' daily at ' + quantimodoService.humanFormat(trackingReminder.reminderStartTimeLocal);
+            } else if (trackingReminder.reminderFrequency === 0){
+                if(trackingReminder.defaultValue){return trackingReminder.defaultValue + ' ' + trackingReminder.unitAbbreviatedName + ' as-needed';}
+                return "As-Needed";
+            } else {
+                if(trackingReminder.variableCategoryName === 'Rating'){return 'Rate every ' + trackingReminder.reminderFrequency/3600 + " hours";}
+                return trackingReminder.defaultValue + ' ' + trackingReminder.unitAbbreviatedName + ' every ' + trackingReminder.reminderFrequency/3600 + " hours";
+            }
+        };
         quantimodoService.convertReminderTimeStringToMoment = function(reminderTimeString) {
             var now = new Date();
             var hourOffsetFromUtc = now.getTimezoneOffset()/60;
@@ -5065,7 +5077,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.humanFormat = function(hhmmssFormatString){
             var intitialTimeFormat = "HH:mm:ss";
-            var humanTimeFormat = "hh:mm A";
+            var humanTimeFormat = "h:mm A";
             return moment(hhmmssFormatString, intitialTimeFormat).format(humanTimeFormat);
         };
         quantimodoService.getUtcTimeStringFromLocalString = function (localTimeString) {
