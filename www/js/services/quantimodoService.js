@@ -7399,45 +7399,45 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 });
         };
         quantimodoService.addToRemindersUsingVariableObject = function (variableObject, options) {
-        var doneState = config.appSettings.defaultState;
-        if(options.doneState){doneState = options.doneState;}
-        if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
-            $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
-            $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
-            $rootScope.onboardingPages[0].addButtonText = "Add Another";
-            $rootScope.onboardingPages[0].nextPageButtonText = "All Done";
-            $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
-                variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
-                variableObject.variableCategoryName.toLowerCase() + '?';
-            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
-        }
-        var trackingReminder = {};
-        trackingReminder.variableId = variableObject.id;
-        trackingReminder.variableName = variableObject.name;
-        trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
-        trackingReminder.variableDescription = variableObject.description;
-        trackingReminder.variableCategoryName = variableObject.variableCategoryName;
-        trackingReminder.reminderFrequency = 86400;
-        trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
-        var skipReminderSettings = false;
-        if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
-        if(options.skipReminderSettingsIfPossible){
-            if(variableObject.userVariableDefaultUnitAbbreviatedName === '/5'){skipReminderSettings = true;}
-            if(variableObject.userVariableDefaultUnitAbbreviatedName === 'serving'){
-                skipReminderSettings = true;
-                trackingReminder.defaultValue = 1;
+            var doneState = config.appSettings.defaultState;
+            if(options.doneState){doneState = options.doneState;}
+            if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
+                $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
+                $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
+                $rootScope.onboardingPages[0].addButtonText = "Add Another";
+                $rootScope.onboardingPages[0].nextPageButtonText = "All Done";
+                $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+                    variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
+                    variableObject.variableCategoryName.toLowerCase() + '?';
+                quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
             }
-        }
-        if (!skipReminderSettings) {
-            $state.go('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
-            return;
-        }
-        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder)
-            .then(function() {
-                // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                $state.go(doneState, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
-                quantimodoService.syncTrackingReminders();
-            });
-    };
+            var trackingReminder = {};
+            trackingReminder.variableId = variableObject.id;
+            trackingReminder.variableName = variableObject.name;
+            trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
+            trackingReminder.variableDescription = variableObject.description;
+            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+            trackingReminder.reminderFrequency = 86400;
+            trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
+            var skipReminderSettings = false;
+            if(variableObject.variableName === "Blood Pressure"){skipReminderSettings = true;}
+            if(options.skipReminderSettingsIfPossible){
+                if(variableObject.userVariableDefaultUnitAbbreviatedName === '/5'){skipReminderSettings = true;}
+                if(variableObject.userVariableDefaultUnitAbbreviatedName === 'serving'){
+                    skipReminderSettings = true;
+                    trackingReminder.defaultValue = 1;
+                }
+            }
+            if (!skipReminderSettings) {
+                $state.go('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
+                return;
+            }
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder)
+                .then(function() {
+                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+                    $state.go(doneState, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
+                    quantimodoService.syncTrackingReminders();
+                });
+        };
         return quantimodoService;
     });
