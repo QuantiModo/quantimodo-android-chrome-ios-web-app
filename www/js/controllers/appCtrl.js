@@ -429,7 +429,6 @@ angular.module('starter')
             if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.isSubMenuParent) { $scope.closeMenu();}
         };
         $scope.showHistorySubMenu = false;
-        $scope.shoppingCartEnabled = config.appSettings.shoppingCartEnabled;
         $scope.loading = false;
         $ionicLoading.hide();
         /*Wrapper Config*/
