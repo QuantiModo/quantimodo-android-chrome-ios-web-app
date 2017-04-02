@@ -10,10 +10,10 @@ A configuration object "appSettings" is available in /js/config.js for changing 
 
 1. "welcomeText" : This text will be displayed on first line of welcome card on welcome screen
 
-1. "primaryOutcomeVariableTrackingQuestion" : will be displayed above primary outcome variable reporting card
+1. "primaryOutcomeVariableDetails.trackingQuestion" : will be displayed above primary outcome variable reporting card
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436307683/welcome_card_i8dvgr.png)
 
-1. "primaryOutcomeVariableAverageText" : "indicating average value of the primary outcome variable.
+1. "primaryOutcomeVariableDetails.averageText" : "indicating average value of the primary outcome variable.
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436308086/average_rqvqb7.png)

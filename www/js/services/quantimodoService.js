@@ -1304,7 +1304,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var primaryOutcomeMeasurements = [];
             if(measurementsQueue){
                 for(var i = 0; i < measurementsQueue.length; i++){
-                    if(measurementsQueue[i].variableName === config.appSettings.primaryOutcomeVariableDetails.name){
+                    if(measurementsQueue[i].variableName === quantimodoService.getPrimaryOutcomeVariable().name){
                         primaryOutcomeMeasurements.push(measurementsQueue[i]);
                     }
                 }
@@ -1319,7 +1319,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 deferred.reject(errorMessage);
                 return deferred.promise;
             }
-            var params = {variableName : config.appSettings.primaryOutcomeVariableDetails.name, sort : '-startTimeEpoch', limit:900};
+            var params = {variableName : quantimodoService.getPrimaryOutcomeVariable().name, sort : '-startTimeEpoch', limit:900};
             quantimodoService.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
                 if (primaryOutcomeMeasurementsFromApi.length > 0) {
                     quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements', JSON.stringify(primaryOutcomeMeasurementsFromApi));
@@ -1410,18 +1410,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.createPrimaryOutcomeMeasurement = function(numericRatingValue) {
             // if val is string (needs conversion)
             if(isNaN(parseFloat(numericRatingValue))){
-                numericRatingValue = config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] ?
-                    config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] : false;
+                numericRatingValue = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] ?
+                    quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] : false;
             }
             var startTimeEpoch  = new Date().getTime();
             var measurementObject = {
                 id: null,
-                variable: config.appSettings.primaryOutcomeVariableDetails.name,
-                variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.variableCategoryName,
-                variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
+                variable: quantimodoService.getPrimaryOutcomeVariable().name,
+                variableName: quantimodoService.getPrimaryOutcomeVariable().name,
+                variableCategoryName: quantimodoService.getPrimaryOutcomeVariable().variableCategoryName,
+                variableDescription: quantimodoService.getPrimaryOutcomeVariable().description,
                 startTimeEpoch: Math.floor(startTimeEpoch / 1000),
-                unitAbbreviatedName: config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName,
+                unitAbbreviatedName: quantimodoService.getPrimaryOutcomeVariable().unitAbbreviatedName,
                 value: numericRatingValue,
                 note: null
             };
@@ -1502,7 +1502,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             } else {
                 quantimodoService.addToMeasurementsQueue(measurementInfo);
             }
-            if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+            if (measurementInfo.variableName === quantimodoService.getPrimaryOutcomeVariable().name) {
                 //quantimodoService.addToLocalStorage('primaryOutcomeVariableMeasurements', measurementInfo);
                 quantimodoService.syncPrimaryOutcomeVariableMeasurements();
             } else {
@@ -2675,31 +2675,31 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var ratingInfo =
                 {
                     1 : {
-                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[0],
+                        displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[0],
                         positiveImage: quantimodoService.ratingImages.positive[0],
                         negativeImage: quantimodoService.ratingImages.negative[0],
                         numericImage:  quantimodoService.ratingImages.numeric[0],
                     },
                     2 : {
-                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[1],
+                        displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[1],
                         positiveImage: quantimodoService.ratingImages.positive[1],
                         negativeImage: quantimodoService.ratingImages.negative[1],
                         numericImage:  quantimodoService.ratingImages.numeric[1],
                     },
                     3 : {
-                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[2],
+                        displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[2],
                         positiveImage: quantimodoService.ratingImages.positive[2],
                         negativeImage: quantimodoService.ratingImages.negative[2],
                         numericImage:  quantimodoService.ratingImages.numeric[2],
                     },
                     4 : {
-                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[3],
+                        displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[3],
                         positiveImage: quantimodoService.ratingImages.positive[3],
                         negativeImage: quantimodoService.ratingImages.negative[3],
                         numericImage:  quantimodoService.ratingImages.numeric[3],
                     },
                     5 : {
-                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[4],
+                        displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[4],
                         positiveImage: quantimodoService.ratingImages.positive[4],
                         negativeImage: quantimodoService.ratingImages.negative[4],
                         numericImage:  quantimodoService.ratingImages.numeric[4],
@@ -2708,8 +2708,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return ratingInfo;
         };
         quantimodoService.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-            if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptionLabels){return ['1',  '2',  '3',  '4', '5'];
-            } else {return config.appSettings.primaryOutcomeVariableRatingOptionLabels;}
+            if(shouldShowNumbers || !quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels){return ['1',  '2',  '3',  '4', '5'];
+            } else {return quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels;}
         };
         quantimodoService.getPositiveImageByRatingValue = function(numericValue){
             var positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
@@ -2727,7 +2727,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return filteredList.length? filteredList[0].img || false : false;
         };
         quantimodoService.getPrimaryOutcomeVariableByNumber = function(num){
-            return config.appSettings.ratingValueToTextConversionDataSet[num] ? config.appSettings.ratingValueToTextConversionDataSet[num] : false;
+            return quantimodoService.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] ? quantimodoService.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[num] : false;
         };
         quantimodoService.getRatingFaceImageByText = function(lowerCaseRatingTextDescription){
             var positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
@@ -2739,32 +2739,32 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return [
                 {
                     numericValue: 1,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[0],
-                    lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[0],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[0],
+                    lowerCaseTextDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[0].toLowerCase(),
                     img: quantimodoService.ratingImages.positive[0]
                 },
                 {
                     numericValue: 2,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[1],
-                    lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[1],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[1],
+                    lowerCaseTextDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[1].toLowerCase(),
                     img: quantimodoService.ratingImages.positive[1]
                 },
                 {
                     numericValue: 3,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[2],
-                    lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[2],
-                    img: quantimodoService.ratingImages.positive[2],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[2],
+                    lowerCaseTextDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[2].toLowerCase(),
+                    img: quantimodoService.ratingImages.positive[2]
                 },
                 {
                     numericValue: 4,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[3],
-                    lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[3],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[3],
+                    lowerCaseTextDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[3].toLowerCase(),
                     img: quantimodoService.ratingImages.positive[3]
                 },
                 {
                     numericValue: 5,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[4],
-                    lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[4],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[4],
+                    lowerCaseTextDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[4].toLowerCase(),
                     img: quantimodoService.ratingImages.positive[4]
                 }
             ];
@@ -2773,32 +2773,32 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return [
                 {
                     numericValue: 1,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[4],
-                    value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[4],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[4],
+                    value: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[4].toLowerCase(),
                     img: quantimodoService.ratingImages.negative[0]
                 },
                 {
                     numericValue: 2,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[3],
-                    value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[3],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[3],
+                    value: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[3].toLowerCase(),
                     img: quantimodoService.ratingImages.negative[1]
                 },
                 {
                     numericValue: 3,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[2],
-                    value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[2],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[2],
+                    value: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[2].toLowerCase(),
                     img: quantimodoService.ratingImages.negative[2]
                 },
                 {
                     numericValue: 4,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[1],
-                    value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[1],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[1],
+                    value: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[1].toLowerCase(),
                     img: quantimodoService.ratingImages.negative[3]
                 },
                 {
                     numericValue: 5,
-                    displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[0],
-                    value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[0],
+                    displayDescription: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[0],
+                    value: quantimodoService.getPrimaryOutcomeVariable().ratingOptionLabels[0].toLowerCase(),
                     img: quantimodoService.ratingImages.negative[4]
                 }
             ];
@@ -2817,8 +2817,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var index;
             for (index = 0; index < measurements.length; ++index) {
                 if(!measurements[index].variableName){measurements[index].variableName = measurements[index].variable;}
-                if(measurements[index].variableName === config.appSettings.primaryOutcomeVariableDetails.name){
-                    measurements[index].variableDescription = config.appSettings.primaryOutcomeVariableDetails.description;
+                if(measurements[index].variableName === quantimodoService.getPrimaryOutcomeVariable().name){
+                    measurements[index].variableDescription = quantimodoService.getPrimaryOutcomeVariable().description;
                 }
                 if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
                 if (measurements[index].unitAbbreviatedName.charAt(0) === '/') {
@@ -2829,12 +2829,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     // add space between value and unit
                     measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
                 }
-                // Don't truncate
-                /*
-                 if(measurements[index].valueUnitVariableName.length > 29){
-                 measurements[index].valueUnitVariableName =  measurements[index].valueUnitVariableName.substring(0, 29)+'...';
-                 }
-                 */
                 if (measurements[index].unitAbbreviatedName === '%') {
                     measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
                 }
@@ -2858,7 +2852,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var deferred = $q.defer();
             deferred.resolve(quantimodoService.processDataAndConfigureWeekdayChart(
                 quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements'),
-                config.appSettings.primaryOutcomeVariableDetails));
+                quantimodoService.getPrimaryOutcomeVariable()));
             return deferred.promise;
         };
         quantimodoService.generateDistributionArray = function(allMeasurements){
@@ -2968,7 +2962,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return averageValueByMonthlyArray;
         };
         var shouldWeUsePrimaryOutcomeLabels = function (variableObject) {
-            return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name;
+            return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === quantimodoService.getPrimaryOutcomeVariable().name;
         };
         quantimodoService.configureDistributionChart = function(dataAndLabels, variableObject){
             var xAxisLabels = [];
@@ -4756,7 +4750,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 at.setUTCSeconds(epochSecondsPlus15Minutes);
                 notificationSettings.at = at;
             }
-            if(!notificationSettings.id){notificationSettings.id = config.appSettings.primaryOutcomeVariableDetails.id;}
+            if(!notificationSettings.id){notificationSettings.id = quantimodoService.getPrimaryOutcomeVariable().id;}
             notificationSettings.title = "Time to track!";
             notificationSettings.text = "Open reminder inbox";
             notificationSettings.sound = "file://sound/silent.ogg";
@@ -7321,6 +7315,43 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return true;
             }
             return false;
+        };
+        quantimodoService.getPrimaryOutcomeVariable = function(){
+            if(config.appSettings.primaryOutcomeVariableDetails){ return config.appSettings.primaryOutcomeVariableDetails;}
+            var variables = {
+                "Overall Mood" : {
+                    "id" : 1398,
+                    "name" : "Overall Mood",
+                    "variableName": "Overall Mood",
+                    variableCategoryName : "Mood",
+                    "unitAbbreviatedName" : "/5",
+                    "combinationOperation": "MEAN",
+                    "description": "positive",
+                    "unitName": "1 to 5 Rating",
+                    "ratingOptionLabels" : ["Depressed", "Sad", "OK", "Happy", "Ecstatic"],
+                    "ratingValueToTextConversionDataSet": {1: "depressed", 2: "sad", 3: "ok", 4: "happy", 5: "ecstatic"},
+                    "ratingTextToValueConversionDataSet" : {"depressed" : 1, "sad" : 2, "ok" : 3, "happy" : 4, "ecstatic": 5},
+                    trackingQuestion: "How are you?",
+                    averageText:"Your average mood is ",
+                },
+                "Energy Rating" : {
+                    id : 108092,
+                    name : "Energy Rating",
+                    variableName: "Energy Rating",
+                    variableCategoryName : "Emotions",
+                    unitAbbreviatedName : "/5",
+                    combinationOperation: "MEAN",
+                    positiveOrNegative: 'positive',
+                    unitName: '1 to 5 Rating',
+                    ratingOptionLabels : ['1', '2', '3', '4', '5'],
+                    ratingValueToTextConversionDataSet: {1: "1", 2: "2", 3: "3", 4: "4", 5: "5"},
+                    ratingTextToValueConversionDataSet : {"1" : 1, "2" : 2, "3" : 3, "4" : 4, "5" : 5},
+                    trackingQuestion:"How is your energy level right now?",
+                    averageText:"Your average energy level is ",
+                }
+            };
+            if(config.appSettings.primaryOutcomeVariableName){return variables[config.appSettings.primaryOutcomeVariableName];}
+            return variables['Overall Mood'];
         };
         quantimodoService.ratingImages = {
             positive : [

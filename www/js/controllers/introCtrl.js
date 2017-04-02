@@ -1,7 +1,7 @@
 angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                                            $rootScope, $stateParams, quantimodoService) {
 
-    $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
+    $scope.primaryOutcomeVariableName = quantimodoService.getPrimaryOutcomeVariable().name;
     if($state.current.name === 'app.introOld'){ $scope.introSlides = quantimodoService.getIntroSlidesOld(); }
     else { $scope.introSlides = quantimodoService.getIntroSlidesNew(); }
     $rootScope.showFilterBarSearchIcon = false;

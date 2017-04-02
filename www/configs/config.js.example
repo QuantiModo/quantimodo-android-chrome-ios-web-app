@@ -13,7 +13,6 @@ config.appSettings  = {
         ' - Track diet, treatments, symptoms, and anything else',
         ' - Analyze your data to see the strongest predictors of your mood'
     ],
-
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
@@ -21,7 +20,6 @@ config.appSettings  = {
         unitAbbreviatedName : "/5",
         combinationOperation: "MEAN"
     },
-
     primaryOutcomeVariableRatingOptionLabels : [
         'Depressed',
         'Sad',
@@ -32,25 +30,7 @@ config.appSettings  = {
 
 
     welcomeText:"Let's start off by reporting your first mood below",
-    primaryOutcomeVariableTrackingQuestion:"How are you?",
-    primaryOutcomeVariableAverageText:"Your average mood is ",
-    mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
-    ratingValueToTextConversionDataSet: {
-        "1": "depressed",
-        "2": "sad",
-        "3": "ok",
-        "4": "happy",
-        "5": "ecstatic"
-    },
-    ratingTextToValueConversionDataSet : {
-        "depressed" : 1,
-        "sad" : 2,
-        "ok" : 3,
-        "happy" : 4,
-        "ecstatic": 5
-    },
-
     intro : [
         // screen 1
         {
@@ -562,8 +542,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
-        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
+        val = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]?
+        quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
 
     // report
