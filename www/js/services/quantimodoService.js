@@ -283,17 +283,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
             quantimodoService.post('api/v1/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
         };
-        // Request measurements to be emailed as a csv
-        quantimodoService.postMeasurementsCsvExport = function() {
-            quantimodoService.post('api/v2/measurements/request_csv', [], [], quantimodoService.successHandler, quantimodoService.errorHandler);
-        };
-        // Request measurements to be emailed as a xls
-        quantimodoService.postMeasurementsXlsExport = function() {
-            quantimodoService.post('api/v2/measurements/request_xls', [], [], quantimodoService.successHandler, quantimodoService.errorHandler);
-        };
-        // Request measurements to be emailed as a pdf
-        quantimodoService.postMeasurementsPdfExport = function() {
-            quantimodoService.post('api/v2/measurements/request_pdf', [], [], quantimodoService.successHandler, quantimodoService.errorHandler);
+        quantimodoService.postMeasurementsExport = function(type) {
+            quantimodoService.post('api/v2/measurements/request_' . type, [], [], quantimodoService.successHandler, quantimodoService.errorHandler);
         };
         // post new Measurements for user
         quantimodoService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
@@ -550,16 +541,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var params = {platform: platform, deviceToken: deviceToken, clientId: quantimodoService.getClientId()};
             quantimodoService.post('api/v1/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
         };
-        quantimodoService.deleteDeviceToken = function(deviceToken, successHandler, errorHandler) {
+        quantimodoService.deleteDeviceTokenFromServer = function(successHandler, errorHandler) {
             var deferred = $q.defer();
-            if(!deviceToken){deferred.reject('No deviceToken provided to quantimodoService.deleteDeviceToken');
+            if(!localStorage.getItem('deviceTokenOnServer')){
+                deferred.reject('No deviceToken provided to quantimodoService.deleteDeviceTokenFromServer');
             } else {
-                var params = {deviceToken: deviceToken};
+                var params = {deviceToken: localStorage.getItem('deviceTokenOnServer')};
                 quantimodoService.post('api/v1/deviceTokens/delete',
                     ['deviceToken'],
                     params,
                     successHandler,
                     errorHandler);
+                localStorage.clear('deviceTokenOnServer');
                 deferred.resolve();
             }
             return deferred.promise;
@@ -855,8 +848,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             console.debug("Posting deviceToken to server: ", deviceToken);
             quantimodoService.postDeviceToken(deviceToken, function(response){
-                quantimodoService.deleteItemFromLocalStorage('deviceTokenToSync');
-                quantimodoService.setLocalStorageItem('deviceTokenOnServer', deviceToken);
+                localStorage.clear('deviceTokenToSync');
+                localStorage.setItem('deviceTokenOnServer', deviceToken);
                 console.debug(response);
                 deferred.resolve();
             }, function(error){
@@ -941,10 +934,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             };
             */
 
-            var deviceTokenOnServer = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
-            var deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenToSync');
-            if(deviceTokenOnServer){console.debug("This token is already on the server: " + deviceTokenOnServer);}
-            if (deviceTokenToSync){quantimodoService.registerDeviceToken(deviceTokenToSync);}
+            if(localStorage.getItem('deviceTokenOnServer')){console.debug("This token is already on the server: " + localStorage.getItem('deviceTokenOnServer'));}
+            if (localStorage.getItem('deviceTokenToSync')){quantimodoService.registerDeviceToken(localStorage.getItem('deviceTokenToSync'));}
             if($rootScope.sendReminderNotificationEmails){
                 quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
                 $rootScope.sendReminderNotificationEmails = null;
@@ -1002,14 +993,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.completelyResetAppState = function(){
             $rootScope.user = null;
             // Getting token so we can post as the new user if they log in again
-            $rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
-            quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
+            quantimodoService.deleteDeviceTokenFromServer();
             quantimodoService.clearLocalStorage();
             quantimodoService.cancelAllNotifications();
             $ionicHistory.clearHistory();
             $ionicHistory.clearCache();
         };
-        quantimodoService.clearTokensFromLocalStorage = function(){
+        quantimodoService.clearOAuthTokensFromLocalStorage = function(){
             localStorage.setItem('accessToken', null);
             localStorage.setItem('refreshToken', null);
             localStorage.setItem('expiresAtMilliseconds', null);

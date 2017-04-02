@@ -1,20 +1,35 @@
-angular.module('starter')
-
-	// Controls the settings page
-	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
-										  quantimodoService, ionicTimePicker, $stateParams, $ionicHistory,
-										  $ionicLoading,
+angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
+										  quantimodoService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
 										  //$ionicDeploy,
 										  $ionicPlatform) {
-
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
         $rootScope.showFilterBarSearchIcon = false;
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
-
-		//quantimodoService.updateUserTimeZoneIfNecessary();
-
-		// populate ratings interval
+		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+			$rootScope.hideNavigationMenu = false;
+			if($rootScope.urlParameters.userEmail){
+				$scope.state.loading = true;
+				$ionicLoading.show();
+				quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: $rootScope.urlParameters.userEmail}, function(user){
+					$scope.user = user;
+					$scope.state.loading = false;
+					$ionicLoading.hide();
+				}, function(error){
+					console.error(error);
+					$scope.state.loading = false;
+					$ionicLoading.hide();
+				});
+				return;
+			}
+			if(!$rootScope.user){
+				quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
+				console.debug("set afterLoginGoTo to " + window.location.href);
+				$rootScope.sendToLogin();
+			}
+		});
 		quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 			if($rootScope.isIOS){
@@ -27,20 +42,11 @@ angular.module('starter')
 				}
 			}
 		});
-		// load rating popover
-		$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
-			scope: $scope
-		}).then(function(popover) {
-			$scope.ratingPopover = popover;
-		});
-		// when interval is updated
+		$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {scope: $scope}).then(function(popover) {$scope.ratingPopover = popover;});
 		$scope.saveRatingInterval = function(interval){
-			//schedule notification
-			//TODO we can pass callback function to check the status of scheduling
 			$scope.saveInterval(interval);
 			quantimodoService.setLocalStorageItem('primaryOutcomeRatingFrequencyDescription', interval);
 			$scope.primaryOutcomeRatingFrequencyDescription = interval;
-			// hide popover
 			$scope.ratingPopover.hide();
 		};
 		$scope.refreshUser = function () {quantimodoService.refreshUser();};
@@ -49,23 +55,22 @@ angular.module('starter')
 			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 			var fallbackUrl = quantimodoService.getQuantiModoUrl("api/v2/account/applications", true);
 			var emailAddress = null;
-			if($rootScope.isMobile){
-				quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
-			} else {
-				quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
-			}
+			if($rootScope.isMobile){quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+			} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 		};
+		function addAppInformationToTemplate(template){
+            if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer');}
+            if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync');}
+            template = template + "QuantiModo Client ID: " + quantimodoService.getClientId() + '\r\n';
+            template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
+            template = template + "App Name: " + config.appSettings.appDisplayName + '\r\n';
+            return template;
+		}
 		$scope.sendBugReport = function() {
 			var subjectLine = encodeURIComponent( $rootScope.appDisplayName + ' ' + $rootScope.appVersion + ' Bug Report');
 			var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
 				"Additional Information: " + '\r\n';
-			//template =  template + $rootScope.appSettings.appDisplayName + ' ' + $rootScope.appVersion + '\r\n';
-			template = template + "QuantiModo Client ID: " + quantimodoService.getClientId() + '\r\n';
-            template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
-            template = template + "App Name: " + config.appSettings.appDisplayName + '\r\n';
-			if($rootScope.deviceToken){
-				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
-			}
+			template = addAppInformationToTemplate(template);
 			if(typeof $ionicDeploy !== "undefined"){
                 $ionicPlatform.ready(function () {
                     var snapshotList;
@@ -77,29 +82,22 @@ angular.module('starter')
                     });
                 });
             }
-
 			var emailBody = encodeURIComponent(template);
 			var emailAddress = 'mike@quantimo.do';
 			var fallbackUrl = 'http://help.quantimo.do';
-			if($rootScope.isMobile){
-				quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
-			} else {
-				quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
-			}
+			if($rootScope.isMobile){quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+			} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 		};
-
 		$scope.contactUs = function() {
 			$scope.hideLoader();
 			if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
 			else {window.location = '#app/feedback';}
 		};
-
 		$scope.postIdea = function() {
 			$scope.hideLoader();
 			if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
 			} else {window.open('http://help.quantimo.do/forums/211661-general', '_blank');}
 		};
-
 		$scope.combineNotificationChange = function() {
 			quantimodoService.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
 			if($rootScope.user.combineNotifications){
@@ -113,12 +111,11 @@ angular.module('starter')
 					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
 						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
 						"frequency reminder");
-                    if(!$rootScope.deviceToken){
+                    if(!localStorage.getItem('deviceTokenOnServer')){
                         console.warn("Could not find device token for push notifications so scheduling combined local notifications");
                         quantimodoService.syncTrackingReminders();
                     }
 				});
-
 			} else {
 				$ionicPopup.alert({
 					title: 'Enabled Multiple Notifications',
@@ -126,34 +123,20 @@ angular.module('starter')
 				});
 				quantimodoService.cancelAllNotifications().then(function() {quantimodoService.syncTrackingReminders();});
 			}
-
 		};
-
 		$scope.showAppInfoPopup = function () {
-
 			var template = "Please provide the following information when submitting a bug report: <br><br>";
-			template =  template + $rootScope.appSettings.appDisplayName + ' ' + $rootScope.appVersion + "<br><br>";
-			template = template + "QuantiModo Client Id: " + quantimodoService.getClientId();
-			if($rootScope.deviceToken){
-				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
-			}
-			$ionicPopup.alert({
-				title: "App Information",
-				template: template
-			});
+            template = addAppInformationToTemplate(template);
+			$ionicPopup.alert({title: "App Information", template: template});
 		};
-
 		$scope.getPreviewBuildsChange = function() {
 			var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
 			quantimodoService.updateUserSettingsDeferred(params);
 			$scope.autoUpdateApp();
 		};
-
 		var sendReminderNotificationEmailsChange = function () {
             var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
-            if($rootScope.urlParameters.userEmail){
-                params.userEmail = $rootScope.urlParameters.userEmail;
-            }
+            if($rootScope.urlParameters.userEmail){params.userEmail = $rootScope.urlParameters.userEmail;}
             quantimodoService.updateUserSettingsDeferred(params);
             if($rootScope.user.sendReminderNotificationEmails){
                 $ionicPopup.alert({
@@ -167,16 +150,10 @@ angular.module('starter')
                 });
             }
         };
-
-		$scope.sendReminderNotificationEmailsChange = function() {
-            verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);
-		};
-
+		$scope.sendReminderNotificationEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);};
 		var sendPredictorEmailsChange = function () {
             var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-            if($rootScope.urlParameters.userEmail){
-                params.userEmail = $rootScope.urlParameters.userEmail;
-            }
+            if($rootScope.urlParameters.userEmail){params.userEmail = $rootScope.urlParameters.userEmail;}
             quantimodoService.updateUserSettingsDeferred(params);
             if($rootScope.user.sendPredictorEmails){
                 $ionicPopup.alert({
@@ -190,11 +167,7 @@ angular.module('starter')
                 });
             }
         };
-
-        $scope.sendPredictorEmailsChange = function() {
-        	verifyEmailAddressAndExecuteCallback(sendPredictorEmailsChange);
-        };
-
+        $scope.sendPredictorEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendPredictorEmailsChange);};
 		$scope.openEarliestReminderTimePicker = function() {
 			$scope.state.earliestReminderTimePickerConfiguration = {
 				callback: function (val) {
@@ -202,9 +175,7 @@ angular.module('starter')
 						console.debug('Time not selected');
 					} else {
 						var a = new Date();
-						var params = {
-							timeZoneOffset: a.getTimezoneOffset()
-						};
+						var params = {timeZoneOffset: a.getTimezoneOffset()};
 						var selectedTime = new Date(val * 1000);
 						a.setHours(selectedTime.getUTCHours());
 						a.setMinutes(selectedTime.getUTCMinutes());
@@ -233,10 +204,8 @@ angular.module('starter')
 				step: 15,
 				closeLabel: 'Cancel'
 			};
-
 			ionicTimePicker.openTimePicker($scope.state.earliestReminderTimePickerConfiguration);
 		};
-
 		$scope.openLatestReminderTimePicker = function() {
 			$scope.state.latestReminderTimePickerConfiguration = {
 				callback: function (val) {
@@ -244,9 +213,7 @@ angular.module('starter')
 						console.debug('Time not selected');
 					} else {
 						var a = new Date();
-						var params = {
-							timeZoneOffset: a.getTimezoneOffset()
-						};
+						var params = {timeZoneOffset: a.getTimezoneOffset()};
 						var selectedTime = new Date(val * 1000);
 						a.setHours(selectedTime.getUTCHours());
 						a.setMinutes(selectedTime.getUTCMinutes());
@@ -275,39 +242,36 @@ angular.module('starter')
 				step: 15,
 				closeLabel: 'Cancel'
 			};
-
 			ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
 		};
-
+		function storeDeviceTokenToSync(){
+            // Getting token so we can post as the new user if they log in again
+            if(localStorage.getItem('deviceTokenOnServer')){
+                localStorage.setItem('deviceTokenToSync', localStorage.getItem('deviceTokenOnServer'));
+                quantimodoService.deleteDeviceTokenFromServer();
+            }
+		}
+		function logOutOfWebsite() {
+            if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
+                window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
+            }
+        }
         $scope.logout = function() {
-
 			var completelyResetAppStateAndLogout = function(){
                 quantimodoService.completelyResetAppState();
-				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
-					window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
-				}
-				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
+				logOutOfWebsite();
+                storeDeviceTokenToSync();
                 $state.go('app.intro');
-				//$state.go(config.appSettings.welcomeState, {}, { reload: true });
 			};
-
 			var afterLogoutDoNotDeleteMeasurements = function(){
                 $rootScope.user = null;
-				// Getting token so we can post as the new user if they log in again
-				$rootScope.deviceTokenToSync = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
-				quantimodoService.deleteDeviceToken($rootScope.deviceTokenToSync);
-				quantimodoService.clearTokensFromLocalStorage();
-				if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
-					window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
-				}
+				storeDeviceTokenToSync();
+				quantimodoService.clearOAuthTokensFromLocalStorage();
+                logOutOfWebsite();
                 window.localStorage.introSeen = false;
                 window.localStorage.onboarded = false;
-				quantimodoService.setLocalStorageItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
                 $state.go('app.intro');
-				//hard reload
-				//$state.go(config.appSettings.welcomeState, {}, { reload: true });
 			};
-
             $scope.showDataClearPopup = function(){
                 $ionicPopup.show({
                     title: 'Clear local storage?',
@@ -329,13 +293,11 @@ angular.module('starter')
 
                 });
             };
-
 			console.debug('Logging out...');
 			$scope.hideLoader();
 			$rootScope.user = null;
 			$scope.showDataClearPopup();
         };
-
 	    // Convert all data Array to a CSV object
 	    var convertToCSV = function(objArray) {
 	        var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
@@ -352,93 +314,33 @@ angular.module('starter')
 	        }
 	        return str;
 	    };
-
 	    var verifyEmailAddressAndExecuteCallback = function (callback) {
 	    	if($rootScope.user.email || $rootScope.user.userEmail){
 	    		callback();
 	    		return;
 			}
             $scope.updateEmailAndExecuteCallback(callback);
-
         };
-
 	    var exportRequestAlert = function () {
             $ionicPopup.alert({
                 title: 'Export Request Sent!',
                 template: 'Your data will be emailed to you within the next 24 hours.  Enjoy your life! So do we!'
             });
         };
-
-	    var exportCsv = function () {
-            quantimodoService.postMeasurementsCsvExport(function(response){
-                if(!response.success) {
-                    quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
-                }
+	    function exportMeasurements(type){
+            quantimodoService.postMeasurementsExport(type, function(response){
+                if(!response.success) {quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));}
             }, function(error){
                 quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
             });
             exportRequestAlert();
-        };
-
-        var exportPdf = function () {
-            exportRequestAlert();
-            quantimodoService.postMeasurementsPdfExport(function(response){
-                if(!response.success) {
-                    quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
-                }
-            }, function(error){
-                quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
-            });
-        };
-
-        var exportXls = function () {
-            exportRequestAlert();
-            quantimodoService.postMeasurementsXlsExport(function(response){
-                if(!response.success) {
-                    quantimodoService.reportError("Could not export measurements.");
-                }
-            }, function(error){
-                quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
-            });
-        };
-
-		$scope.exportCsv = function() {
-            verifyEmailAddressAndExecuteCallback(exportCsv);
+		}
+	    var exportCsv = function () {exportMeasurements('csv');};
+        var exportPdf = function () {exportMeasurements('pdf');};
+        var exportXls = function () {exportMeasurements('xls');};
+		$scope.exportMeasurements = function(type) {
+			if(type === 'csv'){verifyEmailAddressAndExecuteCallback(exportCsv);}
+            if(type === 'pdf'){verifyEmailAddressAndExecuteCallback(exportPdf);}
+            if(type === 'xls'){verifyEmailAddressAndExecuteCallback(exportXls);}
 		};
-
-		$scope.exportPdf = function() {
-            verifyEmailAddressAndExecuteCallback(exportPdf);
-		};
-
-		$scope.exportXls = function(){
-            verifyEmailAddressAndExecuteCallback(exportXls);
-		};
-
-		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $rootScope.hideNavigationMenu = false;
-            if($rootScope.urlParameters.userEmail){
-                $scope.state.loading = true;
-                $ionicLoading.show();
-                quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: $rootScope.urlParameters.userEmail}, function(user){
-                    $scope.user = user;
-                    $scope.state.loading = false;
-                    $ionicLoading.hide();
-                }, function(error){
-                	console.error(error);
-                    $scope.state.loading = false;
-                    $ionicLoading.hide();
-                });
-                return;
-            }
-
-			if(!$rootScope.user){
-				quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-				console.debug("set afterLoginGoTo to " + window.location.href);
-				$rootScope.sendToLogin();
-			}
-
-		});
-
 	});

@@ -31,85 +31,33 @@ angular.module('starter',
 )
 
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {
-//.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
-// Database
-//.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
-
     $rootScope.appVersion = "2.5.1.0";
     quantimodoService.setPlatformVariables();
-
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-                //alert(errorMsg);
                 quantimodoService.reportError(errorMsg);
             };
         }
-
-        if($rootScope.isMobile){
-            if(typeof PushNotification === "undefined"){
-                quantimodoService.reportError('PushNotification is undefined');
-            }
-        }
-
+        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){quantimodoService.reportError('PushNotification is undefined');}}
         if (typeof PushNotification !== "undefined") {
             var pushConfig = {
-                android: {
-                    senderID: "1052648855194",
-                    badge: true,
-                    sound: false,
-                    vibrate: false,
-                    icon: 'ic_stat_icon_bw',
-                    clearBadge: true
-                },
-                browser: {
-                    pushServiceURL: 'http://push.api.phonegap.com/v1/push'
-                },
-                ios: {
-                    alert: "false",
-                    badge: "true",
-                    sound: "false",
-                    clearBadge: true
-                },
+                android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
+                browser: {pushServiceURL: 'http://push.api.phonegap.com/v1/push'},
+                ios: {alert: "false", badge: "true", sound: "false", clearBadge: true},
                 windows: {}
             };
             console.debug("Going to try to register push with " + JSON.stringify(pushConfig));
             var push = PushNotification.init(pushConfig);
-
              push.on('registration', function(registerResponse) {
                  console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
-                 if(!registerResponse.registrationId){
-                     quantimodoService.bugsnagNotify('No registerResponse.registrationId from push registration');
-                 }
-                 // data.registrationId
-                 var newDeviceToken = registerResponse.registrationId;
+                 if(!registerResponse.registrationId){quantimodoService.bugsnagNotify('No registerResponse.registrationId from push registration');}
                  console.debug("Got device token for push notifications: " + registerResponse.registrationId);
-                 var deviceTokenOnServer = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
-                 $rootScope.deviceToken = deviceTokenOnServer;
-                 console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
-                 var name;
-                 var message;
-                 var metaData = {};
-                 var severity = "error";
-                 metaData.registerResponse = registerResponse;
-                 metaData.deviceTokenOnServer = deviceTokenOnServer;
-                 if(deviceTokenOnServer !== registerResponse.registrationId) {
-                     $rootScope.deviceToken = newDeviceToken;
-                     quantimodoService.setLocalStorageItem('deviceTokenToSync', newDeviceToken);
-                     name = 'New push device token does not match localStorage.deviceTokenOnServer';
-                     message = 'New push device token ' + registerResponse.registrationId +
-                         ' does not match localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
-                         ' so saving to localStorage to sync after login';
-                     //quantimodoService.bugsnagNotify(name, message, metaData, severity);
-                 } else {
-                     name = 'New push device token matches localStorage.deviceTokenOnServer';
-                     message = 'New push device token ' + registerResponse.registrationId +
-                         ' matches localStorage.deviceTokenOnServer ' + deviceTokenOnServer +
-                         ' so not to localStorage to sync after login';
-                     //quantimodoService.bugsnagNotify(name, message, metaData, severity);
+                 var deviceTokenOnServer = localStorage.getItem('deviceTokenOnServer');
+                 if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
+                     localStorage.setItem('deviceTokenToSync', registerResponse.registrationId);
                  }
              });
 
