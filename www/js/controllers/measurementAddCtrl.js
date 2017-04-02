@@ -48,9 +48,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 $ionicLoading.hide();
                 refreshUnitsIfStale();
                 console.debug($state.current.name + ": " + "got units in init function");
-                if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
-                    $scope.state.measurement.unitAbbreviatedName = $stateParams.variableObject.userVariableDefaultUnitAbbreviatedName;
-                }
                 if($stateParams.reminderNotification) {$scope.state.measurement.unitAbbreviatedName = $stateParams.reminderNotification.unitAbbreviatedName;}
                 $scope.state.selectedDate = moment();
                 if(!$scope.state.measurementIsSetup) { setupFromUrlParameters(); }
@@ -311,6 +308,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         var setupFromVariableStateParameter = function(){
             if($stateParams.variableObject) {
                 console.debug($state.current.name + ": " + 'setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
+                $scope.state.measurement.unitAbbreviatedName = ($stateParams.variableObject.userVariableDefaultUnitAbbreviatedName) ? $stateParams.variableObject.userVariableDefaultUnitAbbreviatedName : $stateParams.variableObject.defaultUnitAbbreviatedName;
                 // Gets version from local storage in case we just updated unit in variable settings
                 var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', {name: $stateParams.variableObject.name});
                 if(userVariables && userVariables.length){ $stateParams.variableObject = userVariables[0]; }
@@ -322,14 +320,11 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 if($stateParams.variableObject.variableCategoryName){
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
                     setupVariableCategory($scope.state.measurement.variableCategoryName);
-                } else if($stateParams.variableObject.variableCategoryName) {
-                    $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
-                    setupVariableCategory($scope.state.measurement.variableCategoryName);
                 } else {$scope.state.showVariableCategorySelector = true;}
                 if($stateParams.variableObject.combinationOperation){$scope.state.measurement.combinationOperation = $stateParams.variableObject.combinationOperation;
                 } else {$stateParams.variableObject.combinationOperation = 'MEAN';}
                 $scope.state.measurementIsSetup = true;
-                setupValueFieldType($stateParams.variableObject.userVariableDefaultUnitAbbreviatedName, $stateParams.variableObject.description);
+                setupValueFieldType($scope.state.measurement.unitAbbreviatedNamee, $stateParams.variableObject.description);
                 // Fill in default value as last value if not /5
                 /** @namespace $stateParams.variableObject.lastValue */
                 if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value &&

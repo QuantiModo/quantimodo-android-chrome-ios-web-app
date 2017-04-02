@@ -27,6 +27,44 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			noRemindersText: "You don't have any reminders, yet.",
             noRemindersIcon: "ion-android-notifications-none"
 	    };
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter RemindersManageCtrl");
+            $rootScope.hideNavigationMenu = false;
+            $scope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
+                if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
+                if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add new reminder"; }
+            } else {
+                $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + "!";
+                $scope.state.noRemindersText = "You don't have any " + $stateParams.variableCategoryName.toLowerCase() + ", yet.";
+                $scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
+                if(!$scope.stateParams.title){ $scope.stateParams.title = $stateParams.variableCategoryName; }
+                if(!$scope.stateParams.addButtonText) {
+                    $scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
+                }
+                $scope.state.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
+            }
+            $scope.state.showButtons = true;
+            getTrackingReminders();
+            $rootScope.showActionSheetMenu = function() {
+                var hideSheet = $ionicActionSheet.show({
+                    buttons: [
+                        { text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
+                        { text: '<i class="icon ion-clock"></i>Sort by Time' }
+                    ],
+                    cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                    cancel: function() {console.debug('CANCELLED');},
+                    buttonClicked: function(index) {
+                        console.debug('BUTTON CLICKED', index);
+                        if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
+                        if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
+                        return true;
+                    }
+                });
+                $timeout(function() { hideSheet(); }, 20000);
+            };
+        });
 	    if(!$rootScope.reminderOrderParameter){ $rootScope.reminderOrderParameter = 'variableName'; }
 		function showAppropriateHelpInfoCards(){
 			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) &&
@@ -53,57 +91,6 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 					$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
 				});
 		};
-	    var init = function(){
-            $rootScope.hideNavigationMenu = false;
-			console.debug($state.current.name + ' initializing...');
-			$rootScope.stateParams = $stateParams;
-			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
-				if(!$rootScope.stateParams.title) { $rootScope.stateParams.title = "Manage Reminders"; }
-				if(!$rootScope.stateParams.addButtonText) { $rootScope.stateParams.addButtonText = "Add new reminder"; }
-                $scope.state.addMeasurementButtonText = "Add Measurement";
-			} else {
-                $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + "!";
-				$scope.state.noRemindersText = "You don't have any " + $stateParams.variableCategoryName.toLowerCase() + ", yet.";
-                $scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
-				if(!$rootScope.stateParams.title){ $rootScope.stateParams.title = $stateParams.variableCategoryName; }
-				if(!$rootScope.stateParams.addButtonText) {
-					$rootScope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
-				}
-                $scope.state.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
-			}
-			$scope.state.showButtons = true;
-			getTrackingReminders();
-			$scope.refreshReminders();
-			// Triggered on a button click, or some other target
-			$rootScope.showActionSheetMenu = function() {
-				// Show the action sheet
-				var hideSheet = $ionicActionSheet.show({
-					buttons: [
-						{ text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
-						{ text: '<i class="icon ion-clock"></i>Sort by Time' }
-					],
-					cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-					cancel: function() {console.debug('CANCELLED');},
-					buttonClicked: function(index) {
-						console.debug('BUTTON CLICKED', index);
-						if(index === 0){
-							console.debug("Sort by name");
-							$rootScope.reminderOrderParameter = 'variableName';
-							init();
-						}
-						if(index === 1){
-							console.debug("Sort by time");
-							$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';
-							init();
-						}
-						return true;
-					}
-				});
-				$timeout(function() { hideSheet(); }, 20000);
-			};
-	    };
 		$scope.showMoreNotificationInfoPopup = function(){
 			var moreNotificationInfoPopup = $ionicPopup.show({
 				title: "Individual Notifications Disabled",
@@ -143,15 +130,11 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 				console.error('Failed to Delete Reminder!');
 			});
 	    };
-    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-    		init();
-    	});
 		$scope.showActionSheet = function(trackingReminder) {
 			var variableObject = {id : trackingReminder.variableId, name : trackingReminder.variableName};
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-android-notifications-none"></i>Edit'},
-					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
 					{ text: '<i class="icon ion-edit"></i>Record Measurement' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>History'},
@@ -163,10 +146,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 				buttonClicked: function(index) {
 					console.debug('BUTTON CLICKED', index);
 					if(index === 0){$scope.edit(trackingReminder);}
-					if(index === 1){$scope.goToAddMeasurementForVariableObject(variableObject);}
+					if(index === 1){$state.go('app.measurementAdd', {reminderNotification: trackingReminder});}
 					if(index === 2){$scope.goToChartsPageForVariableObject(variableObject);}
 					if(index === 3){$scope.goToHistoryForVariableObject(variableObject);}
-					if(index === 4) {$state.go('app.variableSettings', {variableName: trackingReminder.variableName});}
+					if(index === 4){$state.go('app.variableSettings', {variableName: trackingReminder.variableName});}
 					return true;
 				},
 				destructiveButtonClicked: function() {
