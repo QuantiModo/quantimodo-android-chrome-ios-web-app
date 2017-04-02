@@ -10,7 +10,6 @@ config.appSettings  = {
     "ionicAppId": "470c1f1b",
     "cordovaLocalNotificationsEnabled" : false,
     "linkToChromeExtension" : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
-    "shoppingCartEnabled" : true,
     "defaultState" : "app.remindersInbox",
     "welcomeState" : "app.welcome",
     "appStorageIdentifier": "MoodiModoData*",

@@ -8,7 +8,6 @@ config.appSettings  = {
     ionicAppId: null,
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
-    shoppingCartEnabled : true,
     ionNavBarClass:'bar-positive',
     defaultState : 'app.measurements-variable-button-icons',
     welcomeState : 'app.welcome',
