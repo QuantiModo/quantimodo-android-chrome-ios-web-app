@@ -5,7 +5,7 @@ angular.module('starter')
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
             requestParams: $stateParams.requestParams,
-            variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+            variableName: quantimodoService.getPrimaryOutcomeVariable().name,
             increasingDecreasing: '',
             correlationObjects: [],
             showLoadMoreButton: false,
@@ -205,7 +205,7 @@ angular.module('starter')
             if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
             if($rootScope.urlParameters.causeVariableName){ $stateParams.causeVariableName = $rootScope.urlParameters.causeVariableName; }
             if($rootScope.urlParameters.effectVariableName){ $stateParams.effectVariableName = $rootScope.urlParameters.effectVariableName; }
-            if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name; }
+            if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = quantimodoService.getPrimaryOutcomeVariable().name; }
             $scope.state.requestParams.offset = 0;
             $scope.state.requestParams.limit = 10;
             if ($stateParams.causeVariableName){

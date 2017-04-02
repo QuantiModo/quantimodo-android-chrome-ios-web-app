@@ -25,49 +25,12 @@ config.appSettings = {
         " - Track diet, treatments, symptoms, and anything else",
         " - Analyze your data to see the strongest predictors of your mood"
     ],
-    "primaryOutcomeVariableDetails" : {
-        "id" : 1398,
-        "name" : "Overall Mood",
-        "variableName": "Overall Mood",
-        variableCategoryName : "Mood",
-        "unitAbbreviatedName" : "/5",
-        "combinationOperation": "MEAN",
-        "description": "positive",
-        "unitName": "1 to 5 Rating"
-    },
-    "primaryOutcomeVariableRatingOptionLabels" : [
-        "Depressed",
-        "Sad",
-        "OK",
-        "Happy",
-        "Ecstatic"
-    ],
-    "primaryOutcomeVariableRatingOptionLowercaseLabels" : [
-        "depressed",
-        "sad",
-        "ok",
-        "happy",
-        "ecstatic"
-    ],
     "welcomeText" : "Let's start off by reporting your first mood below",
     "primaryOutcomeVariableTrackingQuestion" : "How are you?",
     "primaryOutcomeVariableAverageText" : "Your average mood is ",
     "mobileNotificationImage" : "file://img/icons/icon_128.png",
     "mobileNotificationText" : "Time to track!",
-    "ratingValueToTextConversionDataSet": {
-        "1": "depressed",
-        "2": "sad",
-        "3": "ok",
-        "4": "happy",
-        "5": "ecstatic"
-    },
-    "ratingTextToValueConversionDataSet" : {
-        "depressed" : 1,
-        "sad" : 2,
-        "ok" : 3,
-        "happy" : 4,
-        "ecstatic": 5
-    },
+
     "backgroundColor": "#3467d6",
     "intro" : null,
     "helpPopupMessages" : {

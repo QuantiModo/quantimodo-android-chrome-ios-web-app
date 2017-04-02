@@ -173,7 +173,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		var getWeekdayChartIfNecessary = function () {
 			if(!$scope.state.numberOfDisplayedNotifications && !$scope.weekdayChartConfig){
 				quantimodoService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
-					config.appSettings.primaryOutcomeVariableDetails).then(function (chartConfig) {
+					quantimodoService.getPrimaryOutcomeVariable()).then(function (chartConfig) {
 					$scope.weekdayChartConfig = chartConfig;
 				});
 			}
@@ -252,14 +252,14 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				});
 	    };
         function wordClicked(word){
-            alert(word.text + " appears " + word.count + " times and the average " + config.appSettings.primaryOutcomeVariableDetails.name +
-                " value when it is written is " + word.average + config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName + '.' );
+            alert(word.text + " appears " + word.count + " times and the average " + quantimodoService.getPrimaryOutcomeVariable().name +
+                " value when it is written is " + word.average + quantimodoService.getPrimaryOutcomeVariable().unitAbbreviatedName + '.' );
         }
         function createWordCloudFromNotes() {
             $scope.height = window.innerHeight * 0.5;
             $scope.width = window.innerWidth; //element.find('word-cloud')[0].offsetWidth;
             $scope.wordClicked = wordClicked;
-            quantimodoService.getNotesDeferred(config.appSettings.primaryOutcomeVariableDetails.name).then(function (response) {
+            quantimodoService.getNotesDeferred(quantimodoService.getPrimaryOutcomeVariable().name).then(function (response) {
                 $scope.words = response;
             });
         }

@@ -17,7 +17,7 @@ angular.module('starter')
         $scope.showTrackingSubMenu = false;
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
-        $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
+        $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
         $rootScope.appDisplayName = config.appSettings.appDisplayName;
         $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
         if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
@@ -433,7 +433,7 @@ angular.module('starter')
         $scope.loading = false;
         $ionicLoading.hide();
         /*Wrapper Config*/
-        $scope.primaryOutcomeVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
+        $scope.primaryOutcomeVariableName = quantimodoService.getPrimaryOutcomeVariable().name;
         $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
         $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
         $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
@@ -612,7 +612,7 @@ angular.module('starter')
             };
             var reminderToSchedule = {
                 reminderFrequency: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
-                variableId: config.appSettings.primaryOutcomeVariableDetails.id,
+                variableId: quantimodoService.getPrimaryOutcomeVariable().id,
                 defaultValue: 3
             };
             quantimodoService.addToTrackingReminderSyncQueue(reminderToSchedule);
@@ -820,7 +820,7 @@ angular.module('starter')
             // Delete all measurements for a variable
             quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
                 // If primaryOutcomeVariableName, delete local storage measurements
-                if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                if ($rootScope.variableName === quantimodoService.getPrimaryOutcomeVariable().name) {
                     quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
                     quantimodoService.setLocalStorageItem('measurementsQueue',[]);
                     quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);

@@ -81,181 +81,98 @@ angular.module('starter',
                      console.debug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
                      return;
                  }
-                 push.finish(function () {
-                     console.debug("processing of push data is finished: " + JSON.stringify(data));
-                 });
+                 push.finish(function () {console.debug("processing of push data is finished: " + JSON.stringify(data));});
              });
-
-             push.on('error', function(e) {
-                 quantimodoService.reportException(e, e.message, pushConfig);
-                 //alert(e.message);
-             });
-
+             push.on('error', function(e) {quantimodoService.reportException(e, e.message, pushConfig);});
              var finishPush = function (data) {
                  if(!finishPushes){
                      console.debug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
                      return;
                  }
-
                  push.finish(function() {
                      console.debug('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
                      console.debug('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
-
              };
-
              window.trackOneRatingAction = function (data){
-
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 1
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackTwoRatingAction = function (data){
-
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 2
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackThreeRatingAction = function (data){
-
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 3
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackFourRatingAction = function (data){
-
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 4
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackFiveRatingAction = function (data){
-
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 5
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackDefaultValueAction = function (data){
-
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.snoozeAction = function (data){
-
                  console.debug("snoozeAction push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
-                 };
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
                  quantimodoService.snoozeTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackLastValueAction = function (data){
-
                  console.debug("trackLastValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: data.additionalData.lastValue
-                 };
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.lastValue};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackSecondToLastValueAction = function (data){
-
                  console.debug("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: data.additionalData.secondToLastValue
-                 };
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.secondToLastValue};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackThirdToLastValueAction = function (data){
-
                  console.debug("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: data.additionalData.thirdToLastValue
-                 };
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.thirdToLastValue};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
          }
-
         window.notification_callback = function(reportedVariable, reportingTime){
             var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
             var keyIdentifier = config.appSettings.appStorageIdentifier;
             var val = false;
-
-            // convert values
             if(reportedVariable === "repeat_rating"){
-                val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
-                    JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
+                val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
             } else {
-                val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
-                    config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
+                val = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
             }
-
-            // report
             if(val){
-                // update localstorage
                 localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
-
-                var allMeasurementsObject = {
-                    storedValue : val,
-                    value : val,
-                    startTime : startTime,
-                    humanTime : {
-                        date : new Date().toISOString()
-                    }
-                };
-
-                // update full data
+                var allMeasurementsObject = {storedValue : val, value : val, startTime : startTime,};
                 if(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']){
                     var allMeasurements = JSON.parse(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']);
                     allMeasurements.push(allMeasurementsObject);
                     localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
                 }
-
-                //update measurementsQueue
                 if(!localStorage[keyIdentifier+'measurementsQueue']){
                     localStorage[keyIdentifier+'measurementsQueue'] = '[]';
                 } else {
@@ -265,117 +182,72 @@ angular.module('starter',
                 }
             }
         };
-
-        if(typeof analytics !== "undefined") {
-            console.debug("Configuring Google Analytics");
-            //noinspection JSUnresolvedFunction
-            analytics.startTrackerWithId("UA-39222734-24");
-        } else {
-            //console.debug("Google Analytics Unavailable");
-        }
-
-        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-        // for form inputs)
+        if(typeof analytics !== "undefined") {analytics.startTrackerWithId("UA-39222734-24");}
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
         }
-        if (window.StatusBar) {
-            // org.apache.cordova.statusbar required
-            StatusBar.styleDefault();
-        }
-        // Database
-        /*
-         if (!$rootScope.isMobile) {
-         db = window.openDatabase("my.db", "1.0", "Cordova Demo", 200000);
-         }
-         else {
-         db = $cordovaSQLite.openDB("my.db");
-         }
-         */
-
+        if (window.StatusBar) {StatusBar.styleDefault();} // org.apache.cordova.statusbar required
     });
-
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
     };
-
     $ionicPlatform.registerBackButtonAction(function (event) {
         if($rootScope.backButtonState){
             $state.go($rootScope.backButtonState);
             $rootScope.backButtonState = null;
             return;
         }
-
         if($ionicHistory.currentStateName() === 'app.upgrade'){
             console.debug('registerBackButtonAction from upgrade: Going to default state...');
             $state.go(config.appSettings.defaultState);
             return;
         }
-
         if($ionicHistory.currentStateName() === config.appSettings.defaultState){
             ionic.Platform.exitApp();
             return;
         }
-
         if($ionicHistory.backView()){
             $ionicHistory.goBack();
             return;
         }
-
         if(localStorage.user){
             $rootScope.hideNavigationMenu = false;
             console.debug('registerBackButtonAction: Going to default state...');
             $state.go(config.appSettings.defaultState);
             return;
         }
-
         console.debug('registerBackButtonAction: Closing the app');
         ionic.Platform.exitApp();
-
     }, 100);
 
     var intervalChecker = setInterval(function(){
-        if(typeof config !== "undefined"){
-            clearInterval(intervalChecker);
-        }
+        if(typeof config !== "undefined"){clearInterval(intervalChecker);}
     }, 500);
-
     String.prototype.toCamel = function(){
         return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
     };
-
-    var getAllUrlParams = function() {
-        $rootScope.urlParameters = {};
-        var queryString = document.location.toString().split('?')[1];
-        var sURLVariables;
-        var parameterNameValueArray;
-        if(queryString) {
-            sURLVariables = queryString.split('&');
-        }
-        if(sURLVariables) {
-            for (var i = 0; i < sURLVariables.length; i++) {
-                parameterNameValueArray = sURLVariables[i].split('=');
-                if(parameterNameValueArray[1].indexOf('http') > -1){
-                    $rootScope.urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];
-                } else {
-                    $rootScope.urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);
-                }
-
+    $rootScope.urlParameters = {};
+    var queryString = document.location.toString().split('?')[1];
+    var sURLVariables;
+    var parameterNameValueArray;
+    if(queryString) {sURLVariables = queryString.split('&');}
+    if(sURLVariables) {
+        for (var i = 0; i < sURLVariables.length; i++) {
+            parameterNameValueArray = sURLVariables[i].split('=');
+            if(parameterNameValueArray[1].indexOf('http') > -1){
+                $rootScope.urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];
+            } else {
+                $rootScope.urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);
             }
+
         }
-    };
-
-    getAllUrlParams();
-
+    }
     if ($rootScope.urlParameters.accessToken || $rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
         window.localStorage.introSeen = true;
         window.localStorage.onboarded = true;
     }
 })
-
-.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
-
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};
     if(ionic.Platform.isAndroid()){
         var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
@@ -386,7 +258,6 @@ angular.module('starter',
         }
         analyticsOptions.fields = {storage: 'none', fields: clientId};
     }
-
     AnalyticsProvider.setAccount(analyticsOptions);
     AnalyticsProvider.delayScriptTag(true);  // Needed to set user id later
     // Track all routes (default is true).
@@ -399,25 +270,15 @@ angular.module('starter',
     //AnalyticsProvider.enterDebugMode(true);
     AnalyticsProvider.useECommerce(true, true); // Enable e-commerce module (ecommerce.js)
 
-    /*  Trying to move to appCtrl
-    $ionicCloudProvider.init({
-        "core": {
-            "app_id": "42fe48d4"
-        }
-    });
-    */
+    //$ionicCloudProvider.init({"core": {"app_id": "42fe48d4"}}); Trying to move to appCtrl
 
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
     $ionicConfigProvider.navBar.alignTitle('center');
-
     if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
-        // Prevents back swipe white screen on iOS when caching is disabled
-        // https://github.com/driftyco/ionic/issues/3216
-        $ionicConfigProvider.views.swipeBackEnabled(false);
+        $ionicConfigProvider.views.swipeBackEnabled(false);  // Prevents back swipe white screen on iOS when caching is disabled https://github.com/driftyco/ionic/issues/3216
     }
-
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
         var getAppNameFromUrl = function () {
@@ -438,15 +299,7 @@ angular.module('starter',
       }]
     };
 
-    // Configure timepicker
-    var timePickerObj = {
-        format: 12,
-        step: 1,
-        closeLabel: 'Cancel'
-    };
-    ionicTimePickerProvider.configTimePicker(timePickerObj);
-
-    // Configure datepicker
+    ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {
         inputDate: new Date(),
         setLabel: 'Set',
@@ -1673,8 +1526,6 @@ angular.module('starter',
         console.debug("Intro seen so setting default route to inbox");
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     }
-      // if none of the above states are matched, use this as the fallback
-
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {

@@ -14,16 +14,9 @@ config.appSettings  = {
     shoppingCartEnabled : false,
     qmApiHostName: 'app.quantimo.do',
     appStorageIdentifier: 'EpharmixData*',
-
     defaultState : 'app.remindersInbox',
-
     welcomeState : 'app.login',
-
-    settingsPageOptions :
-    {
-        showReminderFrequencySelector : false
-    },
-
+    settingsPageOptions : {showReminderFrequencySelector : false},
     headline : 'Improving Health Outcomes',
     features: [
         ' Follow These Quick Steps to Improve Your Health',
@@ -31,54 +24,11 @@ config.appSettings  = {
         ' 2. Record "How I Feel" Responses',
         ' 3. Create Reports of Your Responses and Choose to Connect With Your Doctors'
     ],
-
-    primaryOutcomeVariableDetails : {
-        id : 1398,
-        name : "Overall Mood",
-        variableName: "Overall Mood",
-        variableCategoryName : "Mood",
-        unitAbbreviatedName : "/5",
-        unitId : 10,
-        combinationOperation: "MEAN",
-        description: 'positive',
-        unitName: '1 to 5 Rating'
-    },
-
-    primaryOutcomeVariableRatingOptionLabels : [
-        'Depressed',
-        'Sad',
-        'OK',
-        'Happy',
-        'Ecstatic'
-    ],
-
-    primaryOutcomeVariableRatingOptionLowercaseLabels : [
-        'depressed',
-        'sad',
-        'ok',
-        'happy',
-        'ecstatic'
-    ],
     welcomeText:"Let's start off by adding your first medication!",
     primaryOutcomeVariableTrackingQuestion:"How are you",
     primaryOutcomeVariableAverageText:"Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
-    ratingValueToTextConversionDataSet: {
-        "1": "depressed",
-        "2": "sad",
-        "3": "ok",
-        "4": "happy",
-        "5": "ecstatic"
-    },
-    ratingTextToValueConversionDataSet : {
-        "depressed" : 1,
-        "sad" : 2,
-        "ok" : 3,
-        "happy" : 4,
-        "ecstatic": 5
-    },
-
     intro : [
         // screen 1
         {
@@ -162,10 +112,9 @@ config.appSettings  = {
             }
         }
     ],
-
     helpPopupMessages : {
         "#/app/example": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
-       },
+    },
     wordAliases : {
     },
     remindersInbox : {
@@ -276,9 +225,5 @@ config.appSettings  = {
     ],
     menuType : 'medication',
 };
-
-if(!module){
-    var module = {};
-}
-
+if(!module){var module = {};}
 module.exports = config.appSettings;
