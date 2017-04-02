@@ -194,7 +194,6 @@ angular.module('starter')
                 }
             });
         };
-
         var showUnshareStudyConfirmation = function(correlationObject) {
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Share Study',
@@ -218,7 +217,6 @@ angular.module('starter')
                 }
             });
         };
-
         $scope.toggleStudyShare = function (correlationObject) {
             if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject);
             } else {showUnshareStudyConfirmation(correlationObject);}
@@ -341,23 +339,12 @@ angular.module('starter')
                 ]
             });
         };
-        $scope.addTag = function () {
-            $state.go('app.tagSearch',  {fromState: $state.current.name, userTaggedVariableObject: $rootScope.variableObject});
-        };
+
         $scope.tagAnotherVariable = function () {
             $state.go('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: $rootScope.variableObject});
         };
-        $scope.goToAddMeasurementForVariableObject = function (variableObject) {
-            $state.go('app.measurementAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href});
-        };
-        $scope.goToHistoryForVariableObject = function (variableObject) {
-            $state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});
-        };
         $scope.goToChartsPageForVariableObject = function (variableObject) {
-            $state.go('app.charts', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href});
-        };
-        $scope.goToAddReminderForVariableObject = function (variableObject) {
-            $state.go('app.reminderAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href});
+            $state.go('app.charts', {variableObject: variableObject});
         };
         $scope.addToRemindersUsingVariableObject = function (variableObject, options) {
             var doneState = config.appSettings.defaultState;
@@ -397,31 +384,6 @@ angular.module('starter')
                 .then(function() {
                     // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
                     $state.go(doneState, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
-                    quantimodoService.syncTrackingReminders();
-                });
-        };
-        $scope.addToFavoritesUsingVariableObject = function (variableObject) {
-            var trackingReminder = {};
-            trackingReminder.variableId = variableObject.id;
-            trackingReminder.variableName = variableObject.name;
-            trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
-            trackingReminder.variableDescription = variableObject.description;
-            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
-            trackingReminder.reminderFrequency = 0;
-            if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
-                var message = 'Got deletion request before last reminder refresh completed';
-                console.debug(message);
-                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
-                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
-            }
-            if ((trackingReminder.unitAbbreviatedName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
-                $state.go('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
-                return;
-            }
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
-                .then(function() {
-                    // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                    $state.go('app.favorites', {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
                     quantimodoService.syncTrackingReminders();
                 });
         };
@@ -874,7 +836,7 @@ angular.module('starter')
                     if(index === 0){$state.go('app.favoriteAdd', {reminder: favorite});}
                     if(index === 1){$state.go('app.measurementAdd', {trackingReminder: favorite});}
                     if(index === 2){$state.go('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
-                    if(index === 3) {$scope.goToHistoryForVariableObject(variableObject);}
+                    if(index === 3) {$state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
                     if(index === 4) {$state.go('app.variableSettings', {variableName: favorite.variableName});}
                     if(index === 5){
                         var reminder = JSON.parse(JSON.stringify(favorite));

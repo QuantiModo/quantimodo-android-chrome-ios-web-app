@@ -76,12 +76,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() {console.debug('CANCELLED');},
                     buttonClicked: function(index) {
-                        if(index === 0) {$scope.goToAddMeasurementForVariableObject($rootScope.variableObject);}
-                        if(index === 1) {$scope.goToAddReminderForVariableObject($rootScope.variableObject);}
-                        if(index === 2) {$scope.goToChartsPageForVariableObject($rootScope.variableObject);}
-                        if(index === 3) {$scope.goToHistoryForVariableObject($rootScope.variableObject);}
-                        if(index === 4) {$scope.addTag($rootScope.variableObject);}
-                        if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
+                        if(index === 0) {$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject});}
+                        if(index === 1) {$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject});}
+                        if(index === 2) {$state.go('app.charts', {variableObject: $rootScope.variableObject});}
+                        if(index === 3) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
                         return true;
                     },
                     destructiveButtonClicked: function() {$scope.showDeleteAllMeasurementsForVariablePopup(); return true;}
@@ -177,8 +175,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 					console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
 					if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
 					if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
-					if(index === 2) {$scope.goToChartsPageForVariableObject($rootScope.variableObject);}
-					if(index === 3) {$scope.goToHistoryForVariableObject($rootScope.variableObject);}
+					if(index === 2) {$state.go('app.charts', {variableObject: $rootScope.variableObject});}
+					if(index === 3) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
 					if(index === 4){$state.go('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
 					return true;
 				},
