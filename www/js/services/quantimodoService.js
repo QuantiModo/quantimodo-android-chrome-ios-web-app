@@ -3,19 +3,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var quantimodoService = {};
         $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
         // GET method with the added token
-        quantimodoService.get = function(baseURL, allowedParams, params, successHandler, errorHandler, options){
+        quantimodoService.get = function(route, allowedParams, params, successHandler, errorHandler, options){
             if(!options){ options = {}; }
             var cache = false;
             if(params && params.cache){
                 cache = params.cache;
                 params.cache = null;
             }
-            if(!canWeMakeRequestYet('GET', baseURL, options)){ return; }
+            if(!canWeMakeRequestYet('GET', route, options)){ return; }
             if($state.current.name === 'app.intro'){
-                console.warn('Not making request to ' + baseURL + ' user because we are in the intro state');
+                console.warn('Not making request to ' + route + ' user because we are in the intro state');
                 return;
             }
-            console.debug('quantimodoService.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
+            console.debug('quantimodoService.get: Going to try to make request to ' + route + " with params: " + JSON.stringify(params));
             quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
                 allowedParams.push('limit');
                 allowedParams.push('offset');
@@ -39,10 +39,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 //We can't append access token to Ionic requests for some reason
                 //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
                 // configure request
-                var url = quantimodoService.getQuantiModoUrl(baseURL);
                 var request = {
                     method: 'GET',
-                    url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
+                    url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
                     responseType: 'json',
                     headers: {
                         'Content-Type': "application/json"
@@ -69,7 +68,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             quantimodoService.errorHandler(data, status, headers, request, options);
                             errorHandler(data);
                         } else {
-                            quantimodoService.successHandler(data, baseURL, status);
+                            quantimodoService.successHandler(data, route, status);
                             successHandler(data);
                         }
                     })
@@ -204,16 +203,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var canWeMakeRequestYet = function(type, baseURL, options){
             if(!options || !options.minimumSecondsBetweenRequests){return true;}
             var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
-            if(!$rootScope[requestVariableName]){
-                $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
-                return true;
-            }
-            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
-                console.debug('quantimodoService.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
-                    "we made the same request within the last " + options.minimumSecondsBetweenRequests + ' seconds');
+            if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
+                console.debug('quantimodoService.get: Cannot make ' + type + ' request to ' + baseURL + " because " + "we made the same request within the last " + options.minimumSecondsBetweenRequests + ' seconds');
                 return false;
             }
-            $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+            localStorage.setItem(requestVariableName, Math.floor(Date.now() / 1000));
             return true;
         };
         function getCurrentFunctionName() {
