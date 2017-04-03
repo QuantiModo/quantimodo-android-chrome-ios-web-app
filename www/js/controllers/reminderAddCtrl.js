@@ -350,7 +350,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 60: "Every minute",
 				0: "As-Needed"
 	    	};
-	    	if($scope.state.trackingReminder.reminderFrequency && $scope.state.trackingReminder.reminderFrequency !== null){
+	    	if($scope.state.trackingReminder.reminderFrequency !== null){
 	    		$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.trackingReminder.reminderFrequency];
 	    	}
 	    	$scope.state.showReminderFrequencyCard = true;

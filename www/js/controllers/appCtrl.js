@@ -30,7 +30,7 @@ angular.module('starter')
         quantimodoService.refreshCommonVariables();
         quantimodoService.syncTrackingReminders();
         if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
-        if($rootScope.urlParameters.refreshUser){
+        if(quantimodoService.getUrlParameter('refreshUser')){
             quantimodoService.clearLocalStorage();
             window.localStorage.introSeen = true;
             window.localStorage.onboarded = true;
@@ -496,9 +496,6 @@ angular.module('starter')
                 userTagVariableObject: $rootScope.variableObject
             });
         };
-        $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
-            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
-        });
         $scope.togglePrimaryOutcomeSubMenu = function () {$scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;};
         $scope.toggleEmotionsSubMenu = function () {$scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;};
         $scope.toggleDietSubMenu = function () {$scope.showDietSubMenu = !$scope.showDietSubMenu;};
@@ -686,14 +683,14 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
         };
         $scope.trackFavoriteByValueField = function(trackingReminder, $index){
-            if($rootScope.favoritesArray[$index].total === null){
-                $scope.favoriteValidationFailure('Please specify a value for ' + $rootScope.favoritesArray[$index].variableName);
+            if(trackingReminder.total === null){
+                $scope.favoriteValidationFailure('Please specify a value for ' + trackingReminder.variableName);
                 return;
             }
-            $rootScope.favoritesArray[$index].displayTotal = "Recorded " + $rootScope.favoritesArray[$index].total + " " + $rootScope.favoritesArray[$index].unitAbbreviatedName;
-            quantimodoService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
+            trackingReminder.displayTotal = "Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName;
+            quantimodoService.postMeasurementByReminder(trackingReminder, trackingReminder.total)
                 .then(function () {
-                    console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
+                    console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     console.error(error);
@@ -769,11 +766,11 @@ angular.module('starter')
         $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
             var variableObject = {id: favorite.variableId, name: favorite.variableName};
             var actionMenuButtons = [
-                { text: '<i class="icon ion-gear-a"></i>Change Default Value' },
+                { text: '<i class="icon ion-gear-a"></i>Edit' },
                 { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
                 { text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
-                { text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-                { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                { text: '<i class="icon ion-ios-list-outline"></i>History'},
+                { text: '<i class="icon ion-settings"></i>Analysis Settings'},
                 { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'}
             ];
             /** @namespace config.appSettings.favoritesController */
@@ -788,7 +785,7 @@ angular.module('starter')
                 cancel: function() {console.debug('CANCELLED');},
                 buttonClicked: function(index) {
                     console.debug('BUTTON CLICKED', index);
-                    if(index === 0){$state.go('app.favoriteAdd', {reminder: favorite});}
+                    if(index === 0){$state.go('app.reminderAdd', {reminder: favorite});}
                     if(index === 1){$state.go('app.measurementAdd', {trackingReminder: favorite});}
                     if(index === 2){$state.go('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
                     if(index === 3) {$state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
@@ -802,31 +799,8 @@ angular.module('starter')
                     return true;
                 },
                 destructiveButtonClicked: function() {
-                    if(!bloodPressure){
-                        $rootScope.favoritesArray.splice($index, 1);
-                        quantimodoService.deleteTrackingReminderDeferred(favorite.id)
-                            .then(function(){
-                                console.debug('Favorite deleted: ' + JSON.stringify(favorite));
-                            }, function(error){
-                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify(favorite));
-                            });
-                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', favorite.id);
-                        return true;
-                    }
-                    if(bloodPressure){
-                        quantimodoService.deleteTrackingReminderDeferred($rootScope.bloodPressureReminderId)
-                            .then(function(){
-                                console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
-                            }, function(error){
-                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($rootScope.bloodPressure));
-                            });
-                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $rootScope.bloodPressureReminderId)
-                            .then(function(){
-                                //$scope.init();
-                            });
-                        $rootScope.bloodPressureReminderId = null;
-                        return true;
-                    }
+                    favorite.hide = true;
+                    quantimodoService.deleteTrackingReminderDeferred(favorite.id);
                 }
             });
             $timeout(function() {hideSheet();}, 20000);

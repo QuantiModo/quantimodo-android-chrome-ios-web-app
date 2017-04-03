@@ -27,26 +27,32 @@
 				{{state.noRemindersText}} Press the pink button to add one now.
 			</div>
 		</div>
-		<div class="list" ng-show="state.trackingReminders.length" id="remindersList">
-			<div on-hold="showActionSheet(reminder)"
-				 class="item"
-				 ng-repeat="reminder in state.trackingReminders | orderBy:reminderOrderParameter track by $index"
-				 ng-if="!reminder.hide">
-				<div class="row">
-					<div ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">
-						<i style="font-size: 40px;" class="icon positive {{reminder.ionIcon}}"></i>
-					</div>
-<!--					<div ng-if="reminder.imageUrl" ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">
-						<img style=" width: 40px; height: 40px" ng-src="{{reminder.imageUrl}}" alt="Ivy">
-					</div>-->
-					<div ng-click="showActionSheet(reminder)" class="col col-70">
-						<h2 style="white-space: normal; line-height: normal;">{{reminder.variableName}}</h2>
-						<p style="white-space: normal;">{{reminder.valueAndFrequencyTextDescriptionWithTime}}</p>
-					</div>
-					<div ng-click="showActionSheet(reminder)" class="col col-10">
-						<i style="font-size: 20px;" class="icon positive ion-more"></i>
-					</div>
-				</div>
+
+		<div class="list" id="remindersList" ng-cloak>
+			<div class="item item-divider" ng-if="state.favorites && state.favorites.length">As-Needed</div>
+			<div class="item" id="favoriteItem" style="padding:0"
+				 ng-if="!trackingReminder.hide"
+				 ng-repeat="trackingReminder in state.favorites"
+				 on-hold="showFavoriteActionSheet(favorite, $index)">
+				<div ng-include="'templates/items/favorite-item.html'"></div>
+			</div>
+			<div class="item item-divider"  ng-if="state.trackingReminders && state.trackingReminders.length" >Scheduled</div>
+			<div ng-click="showActionSheet(trackingReminder)"
+				 class="item item-avatar"
+				 ng-repeat="trackingReminder in state.trackingReminders | orderBy:reminderOrderParameter"
+				 ng-if="!trackingReminder.hide">
+				<img src="{{trackingReminder.pngPath}}" style="border-radius: 0">
+				<h2 style="white-space: normal; line-height: normal;">{{trackingReminder.variableName}}</h2>
+				<p style="white-space: normal;">{{trackingReminder.valueAndFrequencyTextDescriptionWithTime}}</p>
+			</div>
+			<div class="item item-divider" ng-if="state.archivedTrackingReminders && state.archivedTrackingReminders.length" >Archived</div>
+			<div ng-click="showActionSheet(trackingReminder)"
+				 class="item item-avatar"
+				 ng-repeat="trackingReminder in state.archivedTrackingReminders | orderBy:reminderOrderParameter"
+				 ng-if="!trackingReminder.hide">
+				<img src="{{trackingReminder.pngPath}}" style="border-radius: 0">
+				<h2 style="white-space: normal; line-height: normal;">{{trackingReminder.variableName}}</h2>
+				<p style="white-space: normal;">{{trackingReminder.valueAndFrequencyTextDescriptionWithTime}}</p>
 			</div>
 		</div>
 	</ion-content>

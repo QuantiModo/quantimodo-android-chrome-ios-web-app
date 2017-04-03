@@ -4,15 +4,16 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 										  $ionicPlatform) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
+		$scope.userEmail = quantimodoService.getUrlParameter('userEmail');
         $rootScope.showFilterBarSearchIcon = false;
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			$rootScope.hideNavigationMenu = false;
-			if($rootScope.urlParameters.userEmail){
+			if(quantimodoService.getUrlParameter('userEmail')){
 				$scope.state.loading = true;
 				$ionicLoading.show();
-				quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: $rootScope.urlParameters.userEmail}, function(user){
+				quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: quantimodoService.getUrlParameter('userEmail')}, function(user){
 					$scope.user = user;
 					$scope.state.loading = false;
 					$ionicLoading.hide();
@@ -135,7 +136,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		};
 		var sendReminderNotificationEmailsChange = function () {
             var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
-            if($rootScope.urlParameters.userEmail){params.userEmail = $rootScope.urlParameters.userEmail;}
+            if(quantimodoService.getUrlParameter('userEmail')){params.userEmail = quantimodoService.getUrlParameter('userEmail');}
             quantimodoService.updateUserSettingsDeferred(params);
             if($rootScope.user.sendReminderNotificationEmails){
                 $ionicPopup.alert({
@@ -152,7 +153,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$scope.sendReminderNotificationEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);};
 		var sendPredictorEmailsChange = function () {
             var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-            if($rootScope.urlParameters.userEmail){params.userEmail = $rootScope.urlParameters.userEmail;}
+            if(quantimodoService.getUrlParameter('userEmail')){params.userEmail = quantimodoService.getUrlParameter('userEmail');}
             quantimodoService.updateUserSettingsDeferred(params);
             if($rootScope.user.sendPredictorEmails){
                 $ionicPopup.alert({

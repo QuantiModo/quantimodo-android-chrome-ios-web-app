@@ -21,7 +21,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
         }
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            if($rootScope.urlParameters.variableName){$stateParams.variableName = $rootScope.urlParameters.variableName;}
+            if(quantimodoService.getUrlParameter('variableName')){$stateParams.variableName = quantimodoService.getUrlParameter('variableName');}
             $rootScope.hideNavigationMenu = false;
             $scope.stopGettingMeasurements = false;
             $ionicLoading.hide();
@@ -120,7 +120,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 console.error($state.current.name + " $rootScope.variableObject: " + JSON.stringify($rootScope.variableObject));
                 return;
             }
-            if($rootScope.urlParameters.doNotProcess){params.doNotProcess = true;}
+            if(quantimodoService.getUrlParameter('doNotProcess')){params.doNotProcess = true;}
             $scope.state.loadingHistory = true;
             quantimodoService.getMeasurementsFromApi(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
