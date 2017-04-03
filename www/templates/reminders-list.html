@@ -28,25 +28,12 @@
 			</div>
 		</div>
 		<div class="list" ng-show="state.trackingReminders.length" id="remindersList">
-			<div on-hold="showActionSheet(reminder)"
+			<div on-hold="showActionSheet(trackingReminder)"
 				 class="item"
-				 ng-repeat="reminder in state.trackingReminders | orderBy:reminderOrderParameter track by $index"
-				 ng-if="!reminder.hide">
-				<div class="row">
-					<div ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">
-						<i style="font-size: 40px;" class="icon positive {{reminder.ionIcon}}"></i>
-					</div>
-<!--					<div ng-if="reminder.imageUrl" ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">
-						<img style=" width: 40px; height: 40px" ng-src="{{reminder.imageUrl}}" alt="Ivy">
-					</div>-->
-					<div ng-click="showActionSheet(reminder)" class="col col-70">
-						<h2 style="white-space: normal; line-height: normal;">{{reminder.variableName}}</h2>
-						<p style="white-space: normal;">{{reminder.valueAndFrequencyTextDescriptionWithTime}}</p>
-					</div>
-					<div ng-click="showActionSheet(reminder)" class="col col-10">
-						<i style="font-size: 20px;" class="icon positive ion-more"></i>
-					</div>
-				</div>
+				 ng-repeat="trackingReminder in state.trackingReminders | orderBy:reminderOrderParameter track by $index"
+				 ng-if="!trackingReminder.hide">
+				<div ng-if="trackingReminder.reminderFrequency" ng-include="'templates/items/tracking-reminder-item.html'"></div>
+				<div ng-if="!trackingReminder.reminderFrequency" ng-include="'templates/items/favorite-item.html'"></div>
 			</div>
 		</div>
 	</ion-content>

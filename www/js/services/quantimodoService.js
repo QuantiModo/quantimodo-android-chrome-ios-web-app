@@ -2161,8 +2161,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 quantimodoService.postTrackingRemindersToApi(trackingRemindersArray, function(response){
                     if(response){
-                        if(response.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);}
-                        if(response.trackingReminders){quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));}
+                        if(response.data.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);}
+                        if(response.data.trackingReminders){quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(response.data.trackingReminders));}
                         if(response.data && response.data.userVariables){quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);}
                     }
                     deferred.resolve(response.trackingReminders);
@@ -2479,7 +2479,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var deferred = $q.defer();
             var trackingReminderSyncQueue = quantimodoService.getLocalStorageItemAsObject('trackingReminderSyncQueue');
             if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
-                quantimodoService.postTrackingRemindersDeferred(trackingReminderSyncQueue).then(function (response) {
+                quantimodoService.postTrackingRemindersDeferred(trackingReminderSyncQueue).then(function (trackingReminders) {
+                    quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(remindersResponse.data));
                     quantimodoService.deleteItemFromLocalStorage('trackingReminderSyncQueue');
                     deferred.resolve(response);
                 }, function(error) { if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error); });
@@ -2544,24 +2545,24 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.getTrackingRemindersFromLocalStorage = function (variableCategoryName){
             var deferred = $q.defer();
-            var allReminders = [];
-            var nonFavoriteReminders = [];
+            var filteredReminders = [];
             var unfilteredReminders = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminders'));
             if(!unfilteredReminders){unfilteredReminders = [];}
             var syncQueue = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminderSyncQueue'));
             if(syncQueue){unfilteredReminders = unfilteredReminders.concat(syncQueue);}
             unfilteredReminders = quantimodoService.attachVariableCategoryIcons(unfilteredReminders);
             if(unfilteredReminders) {
-                for(var k = 0; k < unfilteredReminders.length; k++){
-                    if(unfilteredReminders[k].reminderFrequency !== 0){nonFavoriteReminders.push(unfilteredReminders[k]);}
-                }
                 if(variableCategoryName && variableCategoryName !== 'Anything') {
-                    for(var j = 0; j < nonFavoriteReminders.length; j++){
-                        if(variableCategoryName === nonFavoriteReminders[j].variableCategoryName){allReminders.push(nonFavoriteReminders[j]);}
+                    for(var j = 0; j < unfilteredReminders.length; j++){
+                        if(variableCategoryName === unfilteredReminders[j].variableCategoryName){
+                            filteredReminders.push(unfilteredReminders[j]);
+                        }
                     }
-                } else {allReminders = nonFavoriteReminders;}
-                allReminders = quantimodoService.addRatingTimesToDailyReminders(allReminders); //We need to keep this in case we want offline reminders
-                deferred.resolve(allReminders);
+                } else {
+                    filteredReminders = unfilteredReminders;
+                }
+                filteredReminders = quantimodoService.addRatingTimesToDailyReminders(filteredReminders); //We need to keep this in case we want offline reminders
+                deferred.resolve(filteredReminders);
             }
             return deferred.promise;
         };

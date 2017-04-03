@@ -19,7 +19,7 @@ ul > li {
 .primary-outcome-variable-rating-buttons > img {
 	width: 18%;
 	padding:5px;
-    max-width: 100px;
+    max-width: 50px;
     cursor:pointer;
 }
 
