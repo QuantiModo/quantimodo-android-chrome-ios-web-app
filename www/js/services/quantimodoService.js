@@ -604,6 +604,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 successHandler,
                 errorHandler);
         };
+        function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1;}
         // if not logged in, returns rejects
         quantimodoService.getAccessTokenFromAnySource = function () {
             var deferred = $q.defer();
@@ -635,7 +636,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }));
             if(refreshToken && !expiresAtMilliseconds){
                 var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
-                Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");
+                if(!isTestUser()){Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");}
             }
             if (accessToken && now < expiresAtMilliseconds) {
                 console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
