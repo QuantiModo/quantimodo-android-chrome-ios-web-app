@@ -1027,7 +1027,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return filteredArray;
         };
         quantimodoService.getFavoriteTrackingRemindersFromLocalStorage = function(variableCategoryName){
-            var deferred;
+            var deferred = $q.defer();
             quantimodoService.getAllReminderTypes(variableCategoryName).then(function (allTrackingReminderTypes) {
                 deferred.resolve(allTrackingReminderTypes.favorites);
             }, function(error){deferred.reject(error);});
