@@ -96,8 +96,8 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             if ($scope.state.dailyHistory.length > 0) {
                 if($rootScope.variableObject.fillingValue !== null && $rootScope.variableObject.fillingValue !== -1){
                     $scope.distributionChartConfig = quantimodoService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
+                    $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 }
-                $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.weekdayChartConfig = quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.monthlyChartConfig = quantimodoService.processDataAndConfigureMonthlyChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.highchartsReflow();
@@ -107,6 +107,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             if ($scope.state.history.length > 0) {
                 if($rootScope.variableObject.fillingValue === null || $rootScope.variableObject.fillingValue === -1){
                     $scope.distributionChartConfig = quantimodoService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
+                    $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.history, $rootScope.variableObject);
                 }
                 $scope.hourlyChartConfig = quantimodoService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
                 $scope.highchartsReflow();
