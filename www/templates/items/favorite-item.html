@@ -1,5 +1,5 @@
 <div class="row">
-    <div ng-click="showFavoriteActionSheet(trackingReminder, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">
+    <div id="favoriteItemIcon" ng-click="showFavoriteActionSheet(trackingReminder, $index)" class="col col-10" style="padding-top: 0; text-align: center;">
         <i style="font-size: 40px;" class="icon positive {{trackingReminder.ionIcon}}"></i>
     </div>
     <div class="col col-70">
@@ -10,7 +10,7 @@
             <i class="ion-android-done"> &nbsp; Record {{trackingReminder.defaultValue}} {{trackingReminder.unitAbbreviatedName}}</i>
         </button>
     </div>
-    <div ng-click="showFavoriteActionSheet(trackingReminder, $index)" class="col col-10">
+    <div id="favoriteItemSettings" ng-click="showFavoriteActionSheet(trackingReminder, $index)" class="col col-10">
         <i style="font-size: 20px;" class="icon positive ion-more"></i>
     </div>
 </div>
