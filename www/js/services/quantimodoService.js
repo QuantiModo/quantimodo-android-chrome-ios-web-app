@@ -2569,7 +2569,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var deferred = $q.defer();
             quantimodoService.getLocalStorageItemAsStringWithCallback('defaultRemindersCreated', function (defaultRemindersCreated) {
                 if(JSON.parse(defaultRemindersCreated) !== true) {
-                    var defaultReminders = config.appSettings.defaultReminders;
+                    var defaultReminders = quantimodoService.getDefaultReminders();
                     if(defaultReminders && defaultReminders.length){
                         quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront(
                             'trackingReminderSyncQueue', defaultReminders).then(function () {
@@ -7281,6 +7281,30 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.getFloatingMaterialButton = function(){
             if(config.appSettings.floatingMaterialButton){return config.appSettings.floatingMaterialButton;}
+            if(config.appSettings.appType === 'medication'){
+                return {
+                    button1 : {
+                        icon: 'ion-android-notifications-none',
+                            label: 'Add a Reminder',
+                            stateAndParameters: "'app.reminderSearch'"
+                    },
+                    button2 : {
+                        icon: 'ion-compose',
+                            label: 'Record a Measurement',
+                            stateAndParameters: "'app.measurementAddSearch'"
+                    },
+                    button3 : {
+                        icon: 'ion-ios-medkit-outline',
+                            label: 'Record a Dose',
+                            stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Treatments'}"
+                    },
+                    button4 : {
+                        icon: 'ion-sad-outline',
+                            label: 'Rate a Symptom',
+                            stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Symptoms'}"
+                    }
+                };
+            }
             return {
                 "button1" : {
                     "icon": "ion-android-notifications-none",
@@ -7438,6 +7462,86 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     $state.go(doneState, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
                     quantimodoService.syncTrackingReminders();
                 });
+        };
+        quantimodoService.getDefaultReminders = function(){
+            if(config.appSettings.defaultReminders){return config.appSettings.defaultReminders;}
+            if(config.appSettings.defaultRemindersType === 'medication'){
+                return [
+                    {
+                        variableName : 'Heart Rate (Pulse)',
+                        defaultValue :  null,
+                        unitAbbreviatedName: 'bpm',
+                        reminderFrequency : 0,
+                        icon: 'ion-heart',
+                        variableCategoryName : 'Vital Signs'
+                    },
+                    {
+                        variableName: 'Blood Pressure',
+                        icon: 'ion-heart',
+                        unitAbbreviatedName: 'mmHg',
+                        reminderFrequency : 0,
+                        defaultValue :  null,
+                        variableCategoryName : 'Vital Signs'
+                    },
+                    {
+                        variableName: 'Core Body Temperature',
+                        icon: null,
+                        unitAbbreviatedName: 'C',
+                        reminderFrequency : 0,
+                        defaultValue :  null,
+                        variableCategoryName : 'Vital Signs'
+                    },
+                    {
+                        variableName: 'Oxygen Saturation',
+                        icon: null,
+                        unitAbbreviatedName: '%',
+                        reminderFrequency : 0,
+                        defaultValue :  null,
+                        variableCategoryName : 'Vital Signs'
+                    },
+                    {
+                        variableName: 'Respiratory Rate (Ventilation/Breath/RR/Respiration)',
+                        icon: null,
+                        unitAbbreviatedName: '/minute',
+                        reminderFrequency : 0,
+                        defaultValue :  null,
+                        variableCategoryName : 'Vital Signs'
+                    },
+                    {
+                        variableName: 'Weight',
+                        icon: null,
+                        unitAbbreviatedName: 'lb',
+                        reminderFrequency : 0,
+                        defaultValue :  null,
+                        variableCategoryName : 'Physique'
+                    },
+                    {
+                        variableName: 'Height',
+                        icon: null,
+                        unitAbbreviatedName: 'cm',
+                        reminderFrequency : 0,
+                        defaultValue :  null,
+                        variableCategoryName : 'Physique'
+                    },
+                    {
+                        variableName: 'Body Mass Index or BMI',
+                        icon: null,
+                        unitAbbreviatedName: 'index',
+                        reminderFrequency : 0,
+                        defaultValue :  null,
+                        variableCategoryName : 'Physique'
+                    },
+                    {
+                        variableName: 'Blood Glucose Sugar',
+                        icon: null,
+                        unitAbbreviatedName: 'mg/dL',
+                        reminderFrequency : 0,
+                        defaultValue :  null,
+                        variableCategoryName : 'Vital Signs'
+                    }
+                ];
+            }
+            return null;
         };
         return quantimodoService;
     });
