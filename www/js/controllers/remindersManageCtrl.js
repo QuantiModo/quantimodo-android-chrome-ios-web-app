@@ -77,8 +77,13 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
                 return;
             }
             $scope.state.showNoRemindersCard = false;
-            $scope.state.favorites = trackingReminders.filter(function( obj ) {return obj.reminderFrequency === 0;});
-            $scope.state.trackingReminders = trackingReminders.filter(function( obj ) {return obj.reminderFrequency !== 0;});
+            $scope.state.favorites = trackingReminders.filter(function( trackingReminder ) {return trackingReminder.reminderFrequency === 0;});
+            $scope.state.trackingReminders = trackingReminders.filter(function( trackingReminder ) {
+            	return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
+            });
+            $scope.state.archivedTrackingReminders = trackingReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
+            });
             showAppropriateHelpInfoCards();
             $scope.hideLoader();
             $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
