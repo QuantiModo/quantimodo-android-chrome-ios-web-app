@@ -14,13 +14,13 @@
         <i style="font-size: 20px;" class="icon positive ion-more"></i>
     </div>
 </div>
-<label ng-if="trackingReminder.defaultValue === null && trackingReminder.unitAbbreviatedName !== '/5'" class="item item-input">
+<div ng-if="trackingReminder.defaultValue === null && trackingReminder.unitAbbreviatedName !== '/5'" class="item-input" style="padding-top: 0">
     <input type="number" ng-model="trackingReminder.total" id="favoriteValueField"
            ng-click="onTextClick($event)"
            placeholder="Enter value"
            style="text-align: center">
     <span on-tap="trackFavoriteByValueField(trackingReminder, $index)" class="input-label">{{trackingReminder.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
-</label>
+</div>
 <div id="favoriteNumericRatingButtons" class="primary-outcome-variable-reporting"
      ng-if="!trackingReminder.variableDescription && trackingReminder.unitAbbreviatedName === '/5'">
     <div class="primary-outcome-variable-rating-buttons" >
