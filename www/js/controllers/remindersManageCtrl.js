@@ -28,6 +28,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
             noRemindersIcon: "ion-android-notifications-none"
 	    };
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter RemindersManageCtrl");
+        	$ionicLoading.show();
             $rootScope.hideNavigationMenu = false;
             $scope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -72,6 +73,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		}
 		function processTrackingReminders(trackingReminders) {
             trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', $stateParams.variableCategoryName);
+            $scope.hideLoader();
+            $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
             if(!trackingReminders || !trackingReminders.length){
                 $scope.state.showNoRemindersCard = true;
                 return;
@@ -85,8 +88,6 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
                 return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
             });
             showAppropriateHelpInfoCards();
-            $scope.hideLoader();
-            $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
         }
 		$scope.refreshReminders = function () {
 			$scope.showLoader('Syncing...');
