@@ -7538,7 +7538,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return reminderTypesArray;
         }
         quantimodoService.getAllReminderTypes = function(variableCategoryName, type){
-            var deferred;
+            var deferred = $q.defer();
             quantimodoService.getTrackingRemindersDeferred(variableCategoryName).then(function (trackingReminders) {
                 var reminderTypesArray = processTrackingReminders(trackingReminders, variableCategoryName);
                 if(type){
