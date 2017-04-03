@@ -17,11 +17,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 	        measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
 	    	$state.go('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
 	    };
-	    $scope.getVariableCategoryByUnit = function(unit){
-	    	if(!unit) { return false;}
-	    	var variableCategory = $scope.state.variableCategories.filter(function(vc){return vc.name === unit.category;})[0];
-	    	return variableCategory? variableCategory : false;
-	    };
         $scope.refreshHistory = function(){
         	var concat = false;
         	var refresh = true;
@@ -138,12 +133,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
                 $rootScope.variableObject = $stateParams.variableObject;
                 setupVariableActionSheet();
             }
-            quantimodoService.getVariableCategories()
-                .then(function(variableCategories){ $scope.state.variableCategories = variableCategories;
-                }, function(error){
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                    console.debug($state.current.name + ": " + "error getting variable categories "+ JSON.stringify(error));
-                });
             $scope.getHistory();
     	});
 		$scope.$on('$ionicView.beforeEnter', function(e) {

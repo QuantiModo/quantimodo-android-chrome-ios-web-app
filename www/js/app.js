@@ -1,6 +1,5 @@
 // Database
 //var db = null;
-
 angular.module('starter',
     [
         'ionic',
@@ -29,7 +28,6 @@ angular.module('starter',
         'angular-d3-word-cloud'
     ]
 )
-
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {
     $rootScope.appVersion = "2.5.1.0";
     quantimodoService.setPlatformVariables();
@@ -1520,7 +1518,6 @@ angular.module('starter',
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     }
 });
-
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
         if (typeof Bugsnag !== "undefined") {
