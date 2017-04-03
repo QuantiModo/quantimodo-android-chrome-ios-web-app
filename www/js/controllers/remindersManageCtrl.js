@@ -74,7 +74,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		function addRemindersToScope(allTrackingReminderTypes) {
             $scope.hideLoader();
             $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
-            if(!allTrackingReminderTypes || !allTrackingReminderTypes.length){
+            if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
                 $scope.state.showNoRemindersCard = true;
                 return;
             }

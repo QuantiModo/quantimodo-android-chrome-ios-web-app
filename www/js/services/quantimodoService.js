@@ -7528,7 +7528,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if(typeof trackingReminders[i].defaultValue === "undefined"){trackingReminders[i].defaultValue = null;}
             }
             trackingReminders = quantimodoService.attachVariableCategoryIcons(trackingReminders);
-            var reminderTypesArray = {};
+            var reminderTypesArray = {allTrackingReminders: trackingReminders};
             reminderTypesArray.favorites = trackingReminders.filter(function( trackingReminder ) {return trackingReminder.reminderFrequency === 0;});
             reminderTypesArray.trackingReminders = trackingReminders.filter(function( trackingReminder ) {
                 return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
