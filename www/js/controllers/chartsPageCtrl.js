@@ -1,5 +1,4 @@
-angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
-                                             $stateParams, quantimodoService, clipboard) {
+angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, quantimodoService, clipboard) {
         $scope.controller_name = "ChartsPageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -17,9 +16,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             title: "Charts"
         };
         var maximumMeasurements = 999; // Highcharts will only show 1000 measurements with notes
-        function getTruncatedVariableName(variableName) {
-            if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
-        }
+        function getTruncatedVariableName(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}}
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             if(quantimodoService.getUrlParameter('variableName')){$stateParams.variableName = quantimodoService.getUrlParameter('variableName');}
             $rootScope.hideNavigationMenu = false;
@@ -32,9 +29,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             } else if ($stateParams.trackingReminder){
                 getStatisticsForVariable($stateParams.trackingReminder.variableName);
             } else if ($stateParams.variableName){
-                if(!$rootScope.variableObject || $rootScope.variableObject.name !== $stateParams.variableName){
-                    getStatisticsForVariable($stateParams.variableName);
-                }
+                if(!$rootScope.variableObject || $rootScope.variableObject.name !== $stateParams.variableName){getStatisticsForVariable($stateParams.variableName);}
             } else {
                 $scope.goBack();
                 return;
@@ -57,7 +52,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                         { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
                         { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
                         { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '},
-                        //{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
                     ],
                     destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -116,9 +110,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         var getHistoryForVariable = function(params){
             if($scope.stopGettingMeasurements){return;}
             if(!params.variableName){
-                console.error("ERROR: params.variableName not provided to getHistoryForVariable");
-                console.error($state.current.name + " params: " + JSON.stringify(params));
-                console.error($state.current.name + " $rootScope.variableObject: " + JSON.stringify($rootScope.variableObject));
+                console.error("ERROR: params.variableName not provided to getHistoryForVariable.  params are: " + JSON.stringify(params));
                 return;
             }
             if(quantimodoService.getUrlParameter('doNotProcess')){params.doNotProcess = true;}
@@ -147,9 +139,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         var getDailyHistoryForVariable = function(params){
             if($scope.stopGettingMeasurements){return;}
             if(!params.variableName){
-                console.error("ERROR: params.variableName not provided to getHistoryForVariable");
-                console.error("params: " + JSON.stringify(params));
-                console.error("$rootScope.variableObject: " + JSON.stringify($rootScope.variableObject));
+                console.error("ERROR: params.variableName not provided to getHistoryForVariable. params: " + JSON.stringify(params));
                 return;
             }
             $scope.state.loadingDailyHistory = true;
