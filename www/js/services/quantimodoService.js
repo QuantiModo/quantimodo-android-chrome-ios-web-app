@@ -7546,5 +7546,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             });
             return deferred.promise;
         };
+        quantimodoService.convertTrackingReminderToVariableObject = function(trackingReminder){
+            var variableObject = trackingReminder;
+            variableObject.id = trackingReminder.variableId;
+            variableObject.name = trackingReminder.variableName;
+            return variableObject;
+        };
         return quantimodoService;
     });

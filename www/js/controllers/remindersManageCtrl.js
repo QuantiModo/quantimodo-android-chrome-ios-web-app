@@ -129,7 +129,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			});
 	    };
 		$scope.showActionSheet = function(trackingReminder) {
-			var variableObject = {id : trackingReminder.variableId, name : trackingReminder.variableName};
+			var variableObject = quantimodoService.convertTrackingReminderToVariableObject(trackingReminder);
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-android-notifications-none"></i>Edit'},
@@ -144,10 +144,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 				buttonClicked: function(index) {
 					console.debug('BUTTON CLICKED', index);
 					if(index === 0){$scope.edit(trackingReminder);}
-					if(index === 1){$state.go('app.measurementAdd', {reminderNotification: trackingReminder});}
-					if(index === 2){$state.go('app.charts', {variableObject: $rootScope.variableObject});}
+					if(index === 1){$state.go('app.measurementAdd', {variableObject: variableObject});}
+					if(index === 2){$state.go('app.charts', {variableObject: variableObject});}
 					if(index === 3){$state.go('app.historyAllVariable', {variableObject: variableObject});}
-					if(index === 4){$state.go('app.variableSettings', {variableName: trackingReminder.variableName});}
+					if(index === 4){$state.go('app.variableSettings', {variableObject: variableObject});}
 					return true;
 				},
 				destructiveButtonClicked: function() {
