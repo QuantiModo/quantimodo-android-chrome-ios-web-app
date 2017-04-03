@@ -201,10 +201,10 @@ angular.module('starter')
             console.debug($state.current.name + ' initializing...');
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            if($rootScope.urlParameters.aggregated){ $stateParams.aggregated = $rootScope.urlParameters.aggregated; }
+            if(quantimodoService.getUrlParameter('aggregated')){ $stateParams.aggregated = quantimodoService.getUrlParameter('aggregated'); }
             if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
-            if($rootScope.urlParameters.causeVariableName){ $stateParams.causeVariableName = $rootScope.urlParameters.causeVariableName; }
-            if($rootScope.urlParameters.effectVariableName){ $stateParams.effectVariableName = $rootScope.urlParameters.effectVariableName; }
+            if(quantimodoService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName'); }
+            if(quantimodoService.getUrlParameter('effectVariableName')){ $stateParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName'); }
             if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = quantimodoService.getPrimaryOutcomeVariable().name; }
             $scope.state.requestParams.offset = 0;
             $scope.state.requestParams.limit = 10;

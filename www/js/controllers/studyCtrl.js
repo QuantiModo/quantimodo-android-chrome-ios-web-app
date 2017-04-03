@@ -17,14 +17,14 @@ angular.module('starter')
             console.debug($state.current.name + ' initializing...');
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            if($rootScope.urlParameters.causeVariableName){ $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName; }
-            if($rootScope.urlParameters.effectVariableName){ $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName; }
+            if(quantimodoService.getUrlParameter('causeVariableName')){ $scope.state.requestParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName'); }
+            if(quantimodoService.getUrlParameter('effectVariableName')){ $scope.state.requestParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName'); }
             if($stateParams.causeVariableName){ $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName; }
             if($stateParams.effectVariableName){ $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName; }
             $scope.predictorVariableName = $scope.state.requestParams.causeVariableName;
             $scope.outcomeVariableName = $scope.state.requestParams.effectVariableName;
-            if($rootScope.urlParameters.userId){
-                $scope.state.requestParams.userId = $rootScope.urlParameters.userId;
+            if(quantimodoService.getUrlParameter('userId')){
+                $scope.state.requestParams.userId = quantimodoService.getUrlParameter('userId');
                 getStudy();
                 return;
             }

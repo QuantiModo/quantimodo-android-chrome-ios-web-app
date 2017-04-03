@@ -220,32 +220,25 @@ angular.module('starter',
         ionic.Platform.exitApp();
     }, 100);
 
-    var intervalChecker = setInterval(function(){
-        if(typeof config !== "undefined"){clearInterval(intervalChecker);}
-    }, 500);
-    String.prototype.toCamel = function(){
-        return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
-    };
-    $rootScope.urlParameters = {};
-    var queryString = document.location.toString().split('?')[1];
-    var sURLVariables;
-    var parameterNameValueArray;
-    if(queryString) {sURLVariables = queryString.split('&');}
-    if(sURLVariables) {
-        for (var i = 0; i < sURLVariables.length; i++) {
-            parameterNameValueArray = sURLVariables[i].split('=');
-            if(parameterNameValueArray[1].indexOf('http') > -1){
-                $rootScope.urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];
-            } else {
-                $rootScope.urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);
+    var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
+    String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+    function setIntoSeenAndOnboarded() {
+        var urlParameters = {};
+        var queryString = document.location.toString().split('?')[1];
+        var sURLVariables, parameterNameValueArray;
+        if (queryString) {sURLVariables = queryString.split('&');}
+        if (sURLVariables) {
+            for (var i = 0; i < sURLVariables.length; i++) {
+                parameterNameValueArray = sURLVariables[i].split('=');
+                if (parameterNameValueArray[1].indexOf('http') > -1) {urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];} else {urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);}
             }
-
+        }
+        if (urlParameters.accessToken || urlParameters.existingUser || urlParameters.introSeen || urlParameters.refreshUser) {
+            window.localStorage.introSeen = true;
+            window.localStorage.onboarded = true;
         }
     }
-    if ($rootScope.urlParameters.accessToken || $rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
-        window.localStorage.introSeen = true;
-        window.localStorage.onboarded = true;
-    }
+    setIntoSeenAndOnboarded();
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};

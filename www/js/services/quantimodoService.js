@@ -35,7 +35,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
                 if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
                 if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
-                if($rootScope.urlParameters.userId){urlParams.push(encodeURIComponent('userId') + '=' + $rootScope.urlParameters.userId);}
+                if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + $rootScope.urlParameters.userId);}
                 //We can't append access token to Ionic requests for some reason
                 //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
                 // configure request
@@ -7522,7 +7522,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         function processTrackingReminders(trackingReminders, variableCategoryName) {
             trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', variableCategoryName);
-            if(!trackingReminders || !trackingReminders.length){return;}
+            if(!trackingReminders || !trackingReminders.length){return {};}
             for(var i = 0; i < trackingReminders.length; i++){
                 trackingReminders[i].total = null;
                 if(typeof trackingReminders[i].defaultValue === "undefined"){trackingReminders[i].defaultValue = null;}
@@ -7542,11 +7542,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var deferred = $q.defer();
             quantimodoService.getTrackingRemindersDeferred(variableCategoryName).then(function (trackingReminders) {
                 var reminderTypesArray = processTrackingReminders(trackingReminders, variableCategoryName);
-                if(type){
-                    deferred.resolve(reminderTypesArray[type]);
-                } else {
-                    deferred.resolve(reminderTypesArray);
-                }
+                if(type){deferred.resolve(reminderTypesArray[type]);} else {deferred.resolve(reminderTypesArray);}
             });
             return deferred.promise;
         };

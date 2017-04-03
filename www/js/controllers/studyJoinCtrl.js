@@ -18,8 +18,6 @@ angular.module('starter')
                 $rootScope.hideNavigationMenu = true;
             }
             $scope.requestParams = {
-                //causeVariableName: $rootScope.urlParameters.causeVariableName,
-                //effectVariableName: $rootScope.urlParameters.effectVariableName,
                 causeVariableName: getParameterByName('causeVariableName'),
                 effectVariableName: getParameterByName('effectVariableName'),
             };
