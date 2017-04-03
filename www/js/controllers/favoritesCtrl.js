@@ -1,6 +1,5 @@
 angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, quantimodoService, $rootScope,
 										  $stateParams) {
-
 	    $scope.controller_name = "FavoritesCtrl";
 		console.debug('Loading ' + $scope.controller_name);
 	    $scope.state = {
@@ -19,11 +18,7 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $rootScope.hideNavigationMenu = false;
             $scope.hideLoader();
-            $rootScope.bloodPressure = {
-                systolicValue: null,
-                diastolicValue: null,
-                displayTotal: "Blood Pressure"
-            };
+            $rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
             if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
                 $rootScope.variableCategoryName = $stateParams.variableCategoryName;
                 $scope.state.addButtonText = "Add favorite " + $stateParams.variableCategoryName.toLowerCase();
@@ -36,29 +31,27 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
                 $scope.state.addButtonIcon = "ion-ios-medkit-outline";
                 $scope.state.title = 'As-Needed Meds';
             }
-
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             if($stateParams.presetVariables){
-                $rootScope.favoritesArray = $stateParams.presetVariables;
+                $scope.favoritesArray = $stateParams.presetVariables;
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
             } else {
-                quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
+                getFavoritesFromLocalStorage();
                 $scope.refreshFavorites();
             }
         });
-
-		$scope.favoriteAddButtonClick = function () {
-			$state.go('app.favoriteSearch');
-		};
-
+        var getFavoritesFromLocalStorage = function(){
+            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
+        };
+		$scope.favoriteAddButtonClick = function () {$state.go('app.favoriteSearch');};
 		$scope.refreshFavorites = function () {
             console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
             $scope.showLoader('Syncing...');
-            quantimodoService.syncTrackingReminders().then(function (trackingReminders) {
+            quantimodoService.syncTrackingReminders().then(function () {
                 $scope.hideLoader();
-                quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
+                getFavoritesFromLocalStorage();
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
             });

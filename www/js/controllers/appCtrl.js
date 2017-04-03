@@ -496,9 +496,6 @@ angular.module('starter')
                 userTagVariableObject: $rootScope.variableObject
             });
         };
-        $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
-            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
-        });
         $scope.togglePrimaryOutcomeSubMenu = function () {$scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;};
         $scope.toggleEmotionsSubMenu = function () {$scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;};
         $scope.toggleDietSubMenu = function () {$scope.showDietSubMenu = !$scope.showDietSubMenu;};
@@ -802,31 +799,8 @@ angular.module('starter')
                     return true;
                 },
                 destructiveButtonClicked: function() {
-                    if(!bloodPressure){
-                        $rootScope.favoritesArray.splice($index, 1);
-                        quantimodoService.deleteTrackingReminderDeferred(favorite.id)
-                            .then(function(){
-                                console.debug('Favorite deleted: ' + JSON.stringify(favorite));
-                            }, function(error){
-                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify(favorite));
-                            });
-                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', favorite.id);
-                        return true;
-                    }
-                    if(bloodPressure){
-                        quantimodoService.deleteTrackingReminderDeferred($rootScope.bloodPressureReminderId)
-                            .then(function(){
-                                console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
-                            }, function(error){
-                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($rootScope.bloodPressure));
-                            });
-                        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $rootScope.bloodPressureReminderId)
-                            .then(function(){
-                                //$scope.init();
-                            });
-                        $rootScope.bloodPressureReminderId = null;
-                        return true;
-                    }
+                    favorite.hide = true;
+                    quantimodoService.deleteTrackingReminderDeferred(favorite.id);
                 }
             });
             $timeout(function() {hideSheet();}, 20000);

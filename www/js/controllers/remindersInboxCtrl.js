@@ -52,10 +52,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){$rootScope.variableCategoryName = $stateParams.variableCategoryName;
             } else {$rootScope.variableCategoryName = null;}
             var secondsSinceWeLastGotNotifications = quantimodoService.getSecondsSinceWeLastGotNotifications();
-            if(!$rootScope.numberOfPendingNotifications || secondsSinceWeLastGotNotifications > 600){
-                $scope.refreshTrackingReminderNotifications();
-			}
-            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
+            if(!$rootScope.numberOfPendingNotifications || secondsSinceWeLastGotNotifications > 600){$scope.refreshTrackingReminderNotifications();}
             // Triggered on a button click, or some other target
             $rootScope.showActionSheetMenu = function() {
                 // Show the action sheet
@@ -170,8 +167,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
                     hideInboxLoader();
 				});
 		};
-		var getWeekdayChartIfNecessary = function () {
+		var getWeekdayChartAndFavoritesIfNecessary = function () {
 			if(!$scope.state.numberOfDisplayedNotifications && !$scope.weekdayChartConfig){
+                quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
 				quantimodoService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
 					quantimodoService.getPrimaryOutcomeVariable()).then(function (chartConfig) {
 					$scope.weekdayChartConfig = chartConfig;
@@ -188,7 +186,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             $rootScope.numberOfPendingNotifications--;
             $scope.state.numberOfDisplayedNotifications--;
             closeWindowIfNecessary();
-            getWeekdayChartIfNecessary();
+            getWeekdayChartAndFavoritesIfNecessary();
         };
         var enlargeChromePopupIfNecessary = function () {
         	if($rootScope.alreadyEnlargedWindow){return;}
@@ -272,7 +270,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			} else {
 				$scope.filteredTrackingReminderNotifications = quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
                 console.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
-				getWeekdayChartIfNecessary();
+				getWeekdayChartAndFavoritesIfNecessary();
 			}
 			hideInboxLoader();
 		};
@@ -288,13 +286,13 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications =
 						quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-					getWeekdayChartIfNecessary();
+					getWeekdayChartAndFavoritesIfNecessary();
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 					hideInboxLoader();
 					$scope.loading = false;
 				}, function(error){
-					getWeekdayChartIfNecessary();
+					getWeekdayChartAndFavoritesIfNecessary();
 					console.error(error);
 					hideInboxLoader();
 					console.error("failed to get reminder notifications!");
@@ -359,7 +357,6 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			var hideSheetForNotification = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
-					{ text: '<i class="icon ion-ios-star"></i>Add ' + ' to Favorites' },
 					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
@@ -371,11 +368,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				buttonClicked: function(index) {
 					console.debug('BUTTON CLICKED', index);
 					if(index === 0){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
-					if(index === 1){quantimodoService.addToFavoritesUsingVariableObject($rootScope.variableObject);}
-					if(index === 2){$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject});}
-					if(index === 3){$state.go('app.charts', {variableObject: $rootScope.variableObject});}
-					if(index === 4){$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
-					if (index === 5) {$state.go('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
+					if(index === 1){$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject});}
+					if(index === 2){$state.go('app.charts', {variableObject: $rootScope.variableObject});}
+					if(index === 3){$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
+					if(index === 4){$state.go('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
 					return true;
 				},
 				destructiveButtonClicked: function() {

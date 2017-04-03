@@ -71,30 +71,25 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Treatments') > -1 || $stateParams.variableCategoryName === 'Anything');
 			$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
 		}
-		function processTrackingReminders(trackingReminders) {
-            trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', $stateParams.variableCategoryName);
+		function addRemindersToScope(allTrackingReminderTypes) {
             $scope.hideLoader();
             $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
-            if(!trackingReminders || !trackingReminders.length){
+            if(!allTrackingReminderTypes || !allTrackingReminderTypes.length){
                 $scope.state.showNoRemindersCard = true;
                 return;
             }
             $scope.state.showNoRemindersCard = false;
-            $scope.state.favorites = trackingReminders.filter(function( trackingReminder ) {return trackingReminder.reminderFrequency === 0;});
-            $scope.state.trackingReminders = trackingReminders.filter(function( trackingReminder ) {
-            	return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
-            });
-            $scope.state.archivedTrackingReminders = trackingReminders.filter(function( trackingReminder ) {
-                return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
-            });
+            $scope.state.favorites = allTrackingReminderTypes.favorites;
+            $scope.state.trackingReminders = allTrackingReminderTypes.trackingReminders;
+            $scope.state.archivedTrackingReminders = allTrackingReminderTypes.archivedTrackingReminders;
             showAppropriateHelpInfoCards();
         }
 		$scope.refreshReminders = function () {
 			$scope.showLoader('Syncing...');
-			quantimodoService.syncTrackingReminders().then(function (trackingReminders) {processTrackingReminders(trackingReminders);});
+			quantimodoService.syncTrackingReminders().then(function(){getTrackingReminders();});
 		};
 		var getTrackingReminders = function(){
-			quantimodoService.getTrackingRemindersDeferred($stateParams.variableCategoryName).then(function (trackingReminders) {processTrackingReminders(trackingReminders);});
+			quantimodoService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {addRemindersToScope(allTrackingReminderTypes);});
 		};
 		$scope.showMoreNotificationInfoPopup = function(){
 			var moreNotificationInfoPopup = $ionicPopup.show({

@@ -1027,34 +1027,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return filteredArray;
         };
         quantimodoService.getFavoriteTrackingRemindersFromLocalStorage = function(variableCategoryName){
-            console.debug('Getting favorites from local storage');
-            $rootScope.favoritesArray = [];
-            var favorites = quantimodoService.getElementsFromLocalStorageItemWithFilters('trackingReminders', 'reminderFrequency', 0);
-            if(!favorites){favorites = [];}
-            var trackingReminderSyncQueue = quantimodoService.getElementsFromLocalStorageItemWithFilters('trackingReminderSyncQueue', 'reminderFrequency', 0);
-            if(trackingReminderSyncQueue){favorites = favorites.concat(trackingReminderSyncQueue);}
-            if(!favorites || !favorites.length){return false;}
-            for(i = 0; i < favorites.length; i++){
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
-                    if(variableCategoryName === favorites[i].variableCategoryName){$rootScope.favoritesArray.push(favorites[i]);}
-                } else {$rootScope.favoritesArray.push(favorites[i]);}
-            }
-            $rootScope.favoritesArray = quantimodoService.attachVariableCategoryIcons($rootScope.favoritesArray);
-            var i;
-            for(i = 0; i < $rootScope.favoritesArray.length; i++){
-                $rootScope.favoritesArray[i].total = null;
-                if($rootScope.favoritesArray[i].variableName.toLowerCase().indexOf('blood pressure') > -1){
-                    $rootScope.bloodPressureReminderId = $rootScope.favoritesArray[i].id;
-                    $rootScope.favoritesArray[i].hide = true;
-                }
-                if(typeof $rootScope.favoritesArray[i].defaultValue === "undefined"){$rootScope.favoritesArray[i].defaultValue = null;}
-            }
-            var difference;
-            $rootScope.favoritesArray.sort(function(a, b) {
-                difference = b.numberOfRawMeasurements - a.numberOfRawMeasurements;
-                //console.debug(difference);
-                return difference;
-            });
+            var deferred;
+            quantimodoService.getAllReminderTypes(variableCategoryName).then(function (allTrackingReminderTypes) {
+                deferred.resolve(allTrackingReminderTypes.favorites);
+            }, function(error){deferred.reject(error);});
+            return deferred.promise;
         };
         quantimodoService.attachVariableCategoryIcons = function(dataArray){
             if(!dataArray){ return;}
@@ -1070,7 +1047,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             return dataArray;
         };
-
         $rootScope.variableCategories = {
             "Anything": {
                 defaultUnitAbbreviatedName: '',
@@ -7542,6 +7518,36 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 ];
             }
             return null;
+        };
+        function processTrackingReminders(trackingReminders, variableCategoryName) {
+            trackingReminders = quantimodoService.filterByStringProperty(trackingReminders, 'variableCategoryName', variableCategoryName);
+            if(!trackingReminders || !trackingReminders.length){return;}
+            for(var i = 0; i < trackingReminders.length; i++){
+                trackingReminders[i].total = null;
+                if(typeof trackingReminders[i].defaultValue === "undefined"){trackingReminders[i].defaultValue = null;}
+            }
+            trackingReminders = quantimodoService.attachVariableCategoryIcons(trackingReminders);
+            var reminderTypesArray = {};
+            reminderTypesArray.favorites = trackingReminders.filter(function( trackingReminder ) {return trackingReminder.reminderFrequency === 0;});
+            reminderTypesArray.trackingReminders = trackingReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
+            });
+            reminderTypesArray.archivedTrackingReminders = trackingReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
+            });
+            return reminderTypesArray;
+        }
+        quantimodoService.getAllReminderTypes = function(variableCategoryName, type){
+            var deferred;
+            quantimodoService.getTrackingRemindersDeferred(variableCategoryName).then(function (trackingReminders) {
+                var reminderTypesArray = processTrackingReminders(trackingReminders, variableCategoryName);
+                if(type){
+                    deferred.resolve(reminderTypesArray[type]);
+                } else {
+                    deferred.resolve(reminderTypesArray);
+                }
+            });
+            return deferred.promise;
         };
         return quantimodoService;
     });
