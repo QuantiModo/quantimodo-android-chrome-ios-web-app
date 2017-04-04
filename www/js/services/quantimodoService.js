@@ -4048,6 +4048,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.deleteAllMeasurementsForVariableDeferred = function(variableId) {
             var deferred = $q.defer();
+            // If primaryOutcomeVariableName, delete local storage measurements
+            if (variableId === quantimodoService.getPrimaryOutcomeVariable().id) {
+                quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
+                quantimodoService.setLocalStorageItem('measurementsQueue',[]);
+                quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
+                quantimodoService.setLocalStorageItem('lastSyncTime',0);
+            }
             quantimodoService.deleteUserVariableMeasurements(variableId, function() {
                 // Delete user variable from local storage
                 quantimodoService.deleteElementOfLocalStorageItemById('userVariables', variableId);
@@ -7551,6 +7558,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             variableObject.id = trackingReminder.variableId;
             variableObject.name = trackingReminder.variableName;
             return variableObject;
+        };
+        quantimodoService.syncAllPublicData = function(){
+            quantimodoService.getUnits();
+            quantimodoService.refreshCommonVariables();
+        };
+        quantimodoService.syncAllUserData = function(){
+            quantimodoService.getUserVariablesDeferred();
+            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+            quantimodoService.syncTrackingReminders();
+            quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
         };
         return quantimodoService;
     });
