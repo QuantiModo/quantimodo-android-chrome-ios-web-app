@@ -911,10 +911,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     name: user.displayName, // User’s real name
                     created_at: userRegistered, // Unix timestamp for the date the user signed up
                     id: user.id, // Optional: Unique id of the user (if set, this should not change)
-                    type: config.appSettings.appDisplayName + ' for ' + $rootScope.currentPlatform + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
+                    type: getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
                     account: {
                         //id: 123, // Optional: associate multiple users with a single account
-                        name: config.appSettings.appDisplayName + ' for ' + $rootScope.currentPlatform + ' v' + $rootScope.appVersion, // Account name
+                        name: getSourceName() + ' v' + $rootScope.appVersion, // Account name
                         //created_at: 1364406966, // Unix timestamp for the date the account was created
                         //monthly_rate: 9.99, // Decimal; monthly rate of the account
                         //ltv: 1495.00, // Decimal; lifetime value of the account
@@ -1405,13 +1405,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
             return measurementObject;
         };
+        function getSourceName() {return config.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
         var addLocationAndSourceDataToMeasurement = function(measurementObject){
+            addLocationDataToMeasurement(measurementObject);
+            if(!measurementObject.sourceName){measurementObject.sourceName = getSourceName();}
+            return measurementObject;
+        };
+        function addLocationDataToMeasurement(measurementObject) {
             if(!measurementObject.latitude){measurementObject.latitude = localStorage.lastLatitude;}
             if(!measurementObject.longitude){measurementObject.latitude = localStorage.lastLongitude;}
             if(!measurementObject.location){measurementObject.latitude = localStorage.lastLocationNameAndAddress;}
-            if(!measurementObject.sourceName){measurementObject.sourceName = config.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
             return measurementObject;
-        };
+        }
         // used when adding a new measurement from record measurement OR updating a measurement through the queue
         quantimodoService.addToMeasurementsQueue = function(measurementObject){
             measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
@@ -1494,7 +1499,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var measurementSet = [
                 {
                     variableName: trackingReminder.variableName,
-                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
+                    sourceName: getSourceName(),
                     variableCategoryName: trackingReminder.variableCategoryName,
                     unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                     measurements : [
@@ -1502,13 +1507,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             startTimeEpoch:  startTimeEpochSeconds,
                             value: value,
                             note : null,
-                            latitude: localStorage.lastLatitude,
-                            longitude: localStorage.lastLongitude,
-                            location: localStorage.lastLocationNameAndAddress
                         }
                     ]
                 }
             ];
+            measurementSet[0].measurements[0] = addLocationDataToMeasurement(measurementSet[0].measurements[0]);
             var deferred = $q.defer();
             quantimodoService.postMeasurementsToApi(measurementSet, function(response){
                 if(response.success) {
@@ -1536,34 +1539,26 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.postBloodPressureMeasurements = function(parameters){
             var deferred = $q.defer();
-            var startTimeEpochSeconds;
             /** @namespace parameters.startTimeEpochSeconds */
-            if(!parameters.startTimeEpochSeconds){
-                var startTimeEpochMilliseconds = new Date();
-                startTimeEpochSeconds = startTimeEpochMilliseconds/1000;
-            } else {startTimeEpochSeconds = parameters.startTimeEpochSeconds;}
+            if(!parameters.startTimeEpochSeconds){parameters.startTimeEpochSeconds = new Date()/1000;}
             var measurementSets = [
                 {
                     variableId: 1874,
-                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
-                    startTimeEpoch:  startTimeEpochSeconds,
+                    sourceName: getSourceName(),
+                    startTimeEpoch:  parameters.startTimeEpochSeconds,
                     value: parameters.systolicValue,
-                    note: parameters.note,
-                    latitude: localStorage.lastLatitude,
-                    longitude: localStorage.lastLongitude,
-                    location: localStorage.lastLocationNameAndAddress
+                    note: parameters.note
                 },
                 {
                     variableId: 5554981,
-                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
-                    startTimeEpoch:  startTimeEpochSeconds,
+                    sourceName: getSourceName(),
+                    startTimeEpoch:  parameters.startTimeEpochSeconds,
                     value: parameters.diastolicValue,
-                    note: parameters.note,
-                    latitude: localStorage.lastLatitude,
-                    longitude: localStorage.lastLongitude,
-                    location: localStorage.lastLocationNameAndAddress
+                    note: parameters.note
                 }
             ];
+            measurementSets[0] = addLocationDataToMeasurement(measurementSets[0]);
+            measurementSets[0] = addLocationDataToMeasurement(measurementSets[0]);
             quantimodoService.postMeasurementsToApi(measurementSets, function(response){
                 if(response.success) {
                     if(response && response.data && response.data.userVariables){
@@ -1965,7 +1960,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             } else {console.error("Where's the damn location info?");}
             var secondsAtLocation = currentTimeEpochSeconds - localStorage.lastLocationUpdateTimeEpochSeconds;
             var hoursAtLocation = Math.round(secondsAtLocation/3600 * 100) / 100;
-            var sourceName = localStorage.lastLocationResultType + ' on ' + config.appSettings.appDisplayName + ' for ' + $rootScope.currentPlatform;
+            var sourceName = localStorage.lastLocationResultType + ' on ' + getSourceName();
             if(isBackground){sourceName = sourceName + " (Background Geolocation)";}
             if (variableName && variableName !== "undefined" && secondsAtLocation > 60) {
                 var newMeasurement = {
