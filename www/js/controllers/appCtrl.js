@@ -6,9 +6,6 @@ angular.module('starter')
                                     $locale, $mdDialog, $mdToast, wikipediaFactory) {
 
 	    console.debug('Starting AppCtrl');
-        $rootScope.placeName = null;
-        $rootScope.lastLatitude = null;
-        $rootScope.lastLongitude = null;
         $scope.controller_name = "AppCtrl";
         $scope.menu = quantimodoService.getMenu(config.appSettings.menuType);
         $rootScope.appSettings = config.appSettings;
@@ -17,7 +14,6 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
-        $rootScope.appDisplayName = config.appSettings.appDisplayName;
         $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
         if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
         if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
