@@ -28,7 +28,6 @@ angular.module('starter')
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
         quantimodoService.refreshCommonVariables();
-        quantimodoService.syncTrackingReminders();
         if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
         if(quantimodoService.getUrlParameter('refreshUser')){
             quantimodoService.clearLocalStorage();
@@ -39,6 +38,7 @@ angular.module('starter')
         }
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
         if($rootScope.user){
+            quantimodoService.syncTrackingReminders();
             quantimodoService.getUserVariablesDeferred();  // For getting the new chartsUrl links
             if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
         }
