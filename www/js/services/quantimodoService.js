@@ -2072,7 +2072,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.reportError(errorMessage);
             };
             backgroundGeoLocation.configure(callbackFn, failureFn, {
-                desiredAccuracy: 10,
+                desiredAccuracy: 1000, //Desired accuracy in meters. Possible values [0, 10, 100, 1000]. The lower the number, the more power devoted to GeoLocation resulting in higher accuracy readings. 1000 results in lowest power drain and least accurate readings.
                 stationaryRadius: 20,
                 distanceFilter: 30,
                 locationService: 'ANDROID_DISTANCE_FILTER',  // TODO: Decide on setting https://github.com/mauron85/cordova-plugin-background-geolocation/blob/master/PROVIDERS.md
