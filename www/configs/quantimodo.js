@@ -25,7 +25,7 @@ config.appSettings = {
     "intro" : null,
     "remindersInbox" : {},
     "wordAliases" : {},
-    "menuType" : 'extended'
+    "menuType" : 'minimal'
 };
 
 if(!module){var module = {};}
