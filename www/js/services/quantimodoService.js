@@ -4129,21 +4129,37 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }, function (error) {deferred.reject(error);});
             return deferred.promise;
         };
+
         quantimodoService.refreshCommonVariables = function(){
             var deferred = $q.defer();
-            var successHandler = function(commonVariables) {
-                quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables)).then(function () {
-                    $rootScope.$broadcast('populateCommonVariables');
-                });
-                deferred.resolve(commonVariables);
-            };
-            var errorHandler = function(error) {
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify("ERROR: " + JSON.stringify(error), JSON.stringify(error), {}, "error"); } console.error(error);
-                deferred.reject(error);
-            };
-            var parameters = {limit: 200, sort: "-numberOfUserVariables", numberOfUserVariables: "(gt)3"};
-            quantimodoService.get('api/v1/public/variables', ['category', 'includePublic', 'numberOfUserVariables'], parameters, successHandler, errorHandler);
-            return deferred.promise;
+            if($rootScope.syncingCommonVariables){
+                console.warn('Already called refreshCommonVariables within last 10 seconds!  Rejecting promise!');
+                deferred.reject('Already called refreshCommonVariables within last 10 seconds!  Rejecting promise!');
+                return deferred.promise;
+            }
+            if(!$rootScope.syncingCommonVariables){
+                $rootScope.syncingCommonVariables = true;
+                console.debug('Setting refreshCommonVariables timeout');
+                $timeout(function() {
+                    // Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
+                    $rootScope.syncingCommonVariables = false;
+                }, 10000);
+                var successHandler = function(commonVariables) {
+                    quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables)).then(function () {
+                        $rootScope.$broadcast('populateCommonVariables');
+                    });
+                    $rootScope.syncingCommonVariables = false;
+                    deferred.resolve(commonVariables);
+                };
+                var errorHandler = function(error) {
+                    $rootScope.syncingCommonVariables = false;
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify("ERROR: " + JSON.stringify(error), JSON.stringify(error), {}, "error"); } console.error(error);
+                    deferred.reject(error);
+                };
+                var parameters = {limit: 200, sort: "-numberOfUserVariables", numberOfUserVariables: "(gt)3"};
+                quantimodoService.get('api/v1/public/variables', ['category', 'includePublic', 'numberOfUserVariables'], parameters, successHandler, errorHandler);
+                return deferred.promise;
+            }
         };
 
         // NOTIFICATION SERVICE
