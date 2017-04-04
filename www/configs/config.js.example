@@ -294,7 +294,7 @@ config.appSettings  = {
             img : {
                 width : '250',
                 height : '250',
-                url : 'img/rating/ic_face_ecstatic.png'
+                url : 'img/rating/face_rating_button_256_ecstatic.png'
             },
             content : {
 
