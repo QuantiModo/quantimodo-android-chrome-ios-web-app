@@ -1576,28 +1576,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return deferred.promise;
         };
         function addUnitsToRootScope(units) {
-            if(typeof $rootScope.unitAbbreviatedNames === "undefined"){$rootScope.unitAbbreviatedNames = [];}
             $rootScope.unitObjects = units;
-            $rootScope.unitAbbreviatedNamesIndexedByUnitId = [];
-            $rootScope.nonAdvancedunitAbbreviatedNames = [];
-            $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = [];
-            $rootScope.nonAdvancedunitAbbreviatedNamesIndexedByUnitId = [];
-            $rootScope.nonAdvancedUnitObjects = [];
+            var unitAbbreviatedNames = [];
+            var unitsIndexedByAbbreviatedName = [];
+            var nonAdvancedUnitsIndexedByAbbreviatedName = [];
+            var nonAdvancedUnitObjects = [];
             for (var i = 0; i < units.length; i++) {
-                $rootScope.unitAbbreviatedNames[i] = units[i].abbreviatedName;
-                $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-                $rootScope.unitAbbreviatedNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
+                unitAbbreviatedNames[i] = units[i].abbreviatedName;
+                unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
                 if(!units[i].advanced){
-                    $rootScope.nonAdvancedunitAbbreviatedNames.push(units[i].abbreviatedName);
-                    $rootScope.nonAdvancedUnitObjects.push(units[i]);
-                    $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-                    $rootScope.nonAdvancedunitAbbreviatedNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
+                    nonAdvancedUnitObjects.push(units[i]);
+                    nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
                 }
             }
             var showMoreUnitsObject = {name: "Show more units", abbreviatedName: "Show more units"};
-            $rootScope.nonAdvancedunitAbbreviatedNames.push(showMoreUnitsObject.abbreviatedName);
-            $rootScope.nonAdvancedUnitObjects.push(showMoreUnitsObject);
-            $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName["Show more units"] = showMoreUnitsObject;
+            nonAdvancedUnitObjects.push(showMoreUnitsObject);
+            nonAdvancedUnitsIndexedByAbbreviatedName[showMoreUnitsObject.abbreviatedName] = showMoreUnitsObject;
+            $rootScope.unitsIndexedByAbbreviatedName = unitsIndexedByAbbreviatedName;
+            $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = nonAdvancedUnitsIndexedByAbbreviatedName;
+            $rootScope.nonAdvancedUnitObjects = nonAdvancedUnitObjects;
         }
         quantimodoService.getUnits = function(ignoreExpiration){
             var deferred = $q.defer();
