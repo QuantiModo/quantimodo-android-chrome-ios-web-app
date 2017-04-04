@@ -7345,25 +7345,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.ratingImages = {
             positive : [
-                'img/rating/ic_face_depressed.png',
-                'img/rating/ic_face_sad.png',
-                'img/rating/ic_face_ok.png',
-                'img/rating/ic_face_happy.png',
-                'img/rating/ic_face_ecstatic.png'
+                'img/rating/face_rating_button_256_depressed.png',
+                'img/rating/face_rating_button_256_sad.png',
+                'img/rating/face_rating_button_256_ok.png',
+                'img/rating/face_rating_button_256_happy.png',
+                'img/rating/face_rating_button_256_ecstatic.png'
             ],
             negative : [
-                'img/rating/ic_face_ecstatic.png',
-                'img/rating/ic_face_happy.png',
-                'img/rating/ic_face_ok.png',
-                'img/rating/ic_face_sad.png',
-                'img/rating/ic_face_depressed.png'
+                'img/rating/face_rating_button_256_ecstatic.png',
+                'img/rating/face_rating_button_256_happy.png',
+                'img/rating/face_rating_button_256_ok.png',
+                'img/rating/face_rating_button_256_sad.png',
+                'img/rating/face_rating_button_256_depressed.png'
             ],
             numeric : [
-                'img/rating/ic_1.png',
-                'img/rating/ic_2.png',
-                'img/rating/ic_3.png',
-                'img/rating/ic_4.png',
-                'img/rating/ic_5.png'
+                'img/rating/numeric_rating_button_256_1.png',
+                'img/rating/numeric_rating_button_256_2.png',
+                'img/rating/numeric_rating_button_256_3.png',
+                'img/rating/numeric_rating_button_256_4.png',
+                'img/rating/numeric_rating_button_256_5.png'
             ]
         };
         quantimodoService.addToFavoritesUsingVariableObject = function (variableObject) {
