@@ -54,7 +54,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         };
         $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
             leaveIfLoggedIn();
-            if($rootScope.appDisplayName !== "MoodiModo"){
+            if(config.appSettings.appDisplayName !== "MoodiModo"){
                 $scope.hideFacebookButton = true;
             }
         });
