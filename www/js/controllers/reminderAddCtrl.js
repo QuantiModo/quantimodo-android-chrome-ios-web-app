@@ -35,16 +35,16 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 { id : 8, name : 'Miscellaneous' }
             ],
             frequencyVariables : [
-                { id : 1, name : 'Daily'},
-                { id : 2, name : 'Every 12 hours'},
-                { id : 3, name : 'Every 8 hours'},
-                { id : 4, name : 'Every 6 hours'},
-                { id : 5, name : 'Every 4 hours'},
-                { id : 6, name : 'Every 3 hours'},
-                { id : 7, name : 'Every 2 hours'},
-                { id : 8, name : 'Hourly'},
-                { id : 9, name : 'Every 30 minutes'},
-                { id : 10, name : 'As-Needed'},
+                { id : 1, name : 'As-Needed'},
+                { id : 2, name : 'Daily'},
+                { id : 3, name : 'Every 12 hours'},
+                { id : 4, name : 'Every 8 hours'},
+                { id : 5, name : 'Every 6 hours'},
+                { id : 6, name : 'Every 4 hours'},
+                { id : 7, name : 'Every 3 hours'},
+                { id : 8, name : 'Every 2 hours'},
+                { id : 9, name : 'Hourly'},
+                { id : 10, name : 'Every 30 minutes'},
                 { id : 11, name : 'Every other day'},
                 { id : 12, name : 'Weekly'},
                 { id : 13, name : 'Every 2 weeks'},
@@ -175,6 +175,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
 	    };
 	    var getFrequencyChart = function(){
 	    	return {
+                "As-Needed": 0,
 	    		"Every 12 hours" : 12*60*60,
 	    		"Every 8 hours": 8*60*60,
 	    		"Every 6 hours": 6*60*60,
@@ -183,7 +184,6 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
 	    		"Every 30 minutes": 30*60,
                 "Every minute": 60,
 	    		"Hourly":60*60,
-	    		"As-Needed": 0,
 	    		"Daily": 24*60*60,
 	    		"Twice a day" : 12*60*60,
 	    		"Three times a day": 8*60*60,
@@ -354,6 +354,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
 	    		$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.trackingReminder.reminderFrequency];
 	    	}
 	    	$scope.state.showReminderFrequencyCard = true;
+            setHideDefaultValueField();
 	    };
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
             $scope.state.variableCategoryObject = quantimodoService.getVariableCategoryInfo(variableCategoryName);
