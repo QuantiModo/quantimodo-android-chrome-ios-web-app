@@ -67,7 +67,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             return template;
 		}
 		$scope.sendBugReport = function() {
-			var subjectLine = encodeURIComponent( $rootScope.appDisplayName + ' ' + $rootScope.appVersion + ' Bug Report');
+			var subjectLine = encodeURIComponent( config.appSettings.appDisplayName + ' ' + $rootScope.appVersion + ' Bug Report');
 			var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
 				"Additional Information: " + '\r\n';
 			template = addAppInformationToTemplate(template);

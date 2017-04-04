@@ -866,10 +866,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             // you can set any advanced configuration here
             Analytics.set('&uid', user.id);
             Analytics.set('&ds', $rootScope.currentPlatform);
-            Analytics.set('&cn', $rootScope.appDisplayName);
-            Analytics.set('&cs', $rootScope.appDisplayName);
+            Analytics.set('&cn', config.appSettings.appDisplayName);
+            Analytics.set('&cs', config.appSettings.appDisplayName);
             Analytics.set('&cm', $rootScope.currentPlatform);
-            Analytics.set('&an', $rootScope.appDisplayName);
+            Analytics.set('&an', config.appSettings.appDisplayName);
             Analytics.set('&aid', config.appSettings.appIdentifier);
             Analytics.set('&av', $rootScope.appVersion);
             // Register a custom dimension for the default, unnamed account object
@@ -911,10 +911,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     name: user.displayName, // User’s real name
                     created_at: userRegistered, // Unix timestamp for the date the user signed up
                     id: user.id, // Optional: Unique id of the user (if set, this should not change)
-                    type: config.appSettings.appDisplayName + ' for ' + $rootScope.currentPlatform + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
+                    type: getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
                     account: {
                         //id: 123, // Optional: associate multiple users with a single account
-                        name: config.appSettings.appDisplayName + ' for ' + $rootScope.currentPlatform + ' v' + $rootScope.appVersion, // Account name
+                        name: getSourceName() + ' v' + $rootScope.appVersion, // Account name
                         //created_at: 1364406966, // Unix timestamp for the date the account was created
                         //monthly_rate: 9.99, // Decimal; monthly rate of the account
                         //ltv: 1495.00, // Decimal; lifetime value of the account
@@ -1405,13 +1405,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
             return measurementObject;
         };
+        function getSourceName() {return config.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
         var addLocationAndSourceDataToMeasurement = function(measurementObject){
-            if(!measurementObject.latitude){measurementObject.latitude = $rootScope.lastLatitude;}
-            if(!measurementObject.longitude){measurementObject.latitude = $rootScope.lastLongitude;}
-            if(!measurementObject.location){measurementObject.latitude = $rootScope.lastLocationNameAndAddress;}
-            if(!measurementObject.sourceName){measurementObject.sourceName = config.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
+            addLocationDataToMeasurement(measurementObject);
+            if(!measurementObject.sourceName){measurementObject.sourceName = getSourceName();}
             return measurementObject;
         };
+        function addLocationDataToMeasurement(measurementObject) {
+            if(!measurementObject.latitude){measurementObject.latitude = localStorage.lastLatitude;}
+            if(!measurementObject.longitude){measurementObject.latitude = localStorage.lastLongitude;}
+            if(!measurementObject.location){measurementObject.latitude = localStorage.lastLocationNameAndAddress;}
+            return measurementObject;
+        }
         // used when adding a new measurement from record measurement OR updating a measurement through the queue
         quantimodoService.addToMeasurementsQueue = function(measurementObject){
             measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
@@ -1494,7 +1499,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var measurementSet = [
                 {
                     variableName: trackingReminder.variableName,
-                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
+                    sourceName: getSourceName(),
                     variableCategoryName: trackingReminder.variableCategoryName,
                     unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                     measurements : [
@@ -1502,13 +1507,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             startTimeEpoch:  startTimeEpochSeconds,
                             value: value,
                             note : null,
-                            latitude: $rootScope.lastLatitude,
-                            longitude: $rootScope.lastLongitude,
-                            location: $rootScope.lastLocationNameAndAddress
                         }
                     ]
                 }
             ];
+            measurementSet[0].measurements[0] = addLocationDataToMeasurement(measurementSet[0].measurements[0]);
             var deferred = $q.defer();
             quantimodoService.postMeasurementsToApi(measurementSet, function(response){
                 if(response.success) {
@@ -1536,34 +1539,26 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.postBloodPressureMeasurements = function(parameters){
             var deferred = $q.defer();
-            var startTimeEpochSeconds;
             /** @namespace parameters.startTimeEpochSeconds */
-            if(!parameters.startTimeEpochSeconds){
-                var startTimeEpochMilliseconds = new Date();
-                startTimeEpochSeconds = startTimeEpochMilliseconds/1000;
-            } else {startTimeEpochSeconds = parameters.startTimeEpochSeconds;}
+            if(!parameters.startTimeEpochSeconds){parameters.startTimeEpochSeconds = new Date()/1000;}
             var measurementSets = [
                 {
                     variableId: 1874,
-                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
-                    startTimeEpoch:  startTimeEpochSeconds,
+                    sourceName: getSourceName(),
+                    startTimeEpoch:  parameters.startTimeEpochSeconds,
                     value: parameters.systolicValue,
-                    note: parameters.note,
-                    latitude: $rootScope.lastLatitude,
-                    longitude: $rootScope.lastLongitude,
-                    location: $rootScope.lastLocationNameAndAddress
+                    note: parameters.note
                 },
                 {
                     variableId: 5554981,
-                    source: config.appSettings.appDisplayName + $rootScope.currentPlatform,
-                    startTimeEpoch:  startTimeEpochSeconds,
+                    sourceName: getSourceName(),
+                    startTimeEpoch:  parameters.startTimeEpochSeconds,
                     value: parameters.diastolicValue,
-                    note: parameters.note,
-                    latitude: $rootScope.lastLatitude,
-                    longitude: $rootScope.lastLongitude,
-                    location: $rootScope.lastLocationNameAndAddress
+                    note: parameters.note
                 }
             ];
+            measurementSets[0] = addLocationDataToMeasurement(measurementSets[0]);
+            measurementSets[0] = addLocationDataToMeasurement(measurementSets[0]);
             quantimodoService.postMeasurementsToApi(measurementSets, function(response){
                 if(response.success) {
                     if(response && response.data && response.data.userVariables){
@@ -1576,28 +1571,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return deferred.promise;
         };
         function addUnitsToRootScope(units) {
-            if(typeof $rootScope.unitAbbreviatedNames === "undefined"){$rootScope.unitAbbreviatedNames = [];}
             $rootScope.unitObjects = units;
-            $rootScope.unitAbbreviatedNamesIndexedByUnitId = [];
-            $rootScope.nonAdvancedunitAbbreviatedNames = [];
-            $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = [];
-            $rootScope.nonAdvancedunitAbbreviatedNamesIndexedByUnitId = [];
-            $rootScope.nonAdvancedUnitObjects = [];
+            var unitAbbreviatedNames = [];
+            var unitsIndexedByAbbreviatedName = [];
+            var nonAdvancedUnitsIndexedByAbbreviatedName = [];
+            var nonAdvancedUnitObjects = [];
             for (var i = 0; i < units.length; i++) {
-                $rootScope.unitAbbreviatedNames[i] = units[i].abbreviatedName;
-                $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-                $rootScope.unitAbbreviatedNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
+                unitAbbreviatedNames[i] = units[i].abbreviatedName;
+                unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
                 if(!units[i].advanced){
-                    $rootScope.nonAdvancedunitAbbreviatedNames.push(units[i].abbreviatedName);
-                    $rootScope.nonAdvancedUnitObjects.push(units[i]);
-                    $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-                    $rootScope.nonAdvancedunitAbbreviatedNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
+                    nonAdvancedUnitObjects.push(units[i]);
+                    nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
                 }
             }
             var showMoreUnitsObject = {name: "Show more units", abbreviatedName: "Show more units"};
-            $rootScope.nonAdvancedunitAbbreviatedNames.push(showMoreUnitsObject.abbreviatedName);
-            $rootScope.nonAdvancedUnitObjects.push(showMoreUnitsObject);
-            $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName["Show more units"] = showMoreUnitsObject;
+            nonAdvancedUnitObjects.push(showMoreUnitsObject);
+            nonAdvancedUnitsIndexedByAbbreviatedName[showMoreUnitsObject.abbreviatedName] = showMoreUnitsObject;
+            $rootScope.unitsIndexedByAbbreviatedName = unitsIndexedByAbbreviatedName;
+            $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = nonAdvancedUnitsIndexedByAbbreviatedName;
+            $rootScope.nonAdvancedUnitObjects = nonAdvancedUnitObjects;
         }
         quantimodoService.getUnits = function(ignoreExpiration){
             var deferred = $q.defer();
@@ -1942,44 +1934,43 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.setLocationVariables = function (result, currentTimeEpochSeconds) {
             if (result.name && result.name !== "undefined") {
-                $rootScope.lastLocationName = result.name;
-                quantimodoService.setLocalStorageItem('lastLocationName', result.name);
+                localStorage.lastLocationName = result.name;
             } else if (result.address && result.address !== "undefined") {
-                $rootScope.lastLocationName = result.address;
-                quantimodoService.setLocalStorageItem('lastLocationName', result.address);
-            } else {console.error("Where's the damn location info?");}
+                localStorage.lastLocationName = result.address;
+            } else {
+                console.error("Where's the damn location info?");
+            }
             if (result.address) {
-                $rootScope.lastLocationAddress = result.address;
-                quantimodoService.setLocalStorageItem('lastLocationAddress', result.address);
-                $rootScope.lastLocationResultType = result.type;
-                quantimodoService.setLocalStorageItem('lastLocationResultType', result.type);
-                $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
-                quantimodoService.setLocalStorageItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
-                if($rootScope.lastLocationAddress === $rootScope.lastLocationName){$rootScope.lastLocationNameAndAddress = $rootScope.lastLocationAddress;
-                } else{$rootScope.lastLocationNameAndAddress = $rootScope.lastLocationName + " (" + $rootScope.lastLocationAddress + ")";}
-                quantimodoService.setLocalStorageItem('lastLocationNameAndAddress', $rootScope.lastLocationNameAndAddress);
+                localStorage.lastLocationAddress = result.address;
+                localStorage.lastLocationResultType = result.type;
+                localStorage.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
+                if(result.address === localStorage.lastLocationName){
+                    localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
+                } else{
+                    localStorage.lastLocationNameAndAddress = localStorage.lastLocationName + " (" + localStorage.lastLocationAddress + ")";
+                }
             }
         };
         quantimodoService.postLocationMeasurementAndSetLocationVariables = function (currentTimeEpochSeconds, result, isBackground) {
             var variableName = false;
-            if ($rootScope.lastLocationName && $rootScope.lastLocationName !== "undefined") {
-                variableName = $rootScope.lastLocationName;
-            } else if ($rootScope.lastLocationAddress && $rootScope.lastLocationAddress !== "undefined") {
-                variableName = $rootScope.lastLocationAddress;
+            if (localStorage.lastLocationName && localStorage.lastLocationName !== "undefined") {
+                variableName = localStorage.lastLocationName;
+            } else if (localStorage.lastLocationAddress && localStorage.lastLocationAddress !== "undefined") {
+                variableName = localStorage.lastLocationAddress;
             } else {console.error("Where's the damn location info?");}
-            var secondsAtLocation = currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds;
+            var secondsAtLocation = currentTimeEpochSeconds - localStorage.lastLocationUpdateTimeEpochSeconds;
             var hoursAtLocation = Math.round(secondsAtLocation/3600 * 100) / 100;
-            var sourceName = $rootScope.lastLocationResultType + ' on ' + $rootScope.appDisplayName + ' for ' + $rootScope.currentPlatform;
+            var sourceName = localStorage.lastLocationResultType + ' on ' + getSourceName();
             if(isBackground){sourceName = sourceName + " (Background Geolocation)";}
             if (variableName && variableName !== "undefined" && secondsAtLocation > 60) {
                 var newMeasurement = {
                     variableName: variableName,
                     unitAbbreviatedName: 'h',
-                    startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
+                    startTimeEpoch: localStorage.lastLocationUpdateTimeEpochSeconds,
                     sourceName: sourceName,
                     value: hoursAtLocation,
                     variableCategoryName: 'Location',
-                    location: $rootScope.lastLocationAddress,
+                    location: localStorage.lastLocationAddress,
                     combinationOperation: "SUM"
                 };
                 quantimodoService.postMeasurementDeferred(newMeasurement);
@@ -1988,17 +1979,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.getLocationVariablesFromLocalStorage = function () {
             if($rootScope.user && $rootScope.user.trackLocation){
-                $rootScope.lastLocationName = quantimodoService.getLocalStorageItemAsString('lastLocationName');
-                $rootScope.lastLocationAddress = quantimodoService.getLocalStorageItemAsString('lastLocationAddress');
-                $rootScope.lastLocationResultType = quantimodoService.getLocalStorageItemAsString('lastLocationResultType');
-                $rootScope.lastLocationUpdateTimeEpochSeconds = quantimodoService.getLocalStorageItemAsString('lastLocationUpdateTimeEpochSeconds');
-                $rootScope.lastLocationNameAndAddress = quantimodoService.getLocalStorageItemAsString('lastLocationNameAndAddress');
+                localStorage.lastLocationName = quantimodoService.getLocalStorageItemAsString('lastLocationName');
+                localStorage.lastLocationAddress = quantimodoService.getLocalStorageItemAsString('lastLocationAddress');
+                localStorage.lastLocationResultType = quantimodoService.getLocalStorageItemAsString('lastLocationResultType');
+                localStorage.lastLocationUpdateTimeEpochSeconds = quantimodoService.getLocalStorageItemAsString('lastLocationUpdateTimeEpochSeconds');
+                localStorage.lastLocationNameAndAddress = quantimodoService.getLocalStorageItemAsString('lastLocationNameAndAddress');
             }
         };
         function lookupGoogleAndFoursquareLocationAndPostMeasurement(deferred, isBackground) {
             quantimodoService.forecastioWeather();
-            quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps($rootScope.lastLongitude,
-                $rootScope.lastLatitude).then(function (result) {
+            quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps(localStorage.lastLongitude,
+                localStorage.lastLatitude).then(function (result) {
                 //console.debug('Result was '+JSON.stringify(result));
                 if (result.type === 'foursquare') {
                     //console.debug('Foursquare location name is ' + result.name + ' located at ' + result.address);
@@ -2006,18 +1997,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     //console.debug('geocode address is ' + result.address);
                 } else {
                     var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' +
-                        $rootScope.lastLatitude + ',' + $rootScope.lastLongitude +
+                        localStorage.lastLatitude + ',' + localStorage.lastLongitude +
                         'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' +
-                        $rootScope.lastLatitude + ',' + $rootScope.lastLongitude;
+                        localStorage.lastLatitude + ',' + localStorage.lastLongitude;
                     console.debug('Sorry, I\'ve got nothing. But here is a map!');
                 }
                 var currentTimeEpochMilliseconds = new Date().getTime();
                 var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
-                if (!$rootScope.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined") {
+                if (!localStorage.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined") {
                     quantimodoService.setLocationVariables(result, currentTimeEpochSeconds);
                 } else {
                     if (result.address && result.address !== "undefined" &&
-                        ($rootScope.lastLocationAddress !== result.address || $rootScope.lastLocationName !== result.name)) {
+                        (localStorage.lastLocationAddress !== result.address || localStorage.lastLocationName !== result.name)) {
                         quantimodoService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result, isBackground);
                     }
                 }
@@ -2045,9 +2036,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             $ionicPlatform.ready(function() {
                 var posOptions = {enableHighAccuracy: true, timeout: 20000, maximumAge: 0};
                 $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                    $rootScope.lastLatitude = position.coords.latitude;
+                    localStorage.lastLatitude = position.coords.latitude;
                     quantimodoService.setLocalStorageItem('lastLatitude', position.coords.latitude);
-                    $rootScope.lastLongitude = position.coords.longitude;
+                    localStorage.lastLongitude = position.coords.longitude;
                     quantimodoService.setLocalStorageItem('lastLongitude', position.coords.longitude);
                     lookupGoogleAndFoursquareLocationAndPostMeasurement(deferred);
                     //console.debug("My coordinates are: ", position.coords);
@@ -2068,9 +2059,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var callbackFn = function(location) {
                 console.debug("background location is " + JSON.stringify(location));
                 var isBackground = true;
-                $rootScope.lastLatitude = location.latitude;
+                localStorage.lastLatitude = location.latitude;
                 quantimodoService.setLocalStorageItem('lastLatitude', location.latitude);
-                $rootScope.lastLongitude = location.longitude;
+                localStorage.lastLongitude = location.longitude;
                 quantimodoService.setLocalStorageItem('lastLongitude', location.longitude);
                 lookupGoogleAndFoursquareLocationAndPostMeasurement(null, isBackground);
                 backgroundGeoLocation.finish();
@@ -4048,6 +4039,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         quantimodoService.deleteAllMeasurementsForVariableDeferred = function(variableId) {
             var deferred = $q.defer();
+            // If primaryOutcomeVariableName, delete local storage measurements
+            if (variableId === quantimodoService.getPrimaryOutcomeVariable().id) {
+                quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
+                quantimodoService.setLocalStorageItem('measurementsQueue',[]);
+                quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
+                quantimodoService.setLocalStorageItem('lastSyncTime',0);
+            }
             quantimodoService.deleteUserVariableMeasurements(variableId, function() {
                 // Delete user variable from local storage
                 quantimodoService.deleteElementOfLocalStorageItemById('userVariables', variableId);
@@ -5535,7 +5533,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
             var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
-            url = url + $rootScope.lastLatitude + ',' + $rootScope.lastLongitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
+            url = url + localStorage.lastLatitude + ',' + localStorage.lastLongitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
             console.debug('Checking weather forecast at ' + url);
             var measurementSets = [];
             $http.jsonp(url).
@@ -7551,6 +7549,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             variableObject.id = trackingReminder.variableId;
             variableObject.name = trackingReminder.variableName;
             return variableObject;
+        };
+        quantimodoService.syncAllPublicData = function(){
+            quantimodoService.getUnits();
+            quantimodoService.refreshCommonVariables();
+        };
+        quantimodoService.syncAllUserData = function(){
+            quantimodoService.getUserVariablesDeferred();
+            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+            quantimodoService.syncTrackingReminders();
+            quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
         };
         return quantimodoService;
     });

@@ -6,9 +6,6 @@ angular.module('starter')
                                     $locale, $mdDialog, $mdToast, wikipediaFactory) {
 
 	    console.debug('Starting AppCtrl');
-        $rootScope.placeName = null;
-        $rootScope.lastLatitude = null;
-        $rootScope.lastLongitude = null;
         $scope.controller_name = "AppCtrl";
         $scope.menu = quantimodoService.getMenu(config.appSettings.menuType);
         $rootScope.appSettings = config.appSettings;
@@ -17,18 +14,18 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
-        $rootScope.appDisplayName = config.appSettings.appDisplayName;
         $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
         if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
-        if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
-        if(!$rootScope.user){
-            quantimodoService.refreshUser().then(function(){ $scope.syncEverything(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
+        if($rootScope.user){
+            if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
+            if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
+            quantimodoService.syncAllUserData();
         }
+        quantimodoService.syncAllPublicData();
+        if(!$rootScope.user){quantimodoService.refreshUser().then(function(){quantimodoService.syncAllUserData();});}
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
-        quantimodoService.refreshCommonVariables();
-        quantimodoService.syncTrackingReminders();
         if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
         if(quantimodoService.getUrlParameter('refreshUser')){
             quantimodoService.clearLocalStorage();
@@ -38,10 +35,6 @@ angular.module('starter')
             $rootScope.refreshUser = false;
         }
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
-        if($rootScope.user){
-            quantimodoService.getUserVariablesDeferred();  // For getting the new chartsUrl links
-            if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
-        }
         if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
             console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
             $ionicPlatform.ready(function () {
@@ -73,20 +66,10 @@ angular.module('starter')
             } else { $scope.showMoreMenuButton = false; }
         });
         $scope.closeMenu = function () { $ionicSideMenuDelegate.toggleLeft(false); };
-        $scope.$watch(function () { return $ionicSideMenuDelegate.getOpenRatio();
-        }, function (ratio) {
-            if (ratio == 1){
-                $scope.showCloseMenuButton = true;
-                $scope.hideMenuButton = true;
-            }
-            if (ratio == 0){
-                $scope.showCloseMenuButton = false;
-                $scope.hideMenuButton = false;
-            }
+        $scope.$watch(function () { return $ionicSideMenuDelegate.getOpenRatio();}, function (ratio) {
+            if (ratio){$scope.showCloseMenuButton = $scope.hideMenuButton = true;} else {$scope.showCloseMenuButton = $scope.hideMenuButton = false;}
         });
         $scope.floatingMaterialButton = quantimodoService.getFloatingMaterialButton();
-        $rootScope.unitsIndexedByAbbreviatedName = [];
-        $rootScope.unitAbbreviatedNamesIndexedByUnitId = [];
         //  Calendar and  Date picker
         // will update from showCalendarPopup
         $scope.fromDate = new Date();
@@ -167,30 +150,22 @@ angular.module('starter')
                 ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? <br><br> You can ' +
                 'make them private again at any time on this study page.'
             });
-
             confirmPopup.then(function(res) {
                 if(res) {
                     correlationObject.shareUserMeasurements = true;
                     $rootScope.correlationObject.shareUserMeasurements = true;
                     quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
-                    var body = {
-                        causeVariableId: correlationObject.causeVariableId,
-                        effectVariableId: correlationObject.effectVariableId,
-                        shareUserMeasurements: true
-                    };
-                    $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+                    var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
+                    $ionicLoading.show();
                     quantimodoService.postStudyDeferred(body).then(function () {
                         $ionicLoading.hide();
-                        if(sharingUrl){
-                            quantimodoService.openSharingUrl(sharingUrl);
-                        }
+                        if(sharingUrl){quantimodoService.openSharingUrl(sharingUrl);}
                     }, function (error) {
                         $ionicLoading.hide();
                         console.error(error);
                     });
                 } else {
                     correlationObject.shareUserMeasurements = false;
-                    console.log('You are not sure');
                 }
             });
         };
@@ -204,16 +179,10 @@ angular.module('starter')
             confirmPopup.then(function(res) {
                 if(res) {
                     correlationObject.shareUserMeasurements = false;
-                    var body = {
-                        causeVariableId: correlationObject.causeVariableId,
-                        effectVariableId: correlationObject.effectVariableId,
-                        shareUserMeasurements: false
-                    };
-                    quantimodoService.postStudyDeferred(body).then(function () {
-                    }, function (error) {console.error(error);});
+                    var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
+                    quantimodoService.postStudyDeferred(body).then(function () {}, function (error) {console.error(error);});
                 } else {
                     correlationObject.shareUserMeasurements = true;
-                    console.log('You are not sure');
                 }
             });
         };
@@ -576,7 +545,6 @@ angular.module('starter')
                 });
             }
         };
-
         $scope.upVote = function(correlationObject, $index){
             if (correlationObject.correlationCoefficient > 0) {
                 $scope.increasesDecreases = "increases";
@@ -625,7 +593,7 @@ angular.module('starter')
                 });
             }
         };
-        function deleteVote(correlationObject, $index) {
+        function deleteVote(correlationObject) {
             correlationObject.userVote = null;
             quantimodoService.deleteVoteDeferred(correlationObject, function(response){
                 console.debug("deleteVote response", response);
@@ -658,20 +626,6 @@ angular.module('starter')
             $rootScope.syncDisplayText = '';
             $scope.loading = false;
             $ionicLoading.hide();
-        };
-        $scope.syncEverything = function () {
-            if(!$rootScope.syncedEverything && $rootScope.user){
-                console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
-                //quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-                if($rootScope.localNotificationsEnabled){
-                    console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
-                    quantimodoService.syncTrackingReminders();
-                }
-                quantimodoService.getUserVariablesDeferred();
-                quantimodoService.getUnits();
-                $rootScope.syncedEverything = true;
-                quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-            }
         };
         $scope.onTextClick = function ($event) {
             console.debug("Auto selecting text so the user doesn't have to press backspace...");
@@ -727,24 +681,9 @@ angular.module('starter')
                 }
             }, 2000);
         };
-        $scope.deleteAllMeasurementsForVariable = function() {
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-            // Delete all measurements for a variable
-            quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
-                // If primaryOutcomeVariableName, delete local storage measurements
-                if ($rootScope.variableName === quantimodoService.getPrimaryOutcomeVariable().name) {
-                    quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
-                    quantimodoService.setLocalStorageItem('measurementsQueue',[]);
-                    quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
-                    quantimodoService.setLocalStorageItem('lastSyncTime',0);
-                }
-                $ionicLoading.hide();
-                $state.go(config.appSettings.defaultState);
-                console.debug("All measurements for " + $rootScope.variableName + " deleted!");
-            }, function(error) {
-                $ionicLoading.hide();
-                console.debug('Error deleting measurements: '+ JSON.stringify(error));
-            });
+        var deleteAllMeasurementsForVariable = function() {
+            quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id);
+            $scope.goBack();
         };
         $scope.showDeleteAllMeasurementsForVariablePopup = function(){
             $ionicPopup.show({
@@ -753,11 +692,7 @@ angular.module('starter')
                 template: 'This cannot be undone!',
                 scope: $scope,
                 buttons:[
-                    {
-                        text: 'Yes',
-                        type: 'button-positive',
-                        onTap: $scope.deleteAllMeasurementsForVariable
-                    },
+                    {text: 'Yes', type: 'button-positive', onTap: deleteAllMeasurementsForVariable},
                     {text: 'No', type: 'button-assertive'}
                 ]
             });
@@ -852,14 +787,8 @@ angular.module('starter')
                 //subTitle: '',
                 template: explanationText[settingName],
                 scope: $scope,
-                buttons: [
-                    {
-                        text: 'OK',
-                        type: 'button-positive'
-                    }
-                ]
+                buttons: [{text: 'OK', type: 'button-positive'}]
             });
-
         };
         $scope.saveVariableSettings = function(variableObject){
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
@@ -894,7 +823,6 @@ angular.module('starter')
                 var stateId = backView.stateName;
                 if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
                     $ionicHistory.goBack(-2);
-                    //$state.go(config.appSettings.defaultState, stateParams);
                     return;
                 }
                 if(stateParams){
@@ -980,15 +908,11 @@ angular.module('starter')
                     $rootScope.connectors = connectors;
                     //Stop the ion-refresher from spinning
                     $scope.$broadcast('scroll.refreshComplete');
-                    $ionicLoading.hide().then(function(){
-                        console.debug("The loading indicator is now hidden");
-                    });
+                    $ionicLoading.hide();
                 }, function(response){
                     console.error(response);
                     $scope.$broadcast('scroll.refreshComplete');
-                    $ionicLoading.hide().then(function(){
-                        console.debug("The loading indicator is now hidden");
-                    });
+                    $ionicLoading.hide();
                 });
         };
         var errorHandler = function(error){
@@ -1030,9 +954,7 @@ angular.module('starter')
                 ]
             });
             myPopup.then(function(res) {
-                var params = {
-                    location: String($scope.data.location)
-                };
+                var params = {location: String($scope.data.location)};
                 connectWithParams(params, 'worldweatheronline');
                 $scope.showInfoToast('Weather logging activated');
                 console.debug('Entered zip code. Result: ', res);
@@ -1045,10 +967,7 @@ angular.module('starter')
             connector.loadingText = 'Connecting...';
             var connectWithToken = function(response) {
                 console.debug("Response Object -> " + JSON.stringify(response));
-                var body = {
-                    connectorCredentials: {token: response},
-                    connector: connector
-                };
+                var body = {connectorCredentials: {token: response}, connector: connector};
                 quantimodoService.connectConnectorWithTokenDeferred(body).then(function(result){
                     console.debug(JSON.stringify(result));
                     $scope.refreshConnectors();
@@ -1640,11 +1559,8 @@ angular.module('starter')
             });
         };
         var appleDowngrade = function () {
-            var confirmPopup = $ionicPopup.confirm({
-                title: 'App Store',
-                template: "You subscribed through the App Store so I have to send you to a page that tells you how to " +
-                "unsubscribe from App Store subscriptions"
-            });
+            var confirmPopup = $ionicPopup.confirm({title: 'App Store',
+                template: "You subscribed through the App Store so I have to send you to a page that tells you how to unsubscribe from App Store subscriptions"});
             confirmPopup.then(function(res) {
                 if(res) {
                     $rootScope.user.stripeActive = false;
@@ -1661,19 +1577,14 @@ angular.module('starter')
             } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
             } else { webDowngrade(); }
         };
-        var last = {bottom: true, top: false, left: true, right: false };
         $scope.toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
-        $scope.getToastPosition = function() {
-            return Object.keys($scope.toastPosition).filter(function(pos) { return $scope.toastPosition[pos]; }).join(' ');
-        };
+        $scope.getToastPosition = function() {return Object.keys($scope.toastPosition).filter(function(pos) { return $scope.toastPosition[pos]; }).join(' ');};
         var undoInboxAction = function(){
             var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
             if(!notificationsSyncQueue){ return false; }
             notificationsSyncQueue[0].hide = false;
-            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications',
-                notificationsSyncQueue[0]);
-            quantimodoService.deleteElementsOfLocalStorageItemByProperty('notificationsSyncQueue',
-                'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
+            quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications', notificationsSyncQueue[0]);
+            quantimodoService.deleteElementsOfLocalStorageItemByProperty('notificationsSyncQueue', 'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
             $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
         };
         $scope.showUndoToast = function(lastAction) {
@@ -1791,7 +1702,6 @@ angular.module('starter')
                 quantimodoService.addVariableToLocalStorage(item.variable);
                 $log.info('Item changed to ' + item.variable.name);
             }
-
             /**
              * Build `variables` list of key/value pairs
              */
@@ -1910,11 +1820,7 @@ angular.module('starter')
             function loadAll(pages) {
                 if(!pages){ return null; }
                 return pages.map( function (page) {
-                    return {
-                        value: page.title,
-                        display: page.title,
-                        page: page,
-                    };
+                    return {value: page.title, display: page.title, page: page};
                 });
             }
         };
@@ -1936,10 +1842,6 @@ angular.module('starter')
                         variableName: $rootScope.variableObject.name
                     }
                 },
-            }).then(function(page) {
-                $rootScope.variableObject.wikipediaPage = page;
-            }, function() {
-                console.debug('User cancelled selection');
-            });
+            }).then(function(page) {$rootScope.variableObject.wikipediaPage = page;});
         };
     });
