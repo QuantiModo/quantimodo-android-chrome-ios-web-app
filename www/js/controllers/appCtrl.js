@@ -85,8 +85,6 @@ angular.module('starter')
             }
         });
         $scope.floatingMaterialButton = quantimodoService.getFloatingMaterialButton();
-        $rootScope.unitsIndexedByAbbreviatedName = [];
-        $rootScope.unitAbbreviatedNamesIndexedByUnitId = [];
         //  Calendar and  Date picker
         // will update from showCalendarPopup
         $scope.fromDate = new Date();
@@ -1640,11 +1638,8 @@ angular.module('starter')
             });
         };
         var appleDowngrade = function () {
-            var confirmPopup = $ionicPopup.confirm({
-                title: 'App Store',
-                template: "You subscribed through the App Store so I have to send you to a page that tells you how to " +
-                "unsubscribe from App Store subscriptions"
-            });
+            var confirmPopup = $ionicPopup.confirm({title: 'App Store',
+                template: "You subscribed through the App Store so I have to send you to a page that tells you how to unsubscribe from App Store subscriptions"});
             confirmPopup.then(function(res) {
                 if(res) {
                     $rootScope.user.stripeActive = false;
