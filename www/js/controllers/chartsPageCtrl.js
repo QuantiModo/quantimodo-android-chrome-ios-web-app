@@ -46,10 +46,10 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 console.debug("variablePageCtrl.showActionSheetMenu:  $rootScope.variableObject: ", $rootScope.variableObject);
                 var hideSheet = $ionicActionSheet.show({
                     buttons: [
-                        { text: '<i class="icon ion-compose"></i>Record Measurement'},
-                        { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-                        { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                        { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                        quantimodoService.actionSheetButtons.recordMeasurement,
+                        quantimodoService.actionSheetButtons.addReminder,
+                        quantimodoService.actionSheetButtons.history,
+                        quantimodoService.actionSheetButtons.analysisSettings,
                         { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
                         { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '},
                     ],

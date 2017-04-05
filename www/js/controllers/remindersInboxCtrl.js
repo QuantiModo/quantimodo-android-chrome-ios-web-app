@@ -357,10 +357,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			var hideSheetForNotification = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
-					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
-					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+					quantimodoService.actionSheetButtons.recordMeasurement,
+					quantimodoService.actionSheetButtons.charts,
+					quantimodoService.actionSheetButtons.history,
+					quantimodoService.actionSheetButtons.analysisSettings
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Skip All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',

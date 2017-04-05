@@ -43,9 +43,9 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 				buttons: [
 					{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
 					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
-					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
-					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+					quantimodoService.actionSheetButtons.addReminder,
+					quantimodoService.actionSheetButtons.charts,
+					quantimodoService.actionSheetButtons.analysisSettings
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {console.debug($state.current.name + ": " + 'CANCELLED');},

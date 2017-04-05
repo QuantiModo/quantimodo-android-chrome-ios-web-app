@@ -58,10 +58,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
                 var hideSheet = $ionicActionSheet.show({
                     buttons: [
                         //{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
-                        { text: '<i class="icon ion-compose"></i>Record Measurement'},
-                        { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-                        { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
-                        { text: '<i class="icon ion-ios-list-outline"></i>History'},
+                        quantimodoService.actionSheetButtons.recordMeasurement,
+                        quantimodoService.actionSheetButtons.addReminder,
+                        quantimodoService.actionSheetButtons.charts,
+                        quantimodoService.actionSheetButtons.history,
                         { text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
                         { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
                     ],
@@ -102,7 +102,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
                         if(index === 3) {$state.go('app.historyAll', {variableCategoryName: 'Treatments'});}
                         if(index === 4) {$state.go('app.historyAll', {variableCategoryName: 'Physical Activity'});}
                         if(index === 5) {$state.go('app.historyAll', {variableCategoryName: 'Vital Signs'});}
-                        if(index === 5) {$state.go('app.historyAll', {variableCategoryName: 'Locations'});}
+                        if(index === 6) {$state.go('app.historyAll', {variableCategoryName: 'Locations'});}
                         return true;
                     },
                     destructiveButtonClicked: function() {}
@@ -149,11 +149,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
-					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
-					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
-					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+					quantimodoService.actionSheetButtons.addReminder,
+					quantimodoService.actionSheetButtons.charts,
+					quantimodoService.actionSheetButtons.history,
+					quantimodoService.actionSheetButtons.analysisSettings
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',

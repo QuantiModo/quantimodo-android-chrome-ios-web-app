@@ -6709,7 +6709,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         "isSubMenuChild" : true,
                         "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
                         "href" : "#/app/history",
-                        "icon" : "ion-ios-list-outline"
+                        "icon" : quantimodoService.ionIcons.history
                     },
                     {
                         "title" : "Positive Predictors",
@@ -6844,7 +6844,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         "click" : "toggleHistorySubMenu",
                         "showSubMenuVariable" : "showHistorySubMenu",
                         "isSubMenuParent" : true,
-                        "collapsedIcon" : "ion-ios-list-outline",
+                        "collapsedIcon" : quantimodoService.ionIcons.history,
                         "expandedIcon" : "ion-chevron-down"
                     },
                     {
@@ -7544,6 +7544,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             variableObject.id = trackingReminder.variableId;
             variableObject.name = trackingReminder.variableName;
             return variableObject;
+        };
+        quantimodoService.ionIcons = {
+            history: 'ion-ios-list-outline'
+        };
+        quantimodoService.actionSheetButtons = {
+            history: { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>History'},
+            analysisSettings: { text: '<i class="icon ion-settings"></i>' + 'Analysis Settings'},
+            recordMeasurement: { text: '<i class="icon ion-compose"></i>Record Measurement'},
+            addReminder: { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
+            charts: { text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
+
         };
         return quantimodoService;
     });

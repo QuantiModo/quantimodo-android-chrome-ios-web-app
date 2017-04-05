@@ -31,14 +31,20 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
         	$ionicLoading.show();
             $rootScope.hideNavigationMenu = false;
             $scope.stateParams = $stateParams;
+            var actionButtons = [
+                { text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
+                { text: '<i class="icon ion-clock"></i>Sort by Time' }
+            ];
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
                 if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
                 if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add new reminder"; }
+                actionButtons[2] = quantimodoService.actionSheetButtons.history;
             } else {
-                $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + "!";
-                $scope.state.noRemindersText = "You don't have any " + $stateParams.variableCategoryName.toLowerCase() + ", yet.";
+                actionButtons[2] = { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
+                $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + " favorites or reminders!";
+                $scope.state.noRemindersText = "You haven't saved any " + $stateParams.variableCategoryName.toLowerCase() + " here, yet.";
                 $scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
                 if(!$scope.stateParams.title){ $scope.stateParams.title = $stateParams.variableCategoryName; }
                 if(!$scope.stateParams.addButtonText) {
@@ -50,16 +56,14 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
             getTrackingReminders();
             $rootScope.showActionSheetMenu = function() {
                 var hideSheet = $ionicActionSheet.show({
-                    buttons: [
-                        { text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
-                        { text: '<i class="icon ion-clock"></i>Sort by Time' }
-                    ],
+                    buttons: actionButtons,
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function() {console.debug('CANCELLED');},
                     buttonClicked: function(index) {
                         console.debug('BUTTON CLICKED', index);
                         if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
                         if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
+                        if(index === 2){$state.go('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
                         return true;
                     }
                 });
@@ -133,10 +137,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-android-notifications-none"></i>Edit'},
-					{ text: '<i class="icon ion-edit"></i>Record Measurement' },
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
-					{ text: '<i class="icon ion-ios-list-outline"></i>History'},
-					{ text: '<i class="icon ion-settings"></i>Analysis Settings'}
+					quantimodoService.actionSheetButtons.recordMeasurement,
+					quantimodoService.actionSheetButtons.charts,
+					quantimodoService.actionSheetButtons.history,
+					quantimodoService.actionSheetButtons.analysisSettings
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
