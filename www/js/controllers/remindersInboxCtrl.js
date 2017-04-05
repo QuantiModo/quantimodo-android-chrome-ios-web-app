@@ -393,11 +393,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			});
 			$timeout(function() {hideSheetForNotification();}, 20000);
 		};
-
-        $scope.hideHelpCard = function () {
-            var card = $scope.defaultHelpCards[0];
-            card.hide = true;
-            $scope.defaultHelpCards = $scope.defaultHelpCards.filter(function( obj ) {return obj.id !== card.id;});
-            quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', card.id);
+        $scope.hideHelpCard = function (helpCard, emailType) {
+            if(emailType){$scope.sendEmailAfterVerification(emailType);}
+            helpCard.hide = true;
+            $scope.defaultHelpCards = $scope.defaultHelpCards.filter(function( obj ) {return obj.id !== helpCard.id;});
+            quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', helpCard.id);
         };
 	});
