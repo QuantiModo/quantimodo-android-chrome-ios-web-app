@@ -40,9 +40,9 @@ angular.module('starter')
         return function(time){
             if(time){
                 if(typeof time === "number") {
-                    return moment(time * 1000).format("h A");
+                    return moment(time * 1000).format("hA");
                 }
-                return moment.utc(time).local().format("h A");
+                return moment.utc(time).local().format("hA");
             } else {
                 return "";
             }
