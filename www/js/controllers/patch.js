@@ -1,18 +1,13 @@
 angular.module('ngIOS9UIWebViewPatch', ['ng']).config(['$provide', function($provide) {
   'use strict';
-
   $provide.decorator('$browser', ['$delegate', '$window', function($delegate, $window) {
-
     if (isIOS9UIWebView($window.navigator.userAgent)) {
       return applyIOS9Shim($delegate);
     }
-
     return $delegate;
-
     function isIOS9UIWebView(userAgent) {
       return /(iPhone|iPad|iPod).* OS 9_\d/.test(userAgent) && !/Version\/9\./.test(userAgent);
     }
-
     function applyIOS9Shim(browser) {
       var pendingLocationUrl = null;
       var originalUrlFn= browser.url;
