@@ -39,7 +39,7 @@
 			<div class="item item-divider"  ng-if="state.trackingReminders && state.trackingReminders.length" >Scheduled</div>
 			<div ng-click="showActionSheet(trackingReminder)"
 				 class="item item-avatar"
-				 ng-repeat="trackingReminder in state.trackingReminders | orderBy:reminderOrderParameter  track by $index"
+				 ng-repeat="trackingReminder in state.trackingReminders | orderBy:reminderOrderParameter track by $index"
 				 ng-if="!trackingReminder.hide">
 				<img src="{{trackingReminder.pngPath}}" style="border-radius: 0">
 				<h2 style="white-space: normal; line-height: normal;">{{trackingReminder.variableName}}</h2>

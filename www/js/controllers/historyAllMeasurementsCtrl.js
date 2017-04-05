@@ -1,4 +1,5 @@
-angular.module('starter').controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet, quantimodoService) {
+angular.module('starter').controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout,
+																			$ionicActionSheet, quantimodoService, $ionicLoading) {
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
 	    $scope.state = {
 	    	offset : 0,
@@ -6,7 +7,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 	    	history : [],
 			units : [],
 			variableCategories : [],
-			hideLoadMoreButton : true,
 			showLocationToggle: false,
 			noHistory: false,
 			helpCardTitle: "Past Measurements",
@@ -28,20 +28,18 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			if($stateParams.variableObject){params.variableName = $stateParams.variableObject.name;}
             if($stateParams.variableName){params.variableName = $stateParams.variableName;}
             if(params.variableName){
-                $rootScope.showMoreMenuButton = true;
                 if(!$rootScope.variableObject){
                     quantimodoService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {
 						$rootScope.variableObject = variables[0];
                     }, function (error) {console.error(error);});
                 }
 			}
+			$ionicLoading.show();
 	    	quantimodoService.getMeasurementsDeferred(params, refresh).then(function(history){
+	    		if(!history ||!history.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
 	    		if (concat) {$scope.state.history = $scope.state.history.concat(history);} else {$scope.state.history = history;}
 				$scope.hideLoader();
-				if(history.length < $scope.state.limit){
-					$scope.state.hideLoadMoreButton = true;
-					$scope.state.noHistory = history.length === 0;
-				} else {$scope.state.hideLoadMoreButton = false;}
+				if(history.length < $scope.state.limit){$scope.state.noHistory = history.length === 0;}
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
 				$scope.state.loading = false;

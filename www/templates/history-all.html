@@ -1,5 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
-    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-nav-title>History</ion-nav-title>
      <ion-content ng-class="{ isBrowserView : isWeb == true }">
          <ion-refresher on-refresh="refreshHistory()"></ion-refresher>
          <div class="list card" ng-show="state.noHistory">
@@ -89,7 +89,7 @@
          </div>
 
       <ion-list id="historyList">
-          <div ng-repeat="historyItem in state.history"
+          <div ng-repeat="historyItem in state.history | orderBy:startTimeEpoch:true"
                ng-hide="historyItem.hide"
                data-measurementid="{{historyItem.id}}"
                class="item item-avatar"
@@ -107,17 +107,17 @@
 							border-radius: 4px;">
               </i>
               <img ng-if="historyItem.pngPath" src="{{historyItem.pngPath}}" style="border-radius: 0">
-              <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal;">
+              <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal; line-height: normal;">
                   {{historyItem.valueUnitVariableName}}
               </h2>
               <p id="historyItemBody" >
-                  {{historyItem.startTimeEpoch | timeOfDayDayOfWeekNoArray}}<br>
-                  {{historyItem.startTimeEpoch | justDateNoArray}}<br>
+                  <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
+                  {{historyItem.startTimeEpoch | dayOfWeekAndDate}}<br>
                   {{historyItem.note | limitTo:40}}
               </p>
           </div>
       </ion-list> 
-      <div class="button-bar" ng-hide="state.hideLoadMoreButton">
+      <div class="button-bar" ng-show="state.showLoadMoreButton">
         <a class="button button-clear button-positive" ng-click="getNext()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
       </div>
     </ion-content>
