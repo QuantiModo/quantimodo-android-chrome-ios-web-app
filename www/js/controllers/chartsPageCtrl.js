@@ -18,7 +18,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         var maximumMeasurements = 999; // Highcharts will only show 1000 measurements with notes
         function getTruncatedVariableName(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}}
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            if(quantimodoService.getUrlParameter('variableName')){$stateParams.variableName = quantimodoService.getUrlParameter('variableName');}
+            if(quantimodoService.getUrlParameter('variableName')){$stateParams.variableName = quantimodoService.getUrlParameter('variableName', window.location.href, true);}
             $rootScope.hideNavigationMenu = false;
             $scope.stopGettingMeasurements = false;
             $ionicLoading.hide();

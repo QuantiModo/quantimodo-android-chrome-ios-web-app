@@ -1756,6 +1756,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // returns false if not found
         quantimodoService.getUrlParameter = function (parameterName, url, shouldDecode) {
             if(!url){url = window.location.href;}
+            if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
             if(url.split('?').length > 1){
                 var queryString = url.split('?')[1];
                 var parameterKeyValuePairs = queryString.split('&');

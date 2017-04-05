@@ -203,8 +203,8 @@ angular.module('starter')
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             if(quantimodoService.getUrlParameter('aggregated')){ $stateParams.aggregated = quantimodoService.getUrlParameter('aggregated'); }
             if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
-            if(quantimodoService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName'); }
-            if(quantimodoService.getUrlParameter('effectVariableName')){ $stateParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName'); }
+            if(quantimodoService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName', window.location.href, true); }
+            if(quantimodoService.getUrlParameter('effectVariableName')){ $stateParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName', window.location.href, true); }
             if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = quantimodoService.getPrimaryOutcomeVariable().name; }
             $scope.state.requestParams.offset = 0;
             $scope.state.requestParams.limit = 10;

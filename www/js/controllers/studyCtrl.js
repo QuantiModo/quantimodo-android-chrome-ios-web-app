@@ -17,8 +17,8 @@ angular.module('starter')
             console.debug($state.current.name + ' initializing...');
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            if(quantimodoService.getUrlParameter('causeVariableName')){ $scope.state.requestParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName'); }
-            if(quantimodoService.getUrlParameter('effectVariableName')){ $scope.state.requestParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName'); }
+            if(quantimodoService.getUrlParameter('causeVariableName')){ $scope.state.requestParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName', window.location.href, true); }
+            if(quantimodoService.getUrlParameter('effectVariableName')){ $scope.state.requestParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName', window.location.href, true); }
             if($stateParams.causeVariableName){ $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName; }
             if($stateParams.effectVariableName){ $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName; }
             $scope.predictorVariableName = $scope.state.requestParams.causeVariableName;
