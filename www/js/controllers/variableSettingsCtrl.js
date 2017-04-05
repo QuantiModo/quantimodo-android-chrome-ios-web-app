@@ -1,5 +1,5 @@
 angular.module('starter').controller('VariableSettingsCtrl', function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $mdDialog, $ionicLoading,
-                 $stateParams, $ionicHistory, $ionicActionSheet) {
+                 $stateParams, $ionicHistory, $ionicActionSheet, quantimodoService) {
         $scope.controller_name = "VariableSettingsCtrl";
         $rootScope.showFilterBarSearchIcon = false;
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
