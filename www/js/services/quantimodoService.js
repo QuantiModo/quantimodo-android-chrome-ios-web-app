@@ -710,7 +710,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.debug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
             }
             if(expiresAtMilliseconds){
-                quantimodoService.setLocalStorageItem('expiresAtMilliseconds', expiresAtMilliseconds - bufferInMilliseconds);
+                localStorage.expiresAtMilliseconds = expiresAtMilliseconds - bufferInMilliseconds;
                 return accessToken;
             } else {
                 console.error('No expiresAtMilliseconds!');
