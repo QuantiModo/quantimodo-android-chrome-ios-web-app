@@ -30,7 +30,6 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	//createWordCloudFromNotes();
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("RemindersInboxCtrl beforeEnter ");
-		$scope.defaultHelpCards = quantimodoService.setupHelpCards();
 		$scope.loading = true;
 		if(!quantimodoService.getUrlParameter('accessToken') && !$rootScope.user){
 			console.debug('Setting afterLoginGoToState to ' + $state.current.name);
@@ -40,9 +39,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$rootScope.hideBackButton = true;
 		$rootScope.hideHomeButton = true;
 		setPageTitle();
-		getTrackingReminderNotifications();
 	});
 	$scope.$on('$ionicView.enter', function(e) {
+        $scope.defaultHelpCards = quantimodoService.setupHelpCards();
+        getTrackingReminderNotifications();
 		console.debug("RemindersInboxCtrl enter");
 		if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
@@ -51,9 +51,6 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){$rootScope.variableCategoryName = $stateParams.variableCategoryName;
 		} else {$rootScope.variableCategoryName = null;}
-		var secondsSinceWeLastGotNotifications = quantimodoService.getSecondsSinceWeLastGotNotifications();
-		if(!$rootScope.numberOfPendingNotifications || secondsSinceWeLastGotNotifications > 600){$scope.refreshTrackingReminderNotifications();}
-		// Triggered on a button click, or some other target
 		$rootScope.showActionSheetMenu = function() {
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
@@ -88,8 +85,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		}
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
-		console.debug("RemindersInboxCtrl afterEnter");
-		quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+        console.debug("RemindersInboxCtrl afterEnter");
+        var secondsSinceWeLastGotNotifications = quantimodoService.getSecondsSinceWeLastGotNotifications();
+        if(!$rootScope.numberOfPendingNotifications || secondsSinceWeLastGotNotifications > 600){$scope.refreshTrackingReminderNotifications();}
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		console.debug("RemindersInboxCtrl afterLeave");
@@ -169,6 +167,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	var getWeekdayChartAndFavoritesIfNecessary = function () {
 		if(!$scope.state.numberOfDisplayedNotifications && !$scope.weekdayChartConfig){
+            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
 			quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
 			quantimodoService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
 				quantimodoService.getPrimaryOutcomeVariable()).then(function (chartConfig) {
@@ -284,8 +283,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		quantimodoService.getTodayTrackingReminderNotificationsDeferred($stateParams.variableCategoryName)
 			.then(function (trackingReminderNotifications) {
 				$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-				$scope.filteredTrackingReminderNotifications =
-					quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+				$scope.filteredTrackingReminderNotifications = quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 				getWeekdayChartAndFavoritesIfNecessary();
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
