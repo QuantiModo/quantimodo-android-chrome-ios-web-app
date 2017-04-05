@@ -29,7 +29,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 { id : 8, name : 'Miscellaneous' }
             ],
             hideReminderMeButton : false,
-            showMoreMenuButton: true,
             editReminder : false,
             showMoreUnits: false
         };

@@ -36,18 +36,18 @@ angular.module('starter')
 			}
 		};
 	})
-	.filter('timeOfDay', function(){
-		return function(time){
-			if(time){
-				if(typeof time === "number") {
-					return moment(time * 1000).format("h:mm a").split(/,/g);
-				}
-				return moment.utc(time).local().format("h:mm a").split(/,/g);
-			} else {
-				return "";
-			}
-		};
-	})
+    .filter('timeOfDay', function(){
+        return function(time){
+            if(time){
+                if(typeof time === "number") {
+                    return moment(time * 1000).format("h A");
+                }
+                return moment.utc(time).local().format("h A");
+            } else {
+                return "";
+            }
+        };
+    })
 	.filter('timeOfDayDayOfWeek', function(){
 		return function(time){
 			if(time){
@@ -112,9 +112,9 @@ angular.module('starter')
 		return function(time){
 			if(time){
 				if(typeof time === "number") {
-					return moment(time * 1000).format("dddd MMM Do YYYY").split(/,/g);
+					return moment(time * 1000).format("ddd, MMM Do, YYYY");
 				}
-				return moment.utc(time).local().format("dddd MMMM Do YYYY").split(/,/g);
+				return moment.utc(time).local().format("ddd, MMM Do, YYYY");
 			} else {
 				return "";
 			}
