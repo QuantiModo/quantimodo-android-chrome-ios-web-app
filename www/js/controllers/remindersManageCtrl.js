@@ -43,8 +43,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
                 actionButtons[2] = quantimodoService.actionSheetButtons.history;
             } else {
                 actionButtons[2] = { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
-                $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + "!";
-                $scope.state.noRemindersText = "You don't have any " + $stateParams.variableCategoryName.toLowerCase() + ", yet.";
+                $scope.state.noRemindersTitle = "No " + $stateParams.variableCategoryName.toLowerCase() + " favorites or reminders!";
+                $scope.state.noRemindersText = "You haven't saved any " + $stateParams.variableCategoryName.toLowerCase() + " here, yet.";
                 $scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
                 if(!$scope.stateParams.title){ $scope.stateParams.title = $stateParams.variableCategoryName; }
                 if(!$scope.stateParams.addButtonText) {

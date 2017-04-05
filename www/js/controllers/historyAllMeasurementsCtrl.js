@@ -102,7 +102,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
                         if(index === 3) {$state.go('app.historyAll', {variableCategoryName: 'Treatments'});}
                         if(index === 4) {$state.go('app.historyAll', {variableCategoryName: 'Physical Activity'});}
                         if(index === 5) {$state.go('app.historyAll', {variableCategoryName: 'Vital Signs'});}
-                        if(index === 5) {$state.go('app.historyAll', {variableCategoryName: 'Locations'});}
+                        if(index === 6) {$state.go('app.historyAll', {variableCategoryName: 'Locations'});}
                         return true;
                     },
                     destructiveButtonClicked: function() {}
