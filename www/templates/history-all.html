@@ -89,7 +89,7 @@
          </div>
 
       <ion-list id="historyList">
-          <div ng-repeat="historyItem in state.history | orderBy:startTimeEpoch:true"
+          <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true"
                ng-hide="historyItem.hide"
                data-measurementid="{{historyItem.id}}"
                class="item item-avatar"
