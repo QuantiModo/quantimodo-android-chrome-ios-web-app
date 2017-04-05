@@ -32,11 +32,10 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    //{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
-                    { text: '<i class="icon ion-compose"></i>Record Measurement'},
-                    { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-                    { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Charts'},
-                    { text: '<i class="icon ion-ios-list-outline"></i>History'},
+                    quantimodoService.actionSheetButtons.recordMeasurement,
+                    quantimodoService.actionSheetButtons.addReminder,
+                    quantimodoService.actionSheetButtons.charts,
+                    quantimodoService.actionSheetButtons.history,
                     { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
                     { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
 

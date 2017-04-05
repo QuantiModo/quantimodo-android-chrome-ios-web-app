@@ -762,10 +762,10 @@ angular.module('starter')
             var actionMenuButtons = [
                 { text: '<i class="icon ion-gear-a"></i>Edit' },
                 { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
-                { text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
-                { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                { text: '<i class="icon ion-settings"></i>Analysis Settings'},
-                { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'}
+                quantimodoService.actionSheetButtons.charts,
+                quantimodoService.actionSheetButtons.history,
+                quantimodoService.actionSheetButtons.analysisSettings,
+                quantimodoService.actionSheetButtons.addReminder
             ];
             /** @namespace config.appSettings.favoritesController */
             if(config.appSettings.favoritesController && config.appSettings.favoritesController.actionMenuButtons){

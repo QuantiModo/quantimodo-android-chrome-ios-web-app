@@ -476,11 +476,10 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             console.debug($state.current.name + ": " + "measurementAddCtrl.showActionSheetMenu:  $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    //{ text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
-                    { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-                    { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
-                    { text: '<i class="icon ion-ios-list-outline"></i>History' },
-                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                    quantimodoService.actionSheetButtons.addReminder,
+                    quantimodoService.actionSheetButtons.charts,
+                    quantimodoService.actionSheetButtons.history,
+                    quantimodoService.actionSheetButtons.analysisSettings,
                     { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
