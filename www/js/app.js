@@ -15,7 +15,7 @@ angular.module('starter',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
         //'templates',
-        'fabric',
+        //'fabric',  // Not sure if this does anything.  We might want to enable for native error logging sometime.
         'ngCordovaOauth',
         'jtt_wikipedia',
         'angular-clipboard',
