@@ -1,6 +1,5 @@
 angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
                                                            $rootScope, $stateParams, quantimodoService) {
-
     $scope.primaryOutcomeVariableName = quantimodoService.getPrimaryOutcomeVariable().name;
     if($state.current.name === 'app.introOld'){ $scope.introSlides = quantimodoService.getIntroSlidesOld(); }
     else { $scope.introSlides = quantimodoService.getIntroSlidesNew(); }
@@ -28,7 +27,6 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
             if($scope.introSlides[index].textColor){$scope.myIntro.textColor = $scope.introSlides[index].textColor;}
         }
     };
-
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         if($scope.introSlides[0].backgroundColor){ $scope.myIntro.backgroundColor = $scope.introSlides[0].backgroundColor; }
         if($scope.introSlides[0].textColor){ $scope.myIntro.textColor = $scope.introSlides[0].textColor; }
@@ -54,7 +52,6 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
             quantimodoService.bugsnagNotify(name, message, metaData, severity);
         }
     });
-
     $scope.$on('$ionicView.afterEnter', function(){
         $rootScope.hideNavigationMenu = true;
         if(navigator && navigator.splashscreen) {
@@ -63,5 +60,4 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         }
         quantimodoService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
-
 });
