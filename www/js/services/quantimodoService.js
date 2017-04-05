@@ -749,7 +749,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             url += "&client_secret=" + quantimodoService.getClientSecret();
             url += "&scope=" + quantimodoService.getPermissionString();
             url += "&state=testabcd";
-            url += "&token=" + JWTToken;
+            if(JWTToken){url += "&token=" + JWTToken;}
             //url += "&redirect_uri=" + quantimodoService.getRedirectUri();
             return url;
         };
@@ -1721,8 +1721,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "not contain window.private_keys");
                 return "https://app.quantimo.do";
             }
-            if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled' && window.location.origin) {return window.location.origin;}
             if(window.private_keys.apiUrl){return window.private_keys.apiUrl;}
+            if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled' && window.location.origin) {return window.location.origin;}
             return "https://app.quantimo.do";
         };
         quantimodoService.getQuantiModoUrl = function (path) {
