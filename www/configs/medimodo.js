@@ -26,14 +26,9 @@ config.appSettings  = {
     wordAliases : {
     },
     remindersInbox : {
-        showAddNewMedicationButton : true,
-        hideAddNewReminderButton : true,
-        showAddHowIFeelResponseButton : true,
-        showAddVitalSignButton : true,
         title : 'Reminder Inbox'
     },
     remindersManage : {
-        hideAddNewReminderButton : true
     },
     //defaultRemindersType: 'medication',
     appType: 'medication',

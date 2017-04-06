@@ -94,18 +94,6 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$rootScope.hideHomeButton = false;
 		$rootScope.hideBackButton = false;
 	});
-	if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
-		$scope.state.showAddHowIFeelResponseButton = config.appSettings.remindersInbox.showAddHowIFeelResponseButton;
-	}
-	if(typeof(config.appSettings.remindersInbox.hideAddNewReminderButton) !== 'undefined'){
-		$scope.state.hideAddNewReminderButton = config.appSettings.remindersInbox.hideAddNewReminderButton;
-	}
-	if(typeof(config.appSettings.remindersInbox.showAddNewMedicationButton) !== 'undefined'){
-		$scope.state.showAddNewMedicationButton = config.appSettings.remindersInbox.showAddNewMedicationButton;
-	}
-	if(typeof(config.appSettings.remindersInbox.showAddVitalSignButton) !== 'undefined'){
-		$scope.state.showAddVitalSignButton = config.appSettings.remindersInbox.showAddVitalSignButton;
-	}
 	var setPageTitle = function(){
 		if($stateParams.today) {
 			if($stateParams.variableCategoryName === 'Treatments') {
@@ -125,11 +113,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	var isGhostClick = function ($event) {
 		if(!$rootScope.isMobile){return false;}
-		if($event &&
-			$scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 &&
-			$scope.state.lastClientX === $event.clientX &&
-			$scope.state.lastClientY === $event.clientY
-		) {
+		if($event && $scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 && $scope.state.lastClientX === $event.clientX && $scope.state.lastClientY === $event.clientY) {
 			console.debug('This event is probably a ghost click so not registering.', $event);
 			return true;
 		} else {
@@ -326,8 +310,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		trackingReminderNotification.hide = true;
 		$rootScope.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
-		quantimodoService.deleteElementOfLocalStorageItemById('trackingReminderNotifications',
-			trackingReminderNotification.id);
+		quantimodoService.deleteElementOfLocalStorageItemById('trackingReminderNotifications', trackingReminderNotification.id);
 		$state.go('app.measurementAdd', {reminderNotification: trackingReminderNotification, fromUrl: window.location.href});
 	};
 	$scope.editReminderSettingsByNotification = function(trackingReminderNotification){
