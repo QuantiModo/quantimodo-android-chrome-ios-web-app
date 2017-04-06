@@ -21,7 +21,7 @@
                 <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div><br>
                 <h3 id="studyAbstractTitle">Study Abstract</h3>
-                <p id="studyAbstractBody">{{correlationObject.studyAbstract}}</p><br>
+                <p id="studyAbstractBody" style="padding: 5px;">{{correlationObject.studyAbstract}}</p><br>
                 <div ng-hide="false && correlationObject && user && correlationObject.userId === user.id" class="row">
                     <div class="col">
                         <button class="button button-outline button-block icon-left ion-ios-people button-positive"

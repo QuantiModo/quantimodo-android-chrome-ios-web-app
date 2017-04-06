@@ -14,13 +14,10 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     $scope.showSearchFilterBox = false;
     $rootScope.showFilterBarSearchIcon = true;
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        $scope.hideLoader();
         init();
     });
     $scope.$on('$ionicView.enter', function (e) { });
     $rootScope.toggleFilterBar = function () {
-        //$ionicFilterBar.show();
-        console.debug('clicked showFilterBar');
         $scope.showSearchFilterBox = !$scope.showSearchFilterBox;
     };
     $scope.filterSearch = function () {
@@ -119,7 +116,6 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         }
     };
     $scope.refreshList = function () {
-        $scope.state.requestParams.offset = 0;
         quantimodoService.clearCorrelationCache();
         init();
     };
