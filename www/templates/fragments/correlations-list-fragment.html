@@ -1,0 +1,20 @@
+<ion-list>
+    <div class="list card correlationResultList"
+         style="text-align: center"
+         ng-repeat="correlationObject in state.correlationObjects">
+        <div class="item item-avatar" ng-click="goToStudyPage(correlationObject)">
+            <img ng-if="predictorList" ng-src="{{correlationObject.causeVariableImageUrl}}">
+            <img ng-if="outcomeList" ng-src="{{correlationObject.effectVariableImageUrl}}">
+            <p style="height: 40px; line-height: 40px; white-space: nowrap; color: black; font-size: 18px;">
+                <span ng-if="outcomeList">{{correlationObject.effectVariableName}}</span>
+                <span ng-if="predictorList">{{correlationObject.causeVariableName}}</span>
+            </p>
+        </div>
+        <div class="item item-body">
+            <img ng-src="{{correlationObject.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
+            <p>{{correlationObject.predictorExplanation}}</p>
+            <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
+            <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
+        </div>
+    </div>
+</ion-list>
