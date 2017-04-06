@@ -130,9 +130,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var maxLength = 140;
         console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-        if(!data.success){console.debug('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');}
         if(data.message){ console.warn(data.message); }
-        if(!$rootScope.user && baseURL.indexOf('user') === -1){ quantimodoService.refreshUser(); }
     };
     quantimodoService.errorHandler = function(data, status, headers, request, options){
         if(status === 302){
@@ -964,6 +962,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return false;
     };
+    quantimodoService.syncAllUserData = function(){
+        quantimodoService.syncTrackingReminders();
+        quantimodoService.getUserVariablesDeferred();
+        quantimodoService.getUnits();
+        quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
+    };
     quantimodoService.refreshUser = function(){
         var deferred = $q.defer();
         quantimodoService.getUserFromApi(function(user){
@@ -1264,7 +1268,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.geLocalPrimaryOutcomeMeasurements = function(){
+    quantimodoService.getLocalPrimaryOutcomeMeasurements = function(){
         var primaryOutcomeVariableMeasurements = quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
         if(!primaryOutcomeVariableMeasurements) {primaryOutcomeVariableMeasurements = [];}
         var measurementsQueue = getPrimaryOutcomeMeasurementsFromQueue();
@@ -1316,7 +1320,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return defer.promise;
         }
         quantimodoService.getLocalStorageItemAsStringWithCallback('measurementsQueue', function(measurementsQueueString) {
-            quantimodoService.setLocalStorageItem('measurementsQueue', JSON.stringify([]));
             var parsedMeasurementsQueue = JSON.parse(measurementsQueueString);
             if(!parsedMeasurementsQueue || parsedMeasurementsQueue.length < 1){
                 if(successHandler){successHandler();}
@@ -5408,12 +5411,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     $ionicLoading.show();
                     quantimodoService.refreshUser().then(function(user){
                         $ionicLoading.hide();
-                        console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' +
-                            JSON.stringify(user));
+                        quantimodoService.syncAllUserData();
+                        console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user));
                     }, function(error){
                         $ionicLoading.hide();
-                        quantimodoService.reportError($state.current.name + ' could not refresh user because ' +
-                            JSON.stringify(error));
+                        quantimodoService.reportError($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                     });
                 }
             }).catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }

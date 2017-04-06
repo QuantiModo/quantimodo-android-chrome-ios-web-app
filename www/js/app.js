@@ -171,9 +171,7 @@ angular.module('starter',
                     allMeasurements.push(allMeasurementsObject);
                     localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
                 }
-                if(!localStorage[keyIdentifier+'measurementsQueue']){
-                    localStorage[keyIdentifier+'measurementsQueue'] = '[]';
-                } else {
+                if(localStorage[keyIdentifier+'measurementsQueue']){
                     var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
                     measurementsQueue.push(allMeasurementsObject);
                     localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);

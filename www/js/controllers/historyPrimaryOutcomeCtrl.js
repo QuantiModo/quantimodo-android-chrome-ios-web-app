@@ -9,12 +9,12 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 	};
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.refreshMeasurementHistory = function () {
-		$scope.history = quantimodoService.geLocalPrimaryOutcomeMeasurements();
+		$scope.history = quantimodoService.getLocalPrimaryOutcomeMeasurements();
 		if($rootScope.user){
 			$scope.showLoader($scope.syncDisplayText);
 			quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
 				$scope.hideLoader();
-				$scope.history = quantimodoService.geLocalPrimaryOutcomeMeasurements();
+				$scope.history = quantimodoService.getLocalPrimaryOutcomeMeasurements();
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
 			});
@@ -30,7 +30,7 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 	});
 	$scope.$on('updatePrimaryOutcomeHistory', function(){
 		console.debug($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
-		$scope.history = quantimodoService.geLocalPrimaryOutcomeMeasurements();
+		$scope.history = quantimodoService.getLocalPrimaryOutcomeMeasurements();
 	});
 	$scope.showActionSheet = function(measurement) {
 		$scope.state.measurement = measurement;

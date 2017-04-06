@@ -17,12 +17,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
     if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
     if(!$rootScope.user){
-        quantimodoService.refreshUser().then(function(){ $scope.syncEverything(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
+        quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
     }
     quantimodoService.backgroundGeolocationInit();
     quantimodoService.setupBugsnag();
     quantimodoService.getUserAndSetupGoogleAnalytics();
-    quantimodoService.refreshCommonVariables();
+    //quantimodoService.refreshCommonVariables();
     if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
     if(quantimodoService.getUrlParameter('refreshUser')){
         quantimodoService.clearLocalStorage();
@@ -33,8 +33,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     }
     if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
     if($rootScope.user){
-        quantimodoService.syncTrackingReminders();
-        quantimodoService.getUserVariablesDeferred();  // For getting the new chartsUrl links
+        //quantimodoService.syncTrackingReminders();
+        //quantimodoService.getUserVariablesDeferred();  // I think this slows loading
         if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
     }
     if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
@@ -651,20 +651,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $rootScope.syncDisplayText = '';
         $scope.loading = false;
         $ionicLoading.hide();
-    };
-    $scope.syncEverything = function () {
-        if(!$rootScope.syncedEverything && $rootScope.user){
-            console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
-            //quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-            if($rootScope.localNotificationsEnabled){
-                console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
-                quantimodoService.syncTrackingReminders();
-            }
-            quantimodoService.getUserVariablesDeferred();
-            quantimodoService.getUnits();
-            $rootScope.syncedEverything = true;
-            quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-        }
     };
     $scope.onTextClick = function ($event) {
         console.debug("Auto selecting text so the user doesn't have to press backspace...");
