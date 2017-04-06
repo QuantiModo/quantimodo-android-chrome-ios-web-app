@@ -36,7 +36,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         console.debug($state.current.name + ": beforeEnter");
         $rootScope.hideNavigationMenu = false;
         $rootScope.bloodPressure = {diastolicValue: null, systolicValue: null, show: false};
-        $rootScope.stateParams = $stateParams;
         if($stateParams.trackingReminder){$stateParams.reminderNotification = $stateParams.trackingReminder;}
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }

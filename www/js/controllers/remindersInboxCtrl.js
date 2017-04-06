@@ -46,7 +46,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		console.debug("RemindersInboxCtrl enter");
 		if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
-		$rootScope.stateParams = $stateParams;
+		$scope.stateParams = $stateParams;
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){$rootScope.variableCategoryName = $stateParams.variableCategoryName;
