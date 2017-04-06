@@ -1616,34 +1616,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
         } else { webDowngrade(); }
     };
-    var last = {bottom: true, top: false, left: true, right: false };
-    $scope.toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
-    $scope.getToastPosition = function() {
-        return Object.keys($scope.toastPosition).filter(function(pos) { return $scope.toastPosition[pos]; }).join(' ');
-    };
-    var undoInboxAction = function(){
-        var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
-        if(!notificationsSyncQueue){ return false; }
-        notificationsSyncQueue[0].hide = false;
-        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications',
-            notificationsSyncQueue[0]);
-        quantimodoService.deleteElementsOfLocalStorageItemByProperty('notificationsSyncQueue',
-            'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
-        $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
-    };
-    $scope.showUndoToast = function(lastAction) {
-        var toast = $mdToast.simple()
-            .textContent(lastAction)
-            .action('UNDO')
-            .highlightAction(true)
-            .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
-            .hideDelay(10000)
-            .position($scope.getToastPosition());
-        $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { undoInboxAction(); } });
-    };
-    $scope.showInfoToast = function(text) {
-        $mdToast.show($mdToast.simple().textContent(text).position($scope.getToastPosition()).hideDelay(3000));
-    };
+    var toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
+    var getToastPosition = function() {return Object.keys(toastPosition).filter(function(pos) { return toastPosition[pos]; }).join(' ');};
+    $scope.showInfoToast = function(text) {$mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));};
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
     $scope.copyChartsUrlToClipboard = function () {
         $scope.copyLinkText = 'Copied!';
