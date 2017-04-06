@@ -300,8 +300,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.onGenericHelpButtonPress = function () {$state.go('app.help');};
     $scope.onHelpButtonPress = function (title, helpText) {
-        if(!helpText){helpText = $rootScope.stateParams.helpText;}
-        if(!title){title = $rootScope.stateParams.title;}
         $rootScope.helpButtonPopup = $ionicPopup.show({
             title: title,
             //subTitle: '',

@@ -19,7 +19,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug("VariableSearchCtrl beforeEnter");
-        $rootScope.stateParams = $stateParams;
+        $scope.stateParams = $stateParams;
         if($stateParams.helpText){$scope.state.helpText = $stateParams.helpText;}
         if($stateParams.title){$scope.state.title = $stateParams.title;}
         if($stateParams.variableSearchPlaceholderText){$scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;}
@@ -107,9 +107,9 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             }
         } else {
-            $rootScope.stateParams.variableName = variableObject.name;
-            $rootScope.stateParams.variableObject = variableObject;
-            $state.go($stateParams.nextState, $rootScope.stateParams);
+            $scope.stateParams.variableName = variableObject.name;
+            $scope.stateParams.variableObject = variableObject;
+            $state.go($stateParams.nextState, $scope.stateParams);
         }
     };
     $scope.goToStateFromVariableSearch = function(stateName){$state.go(stateName, $stateParams);};
@@ -263,8 +263,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
 
         console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
         if ($stateParams.nextState) {
-            $rootScope.stateParams.variableObject = variableObject;
-            $state.go($stateParams.nextState, $rootScope.stateParams);
+            $scope.stateParams.variableObject = variableObject;
+            $state.go($stateParams.nextState, $scope.stateParams);
         }
     };
     function setHelpText() {
@@ -273,7 +273,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 "that you'd like to tag " + $stateParams.userTaggedVariableObject.name.toUpperCase() + " with.  Then " +
                 "when your tag variable is analyzed, measurements from " +
                 $stateParams.userTaggedVariableObject.name.toUpperCase() + " will be included.";
-            $rootScope.stateParams.helpText = " <br><br> Search for a variable " +
+            $scope.stateParams.helpText = " <br><br> Search for a variable " +
                 "that you'd like to tag with " + $stateParams.userTaggedVariableObject.name.toUpperCase() + ".  Then " +
                 "when " + $stateParams.userTaggedVariableObject.name.toUpperCase() +
                 " is analyzed, measurements from your selected tagged variable will be included. <br><br> For instance, if " +
@@ -287,7 +287,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 "that you'd like to tag with " + $stateParams.userTagVariableObject.name.toUpperCase() + ".  Then " +
                 "when " + $stateParams.userTagVariableObject.name.toUpperCase() +
                 " is analyzed, measurements from your selected tagged variable will be included.";
-            $rootScope.stateParams.helpText = $scope.state.helpText + " <br><br> For instance, if " +
+            $scope.stateParams.helpText = $scope.state.helpText + " <br><br> For instance, if " +
                 "your currently selected variable were Sugar, you could search for Coke and tag it with 37 grams of " +
                 "sugar per serving. Then coke measurements would be included when analyzing to see how sugar affects you.  <br><br>" +
                 "If your current parent tag variable were Inflammatory Pain, you could search for Back Pain and then your " +

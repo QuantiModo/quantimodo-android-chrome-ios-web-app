@@ -33,7 +33,6 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     $scope.init = function(){
         $rootScope.hideNavigationMenu = true;
         console.debug($state.current.name + ' initializing...');
-        $rootScope.stateParams = $stateParams;
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 

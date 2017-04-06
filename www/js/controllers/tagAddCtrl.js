@@ -16,22 +16,22 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
     // delete measurement
     $scope.deleteTag = function(){
         var userTagData = {
-            userTagVariableId: $rootScope.stateParams.userTagVariableObject.id,
-            userTaggedVariableId: $rootScope.stateParams.userTaggedVariableObject.id
+            userTagVariableId: $scope.stateParams.userTagVariableObject.id,
+            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id
         };
         $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
 
         if($rootScope.variableObject.userTagVariables){
             $rootScope.variableObject.userTagVariables =
                 $rootScope.variableObject.userTagVariables.filter(function( obj ) {
-                    return obj.id !== $rootScope.stateParams.userTagVariableObject.id;
+                    return obj.id !== $scope.stateParams.userTagVariableObject.id;
                 });
         }
 
         if($rootScope.variableObject.userTaggedVariables){
             $rootScope.variableObject.userTaggedVariables =
                 $rootScope.variableObject.userTaggedVariables.filter(function( obj ) {
-                    return obj.id !== $rootScope.stateParams.userTaggedVariableObject.id;
+                    return obj.id !== $scope.stateParams.userTaggedVariableObject.id;
                 });
         }
 
@@ -47,39 +47,39 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
     };
     $scope.done = function(){
 
-        if(!$rootScope.stateParams.tagConversionFactor){
-            $rootScope.stateParams.tagConversionFactor = 1;
+        if(!$scope.stateParams.tagConversionFactor){
+            $scope.stateParams.tagConversionFactor = 1;
         }
         var userTagData = {
-            userTagVariableId: $rootScope.stateParams.userTagVariableObject.id,
-            userTaggedVariableId: $rootScope.stateParams.userTaggedVariableObject.id,
-            conversionFactor: $rootScope.stateParams.tagConversionFactor
+            userTagVariableId: $scope.stateParams.userTagVariableObject.id,
+            userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id,
+            conversionFactor: $scope.stateParams.tagConversionFactor
         };
 
-        if($rootScope.variableObject.id === $rootScope.stateParams.userTagVariableObject.id){
-            $rootScope.stateParams.userTaggedVariableObject.tagConversionFactor = $rootScope.stateParams.tagConversionFactor;
-            $rootScope.stateParams.userTaggedVariableObject.tagDisplayText = $rootScope.stateParams.tagConversionFactor +
-                ' ' + $rootScope.stateParams.userTagVariableObject.unitName + ' of ' +
-                $rootScope.stateParams.userTagVariableObject.name + ' per ' +
-                $rootScope.stateParams.userTaggedVariableObject.unitName + ' of ' +
-                $rootScope.stateParams.userTaggedVariableObject.name;
+        if($rootScope.variableObject.id === $scope.stateParams.userTagVariableObject.id){
+            $scope.stateParams.userTaggedVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
+            $scope.stateParams.userTaggedVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
+                ' ' + $scope.stateParams.userTagVariableObject.unitName + ' of ' +
+                $scope.stateParams.userTagVariableObject.name + ' per ' +
+                $scope.stateParams.userTaggedVariableObject.unitName + ' of ' +
+                $scope.stateParams.userTaggedVariableObject.name;
             if(!$rootScope.variableObject.userTaggedVariables){
                 $rootScope.variableObject.userTaggedVariables = [];
             }
-            $rootScope.variableObject.userTaggedVariables.push($rootScope.stateParams.userTaggedVariableObject);
+            $rootScope.variableObject.userTaggedVariables.push($scope.stateParams.userTaggedVariableObject);
         }
 
-        if($rootScope.variableObject.id === $rootScope.stateParams.userTaggedVariableObject.id){
-            $rootScope.stateParams.userTagVariableObject.tagConversionFactor = $rootScope.stateParams.tagConversionFactor;
-            $rootScope.stateParams.userTagVariableObject.tagDisplayText = $rootScope.stateParams.tagConversionFactor +
-                ' ' + $rootScope.stateParams.userTagVariableObject.unitName + ' of ' +
-                $rootScope.stateParams.userTagVariableObject.name + ' per ' +
-                $rootScope.stateParams.userTaggedVariableObject.unitName + ' of ' +
-                $rootScope.stateParams.userTaggedVariableObject.name;
+        if($rootScope.variableObject.id === $scope.stateParams.userTaggedVariableObject.id){
+            $scope.stateParams.userTagVariableObject.tagConversionFactor = $scope.stateParams.tagConversionFactor;
+            $scope.stateParams.userTagVariableObject.tagDisplayText = $scope.stateParams.tagConversionFactor +
+                ' ' + $scope.stateParams.userTagVariableObject.unitName + ' of ' +
+                $scope.stateParams.userTagVariableObject.name + ' per ' +
+                $scope.stateParams.userTaggedVariableObject.unitName + ' of ' +
+                $scope.stateParams.userTaggedVariableObject.name;
             if(!$rootScope.variableObject.userTagVariables){
                 $rootScope.variableObject.userTagVariables = [];
             }
-            $rootScope.variableObject.userTagVariables.push($rootScope.stateParams.userTagVariableObject);
+            $rootScope.variableObject.userTagVariables.push($scope.stateParams.userTagVariableObject);
         }
 
         $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
@@ -102,23 +102,23 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
     });
     $scope.$on('$ionicView.beforeEnter', function(){
         $scope.state.title = 'Record a Tag';
-        $rootScope.stateParams = $stateParams;
-        if(!$rootScope.stateParams.userTagVariableObject){
+        $scope.stateParams = $stateParams;
+        if(!$scope.stateParams.userTagVariableObject){
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
             quantimodoService.getUserVariableByNameDeferred('Anxiety').then(function (variable) {
-                $rootScope.stateParams.userTagVariableObject = variable;
+                $scope.stateParams.userTagVariableObject = variable;
                 $ionicLoading.hide();
             });
         }
 
-        if(!$rootScope.stateParams.userTaggedVariableObject){
+        if(!$scope.stateParams.userTaggedVariableObject){
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
             quantimodoService.getUserVariableByNameDeferred('Overall Mood').then(function (variable) {
-                $rootScope.stateParams.userTaggedVariableObject = variable;
+                $scope.stateParams.userTaggedVariableObject = variable;
                 $ionicLoading.hide();
             });
         }
