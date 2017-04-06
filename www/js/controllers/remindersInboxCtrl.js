@@ -1,5 +1,5 @@
 angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService, $ionicLoading) {
+											   $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast) {
 	$scope.controller_name = "RemindersInboxCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
@@ -382,4 +382,24 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	function getCorrelations() {
         quantimodoService.getUserCorrelationsDeferred({limit: 10, fallbackToAggregateCorrelations: true}).then(function (correlationObjects) {$scope.state.correlationObjects = correlationObjects;});
     }
+    var undoToastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
+    var getUndoToastPosition = function() {return Object.keys(undoToastPosition).filter(function(pos) { return undoToastPosition[pos]; }).join(' ');};
+    var undoInboxAction = function(){
+        var notificationsSyncQueue = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
+        if(!notificationsSyncQueue){ return false; }
+        notificationsSyncQueue[0].hide = false;
+        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderNotifications', notificationsSyncQueue[0]);
+        quantimodoService.deleteElementsOfLocalStorageItemByProperty('notificationsSyncQueue', 'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
+        getTrackingReminderNotifications();
+    };
+    $scope.showUndoToast = function(lastAction) {
+        var toast = $mdToast.simple()
+            .textContent(lastAction)
+            .action('UNDO')
+            .highlightAction(true)
+            .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
+            .hideDelay(10000)
+            .position(getUndoToastPosition());
+        $mdToast.show(toast).then(function(response) {  if ( response === 'ok' ) { undoInboxAction(); } });
+    };
 });
