@@ -150,13 +150,22 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				hideInboxLoader();
 			});
 	};
-	var getWeekdayChartAndFavoritesIfNecessary = function () {
-		if(!$scope.state.numberOfDisplayedNotifications && !$scope.weekdayChartConfig){
+	function getWeekdayCharts() {
+        if(!$scope.weekdayChartConfig){
             quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-			quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
-			quantimodoService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
-				quantimodoService.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
-            getCorrelations();
+            quantimodoService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, quantimodoService.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
+        }
+    };
+	function getFavorites() {
+		if(!$scope.favoritesArray){
+            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
+		}
+    };
+	var getFallbackInboxContent = function () {
+		if(!$scope.state.numberOfDisplayedNotifications){
+			getFavorites();
+			getWeekdayCharts();
+            getDiscoveries();
 		}
 	};
 	var closeWindowIfNecessary = function () {
@@ -169,7 +178,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$rootScope.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
 		closeWindowIfNecessary();
-		getWeekdayChartAndFavoritesIfNecessary();
+		getFallbackInboxContent();
 	};
 	var enlargeChromePopupIfNecessary = function () {
 		if($rootScope.alreadyEnlargedWindow){return;}
@@ -252,7 +261,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		} else {
 			$scope.filteredTrackingReminderNotifications = quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 			console.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
-			getWeekdayChartAndFavoritesIfNecessary();
+			getFallbackInboxContent();
 		}
 		hideInboxLoader();
 	};
@@ -267,13 +276,13 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			.then(function (trackingReminderNotifications) {
 				$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 				$scope.filteredTrackingReminderNotifications = quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-				getWeekdayChartAndFavoritesIfNecessary();
+				getFallbackInboxContent();
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
 				hideInboxLoader();
 				$scope.loading = false;
 			}, function(error){
-				getWeekdayChartAndFavoritesIfNecessary();
+				getFallbackInboxContent();
 				console.error(error);
 				hideInboxLoader();
 				console.error("failed to get reminder notifications!");
@@ -295,14 +304,13 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	$scope.refreshTrackingReminderNotifications = function () {
 		showLoader();
-		if($stateParams.today){getTrackingReminderNotifications();} else {
-			quantimodoService.refreshTrackingReminderNotifications().then(function(){
-				getTrackingReminderNotifications();
-			}, function (error) {
-				console.error('$scope.refreshTrackingReminderNotifications: ' + error);
-				hideInboxLoader();
-			});
-		}
+		quantimodoService.refreshTrackingReminderNotifications().then(function(){
+            hideInboxLoader();
+			getTrackingReminderNotifications();
+		}, function (error) {
+			console.error('$scope.refreshTrackingReminderNotifications: ' + error);
+			hideInboxLoader();
+		});
 	};
 	$scope.editMeasurement = function(trackingReminderNotification){
 		enlargeChromePopupIfNecessary();
@@ -379,8 +387,11 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$scope.defaultHelpCards = $scope.defaultHelpCards.filter(function( obj ) {return obj.id !== helpCard.id;});
 		quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', helpCard.id);
 	};
-	function getCorrelations() {
-        quantimodoService.getUserCorrelationsDeferred({limit: 10, fallbackToAggregateCorrelations: true}).then(function (correlationObjects) {$scope.state.correlationObjects = correlationObjects;});
+	function getDiscoveries() {
+		if(!$scope.state.correlationObjects){
+            quantimodoService.getUserCorrelationsDeferred({limit: 10, fallbackToAggregateCorrelations: true})
+				.then(function (correlationObjects) {$scope.state.correlationObjects = correlationObjects;});
+		}
     }
     var undoToastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
     var getUndoToastPosition = function() {return Object.keys(undoToastPosition).filter(function(pos) { return undoToastPosition[pos]; }).join(' ');};
