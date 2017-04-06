@@ -160,31 +160,20 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? <br><br> You can ' +
             'make them private again at any time on this study page.'
         });
-
         confirmPopup.then(function(res) {
             if(res) {
                 correlationObject.shareUserMeasurements = true;
-                $rootScope.correlationObject.shareUserMeasurements = true;
                 quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
-                var body = {
-                    causeVariableId: correlationObject.causeVariableId,
-                    effectVariableId: correlationObject.effectVariableId,
-                    shareUserMeasurements: true
-                };
+                var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
                 $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
                 quantimodoService.postStudyDeferred(body).then(function () {
                     $ionicLoading.hide();
-                    if(sharingUrl){
-                        quantimodoService.openSharingUrl(sharingUrl);
-                    }
+                    if(sharingUrl){quantimodoService.openSharingUrl(sharingUrl);}
                 }, function (error) {
                     $ionicLoading.hide();
                     console.error(error);
                 });
-            } else {
-                correlationObject.shareUserMeasurements = false;
-                console.log('You are not sure');
-            }
+            } else {correlationObject.shareUserMeasurements = false;}
         });
     };
     var showUnshareStudyConfirmation = function(correlationObject) {
@@ -197,17 +186,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         confirmPopup.then(function(res) {
             if(res) {
                 correlationObject.shareUserMeasurements = false;
-                var body = {
-                    causeVariableId: correlationObject.causeVariableId,
-                    effectVariableId: correlationObject.effectVariableId,
-                    shareUserMeasurements: false
-                };
-                quantimodoService.postStudyDeferred(body).then(function () {
-                }, function (error) {console.error(error);});
-            } else {
-                correlationObject.shareUserMeasurements = true;
-                console.log('You are not sure');
-            }
+                var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
+                quantimodoService.postStudyDeferred(body);
+            } else {correlationObject.shareUserMeasurements = true;}
         });
     };
     $scope.toggleStudyShare = function (correlationObject) {

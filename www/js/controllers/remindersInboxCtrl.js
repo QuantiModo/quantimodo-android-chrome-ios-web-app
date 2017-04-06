@@ -170,9 +170,8 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             quantimodoService.syncPrimaryOutcomeVariableMeasurements();
 			quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
 			quantimodoService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
-				quantimodoService.getPrimaryOutcomeVariable()).then(function (chartConfig) {
-				$scope.weekdayChartConfig = chartConfig;
-			});
+				quantimodoService.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
+            getCorrelations();
 		}
 	};
 	var closeWindowIfNecessary = function () {
@@ -397,4 +396,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$scope.defaultHelpCards = $scope.defaultHelpCards.filter(function( obj ) {return obj.id !== helpCard.id;});
 		quantimodoService.deleteElementOfLocalStorageItemById('defaultHelpCards', helpCard.id);
 	};
+	function getCorrelations() {
+        quantimodoService.getUserCorrelationsDeferred({limit: 10}).then(function (correlationObjects) {$scope.state.correlationObjects = correlationObjects;});
+    }
 });
