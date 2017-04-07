@@ -29,7 +29,7 @@ angular.module('starter',
     ]
 )
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {
-    $rootScope.appVersion = "2.5.1.0";
+    $rootScope.appVersion = "2.5.2.0";
     quantimodoService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
