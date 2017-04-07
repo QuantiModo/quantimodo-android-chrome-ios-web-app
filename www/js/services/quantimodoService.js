@@ -1167,7 +1167,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             measurementSynonymSingularLowercase : "physique measurement",
             ionIcon: "ion-ios-body",
             imageUrl: 'img/features/slim-down.png',
-            moreInfo: "I can gives you easy access to your weight and other vitals. You can manually " +
+            moreInfo: "I can give you easy access to your weight and other vitals. You can manually " +
             "enter weight, but I recommend using a Fitbit or Withings wifi scale for the most detailed data. I can " +
             "create a beautiful graph of your weight changes, so you can easily keep track of " +
             "whether you're hitting your goals. Body weight doesn't tell the whole story, so I also " +
