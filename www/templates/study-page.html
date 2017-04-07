@@ -155,14 +155,7 @@
                 </p>
                 <br>
                 <p> Want to help advance citizen science? </p>
-                <div class="row" >
-                    <div class="button-bar">
-                        <button class="button button-clear button-assertive" style="font-size: 22px;"
-                                ng-click="goToState('app.studyJoin')">
-                            <i class="ion-ios-flask"> &nbsp; Join this Study &nbsp;</i>
-                        </button>
-                    </div>
-                </div>
+                <div ng-include="'templates/buttons/join-study-button.html'"></div>
                 <div>
                     <p style="font-size: 16px; line-height: 1; text-align: center"> or share it </p>
                     <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
