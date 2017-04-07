@@ -2603,9 +2603,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getCorrelationsDeferred = function (params) {
         var deferred = $q.defer();
-        var cachedCorrelations = quantimodoService.getCachedResponse('correlations', params);
-        if(cachedCorrelations){
-            deferred.resolve(cachedCorrelations);
+        var cachedCorrelationsResponseData = quantimodoService.getCachedResponse('correlations', params);
+        if(cachedCorrelationsResponseData){
+            deferred.resolve(cachedCorrelationsResponseData);
             return deferred.promise;
         }
         quantimodoService.getUserCorrelationsFromApi(params, function(response){
@@ -5347,7 +5347,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
         if(ignoreExpiration){cacheNotExpired = true;}
         if(!cacheNotExpired){return false;}
-        if(!cachedResponse.response.length){return false;}
+        //if(!cachedResponse.response.length){return false;} // Doesn't work if response is an object instead of array
         return cachedResponse.response;
     };
     quantimodoService.storeCachedResponse = function(requestName, params, response){
