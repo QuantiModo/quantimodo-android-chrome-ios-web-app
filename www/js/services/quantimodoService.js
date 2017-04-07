@@ -7553,7 +7553,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         recordMeasurement: { text: '<i class="icon ion-compose"></i>Record Measurement'},
         addReminder: { text: '<i class="icon ' + quantimodoService.ionIcons.reminder + '"></i>Add Reminder'},
         charts: { text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
-
+    };
+    quantimodoService.addImagePaths = function(object){
+        if(object.variableCategoryName){
+            var pathPrefix = 'img/variable_categories/' + object.variableCategoryName.toLowerCase().replace(' ', '-');
+            if(!object.pngPath){object.pngPath = pathPrefix + '.png';}
+            if(!object.svgPath){object.svgPath = pathPrefix + '.svg';}
+        }
+        return object;
     };
     return quantimodoService;
 });
