@@ -15,60 +15,6 @@
     </ion-header-bar>
     <ion-content  style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
         <ion-refresher on-refresh="refreshList()"></ion-refresher>
-        <div class="card" ng-show="state.correlationObjects.length">
-            <div class="item item-avatar">
-                <i class="icon positive {{state.explanationIcon}}"
-                   style="position: absolute;
-							top: 15px;
-							left: 15px;
-							font-size: 36px;
-							max-width: 40px;
-							max-height: 40px;
-							width: 100%;
-							border-radius: 4px;"
-                ></i>
-                <p style="
-					  height: 40px;
-					  line-height: 40px;
-					  white-space: nowrap;
-					  color: black;
-					font-size: 18px;">
-                    {{state.explanationHeader}}
-                </p>
-            </div>
-            <div class="item item-body" style="text-align: center;">
-                {{state.explanationText}}
-            </div>
-            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
-                 class="item item-body"
-                 style="text-align: center;">
-                Results in order of descending statistical significance.
-            </div>
-            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-qmScore'"
-                 class="item item-body"
-                 style="text-align: center;">
-                Results in order of descending QM Score which is a combination of effect size and statistical significance.
-            </div>
-            <div ng-if="state.requestParams.sort && state.requestParams.sort === '-correlationCoefficient'"
-                 class="item item-body"
-                 style="text-align: center;">
-                Results in order of descending predictive correlation.  (So you'll probably just see positive correlations.)
-            </div>
-            <div ng-if="state.requestParams.sort && state.requestParams.sort === 'correlationCoefficient'"
-                 class="item item-body"
-                 style="text-align: center;">
-                Results in order of ascending predictive correlation.  (So you'll probably just see negative correlations.)
-            </div>
-        </div>
-        <div ng-show="searching" style="text-align: center">
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <ion-spinner icon="android"></ion-spinner>
-            <br>
-        </div>
         <div ng-include="'templates/fragments/correlations-list-fragment.html'"></div>
         <div class="list card"  ng-show="state.noCorrelations">
             <div class="item" style="padding-bottom:0px;">

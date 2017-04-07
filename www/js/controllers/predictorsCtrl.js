@@ -4,22 +4,41 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     $scope.state = {
         requestParams: $stateParams.requestParams,
         variableName: quantimodoService.getPrimaryOutcomeVariable().name,
-        increasingDecreasing: '',
         correlationObjects: [],
-        showLoadMoreButton: false,
+        showLoadMoreButton: false
     };
     $scope.data = { "search" : '' };
     $scope.filterSearchQuery = '';
     $scope.searching = true;
     $scope.showSearchFilterBox = false;
     $rootScope.showFilterBarSearchIcon = true;
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        init();
+    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+        $rootScope.hideNavigationMenu = false;
+        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+        if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
+        $scope.state.requestParams.aggregated = quantimodoService.getUrlParameter('aggregated');
+        if(quantimodoService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName', window.location.href, true); }
+        if(quantimodoService.getUrlParameter('effectVariableName')){ $stateParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName', window.location.href, true); }
+        if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = quantimodoService.getPrimaryOutcomeVariable().name; }
+        $scope.state.requestParams.offset = 0;
+        $scope.state.requestParams.limit = 10;
+        if ($stateParams.causeVariableName){
+            $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
+            $rootScope.variableName = $stateParams.causeVariableName;
+            $scope.outcomeList = true;
+        }
+        if ($stateParams.effectVariableName) {
+            $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
+            $rootScope.variableName = $stateParams.effectVariableName;
+            $scope.predictorList = true;
+        }
+        if($stateParams.valence === 'positive'){$scope.state.requestParams.correlationCoefficient = "(gt)0";}
+        if($stateParams.valence === 'negative'){$scope.state.requestParams.correlationCoefficient = "(lt)0";}
+        if($stateParams.effectVariableName){$scope.state.title = "Predictors";} else {$scope.state.title = "Outcomes";}
+        populateCorrelationList();
     });
-    $scope.$on('$ionicView.enter', function (e) { });
-    $rootScope.toggleFilterBar = function () {
-        $scope.showSearchFilterBox = !$scope.showSearchFilterBox;
-    };
+    $rootScope.toggleFilterBar = function () {$scope.showSearchFilterBox = !$scope.showSearchFilterBox;};
     $scope.filterSearch = function () {
         console.debug($scope.data.search);
         if($scope.outcomeList) {
@@ -33,66 +52,23 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         if($scope.outcomeList) { $stateParams.effectVariableName = '**' + $scope.data.search + '**';
         } else { $stateParams.causeVariableName = '**' + $scope.data.search + '**'; }
         $scope.state.requestParams.offset = null;
-        populateUserCorrelationList();
+        populateCorrelationList();
     };
     function showLoadMoreButtonIfNecessary() {
         if($scope.state.correlationObjects.length && $scope.state.correlationObjects.length%$scope.state.requestParams.limit === 0){
             $scope.state.showLoadMoreButton = true;
-            return;
+        } else {
+            $scope.state.showLoadMoreButton = false;
         }
-        $scope.state.showLoadMoreButton = false;
     }
-    function populateAggregatedCorrelationList() {
+    function populateCorrelationList() {
         $scope.searching = true;
-        setupAggregatedPredictors();
-        quantimodoService.getAggregatedCorrelationsDeferred($scope.state.requestParams)
-            .then(function (correlationObjects) {
-                if(correlationObjects.length) {
-                    if($scope.state.requestParams.offset){ $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
-                    } else { $scope.state.correlationObjects = correlationObjects; }
-                    showLoadMoreButtonIfNecessary();
-                    $scope.searching = false;
-                    $ionicLoading.hide();
-                    $scope.$broadcast('scroll.infiniteScrollComplete');
-                } else {
-                    quantimodoService.getUserCorrelationsDeferred($scope.state.requestParams)
-                        .then(function (correlationObjects) {
-                            $ionicLoading.hide();
-                            $scope.searching = false;
-                            $scope.$broadcast('scroll.infiniteScrollComplete');
-                            if(correlationObjects.length) {
-                                setupUserPredictors();
-                                if($scope.state.requestParams.offset){
-                                    $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
-                                } else {
-                                    $scope.state.correlationObjects = correlationObjects;
-                                }
-                                showLoadMoreButtonIfNecessary();
-                            } else {
-                                $scope.state.noCorrelations = true;
-                            }
-                        });
-                }
-            }, function (error) {
-                $ionicLoading.hide();
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                $scope.searching = false;
-                console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
-            });
-    }
-    function populateUserCorrelationList() {
-        $scope.searching = true;
-        setupUserPredictors();
-        if(typeof $scope.state.requestParams.fallbackToAggregatedCorrelations === "undefined"){
-            $scope.state.requestParams.fallbackToAggregatedCorrelations = true;
-        }
-        quantimodoService.getUserCorrelationsDeferred($scope.state.requestParams)
-            .then(function (correlationObjects) {
-                if(correlationObjects.length) {
-                    if($scope.state.requestParams.offset){ $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
-                    } else { $scope.state.correlationObjects = correlationObjects; }
-                    if(!$scope.state.correlationObjects[0].userId){ setupAggregatedPredictors(); }
+        quantimodoService.getCorrelationsDeferred($scope.state.requestParams)
+            .then(function (data) {
+                if(data.correlations.length) {
+                    $scope.state.correlationsExplanation = data.explanation;
+                    if($scope.state.requestParams.offset){$scope.state.correlationObjects = $scope.state.correlationObjects.concat(data.correlations);
+                    } else {$scope.state.correlationObjects = data.correlations;}
                     showLoadMoreButtonIfNecessary();
                 } else {
                     $scope.state.noCorrelations = true;
@@ -112,45 +88,13 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         $ionicLoading.show();
         if($scope.state.correlationObjects.length){
             $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
-            populateUserCorrelationList();
+            populateCorrelationList();
         }
     };
     $scope.refreshList = function () {
         quantimodoService.clearCorrelationCache();
-        init();
+        populateCorrelationList();
     };
-    function setupUserPredictors() {
-        if($stateParams.effectVariableName){
-            $scope.state.explanationHeader = $stateParams.effectVariableName + " Predictors";
-            $scope.state.explanationIcon = "ion-ios-person";
-            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
-                ' your ' + $rootScope.variableName + ' based on your own data.  ' +
-                'Want more accurate results? Add some reminders and start tracking!';
-        } else { setupUserOutcomes(); }
-    }
-    function setupAggregatedPredictors() {
-        if($stateParams.effectVariableName){
-            $scope.state.explanationHeader = $stateParams.effectVariableName + " Predictors";
-            $scope.state.explanationIcon = "ion-ios-people";
-            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
-                ' ' + $rootScope.variableName + ' for the average user.  ' +
-            'Want PERSONALIZED results? Add some reminders and start tracking!';
-        } else { setupAggregatedOutcomes(); }
-    }
-    function setupUserOutcomes() {
-        $scope.state.explanationHeader = $stateParams.causeVariableName + " Outcomes";
-        $scope.state.explanationIcon = "ion-ios-person";
-        $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
-            ' your ' + $rootScope.variableName + ' based on your own data.  ' +
-            'Want more accurate results? Add some reminders and start tracking!';
-    }
-    function setupAggregatedOutcomes() {
-        $scope.state.explanationHeader = $stateParams.causeVariableName + " Outcomes";
-        $scope.state.explanationIcon = "ion-ios-people";
-        $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
-            ' ' + $rootScope.variableName + ' for the average user.  ' +
-            'Want PERSONALIZED results? Add some reminders and start tracking!';
-    }
     $rootScope.showActionSheetMenu = function() {
         // Show the action sheet
         var hideSheet = $ionicActionSheet.show({
@@ -167,60 +111,26 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 if(index === 0){
                     console.debug("Sort by Statistical Significance");
                     $scope.state.requestParams.sort = '-statisticalSignificance';
-                    populateUserCorrelationList();
+                    populateCorrelationList();
                 }
                 if(index === 1){
                     console.debug("Sort by QM Score");
                     $scope.state.requestParams.sort = '-qmScore';
-                    populateUserCorrelationList();
+                    populateCorrelationList();
                 }
                 if(index === 2){
                     console.debug("Ascending Predictive Correlation");
                     $scope.state.requestParams.sort = 'correlationCoefficient';
-                    populateUserCorrelationList();
+                    populateCorrelationList();
                 }
                 if(index === 3){
                     console.debug("Descending Predictive Correlation");
                     $scope.state.requestParams.sort = '-correlationCoefficient';
-                    populateUserCorrelationList();
+                    populateCorrelationList();
                 }
                 return true;
             }
         });
-    };
-    var init = function(){
-        $rootScope.hideNavigationMenu = false;
-        console.debug($state.current.name + ' initializing...');
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-        if(quantimodoService.getUrlParameter('aggregated')){ $stateParams.aggregated = quantimodoService.getUrlParameter('aggregated'); }
-        if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
-        if(quantimodoService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName', window.location.href, true); }
-        if(quantimodoService.getUrlParameter('effectVariableName')){ $stateParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName', window.location.href, true); }
-        if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = quantimodoService.getPrimaryOutcomeVariable().name; }
-        $scope.state.requestParams.offset = 0;
-        $scope.state.requestParams.limit = 10;
-        if ($stateParams.causeVariableName){
-            $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
-            $rootScope.variableName = $stateParams.causeVariableName;
-            $scope.outcomeList = true;
-        }
-        if ($stateParams.effectVariableName) {
-            $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
-            $rootScope.variableName = $stateParams.effectVariableName;
-            $scope.predictorList = true;
-        }
-        if($stateParams.effectVariableName){
-            $scope.state.title = "Predictors";
-            if($stateParams.valence === 'positive'){
-                $scope.state.increasingDecreasing = 'INCREASING';
-                $scope.state.requestParams.correlationCoefficient = "(gt)0";
-            } else if($stateParams.valence === 'negative'){
-                $scope.state.increasingDecreasing = 'DECREASING';
-                $scope.state.requestParams.correlationCoefficient = "(lt)0";
-            }
-        } else { $scope.state.title = "Outcomes"; }
-        if($stateParams.aggregated){ populateAggregatedCorrelationList(); } else { populateUserCorrelationList(); }
     };
     $scope.openStore = function(name){
         console.debug("open store for ", name); // make url
@@ -276,8 +186,8 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 requestParams.effectVariableName = $stateParams.effectVariableName;
                 requestParams.causeVariableName = "**" + query + "**";
             }
-            quantimodoService.getUserCorrelationsDeferred(requestParams)
-                .then(function (results) { deferred.resolve(loadAll(results)); }, function (error) { deferred.reject(error); });
+            quantimodoService.getCorrelationsDeferred(requestParams)
+                .then(function (data) { deferred.resolve(loadAll(data.correlations)); }, function (error) { deferred.reject(error); });
             return deferred.promise;
         }
         function searchTextChange(text) { $log.debug('Text changed to ' + text); }

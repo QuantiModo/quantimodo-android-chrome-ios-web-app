@@ -389,8 +389,11 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	function getDiscoveries() {
 		if(!$scope.state.correlationObjects){
-            quantimodoService.getUserCorrelationsDeferred({limit: 10, fallbackToAggregateCorrelations: true})
-				.then(function (correlationObjects) {$scope.state.correlationObjects = correlationObjects;});
+            quantimodoService.getCorrelationsDeferred({limit: 10, fallbackToAggregateCorrelations: true})
+				.then(function (data) {
+					$scope.state.correlationsExplanation = data.explanation;
+					$scope.state.correlationObjects = data.correlations;
+				});
 		}
     }
     var undoToastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });

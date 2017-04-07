@@ -307,7 +307,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getUserCorrelationsFromApi = function (params, successHandler, errorHandler) {
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
-        quantimodoService.get('api/v1/correlations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler);
+        quantimodoService.get('api/v3/correlations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler);
     };
     quantimodoService.postCorrelationToApi = function(correlationSet, successHandler ,errorHandler){
         quantimodoService.post('api/v1/correlations', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
@@ -1773,8 +1773,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 }
             }
-            return false;
-        } else {return false;}
+        }
+        return null;
     };
     quantimodoService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
@@ -2572,7 +2572,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.clearCorrelationCache = function(){
         quantimodoService.deleteCachedResponse('aggregatedCorrelations');
-        quantimodoService.deleteCachedResponse('userCorrelations');
+        quantimodoService.deleteCachedResponse('correlations');
     };
     quantimodoService.getAggregatedCorrelationsDeferred = function(params){
         var deferred = $q.defer();
@@ -2601,17 +2601,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.getUserCorrelationsDeferred = function (params) {
+    quantimodoService.getCorrelationsDeferred = function (params) {
         var deferred = $q.defer();
-        var cachedCorrelations = quantimodoService.getCachedResponse('userCorrelations', params);
+        var cachedCorrelations = quantimodoService.getCachedResponse('correlations', params);
         if(cachedCorrelations){
             deferred.resolve(cachedCorrelations);
             return deferred.promise;
         }
-        quantimodoService.getUserCorrelationsFromApi(params, function(correlationObjects){
-            correlationObjects = useLocalImages(correlationObjects);
-            quantimodoService.storeCachedResponse('userCorrelations', params, correlationObjects);
-            deferred.resolve(correlationObjects);
+        quantimodoService.getUserCorrelationsFromApi(params, function(response){
+            response.data.correlations = useLocalImages(response.data.correlations);
+            quantimodoService.storeCachedResponse('correlations', params, response.data);
+            deferred.resolve(response.data);
         }, function(error){
             if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
             deferred.reject(error);
@@ -2621,9 +2621,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.postVoteDeferred = function(correlationObject){
         var deferred = $q.defer();
         quantimodoService.postVoteToApi(correlationObject, function(response){
-            quantimodoService.deleteCachedResponse('userCorrelations');
-            quantimodoService.deleteCachedResponse('aggregatedCorrelations');
-            console.debug("postVote response", response);
+            quantimodoService.clearCorrelationCache();
             deferred.resolve(true);
         }, function(error){
             console.error("postVote response", error);
@@ -2634,9 +2632,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.deleteVoteDeferred = function(correlationObject){
         var deferred = $q.defer();
         quantimodoService.deleteVoteToApi(correlationObject, function(response){
-            quantimodoService.deleteCachedResponse('userCorrelations');
-            quantimodoService.deleteCachedResponse('aggregatedCorrelations');
-            console.debug("deleteVote response", response);
+            quantimodoService.clearCorrelationCache();
             deferred.resolve(true);
         }, function(error){
             console.error("deleteVote response", error);
