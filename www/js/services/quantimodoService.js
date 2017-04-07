@@ -7252,7 +7252,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(config.appSettings.appType === 'medication'){
             return {
                 button1 : {
-                    icon: 'ion-android-notifications-none',
+                    icon: quantimodoService.ionIcons.reminder,
                         label: 'Add a Reminder',
                         stateAndParameters: "'app.reminderSearch'"
                 },
@@ -7544,13 +7544,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return variableObject;
     };
     quantimodoService.ionIcons = {
-        history: 'ion-ios-list-outline'
+        history: 'ion-ios-list-outline',
+        reminder: 'ion-android-notifications-none'
     };
     quantimodoService.actionSheetButtons = {
         history: { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>History'},
         analysisSettings: { text: '<i class="icon ion-settings"></i>' + 'Analysis Settings'},
         recordMeasurement: { text: '<i class="icon ion-compose"></i>Record Measurement'},
-        addReminder: { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
+        addReminder: { text: '<i class="icon ' + quantimodoService.ionIcons.reminder + '"></i>Add Reminder'},
         charts: { text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
 
     };

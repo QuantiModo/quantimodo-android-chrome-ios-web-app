@@ -41,8 +41,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
 			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add new reminder"; }
 			actionButtons[2] = quantimodoService.actionSheetButtons.history;
+            actionButtons[3] = quantimodoService.actionSheetButtons.addReminder;
 		} else {
-			actionButtons[2] = { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
 			$scope.state.noRemindersTitle = "Add " + $stateParams.variableCategoryName;
 			$scope.state.noRemindersText = "You haven't saved any " + $stateParams.variableCategoryName.toLowerCase() + " favorites or reminders here, yet.";
 			$scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
@@ -51,6 +51,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 				$scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
 			}
 			$scope.state.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
+            actionButtons[2] = { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
+            actionButtons[3] = { text: '<i class="icon ' + quantimodoService.ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
 		}
 		$scope.state.showButtons = true;
 		getTrackingReminders();
@@ -64,6 +66,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 					if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
 					if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
 					if(index === 2){$state.go('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
+                    if(index === 3){$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
 					return true;
 				}
 			});
