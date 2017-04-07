@@ -1,7 +1,7 @@
 private_keys = {
     "username": null,
     "password": null,
-    "bugsnag_key" : "xyz",
+    "bugsnag_key": "xyz",
     "client_ids": {
         "iOS": "your_quantimodo_client_id_here",
         "Android": "your_quantimodo_client_id_here",
@@ -16,9 +16,9 @@ private_keys = {
         "Chrome": "your_quantimodo_client_secret_here",
         "Windows": "your_quantimodo_client_secret_here"
     },
-    "FACEBOOK_APP_ID" : "123456789",
-    "FACEBOOK_APP_NAME" : "SOMEAPPNAME",
-    "REVERSED_CLIENT_ID" : "com.google.someappname123345667"
+    "FACEBOOK_APP_ID": "123456789",
+    "FACEBOOK_APP_NAME": "SOMEAPPNAME",
+    "REVERSED_CLIENT_ID": "com.google.someappname123345667"
 };
 
 if(!module){

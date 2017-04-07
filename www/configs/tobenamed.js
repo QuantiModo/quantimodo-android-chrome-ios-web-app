@@ -20,7 +20,7 @@ config.appSettings  = {
     ],
     welcomeText:"Let's start off by adding your first medication!",
     mobileNotificationText : "Time to track!",
-    "intro" : null,
+    "intro": null,
     remindersInbox : {},
     wordAliases : {},
     //****modified default reminders

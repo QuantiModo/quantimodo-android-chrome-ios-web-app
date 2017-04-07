@@ -105,7 +105,7 @@ config.appSettings  = {
         }
     ],
     helpPopupMessages : {
-        "#/app/example" :'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Mood for the average user.',
+        "#/app/example":'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Mood for the average user.',
     },
     remindersInbox : {},
     wordAliases : {},

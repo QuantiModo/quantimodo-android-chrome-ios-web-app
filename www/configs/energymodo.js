@@ -16,7 +16,7 @@ config.appSettings  = {
     primaryOutcomeVariableName : "Energy Rating",
     welcomeText:"Let's start off by reporting your energy below",
     mobileNotificationText : "Time to track!",
-    "intro" : null,
+    "intro": null,
     remindersInbox : {},
     wordAliases : {},
     menuType : 'extended'

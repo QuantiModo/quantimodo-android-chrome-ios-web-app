@@ -1,5 +1,5 @@
 private_keys = {
-    "bugsnag_key" : "xyz",
+    "bugsnag_key": "xyz",
     "client_ids": {
         "iOS": "xyz",
         "Android": "xyz",
@@ -24,9 +24,9 @@ private_keys = {
         "Web": "https://app.quantimo.do",
         "Chrome": "https://app.quantimo.do"
     },
-    "FACEBOOK_APP_ID" : "123456789",
-    "FACEBOOK_APP_NAME" : "SOMEAPPNAME",
-    "REVERSED_CLIENT_ID" : "com.google.someappname123345667"
+    "FACEBOOK_APP_ID": "123456789",
+    "FACEBOOK_APP_NAME": "SOMEAPPNAME",
+    "REVERSED_CLIENT_ID": "com.google.someappname123345667"
 };
 
 if(!module){

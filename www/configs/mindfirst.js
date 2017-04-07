@@ -20,7 +20,7 @@ config.appSettings  = {
     ],
     welcomeText:"Let's start off by reporting your first mood below",
     mobileNotificationText : "Time to track!",
-    "intro" : null,
+    "intro": null,
     remindersInbox : {},
     wordAliases : {},
     menuType : 'extended'
