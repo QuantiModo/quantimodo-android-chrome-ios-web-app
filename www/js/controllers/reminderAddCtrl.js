@@ -385,6 +385,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
         }
         if(variableCategoryName === 'Treatments'){$scope.state.showInstructionsField = true;}
+        $scope.state.trackingReminder = quantimodoService.addImagePaths($scope.state.trackingReminder);
         showMoreUnitsIfNecessary();
     };
     function setupReminderEditingFromVariableId(variableId) {
