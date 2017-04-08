@@ -1,35 +1,35 @@
-angular.module('starter').controller('StudyCtrl', function($scope, $state, quantimodoService, $stateParams, $ionicHistory, $rootScope,
-                                      $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard) {
+angular.module("starter").controller("StudyCtrl", function($scope, $state, quantimodoService, $stateParams, $ionicHistory, $rootScope,
+                                      $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog) {
     $scope.controller_name = "StudyCtrl";
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on("$ionicView.beforeEnter", function() { console.debug("Entering state " + $state.current.name);
         $scope.state = {
-            title: 'Loading study...',
+            title: "Loading study...",
             requestParams: {},
             hideStudyButton: true,
             loading: true
         };
     });
-    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on("$ionicView.enter", function() { console.debug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
-        console.debug($state.current.name + ' initializing...');
+        console.debug($state.current.name + " initializing...");
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-        if(quantimodoService.getUrlParameter('causeVariableName')){ $scope.state.requestParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName', window.location.href, true); }
-        if(quantimodoService.getUrlParameter('effectVariableName')){ $scope.state.requestParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName', window.location.href, true); }
+        if (typeof analytics !== "undefined")  { analytics.trackView($state.current.name); }
+        if(quantimodoService.getUrlParameter("causeVariableName")){ $scope.state.requestParams.causeVariableName = quantimodoService.getUrlParameter("causeVariableName", window.location.href, true); }
+        if(quantimodoService.getUrlParameter("effectVariableName")){ $scope.state.requestParams.effectVariableName = quantimodoService.getUrlParameter("effectVariableName", window.location.href, true); }
         if($stateParams.causeVariableName){ $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName; }
         if($stateParams.effectVariableName){ $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName; }
         $scope.predictorVariableName = $scope.state.requestParams.causeVariableName;
         $scope.outcomeVariableName = $scope.state.requestParams.effectVariableName;
-        if(quantimodoService.getUrlParameter('userId')){
-            $scope.state.requestParams.userId = quantimodoService.getUrlParameter('userId');
+        if(quantimodoService.getUrlParameter("userId")){
+            $scope.state.requestParams.userId = quantimodoService.getUrlParameter("userId");
             getStudy();
             return;
         }
         if($stateParams.correlationObject){
             $rootScope.correlationObject = $stateParams.correlationObject;
             $scope.state.loading = false;
-            quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($rootScope.correlationObject));
+            quantimodoService.setLocalStorageItem("lastStudy", JSON.stringify($rootScope.correlationObject));
             $ionicLoading.hide();
         }
         if($rootScope.correlationObject){
@@ -45,7 +45,7 @@ angular.module('starter').controller('StudyCtrl', function($scope, $state, quant
             getStudy();
             return;
         }
-        quantimodoService.getLocalStorageItemAsStringWithCallback('lastStudy', function (lastStudy) {
+        quantimodoService.getLocalStorageItemAsStringWithCallback("lastStudy", function (lastStudy) {
             if(lastStudy){
                 $rootScope.correlationObject = JSON.parse(lastStudy);
                 $scope.highchartsReflow();  //Need callback to make sure we get the study before we reflow
@@ -63,23 +63,26 @@ angular.module('starter').controller('StudyCtrl', function($scope, $state, quant
         quantimodoService.clearCorrelationCache();
         getStudy();
     };
-    $scope.joinStudy = function () { $state.go('app.studyJoin', {correlationObject: $rootScope.correlationObject}); };
+    $scope.joinStudy = function () { $state.go("app.studyJoin", {correlationObject: $rootScope.correlationObject}); };
     if (!clipboard.supported) {
-        console.debug('Sorry, copy to clipboard is not supported');
+        console.debug("Sorry, copy to clipboard is not supported");
         $scope.hideClipboardButton = true;
     }
-    $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
+    $scope.copyLinkText = "Copy Shareable Link to Clipboard";
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
-        $scope.copyLinkText = 'Copied!';
+        $scope.copyLinkText = "Copied!";
         var studyLink;
         if(causeVariableName && effectVariableName){
-            studyLink = 'https://app.quantimo.do/api/v2/study?causeVariableName=' + encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
+            studyLink = "https://app.quantimo.do/api/v2/study?causeVariableName=" + encodeURIComponent(causeVariableName) + "&effectVariableName=" + encodeURIComponent(effectVariableName);
         }
         if($rootScope.correlationObject){
+            /** @namespace $rootScope.correlationObject.studyLinkStatic */
             if($rootScope.correlationObject.studyLinkStatic){ studyLink = $rootScope.correlationObject.studyLinkStatic; }
+            /** @namespace $rootScope.correlationObject.userStudy */
             if($rootScope.correlationObject.userStudy && $rootScope.correlationObject.userStudy.studyLinkStatic){
                 studyLink = $rootScope.correlationObject.userStudy.studyLinkStatic;
             }
+            /** @namespace $rootScope.correlationObject.publicStudy */
             if($rootScope.correlationObject.publicStudy && $rootScope.correlationObject.publicStudy.studyLinkStatic){
                 studyLink = $rootScope.correlationObject.publicStudy.studyLinkStatic;
             }
@@ -94,41 +97,36 @@ angular.module('starter').controller('StudyCtrl', function($scope, $state, quant
         var causeSearchTerm = $rootScope.correlationObject.causeVariableCommonAlias;
         if(!causeSearchTerm){ causeSearchTerm = $scope.state.requestParams.causeVariableName; }
         wikipediaFactory.searchArticlesByTitle({
-            term: causeSearchTerm, // Searchterm
-            //lang: '<LANGUAGE>', // (optional) default: 'en'
-            //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
-            pithumbsize: '200', // (optional) default: 400
-            //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
-            exlimit: '1', // (optional) 'max': extracts for all articles, otherwise only for the first
-            exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
+            term: causeSearchTerm,
+            pithumbsize: "200",
+            exlimit: "1", // (optional) "max": extracts for all articles, otherwise only for the first
+            exintro: "1" // (optional) "1": if we just want the intro, otherwise it shows all sections
         }).then(function (causeData) {
             if(causeData.data.query) {
                 $scope.causeWikiEntry = causeData.data.query.pages[0].extract;
-                //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
+                //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + "<br>" + $scope.causeWikiEntry;
                 if(causeData.data.query.pages[0].thumbnail){ $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source; }
             } else {
-                var error = 'Wiki not found for ' + causeSearchTerm;
+                var error = "Wiki not found for " + causeSearchTerm;
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                 console.error(error);
             }
         }).catch(function (error) { console.error(error); });
+        /** @namespace $rootScope.correlationObject.effectVariableCommonAlias */
         var effectSearchTerm = $rootScope.correlationObject.effectVariableCommonAlias;
         if(!effectSearchTerm){ effectSearchTerm = $scope.state.requestParams.effectVariableName; }
         wikipediaFactory.searchArticlesByTitle({
-            term: effectSearchTerm, // Searchterm
-            //lang: '<LANGUAGE>', // (optional) default: 'en'
-            //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
-            pithumbsize: '200', // (optional) default: 400
-            //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
-            exlimit: '1', // (optional) 'max': extracts for all articles, otherwise only for the first
-            exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
+            term: effectSearchTerm,
+            pithumbsize: "200", // (optional) default: 400
+            exlimit: "1", // (optional) "max": extracts for all articles, otherwise only for the first
+            exintro: "1" // (optional) "1": if we just want the intro, otherwise it shows all sections
         }).then(function (effectData) {
             if(effectData.data.query){
                 $scope.effectWikiEntry = effectData.data.query.pages[0].extract;
-                //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + '<br>' + $scope.effectWikiEntry;
+                //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + "<br>" + $scope.effectWikiEntry;
                 if(effectData.data.query.pages[0].thumbnail){ $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source; }
             } else {
-                var error = 'Wiki not found for ' + effectSearchTerm;
+                var error = "Wiki not found for " + effectSearchTerm;
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                 console.error(error);
             }
@@ -138,12 +136,10 @@ angular.module('starter').controller('StudyCtrl', function($scope, $state, quant
     $scope.createUserCharts = function() {
         $scope.loadingCharts = false;
         $scope.state.loading = false;
-        $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
-            $rootScope.correlationObject.causeProcessedDailyMeasurements,
-            {variableName: $scope.state.requestParams.causeVariableName});
-        $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart(
-            $rootScope.correlationObject.effectProcessedDailyMeasurements,
-            {variableName: $scope.state.requestParams.effectVariableName});
+        /** @namespace $rootScope.correlationObject.causeProcessedDailyMeasurements */
+        $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
+        /** @namespace $rootScope.correlationObject.effectProcessedDailyMeasurements */
+        $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
         $scope.highchartsReflow();
         $ionicLoading.hide();
     };
@@ -152,14 +148,14 @@ angular.module('starter').controller('StudyCtrl', function($scope, $state, quant
         quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
             if(data.userStudy){ $rootScope.correlationObject = data.userStudy; }
             if(data.publicStudy){ $rootScope.correlationObject = data.publicStudy; }
-            quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($rootScope.correlationObject));
+            quantimodoService.setLocalStorageItem("lastStudy", JSON.stringify($rootScope.correlationObject));
             $scope.createUserCharts();
         }, function (error) {
             console.error(error);
             $scope.loadingCharts = false;
             $scope.state.loading = false;
             $scope.state.studyNotFound = true;
-            $scope.state.title = 'Not Enough Data, Yet';
+            $scope.state.title = "Not Enough Data, Yet";
         });
     }
     $rootScope.showActionSheetMenu = function() {
@@ -167,15 +163,14 @@ angular.module('starter').controller('StudyCtrl', function($scope, $state, quant
             buttons: [
                 { text: '<i class="icon ion-log-in"></i>' + $rootScope.correlationObject.causeVariableName.substring(0,15) + ' Settings' },
                 { text: '<i class="icon ion-log-out"></i>' + $rootScope.correlationObject.effectVariableName.substring(0,15) + ' Settings' },
-                { text: '<i class="icon ion-thumbsup"></i> Seems Right' },
+                { text: '<i class="icon ion-thumbsup"></i> Seems Right' }
             ],
             destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() { console.debug($state.current.name + ": " + 'CANCELLED'); },
             buttonClicked: function(index) {
-                console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
-                if(index === 0){ $state.go('app.variableSettings', {variableName: $rootScope.correlationObject.causeVariableName}); }
-                if(index === 1){ $state.go('app.variableSettings', {variableName: $rootScope.correlationObject.effectVariableName}); }
+                if(index === 0){ $state.go("app.variableSettings", {variableName: $rootScope.correlationObject.causeVariableName}); }
+                if(index === 1){ $state.go("app.variableSettings", {variableName: $rootScope.correlationObject.effectVariableName}); }
                 if(index === 2){ $scope.upVote($rootScope.correlationObject); }
                 return true;
             },
@@ -186,4 +181,46 @@ angular.module('starter').controller('StudyCtrl', function($scope, $state, quant
         });
         $timeout(function() { hideSheet(); }, 20000);
     };
+    $scope.changeVariableSetting = function(variable, propertyToUpdate, ev){
+        $mdDialog.show({
+            controller: VariableSettingsController,
+            controllerAs: "ctrl",
+            templateUrl: "templates/dialogs/variable-settings-dialog.html",
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: false,
+            fullscreen: false,
+            locals: {
+                dataToPass: {
+                    propertyToUpdate: propertyToUpdate,
+                    buttonText: "Save",
+                    variable: variable
+                }
+            }
+        }).then(function(variable) {
+            $scope.showLoader("Re-analyzing data using updated " + quantimodoService.explanations[propertyToUpdate].title);
+            var postData = {variableName: variable.name};
+            postData[propertyToUpdate] = variable[propertyToUpdate];
+            quantimodoService.postUserVariableDeferred(postData).then(function (response) {
+                getStudy();
+            });
+        }, function() {console.debug("User cancelled selection");});
+    };
+    function VariableSettingsController(quantimodoService, dataToPass) {
+        var self = this;
+        self.title = quantimodoService.explanations[dataToPass.propertyToUpdate].title;
+        self.helpText = quantimodoService.explanations[dataToPass.propertyToUpdate].explanation;
+        self.placeholder = quantimodoService.explanations[dataToPass.propertyToUpdate].title;
+        if(quantimodoService.explanations[dataToPass.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + quantimodoService.explanations[dataToPass.propertyToUpdate].unitName;}
+        self.value = dataToPass.variable[dataToPass.propertyToUpdate];
+        self.unitName = quantimodoService.explanations[dataToPass.propertyToUpdate].unitName;
+        self.cancel = function() {
+            self.items = null;
+            $mdDialog.cancel();
+        };
+        self.finish = function() {
+            dataToPass.variable[dataToPass.propertyToUpdate] = self.value;
+            $mdDialog.hide(dataToPass.variable);
+        };
+    }
 });

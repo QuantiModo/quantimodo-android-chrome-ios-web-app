@@ -1838,46 +1838,4 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             console.debug('User cancelled selection');
         });
     };
-    $scope.changeVariableSetting = function(variable, propertyToUpdate, ev){
-        $mdDialog.show({
-            controller: VariableSettingsController,
-            controllerAs: "ctrl",
-            templateUrl: "templates/dialogs/variable-settings-dialog.html",
-            parent: angular.element(document.body),
-            targetEvent: ev,
-            clickOutsideToClose: false,
-            fullscreen: false,
-            locals: {
-                dataToPass: {
-                    propertyToUpdate: propertyToUpdate,
-                    buttonText: "Save",
-                    variable: variable
-                }
-            }
-        }).then(function(variable) {
-            $scope.showLoader("Re-analyzing data using updated " + quantimodoService.explanations[propertyToUpdate].title);
-            var postData = {variableName: variable.name};
-            postData[propertyToUpdate] = variable[propertyToUpdate];
-            quantimodoService.postUserVariableDeferred(postData).then(function (response) {
-                getStudy();
-            });
-        }, function() {console.debug("User cancelled selection");});
-    };
-    function VariableSettingsController(quantimodoService, dataToPass) {
-        var self = this;
-        self.title = quantimodoService.explanations[dataToPass.propertyToUpdate].title;
-        self.helpText = quantimodoService.explanations[dataToPass.propertyToUpdate].explanation;
-        self.placeholder = quantimodoService.explanations[dataToPass.propertyToUpdate].title;
-        if(quantimodoService.explanations[dataToPass.propertyToUpdate].unitName){self.placeholder = self.placeholder + " in " + quantimodoService.explanations[dataToPass.propertyToUpdate].unitName;}
-        self.value = dataToPass.variable[dataToPass.propertyToUpdate];
-        self.unitName = quantimodoService.explanations[dataToPass.propertyToUpdate].unitName;
-        self.cancel = function() {
-            self.items = null;
-            $mdDialog.cancel();
-        };
-        self.finish = function() {
-            dataToPass.variable[dataToPass.propertyToUpdate] = self.value;
-            $mdDialog.hide(dataToPass.variable);
-        };
-    }
 });
