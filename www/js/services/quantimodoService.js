@@ -6506,7 +6506,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.openSharingUrl(emailUrl);
     };
     quantimodoService.openSharingUrl = function(sharingUrl){
-        var newTab = window.open(sharingUrl,'_blank');
+        var newTab = window.open(sharingUrl,'_system');
         if(!newTab){ alert("Please unblock popups and press the share button again!"); }
     };
     quantimodoService.addVariableToLocalStorage = function(variable){
