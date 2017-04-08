@@ -76,7 +76,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     });
     var trackBloodPressure = function(){
         if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-            validationFailure('Please enter both values for blood pressure.');
+            quantimodoService.validationFailure('Please enter both values for blood pressure.');
             return;
         }
         $scope.state.selectedDate = moment($scope.state.selectedDate);
@@ -100,32 +100,27 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             $scope.goBack();
         });
     };
-    var validationFailure = function (message) {
-        $scope.showMaterialAlert(message);
-        console.error(message);
-        if (typeof Bugsnag !== "undefined") {Bugsnag.notify(message, "measurement is " + JSON.stringify($scope.state.measurement), {}, "error");}
-    };
     var validate = function () {
         var message;
         if($scope.state.measurement.value === null || $scope.state.measurement.value === '' ||
             typeof $scope.state.measurement.value === 'undefined'){
             if($scope.state.measurement.unitAbbreviatedName === '/5'){message = 'Please select a rating';} else {message = 'Please enter a value';}
-            validationFailure(message);
+            quantimodoService.validationFailure(message);
             return false;
         }
         if(!$scope.state.measurement.variableName || $scope.state.measurement.variableName === ""){
             message = 'Please enter a variable name';
-            validationFailure(message);
+            quantimodoService.validationFailure(message);
             return false;
         }
         if(!$scope.state.measurement.variableCategoryName){
             message = 'Please select a variable category';
-            validationFailure(message);
+            quantimodoService.validationFailure(message);
             return false;
         }
         if(!$scope.state.measurement.unitAbbreviatedName){
             message = 'Please select a unit';
-            validationFailure(message);
+            quantimodoService.validationFailure(message);
             return false;
         } else {
             if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName]){
@@ -135,32 +130,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 }
             } else {$scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].id;}
         }
-        if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName] &&
-            typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].minimumValue !== "undefined" &&
-            $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].minimumValue !== null)
-        {
-            if($scope.state.measurement.value <
-                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].minimumValue){
-                message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].minimumValue +
-                    ' is the smallest possible value for the unit ' +
-                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].name +
-                    ".  Please select another unit or value.";
-                validationFailure(message);
-                return false;
-            }
-        }
-        if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName] &&
-            typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].maximumValue !== "undefined" &&
-            $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].maximumValue !== null)
-        {
-            if($scope.state.measurement.value > $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].maximumValue){
-                message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].maximumValue +
-                    ' is the largest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].name +
-                    ".  Please select another unit or value.";
-                validationFailure(message);
-                return false;
-            }
-        }
         return true;
     };
     $scope.done = function(){
@@ -169,6 +138,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             return;
         }
         if(!validate()){ return false; }
+        if(!quantimodoService.valueIsValid($scope.state.measurement, $scope.state.measurement.value)){return false;}
         if ($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1) {
             // If "record a different value/time was pressed", skip reminder upon save
             var params = { trackingReminderNotificationId: $stateParams.reminderNotification.id };

@@ -70,8 +70,8 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
         }, function (error) {
             $ionicLoading.hide();
             quantimodoService.reportError(error);
-            $scope.showMaterialAlert("Could not join study.", "Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
+            quantimodoService.showMaterialAlert("Could not join study.", "Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
         });
     };
-    $scope.showMoreInfo = function () { $scope.showMaterialAlert($scope.state.title, $scope.state.moreInfo); };
+    $scope.showMoreInfo = function () { quantimodoService.showMaterialAlert($scope.state.title, $scope.state.moreInfo); };
 });
