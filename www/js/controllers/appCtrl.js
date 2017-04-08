@@ -636,7 +636,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $event.target.select();
     };
     $scope.favoriteValidationFailure = function (message) {
-        $scope.showMaterialAlert(message);
+        quantimodoService.showMaterialAlert(message);
         console.error(message);
         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
     };
@@ -657,16 +657,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
         if(!modifiedReminderValue){modifiedReminderValue = trackingReminder.defaultValue;}
-        console.debug('Tracking reminder', trackingReminder);
-        console.debug('modifiedReminderValue is ' + modifiedReminderValue);
         if(trackingReminder.unitAbbreviatedName !== '/5') {
             if(trackingReminder.combinationOperation === "SUM"){trackingReminder.total = trackingReminder.total + modifiedReminderValue;} else {trackingReminder.total = modifiedReminderValue;}
             trackingReminder.displayTotal = trackingReminder.total + " " + trackingReminder.unitAbbreviatedName;
         } else {trackingReminder.displayTotal = modifiedReminderValue + '/5';}
         if(!trackingReminder.tally){trackingReminder.tally = 0;}
         if(trackingReminder.combinationOperation === "SUM"){trackingReminder.tally += modifiedReminderValue;} else {trackingReminder.tally = modifiedReminderValue;}
-        console.debug('modified tally is ' + trackingReminder.tally);
-        console.debug('Setting trackByFavorite timeout');
         $timeout(function() {
             if(typeof trackingReminder === "undefined"){
                 console.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
@@ -1329,19 +1325,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     });
     $scope.showAlert = function(title, template, subTitle) {quantimodoService.showAlert(title, template, subTitle);};
     $scope.showMaterialAlert = function(title, textContent, ev) {
-        // Appending dialog to document.body to cover sidenav in docs app
-        // Modal dialogs should fully cover application
-        // to prevent interaction outside of dialog
-        $mdDialog.show(
-            $mdDialog.alert()
-                .parent(angular.element(document.querySelector('#popupContainer')))
-                .clickOutsideToClose(true)
-                .title(title)
-                .textContent(textContent)
-                .ariaLabel(title)
-                .ok('OK')
-                .targetEvent(ev)
-        );
+        quantimodoService.showMaterialAlert(title, textContent, ev);
     };
     if(!$scope.productId){ $scope.productId = 'monthly7'; }
     $scope.monthlySubscription = function () { $scope.productId = 'yearly60'; $scope.upgrade(); };
@@ -1542,10 +1526,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
             $ionicLoading.hide();
             console.debug(JSON.stringify(response));
-            $scope.showMaterialAlert('Successfully downgraded to QuantiModo Lite');
+            quantimodoService.showMaterialAlert('Successfully downgraded to QuantiModo Lite');
         }, function (error) {
             $ionicLoading.hide();
-            $scope.showMaterialAlert('An error occurred while downgrading.', 'Please email mike@quantimo.do');
+            quantimodoService.showMaterialAlert('An error occurred while downgrading.', 'Please email mike@quantimo.do');
             console.debug(JSON.stringify(error));
         });
     };
@@ -1602,11 +1586,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     var sendCouponEmail = function () {
         quantimodoService.sendEmailViaAPIDeferred('couponInstructions');
-        $scope.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.', event);
+        quantimodoService.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.', event);
     };
     var sendFitbitEmail = function () {
         quantimodoService.sendEmailViaAPIDeferred('fitbit');
-        $scope.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
+        quantimodoService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
     };
     $scope.sendEmailAfterVerification = function(emailType) {
         if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }

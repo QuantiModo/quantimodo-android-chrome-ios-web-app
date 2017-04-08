@@ -1,5 +1,4 @@
-angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
-                                                            $rootScope, $stateParams, quantimodoService) {
+angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService) {
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         if(!$rootScope.user){
             console.debug('Setting afterLoginGoToState to ' + $state.current.name);
@@ -14,13 +13,8 @@ angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $io
         quantimodoService.setupUpgradePages();
         $ionicLoading.hide();
     });
-    $scope.$on('$ionicView.afterEnter', function(){ });
-    $scope.$on('$ionicView.leave', function(){ });
-    $scope.$on('$ionicView.beforeLeave', function(){ });
-    $scope.$on('$ionicView.afterLeave', function(){ });
-    $scope.useLitePlan = function () {
-        if($stateParams.litePlanState){$state.go($stateParams.litePlanState);} else { $scope.goBack();}
-    };
+    $scope.useLitePlan = function () {if($stateParams.litePlanState){$state.go($stateParams.litePlanState);} else { $scope.goBack();}};
+    $scope.showMaterialAlert = function(title, textContent, ev) {quantimodoService.showMaterialAlert(title, textContent, ev);};
     $scope.hideUpgradePage = function () {
         $rootScope.upgradePages = $rootScope.upgradePages.filter(function( obj ) {
             return obj.id !== $rootScope.upgradePages[0].id; });

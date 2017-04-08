@@ -72,7 +72,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 						}, function(error){
 							if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 							console.error(error);
-							$scope.showMaterialAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
+							quantimodoService.showMaterialAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
 						});
 					return true;
 				}
@@ -133,6 +133,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	function refreshIfRunningOutOfNotifications() {if($scope.state.numberOfDisplayedNotifications < 2){$scope.refreshTrackingReminderNotifications();}}
 	$scope.trackByValueField = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){return;}
+        if(!quantimodoService.valueIsValid(trackingReminderNotification, trackingReminderNotification.modifiedValue)){return false;}
 		//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 		trackingReminderNotification.hide = true;
 		$rootScope.numberOfPendingNotifications--;
@@ -374,7 +375,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 						hideInboxLoader();
 						if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 						console.error(error);
-						$scope.showMaterialAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
+						quantimodoService.showMaterialAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
 					});
 				return true;
 			}

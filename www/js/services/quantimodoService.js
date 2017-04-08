@@ -1516,6 +1516,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         ];
         measurementSet[0].measurements[0] = addLocationDataToMeasurement(measurementSet[0].measurements[0]);
         var deferred = $q.defer();
+        if(!quantimodoService.valueIsValid(trackingReminder, value)){
+            deferred.reject('Value is not valid');
+            return deferred.promise;
+        }
         quantimodoService.postMeasurementsToApi(measurementSet, function(response){
             if(response.success) {
                 console.debug("quantimodoService.postMeasurementsToApi success: " + JSON.stringify(response));
@@ -7574,43 +7578,81 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         onsetDelayInHours: {
             title: "Onset Delay",
             unitName: "Hours",
-            explanation:  "An outcome is always preceded by the predictor or stimulus. The amount of time that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”.  For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.",
+            explanation: "An outcome is always preceded by the predictor or stimulus. The amount of time that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”.  For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.",
         },
         onsetDelay: {
             title: "Onset Delay",
             unitName: "Seconds",
-            explanation:  "An outcome is always preceded by the predictor or stimulus. The amount of time that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”.  For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.",
+            explanation: "An outcome is always preceded by the predictor or stimulus. The amount of time that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”.  For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.",
         },
         durationOfActionInHours: {
             title: "Duration of Action",
             unitName: "Hours",
-            explanation:  "The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin typically decreases headache severity for approximately four hours (duration of action) following the onset delay.",
+            explanation: "The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin typically decreases headache severity for approximately four hours (duration of action) following the onset delay.",
         },
         durationOfAction: {
             title: "Duration of Action",
             unitName: "Seconds",
-            explanation:  "The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin typically decreases headache severity for approximately four hours (duration of action) following the onset delay.",
+            explanation: "The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin typically decreases headache severity for approximately four hours (duration of action) following the onset delay.",
         },
         fillingValue: {
             title: "Filling Value",
-            explanation:  "When it comes to analysis to determine the effects of this variable, knowing when it did not occur is as important as knowing when it did occur. For example, if you are tracking a medication, it is important to know when you did not take it, but you do not have to log zero values for all the days when you haven't taken it. Hence, you can specify a filling value (typically 0) to insert whenever data is missing.",
+            explanation: "When it comes to analysis to determine the effects of this variable, knowing when it did not occur is as important as knowing when it did occur. For example, if you are tracking a medication, it is important to know when you did not take it, but you do not have to log zero values for all the days when you haven't taken it. Hence, you can specify a filling value (typically 0) to insert whenever data is missing.",
         },
         combinationOperation: {
             title: "Combination Method",
-            explanation:  "How multiple measurements are combined over time.  We use the average (or mean) for things like your weight.  Summing is used for things like number of apples eaten.",
+            explanation: "How multiple measurements are combined over time.  We use the average (or mean) for things like your weight.  Summing is used for things like number of apples eaten.",
         },
         defaultValue: {
             title: "Default Value",
-            explanation:  "If specified, there will be a button that allows you to quickly record this value.",
+            explanation: "If specified, there will be a button that allows you to quickly record this value.",
         },
         experimentStartTime: {
             title: "Analysis Start Date",
-            explanation:  "Data prior to this date will not be used in analysis.",
+            explanation: "Data prior to this date will not be used in analysis.",
         },
         experimentEndTime: {
             title: "Analysis End Date",
-            explanation:  "Data after this date will not be used in analysis.",
+            explanation: "Data after this date will not be used in analysis.",
         },
+    };
+    quantimodoService.showMaterialAlert = function(title, textContent, ev){
+        // Appending dialog to document.body to cover sidenav in docs app
+        // Modal dialogs should fully cover application
+        // to prevent interaction outside of dialog
+        $mdDialog.show(
+            $mdDialog.alert()
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title(title)
+                .textContent(textContent)
+                .ariaLabel(title)
+                .ok('OK')
+                .targetEvent(ev)
+        );
+    };
+    quantimodoService.validationFailure = function (message, object) {
+        quantimodoService.showMaterialAlert(message);
+        console.error(message);
+        if (typeof Bugsnag !== "undefined") {Bugsnag.notify(message, "measurement is " + JSON.stringify(object), {}, "error");}
+    };
+    quantimodoService.valueIsValid = function(object, value){
+        var message;
+        if($rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName] && typeof $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue !== "undefined" && $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue !== null) {
+            if(value < $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue){
+                message = $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].minimumValue + ' is the smallest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].name + ".  Please select another unit or value.";
+                quantimodoService.validationFailure(message);
+                return false;
+            }
+        }
+        if($rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName] && typeof $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue !== "undefined" && $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue !== null) {
+            if(value > $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue){
+                message = $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].maximumValue + ' is the largest possible value for the unit ' + $rootScope.unitsIndexedByAbbreviatedName[object.unitAbbreviatedName].name + ".  Please select another unit or value.";
+                quantimodoService.validationFailure(message);
+                return false;
+            }
+        }
+        return true;
     };
     return quantimodoService;
 });
