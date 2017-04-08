@@ -184,7 +184,6 @@ angular.module('starter').controller('StudyCtrl', function($scope, $state, quant
                 return true;
             }
         });
-        console.debug('Setting hideSheet timeout');
         $timeout(function() { hideSheet(); }, 20000);
     };
 });

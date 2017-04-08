@@ -493,15 +493,4 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         console.debug('Setting hideSheet timeout');
         $timeout(function() {hideSheet();}, 20000);
     };
-    $scope.showExplanationsPopup = function(helpTitle) {
-        var explanationText;
-        if (helpTitle === "Default Value") {explanationText = "If specified, there will be a button that allows you to quickly record this value.";}
-        $ionicPopup.show({
-            title: helpTitle,
-            //subTitle: '',
-            template: explanationText,
-            scope: $scope,
-            buttons: [{text: 'OK', type: 'button-positive'}]
-        });
-    };
 });
