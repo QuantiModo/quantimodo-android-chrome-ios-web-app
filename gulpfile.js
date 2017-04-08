@@ -1638,62 +1638,43 @@ var getIsoString = function () {
 };
 
 gulp.task('generateConfigXmlFromTemplate', [], function(callback){
-	//console.log('gulp generateConfigXmlFromTemplate was called');
 	if(!process.env.CONFIG_XML_TEMPLATE_PATH){
         process.env.CONFIG_XML_TEMPLATE_PATH = "./config-template.xml";
 		console.warn("CONFIG_XML_TEMPLATE_PATH not set!  Falling back to " + process.env.CONFIG_XML_TEMPLATE_PATH);
-	} else {
-        console.log("generateConfigXmlFromTemplate using " + process.env.CONFIG_XML_TEMPLATE_PATH);
-	}
-
+	} else {console.log("generateConfigXmlFromTemplate using " + process.env.CONFIG_XML_TEMPLATE_PATH);}
 	var xml = fs.readFileSync(process.env.CONFIG_XML_TEMPLATE_PATH, 'utf8');
-
 	if(!xml){
         console.log("Could not find template at CONFIG_XML_TEMPLATE_PATH " + process.env.CONFIG_XML_TEMPLATE_PATH);
         return;
 	}
 	parseString(xml, function (err, parsedXmlFile) {
-		if(err){
-			throw new Error("ERROR: failed to read xml file", err);
+		if(err){throw new Error("ERROR: failed to read xml file", err);
 		} else {
 			if(process.env.APP_DISPLAY_NAME) {
 				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
 				console.log("Setting config.xml name to " + parsedXmlFile.widget.name[0]);
-			} else {
-                throw("APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME");
-			}
-
+			} else {throw("APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME");}
 			if(process.env.APP_DESCRIPTION) {
 				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
                 console.log("Setting config.xml description to " + parsedXmlFile.widget.description[0]);
-			} else {
-                throw("APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION");
-            }
-
+			} else {throw("APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION");}
 			if(process.env.APP_IDENTIFIER) {
 				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
                 console.log("Setting config.xml id to " + parsedXmlFile.widget.$["id"]);
-			} else {
-                throw("APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER");
-            }
-
+			} else {throw("APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER");}
             if(process.env.IONIC_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
                 console.log("Setting config.xml version to " + parsedXmlFile.widget.$["version"]);
             }
-
             if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
                 console.log("Setting config.xml ios-CFBundleVersion to " + parsedXmlFile.widget.$["ios-CFBundleVersion"]);
             }
-
             var builder = new xml2js.Builder();
 			var updatedXmlFile = builder.buildObject(parsedXmlFile);
-
 			fs.writeFile('./config.xml', updatedXmlFile, 'utf8', function (error) {
-				if (error) {
-					console.error("ERROR: Error updating version number in config.xml", error);
+				if (error) {console.error("ERROR: Error updating version number in config.xml", error);
 				} else {
 					console.log("Successfully updated config.xml file");
 					callback();
