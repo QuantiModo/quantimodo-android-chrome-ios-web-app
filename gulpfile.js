@@ -36,14 +36,11 @@ var paths = {
 	sass: ['./scss/**/*.scss']
 };
 
-if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.5.1.0';
-    console.log('Falling back to OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
-    process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-}
+var date = new Date('2010-10-11T00:00:00+05:30');
+date =  date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.5.2.0';
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.5.' + date + '.0';
     process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
@@ -1298,40 +1295,6 @@ var setVersionNumberInConfigXml = function(configFilePath, callback){
 	});
 };
 
-gulp.task('bumpVersionNumberEnvs', ['setVersionNumberEnvsFromIosConfig'], function(callback){
-	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER;
-	var numberToBumpArr = process.env.IONIC_APP_VERSION_NUMBER.split('.');
-	numberToBumpArr[2] = (parseInt(numberToBumpArr[2]) + 1).toString();
-	if(parseInt(numberToBumpArr[2]) === 10){
-		numberToBumpArr[2] = "0";
-		numberToBumpArr[1] = (parseInt(numberToBumpArr[1]) + 1).toString();
-	}
-	if(parseInt(numberToBumpArr[1]) === 10){
-		numberToBumpArr[1] = "0";
-		numberToBumpArr[0] = (parseInt(numberToBumpArr[1]) + 1).toString();
-	}
-	process.env.IONIC_APP_VERSION_NUMBER = numberToBumpArr.join('.');
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = process.env.IONIC_APP_VERSION_NUMBER + '.0';
-	callback();
-});
-
-gulp.task('bumpVersionNumbersInFiles', function(callback){
-	runSequence(
-		'bumpVersionNumberEnvs',
-		'setVersionNumberInConfigXml',
-		'setVersionNumberInIosConfigXml',
-		'setVersionNumberInFiles',
-		callback);
-});
-
-gulp.task('replaceVersionNumbersInFiles', function(callback){
-	runSequence(
-		//'setVersionNumberInConfigXml',  Messes it up, I think. Replacing with shell script for now.
-		'setVersionNumberInFiles',
-        //'setVersionNumberInIosConfigXml',
-		callback);
-});
-
 gulp.task('setVersionNumberInConfigXml', [], function(callback){
 	var configFilePath = './config-template.xml';
 	setVersionNumberInConfigXml(configFilePath, callback);
@@ -1343,35 +1306,11 @@ gulp.task('setVersionNumberInIosConfigXml', [], function(callback){
 });
 
 gulp.task('setVersionNumberInFiles', function(callback){
-
-	if(process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER === process.env.IONIC_IOS_APP_VERSION_NUMBER){
-		throw 'process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER should be less than process.env.IONIC_IOS_APP_VERSION_NUMBER';
-	}
-
-	if(process.env.OLD_IONIC_APP_VERSION_NUMBER === process.env.IONIC_APP_VERSION_NUMBER){
-		throw 'process.env.OLD_IONIC_APP_VERSION_NUMBER should be less than process.env.IONIC_APP_VERSION_NUMBER';
-	}
-
-	if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-		throw 'Please set process.env.IONIC_IOS_APP_VERSION_NUMBER';
-	}
-
-	if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
-		throw 'Please set process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER';
-	}
-
-	if(!process.env.OLD_IONIC_APP_VERSION_NUMBER){
-		throw 'Please set process.env.OLD_IONIC_APP_VERSION_NUMBER';
-	}
-
-	if(!process.env.IONIC_APP_VERSION_NUMBER){
-		throw 'Please set process.env.IONIC_APP_VERSION_NUMBER';
-	}
-
+	if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){throw 'Please set process.env.IONIC_IOS_APP_VERSION_NUMBER';}
+	if(!process.env.IONIC_APP_VERSION_NUMBER){throw 'Please set process.env.IONIC_APP_VERSION_NUMBER';}
 	var filesToUpdate = [
-		'www/js/controllers/appCtrl.js',
-		//'www/js/app.js',
-		'gulp.js',
+		'www/configs/default.js',
+		//'gulp.js',
 		'.travis.yml',
 		//'config.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
 		//'config-template.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
@@ -1380,16 +1319,12 @@ gulp.task('setVersionNumberInFiles', function(callback){
         'build/chrome_extension/manifest.json',
 		'resources/chrome_app/manifest.json'
 	];
-
 	return gulp.src(filesToUpdate, {base: "."}) // Every file allown.
-		.pipe(replace(process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER, process.env.IONIC_IOS_APP_VERSION_NUMBER))
 		.pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_IOS_APP_VERSION_NUMBER))
-		.pipe(replace(process.env.OLD_IONIC_APP_VERSION_NUMBER, process.env.IONIC_APP_VERSION_NUMBER))
 		.pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_APP_VERSION_NUMBER))
 		.pipe(gulp.dest('./'));
 	// Using callback results in the next task starting before this on is completed
 	//callback();
-
 });
 
 gulp.task('setIonicAppId', function(callback){
@@ -1750,7 +1685,7 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
             if(process.env.IONIC_IOS_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
                 parsedXmlFile.widget.$["ios-CFBundleVersion"] = getIsoString();
-                console.log("Setting config.xml version to " + parsedXmlFile.widget.$["ios-CFBundleVersion"]);
+                console.log("Setting config.xml ios-CFBundleVersion to " + parsedXmlFile.widget.$["ios-CFBundleVersion"]);
             }
 
             var builder = new xml2js.Builder();
@@ -1895,7 +1830,6 @@ gulp.task('configureApp', [], function(callback){
 		'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
 		'decryptPrivateConfigToDefault',
         'loadConfigs',
-		//'replaceVersionNumbersInFiles',  It's better to just leave the version numbers hard-coded in the files and
 		// templates because of the git changes and weird stuff replacement does to config-template.xml
 		'copyAppConfigToDefault',
 		'setIonicAppId',

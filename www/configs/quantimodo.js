@@ -2,6 +2,7 @@ var config = {};
 
 config.appSettings = {
     "appDisplayName": "QuantiModo",
+    versionNumber: "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     "lowercaseAppName": "quantimodo",
     "appDescription": "Perfect your life!",
     "appleId": "1115037060",

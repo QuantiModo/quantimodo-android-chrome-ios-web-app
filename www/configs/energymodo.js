@@ -2,6 +2,7 @@ var config = {};
 
 config.appSettings  = {
     appDisplayName : 'EnergyModo',
+    versionNumber: "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     lowercaseAppName : 'energymodo',
     appDescription : "Track and find out what affects your energy levels",
     appleId: null,

@@ -2,6 +2,7 @@ var config = {};
 
 config.appSettings  = {
     appDisplayName : 'Epharmix',
+    versionNumber: "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     lowercaseAppName : 'epharmix',
     appDescription : "Medication. Track. Learn. Connect.",
     appleId: null,

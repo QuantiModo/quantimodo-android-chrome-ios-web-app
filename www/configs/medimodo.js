@@ -2,6 +2,7 @@ var config = {};
 
 config.appSettings  = {
     appDisplayName : 'MediModo',
+    versionNumber: "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     lowercaseAppName : 'medimodo',
     appDescription : "Better health through data.",
     appleId: "1115037661",

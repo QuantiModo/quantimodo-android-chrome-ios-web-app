@@ -2,6 +2,7 @@ var config = {};
 
 config.appSettings  = {
     "appDisplayName": "MoodiModo",
+    versionNumber: "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     "lowercaseAppName": "moodimodo",
     "appDescription": "Perfect your life!",
     "appleId": "1046797567",

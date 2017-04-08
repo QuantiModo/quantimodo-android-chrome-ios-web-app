@@ -31,7 +31,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 }
             }
             urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.appVersion));
             urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
             if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
             if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
@@ -99,7 +99,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             var urlParams = [];
             urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.appVersion));
             urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
             var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
             // configure request
@@ -869,7 +869,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         Analytics.set('&cm', $rootScope.currentPlatform);
         Analytics.set('&an', config.appSettings.appDisplayName);
         Analytics.set('&aid', config.appSettings.appIdentifier);
-        Analytics.set('&av', $rootScope.appVersion);
+        Analytics.set('&av', config.appSettings.appVersion);
         // Register a custom dimension for the default, unnamed account object
         // e.g., ga('set', 'dimension1', 'Paid');
         Analytics.set('dimension1', 'Paid');
@@ -912,7 +912,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 type: getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
                 account: {
                     //id: 123, // Optional: associate multiple users with a single account
-                    name: getSourceName() + ' v' + $rootScope.appVersion, // Account name
+                    name: getSourceName() + ' v' + config.appSettings.appVersion, // Account name
                     //created_at: 1364406966, // Unix timestamp for the date the account was created
                     //monthly_rate: 9.99, // Decimal; monthly rate of the account
                     //ltv: 1495.00, // Decimal; lifetime value of the account
@@ -928,7 +928,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             email: user.email,
             user_id: user.id,
             app_name: config.appSettings.appDisplayName,
-            app_version: $rootScope.appVersion,
+            app_version: config.appSettings.appVersion,
             platform: $rootScope.currentPlatform
         };
         */
@@ -1881,7 +1881,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
             //Bugsnag.notifyReleaseStages = ['Production','Staging'];
             Bugsnag.releaseStage = quantimodoService.getEnv();
-            Bugsnag.appVersion = $rootScope.appVersion;
+            Bugsnag.appVersion = config.appSettings.appVersion;
             if($rootScope.user){
                 Bugsnag.metaData = {
                     platform: ionic.Platform.platform(),

@@ -2,6 +2,7 @@ var config = {};
 
 config.appSettings  = {
     appDisplayName : 'Mind First Mood Tracker',
+    versionNumber: "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     lowercaseAppName : 'mindfirst',
     appDescription : "Empowering a new approach to mind research",
     appleId: "1024924226",

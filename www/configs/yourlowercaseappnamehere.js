@@ -2,6 +2,7 @@ var config = {};
 
 config.appSettings  = {
     appDisplayName : 'YourAppDisplayNameHere',
+    versionNumber: "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     lowercaseAppName : 'yourlowercaseappnamehere',
     appDescription : "yourAppDescriptionHere",
     appleId: null,
