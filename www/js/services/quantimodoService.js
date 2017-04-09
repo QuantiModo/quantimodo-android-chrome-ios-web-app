@@ -7654,5 +7654,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return true;
     };
+    quantimodoService.getInputType = function(unitAbbreviatedName, variableDescription, variableName) {
+        var inputType = 'value';
+        if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
+        if (unitAbbreviatedName === '/5') {
+            inputType = 'oneToFiveNumbers';
+            variableDescription = (variableDescription ? variableDescription : null);
+            if (variableDescription === 'positive') {inputType = 'happiestFaceIsFive';}
+            if (variableDescription === 'negative') {inputType = 'saddestFaceIsFive';}
+        }
+        if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
+        return inputType;
+    };
     return quantimodoService;
 });
