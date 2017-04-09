@@ -282,7 +282,10 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if(userVariables && userVariables.length){ $stateParams.variableObject = userVariables[0]; }
             $rootScope.variableObject = $stateParams.variableObject;
             $scope.state.title = "Record Measurement";
+            $scope.state.measurement.inputType = $stateParams.variableObject.inputType;
             $scope.state.measurement.variableName = $stateParams.variableObject.name;
+            $scope.state.measurement.maximumAllowedValue = $stateParams.variableObject.maximumAllowedValue;
+            $scope.state.measurement.minimumAllowedValue = $stateParams.variableObject.minimumAllowedValue;
             if (!$scope.state.measurement.variableName) {$scope.state.measurement.variableName = $stateParams.variableObject.variableName;}
             if($scope.state.measurement.variableName.toLowerCase().indexOf('blood pressure') > -1) {$rootScope.bloodPressure.show = true;}
             if($stateParams.variableObject.variableCategoryName){
@@ -354,35 +357,13 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             $scope.state.showMoreUnits = true;
         }
     };
-    function setupValueFieldType(unitAbbreviatedName, variableDescription) {
+    function setupValueFieldType(unitAbbreviatedName, variableDescription, variableName) {
+        if($scope.state.measurement.inputType){return;}
         if(!unitAbbreviatedName){
             console.error('No unitAbbreviatedName provided to setupValueFieldType');
             return false;
         }
-        showMoreUnitsIfNecessary();
-        if (unitAbbreviatedName === '/5') {
-            if (!variableDescription) {
-                $scope.showNumericRatingNumberButtons = true;
-                $scope.showNegativeRatingFaceButtons = false;
-                $scope.showValueBox = false;
-                $scope.showPositiveRatingFaceButtons = false;
-            } else if (variableDescription.toLowerCase().indexOf('positive') > -1) {
-                $scope.showPositiveRatingFaceButtons = true;
-                $scope.showNumericRatingNumberButtons = false;
-                $scope.showNegativeRatingFaceButtons = false;
-                $scope.showValueBox = false;
-            } else if (variableDescription.toLowerCase().indexOf('negative') > -1) {
-                $scope.showNegativeRatingFaceButtons = true;
-                $scope.showValueBox = false;
-                $scope.showPositiveRatingFaceButtons = false;
-                $scope.showNumericRatingNumberButtons = false;
-            }
-        } else {
-            $scope.showValueBox = true;
-            $scope.showNegativeRatingFaceButtons = false;
-            $scope.showPositiveRatingFaceButtons = false;
-            $scope.showNumericRatingNumberButtons = false;
-        }
+        $scope.state.measurement.inputType = quantimodoService.getInputType(unitAbbreviatedName, variableDescription, variableName);
     }
     function setVariableObjectFromMeasurement() {
         $rootScope.variableObject = {
