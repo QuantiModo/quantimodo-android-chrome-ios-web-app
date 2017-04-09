@@ -21,6 +21,10 @@
     </div>
     <div class="item item-body" style="text-align: center;">
         {{state.correlationsExplanation.description}}  {{state.correlationsExplanation.startTracking.description}}
+        <br>
+        <div class="button-bar">
+            <a class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)" style="text-overflow: clip;"><i class="ion-information-circled">  Improve Predictions</i></a>
+        </div>
     </div>
     <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
          class="item item-body"
