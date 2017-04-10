@@ -25,7 +25,7 @@
     <span on-tap="trackFavoriteByValueField(trackingReminder, $index)" class="input-label">{{trackingReminder.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
 </div>
 <div id="favoriteNumericRatingButtons" class="primary-outcome-variable-reporting"
-     ng-if="!trackingReminder.variableDescription && trackingReminder.unitAbbreviatedName === '/5'">
+     ng-if="trackingReminder.inputType === 'oneToFiveNumbers'">
     <div class="primary-outcome-variable-rating-buttons" >
         <img ng-repeat="option in numericRatingOptions"
              ng-click="trackByFavorite(trackingReminder, option.numericValue)"
@@ -33,7 +33,7 @@
     </div>
 </div>
 <div id="favoritePositiveRatingButtons" class="primary-outcome-variable-reporting"
-     ng-if="trackingReminder.unitAbbreviatedName === '/5' && trackingReminder.variableDescription.toLowerCase().indexOf('positive') > -1">
+     ng-if="trackingReminder.inputType === 'happiestFaceIsFive'">
     <div class="primary-outcome-variable-rating-buttons" >
         <img ng-repeat="option in positiveRatingOptions"
              ng-click="trackByFavorite(trackingReminder, option.numericValue)"
@@ -41,7 +41,7 @@
     </div>
 </div>
 <div id="favoriteNegativeRatingButtons" class="primary-outcome-variable-reporting"
-     ng-if="trackingReminder.unitAbbreviatedName === '/5' && trackingReminder.variableDescription.toLowerCase().indexOf('negative') > -1">
+     ng-if="trackingReminder.inputType === 'saddestFaceIsFive'">
     <div class="primary-outcome-variable-rating-buttons" >
         <img ng-repeat="option in negativeRatingOptions"
              ng-click="trackByFavorite(trackingReminder, option.numericValue)"

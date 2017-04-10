@@ -97,7 +97,7 @@
 		</div>
 	</div>
 	<div class="primary-outcome-variable-reporting"
-		 ng-if="!trackingReminderNotification.description &&	trackingReminderNotification.unitAbbreviatedName === '/5'">
+		 ng-if="trackingReminderNotification.inputType === 'oneToFiveNumbers'">
 		<div class="primary-outcome-variable-rating-buttons" >
 			<img ng-repeat="option in numericRatingOptions"
 				 ng-click="track(trackingReminderNotification, option.numericValue, $event)"
@@ -106,8 +106,7 @@
 		<br>
 	</div>
 	<div class="primary-outcome-variable-reporting"
-		 ng-if="trackingReminderNotification.unitAbbreviatedName === '/5' &&
-		trackingReminderNotification.description.toLowerCase().indexOf('positive') > -1">
+		 ng-if="trackingReminderNotification.inputType === 'happiestFaceIsFive'">
 		<div class="primary-outcome-variable-rating-buttons" >
 			<img ng-repeat="option in positiveRatingOptions"
 				 ng-click="track(trackingReminderNotification, option.numericValue, $event)"
@@ -117,8 +116,7 @@
 		<br>
 	</div>
 	<div class="primary-outcome-variable-reporting"
-		 ng-if="trackingReminderNotification.unitAbbreviatedName === '/5' &&
-		trackingReminderNotification.description.toLowerCase().indexOf('negative') > -1">
+		 ng-if="trackingReminderNotification.inputType === 'saddestFaceIsFive'">
 		<div class="primary-outcome-variable-rating-buttons" >
 			<img ng-repeat="option in negativeRatingOptions"
 				 ng-click="track(trackingReminderNotification, option.numericValue, $event)"
