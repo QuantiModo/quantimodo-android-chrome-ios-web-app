@@ -200,11 +200,11 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
 		return trackingReminderNotification;
 	};
-	$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationIndex){
+	$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
 		if(isGhostClick($event)){ return false; }
 		if(modifiedReminderValue === null){ modifiedReminderValue = trackingReminderNotification.defaultValue; }
 		setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
-		var body = notificationAction(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex);
+		var body = notificationAction(trackingReminderNotification);
 		body.modifiedValue = modifiedReminderValue;
 		quantimodoService.trackTrackingReminderNotificationDeferred(body)
 			.then(function(){
@@ -215,10 +215,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				hideInboxLoader();
 			});
 	};
-	$scope.skip = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex){
+	$scope.skip = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){ return; }
 		$scope.lastAction = 'Skipped';
-		var params = notificationAction(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex);
+		var params = notificationAction(trackingReminderNotification);
 		quantimodoService.skipTrackingReminderNotificationDeferred(params)
 			.then(function(){
 				if($rootScope.localNotificationsEnabled){quantimodoService.decrementNotificationBadges();}
@@ -228,10 +228,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				hideInboxLoader();
 			});
 	};
-	$scope.snooze = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex){
+	$scope.snooze = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){return;}
 		$scope.lastAction = 'Snoozed';
-		var params = notificationAction(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex);
+		var params = notificationAction(trackingReminderNotification);
 		quantimodoService.snoozeTrackingReminderNotificationDeferred(params)
 			.then(function(){
 				if($rootScope.localNotificationsEnabled){quantimodoService.decrementNotificationBadges();}

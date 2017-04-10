@@ -1399,7 +1399,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             variable: quantimodoService.getPrimaryOutcomeVariable().name,
             variableName: quantimodoService.getPrimaryOutcomeVariable().name,
             variableCategoryName: quantimodoService.getPrimaryOutcomeVariable().variableCategoryName,
-            variableDescription: quantimodoService.getPrimaryOutcomeVariable().description,
+            valence: quantimodoService.getPrimaryOutcomeVariable().valence,
             startTimeEpoch: Math.floor(startTimeEpoch / 1000),
             unitAbbreviatedName: quantimodoService.getPrimaryOutcomeVariable().unitAbbreviatedName,
             value: numericRatingValue,
@@ -2767,7 +2767,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         for (index = 0; index < measurements.length; ++index) {
             if(!measurements[index].variableName){measurements[index].variableName = measurements[index].variable;}
             if(measurements[index].variableName === quantimodoService.getPrimaryOutcomeVariable().name){
-                measurements[index].variableDescription = quantimodoService.getPrimaryOutcomeVariable().description;
+                measurements[index].valence = quantimodoService.getPrimaryOutcomeVariable().valence;
             }
             if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
             if (measurements[index].unitAbbreviatedName.charAt(0) === '/') {
@@ -2781,10 +2781,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if (measurements[index].unitAbbreviatedName === '%') {
                 measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
             }
-            if (measurements[index].roundedValue && measurements[index].variableDescription === 'positive' && ratingInfo[measurements[index].roundedValue]) {
+            if (measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]) {
                 measurements[index].image = measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
             }
-            if (measurements[index].roundedValue && measurements[index].variableDescription === 'negative' && ratingInfo[measurements[index].roundedValue]) {
+            if (measurements[index].roundedValue && measurements[index].valence === 'negative' && ratingInfo[measurements[index].roundedValue]) {
                 measurements[index].image = ratingInfo[measurements[index].roundedValue].negativeImage;
             }
             if (!measurements[index].image && measurements[index].roundedValue && ratingInfo[measurements[index].roundedValue]) {
@@ -4147,7 +4147,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             reminderStartTime: trackingReminder.reminderStartTime,
             startTrackingDate: trackingReminder.startTrackingDate,
             variableCategoryName: trackingReminder.variableCategoryName,
-            variableDescription: trackingReminder.variableDescription,
+            valence: trackingReminder.valence,
             reminderEndTime: trackingReminder.reminderEndTime
         };
     }
@@ -7294,7 +7294,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 variableCategoryName : "Mood",
                 "unitAbbreviatedName" : "/5",
                 "combinationOperation": "MEAN",
-                "description": "positive",
+                "valence": "positive",
                 "unitName": "1 to 5 Rating",
                 "ratingOptionLabels" : ["Depressed", "Sad", "OK", "Happy", "Ecstatic"],
                 "ratingValueToTextConversionDataSet": {1: "depressed", 2: "sad", 3: "ok", 4: "happy", 5: "ecstatic"},
@@ -7349,7 +7349,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         trackingReminder.variableId = variableObject.id;
         trackingReminder.variableName = variableObject.name;
         trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
-        trackingReminder.variableDescription = variableObject.description;
+        trackingReminder.valence = variableObject.valence;
         trackingReminder.variableCategoryName = variableObject.variableCategoryName;
         trackingReminder.reminderFrequency = 0;
         if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
@@ -7386,7 +7386,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         trackingReminder.variableId = variableObject.id;
         trackingReminder.variableName = variableObject.name;
         trackingReminder.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
-        trackingReminder.variableDescription = variableObject.description;
+        trackingReminder.valence = variableObject.valence;
         trackingReminder.variableCategoryName = variableObject.variableCategoryName;
         trackingReminder.reminderFrequency = 86400;
         trackingReminder.reminderStartTime = quantimodoService.getUtcTimeStringFromLocalString("19:00:00");
@@ -7638,14 +7638,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return true;
     };
-    quantimodoService.getInputType = function(unitAbbreviatedName, variableDescription, variableName) {
+    quantimodoService.getInputType = function(unitAbbreviatedName, valence, variableName) {
         var inputType = 'value';
         if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
         if (unitAbbreviatedName === '/5') {
             inputType = 'oneToFiveNumbers';
-            variableDescription = (variableDescription ? variableDescription : null);
-            if (variableDescription === 'positive') {inputType = 'happiestFaceIsFive';}
-            if (variableDescription === 'negative') {inputType = 'saddestFaceIsFive';}
+            if (valence === 'positive') {inputType = 'happiestFaceIsFive';}
+            if (valence === 'negative') {inputType = 'saddestFaceIsFive';}
         }
         if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
         return inputType;

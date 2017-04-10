@@ -203,7 +203,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             $scope.state.measurement.unitName = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].name;
             $scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].id;
         }
-        setupValueFieldType($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.variableDescription);
+        setupValueFieldType($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.valence);
     };
     $scope.selectPrimaryOutcomeVariableValue = function($event, val){
         // remove any previous primary outcome variables if present
@@ -285,7 +285,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             if($stateParams.variableObject.combinationOperation){$scope.state.measurement.combinationOperation = $stateParams.variableObject.combinationOperation;
             } else {$stateParams.variableObject.combinationOperation = 'MEAN';}
             $scope.state.measurementIsSetup = true;
-            setupValueFieldType($scope.state.measurement.unitAbbreviatedNamee, $stateParams.variableObject.description);
+            setupValueFieldType($scope.state.measurement.unitAbbreviatedNamee, $stateParams.variableObject.valence);
             // Fill in default value as last value if not /5
             /** @namespace $stateParams.variableObject.lastValue */
             if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value &&
@@ -347,13 +347,14 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             $scope.state.showMoreUnits = true;
         }
     };
-    function setupValueFieldType(unitAbbreviatedName, variableDescription, variableName) {
+    function setupValueFieldType(unitAbbreviatedName, valence, variableName) {
+        showMoreUnitsIfNecessary();
         if($scope.state.measurement.inputType){return;}
         if(!unitAbbreviatedName){
             console.error('No unitAbbreviatedName provided to setupValueFieldType');
             return false;
         }
-        $scope.state.measurement.inputType = quantimodoService.getInputType(unitAbbreviatedName, variableDescription, variableName);
+        $scope.state.measurement.inputType = quantimodoService.getInputType(unitAbbreviatedName, valence, variableName);
     }
     function setVariableObjectFromMeasurement() {
         $rootScope.variableObject = {
@@ -361,7 +362,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             variableCategoryName: $scope.state.measurement.variableCategoryName ? $scope.state.measurement.variableCategoryName : null,
             id: $scope.state.measurement.variableId ? $scope.state.measurement.variableId : null,
             name: $scope.state.measurement.variableName,
-            description: $scope.state.measurement.variableDescription
+            valence: $scope.state.measurement.valence
         };
     }
     function setVariableObject() {
@@ -376,7 +377,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         $scope.state.selectedDate = moment(measurementObject.startTimeEpoch * 1000);
         $scope.state.measurement = measurementObject;
         $scope.state.measurementIsSetup = true;
-        setupValueFieldType($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.variableDescription);
+        setupValueFieldType($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.valence);
         if ($scope.state.measurement.variable) { $scope.state.measurement.variableName = $scope.state.measurement.variable; }
         setVariableObject();
     };
@@ -393,7 +394,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 $scope.state.selectedDate = moment($stateParams.reminderNotification.trackingReminderNotificationTimeEpoch * 1000);
             }
             $scope.state.measurementIsSetup = true;
-            setupValueFieldType($stateParams.reminderNotification.unitAbbreviatedName, $stateParams.reminderNotification.variableDescription);
+            setupValueFieldType($stateParams.reminderNotification.unitAbbreviatedName, $stateParams.reminderNotification.valence);
             setVariableObject();
         }
         // Create variableObject

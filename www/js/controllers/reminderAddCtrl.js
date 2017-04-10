@@ -162,7 +162,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if (selectedVariable.name) {$scope.state.trackingReminder.variableName = selectedVariable.name;}
         if (selectedVariable.variableName) {$scope.state.trackingReminder.variableName = selectedVariable.variableName;}
         setHideDefaultValueField();
-        if (selectedVariable.description) {$scope.state.trackingReminder.variableDescription = selectedVariable.description;}
+        if (selectedVariable.valence) {$scope.state.trackingReminder.valence = selectedVariable.valence;}
         $scope.state.showReminderFrequencyCard = true;
         showMoreUnitsIfNecessary();
     };
