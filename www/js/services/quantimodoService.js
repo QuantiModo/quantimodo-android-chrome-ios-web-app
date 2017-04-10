@@ -1945,12 +1945,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (result.address && result.address !== "undefined") {return result.address;}
         quantimodoService.reportError("Where's the damn location info?");
     }
-    quantimodoService.setLocationVariables = function (result, currentTimeEpochSeconds) {
-        if (getLocationNameFromResult(result)) {localStorage.lastLocationName = getLocationNameFromResult(result);}
-        if (result.address) {
+    quantimodoService.updateLocationInLocalStorage = function (result) {
+        if(getLocationNameFromResult(result)) {localStorage.lastLocationName = getLocationNameFromResult(result);}
+        if(result.type){localStorage.lastLocationResultType = result.type;}
+        var currentTimeEpochMilliseconds = new Date().getTime();
+        localStorage.lastLocationUpdateTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
+        if(result.address) {
             localStorage.lastLocationAddress = result.address;
-            localStorage.lastLocationResultType = result.type;
-            localStorage.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
             if(result.address === localStorage.lastLocationName){
                 localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
             } else{
@@ -1963,90 +1964,71 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (localStorage.lastLocationAddress && localStorage.lastLocationAddress !== "undefined") {return localStorage.lastLocationAddress;}
         quantimodoService.reportError("Where's the damn location info?");
     };
-    quantimodoService.postLocationMeasurementAndSetLocationVariables = function (currentTimeEpochSeconds, result, isBackground) {
+    function getHoursAtLocation(){
+        var currentTimeEpochMilliseconds = new Date().getTime();
+        var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
         var secondsAtLocation = currentTimeEpochSeconds - localStorage.lastLocationUpdateTimeEpochSeconds;
-        var hoursAtLocation = Math.round(secondsAtLocation/3600 * 100) / 100;
+        return Math.round(secondsAtLocation/3600 * 100) / 100;
+    }
+    function getGeoLocationSourceName(isBackground) {
         var sourceName = localStorage.lastLocationResultType + ' on ' + getSourceName();
         if(isBackground){sourceName = sourceName + " (Background Geolocation)";}
-        if (getLastLocationNameFromLocalStorage() && getLastLocationNameFromLocalStorage() !== "undefined" && secondsAtLocation > 60) {
+        return sourceName;
+    }
+    quantimodoService.postLocationMeasurementAndSetLocationVariables = function (result, isBackground) {
+        if (getLastLocationNameFromLocalStorage() && getLastLocationNameFromLocalStorage() !== "undefined") {
             var newMeasurement = {
                 variableName:  getLastLocationNameFromLocalStorage(),
                 unitAbbreviatedName: 'h',
                 startTimeEpoch: localStorage.lastLocationUpdateTimeEpochSeconds,
-                sourceName: sourceName,
-                value: hoursAtLocation,
+                sourceName: getGeoLocationSourceName(isBackground, result),
+                value: getHoursAtLocation(),
                 variableCategoryName: 'Location',
                 location: localStorage.lastLocationAddress,
                 combinationOperation: "SUM"
             };
             quantimodoService.postMeasurementDeferred(newMeasurement);
-            quantimodoService.setLocationVariables(result, currentTimeEpochSeconds);
         }
-    };
-    quantimodoService.getLocationVariablesFromLocalStorage = function () {
-        if($rootScope.user && $rootScope.user.trackLocation){
-            localStorage.lastLocationName = quantimodoService.getLocalStorageItemAsString('lastLocationName');
-            localStorage.lastLocationAddress = quantimodoService.getLocalStorageItemAsString('lastLocationAddress');
-            localStorage.lastLocationResultType = quantimodoService.getLocalStorageItemAsString('lastLocationResultType');
-            localStorage.lastLocationUpdateTimeEpochSeconds = quantimodoService.getLocalStorageItemAsString('lastLocationUpdateTimeEpochSeconds');
-            localStorage.lastLocationNameAndAddress = quantimodoService.getLocalStorageItemAsString('lastLocationNameAndAddress');
-        }
+        quantimodoService.updateLocationInLocalStorage(result);
     };
     function hasLocationChanged(result) {
         return getLastLocationNameFromLocalStorage() !== getLocationNameFromResult(result);
     }
-    function lookupGoogleAndFoursquareLocationAndPostMeasurement(deferred, isBackground) {
+    function lookupGoogleAndFoursquareLocationAndPostMeasurement(position, deferred, isBackground) {
         quantimodoService.forecastioWeather();
-        quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps(localStorage.lastLongitude, localStorage.lastLatitude).then(function (result) {
+        quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps(position.latitude, position.longitude).then(function (result) {
             //console.debug('Result was '+JSON.stringify(result));
             if (result.type === 'foursquare') {
                 //console.debug('Foursquare location name is ' + result.name + ' located at ' + result.address);
             } else if (result.type === 'geocode') {
                 //console.debug('geocode address is ' + result.address);
             } else {
-                var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + localStorage.lastLatitude + ',' + localStorage.lastLongitude + 'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + localStorage.lastLatitude + ',' + localStorage.lastLongitude;
+                var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + position.latitude + ',' + position.longitude + 'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + localStorage.lastLatitude + ',' + localStorage.lastLongitude;
                 console.debug('Sorry, I\'ve got nothing. But here is a map!');
             }
-            var currentTimeEpochMilliseconds = new Date().getTime();
-            var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
-            if(hasLocationChanged(result)){
-                if (!localStorage.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined") {
-                    quantimodoService.setLocationVariables(result, currentTimeEpochSeconds);
-                } else {
-                    if (result.address && result.address !== "undefined" && (localStorage.lastLocationAddress !== result.address || localStorage.lastLocationName !== result.name)) {
-                        quantimodoService.reportError('Posting location because')
-                        quantimodoService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result, isBackground);
-                    }
-                }
-            }
+            if(hasLocationChanged(result)){quantimodoService.postLocationMeasurementAndSetLocationVariables(result, isBackground);}
             if(deferred){deferred.resolve(result);}
         });
     }
     quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged = function () {
         var deferred = $q.defer();
-        var usingBackgroundLocationTracking = true;
-        if(usingBackgroundLocationTracking){
-            console.debug("Not logging location with $cordovaGeolocation because we're using background location tracker instead");
-            deferred.reject();
-            return deferred.promise;
-        }
-        quantimodoService.getLocationVariablesFromLocalStorage();
+        var message;
         if(!$rootScope.user){
-            deferred.reject();
+            message = 'Not logging location because we do not have a user';
+            console.debug(message);
+            deferred.reject(message);
             return deferred.promise;
         }
         if(!$rootScope.user.trackLocation){
-            deferred.reject();
+            message = 'Location tracking disabled for this user';
+            console.debug(message);
+            deferred.reject(message);
             return deferred.promise;
         }
         $ionicPlatform.ready(function() {
             var posOptions = {enableHighAccuracy: true, timeout: 20000, maximumAge: 0};
             $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                localStorage.lastLatitude = position.coords.latitude;
-                quantimodoService.setLocalStorageItem('lastLatitude', position.coords.latitude);
-                localStorage.lastLongitude = position.coords.longitude;
-                quantimodoService.setLocalStorageItem('lastLongitude', position.coords.longitude);
-                lookupGoogleAndFoursquareLocationAndPostMeasurement(deferred);
+                lookupGoogleAndFoursquareLocationAndPostMeasurement(position.coords, deferred);
                 //console.debug("My coordinates are: ", position.coords);
             }, function(error) {
                 deferred.reject(error);
@@ -2065,11 +2047,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var callbackFn = function(location) {
             console.debug("background location is " + JSON.stringify(location));
             var isBackground = true;
-            localStorage.lastLatitude = location.latitude;
-            quantimodoService.setLocalStorageItem('lastLatitude', location.latitude);
-            localStorage.lastLongitude = location.longitude;
-            quantimodoService.setLocalStorageItem('lastLongitude', location.longitude);
-            lookupGoogleAndFoursquareLocationAndPostMeasurement(null, isBackground);
+            lookupGoogleAndFoursquareLocationAndPostMeasurement(location, null, isBackground);
             backgroundGeoLocation.finish();
         };
         var failureFn = function(error) {
