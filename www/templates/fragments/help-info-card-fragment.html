@@ -21,19 +21,10 @@
            {{defaultHelpCards[0].title}}
         </p>
     </div>
-<!--    <div >
-        <div class="row" >
-            <div class="button-bar">
-                <img style="margin: auto;" src="img/robots/quantimodo-robot-waving.svg">
-            </div>
-        </div>
-    </div>-->
     <div class="item item-body item-borderless" style="text-align: center;">
         {{defaultHelpCards[0].bodyText}}
     </div>
-    <!--buttons: <pre>{{defaultHelpCards[0].buttons|json}}</pre>-->
     <div ng-repeat="button in defaultHelpCards[0].buttons" >
-        <!--button: <pre>{{button|json}}</pre>-->
         <div class="row" >
             <div class="button-bar">
                 <button class="{{button.buttonClass}}"
@@ -43,16 +34,6 @@
                     <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText}} &nbsp;</i>
                 </button>
             </div>
-        </div>
-    </div>
-    <div class="row" ng-show="defaultHelpCards[0].chromeExtensionEmailButton">
-        <div class="button-bar">
-            <button class="button button-clear button-balanced"
-                    style="font-size: 14px;"
-                    id="chromeExtensionEmailButton"
-                    ng-click="sendChromeEmailLink()">
-                <i class="ion-email"> &nbsp; Send Yourself a Link &nbsp;</i>
-            </button>
         </div>
     </div>
     <div class="row" ng-show="defaultHelpCards[0].emailButton">
