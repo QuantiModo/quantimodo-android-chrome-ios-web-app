@@ -5655,7 +5655,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "track twice!",
                 hideHelpCardText: "Dismiss",
                 hideHelpCardIonIcon: "ion-close-circled",
-                chromeExtensionEmailButton: true
+                emailButton: {
+                    type: "chrome",
+                    text: "Send Me a Link",
+                    ionIcon: "ion-checkmark"
+                }
             },
             {
                 id: "getHelpInfoCard",
