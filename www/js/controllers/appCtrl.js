@@ -773,14 +773,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
             });
     };
-    $scope.showExplanationsPopup = function(settingName) {
-        $ionicPopup.show({
-            title: quantimodoService.explanations[settingName].title,
-            //subTitle: '',
-            template: quantimodoService.explanations[settingName].explanation,
-            scope: $scope,
-            buttons: [{text: 'OK', type: 'button-positive'}]
-        });
+    $scope.showExplanationsPopup = function(settingName, ev) {
+        quantimodoService.showMaterialAlert(quantimodoService.explanations[settingName].title, quantimodoService.explanations[settingName].explanation, ev);
     };
     $scope.saveVariableSettings = function(variableObject){
         $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });

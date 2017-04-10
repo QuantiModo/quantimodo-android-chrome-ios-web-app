@@ -7615,6 +7615,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             title: "Analysis End Date",
             explanation: "Data after this date will not be used in analysis.",
         },
+        thumbs: {
+            title: "Help Me Learn",
+            explanation: "I'm really good at finding correlations and even compensating for various onset delays and durations of action. " +
+                "However, you're much better than me at knowing if there's a way that a given factor could plausibly influence an outcome. " +
+                "You can help me learn and get better at my predictions by pressing the thumbs down button for relationships that you don't think could possibly be causal.",
+        }
     };
     quantimodoService.showMaterialAlert = function(title, textContent, ev){
         // Appending dialog to document.body to cover sidenav in docs app

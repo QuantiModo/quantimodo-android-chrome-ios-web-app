@@ -226,6 +226,10 @@
         </div>
         <div ng-if="state.correlationObjects && state.correlationObjects.length"  class="list card">
             <div ng-include="'templates/fragments/correlations-list-fragment.html'"></div>
+            <div class="button-bar" >
+                <a class="button button-clear button-positive" ng-click="goToState('app.predictorSearch')" style="text-overflow: clip;"><i class="ion-search"> More Discoveries</i></a>
+            </div>
+            <br>
         </div>
         <div class="list card"
              ng-if="!loading && state.numberOfDisplayedNotifications === 0 && favoritesArray && favoritesArray.length"

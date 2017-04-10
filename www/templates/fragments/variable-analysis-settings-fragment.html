@@ -2,14 +2,14 @@
     <div class="list">
         <div class="item item-divider ng-binding">Analysis Settings</div>
         <label class="item item-input item-select">
-            <div class="input-label" style="white-space:normal; width: 60%" ng-click="showExplanationsPopup('combinationOperation')">Combination Method</div>
+            <div class="input-label" style="white-space:normal; width: 60%" ng-click="showExplanationsPopup('combinationOperation', $event)">Combination Method</div>
             <select ng-model="variableObject.combinationOperation">
                 <option value="SUM" name="group">Sum</option>
                 <option value="MEAN" name="group">Average</option>
             </select>
         </label>
         <div ng-hide="variableObject.defaultUnitCategoryName === 'Rating'" class="item item-input">
-            <span class="input-label left-span" ng-click="showExplanationsPopup('minimumAllowedValue')">
+            <span class="input-label left-span" ng-click="showExplanationsPopup('minimumAllowedValue', $event)">
                 Minimum Value &nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span">
@@ -18,7 +18,7 @@
             </span>
         </div>
         <div ng-hide="variableObject.defaultUnitCategoryName === 'Rating'" class="item item-input">
-            <span class="input-label left-span" ng-click="showExplanationsPopup('maximumAllowedValue')">
+            <span class="input-label left-span" ng-click="showExplanationsPopup('maximumAllowedValue', $event)">
                 Maximum Value &nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span">
@@ -27,7 +27,7 @@
             </span>
         </div>
         <div class="item item-input">
-            <span class="input-label left-span" ng-click="showExplanationsPopup('onsetDelay')">
+            <span class="input-label left-span" ng-click="showExplanationsPopup('onsetDelay', $event)">
                 Onset Delay (hours) &nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span" style="width:45%">
@@ -35,7 +35,7 @@
             </span>
         </div>
         <div class="item item-input">
-            <span class="input-label left-span" ng-click="showExplanationsPopup('durationOfAction')">
+            <span class="input-label left-span" ng-click="showExplanationsPopup('durationOfAction', $event)">
                 Duration of Action (hours) &nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span" style="width: 34%">
@@ -44,7 +44,7 @@
             </span>
         </div>
         <div class="item item-input">
-            <span class="input-label left-span" ng-click="showExplanationsPopup('fillingValue')">
+            <span class="input-label left-span" ng-click="showExplanationsPopup('fillingValue', $event)">
                 Filling Value &nbsp; <i class="icon ion-help-circled"></i>
             </span>
             <span class="right-span">
@@ -53,7 +53,7 @@
             </span>
         </div>
         <div class="row labeled-control">
-            <div class="col col-l"><span ng-click="showExplanationsPopup('experimentStartTime')">Analysis Start Date</span></div>
+            <div class="col col-l"><span ng-click="showExplanationsPopup('experimentStartTime', $event)">Analysis Start Date</span></div>
             <div class="col" style="padding-top: 15px;">
                 <input time="false" date="true" mdc-datetime-picker type="text" id="experimentStartTime"
                        placeholder="Select Date" style="cursor: pointer;  background-color: white;" format="MMM Do YYYY"
@@ -61,7 +61,7 @@
             </div>
         </div>
         <div class="row labeled-control">
-            <div class="col col-l"><span ng-click="showExplanationsPopup('experimentEndTime')">Analysis End Date</span></div>
+            <div class="col col-l"><span ng-click="showExplanationsPopup('experimentEndTime', $event)">Analysis End Date</span></div>
             <div class="col" style="padding-top: 15px;">
                 <input time="false" date="true" mdc-datetime-picker type="text" id="experimentEndTime"
                        placeholder="Select Date" style="cursor: pointer;  background-color: white;" format="MMM Do YYYY"
