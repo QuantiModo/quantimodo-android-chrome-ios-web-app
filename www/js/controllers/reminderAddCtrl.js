@@ -61,27 +61,21 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         setTitle();
-        var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
-        $ionicLoading.show();
-        quantimodoService.getUnits(ignoreExpiration).then(function () {
-            $ionicLoading.hide();
-            refreshUnitsIfStale();
-            var reminderIdUrlParameter = quantimodoService.getUrlParameter('reminderId');
-            var variableIdUrlParameter = quantimodoService.getUrlParameter('variableId');
-            if ($stateParams.variableObject) {
-                $rootScope.variableObject = $stateParams.variableObject;
-                setupByVariableObject($stateParams.variableObject);
-            } else if ($stateParams.reminder && $stateParams.reminder !== null) {
-                setupEditReminder($stateParams.reminder);
-            } else if(reminderIdUrlParameter) {
-                setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-            } else if(variableIdUrlParameter) {
-                setupReminderEditingFromVariableId(variableIdUrlParameter);
-            } else if($stateParams.variableCategoryName){
-                $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
-            } else { $scope.goBack(); }
-        });
+        var reminderIdUrlParameter = quantimodoService.getUrlParameter('reminderId');
+        var variableIdUrlParameter = quantimodoService.getUrlParameter('variableId');
+        if ($stateParams.variableObject) {
+            $rootScope.variableObject = $stateParams.variableObject;
+            setupByVariableObject($stateParams.variableObject);
+        } else if ($stateParams.reminder && $stateParams.reminder !== null) {
+            setupEditReminder($stateParams.reminder);
+        } else if(reminderIdUrlParameter) {
+            setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+        } else if(variableIdUrlParameter) {
+            setupReminderEditingFromVariableId(variableIdUrlParameter);
+        } else if($stateParams.variableCategoryName){
+            $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
+            setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+        } else { $scope.goBack(); }
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
     if($rootScope.user) {
@@ -430,10 +424,6 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 if($stateParams.variableCategoryName === 'Treatments'){$scope.state.title = "Add As-Needed Med";} else {$scope.state.title = "Add Favorite";}
             }
         } else {if($stateParams.reminder) {$scope.state.title = "Edit Reminder Settings";} else {$scope.state.title = "Add Reminder";}}
-    };
-    var refreshUnitsIfStale = function () {
-        var ignoreExpiration = false;
-        quantimodoService.getUnits(ignoreExpiration);
     };
     $scope.deleteReminder = function(){
         quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id).then(function(){$scope.goBack();});

@@ -40,35 +40,29 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.state.title = 'Record a Measurement';
-        var ignoreExpiration = true; //Gets them as quickly as possible and refresh later
-        $ionicLoading.show();
-        quantimodoService.getUnits(ignoreExpiration).then(function () {
-            $ionicLoading.hide();
-            refreshUnitsIfStale();
-            console.debug($state.current.name + ": " + "got units in init function");
-            if($stateParams.reminderNotification) {$scope.state.measurement.unitAbbreviatedName = $stateParams.reminderNotification.unitAbbreviatedName;}
-            $scope.state.selectedDate = moment();
-            if(!$scope.state.measurementIsSetup) { setupFromUrlParameters(); }
-            if(!$scope.state.measurementIsSetup) { setupFromMeasurementStateParameter(); }
-            if(!$scope.state.measurementIsSetup) { setupFromMeasurementObjectInUrl(); }
-            if(!$scope.state.measurementIsSetup) { setupFromVariableStateParameter(); }
-            if(!$scope.state.measurementIsSetup) { setupFromReminderObjectInUrl(); }
-            if(!$scope.state.measurementIsSetup) { setupFromReminderNotificationStateParameter(); }
-            if(!$scope.state.measurementIsSetup){
-                setMeasurementVariablesByMeasurementId().then(function() {
-                    if(!$scope.state.measurementIsSetup){
-                        // Not set up, go to different state
-                        if($stateParams.fromUrl){window.location = $stateParams.fromUrl;
-                        } else if ($stateParams.fromState){$state.go($stateParams.fromState);
-                        } else {
-                            $rootScope.hideNavigationMenu = false;
-                            $state.go(config.appSettings.defaultState);
-                        }
+        console.debug($state.current.name + ": " + "got units in init function");
+        if($stateParams.reminderNotification) {$scope.state.measurement.unitAbbreviatedName = $stateParams.reminderNotification.unitAbbreviatedName;}
+        $scope.state.selectedDate = moment();
+        if(!$scope.state.measurementIsSetup) { setupFromUrlParameters(); }
+        if(!$scope.state.measurementIsSetup) { setupFromMeasurementStateParameter(); }
+        if(!$scope.state.measurementIsSetup) { setupFromMeasurementObjectInUrl(); }
+        if(!$scope.state.measurementIsSetup) { setupFromVariableStateParameter(); }
+        if(!$scope.state.measurementIsSetup) { setupFromReminderObjectInUrl(); }
+        if(!$scope.state.measurementIsSetup) { setupFromReminderNotificationStateParameter(); }
+        if(!$scope.state.measurementIsSetup){
+            setMeasurementVariablesByMeasurementId().then(function() {
+                if(!$scope.state.measurementIsSetup){
+                    // Not set up, go to different state
+                    if($stateParams.fromUrl){window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.fromState){$state.go($stateParams.fromState);
+                    } else {
+                        $rootScope.hideNavigationMenu = false;
+                        $state.go(config.appSettings.defaultState);
                     }
-                });
-            }
-            if(!$scope.state.measurementIsSetup){ setupFromVariableNameStateParameter(); }
-        });
+                }
+            });
+        }
+        if(!$scope.state.measurementIsSetup){ setupFromVariableNameStateParameter(); }
     });
     $scope.$on('$ionicView.enter', function(e) {
         console.debug("$ionicView.enter " + $state.current.name);
@@ -210,10 +204,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             $scope.state.measurement.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName].id;
         }
         setupValueFieldType($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.variableDescription);
-    };
-    var refreshUnitsIfStale = function () {
-        var ignoreExpiration = false;
-        quantimodoService.getUnits(ignoreExpiration);
     };
     $scope.selectPrimaryOutcomeVariableValue = function($event, val){
         // remove any previous primary outcome variables if present
