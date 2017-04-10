@@ -54,6 +54,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
             actionButtons[2] = { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
             actionButtons[3] = { text: '<i class="icon ' + quantimodoService.ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
 		}
+        actionButtons[4] = quantimodoService.actionSheetButtons.recordMeasurement;
+        actionButtons[5] = quantimodoService.actionSheetButtons.charts;
 		$scope.state.showButtons = true;
 		getTrackingReminders();
 		$rootScope.showActionSheetMenu = function() {
@@ -67,6 +69,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 					if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
 					if(index === 2){$state.go('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
                     if(index === 3){$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 4){$state.go('app.measurementAddSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 5){$state.go('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
 					return true;
 				}
 			});
