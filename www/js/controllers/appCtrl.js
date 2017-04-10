@@ -725,8 +725,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
             quantimodoService.actionSheetButtons.charts,
             quantimodoService.actionSheetButtons.history,
-            quantimodoService.actionSheetButtons.analysisSettings,
-            quantimodoService.actionSheetButtons.addReminder
+            quantimodoService.actionSheetButtons.analysisSettings
         ];
         /** @namespace config.appSettings.favoritesController */
         if(config.appSettings.favoritesController && config.appSettings.favoritesController.actionMenuButtons){
@@ -743,14 +742,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 if(index === 0){$state.go('app.reminderAdd', {reminder: favorite});}
                 if(index === 1){$state.go('app.measurementAdd', {trackingReminder: favorite});}
                 if(index === 2){$state.go('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
-                if(index === 3) {$state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
-                if(index === 4) {$state.go('app.variableSettings', {variableName: favorite.variableName});}
-                if(index === 5){
-                    var reminder = JSON.parse(JSON.stringify(favorite));
-                    reminder.id = null;
-                    reminder.trackingReminderId = null;
-                    $state.go('app.reminderAdd', {reminder: reminder, fromState: $state.current.name, fromUrl: window.location.href});
-                }
+                if(index === 3){$state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
+                if(index === 4){$state.go('app.variableSettings', {variableName: favorite.variableName});}
                 return true;
             },
             destructiveButtonClicked: function() {

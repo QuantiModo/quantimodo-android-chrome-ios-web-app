@@ -7527,14 +7527,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         reminder: 'ion-android-notifications-none',
         recordMeasurement: 'ion-compose',
         charts: 'ion-arrow-graph-up-right',
-        settings: 'ion-settings'
+        settings: 'ion-settings',
+        help: 'ion-help'
     };
     quantimodoService.actionSheetButtons = {
         history: { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>History'},
         analysisSettings: { text: '<i class="icon ' + quantimodoService.ionIcons.settings + '"></i>' + 'Analysis Settings'},
         recordMeasurement: { text: '<i class="icon ' + quantimodoService.ionIcons.recordMeasurement + '"></i>Record Measurement'},
         addReminder: { text: '<i class="icon ' + quantimodoService.ionIcons.reminder + '"></i>Add Reminder'},
-        charts: { text: '<i class="icon ' + quantimodoService.ionIcons.charts + '"></i>Charts'}
+        charts: { text: '<i class="icon ' + quantimodoService.ionIcons.charts + '"></i>Charts'},
+        settings: { text: '<i class="icon ' + quantimodoService.ionIcons.settings + '"></i>Settings'},
+        help: { text: '<i class="icon ' + quantimodoService.ionIcons.help + '"></i>Help'}
     };
     quantimodoService.addImagePaths = function(object){
         if(object.variableCategoryName){
