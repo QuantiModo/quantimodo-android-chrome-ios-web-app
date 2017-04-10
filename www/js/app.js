@@ -307,7 +307,7 @@ angular.module('starter',
 
     $stateProvider
         .state('intro', {
-            cache: false,
+            cache: true,
             url: '/',
             templateUrl: 'templates/intro-tour-new.html',
             controller: 'IntroCtrl',
@@ -320,7 +320,7 @@ angular.module('starter',
             resolve : config_resolver
         })
         .state('app.welcome', {
-            cache: false,
+            cache: true,
             url: "/welcome",
             views: {
                 'menuContent': {
