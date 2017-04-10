@@ -1947,17 +1947,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.updateLocationInLocalStorage = function (result) {
         if(getLocationNameFromResult(result)) {localStorage.lastLocationName = getLocationNameFromResult(result);}
-        if(result.type){localStorage.lastLocationResultType = result.type;}
+        if(result.type){localStorage.lastLocationResultType = result.type;} else {quantimodoService.reportError("No geolocation lookup type");}
+        if(result.latitude){localStorage.lastLatitude = result.latitude;} else {quantimodoService.reportError("No latitude!");}
+        if(result.longitude){localStorage.lastLongitude = result.longitude;} else {quantimodoService.reportError("No longitude!");}
         var currentTimeEpochMilliseconds = new Date().getTime();
         localStorage.lastLocationUpdateTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
         if(result.address) {
             localStorage.lastLocationAddress = result.address;
-            if(result.address === localStorage.lastLocationName){
-                localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
-            } else{
-                localStorage.lastLocationNameAndAddress = localStorage.lastLocationName + " (" + localStorage.lastLocationAddress + ")";
-            }
-        }
+            if(result.address === localStorage.lastLocationName){localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
+            } else{localStorage.lastLocationNameAndAddress = localStorage.lastLocationName + " (" + localStorage.lastLocationAddress + ")";}
+        } else {quantimodoService.reportError("No address found!");}
     };
     function getLastLocationNameFromLocalStorage(){
         if (localStorage.lastLocationName && localStorage.lastLocationName !== "undefined") {return localStorage.lastLocationName;}
