@@ -3258,13 +3258,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return false;
         }
         var lineChartData = [];
-        var lineChartItem;
+        var lineChartItem, name;
         var numberOfMeasurements = measurements.length;
         if(numberOfMeasurements > 1000){console.warn('Highstock cannot show tooltips because we have more than 100 measurements');}
         for (var i = 0; i < numberOfMeasurements; i++) {
             if(numberOfMeasurements < 1000){
-                lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: "(" + measurements[i].sourceName + ")"};
-                if(measurements[i].note){lineChartItem.name = measurements[i].note + " " + lineChartItem.name;}
+                name = (measurements[i].sourceName) ? "(" + measurements[i].sourceName + ")" : '';
+                if(measurements[i].note){name = measurements[i].note + " " + name;}
+                lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: name};
             } else {
                 lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
             }
@@ -3798,10 +3799,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     formatter: function(){
                         var value = this;
                         var string = '';
-                        string += '<h3><b>' + moment(value.x).format("MMM Do YYYY") + '<b></h3><br/>';
+                        if(numberOfMeasurements < 1000) {
+                            string += '<h3><b>' + moment(value.x).format("h A, dddd, MMM Do YYYY") + '<b></h3><br/>';
+                        } else {
+                            string += '<h3><b>' + moment(value.x).format("MMM Do YYYY") + '<b></h3><br/>';
+                        }
                         angular.forEach(value.points,function(point){
                             //string += '<span>' + point.series.name + ':</span> ';
-                            string += '<span>' + point.point.y + variableObject.userVariableDefaultUnitAbbreviatedName + '</span>';
+                            string += '<span>' + (point.point.y + variableObject.userVariableDefaultUnitAbbreviatedName).replace(' /', '/') + '</span>';
                             string += '<br/>';
                             if(value.points["0"].point.name){
                                 string += '<span>' + value.points["0"].point.name + '</span>';
@@ -7406,7 +7411,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder)
             .then(function() {
                 // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                $state.go(doneState, {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
+                $state.go(doneState, {trackingReminder: trackingReminder});
                 quantimodoService.syncTrackingReminders();
             });
     };
