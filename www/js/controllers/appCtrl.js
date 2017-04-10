@@ -1580,9 +1580,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         quantimodoService.sendEmailViaAPIDeferred('fitbit');
         quantimodoService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
     };
+    var sendChromeEmail = function () {
+        quantimodoService.sendEmailViaAPIDeferred('chrome');
+        quantimodoService.showMaterialAlert('Get the Chrome Extension', 'Please check your email at ' +  $rootScope.user.email + ' for your link.', event);
+    };
     $scope.sendEmailAfterVerification = function(emailType) {
         if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }
         if(emailType === 'fitbit'){ verifyEmailAddressAndExecuteCallback(sendFitbitEmail); }
+        if(emailType === 'chrome'){ verifyEmailAddressAndExecuteCallback(sendChromeEmail()); }
     };
     $scope.updateEmailAndExecuteCallback = function (callback) {
         if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }
