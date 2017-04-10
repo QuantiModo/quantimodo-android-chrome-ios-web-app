@@ -1963,7 +1963,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (localStorage.lastLocationName && localStorage.lastLocationName !== "undefined") {return localStorage.lastLocationName;}
         if (localStorage.lastLocationAddress && localStorage.lastLocationAddress !== "undefined") {return localStorage.lastLocationAddress;}
         quantimodoService.reportError("Where's the damn location info?");
-    };
+    }
     function getHoursAtLocation(){
         var currentTimeEpochMilliseconds = new Date().getTime();
         var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
@@ -2003,7 +2003,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             } else if (result.type === 'geocode') {
                 //console.debug('geocode address is ' + result.address);
             } else {
-                var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + position.latitude + ',' + position.longitude + 'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + localStorage.lastLatitude + ',' + localStorage.lastLongitude;
+                var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + position.latitude + ',' + position.longitude +
+                    'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + position.latitude + ',' + position.longitude;
                 console.debug('Sorry, I\'ve got nothing. But here is a map!');
             }
             if(hasLocationChanged(result)){quantimodoService.postLocationMeasurementAndSetLocationVariables(result, isBackground);}
@@ -5509,8 +5510,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         url = url + localStorage.lastLatitude + ',' + localStorage.lastLongitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
         console.debug('Checking weather forecast at ' + url);
         var measurementSets = [];
-        $http.jsonp(url).
-        success(function(data) {
+        $http.jsonp(url).success(function(data) {
             console.log(data);
             measurementSets.push({
                 variableCategoryName: "Environment",
@@ -5533,7 +5533,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: "F",
                 measurements: [{
                     value: (data.daily.data[0].temperatureMax +  data.daily.data[0].temperatureMin)/2,
-                    startTimeEpoch: yesterdayNoonTimestamp,
+                    startTimeEpoch: yesterdayNoonTimestamp
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
@@ -5545,7 +5545,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: "Pa",
                 measurements: [{
                     value: data.daily.data[0].pressure * 100,
-                    startTimeEpoch: yesterdayNoonTimestamp,
+                    startTimeEpoch: yesterdayNoonTimestamp
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
@@ -5557,7 +5557,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].humidity * 100,
-                    startTimeEpoch: yesterdayNoonTimestamp,
+                    startTimeEpoch: yesterdayNoonTimestamp
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
@@ -5570,7 +5570,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     unitAbbreviatedName: "miles",
                     measurements: [{
                         value: data.daily.data[0].visibility,
-                        startTimeEpoch: yesterdayNoonTimestamp,
+                        startTimeEpoch: yesterdayNoonTimestamp
                         //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                     }]}
                 );
@@ -5583,7 +5583,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].cloudCover * 100,
-                    startTimeEpoch: yesterdayNoonTimestamp,
+                    startTimeEpoch: yesterdayNoonTimestamp
                     //note: data.daily.data[0].icon  // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
