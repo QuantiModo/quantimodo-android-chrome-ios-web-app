@@ -30,6 +30,9 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             getStatisticsForVariable($stateParams.trackingReminder.variableName);
         } else if ($stateParams.variableName){
             if(!$rootScope.variableObject || $rootScope.variableObject.name !== $stateParams.variableName){getStatisticsForVariable($stateParams.variableName);}
+        } else if (quantimodoService.getPrimaryOutcomeVariable()){
+            $stateParams.variableName = quantimodoService.getPrimaryOutcomeVariable().name;
+            getStatisticsForVariable($stateParams.variableName);
         } else {
             $scope.goBack();
             return;
