@@ -883,7 +883,6 @@ angular.module('starter',
             cache: false,
             params: {
                 trackingReminder : null,
-                variableName : null,
                 variableObject: null,
                 measurementInfo: null,
                 noReload: false,
@@ -894,52 +893,6 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/charts-page.html",
                     controller: 'ChartsPageCtrl'
-                }
-            }
-        })
-        .state('app.searchCommonRelationships', {
-            url: "/search-common-relationships",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/iframe-embed.html",
-                    controller: 'IframeScreenCtrl'
-                }
-            }
-        })
-        .state('app.searchUserRelationships', {
-            url: "/search-user-relationships",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/iframe-embed.html",
-                    controller: 'IframeScreenCtrl'
-                }
-            }
-        })
-        .state('app.creditCard', {
-            url: "/credit-card",
-            params: {
-                path: '/api/v2/account/update-card?hideMenu=true',
-                title: 'Update Card',
-                iFrameStyle: "height:2500px; width:100%;"
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/credit-card.html",
-                    controller: 'CreditCardCtrl'
-                }
-            }
-        })
-        .state('app.manageSubscription', {
-            url: "/manage-subscription",
-            params: {
-                path: '/api/v2/account/subscription?hideMenu=true',
-                title: 'Subscription',
-                iFrameStyle: "height:2500px; width:100%;"
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/iframe-embed.html",
-                    controller: 'IframeScreenCtrl'
                 }
             }
         })
