@@ -133,7 +133,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         }).catch(function (error) { console.error(error); });
     }
     $scope.weightedPeriod = 5;
-    $scope.createUserCharts = function() {
+    createUserCharts = function() {
         $scope.loadingCharts = false;
         $scope.state.loading = false;
         /** @namespace $rootScope.correlationObject.causeProcessedDailyMeasurements */
@@ -148,8 +148,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
             if(data.userStudy){ $rootScope.correlationObject = data.userStudy; }
             if(data.publicStudy){ $rootScope.correlationObject = data.publicStudy; }
-            quantimodoService.setLocalStorageItem("lastStudy", JSON.stringify($rootScope.correlationObject));
-            $scope.createUserCharts();
+            createUserCharts();
         }, function (error) {
             console.error(error);
             $scope.loadingCharts = false;

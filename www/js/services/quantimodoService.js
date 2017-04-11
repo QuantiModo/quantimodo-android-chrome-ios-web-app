@@ -426,11 +426,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getStudy = function(params, successHandler, errorHandler){
         quantimodoService.get('api/v1/study', [], params, successHandler, errorHandler);
     };
-    quantimodoService.getStudyDeferred = function(params) {
-        var deferred = $q.defer();
-        quantimodoService.postStudy(params, function(){deferred.resolve();}, function(error){deferred.reject(error);});
-        return deferred.promise;
-    };
     quantimodoService.postUserSettings = function(params, successHandler, errorHandler) {
         quantimodoService.post('api/v1/userSettings', [], params, successHandler, errorHandler);
     };
@@ -1232,29 +1227,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
         }
         return selectedVariableCategoryObject;
-    };
-    quantimodoService.getPairs = function (params, successHandler, errorHandler){
-        var options = {};
-        options.minimumSecondsBetweenRequests = 0;
-        quantimodoService.get('api/v1/pairs',
-            ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'causeVariableName', 'effectVariableName'],
-            params,
-            successHandler,
-            errorHandler,
-            options
-        );
-    };
-    quantimodoService.getPairsDeferred = function (params, successHandler, errorHandler){
-        var deferred = $q.defer();
-        quantimodoService.getPairs(params, function (pairs) {
-            if(successHandler){successHandler();}
-            deferred.resolve(pairs);
-        }, function (error) {
-            if(errorHandler){errorHandler();}
-            deferred.reject(error);
-            console.error(error);
-        });
-        return deferred.promise;
     };
     quantimodoService.getStudyDeferred = function (params, successHandler, errorHandler){
         var deferred = $q.defer();
