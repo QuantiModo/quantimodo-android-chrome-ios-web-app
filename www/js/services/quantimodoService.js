@@ -2892,6 +2892,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     var shouldWeUsePrimaryOutcomeLabels = function (variableObject) {
         return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === quantimodoService.getPrimaryOutcomeVariable().name;
     };
+    function setChartExportingOptions(chartConfig){
+        chartConfig.options.exporting = {enabled: $rootScope.isWeb};
+        return chartConfig;
+    }
     quantimodoService.configureDistributionChart = function(dataAndLabels, variableObject){
         var xAxisLabels = [];
         var xAxisTitle = 'Daily Values (' + variableObject.userVariableDefaultUnitAbbreviatedName + ')';
@@ -2922,7 +2926,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             xAxisLabels = quantimodoService.getPrimaryOutcomeVariableOptionLabels();
             xAxisTitle = '';
         }
-        return {
+        var chartConfig = {
             options: {
                 chart: {
                     height : 300,
@@ -2973,16 +2977,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 credits: {
                     enabled: false
                 },
-                colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
-                exporting: {
-                    enabled: $rootScope.isWeb
-                }
+                colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
             },
             series: [{
                 name : variableObject.name + ' Distribution',
                 data: data
             }]
         };
+        return setChartExportingOptions(chartConfig);
     };
     quantimodoService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
         if(!measurements){
@@ -3051,7 +3053,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(averageValueByWeekdayArray[i] > maximum){maximum = averageValueByWeekdayArray[i];}
             if(averageValueByWeekdayArray[i] < minimum){minimum = averageValueByWeekdayArray[i];}
         }
-        return {
+        var chartConfig = {
             options: {
                 chart: {
                     height : 300,
@@ -3083,16 +3085,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 },
                 credits: {enabled: false},
-                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
-                exporting: {
-                    enabled: $rootScope.isWeb
-                }
+                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
             },
             series: [{
                 name : 'Average  ' + variableObject.name + ' by Day of Week',
                 data: averageValueByWeekdayArray
             }]
         };
+        return setChartExportingOptions(chartConfig);
     };
     quantimodoService.configureMonthlyChart = function(averageValueByMonthlyArray, variableObject){
         if(!variableObject.name){
@@ -3106,7 +3106,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(averageValueByMonthlyArray[i] > maximum){maximum = averageValueByMonthlyArray[i];}
             if(averageValueByMonthlyArray[i] < minimum){minimum = averageValueByMonthlyArray[i];}
         }
-        return {
+        var chartConfig = {
             options: {
                 chart: {
                     height : 300,
@@ -3138,16 +3138,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 },
                 credits: {enabled: false},
-                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
-                exporting: {
-                    enabled: $rootScope.isWeb
-                }
+                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
             },
             series: [{
                 name : 'Average  ' + variableObject.name + ' by Month',
                 data: averageValueByMonthlyArray
             }]
         };
+        return setChartExportingOptions(chartConfig);
     };
     quantimodoService.configureHourlyChart = function(averageValueByHourArray, variableObject){
         if(!variableObject.name){
@@ -3186,7 +3184,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(averageValueByHourArray[i] > maximum){maximum = averageValueByHourArray[i];}
             if(averageValueByHourArray[i] < minimum){minimum = averageValueByHourArray[i];}
         }
-        return {
+        var chartConfig = {
             options: {
                 chart: {
                     height : 300,
@@ -3220,16 +3218,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 },
                 credits: {enabled: false},
-                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"],
-                exporting: {
-                    enabled: $rootScope.isWeb
-                }
+                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"]
             },
             series: [{
                 name : 'Average  ' + variableObject.name + ' by Hour of Day',
                 data: averageValueByHourArray
             }]
         };
+        return setChartExportingOptions(chartConfig);
     };
     quantimodoService.processDataAndConfigureLineChart = function(measurements, variableObject) {
         if(!measurements || !measurements.length){
@@ -3307,7 +3303,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.warn('Need at least a day worth of data for line chart');
             return;
         }
-        var config = {
+        var chartConfig = {
             title: {
                 text: 'Correlations Over Durations of Action',
                 //x: -20 //center
@@ -3333,7 +3329,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             tooltip: {valueSuffix: ''},
             series : seriesToChart
         };
-        return config;
+        return chartConfig;
     };
     quantimodoService.processDataAndConfigureCorrelationsOverOnsetDelaysChart = function(correlations, weightedPeriod) {
         if(!correlations){return false;}
@@ -3533,7 +3529,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         /** @namespace correlationObject.causeVariableDefaultUnitAbbreviatedName */
         /** @namespace correlationObject.effectunitAbbreviatedName */
-        var scatterplotOptions = {
+        var chartConfig = {
             options: {
                 chart: {
                     type: 'scatter',
@@ -3561,10 +3557,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         }
                     }
                 },
-                credits: {enabled: false},
-                exporting: {
-                    enabled: $rootScope.isWeb
-                }
+                credits: {enabled: false}
             },
             xAxis: {
                 title: {
@@ -3587,7 +3580,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             subtitle: {text: ''},
             loading: false
         };
-        return scatterplotOptions;
+        return setChartExportingOptions(chartConfig);
     };
     quantimodoService.configureLineChartForCause  = function(correlationObject, pairs) {
         var variableObject = {unitAbbreviatedName: correlationObject.causeVariableDefaultUnitAbbreviatedName, name: correlationObject.causeVariableName};
@@ -3769,7 +3762,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.warn('Need at least a day worth of data for line chart');
             return;
         }
-        return {
+        var chartConfig = {
             useHighStocks: true,
             options : {
                 //turboThreshold: 0, // DOESN'T SEEM TO WORK -Disables 1000 data point limitation http://api.highcharts.com/highcharts/plotOptions.series.turboThreshold
@@ -3830,8 +3823,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             year: '%Y'
                         }
                     }
-                },
-                exporting: {enabled: $rootScope.isWeb}
+                }
             },
             series :[{
                 name : variableObject.name + ' Over Time',
@@ -3847,6 +3839,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 }
             }]
         };
+        return setChartExportingOptions(chartConfig);
     };
 
     // VARIABLE SERVICE
