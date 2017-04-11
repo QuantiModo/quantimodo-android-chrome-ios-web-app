@@ -13,35 +13,17 @@ A generic app that can be easily configured to help the user track and optimize 
 
 # 5-Minute Quick Start
 1. Fork this repository.
-1. Choose a name for your app.  
-1. Create your free account and app in the [Developer Portal](https://app.quantimo.do/api/v2/apps) to get a 
-`client id` and `client secret`.
-1. Make a copy of `www/configs/default.js.example` named `www/configs/default.js`. Replace `yourlowercaseappnamehere` 
-and `YourAppDisplayNameHere` with your app name within the file. 
-(This configuration file is where you can define the app menu, the primary outcome variable for the app, the intro tour, 
-and many other features.  It is ignored in the git repository to avoid conflicts with other apps.  If you'd like to commit 
-your work in the configuration to the repository, 
-create an additional backup config file named like `www/configs/yourlowercaseappnamehere.js`.  Copy changes made to `www/configs/default.js` 
-to your config file and commit for a backup.)
-1. Make a copy of `www/private_configs/default.config.js.example` named `www/private_configs/default.config.js`. Replace 
-    `your_quantimodo_client_id_here` and `your_quantimodo_client_secret_here` with the credentials you got in the 
-    [Developer Portal](https://app.quantimo.do/api/v2/apps).  `www/private_configs/default.config.js` is ignored and should not be committed 
-    to the repository for security reasons.
-1. Copy `config-template.xml` to a new file named `config.xml` in the root of this repository.  Replace `yourlowercaseappnamehere` and `YourAppDisplayNameHere`.
 1. Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community]
 (https://www.visualstudio.com/cordova-vs?wt.mc_id=o~display~ionic~dn948185), which comes with everything you need!)
 1. Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g cordova ionic`.  
 (Mac Users:  Avoid using `sudo` with your npm commands if possible as it tends to cause problems.)
 1. Install Bower (to auto-download all the libraries listed in bower.json) globally with `npm install -g bower`.  
 1. Run `npm install` in the root of this repository.
+1. Run `gulp configureDefaultApp` in the root of this repository.
+1. Create a test user at [app.quantimo.do](https://app.quantimo.do) with the word `testuser` in the email like mike@testuser.com.
+1. Add the test user username (email) and password to `www/private_configs/default.config.js` in the username and password fields.
 1. Run `ionic serve` in the root of this repository and you should see your app at 
-[http://localhost:8100/#/](http://localhost:8100/#/).
-1. `ionic serve` doesn't provide us an `https` redirect URI in development which will prevent the standard OAuth 
-authentication process from working.  As a workaround, in development, add your QuantiModo username and password to
-`www/private_configs/default.config.js`.  This will bypass the normal OAuth process.  Make sure to remove the username 
-and password lines from `www/private_configs/default.config.js` when building for production.
-1. Great job!  :D  Now you can start configuring your app by changing settings in 
-`www/configs/yourlowercaseappnamehere.js` and modifying the code as needed!
+[http://localhost:8100/#/](http://localhost:8100/#/) or similar.
 1. Need help?  Please [create an issue](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/issues) 
 or contact us at [help.quantimo.do](http://help.quantimo.do). 
 
