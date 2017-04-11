@@ -1328,23 +1328,18 @@ gulp.task('setVersionNumberInFiles', function(callback){
 });
 
 gulp.task('setIonicAppId', function(callback){
-
 	if(!process.env.IONIC_APP_ID){
 		console.error('ERROR: Cannot execute setIonicAppId because process.env.IONIC_APP_ID is not set');
 		return;
 	}
-
 	var filesToUpdate = [
 		'www/js/app.js'
 	];
-
 	return gulp.src(filesToUpdate, {base: "."}) // Every file allown.
 		.pipe(replace('__IONIC_APP_ID__', process.env.IONIC_APP_ID))
 		.pipe(gulp.dest('./'));
-
 	// Returning instead of callback makes it complete before next task
 	//callback();
-
 });
 
 gulp.task('ic_notification', function() {
@@ -1822,6 +1817,16 @@ gulp.task('configureApp', [], function(callback){
 		//'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
         'deleteUnusedFiles',
 		callback);
+});
+
+gulp.task('configureDefaultApp', [], function(callback){
+    process.env.LOWERCASE_APP_NAME = 'yourlowercaseappnamehere';
+    runSequence(
+        'copyAppResources',
+        'loadConfigs',
+        'copyAppConfigToDefault',
+        'setIonicAppId',
+        callback);
 });
 
 gulp.task('buildChromeExtension', [], function(callback){
