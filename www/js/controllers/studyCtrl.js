@@ -133,7 +133,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         }).catch(function (error) { console.error(error); });
     }
     $scope.weightedPeriod = 5;
-    createUserCharts = function() {
+    function createUserCharts() {
         $scope.loadingCharts = false;
         $scope.state.loading = false;
         /** @namespace $rootScope.correlationObject.causeProcessedDailyMeasurements */
@@ -142,12 +142,11 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
         $scope.highchartsReflow();
         $ionicLoading.hide();
-    };
+    }
     function getStudy() {
         $scope.loadingCharts = true;
-        quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (data) {
-            if(data.userStudy){ $rootScope.correlationObject = data.userStudy; }
-            if(data.publicStudy){ $rootScope.correlationObject = data.publicStudy; }
+        quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (study) {
+            $rootScope.correlationObject = study;
             createUserCharts();
         }, function (error) {
             console.error(error);
