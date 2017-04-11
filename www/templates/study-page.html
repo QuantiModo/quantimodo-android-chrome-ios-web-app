@@ -125,7 +125,6 @@
                                  alt="dataSourceImageForCause">
                         </a>
                     </div>
-                    
                     <h3 ng-show="correlationObject.dataSourcesParagraphForEffect" id="effectDataSources">{{correlationObject.effectVariableName}} Data Sources</h3>
                     <p ng-bind-html="correlationObject.dataSourcesParagraphForEffect"></p> <br>
 
@@ -137,7 +136,7 @@
                     </div>
 
                     <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
-                        <p>{{correlationObject.studyLimitations}}</p>
+                        <p ng-bind-html="correlationObject.studyLimitations"></p>
 
                 </div>
             </div>
