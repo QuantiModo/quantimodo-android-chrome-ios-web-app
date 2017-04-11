@@ -1228,13 +1228,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return selectedVariableCategoryObject;
     };
-    quantimodoService.getStudyDeferred = function (params, successHandler, errorHandler){
+    quantimodoService.getStudyDeferred = function (params){
         var deferred = $q.defer();
-        quantimodoService.getStudy(params, function (pairs) {
-            if(successHandler){successHandler();}
-            deferred.resolve(pairs);
+        quantimodoService.getStudy(params, function (response) {
+            var study;
+            if(response.userStudy){ study = response.userStudy; }
+            if(response.publicStudy){ study = response.publicStudy; }
+            for(var i=0; i < study.charts.length; i++){
+                study.charts[i] = setChartExportingOptions(study.charts[i]);
+            }
+            deferred.resolve(study);
         }, function (error) {
-            if(errorHandler){errorHandler();}
             deferred.reject(error);
             console.error(error);
         });
