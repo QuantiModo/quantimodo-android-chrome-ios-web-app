@@ -1387,8 +1387,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return measurementObject;
     };
     function addLocationDataToMeasurement(measurementObject) {
-        if(!measurementObject.latitude){measurementObject.latitude = localStorage.get('lastLatitude');}
-        if(!measurementObject.longitude){measurementObject.latitude = localStorage.get('lastLongitude');}
+        if(!measurementObject.latitude){measurementObject.latitude = localStorage.getItem('lastLatitude');}
+        if(!measurementObject.longitude){measurementObject.latitude = localStorage.getItem('lastLongitude');}
         if(!measurementObject.location){measurementObject.latitude = localStorage.lastLocationNameAndAddress;}
         return measurementObject;
     }
@@ -1966,7 +1966,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return getLastLocationNameFromLocalStorage() !== getLocationNameFromResult(result);
     }
     function coordinatesChanged(coordinates){
-        return localStorage.get('lastLatitude') !== coordinates.latitude && localStorage.get('lastLongitude') !== coordinates.longitude;
+        return localStorage.getItem('lastLatitude') !== coordinates.latitude && localStorage.getItem('lastLongitude') !== coordinates.longitude;
     }
     function lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground) {
 
