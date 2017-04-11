@@ -1387,8 +1387,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return measurementObject;
     };
     function addLocationDataToMeasurement(measurementObject) {
-        if(!measurementObject.latitude){measurementObject.latitude = localStorage.lastLatitude;}
-        if(!measurementObject.longitude){measurementObject.latitude = localStorage.lastLongitude;}
+        if(!measurementObject.latitude){measurementObject.latitude = localStorage.get('lastLatitude');}
+        if(!measurementObject.longitude){measurementObject.latitude = localStorage.get('lastLongitude');}
         if(!measurementObject.location){measurementObject.latitude = localStorage.lastLocationNameAndAddress;}
         return measurementObject;
     }
@@ -1917,16 +1917,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (result.address && result.address !== "undefined") {return result.address;}
         quantimodoService.reportError("Where's the damn location info?");
     }
-    quantimodoService.updateLocationInLocalStorage = function (result) {
-        if(getLocationNameFromResult(result)) {localStorage.lastLocationName = getLocationNameFromResult(result);}
-        if(result.type){localStorage.lastLocationResultType = result.type;} else {quantimodoService.reportError("No geolocation lookup type");}
-        if(result.latitude){localStorage.lastLatitude = result.latitude;} else {quantimodoService.reportError("No latitude!");}
-        if(result.longitude){localStorage.lastLongitude = result.longitude;} else {quantimodoService.reportError("No longitude!");}
+    quantimodoService.updateLocationInLocalStorage = function (coordinates) {
+        if(getLocationNameFromResult(coordinates)) {localStorage.lastLocationName = getLocationNameFromResult(coordinates);}
+        if(coordinates.type){localStorage.lastLocationResultType = coordinates.type;} else {quantimodoService.reportError("No geolocation lookup type");}
+        if(coordinates.latitude){localStorage.lastLatitude = coordinates.latitude;} else {quantimodoService.reportError("No latitude!");}
+        if(coordinates.longitude){localStorage.lastLongitude = coordinates.longitude;} else {quantimodoService.reportError("No longitude!");}
         var currentTimeEpochMilliseconds = new Date().getTime();
         localStorage.lastLocationUpdateTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
-        if(result.address) {
-            localStorage.lastLocationAddress = result.address;
-            if(result.address === localStorage.lastLocationName){localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
+        if(coordinates.address) {
+            localStorage.lastLocationAddress = coordinates.address;
+            if(coordinates.address === localStorage.lastLocationName){localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
             } else{localStorage.lastLocationNameAndAddress = localStorage.lastLocationName + " (" + localStorage.lastLocationAddress + ")";}
         } else {quantimodoService.reportError("No address found!");}
     };
@@ -1962,24 +1962,27 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         quantimodoService.updateLocationInLocalStorage(result);
     };
-    function hasLocationChanged(result) {
+    function hasLocationNameChanged(result) {
         return getLastLocationNameFromLocalStorage() !== getLocationNameFromResult(result);
     }
-    function lookupGoogleAndFoursquareLocationAndPostMeasurement(position, deferred, isBackground) {
-        quantimodoService.forecastioWeather();
-        quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps(position.latitude, position.longitude).then(function (result) {
+    function coordinatesChanged(coordinates){
+        return localStorage.get('lastLatitude') !== coordinates.latitude && localStorage.get('lastLongitude') !== coordinates.longitude;
+    }
+    function lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground) {
+
+        if(!coordinatesChanged(coordinates)){return;}
+        quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps(coordinates.latitude, coordinates.longitude).then(function (result) {
             //console.debug('Result was '+JSON.stringify(result));
             if (result.type === 'foursquare') {
                 //console.debug('Foursquare location name is ' + result.name + ' located at ' + result.address);
             } else if (result.type === 'geocode') {
                 //console.debug('geocode address is ' + result.address);
             } else {
-                var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + position.latitude + ',' + position.longitude +
-                    'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + position.latitude + ',' + position.longitude;
+                var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + coordinates.latitude + ',' + coordinates.longitude +
+                    'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + coordinates.latitude + ',' + coordinates.longitude;
                 console.debug('Sorry, I\'ve got nothing. But here is a map!');
             }
-            if(hasLocationChanged(result)){quantimodoService.postLocationMeasurementAndSetLocationVariables(result, isBackground);}
-            if(deferred){deferred.resolve(result);}
+            if(hasLocationNameChanged(result)){quantimodoService.postLocationMeasurementAndSetLocationVariables(result, isBackground);}
         });
     }
     quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged = function () {
@@ -2000,7 +2003,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $ionicPlatform.ready(function() {
             var posOptions = {enableHighAccuracy: true, timeout: 20000, maximumAge: 0};
             $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                lookupGoogleAndFoursquareLocationAndPostMeasurement(position.coords, deferred);
+                quantimodoService.forecastioWeather(position.coords);
+                lookupGoogleAndFoursquareLocationAndPostMeasurement(position.coords);
+                deferred.resolve();
                 //console.debug("My coordinates are: ", position.coords);
             }, function(error) {
                 deferred.reject(error);
@@ -2016,10 +2021,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return;
         }
         console.debug('Starting quantimodoService.backgroundGeolocationStart');
-        var callbackFn = function(location) {
-            console.debug("background location is " + JSON.stringify(location));
+        var callbackFn = function(coordinates) {
+            console.debug("background location is " + JSON.stringify(coordinates));
             var isBackground = true;
-            lookupGoogleAndFoursquareLocationAndPostMeasurement(location, null, isBackground);
+            quantimodoService.forecastioWeather(coordinates);
+            lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground);
             backgroundGeoLocation.finish();
         };
         var failureFn = function(error) {
@@ -5467,7 +5473,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             window.addEventListener("message", window.onMessageReceived, false);
         }
     };
-    quantimodoService.forecastioWeather = function() {
+    quantimodoService.forecastioWeather = function(coordinates) {
         if(!$rootScope.user){
             console.debug("No recording weather because we're not logged in");
             return;
@@ -5483,7 +5489,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
         var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
-        url = url + localStorage.lastLatitude + ',' + localStorage.lastLongitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
+        url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
         console.debug('Checking weather forecast at ' + url);
         var measurementSets = [];
         $http.jsonp(url).success(function(data) {
