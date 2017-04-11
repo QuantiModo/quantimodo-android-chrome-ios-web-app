@@ -3449,7 +3449,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 yAxis: [{
                     lineWidth: 1,
                     title: {
-                        text: correlationObject.causeVariableName + ' (' + correlationObject.causeunitAbbreviatedName + ')'
+                        text: correlationObject.causeVariableName + ' (' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ')'
                     }
                 }, {
                     lineWidth: 1,
@@ -3469,7 +3469,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     enabled: false
                 },
                 dashStyle: 'shortdot',
-                tooltip: {valueSuffix: '' + correlationObject.causeunitAbbreviatedName}
+                tooltip: {valueSuffix: '' + correlationObject.causeVariableDefaultUnitAbbreviatedName}
             }, {
                 name: correlationObject.effectVariableName,
                 color: '#EA4335',
@@ -3524,7 +3524,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             /** @namespace pairs[i].effectMeasurementValue */
             xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
         }
-        /** @namespace correlationObject.causeunitAbbreviatedName */
+        /** @namespace correlationObject.causeVariableDefaultUnitAbbreviatedName */
         /** @namespace correlationObject.effectunitAbbreviatedName */
         var scatterplotOptions = {
             options: {
@@ -3550,7 +3550,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         },
                         tooltip: {
                             //headerFormat: '<b>{series.name}</b><br>',
-                            pointFormat: '{point.x}' + correlationObject.causeunitAbbreviatedName + ', {point.y}' + correlationObject.effectunitAbbreviatedName
+                            pointFormat: '{point.x}' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ', {point.y}' + correlationObject.effectunitAbbreviatedName
                         }
                     }
                 },
@@ -3562,7 +3562,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             xAxis: {
                 title: {
                     enabled: true,
-                    text: correlationObject.causeVariableName + ' (' + correlationObject.causeunitAbbreviatedName + ')'
+                    text: correlationObject.causeVariableName + ' (' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ')'
                 },
                 startOnTick: true,
                 endOnTick: true,
@@ -3583,7 +3583,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return scatterplotOptions;
     };
     quantimodoService.configureLineChartForCause  = function(correlationObject, pairs) {
-        var variableObject = {unitAbbreviatedName: correlationObject.causeunitAbbreviatedName, name: correlationObject.causeVariableName};
+        var variableObject = {unitAbbreviatedName: correlationObject.causeVariableDefaultUnitAbbreviatedName, name: correlationObject.causeVariableName};
         var data = [];
         for (var i = 0; i < pairs.length; i++) {data[i] = [pairs[i].timestamp * 1000, pairs[i].causeMeasurementValue];}
         return quantimodoService.configureLineChart(data, variableObject);
@@ -3704,7 +3704,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             series: [
                 {
                     yAxis: 0,
-                    name : params.causeVariableName + ' (' + pairs[0].causeunitAbbreviatedName + ')',
+                    name : params.causeVariableName + ' (' + pairs[0].causeVariableDefaultUnitAbbreviatedName + ')',
                     type: tlGraphType,
                     color: inputColor,
                     data: causeSeries,
