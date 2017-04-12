@@ -7592,6 +7592,46 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // Appending dialog to document.body to cover sidenav in docs app
         // Modal dialogs should fully cover application
         // to prevent interaction outside of dialog
+        function DialogController($scope, $mdDialog, dataToPass) {
+            var self = this;
+
+            self.title = dataToPass.title;
+            self.textContent = dataToPass.textContent
+            
+            $scope.hide = function() {
+              $mdDialog.hide();
+            };
+
+            $scope.cancel = function() {
+              $mdDialog.cancel();
+            };
+
+            $scope.answer = function(answer) {
+              $mdDialog.hide(answer);
+            };
+          }
+
+        $mdDialog.show({
+            controller: DialogController,
+            controllerAs: 'ctrl',
+            templateUrl: 'templates/dialogs/robot-alert.html',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose:true,
+            fullscreen: false,
+            locals: {
+                dataToPass: {
+                    title: title,
+                    textContent: textContent,
+                }
+            } // Only for -xs, -sm breakpoints.
+        })
+        .then(function(answer) {
+          //  $scope.status = 'You said the information was "' + answer + '".';
+        }, function() {
+            //$scope.status = 'You cancelled the dialog.';
+        });
+
         $mdDialog.show(
             $mdDialog.alert()
                 .parent(angular.element(document.querySelector('#popupContainer')))
