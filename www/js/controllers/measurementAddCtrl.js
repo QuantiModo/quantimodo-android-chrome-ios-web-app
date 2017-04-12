@@ -63,6 +63,10 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             });
         }
         if(!$scope.state.measurementIsSetup){ setupFromVariableNameStateParameter(); }
+        if(!$scope.state.measurementIsSetup){
+            $stateParams.variableObject = quantimodoService.getPrimaryOutcomeVariable();
+            setupFromVariableStateParameter();
+        }
     });
     $scope.$on('$ionicView.enter', function(e) {
         console.debug("$ionicView.enter " + $state.current.name);
@@ -290,7 +294,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             /** @namespace $stateParams.variableObject.lastValue */
             if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value &&
                 typeof $stateParams.variableObject.lastValue !== "undefined") {
-                $scope.state.measurement.value = Number($stateParams.variableObject.lastValue);
+                $scope.state.measurement.value = Number(($stateParams.variableObject.lastValueInUserUnit) ? $stateParams.variableObject.lastValueInUserUnit : $stateParams.variableObject.lastValue);
             }
         }
     };
