@@ -63,6 +63,10 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             });
         }
         if(!$scope.state.measurementIsSetup){ setupFromVariableNameStateParameter(); }
+        if(!$scope.state.measurementIsSetup){
+            $stateParams.variableObject = quantimodoService.getPrimaryOutcomeVariable();
+            setupFromVariableStateParameter();
+        }
     });
     $scope.$on('$ionicView.enter', function(e) {
         console.debug("$ionicView.enter " + $state.current.name);
