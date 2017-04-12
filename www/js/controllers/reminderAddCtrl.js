@@ -202,7 +202,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if(!$scope.state.thirdReminderStartTimeEpochTime) { $scope.oldOpenReminderStartTimePicker('third'); }
     };
     var validationFailure = function (message) {
-        quantimodoService.showMaterialAlert(message);
+        quantimodoService.showMaterialAlert('Whoops!', message);
         console.error(message);
         if (typeof Bugsnag !== "undefined") {Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");}
     };

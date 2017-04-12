@@ -1716,15 +1716,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         try {stringOrObject = JSON.parse(stringOrObject);} catch (e) {return stringOrObject;}
         return stringOrObject;
     };
-    quantimodoService.showAlert = function(title, template, subTitle) {
-        var alertPopup = $ionicPopup.alert({
-            cssClass : 'positive',
-            okType : 'button-positive',
-            title: title,
-            subTitle: subTitle,
-            template: template
-        });
-    };
     // returns bool
     // if a string starts with substring
     quantimodoService.startsWith = function (fullString, search) {

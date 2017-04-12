@@ -17,7 +17,6 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         console.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
         quantimodoService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
-    $scope.showMaterialAlert = function(title, textContent, ev) {quantimodoService.showMaterialAlert(title, textContent, ev);};
     var removeImportPage = function () {
         quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
         var onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
