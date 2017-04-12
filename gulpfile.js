@@ -37,7 +37,7 @@ var paths = {
 };
 
 var date = new Date();
-date =  date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
+var longDate =  date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
 var dayOfMonth = ("0" + date.getDate()).slice(-2);
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
