@@ -36,12 +36,13 @@ var paths = {
 	sass: ['./scss/**/*.scss']
 };
 
-var date = new Date('2010-10-11T00:00:00+05:30');
+var date = new Date();
 date =  date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
+var dayOfMonth = ("0" + date.getDate()).slice(-2);
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.5.' + date + '.0';
-    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.5.' + dayOfMonth + '.0';
+    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 6);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
 
