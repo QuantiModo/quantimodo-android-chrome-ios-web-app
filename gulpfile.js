@@ -2103,17 +2103,3 @@ gulp.task('prepareQuantiModoAndroid', function(callback){
         'prepareAndroidApp',
         callback);
 });
-
-gulp.task('setVersionNumberEnvsFromIosConfig', [], function(callback){
-	var configFilePath = './config-template-ios.xml';
-	var xml = fs.readFileSync(configFilePath, 'utf8');
-	parseString(xml, function (error, parsedXmlFile) {
-		if(error || !parsedXmlFile){
-			console.error("ERROR: failed to read xml file or it is empty", error);
-		} else {
-			process.env.IONIC_IOS_APP_VERSION_NUMBER = parsedXmlFile.widget.$["ios-CFBundleVersion"];
-			process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-			callback();
-		}
-	});
-});
