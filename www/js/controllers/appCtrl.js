@@ -637,7 +637,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $event.target.select();
     };
     $scope.favoriteValidationFailure = function (message) {
-        quantimodoService.showMaterialAlert(message);
+        quantimodoService.showMaterialAlert('Whoops!', message);
         console.error(message);
         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
     };
@@ -1311,7 +1311,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if($rootScope.offlineConnectionErrorShowing){$rootScope.offlineConnectionErrorShowing = false;}
         $scope.closeMenu();
     });
-    $scope.showAlert = function(title, template, subTitle) {quantimodoService.showAlert(title, template, subTitle);};
     $scope.showMaterialAlert = function(title, textContent, ev) {
         quantimodoService.showMaterialAlert(title, textContent, ev);
     };
@@ -1514,10 +1513,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
             $ionicLoading.hide();
             console.debug(JSON.stringify(response));
-            quantimodoService.showMaterialAlert('Successfully downgraded to QuantiModo Lite');
+            quantimodoService.showMaterialAlert('Downgraded', 'Successfully downgraded to QuantiModo Lite');
         }, function (error) {
             $ionicLoading.hide();
-            quantimodoService.showMaterialAlert('An error occurred while downgrading.', 'Please email mike@quantimo.do');
+            quantimodoService.showMaterialAlert('Error', 'An error occurred while downgrading. Please email mike@quantimo.do');
             console.debug(JSON.stringify(error));
         });
     };

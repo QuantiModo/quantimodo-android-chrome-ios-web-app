@@ -1716,15 +1716,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         try {stringOrObject = JSON.parse(stringOrObject);} catch (e) {return stringOrObject;}
         return stringOrObject;
     };
-    quantimodoService.showAlert = function(title, template, subTitle) {
-        var alertPopup = $ionicPopup.alert({
-            cssClass : 'positive',
-            okType : 'button-positive',
-            title: title,
-            subTitle: subTitle,
-            template: template
-        });
-    };
     // returns bool
     // if a string starts with substring
     quantimodoService.startsWith = function (fullString, search) {
@@ -7589,28 +7580,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
     };
     quantimodoService.showMaterialAlert = function(title, textContent, ev){
-        // Appending dialog to document.body to cover sidenav in docs app
-        // Modal dialogs should fully cover application
-        // to prevent interaction outside of dialog
         function DialogController($scope, $mdDialog, dataToPass) {
             var self = this;
-
             self.title = dataToPass.title;
-            self.textContent = dataToPass.textContent
-            
-            $scope.hide = function() {
-              $mdDialog.hide();
-            };
-
-            $scope.cancel = function() {
-              $mdDialog.cancel();
-            };
-
-            $scope.answer = function(answer) {
-              $mdDialog.hide(answer);
-            };
-          }
-
+            self.textContent = dataToPass.textContent;
+            $scope.hide = function() {$mdDialog.hide();};
+            $scope.cancel = function() {$mdDialog.cancel();};
+            $scope.answer = function(answer) {$mdDialog.hide(answer);};
+        }
         $mdDialog.show({
             controller: DialogController,
             controllerAs: 'ctrl',
@@ -7619,29 +7596,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             targetEvent: ev,
             clickOutsideToClose:true,
             fullscreen: false,
-            locals: {
-                dataToPass: {
-                    title: title,
-                    textContent: textContent,
-                }
-            } // Only for -xs, -sm breakpoints.
+            locals: {dataToPass: {title: title, textContent: textContent}}
         })
         .then(function(answer) {
-          //  $scope.status = 'You said the information was "' + answer + '".';
+            //$scope.status = 'You said the information was "' + answer + '".';
         }, function() {
             //$scope.status = 'You cancelled the dialog.';
         });
-
-        $mdDialog.show(
-            $mdDialog.alert()
-                .parent(angular.element(document.querySelector('#popupContainer')))
-                .clickOutsideToClose(true)
-                .title(title)
-                .textContent(textContent)
-                .ariaLabel(title)
-                .ok('OK')
-                .targetEvent(ev)
-        );
     };
     quantimodoService.validationFailure = function (message, object) {
         quantimodoService.showMaterialAlert(message);

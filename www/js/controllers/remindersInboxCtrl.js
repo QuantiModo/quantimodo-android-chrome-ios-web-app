@@ -84,7 +84,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 						}, function(error){
 							if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 							console.error(error);
-							quantimodoService.showMaterialAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
+							quantimodoService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
 						});
 					return true;
 				}
@@ -387,7 +387,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 						hideInboxLoader();
 						if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 						console.error(error);
-						quantimodoService.showMaterialAlert('Failed to skip all notifications! ', 'Please let me know by pressing the help button.  Thanks!');
+						quantimodoService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
 					});
 				return true;
 			}
