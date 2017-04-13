@@ -206,7 +206,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         quantimodoService.getCommonVariablesDeferred($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
-                    $scope.state.variableSearchResults = arrayUniqueId($scope.state.variableSearchResults.concat(commonVariables));
+                    $scope.state.variableSearchResults = quantimodoService.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));
                     //checkThatVariableNamesExist();
                     $scope.state.searching = false;
                 }
@@ -215,17 +215,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             console.error(error);
         });
     };
-    function arrayUniqueId(array) {
-        var a = array.concat();
-        for(var i=0; i<a.length; ++i) {
-            for(var j=i+1; j<a.length; ++j) {
-                if(a[i].id === a[j].id) {
-                    a.splice(j--, 1);
-                }
-            }
-        }
-        return a;
-    }
     var populateUserVariables = function(){
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
@@ -234,7 +223,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     // Put user variables at top of list
-                    $scope.state.variableSearchResults = arrayUniqueId(userVariables.concat($scope.state.variableSearchResults));
+                    $scope.state.variableSearchResults = quantimodoService.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;
                     //checkThatVariableNamesExist();
