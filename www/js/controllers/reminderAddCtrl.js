@@ -75,6 +75,9 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         } else if($stateParams.variableCategoryName){
             $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
             setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+        } else if (quantimodoService.getPrimaryOutcomeVariable()){
+            $rootScope.variableObject = quantimodoService.getPrimaryOutcomeVariable();
+            setupByVariableObject(quantimodoService.getPrimaryOutcomeVariable());
         } else { $scope.goBack(); }
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
@@ -83,7 +86,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         $scope.state.firstReminderStartTimeEpochTime =
             quantimodoService.getEpochTimeFromLocalStringRoundedToHour('20:00:00');
         $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
-    } else { quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!'); }
+    } else { quantimodoService.reportErrorDeferred($state.current.name + ': $rootScope.user is not defined!'); }
     $scope.openReminderStartTimePicker = function(order) {
         var a = new Date();
         if(order === 'first'){
@@ -202,7 +205,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if(!$scope.state.thirdReminderStartTimeEpochTime) { $scope.oldOpenReminderStartTimePicker('third'); }
     };
     var validationFailure = function (message) {
-        quantimodoService.showMaterialAlert(message);
+        quantimodoService.showMaterialAlert('Whoops!', message);
         console.error(message);
         if (typeof Bugsnag !== "undefined") {Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");}
     };

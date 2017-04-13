@@ -14,7 +14,6 @@ angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $io
         $ionicLoading.hide();
     });
     $scope.useLitePlan = function () {if($stateParams.litePlanState){$state.go($stateParams.litePlanState);} else { $scope.goBack();}};
-    $scope.showMaterialAlert = function(title, textContent, ev) {quantimodoService.showMaterialAlert(title, textContent, ev);};
     $scope.hideUpgradePage = function () {
         $rootScope.upgradePages = $rootScope.upgradePages.filter(function( obj ) {
             return obj.id !== $rootScope.upgradePages[0].id; });

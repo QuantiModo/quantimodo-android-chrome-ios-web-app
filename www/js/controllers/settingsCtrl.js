@@ -328,9 +328,9 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	};
 	function exportMeasurements(type){
 		quantimodoService.postMeasurementsExport(type, function(response){
-			if(!response.success) {quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(response));}
+			if(!response.success) {quantimodoService.reportErrorDeferred("Could not export measurements. Response: " + JSON.stringify(response));}
 		}, function(error){
-			quantimodoService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
+			quantimodoService.reportErrorDeferred("Could not export measurements. Response: " + JSON.stringify(error));
 		});
 		exportRequestAlert();
 	}

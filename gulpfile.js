@@ -36,12 +36,13 @@ var paths = {
 	sass: ['./scss/**/*.scss']
 };
 
-var date = new Date('2010-10-11T00:00:00+05:30');
-date =  date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
+var date = new Date();
+var longDate =  date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
+var dayOfMonth = ("0" + date.getDate()).slice(-2);
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.5.' + date + '.0';
-    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.5.' + dayOfMonth + '.0';
+    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 6);
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
 
@@ -1000,12 +1001,8 @@ gulp.task('addGooglePlusPlugin', [] , function(){
 
 gulp.task('fixResourcesPlist', function(){
 	var deferred = q.defer();
-	if(!process.env.APP_DISPLAY_NAME){
-		deferred.reject('Please export process.env.APP_DISPLAY_NAME');
-	}
-
+	if(!process.env.APP_DISPLAY_NAME){deferred.reject('Please export process.env.APP_DISPLAY_NAME');}
 	var myPlist = plist.parse(fs.readFileSync('platforms/ios/'+process.env.APP_DISPLAY_NAME+'/'+process.env.APP_DISPLAY_NAME+'-Info.plist', 'utf8'));
-
 	var LSApplicationQueriesSchemes = [
 		"fbapi",
 		"fbapi20130214",
@@ -1021,69 +1018,32 @@ gulp.task('fixResourcesPlist', function(){
 		"fbauth2",
 		"fb-messenger-api20140430"
 	];
-
 	myPlist.LSApplicationQueriesSchemes = LSApplicationQueriesSchemes.concat(myPlist.LSApplicationQueriesSchemes);
-
 	if(myPlist.NSAppTransportSecurity && myPlist.NSAppTransportSecurity.NSExceptionDomains){
-
-		// facebook.com
 		var facebookDotCom = {};
-
 		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"]){
 			facebookDotCom = myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"];
 		}
-
-		if(!facebookDotCom.NSIncludesSubdomains){
-			facebookDotCom.NSIncludesSubdomains = true;
-		}
-
-		if(!facebookDotCom.NSThirdPartyExceptionRequiresForwardSecrecy){
-			facebookDotCom.NSThirdPartyExceptionRequiresForwardSecrecy = false;
-		}
-
+		if(!facebookDotCom.NSIncludesSubdomains){facebookDotCom.NSIncludesSubdomains = true;}
+		if(!facebookDotCom.NSThirdPartyExceptionRequiresForwardSecrecy){facebookDotCom.NSThirdPartyExceptionRequiresForwardSecrecy = false;}
 		myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"] = facebookDotCom;
-
 		console.log("Updated facebook.com");
-
-		// fbcdn.net
 		var fbcdnDotNet = {};
-
-		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"]){
-			fbcdnDotNet = myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"];
-		}
-
-		if(!fbcdnDotNet.NSIncludesSubdomains){
-			fbcdnDotNet.NSIncludesSubdomains = true;
-		}
-
-		if(!fbcdnDotNet.NSThirdPartyExceptionRequiresForwardSecrecy){
-			fbcdnDotNet.NSThirdPartyExceptionRequiresForwardSecrecy = false;
-		}
-
+		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"]){fbcdnDotNet = myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"];}
+		if(!fbcdnDotNet.NSIncludesSubdomains){fbcdnDotNet.NSIncludesSubdomains = true;}
+		if(!fbcdnDotNet.NSThirdPartyExceptionRequiresForwardSecrecy){fbcdnDotNet.NSThirdPartyExceptionRequiresForwardSecrecy = false;}
 		myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"] = fbcdnDotNet;
-
 		console.log("Updated fbcdn.net");
-
 		// akamaihd.net
 		var akamaihdDotNet = {};
-
 		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"]){
 			akamaihdDotNet = myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"];
 		}
-
-		if(!akamaihdDotNet.NSIncludesSubdomains){
-			akamaihdDotNet.NSIncludesSubdomains = true;
-		}
-
-		if(!akamaihdDotNet.NSThirdPartyExceptionRequiresForwardSecrecy){
-			akamaihdDotNet.NSThirdPartyExceptionRequiresForwardSecrecy = false;
-		}
-
+		if(!akamaihdDotNet.NSIncludesSubdomains){akamaihdDotNet.NSIncludesSubdomains = true;}
+		if(!akamaihdDotNet.NSThirdPartyExceptionRequiresForwardSecrecy){akamaihdDotNet.NSThirdPartyExceptionRequiresForwardSecrecy = false;}
 		myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"] = akamaihdDotNet;
-
 		console.log("Updated akamaihd.net");
 	}
-
 	fs.writeFile('platforms/ios/'+process.env.APP_DISPLAY_NAME+'/'+process.env.APP_DISPLAY_NAME+'-Info.plist', plist.build(myPlist), 'utf8', function (err) {
 		if (err) {
 			console.error("ERROR: error writing to plist", err);
@@ -1093,28 +1053,18 @@ gulp.task('fixResourcesPlist', function(){
 			deferred.resolve();
 		}
 	});
-
 	return deferred.promise;
 });
 
 gulp.task('addPodfile', function(){
 	var deferred = q.defer();
-
-	if(!process.env.APP_DISPLAY_NAME){
-		deferred.reject('Please export process.env.APP_DISPLAY_NAME');
-	}
-
+	if(!process.env.APP_DISPLAY_NAME){deferred.reject('Please export process.env.APP_DISPLAY_NAME');}
 	var addBugsnagToPodfile = function(){
 		fs.readFile('./platforms/ios/Podfile', function (err, data) {
-			if (err) {
-				throw err;
-			}
-
+			if (err) {throw err;}
 			//if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
-
 			if(data.indexOf('Bugsnag') < 0){
 				console.log("no Bugsnag detected");
-
 				gulp.src('./platforms/ios/Podfile')
 				.pipe(change(function(content){
 					var bugsnag_str = 'target \''+process.env.APP_DISPLAY_NAME+'\' do \npod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"';
@@ -1123,26 +1073,22 @@ gulp.task('addPodfile', function(){
 					return content.replace(/target.*/g, bugsnag_str);
 				}))
 				.pipe(gulp.dest('./platforms/ios/'));
-
 			} else {
 				console.log("Bugsnag already present in Podfile");
 				deferred.resolve();
 			}
 		});
 	};
-
 	fs.exists('./platforms/ios/Podfile', function(exists) {
 	    if (exists) {
 	    	console.log("Podfile");
 	        addBugsnagToPodfile();
 	    } else {
 	    	console.log("PODFILE REPO NOT FOUND, Installing it First");
-
 	    	var commands = [
 	    		'cd ./platforms/ios',
 	    		'pod init'
 	    	].join(' && ');
-
 	    	execute(commands, function(error){
 	    		if(error !== null){
 	    			console.error("ERROR: There was an error detected", error);
@@ -1154,15 +1100,11 @@ gulp.task('addPodfile', function(){
 	    	});
 	    }
 	});
-
 	return deferred.promise;
 });
 
 gulp.task('addInheritedToOtherLinkerFlags', function(){
-	if(!process.env.APP_DISPLAY_NAME){
-		console.log('Please export process.env.APP_DISPLAY_NAME');
-	}
-
+	if(!process.env.APP_DISPLAY_NAME){console.log('Please export process.env.APP_DISPLAY_NAME');}
 	return gulp.src('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/project.pbxproj')
 	.pipe(change(function(content){
 		return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, "OTHER_LDFLAGS = (\n\t\t\t\t\t\"$(inherited)\",");
@@ -1171,11 +1113,7 @@ gulp.task('addInheritedToOtherLinkerFlags', function(){
 });
 
 gulp.task('addDeploymentTarget', function(){
-
-	if(!process.env.APP_DISPLAY_NAME){
-		console.log('Please export process.env.APP_DISPLAY_NAME');
-	}
-
+	if(!process.env.APP_DISPLAY_NAME){console.log('Please export process.env.APP_DISPLAY_NAME');}
 	return gulp.src('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/project.pbxproj')
 		.pipe(change(function(content){
 			if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1) {
@@ -1191,12 +1129,10 @@ gulp.task('addDeploymentTarget', function(){
 
 gulp.task('installPods', [ 'addPodfile' ] , function(){
 	var deferred = q.defer();
-
 	var commands = [
 		'cd platforms/ios',
 		'pod install'
 	].join(' && ');
-
 	execute(commands, function(error){
 		if(error !== null){
 			console.error("ERROR: There was an error detected", error);
@@ -1206,15 +1142,11 @@ gulp.task('installPods', [ 'addPodfile' ] , function(){
 			deferred.resolve();
 		}
 	});
-
 	return deferred.promise;
 });
 
 gulp.task('addBugsnagInObjC', function(){
-	if(!process.env.APP_DISPLAY_NAME){
-		console.log('Please export process.env.APP_DISPLAY_NAME');
-	}
-
+	if(!process.env.APP_DISPLAY_NAME){console.log('Please export process.env.APP_DISPLAY_NAME');}
 	return gulp.src('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'/Classes/AppDelegate.m')
 	.pipe(change(function(content){
 		if(content.indexOf('Bugsnag') !== -1){
@@ -1228,14 +1160,10 @@ gulp.task('addBugsnagInObjC', function(){
 		return content;
 	}))
 	.pipe(gulp.dest('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'/Classes/'));
-
 });
 
 gulp.task('enableBitCode', function(){
-	if(!process.env.APP_DISPLAY_NAME){
-		console.log('Please export process.env.APP_DISPLAY_NAME');
-	}
-
+	if(!process.env.APP_DISPLAY_NAME){console.log('Please export process.env.APP_DISPLAY_NAME');}
 	return gulp.src('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/project.pbxproj')
 	.pipe(change(function(content){
 		return content.replace(/FRAMEWORK_SEARCH_PATHS(\s*)?=(\s*)?\(/g, "ENABLE_BITCODE = NO;\n\t\t\t\tFRAMEWORK_SEARCH_PATHS = (");
@@ -1328,23 +1256,18 @@ gulp.task('setVersionNumberInFiles', function(callback){
 });
 
 gulp.task('setIonicAppId', function(callback){
-
 	if(!process.env.IONIC_APP_ID){
 		console.error('ERROR: Cannot execute setIonicAppId because process.env.IONIC_APP_ID is not set');
 		return;
 	}
-
 	var filesToUpdate = [
 		'www/js/app.js'
 	];
-
 	return gulp.src(filesToUpdate, {base: "."}) // Every file allown.
 		.pipe(replace('__IONIC_APP_ID__', process.env.IONIC_APP_ID))
 		.pipe(gulp.dest('./'));
-
 	// Returning instead of callback makes it complete before next task
 	//callback();
-
 });
 
 gulp.task('ic_notification', function() {
@@ -1359,10 +1282,8 @@ var winPlatforms = ["windows"],
 	osxPlatforms = ["ios"],
 	platformsToBuild = process.platform === "darwin" ? osxPlatforms :
 		(process.platform === "linux" ? linuxPlatforms : winPlatforms),
-
 	// Build config to use for build - Use Pascal case to match paths set by VS
 	buildConfig = "Release",
-
 	// Arguments for build by platform. Warning: Omit the extra "--" when referencing platform
 	// specific options (Ex:"-- --gradleArg" is "--gradleArg").
 	buildArgs = {
@@ -1370,9 +1291,8 @@ var winPlatforms = ["windows"],
 		ios: ["--" + buildConfig.toLocaleLowerCase(), "--device"],
 		windows: ["--" + buildConfig.toLocaleLowerCase(), "--device"]
 	},
-
 	// Paths used by build
-	paths = {
+	buildPaths = {
 		tsconfig: "scripts/tsconfig.json",
 		ts: "./scripts/**/*.ts",
 		sass: "./scss/**/*.scss",
@@ -1400,9 +1320,9 @@ gulp.task("build",  ["scripts", "sass"], function() {
 			return cordovaBuild.packageProject(platformsToBuild)
 				.then(function() {
 					return es.concat(
-						gulp.src(paths.apk).pipe(gulp.dest(paths.binApk)),
-						gulp.src(paths.ipa).pipe(gulp.dest(paths.binIpa)),
-						gulp.src(paths.appx).pipe(gulp.dest(paths.binAppx)));
+						gulp.src(buildPaths.apk).pipe(gulp.dest(buildPaths.binApk)),
+						gulp.src(buildPaths.ipa).pipe(gulp.dest(buildPaths.binIpa)),
+						gulp.src(buildPaths.appx).pipe(gulp.dest(buildPaths.binAppx)));
 				});
 		});
 });
@@ -1411,7 +1331,7 @@ gulp.task("build",  ["scripts", "sass"], function() {
 gulp.task("build-android", ["scripts", "sass"], function() {
 	return cordovaBuild.buildProject("android", buildArgs)
 		.then(function() {
-			return gulp.src(paths.apk).pipe(gulp.dest(paths.binApk));
+			return gulp.src(buildPaths.apk).pipe(gulp.dest(buildPaths.binApk));
 		});
 });
 
@@ -1422,7 +1342,7 @@ gulp.task("build-ios", ["scripts", "sass"], function() {
 			// ** NOTE: Package not required in recent versions of Cordova
 			return cordovaBuild.packageProject(platformsToBuild)
 				.then(function() {
-					return gulp.src(paths.ipa).pipe(gulp.dest(paths.binIpa));
+					return gulp.src(buildPaths.ipa).pipe(gulp.dest(buildPaths.binIpa));
 				});
 		});
 });
@@ -1431,7 +1351,7 @@ gulp.task("build-ios", ["scripts", "sass"], function() {
 gulp.task("build-win", ["scripts", "sass"], function() {
 	return cordovaBuild.buildProject("windows", buildArgs)
 		.then(function() {
-			return gulp.src(paths.appx).pipe(gulp.dest(paths.binAppx));
+			return gulp.src(buildPaths.appx).pipe(gulp.dest(buildPaths.binAppx));
 		});
 });
 
@@ -1439,14 +1359,14 @@ gulp.task("build-win", ["scripts", "sass"], function() {
 gulp.task("scripts", function () {
 	// Compile TypeScript code - This sample is designed to compile anything under the "scripts" folder using settings
 	// in tsconfig.json if present or this gulpfile if not.  Adjust as appropriate for your use case.
-	if (fs.existsSync(paths.tsconfig)) {
+	if (fs.existsSync(buildPaths.tsconfig)) {
 		// Use settings from scripts/tsconfig.json
-		gulp.src(paths.ts)
-			.pipe(ts(ts.createProject(paths.tsconfig)))
+		gulp.src(buildPaths.ts)
+			.pipe(ts(ts.createProject(buildPaths.tsconfig)))
 			.pipe(gulp.dest("."));
 	} else {
 		// Otherwise use these default settings
-		gulp.src(paths.ts)
+		gulp.src(buildPaths.ts)
 			.pipe(ts({
 				noImplicitAny: false,
 				noEmitOnError: true,
@@ -1824,6 +1744,16 @@ gulp.task('configureApp', [], function(callback){
 		callback);
 });
 
+gulp.task('configureDefaultApp', [], function(callback){
+    process.env.LOWERCASE_APP_NAME = 'yourlowercaseappnamehere';
+    runSequence(
+        'copyAppResources',
+        'loadConfigs',
+        'copyAppConfigToDefault',
+        'setIonicAppId',
+        callback);
+});
+
 gulp.task('buildChromeExtension', [], function(callback){
 	runSequence(
         'cleanChromeBuildFolder',
@@ -2172,18 +2102,4 @@ gulp.task('prepareQuantiModoAndroid', function(callback){
         'setQuantiModoEnvs',
         'prepareAndroidApp',
         callback);
-});
-
-gulp.task('setVersionNumberEnvsFromIosConfig', [], function(callback){
-	var configFilePath = './config-template-ios.xml';
-	var xml = fs.readFileSync(configFilePath, 'utf8');
-	parseString(xml, function (error, parsedXmlFile) {
-		if(error || !parsedXmlFile){
-			console.error("ERROR: failed to read xml file or it is empty", error);
-		} else {
-			process.env.IONIC_IOS_APP_VERSION_NUMBER = parsedXmlFile.widget.$["ios-CFBundleVersion"];
-			process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-			callback();
-		}
-	});
 });

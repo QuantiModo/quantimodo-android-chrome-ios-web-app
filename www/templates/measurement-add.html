@@ -9,7 +9,7 @@
             <div ng-if="bloodPressure.show" class="item item-divider">
                 Blood Pressure
             </div>
-            <div class="list">
+            <div class="list margin-bottom-0">
                 <label class="item item-input item-select" ng-show="state.showVariableCategorySelector">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
                     <select id="variableCategorySelector" ng-model="state.measurement.variableCategoryName"
@@ -18,16 +18,20 @@
                                 value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
+
                 <label ng-if="state.measurement.inputType === 'value'" class="item item-input">
-                    <span class="input-label">{{state.defaultValueLabel}}</span>
-                    <input type="number" ng-model="state.measurement.value" id="defaultValue"
+                    <div class="input-label">
+                        {{state.defaultValueLabel}}
+                    </div>
+                    <input type="number" class="text-right" ng-model="state.measurement.value" id="defaultValue"
                            ng-click="onTextClick($event)" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
+
                 <label ng-if="state.measurement.inputType === 'bloodPressure'" class="item item-input">
                     <input type="number" ng-model="bloodPressure.systolicValue" id="systolicValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter systolic value"
-                           style="text-align: center">
+                           class="text-right">
                     <span class="input-label">
                         mmHg
                     </span >
@@ -36,7 +40,7 @@
                     <input type="number" ng-model="bloodPressure.diastolicValue" id="diastolicValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter diastolic value"
-                           style="text-align: center">
+                           class="text-right">
                     <span class="input-label">
                         mmHg
                     </span>
@@ -93,28 +97,23 @@
                     </select>
 
                 </label>
-                <div class="row labeled-control">
-                    <div class="col col-1">
-                        <span>
-                            Date
-                        </span>
+                <label class="item item-input">
+                    <div class="input-label">
+                        Date
                     </div>
-                    <div class="col" style="padding-top: 15px;">
-                        <input time="false" date="true" mdc-datetime-picker type="text" id="date2342"
+                    <input time="false" date="true" mdc-datetime-picker type="text" id="date2342"
                                placeholder="Date"
                                style="cursor: pointer;  background-color: white;"
                                format="ddd, MMM Do YYYY"
-                               ng-model="state.selectedDate">
+                               ng-model="state.selectedDate"
+                               class="md-input text-right">
+                </label>
+
+                <label class="item item-input">
+                    <div class="input-label">
+                        Time
                     </div>
-                </div>
-                <div class="row labeled-control">
-                    <div class="col col-l">
-                        <span>
-                            Time
-                        </span>
-                    </div>
-                    <div class="col" style="padding-top: 15px;">
-                        <input style="cursor: pointer; background-color: white"
+                    <input style="cursor: pointer; background-color: white;"
                                mdc-datetime-picker=""
                                date="false"
                                time="true"
@@ -125,21 +124,15 @@
                                min-date="minDate"
                                format="h:mm A"
                                ng-model="state.selectedDate"
-                               class=" md-input">
+                               class="md-input text-right">
+                </label>
+
+                <label class="item item-input">
+                    <div class="input-label">
+                        Note
                     </div>
-                </div>
-                <div class="row labeled-control">
-                    <div class="col col-l">
-                        <span>
-                            Note
-                        </span>
-                    </div>
-                    <div class="col" style="padding-top: 11px;">
-                        <div class="col">
-                            <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="up-top">
-                        </div>
-                    </div>
-                </div>
+                    <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="text-right up-top">
+                </label>
             </div>
             <div class="row">
                 <div class="col col-50">
