@@ -828,7 +828,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
-            quantimodoService.reportError('No variable name provided to $scope.getUserVariableByName');
+            quantimodoService.reportErrorDeferred('No variable name provided to $scope.getUserVariableByName');
             return;
         }
         if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){ $rootScope.variableObject = null; }
@@ -1322,7 +1322,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if($rootScope.isMobile || mobilePurchaseDebug){  mobileUpgrade(ev);} else { webUpgrade(ev); }
     };
     var webUpgrade = function(ev) {
-        quantimodoService.reportError('User clicked upgrade button');
+        quantimodoService.reportErrorDeferred('User clicked upgrade button');
         $mdDialog.show({
             controller: WebUpgradeDialogController,
             templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
@@ -1331,7 +1331,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             clickOutsideToClose: false,
             fullscreen: false
         }).then(function(answer) {
-            quantimodoService.reportError('User submitted credit card info');
+            quantimodoService.reportErrorDeferred('User submitted credit card info');
             var body = {
                 "card_number": answer.creditCardInfo.cardNumber,
                 "card_month": answer.creditCardInfo.month,
@@ -1343,7 +1343,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             quantimodoService.recordUpgradeProductPurchase(answer.productId, null, 1);
             $ionicLoading.show();
             quantimodoService.postCreditCardDeferred(body).then(function (response) {
-                quantimodoService.reportError('Got successful upgrade response from API');
+                quantimodoService.reportErrorDeferred('Got successful upgrade response from API');
                 $ionicLoading.hide();
                 console.debug(JSON.stringify(response));
                 $mdDialog.show(
@@ -1360,7 +1360,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     quantimodoService.recordUpgradeProductPurchase(answer.productId, response.data.purchaseId, 2);
                 });
             }, function (response) {
-                quantimodoService.reportError(response);
+                quantimodoService.reportErrorDeferred(response);
                 var message = '';
                 if(response.error){ message = response.error; }
                 $ionicLoading.hide();
@@ -1386,14 +1386,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         for(var i = 0; i < 13; i++){  $scope.years.push(currentYear + i); }
         $scope.hide = function() { $mdDialog.hide(); };
         $scope.cancel = function() {
-            quantimodoService.reportError('User cancelled upgrade!  What happened?');
+            quantimodoService.reportErrorDeferred('User cancelled upgrade!  What happened?');
             $mdDialog.cancel();
         };
         $scope.webSubscribe = function(productId, coupon, creditCardInfo, event) {
-            if (!creditCardInfo.securityCode) { quantimodoService.reportError('Please enter card number'); return;}
-            if (!creditCardInfo.cardNumber) {quantimodoService.reportError('Please enter card number'); return; }
-            if (!creditCardInfo.month) { quantimodoService.reportError('Please enter card month'); return; }
-            if (!creditCardInfo.year) { quantimodoService.reportError('Please enter card year'); return; }
+            if (!creditCardInfo.securityCode) { quantimodoService.reportErrorDeferred('Please enter card number'); return;}
+            if (!creditCardInfo.cardNumber) {quantimodoService.reportErrorDeferred('Please enter card number'); return; }
+            if (!creditCardInfo.month) { quantimodoService.reportErrorDeferred('Please enter card month'); return; }
+            if (!creditCardInfo.year) { quantimodoService.reportErrorDeferred('Please enter card year'); return; }
             var answer = { productId: productId, coupon: coupon, creditCardInfo: creditCardInfo };
             $mdDialog.hide(answer);
         };
@@ -1403,7 +1403,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $scope.productId = 'monthly7';
         $scope.hide = function(){$mdDialog.hide();};
         $scope.cancel = function() {
-            quantimodoService.reportError('User cancelled upgrade!  What happened?');
+            quantimodoService.reportErrorDeferred('User cancelled upgrade!  What happened?');
             $mdDialog.cancel();
         };
         $scope.subscribe = function(answer) {$mdDialog.hide(answer);};
@@ -1425,7 +1425,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             //makeInAppPurchase(baseProductId);  // iOS requires us to get products first or we get "unknown product id" error
             getProductsAndMakeInAppPurchase(baseProductId);
         }, function() {
-            quantimodoService.reportError('User cancelled mobileUpgrade subscription selection');
+            quantimodoService.reportErrorDeferred('User cancelled mobileUpgrade subscription selection');
             $scope.status = 'You cancelled the dialog.';
         });
     };
@@ -1440,7 +1440,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         return baseProductId;
     }
     function handleSubscribeResponse(baseProductId, data) {
-        quantimodoService.reportError('inAppPurchase.subscribe response: ' + JSON.stringify(data));
+        quantimodoService.reportErrorDeferred('inAppPurchase.subscribe response: ' + JSON.stringify(data));
         $ionicLoading.hide();
         var alert;
         function showSuccessAlert() {
@@ -1453,7 +1453,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 });
         }
         showSuccessAlert();
-        quantimodoService.reportError("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
+        quantimodoService.reportErrorDeferred("User subscribed to " + getProductId(baseProductId) + ": " + JSON.stringify(data));
         quantimodoService.updateUserSettingsDeferred({
             subscriptionProvider: getSubscriptionProvider(),
             productId: getProductId(baseProductId),
@@ -1470,9 +1470,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 if(getReceipt){
                     inAppPurchase.getReceipt()
                         .then(function (receipt) {
-                            quantimodoService.reportError('inAppPurchase.getReceipt response: ' + JSON.stringify(receipt));
+                            quantimodoService.reportErrorDeferred('inAppPurchase.getReceipt response: ' + JSON.stringify(receipt));
                             console.debug("inAppPurchase.getReceipt " + receipt);
-                        }).catch(function (error) { quantimodoService.reportError('inAppPurchase.getReceipt error response: ' + JSON.stringify(error)); });
+                        }).catch(function (error) { quantimodoService.reportErrorDeferred('inAppPurchase.getReceipt error response: ' + JSON.stringify(error)); });
                 }
                 handleSubscribeResponse(baseProductId, data);
             }).catch(function (error) {
@@ -1486,7 +1486,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 }
                 if($rootScope.isIOS){ showErrorAlert(); } // We want to alert the Apple Reviews about their stupid errors
                 if($rootScope.isAndroid){ handleSubscribeResponse(baseProductId, error); } // Sometimes Android has an error message even though it actually succeeds
-                quantimodoService.reportError('inAppPurchase.catch error ' + JSON.stringify(error));
+                quantimodoService.reportErrorDeferred('inAppPurchase.catch error ' + JSON.stringify(error));
             });
     }
     var getProductsAndMakeInAppPurchase = function (baseProductId) {
@@ -1499,13 +1499,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         inAppPurchase
             .getProducts([getProductId(baseProductId)])
             .then(function (products) {
-                quantimodoService.reportError('inAppPurchase.getProducts response: ' + JSON.stringify(products));
+                quantimodoService.reportErrorDeferred('inAppPurchase.getProducts response: ' + JSON.stringify(products));
                 if(purchaseDebugMode){alert('Available Products: ' + JSON.stringify(products));}
                  //[{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                 makeInAppPurchase(baseProductId);
             }).catch(function (err) {
                 $ionicLoading.hide();
-                quantimodoService.reportError("couldn't get product " + getProductId(baseProductId) + ": " + JSON.stringify(err));
+                quantimodoService.reportErrorDeferred("couldn't get product " + getProductId(baseProductId) + ": " + JSON.stringify(err));
             });
     };
     var webDowngrade = function() {
@@ -1647,6 +1647,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 deferred.resolve(self.items);
                 return deferred.promise;
             }
+            if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
+                self.items = quantimodoService.removeItemsWithDifferentName(self.items, query);
+                if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
+                    deferred.resolve(self.items);
+                    return deferred.promise;
+                }
+            }
             quantimodoService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
                 .then(function(results){
                     console.debug("Got " + results.length + " results matching " + query);
@@ -1673,7 +1680,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             return variables.map( function (variable) {
                 return {
                     value: variable.name.toLowerCase(),
-                    display: variable.name,
+                    name: variable.name,
                     variable: variable,
                 };
             });

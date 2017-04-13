@@ -22,14 +22,14 @@
                         md-selected-item-change="ctrl.selectedItemChange(item)"
                         md-items="item in ctrl.querySearch(ctrl.searchText)"
                         ng-model-options="{debounce: 500}"
-                        md-item-text="item.display"
+                        md-item-text="item.name"
                         md-min-length="0"
                         placeholder="{{ctrl.placeholder}}"
                         md-autofocus>
                     <md-item-template>
                         <!--<i class="icon {{item.ionIcon}}"></i>-->
                         <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">
-                            {{item.display}}
+                            {{item.name}}
                         </span>
                     </md-item-template>
                     <md-not-found>

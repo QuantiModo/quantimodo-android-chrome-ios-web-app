@@ -92,7 +92,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 var item = body[i];
                 for (var j = 0; j < requiredFields.length; j++) {
                     if (!(requiredFields[j] in item)) {
-                        quantimodoService.reportError('Missing required field ' + requiredFields[j] + ' in ' + baseURL + ' request!');
+                        quantimodoService.bugsnagNotify('Missing required field', requiredFields[j] + ' in ' + baseURL + ' request!', body);
                         //throw 'missing required field in POST data; required fields: ' + requiredFields.toString();
                     }
                 }
@@ -154,9 +154,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
         }
-        if(status === 502){quantimodoService.reportError('502 from ' + request.method + ' ' + request.url);}
-        if(status === 400){quantimodoService.reportError('400 from ' + request.method + ' ' + request.url);}
-        if(status === 404){quantimodoService.reportError('404 from ' + request.method + ' ' + request.url);}
+        if(status === 502){quantimodoService.reportErrorDeferred('502 from ' + request.method + ' ' + request.url);}
+        if(status === 400){quantimodoService.reportErrorDeferred('400 from ' + request.method + ' ' + request.url);}
+        if(status === 404){quantimodoService.reportErrorDeferred('404 from ' + request.method + ' ' + request.url);}
         var groupingHash;
         if(!data){
             if (typeof Bugsnag !== "undefined") {
@@ -778,7 +778,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // post
         $http(request).success(function (response) {
             if(response.error){
-                quantimodoService.reportError(response);
+                quantimodoService.reportErrorDeferred(response);
                 alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
                 deferred.reject(response);
             } else {
@@ -807,7 +807,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken) {
         var deferred = $q.defer();
         if(!accessToken || accessToken === "null"){
-            quantimodoService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
+            quantimodoService.reportErrorDeferred("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
             deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
         }
         var url = quantimodoService.getQuantiModoUrl('api/v2/auth/social/authorizeToken');
@@ -1655,7 +1655,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         } else if ($rootScope.isChromeExtension) { $rootScope.clientId = window.private_keys.client_ids.Chrome;
         } else if ($rootScope.isWindows) { $rootScope.clientId = window.private_keys.client_ids.Windows;
         } else { $rootScope.clientId = window.private_keys.client_ids.Web; }
-        if(!$rootScope.clientId || $rootScope.clientId === "undefined"){ quantimodoService.reportError('clientId is undefined!'); }
+        if(!$rootScope.clientId || $rootScope.clientId === "undefined"){ quantimodoService.reportErrorDeferred('clientId is undefined!'); }
         return $rootScope.clientId;
     };
     quantimodoService.setPlatformVariables = function () {
@@ -1818,7 +1818,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.reportError = function(exceptionOrError, metaDataObject, errorLevel){
+    quantimodoService.reportErrorDeferred = function(exceptionOrError){
         var deferred = $q.defer();
         var stringifiedExceptionOrError = 'No error or exception data provided to quantimodoService';
         var stacktrace = 'No stacktrace provided to quantimodoService';
@@ -1910,25 +1910,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     function getLocationNameFromResult(result){
         if (result.name && result.name !== "undefined") {return result.name;}
         if (result.address && result.address !== "undefined") {return result.address;}
-        quantimodoService.reportError("Where's the damn location info?");
+        quantimodoService.reportErrorDeferred("Where's the damn location info?");
     }
     quantimodoService.updateLocationInLocalStorage = function (coordinates) {
         if(getLocationNameFromResult(coordinates)) {localStorage.lastLocationName = getLocationNameFromResult(coordinates);}
-        if(coordinates.type){localStorage.lastLocationResultType = coordinates.type;} else {quantimodoService.reportError("No geolocation lookup type");}
-        if(coordinates.latitude){localStorage.lastLatitude = coordinates.latitude;} else {quantimodoService.reportError("No latitude!");}
-        if(coordinates.longitude){localStorage.lastLongitude = coordinates.longitude;} else {quantimodoService.reportError("No longitude!");}
+        if(coordinates.type){localStorage.lastLocationResultType = coordinates.type;} else {quantimodoService.bugsnagNotify('Geolocation error', "No geolocation lookup type", coordinates);}
+        if(coordinates.latitude){localStorage.lastLatitude = coordinates.latitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No latitude!", coordinates);}
+        if(coordinates.longitude){localStorage.lastLongitude = coordinates.longitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No longitude!", coordinates);}
         var currentTimeEpochMilliseconds = new Date().getTime();
         localStorage.lastLocationUpdateTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
         if(coordinates.address) {
             localStorage.lastLocationAddress = coordinates.address;
             if(coordinates.address === localStorage.lastLocationName){localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
             } else{localStorage.lastLocationNameAndAddress = localStorage.lastLocationName + " (" + localStorage.lastLocationAddress + ")";}
-        } else {quantimodoService.reportError("No address found!");}
+        } else {quantimodoService.bugsnagNotify('Geolocation error', "No address found!", coordinates);}
     };
     function getLastLocationNameFromLocalStorage(){
-        if (localStorage.lastLocationName && localStorage.lastLocationName !== "undefined") {return localStorage.lastLocationName;}
-        if (localStorage.lastLocationAddress && localStorage.lastLocationAddress !== "undefined") {return localStorage.lastLocationAddress;}
-        quantimodoService.reportError("Where's the damn location info?");
+        if (localStorage.getItem('lastLocationName')) {return localStorage.getItem('lastLocationName');}
+        if (localStorage.getItem('lastLocationAddress')) {return localStorage.getItem('lastLocationAddress');}
+        quantimodoService.bugsnagNotify('Geolocation error', "Where's the damn location info?");
     }
     function getHoursAtLocation(){
         var currentTimeEpochMilliseconds = new Date().getTime();
@@ -2027,7 +2027,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var failureFn = function(error) {
             var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
             console.error(errorMessage);
-            quantimodoService.reportError(errorMessage);
+            quantimodoService.reportErrorDeferred(errorMessage);
         };
         backgroundGeoLocation.configure(callbackFn, failureFn, {
             desiredAccuracy: 1000, //Desired accuracy in meters. Possible values [0, 10, 100, 1000]. The lower the number, the more power devoted to GeoLocation resulting in higher accuracy readings. 1000 results in lowest power drain and least accurate readings.
@@ -3879,7 +3879,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return variables && variables.length > 1;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
     }
     function doWeHaveExactMatch(variables, variableSearchQuery){
-        return variables && variables.length && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
+        return quantimodoService.arrayHasItemWithNameProperty(variables) && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
     }
     function shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery){
         var haveEnough = doWeHaveEnoughVariables(variables);
@@ -4849,14 +4849,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             if($rootScope.isIOS){notificationSettings.every = 'day';}
                             if(!(notificationSettings.at instanceof Date)){
                                 var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
-                                quantimodoService.reportError(errorMessage);
+                                quantimodoService.reportErrorDeferred(errorMessage);
                                 return;
                             }
                             if(!isNaN(notificationSettings.at) &&
                                 parseInt(Number(notificationSettings.at)) === notificationSettings.at &&
                                 !isNaN(parseInt(notificationSettings.at, 10))){
                                 var intErrorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
-                                quantimodoService.reportError(intErrorMessage);
+                                quantimodoService.reportErrorDeferred(intErrorMessage);
                                 return;
                             }
                             try{
@@ -5197,7 +5197,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         if(!itemAsString){return null;}
         if(itemAsString === "undefined"){
-            quantimodoService.reportError(localStorageItemName  + " local storage item is undefined!");
+            quantimodoService.reportErrorDeferred(localStorageItemName  + " local storage item is undefined!");
             return null;
         }
         var matchingElements = JSON.parse(itemAsString);
@@ -5325,7 +5325,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 greaterThanPropertyValue = value.replace('(gt)', "");
                 if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
                 greaterThanPropertyName = key;
-            } else if (typeof value === "string" && value !== "Anything"){
+            } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
                 if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
                 filterPropertyNames.push(key);
             } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
@@ -5342,14 +5342,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return results;
     };
-
+    quantimodoService.removeItemsWithDifferentName = function(arrayOfObjects, queryTerm){
+        return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
+    };
+    quantimodoService.arrayHasItemWithNameProperty = function(arrayOfObjects){
+        return arrayOfObjects && arrayOfObjects.length && arrayOfObjects[0] && arrayOfObjects[0].name;
+    };
     // LOGIN SERVICES
     quantimodoService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
         quantimodoService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
             .then(function(response) {
                 $ionicLoading.hide();
                 if(response.error){
-                    quantimodoService.reportError(response.error);
+                    quantimodoService.reportErrorDeferred(response.error);
                     console.error("Error generating access token");
                     quantimodoService.setLocalStorageItem('user', null);
                 } else {
@@ -5363,7 +5368,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user));
                     }, function(error){
                         $ionicLoading.hide();
-                        quantimodoService.reportError($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
+                        quantimodoService.reportErrorDeferred($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                     });
                 }
             }).catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
@@ -5395,7 +5400,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
                 } else {
                     var errorMessage = "quantimodoService.nonNativeMobileLogin: error occurred:" + quantimodoService.getUrlParameter('error', event.url);
-                    quantimodoService.reportError(errorMessage);
+                    quantimodoService.reportErrorDeferred(errorMessage);
                     ref.close();
                 }
             }
@@ -5448,7 +5453,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         } else {
                             // TODO : display_error
                             alert('Could not login.  Please contact mike@quantimo.do');
-                            quantimodoService.reportError("Error occurred validating redirect " + iframe_url +
+                            quantimodoService.reportErrorDeferred("Error occurred validating redirect " + iframe_url +
                                 ". Closing the sibling tab." + quantimodoService.getUrlParameter('error', iframe_url));
                             console.error("Error occurred validating redirect url. Closing the sibling tab.",
                                 quantimodoService.getUrlParameter('error', iframe_url));
@@ -6396,7 +6401,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.postDowngradeSubscriptionDeferred = function(){
         var deferred = $q.defer();
         $rootScope.user.stripeActive = false;
-        quantimodoService.reportError('User downgraded subscription: ' + JSON.stringify($rootScope.user));
+        quantimodoService.reportErrorDeferred('User downgraded subscription: ' + JSON.stringify($rootScope.user));
         quantimodoService.postDowngradeSubscription({}, function(response){
             $rootScope.user = response.user;
             quantimodoService.setLocalStorageItem('user', JSON.stringify($rootScope.user));
@@ -6414,7 +6419,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
         if(!cordova || !cordova.plugins.email){
-            quantimodoService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
+            quantimodoService.reportErrorDeferred('Trying to send with cordova.plugins.email even though it is not installed. ' +
                 ' Using quantimodoService.sendWithMailTo instead.');
             quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
             return;
