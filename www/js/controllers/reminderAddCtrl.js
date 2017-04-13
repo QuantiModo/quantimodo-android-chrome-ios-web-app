@@ -75,6 +75,9 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         } else if($stateParams.variableCategoryName){
             $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
             setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+        } else if (quantimodoService.getPrimaryOutcomeVariable()){
+            $rootScope.variableObject = quantimodoService.getPrimaryOutcomeVariable();
+            setupByVariableObject(quantimodoService.getPrimaryOutcomeVariable());
         } else { $scope.goBack(); }
     });
     $scope.showMoreOptions = function(){ $scope.state.showMoreOptions = true; };
