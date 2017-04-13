@@ -86,7 +86,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         $scope.state.firstReminderStartTimeEpochTime =
             quantimodoService.getEpochTimeFromLocalStringRoundedToHour('20:00:00');
         $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
-    } else { quantimodoService.reportError($state.current.name + ': $rootScope.user is not defined!'); }
+    } else { quantimodoService.reportErrorDeferred($state.current.name + ': $rootScope.user is not defined!'); }
     $scope.openReminderStartTimePicker = function(order) {
         var a = new Date();
         if(order === 'first'){
