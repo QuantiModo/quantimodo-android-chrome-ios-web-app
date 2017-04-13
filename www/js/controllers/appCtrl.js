@@ -1647,6 +1647,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 deferred.resolve(self.items);
                 return deferred.promise;
             }
+            if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
+                self.items = quantimodoService.removeItemsWithDifferentName(self.items, query);
+                if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
+                    deferred.resolve(self.items);
+                    return deferred.promise;
+                }
+            }
             quantimodoService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
                 .then(function(results){
                     console.debug("Got " + results.length + " results matching " + query);
@@ -1673,7 +1680,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             return variables.map( function (variable) {
                 return {
                     value: variable.name.toLowerCase(),
-                    display: variable.name,
+                    name: variable.name,
                     variable: variable,
                 };
             });

@@ -3879,7 +3879,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return variables && variables.length > 1;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
     }
     function doWeHaveExactMatch(variables, variableSearchQuery){
-        return variables && variables.length && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
+        return quantimodoService.arrayHasItemWithNameProperty(variables) && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
     }
     function shouldWeMakeVariablesSearchAPIRequest(variables, variableSearchQuery){
         var haveEnough = doWeHaveEnoughVariables(variables);
@@ -5325,7 +5325,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 greaterThanPropertyValue = value.replace('(gt)', "");
                 if(!isNaN(greaterThanPropertyValue)){greaterThanPropertyValue = Number(greaterThanPropertyValue);}
                 greaterThanPropertyName = key;
-            } else if (typeof value === "string" && value !== "Anything"){
+            } else if (typeof value === "string" && value !== "Anything" && key !== "sort"){
                 if(!isNaN(value)){filterPropertyValues = Number(filterPropertyValue);} else {filterPropertyValues.push(value);}
                 filterPropertyNames.push(key);
             } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
@@ -5342,14 +5342,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return results;
     };
-
+    quantimodoService.removeItemsWithDifferentName = function(arrayOfObjects, queryTerm){
+        return arrayOfObjects.filter(function( obj ) {return obj.name.toLowerCase().indexOf(queryTerm.toLowerCase()) !== -1;});
+    };
+    quantimodoService.arrayHasItemWithNameProperty = function(arrayOfObjects){
+        return arrayOfObjects && arrayOfObjects.length && arrayOfObjects[0] && arrayOfObjects[0].name;
+    };
     // LOGIN SERVICES
     quantimodoService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
         quantimodoService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
             .then(function(response) {
                 $ionicLoading.hide();
                 if(response.error){
-                    quantimodoService.reportError(response.error);
+                    quantimodoService.reportErrorDeferred(response.error);
                     console.error("Error generating access token");
                     quantimodoService.setLocalStorageItem('user', null);
                 } else {
