@@ -38,23 +38,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
             //We can't append access token to Ionic requests for some reason
             //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
-            // configure request
-            var request = {
-                method: 'GET',
-                url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
-                responseType: 'json',
-                headers: {
-                    'Content-Type': "application/json"
-                },
-            };
+            var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
-            if (accessToken) {
-                request.headers = {
-                    "Authorization": "Bearer " + accessToken,
-                    'Content-Type': "application/json"
-                };
-            }
-            //console.debug("Making this request: " + JSON.stringify(request));
+            if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
             console.debug('quantimodoService.get: ' + request.url);
             $http(request)
                 .success(function (data, status, headers) {
@@ -79,16 +65,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 }, onRequestFailed);
         });
     };
-    // POST method with the added token
     quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler, options){
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-        console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' +
-            JSON.stringify(body).substring(0, 140));
+        console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(body).substring(0, 140));
         quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
-            //console.debug("Token : ", token.accessToken);
-            // configure params
-            for (var i = 0; i < body.length; i++)
-            {
+            for (var i = 0; i < body.length; i++) {
                 var item = body[i];
                 for (var j = 0; j < requiredFields.length; j++) {
                     if (!(requiredFields[j] in item)) {
@@ -102,24 +83,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
             urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
             var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
-            // configure request
-            var request = {
-                method : 'POST',
-                url: url,
-                responseType: 'json',
-                headers : {
-                    'Content-Type': "application/json",
-                    'Accept': "application/json"
-                },
-                data : JSON.stringify(body)
-            };
-            if(accessToken) {
-                request.headers = {
-                    "Authorization" : "Bearer " + accessToken,
-                    'Content-Type': "application/json",
-                    'Accept': "application/json"
-                };
-            }
+            var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
+            if(accessToken) {request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};}
             $http(request).success(successHandler).error(function(data, status, headers){
                 quantimodoService.errorHandler(data, status, headers, request, options);
                 if(errorHandler){errorHandler(data);}
@@ -141,8 +106,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(options && options.doNotSendToLogin){
                 return;
             } else {
-                console.warn('quantimodoService.errorHandler: Sending to login because we got 401 with request ' +
-                    JSON.stringify(request));
+                console.warn('quantimodoService.errorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request));
                 quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
                 console.debug("set afterLoginGoTo to " + window.location.href);
                 if (quantimodoService.getClientId() !== 'oAuthDisabled') {
@@ -173,9 +137,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         title: 'NOT CONNECTED',
                         //subTitle: '',
                         template: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                        buttons:[
-                            {text: 'OK', type: 'button-positive', onTap: function(){$rootScope.offlineConnectionErrorShowing = false;}}
-                        ]
+                        buttons:[{text: 'OK', type: 'button-positive', onTap: function(){$rootScope.offlineConnectionErrorShowing = false;}}]
                     });
                 }
             }
@@ -961,7 +923,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.syncTrackingReminders();
         quantimodoService.getUserVariablesDeferred();
         quantimodoService.getUnits();
-        quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
     };
     quantimodoService.refreshUser = function(){
         var deferred = $q.defer();
@@ -1861,8 +1822,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         } else {deferred.reject('Bugsnag is not defined');}
         return deferred.promise;
     };
+    var geoLocationDebug = true;
     quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps = function (long, lat) {
-        //console.debug('ok, in getInfo with ' + long + ',' + lat);
+        if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps with longitude ' + long + ' and latitude,' + lat);}
         var deferred = $q.defer();
         quantimodoService.getLocationInfoFromFoursquare($http).whatsAt(long, lat).then(function (result) {
             //console.debug('back from fq with '+JSON.stringify(result));
@@ -1955,6 +1917,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 combinationOperation: "SUM"
             };
             quantimodoService.postMeasurementDeferred(newMeasurement);
+        } else {
+            if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('Not posting location getLastLocationNameFromLocalStorage returns ' + getLastLocationNameFromLocalStorage());}
         }
         quantimodoService.updateLocationInLocalStorage(result);
     };
@@ -1965,20 +1929,23 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return localStorage.getItem('lastLatitude') !== coordinates.latitude && localStorage.getItem('lastLongitude') !== coordinates.longitude;
     }
     function lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground) {
-
         if(!coordinatesChanged(coordinates)){return;}
         quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps(coordinates.latitude, coordinates.longitude).then(function (result) {
-            //console.debug('Result was '+JSON.stringify(result));
+            if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps was '+ JSON.stringify(result));}
             if (result.type === 'foursquare') {
-                //console.debug('Foursquare location name is ' + result.name + ' located at ' + result.address);
+                if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('Foursquare location name is ' + result.name + ' located at ' + result.address);}
             } else if (result.type === 'geocode') {
-                //console.debug('geocode address is ' + result.address);
+                if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('geocode address is ' + result.address);}
             } else {
                 var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + coordinates.latitude + ',' + coordinates.longitude +
                     'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + coordinates.latitude + ',' + coordinates.longitude;
                 console.debug('Sorry, I\'ve got nothing. But here is a map!');
             }
-            if(hasLocationNameChanged(result)){quantimodoService.postLocationMeasurementAndSetLocationVariables(result, isBackground);}
+            if(hasLocationNameChanged(result)){
+                quantimodoService.postLocationMeasurementAndSetLocationVariables(result, isBackground);
+            } else {
+                if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('Location name has not changed!');}
+            }
         });
     }
     quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged = function () {
