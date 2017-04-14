@@ -132,11 +132,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         }
     }
     function showNoVariablesFoundCardIfNecessary() {
-        if ($scope.state.variableSearchResults.length) {
-            $scope.state.noVariablesFoundCard.show = false;
-            return;
-        }
-        if (!$stateParams.doNotShowAddVariableButton) {
+        if ($scope.state.variableSearchResults.length || !$stateParams.doNotShowAddVariableButton) {
             $scope.state.noVariablesFoundCard.show = false;
             return;
         }
@@ -239,8 +235,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 "If your current parent tag variable were Inflammatory Pain, you could search for Back Pain and then your " +
                 "Inflammatory Pain analysis would include Back Pain measurements as well.";
         }
-        if(!$scope.state.helpText && $stateParams.variableCategoryName &&
-            $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular){
+        if(!$scope.state.helpText && $stateParams.variableCategoryName && $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular){
             $scope.state.helpText = 'Enter a ' + $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular.toLowerCase() +
                 ' in the search box or select one from the list below.';
         }
