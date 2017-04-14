@@ -1870,28 +1870,27 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return {whatsAt: whatsAt};
     };
-    function getLocationNameFromResult(result){
-        if (result.name && result.name !== "undefined") {return result.name;}
-        if (result.address && result.address !== "undefined") {return result.address;}
-        quantimodoService.reportErrorDeferred("Where's the damn location info?");
+    function getLocationNameFromResult(getLookupResult){
+        if (getLookupResult.name && getLookupResult.name !== "undefined") {return getLookupResult.name;}
+        if (getLookupResult.address && getLookupResult.address !== "undefined") {return getLookupResult.address;}
+        quantimodoService.reportErrorDeferred("No name or address property found in this coordinates result: " + JSON.stringify(getLookupResult));
     }
-    quantimodoService.updateLocationInLocalStorage = function (coordinates) {
-        if(getLocationNameFromResult(coordinates)) {localStorage.lastLocationName = getLocationNameFromResult(coordinates);}
-        if(coordinates.type){localStorage.lastLocationResultType = coordinates.type;} else {quantimodoService.bugsnagNotify('Geolocation error', "No geolocation lookup type", coordinates);}
-        if(coordinates.latitude){localStorage.lastLatitude = coordinates.latitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No latitude!", coordinates);}
-        if(coordinates.longitude){localStorage.lastLongitude = coordinates.longitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No longitude!", coordinates);}
+    quantimodoService.updateLocationInLocalStorage = function (geoLookupResult) {
+        if(getLocationNameFromResult(geoLookupResult)) {localStorage.lastLocationName = getLocationNameFromResult(geoLookupResult);}
+        if(geoLookupResult.type){localStorage.lastLocationResultType = geoLookupResult.type;} else {quantimodoService.bugsnagNotify('Geolocation error', "No geolocation lookup type", geoLookupResult);}
+        if(geoLookupResult.latitude){localStorage.lastLatitude = geoLookupResult.latitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No latitude!", geoLookupResult);}
+        if(geoLookupResult.longitude){localStorage.lastLongitude = geoLookupResult.longitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No longitude!", geoLookupResult);}
         var currentTimeEpochMilliseconds = new Date().getTime();
         localStorage.lastLocationUpdateTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
-        if(coordinates.address) {
-            localStorage.lastLocationAddress = coordinates.address;
-            if(coordinates.address === localStorage.lastLocationName){localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
+        if(geoLookupResult.address) {
+            localStorage.lastLocationAddress = geoLookupResult.address;
+            if(geoLookupResult.address === localStorage.lastLocationName){localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
             } else{localStorage.lastLocationNameAndAddress = localStorage.lastLocationName + " (" + localStorage.lastLocationAddress + ")";}
-        } else {quantimodoService.bugsnagNotify('Geolocation error', "No address found!", coordinates);}
+        } else {quantimodoService.bugsnagNotify('Geolocation error', "No address found!", geoLookupResult);}
     };
     function getLastLocationNameFromLocalStorage(){
-        if (localStorage.getItem('lastLocationName')) {return localStorage.getItem('lastLocationName');}
-        if (localStorage.getItem('lastLocationAddress')) {return localStorage.getItem('lastLocationAddress');}
-        quantimodoService.bugsnagNotify('Geolocation error', "Where's the damn location info?");
+        var lastLocationName = localStorage.getItem('lastLocationName');
+        if (lastLocationName && lastLocationName !== "undefined") {return lastLocationName;}
     }
     function getHoursAtLocation(){
         var currentTimeEpochMilliseconds = new Date().getTime();
@@ -1905,13 +1904,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return sourceName;
     }
     function weShouldPostLocation() {return $rootScope.isMobile && getLastLocationNameFromLocalStorage();}
-    quantimodoService.postLocationMeasurementAndSetLocationVariables = function (result, isBackground) {
+    quantimodoService.postLocationMeasurementAndSetLocationVariables = function (geoLookupResult, isBackground) {
         if (weShouldPostLocation()) {
             var newMeasurement = {
                 variableName:  getLastLocationNameFromLocalStorage(),
                 unitAbbreviatedName: 'h',
                 startTimeEpoch: localStorage.lastLocationUpdateTimeEpochSeconds,
-                sourceName: getGeoLocationSourceName(isBackground, result),
+                sourceName: getGeoLocationSourceName(isBackground),
                 value: getHoursAtLocation(),
                 variableCategoryName: 'Location',
                 location: localStorage.lastLocationAddress,
@@ -1921,29 +1920,31 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         } else {
             if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('Not posting location getLastLocationNameFromLocalStorage returns ' + getLastLocationNameFromLocalStorage());}
         }
-        quantimodoService.updateLocationInLocalStorage(result);
+        quantimodoService.updateLocationInLocalStorage(geoLookupResult);
     };
-    function hasLocationNameChanged(result) {
-        return getLastLocationNameFromLocalStorage() !== getLocationNameFromResult(result);
+    function hasLocationNameChanged(geoLookupResult) {
+        return getLastLocationNameFromLocalStorage() !== getLocationNameFromResult(geoLookupResult);
     }
     function coordinatesChanged(coordinates){
         return localStorage.getItem('lastLatitude') !== coordinates.latitude && localStorage.getItem('lastLongitude') !== coordinates.longitude;
     }
     function lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground) {
         if(!coordinatesChanged(coordinates)){return;}
-        quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps(coordinates.latitude, coordinates.longitude).then(function (result) {
-            if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps was '+ JSON.stringify(result));}
-            if (result.type === 'foursquare') {
-                if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('Foursquare location name is ' + result.name + ' located at ' + result.address);}
-            } else if (result.type === 'geocode') {
-                if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('geocode address is ' + result.address);}
+        quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps(coordinates.latitude, coordinates.longitude).then(function (geoLookupResult) {
+            if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps was '+ JSON.stringify(geoLookupResult));}
+            if (geoLookupResult.type === 'foursquare') {
+                if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('Foursquare location name is ' + geoLookupResult.name + ' located at ' + geoLookupResult.address);}
+            } else if (geoLookupResult.type === 'geocode') {
+                if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('geocode address is ' + geoLookupResult.address);}
             } else {
                 var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + coordinates.latitude + ',' + coordinates.longitude +
                     'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + coordinates.latitude + ',' + coordinates.longitude;
                 console.debug('Sorry, I\'ve got nothing. But here is a map!');
             }
-            if(hasLocationNameChanged(result)){
-                quantimodoService.postLocationMeasurementAndSetLocationVariables(result, isBackground);
+            geoLookupResult.latitude = coordinates.latitude;
+            geoLookupResult.longitude = coordinates.longitude;
+            if(hasLocationNameChanged(geoLookupResult)){
+                quantimodoService.postLocationMeasurementAndSetLocationVariables(geoLookupResult, isBackground);
             } else {
                 if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('Location name has not changed!');}
             }
