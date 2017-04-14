@@ -1,12 +1,10 @@
+$item-height: 49px;
+$font-size: 16px;
+$text-color: rgb(68,68,68);
+
 #frequencySelector,
 #advancedUnitSelector {
 	padding-top: 8px; 
-}
-
-#additionalTimeButton {
-	height: 49px;
-	padding: 10px 16px;
-	line-height: 28px;
 }
 
 .reminder-time,
@@ -16,33 +14,35 @@
 	text-align: right;
 }
 
-.list.card.margin-bottom-0,
 .reminder-row,
-.reminder-row > .col {
+.reminder-row > .col,
+.list.card.margin-bottom-0 {
 	padding: 0;
+}
+
+#additionalTimeButton {
+	height: $item-height;
+	padding: 10px 16px;
+	line-height: 28px;
 }
 
 #materialFirstReminderStartTime,
 #materialSecondReminderStartTime,
 #materialThirdReminderStartTime {
-	font-size: 16px;
-	color: rgb(68,68,68);
+	font-size: $font-size;
+	color: $text-color;
 }
 
 .margin-bottom-0 > .row {
-	height: 49px;
+	height: $item-height;
 	border-bottom: 1px solid #DDD;
 	padding-left: 0;
 }
 
+//removes negative margin on end date
 .row+.row {
 	margin-top: 0;
 	padding-top: 5px;
-}
-
-.row.labeled-control > .date-padding-fix {
-	padding: 2px;
-	line-height: 36px;
 }
 
 .more-options-padding {
@@ -50,22 +50,27 @@
 }
 
 .date-fix {
-	height: 49px;
-	font-size: 16px;
-	color: rgb(68,68,68);
+	height: $item-height;
+	font-size: $font-size;
+	color: $text-color;
 
 	input[type=text] {
 		padding-top: 7px;
-		font-size: 16px;
-		color: rgb(68,68,68)
+		font-size: $font-size;
+		color: $text-color;
 	}
 
+}
+
+.row.labeled-control > .date-padding-fix {
+	padding: 2px;
+	line-height: 36px;
 }
 
 #selectedStopTrackingDate,
 #selectedStartTrackingDate,
  {
-	padding: 0 42px 0px 0;
+	padding: 0px 42px 0px 0px;
 }
 
 .button-row-margin {
