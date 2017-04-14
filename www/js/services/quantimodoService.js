@@ -3923,6 +3923,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
             variables = variables.concat(commonVariables);
         }
+        variables = quantimodoService.removeArrayElementsWithDuplicateIds(variables);
         if(requestParams && requestParams.sort){variables = quantimodoService.sortByProperty(variables, requestParams.sort);}
         return variables;
     };
