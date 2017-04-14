@@ -856,6 +856,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         localStorage.user = JSON.stringify(user); // For Chrome Extension
         quantimodoService.saveAccessTokenInLocalStorage(user);
         $rootScope.user = user;
+        quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
         var date = new Date(user.userRegistered);
@@ -1826,24 +1827,24 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps = function (latitude, longitude) {
         if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps with longitude ' + longitude + ' and latitude,' + latitude);}
         var deferred = $q.defer();
-        quantimodoService.getLocationInfoFromFoursquare($http).whatsAt(latitude, longitude).then(function (result) {
-            if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquare result: ' + JSON.stringify(result));}
-            if (result.status === 200 && result.data.response.venues.length >= 1) {
-                var bestMatch = result.data.response.venues[0];
+        quantimodoService.getLocationInfoFromFoursquare($http).whatsAt(latitude, longitude).then(function (geoLookupResult) {
+            if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquare result: ' + JSON.stringify(geoLookupResult));}
+            if (geoLookupResult.status === 200 && geoLookupResult.data.response.venues.length >= 1) {
+                var bestMatch = geoLookupResult.data.response.venues[0];
                 //convert the result to something the caller can use consistently
-                result = {type: "foursquare", name: bestMatch.name, address: bestMatch.location.formattedAddress.join(", ")};
+                geoLookupResult = {type: "foursquare", name: bestMatch.name, address: bestMatch.location.formattedAddress.join(", ")};
                 //console.dir(bestMatch);
-                deferred.resolve(result);
+                deferred.resolve(geoLookupResult);
             } else {
                 //ok, time to try google
-                quantimodoService.getLocationInfoFromGoogleMaps($http).lookup(latitude, longitude).then(function (result) {
+                quantimodoService.getLocationInfoFromGoogleMaps($http).lookup(latitude, longitude).then(function (googleResponse) {
                     //console.debug('back from google with ');
-                    if (result.data && result.data.results && result.data.results.length >= 1) {
+                    if (googleResponse.data && googleResponse.data.results && googleResponse.data.results.length >= 1) {
                         //console.debug('did i come in here?');
-                        var bestMatch = result.data.results[0];
+                        var bestMatch = googleResponse.data.results[0];
                         //console.debug(JSON.stringify(bestMatch));
-                        result = {type: "geocode", address: bestMatch.formatted_address};
-                        deferred.resolve(result);
+                        var geoLookupResult = {type: "geocode", address: bestMatch.formatted_address};
+                        deferred.resolve(geoLookupResult);
                     }
                 });
             }
