@@ -146,6 +146,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
     function getStudy() {
         $scope.loadingCharts = true;
         quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (study) {
+            if(study){$scope.state.studyNotFound = false;}
             $rootScope.correlationObject = study;
             createUserCharts();
         }, function (error) {
