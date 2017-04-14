@@ -196,7 +196,7 @@ gulp.task('unzipChromeExtension', function() {
 
 
 gulp.task('sass', function(done) {
-	gulp.src('./scss/ionic.app.scss')
+	gulp.src('./www/scss/app.scss')
 		.pipe(sass({
 			errLogToConsole: true
 		}))
@@ -1295,7 +1295,7 @@ var winPlatforms = ["windows"],
 	buildPaths = {
 		tsconfig: "scripts/tsconfig.json",
 		ts: "./scripts/**/*.ts",
-		sass: "./scss/**/*.scss",
+		sass: "./www/scss/app.scss",
 		sassCssTarget: "./www/css/",
 		apk:["./platforms/android/ant-build/*.apk",
 			"./platforms/android/bin/*.apk",
@@ -1379,12 +1379,12 @@ gulp.task("scripts", function () {
 	}
 });
 
-// SASS compile (ex in Ionic)
-gulp.task("sass", function () {
-	return gulp.src(paths.sass)
-		.pipe(sass().on("error", sass.logError))
-		.pipe(gulp.dest(paths.sassCssTarget));
-});
+//There was two gulp tasks for SASS compiling
+// gulp.task("sass", function () {
+// 	return gulp.src(paths.sass)
+// 		.pipe(sass().on("error", sass.logError))
+// 		.pipe(gulp.dest(paths.sassCssTarget));
+// });
 
 var templateCache = require('gulp-angular-templatecache');
 gulp.task('template', function(done){

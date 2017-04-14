@@ -7456,6 +7456,12 @@ img.intro-primary-outcome-variable-rating-buttons {
 .popup-buttons .button.activated {
   background-color: #007aff; }
 
+.text-right {
+  text-align: right; }
+
+.margin-bottom-0 {
+  margin-bottom: 0; }
+
 /*
 Cool animations at http://ianlunn.github.io/Hover/
 */
