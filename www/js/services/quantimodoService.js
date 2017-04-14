@@ -4007,7 +4007,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getUserVariablesDeferred = function(params){
         var deferred = $q.defer();
         var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', params);
-        if(userVariables && userVariables.length > 0 && userVariables[0].chartsLinkFacebook){
+        if(userVariables && userVariables.length){
             deferred.resolve(userVariables);
             return deferred.promise;
         }
@@ -4016,46 +4016,24 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return deferred.promise;
         }
         userVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables'));
-        if(userVariables && userVariables.length && typeof userVariables[0].chartsLinkFacebsharook !== "undefined"){
+        if(userVariables && userVariables.length){
             console.debug("We already have userVariables that didn't match filters so no need to refresh them");
             deferred.resolve([]);
             return deferred.promise;
         }
         quantimodoService.refreshUserVariables().then(function () {
-            userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams(
-                'userVariables', params);
+            userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', params);
             deferred.resolve(userVariables);
         }, function (error) {deferred.reject(error);});
         return deferred.promise;
     };
     quantimodoService.refreshUserVariables = function(){
         var deferred = $q.defer();
-        if($rootScope.syncingUserVariables){
-            console.warn('Already called refreshUserVariables within last 10 seconds!  Rejecting promise!');
-            deferred.reject('Already called refreshUserVariables within last 10 seconds!  Rejecting promise!');
-            return deferred.promise;
-        }
-        if(!$rootScope.syncingUserVariables){
-            $rootScope.syncingUserVariables = true;
-            console.debug('Setting refreshUserVariables timeout');
-            $timeout(function() {
-                // Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
-                $rootScope.syncingUserVariables = false;
-            }, 10000);
-            var parameters = {limit: 200, sort: "-latestMeasurementTime"};
-            quantimodoService.getUserVariablesFromApi(parameters, function(userVariables){
-                quantimodoService.setLocalStorageItem('userVariables', JSON.stringify(userVariables))
-                    .then(function () {
-                        $rootScope.$broadcast('populateUserVariables');
-                        $rootScope.syncingUserVariables = false;
-                    });
-                deferred.resolve(userVariables);
-            }, function(error){
-                $rootScope.syncingUserVariables = false;
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        }
+        quantimodoService.getUserVariablesFromApi({limit: 200, sort: "-latestMeasurementTime"}, function(userVariables){
+            quantimodoService.setLocalStorageItem('userVariables', JSON.stringify(userVariables));
+            deferred.resolve(userVariables);
+        }, function(error){deferred.reject(error);});
+        return deferred.promise;
     };
     quantimodoService.getCommonVariablesDeferred = function(params){
         var deferred = $q.defer();
