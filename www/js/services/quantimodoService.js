@@ -3453,7 +3453,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     lineWidth: 1,
                     opposite: true,
                     title: {
-                        text: correlationObject.effectVariableName + ' (' + correlationObject.effectunitAbbreviatedName + ')'
+                        text: correlationObject.effectVariableName + ' (' + correlationObject.effectVariableDefaultUnitAbbreviatedName + ')'
                     }
                 }]
             },
@@ -3474,7 +3474,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 type: 'spline',
                 yAxis: 1,
                 data: outcomeSeries.data,
-                tooltip: {valueSuffix: '' + correlationObject.effectunitAbbreviatedName}
+                tooltip: {valueSuffix: '' + correlationObject.effectVariableDefaultUnitAbbreviatedName}
             }]
         };
         return config;
@@ -3523,7 +3523,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
         }
         /** @namespace correlationObject.causeVariableDefaultUnitAbbreviatedName */
-        /** @namespace correlationObject.effectunitAbbreviatedName */
+        /** @namespace correlationObject.effectVariableDefaultUnitAbbreviatedName */
         var chartConfig = {
             options: {
                 chart: {
@@ -3548,7 +3548,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         },
                         tooltip: {
                             //headerFormat: '<b>{series.name}</b><br>',
-                            pointFormat: '{point.x}' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ', {point.y}' + correlationObject.effectunitAbbreviatedName
+                            pointFormat: '{point.x}' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ', {point.y}' + correlationObject.effectVariableDefaultUnitAbbreviatedName
                         }
                     }
                 },
@@ -3564,7 +3564,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 showLastLabel: true
             },
             yAxis: {
-                title: {text: correlationObject.effectVariableName + ' (' + correlationObject.effectunitAbbreviatedName + ')'}
+                title: {text: correlationObject.effectVariableName + ' (' + correlationObject.effectVariableDefaultUnitAbbreviatedName + ')'}
             },
             series: [{
                 name: correlationObject.effectVariableName + ' by ' + correlationObject.causeVariableName,
@@ -3584,7 +3584,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return quantimodoService.configureLineChart(data, variableObject);
     };
     quantimodoService.configureLineChartForEffect  = function(correlationObject, pairs) {
-        var variableObject = {unitAbbreviatedName: correlationObject.effectunitAbbreviatedName, name: correlationObject.effectVariableName};
+        var variableObject = {unitAbbreviatedName: correlationObject.effectVariableDefaultUnitAbbreviatedName, name: correlationObject.effectVariableName};
         var data = [];
         for (var i = 0; i < pairs.length; i++) {data[i] = [pairs[i].timestamp * 1000, pairs[i].effectMeasurementValue];}
         return quantimodoService.configureLineChart(data, variableObject);
@@ -3707,7 +3707,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 },
                 {
                     yAxis: 1,
-                    name : params.effectVariableName + ' (' + pairs[0].effectunitAbbreviatedName + ')',
+                    name : params.effectVariableName + ' (' + pairs[0].effectVariableDefaultUnitAbbreviatedName + ')',
                     type: tlGraphType,
                     color: outputColor,
                     data: effectSeries,
