@@ -8,11 +8,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         variableCategoryName: $stateParams.variableCategoryName,
         variableSearchQuery : {name:''},
         trackingReminder: {},
-        noVariablesFoundCard: {
-            show: false,
-            title: 'No Variables Found',
-            body: "You don't have any data, yet.  Start tracking!"
-        },
+        noVariablesFoundCard: {show: false, title: 'No Variables Found', body: "You don't have any data, yet.  Start tracking!"},
         searching: true,
         title : "Select Variable",
         variableSearchPlaceholderText: "Search for a variable here..."
@@ -20,6 +16,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug("VariableSearchCtrl beforeEnter");
         $scope.stateParams = $stateParams;
+        if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
         if($stateParams.helpText){$scope.state.helpText = $stateParams.helpText;}
         if($stateParams.title){$scope.state.title = $stateParams.title;}
         if($stateParams.variableSearchPlaceholderText){$scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;}
@@ -40,7 +37,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.$on('$ionicView.enter', function(e) {
         console.debug("VariableSearchCtrl enter");
         $scope.hideLoader();
-        if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
         console.debug($state.current.name + ' initializing...');
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
@@ -79,11 +75,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
                     $ionicLoading.hide();
-                    if ($stateParams.fromState) {
-                        $state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
-                    } else {
-                        $state.go(config.appSettings.defaultState);
-                    }
+                    if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
+                    } else {$state.go(config.appSettings.defaultState);}
                 });
             }
         } else if($stateParams.userTagVariableObject) {
@@ -99,11 +92,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
                     $ionicLoading.hide();
-                    if ($stateParams.fromState) {
-                        $state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});
-                    } else {
-                        $state.go(config.appSettings.defaultState);
-                    }
+                    if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});
+                    } else {$state.go(config.appSettings.defaultState);}
                 });
             }
         } else {
@@ -125,9 +115,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             if ($scope.state.variableSearchResults[resultIndex].name.toLowerCase() ===
                 $scope.state.variableSearchQuery.name.toLowerCase()) {
                 found = true;
-            } else {
-                resultIndex++;
-            }
+            } else {resultIndex++;}
         }
         // If no results or no exact match, show "+ Add [variable]" button for query
         if ((variables.length < 1 || !found)) {
@@ -135,11 +123,9 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
             $scope.state.showAddVariableButton = true;
             if ($stateParams.nextState === "app.reminderAdd") {
-                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
-                    ' reminder';
+                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
             } else if ($stateParams.nextState === "app.measurementAdd") {
-                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
-                    ' measurement';
+                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' measurement';
             } else {
                 $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
             }
@@ -156,11 +142,9 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         }
         $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
         if($stateParams.noVariablesFoundCard && $stateParams.noVariablesFoundCard.body){
-            $scope.state.noVariablesFoundCard.body =
-                $stateParams.noVariablesFoundCard.body.replace('__VARIABLE_NAME__', $scope.state.variableSearchQuery.name.toUpperCase());
+            $scope.state.noVariablesFoundCard.body = $stateParams.noVariablesFoundCard.body.replace('__VARIABLE_NAME__', $scope.state.variableSearchQuery.name.toUpperCase());
         } else {
-            $scope.state.noVariablesFoundCard.body = "You don't have any data for " +
-                $scope.state.variableSearchQuery.name.toUpperCase() + ", yet.  Start tracking!";
+            $scope.state.noVariablesFoundCard.body = "You don't have any data for " + $scope.state.variableSearchQuery.name.toUpperCase() + ", yet.  Start tracking!";
         }
         $scope.state.noVariablesFoundCard.show = true;
     }
@@ -183,13 +167,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             populateUserVariables();
         }
     };
-    function checkThatVariableNamesExist() {
-        for (var i = 0; i < $scope.state.variableSearchResults.length; i++) {
-            if (!checkNameExists($scope.state.variableSearchResults[i])) {
-                console.debug("No name for variable " + i);
-            }
-        }
-    }
     var populateCommonVariables = function(){
         if(!$stateParams.variableSearchParameters.includePublic) {return;}
         if($scope.state.variableSearchQuery.name.length > 2){return;}
@@ -203,9 +180,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.searching = false;
                 }
             }
-        }, function (error) {
-            console.error(error);
-        });
+        }, function (error) {console.error(error);});
     };
     var populateUserVariables = function(){
         if($scope.state.variableSearchQuery.name.length > 2){return;}
@@ -225,22 +200,14 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.noVariablesFoundCard.show = true;
                     $scope.state.searching = false;
                 }
-                if($scope.state.variableSearchResults.length < 1 && $stateParams.variableSearchParameters.includePublic){
-                    populateCommonVariables();
-                }
+                if($scope.state.variableSearchResults.length < 1 && $stateParams.variableSearchParameters.includePublic){populateCommonVariables();}
             }
-        }, function (error) {
-            console.error(error);
-        });
+        }, function (error) {console.error(error);});
     };
     $scope.addNewVariable = function(){
-
         var variableObject = {};
         variableObject.name = $scope.state.variableSearchQuery.name;
-        if($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything'){
-            variableObject.variableCategoryName = $rootScope.variableCategoryName;
-        }
-
+        if($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $rootScope.variableCategoryName;}
         console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
         if ($stateParams.nextState) {
             $scope.stateParams.variableObject = variableObject;
@@ -261,7 +228,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 "to be tagged with Inflammatory Pain since Inflammatory Pain includes Back Pain.  Then Back Pain " +
                 "measurements would be included when Inflammatory Pain is analyzed";
         }
-
         if ($stateParams.userTagVariableObject) {
             $scope.state.helpText = "Search for a child variable " +
                 "that you'd like to tag with " + $stateParams.userTagVariableObject.name.toUpperCase() + ".  Then " +
@@ -273,17 +239,12 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 "If your current parent tag variable were Inflammatory Pain, you could search for Back Pain and then your " +
                 "Inflammatory Pain analysis would include Back Pain measurements as well.";
         }
-
         if(!$scope.state.helpText && $stateParams.variableCategoryName &&
             $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular){
-            $scope.state.helpText = 'Enter a ' +
-                $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular.toLowerCase() +
+            $scope.state.helpText = 'Enter a ' + $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular.toLowerCase() +
                 ' in the search box or select one from the list below.';
         }
-
-        if(!$scope.state.helpText){
-            $scope.state.helpText = 'Enter a variable in the search box or select one from the list below.';
-        }
+        if(!$scope.state.helpText){$scope.state.helpText = 'Enter a variable in the search box or select one from the list below.';}
     }
     var checkNameExists = function (item) {
         if(!item.name){
@@ -296,53 +257,26 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     };
     $scope.matchEveryWord = function() {
         return function( item ) {
-
-            if(!checkNameExists(item)){
-                return false;
-            }
+            if(!checkNameExists(item)){return false;}
             if(item.variableCategoryName){
                 if($stateParams.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
-                    if(item.variableCategoryName.indexOf('Location') !== -1 ||
-                        item.variableCategoryName.indexOf('Software') !== -1 ||
-                        item.variableCategoryName.indexOf('Environment') !== -1
-                    ){
+                    if(item.variableCategoryName.indexOf('Location') !== -1 || item.variableCategoryName.indexOf('Software') !== -1 || item.variableCategoryName.indexOf('Environment') !== -1){
                         return false;
                     }
                 }
             }
-
             if( $stateParams.excludeDuplicateBloodPressure ) {
-                if(item.name.toLowerCase().indexOf('diastolic') !== -1 ||
-                    item.name.toLowerCase().indexOf('systolic') !== -1 ) {
-                    return false;
-                }
+                if(item.name.toLowerCase().indexOf('diastolic') !== -1 || item.name.toLowerCase().indexOf('systolic') !== -1 ) {return false;}
             }
-
-            if($stateParams.excludeSingularBloodPressure &&  item.name.toLowerCase() === 'blood pressure') {
-                return false;
-            }
-
+            if($stateParams.excludeSingularBloodPressure && item.name.toLowerCase() === 'blood pressure') {return false;}
             var variableObjectAsString = JSON.stringify(item).toLowerCase();
-
             var lowercaseVariableSearchQuery = $scope.state.variableSearchQuery.name.toLowerCase();
-
             var filterBy = lowercaseVariableSearchQuery.split(/\s+/);
-
-            if(lowercaseVariableSearchQuery){
-                if(!filterBy.length){
-                    return true;
-                }
-            } else {
-                return true;
-            }
-
+            if(lowercaseVariableSearchQuery){if(!filterBy.length){return true;}} else {return true;}
             return filterBy.every(function (word){
                 var exists = variableObjectAsString.indexOf(word);
-                if(exists !== -1){
-                    return true;
-                }
+                if(exists !== -1){return true;}
             });
-
         };
     };
 });
