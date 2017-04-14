@@ -1823,10 +1823,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return deferred.promise;
     };
     var geoLocationDebug = true;
-    quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps = function (long, lat) {
-        if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps with longitude ' + long + ' and latitude,' + lat);}
+    quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps = function (latitude, longitude) {
+        if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps with longitude ' + longitude + ' and latitude,' + latitude);}
         var deferred = $q.defer();
-        quantimodoService.getLocationInfoFromFoursquare($http).whatsAt(long, lat).then(function (result) {
+        quantimodoService.getLocationInfoFromFoursquare($http).whatsAt(latitude, longitude).then(function (result) {
             if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquare result: ' + JSON.stringify(result));}
             if (result.status === 200 && result.data.response.venues.length >= 1) {
                 var bestMatch = result.data.response.venues[0];
@@ -1836,7 +1836,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 deferred.resolve(result);
             } else {
                 //ok, time to try google
-                quantimodoService.getLocationInfoFromGoogleMaps($http).lookup(long, lat).then(function (result) {
+                quantimodoService.getLocationInfoFromGoogleMaps($http).lookup(latitude, longitude).then(function (result) {
                     //console.debug('back from google with ');
                     if (result.data && result.data.results && result.data.results.length >= 1) {
                         //console.debug('did i come in here?');
@@ -1855,8 +1855,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getLocationInfoFromGoogleMaps = function ($http) {
         var GOOGLE_MAPS_API_KEY = window.private_keys.GOOGLE_MAPS_API_KEY;
         if (!GOOGLE_MAPS_API_KEY) {console.error('Please add GOOGLE_MAPS_API_KEY to private config');}
-        function lookup(long, lat) {
-            return $http.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat + ',' + long + '&key=' + GOOGLE_MAPS_API_KEY);
+        function lookup(latitude, longitude) {
+            return $http.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude + '&key=' + GOOGLE_MAPS_API_KEY);
         }
         return {lookup: lookup};
     };
@@ -1864,10 +1864,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var FOURSQUARE_CLIENT_ID = window.private_keys.FOURSQUARE_CLIENT_ID;
         var FOURSQUARE_CLIENT_SECRET = window.private_keys.FOURSQUARE_CLIENT_SECRET;
         if (!FOURSQUARE_CLIENT_ID) {console.error('Please add FOURSQUARE_CLIENT_ID & FOURSQUARE_CLIENT_SECRET to private config');}
-        function whatsAt(long, lat) {
-            return $http.get('https://api.foursquare.com/v2/venues/search?ll=' + lat + ',' + long +
-                '&intent=browse&radius=30&client_id=' + FOURSQUARE_CLIENT_ID + '&client_secret=' +
-                FOURSQUARE_CLIENT_SECRET + '&v=20151201');
+        function whatsAt(latitude, longitude) {
+            return $http.get('https://api.foursquare.com/v2/venues/search?ll=' + latitude + ',' + longitude +
+                '&intent=browse&radius=30&client_id=' + FOURSQUARE_CLIENT_ID + '&client_secret=' + FOURSQUARE_CLIENT_SECRET + '&v=20151201');
         }
         return {whatsAt: whatsAt};
     };
