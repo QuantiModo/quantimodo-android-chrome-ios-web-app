@@ -1,0 +1,71 @@
+#frequencySelector,
+#advancedUnitSelector {
+	padding-top: 8px; 
+}
+
+#additionalTimeButton {
+	height: 49px;
+	padding: 10px 16px;
+	line-height: 28px;
+}
+
+.reminder-time,
+#selectedStartTrackingDate,
+#selectedStopTrackingDate {
+	text-align: right;
+}
+
+.list.card.margin-bottom-0,
+.reminder-row,
+.reminder-row > .col {
+	padding: 0;
+}
+
+#materialFirstReminderStartTime,
+#materialSecondReminderStartTime,
+#materialThirdReminderStartTime {
+	font-size: 16px;
+	color: rgb(68,68,68);
+}
+
+.margin-bottom-0 > .row {
+	height: 49px;
+	border-bottom: 1px solid #DDD;
+	padding-left: 0;
+}
+
+.row+.row {
+	margin-top: 0;
+	padding-top: 5px;
+}
+
+.row.labeled-control > .date-padding-fix {
+	padding: 2px;
+	line-height: 36px;
+}
+
+.more-options-padding {
+	padding: 10px 0px 10px 16px;
+}
+
+.date-fix {
+	height: 49px;
+	font-size: 16px;
+	color: rgb(68,68,68);
+
+	input[type=text] {
+		padding-top: 7px;
+		font-size: 16px;
+		color: rgb(68,68,68)
+	}
+
+}
+
+#selectedStopTrackingDate,
+#selectedStartTrackingDate {
+	padding: 0 42px 0px 0;
+}
+
+.button-row-margin {
+	margin-top: 20px;
+}
