@@ -951,7 +951,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var scopes;
         var myPopup;
         var options;
-        connector.loadingText = 'Connecting...';
+        connector.loadingText = 'Connected';
         var connectWithToken = function(response) {
             console.debug("Response Object -> " + JSON.stringify(response));
             var body = {
@@ -1277,7 +1277,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         }
     };
     $scope.disconnect = function (connector){
-        connector.loadingText = 'Disconnecting...';
+        connector.loadingText = 'Disconnected';
         quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){ $scope.refreshConnectors();
         }, function() { console.error("error disconnecting " + connector.name); });
     };
