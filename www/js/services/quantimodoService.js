@@ -1849,7 +1849,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 });
             }
         }, function(error) {
-            quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps error:' + error);
+            quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps error: ' + JSON.stringify(error));
         });
         return deferred.promise;
     };
