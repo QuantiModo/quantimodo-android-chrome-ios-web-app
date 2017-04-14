@@ -1986,6 +1986,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
             return;
         }
+        window.localStorage.setItem('bgGPS', 1);
         console.debug('Starting quantimodoService.backgroundGeolocationStart');
         var callbackFn = function(coordinates) {
             console.debug("background location is " + JSON.stringify(coordinates));
