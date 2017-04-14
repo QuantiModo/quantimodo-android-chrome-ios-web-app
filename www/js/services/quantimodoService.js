@@ -7547,7 +7547,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
     };
     quantimodoService.showMaterialAlert = function(title, textContent, ev){
-        function DialogController($scope, $mdDialog, dataToPass) {
+        function AlertDialogController($scope, $mdDialog, dataToPass) {
             var self = this;
             self.title = dataToPass.title;
             self.textContent = dataToPass.textContent;
@@ -7556,7 +7556,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             $scope.answer = function(answer) {$mdDialog.hide(answer);};
         }
         $mdDialog.show({
-            controller: DialogController,
+            controller: AlertDialogController,
             controllerAs: 'ctrl',
             templateUrl: 'templates/dialogs/robot-alert.html',
             parent: angular.element(document.body),
