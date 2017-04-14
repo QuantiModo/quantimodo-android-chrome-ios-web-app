@@ -11,7 +11,8 @@
 
 .reminder-time,
 #selectedStartTrackingDate,
-#selectedStopTrackingDate {
+#selectedStopTrackingDate,
+#defaultValue {
 	text-align: right;
 }
 
@@ -62,7 +63,8 @@
 }
 
 #selectedStopTrackingDate,
-#selectedStartTrackingDate {
+#selectedStartTrackingDate,
+ {
 	padding: 0 42px 0px 0;
 }
 

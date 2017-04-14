@@ -23492,7 +23492,8 @@ md-dialog.dtp {
 
 .reminder-time,
 #selectedStartTrackingDate,
-#selectedStopTrackingDate {
+#selectedStopTrackingDate,
+#defaultValue {
   text-align: right; }
 
 .list.card.margin-bottom-0,
