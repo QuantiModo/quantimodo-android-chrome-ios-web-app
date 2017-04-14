@@ -183,14 +183,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             populateUserVariables();
         }
     };
-    $scope.$on('populateUserVariables', function(){
-        console.debug('populateUserVariables broadcast received..');
-        populateUserVariables();
-    });
-    $scope.$on('populateCommonVariables', function(){
-        console.debug('populateUserVariables broadcast received..');
-        populateUserVariables();
-    });
     function checkThatVariableNamesExist() {
         for (var i = 0; i < $scope.state.variableSearchResults.length; i++) {
             if (!checkNameExists($scope.state.variableSearchResults[i])) {
@@ -228,7 +220,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.noVariablesFoundCard.show = false;
                     //checkThatVariableNamesExist();
                 }
-
             } else {
                 if(!$stateParams.variableSearchParameters.includePublic){
                     $scope.state.noVariablesFoundCard.show = true;
