@@ -3923,6 +3923,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
             variables = variables.concat(commonVariables);
         }
+        variables = quantimodoService.removeArrayElementsWithDuplicateIds(variables);
         if(requestParams && requestParams.sort){variables = quantimodoService.sortByProperty(variables, requestParams.sort);}
         return variables;
     };
@@ -7643,5 +7644,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
         return inputType;
     };
+    quantimodoService.removeArrayElementsWithDuplicateIds = function(array) {
+        var a = array.concat();
+        for(var i=0; i<a.length; ++i) {
+            for(var j=i+1; j<a.length; ++j) {
+                if(a[i].id === a[j].id) {
+                    a.splice(j--, 1);
+                }
+            }
+        }
+        return a;
+    }
     return quantimodoService;
 });
