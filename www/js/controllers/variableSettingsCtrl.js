@@ -132,7 +132,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             return variables.map( function (variable) {
                 return {
                     value: variable.name.toLowerCase(),
-                    display: variable.name,
+                    name: variable.name,
                     variable: variable
                 };
             });
@@ -215,7 +215,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             return variables.map( function (variable) {
                 return {
                     value: variable.name.toLowerCase(),
-                    display: variable.name,
+                    name: variable.name,
                     variable: variable
                 };
             });

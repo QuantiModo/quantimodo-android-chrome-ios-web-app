@@ -195,7 +195,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
             self.selectedItem = item;
             self.correlationObject = item.correlationObject;
             self.buttonText = "Go to Study";
-            $log.info('Item changed to ' + JSON.stringify(item));
+            $log.info('Item changed to ' + item.name);
         }
         function loadAll(correlations) {
             if(!correlations){ return; }
@@ -203,14 +203,14 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 if($stateParams.effectVariableName){
                     return {
                         value: correlationObject.causeVariableName.toLowerCase(),
-                        display: correlationObject.causeVariableName,
+                        name: correlationObject.causeVariableName,
                         correlationObject: correlationObject
                     };
                 }
                 if($stateParams.causeVariableName){
                     return {
                         value: correlationObject.effectVariableName.toLowerCase(),
-                        display: correlationObject.effectVariableName,
+                        name: correlationObject.effectVariableName,
                         correlationObject: correlationObject
                     };
                 }
