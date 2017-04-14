@@ -1827,7 +1827,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps with longitude ' + long + ' and latitude,' + lat);}
         var deferred = $q.defer();
         quantimodoService.getLocationInfoFromFoursquare($http).whatsAt(long, lat).then(function (result) {
-            //console.debug('back from fq with '+JSON.stringify(result));
+            if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquare result: ' + JSON.stringify(result));}
             if (result.status === 200 && result.data.response.venues.length >= 1) {
                 var bestMatch = result.data.response.venues[0];
                 //convert the result to something the caller can use consistently
@@ -1847,6 +1847,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 });
             }
+        }, function(error) {
+            quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps error:' + error);
         });
         return deferred.promise;
     };
