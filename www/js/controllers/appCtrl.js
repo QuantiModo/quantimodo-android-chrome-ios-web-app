@@ -951,7 +951,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var scopes;
         var myPopup;
         var options;
-        connector.loadingText = 'Connected';
+        //connector.loadingText = 'Connecting...'; // TODO: Show Connecting... text again once we figure out how to update after connection is completed
+        connector.loadingText = null;
         var connectWithToken = function(response) {
             console.debug("Response Object -> " + JSON.stringify(response));
             var body = {
