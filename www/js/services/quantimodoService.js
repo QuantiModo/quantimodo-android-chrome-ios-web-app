@@ -3875,7 +3875,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(requestParams && requestParams.sort){variables = quantimodoService.sortByProperty(variables, requestParams.sort);}
         return variables;
     };
-    quantimodoService.getUserVariableByNameDeferred = function(name, params, refresh){
+    quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred = function(name, params, refresh){
         var deferred = $q.defer();
         quantimodoService.getLocalStorageItemAsStringWithCallback('userVariables', function (userVariables) {
             if(!refresh && userVariables){
@@ -3887,9 +3887,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 }
             }
-            quantimodoService.getVariablesByNameFromApi(name, params, function(variable){
-                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variable);
-                deferred.resolve(variable);
+            quantimodoService.getVariablesByNameFromApi(name, params, function(variables){
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variables[0]);
+                deferred.resolve(variables[0]);
             }, function(error){ deferred.reject(error); });
         });
         return deferred.promise;

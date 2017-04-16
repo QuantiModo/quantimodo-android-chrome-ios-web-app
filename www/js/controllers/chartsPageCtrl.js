@@ -174,7 +174,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         $rootScope.variableObject = {name:  variableName};
         $rootScope.variableName = variableName;
         var params = {};
-        quantimodoService.getUserVariableByNameDeferred(variableName, params).then(function(variableObject){
+        quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params).then(function(variableObject){
             $rootScope.variableObject = variableObject;
             refreshUserVariable(variableName);
         });
