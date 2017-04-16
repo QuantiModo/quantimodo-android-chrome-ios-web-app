@@ -1,7 +1,7 @@
 angular.module('starter').controller('StudyCreationCtrl', function($scope, $state, quantimodoService, clipboard) {
     $scope.state = {
         title: 'Create a Study',
-        color: quantimodoService.blue,
+        color: quantimodoService.color.blue,
         image: { url: "img/robots/quantimodo-robot-waving.svg", height: "100", width: "100" },
         bodyText: "One moment please...",
     };
