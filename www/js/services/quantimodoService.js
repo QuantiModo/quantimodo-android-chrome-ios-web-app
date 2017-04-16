@@ -1011,7 +1011,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return dataArray;
     };
-    $rootScope.variableCategories = {
+    quantimodoService.variableCategories = {
         "Anything": {
             defaultUnitAbbreviatedName: '',
             helpText: "What do you want to record?",
@@ -1179,6 +1179,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             ionIcon: "ion-ios-pulse"
         }
     };
+    $rootScope.variableCategories = quantimodoService.variableCategories;
     var variableCategoryNames = [];
     for (var n in $rootScope.variableCategories) {
         if(n !== "Anything"){ variableCategoryNames.push(n); }
@@ -5588,22 +5589,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return helpCards;
     };
-    quantimodoService.green = {backgroundColor: "#0f9d58", circleColor: "#03c466"};
-    quantimodoService.blue = {backgroundColor: "#3467d6", circleColor: "#5b95f9"};
-    quantimodoService.yellow = {backgroundColor: "#f09402", circleColor: "#fab952"};
+    quantimodoService.colors = {
+        green: {backgroundColor: "#0f9d58", circleColor: "#03c466"},
+        blue: {backgroundColor: "#3467d6", circleColor: "#5b95f9"},
+        yellow: {backgroundColor: "#f09402", circleColor: "#fab952"}
+    };
     quantimodoService.setupOnboardingPages = function () {
         var onboardingPages = [
             {
                 id: "addEmotionRemindersCard",
                 ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
                 title: 'Varying Emotions?',
-                color: quantimodoService.green,
-                iconClass: "icon positive " + $rootScope.variableCategories.Emotions.ionIcon,
-                image: {
-                    url: $rootScope.variableCategories.Emotions.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                color: "green",
                 variableCategoryName: "Emotions",
                 addButtonText: 'Add Emotion',
                 nextPageButtonText: 'Maybe Later',
@@ -5613,30 +5610,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 id: "addSymptomRemindersCard",
                 title: 'Recurring Symptoms?',
-                color: quantimodoService.blue,
-                iconClass: "icon positive " + $rootScope.variableCategories.Symptoms.ionIcon,
-                image: {
-                    url: $rootScope.variableCategories.Symptoms.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                color: "blue",
                 variableCategoryName: "Symptoms",
                 addButtonText: 'Add Symptom',
                 nextPageButtonText: 'Maybe Later',
                 bodyText: 'Got any recurring symptoms that vary in their severity?',
-                moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
             },
             {
                 id: "addFoodRemindersCard",
                 ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
                 title: 'Common Foods or Drinks?',
-                color: quantimodoService.blue,
-                iconClass: "icon positive " + $rootScope.variableCategories.Foods.ionIcon,
-                image: {
-                    url: $rootScope.variableCategories.Foods.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                color: "blue",
                 variableCategoryName: "Foods",
                 addButtonText: 'Add Food or Drink',
                 nextPageButtonText: 'Maybe Later',
@@ -5645,56 +5629,37 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 id: "addTreatmentRemindersCard",
                 title: 'Any Treatments?',
-                color: quantimodoService.yellow,
-                iconClass: "icon positive " + $rootScope.variableCategories.Treatments.ionIcon,
-                image: {
-                    url: $rootScope.variableCategories.Treatments.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                color: "yellow",
                 variableCategoryName: "Treatments",
                 addButtonText: 'Add Treatment',
                 nextPageButtonText: 'Maybe Later',
                 bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
                     'like meditation or psychotherapy? ',
-                moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
             },
             {
                 id: "locationTrackingPage",
                 title: 'Location Tracking',
-                color: quantimodoService.green,
-                iconClass: "icon positive " + $rootScope.variableCategories.Location.ionIcon,
-                image: {
-                    url: $rootScope.variableCategories.Location.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                color: "green",
+                variableCategoryName: "Location",
                 premiumFeature: true,
                 nextPageButtonText: 'Maybe Later',
                 bodyText: "Would you like to automatically log location to see how time spent at restaurants, " +
                     "the gym, work or doctors offices might be affecting you? ",
-                moreInfo: $rootScope.variableCategories.Location.moreInfo,
             },
             {
                 id: "weatherTrackingPage",
                 title: 'Weather Tracking',
-                color: quantimodoService.green,
-                iconClass: "icon positive " + $rootScope.variableCategories.Environment.ionIcon,
-                image: {
-                    url: $rootScope.variableCategories.Environment.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                color: "green",
+                variableCategoryName: "Environment",
                 premiumFeature: true,
                 nextPageButtonText: 'Maybe Later',
                 bodyText: "Would you like to automatically record the weather to see how temperature or sunlight " +
                     "exposure might be affecting you? ",
-                moreInfo: $rootScope.variableCategories.Environment.moreInfo,
             },
             {
                 id: "importDataPage",
                 title: 'Import Your Data',
-                color: quantimodoService.yellow,
+                color: "yellow",
                 iconClass: "icon positive ion-ios-cloud-download-outline",
                 image: {
                     url: "img/intro/download_2-96.png",
@@ -5710,7 +5675,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 id: "allDoneCard",
                 ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                 title: 'Great job!',
-                color: quantimodoService.green,
+                color: "green",
                 iconClass: "icon positive ion-ios-cloud-download-outline",
                 image: {
                     url: "img/robots/quantimodo-robot-waving.svg",
@@ -5721,13 +5686,35 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "you're done for the day! "
             }
         ];
+        if(config.appSettings.onboardingPages){onboardingPages = config.appSettings.onboardingPages;}
+        onboardingPages = addVariableCategoryInfo(onboardingPages);
+        onboardingPages = addColors(onboardingPages);
         var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
-        if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length &&
-            onboardingPagesFromLocalStorage !== "undefined"){
+        if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
             onboardingPages = onboardingPagesFromLocalStorage;
         }
         $rootScope.onboardingPages = onboardingPages;
     };
+    function addVariableCategoryInfo(array){
+        angular.forEach(array, function(value, key) {
+            if(value.variableCategoryName && quantimodoService.variableCategories[value.variableCategoryName]){
+                value.iconClass = 'icon positive ' + quantimodoService.variableCategories[value.variableCategoryName].ionIcon;
+                value.moreInfo = quantimodoService.variableCategories[value.variableCategoryName].moreInfo;
+                value.image = {
+                    url: quantimodoService.variableCategories[value.variableCategoryName].imageUrl,
+                    height: "96",
+                    width: "96"
+                };
+            }
+        });
+        return array;
+    }
+    function addColors(array){
+        angular.forEach(array, function(value, key) {
+            if(value.color && quantimodoService.colors[value.color]){value.color = quantimodoService.colors[value.color];}
+        });
+        return array;
+    }
     quantimodoService.getIntroSlidesOld = function () {
         var introSlides = [
             {
@@ -5811,6 +5798,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         ];
         if(config.appSettings.intro){return config.appSettings.intro;}
+        introSlides = addVariableCategoryInfo(introSlides);
+        introSlides = addColors(introSlides);
         return introSlides;
     };
     quantimodoService.getIntroSlidesNew = function () {
@@ -5818,7 +5807,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 newIntroStyle: true,
                 title: "Hi! I'm " + config.appSettings.appDisplayName + "!",
-                color: quantimodoService.green,
+                color: "green",
                 image: {
                     url: "img/robots/quantimodo-robot-waving.svg",
                     height: "120",
@@ -5829,7 +5818,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 newIntroStyle: true,
                 title: "Hidden Influences",
-                color: quantimodoService.blue,
+                color: "blue",
                 image: {
                     url: "img/intro/patient-frown-factors.png",
                     height: "120",
@@ -5841,7 +5830,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 newIntroStyle: true,
                 title: "Only Human",
-                color: quantimodoService.yellow,
+                color: "yellow",
                 image: {
                     url: "img/brains/brain-pink.svg",
                     height: "120",
@@ -5853,7 +5842,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 newIntroStyle: true,
                 title: "Treatment Determination",
-                color: quantimodoService.green,
+                color: "green",
                 image: {
                     url: "img/intro/doctor-frown-factors.png",
                     height: "120",
@@ -5865,7 +5854,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 newIntroStyle: true,
                 title: "Machine Learning",
-                color: quantimodoService.blue,
+                color: "blue",
                 image: {
                     url: "img/robots/quantimodo-robot-brain.svg",
                     height: "120",
@@ -5877,7 +5866,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 newIntroStyle: true,
                 title: "Automated Tracking",
-                color: quantimodoService.green,
+                color: "green",
                 image: {
                     url: "img/intro/download_2-96.png",
                     height: "100",
@@ -5890,7 +5879,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 newIntroStyle: true,
                 title: "Effortless Tracking",
-                color: quantimodoService.yellow,
+                color: "yellow",
                 image: {
                     url: "img/intro/inbox.svg",
                     height: "90",
@@ -5903,17 +5892,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {
                 newIntroStyle: true,
                 title: "Data Security",
-                color: quantimodoService.blue,
+                color: "blue",
                 image: {
                     url: "img/intro/lock.svg",
                     height: "90",
                     width: "90"
                 },
                 bodyText: "I use bank-level encryption to keep your data secure.  Human eyes will never see your " +
-                "data unless you intentionally share it. ",
-            },
+                "data unless you intentionally share it. "
+            }
         ];
         if(config.appSettings.introNew){return config.appSettings.introNew;}
+        introSlides = addVariableCategoryInfo(introSlides);
+        introSlides = addColors(introSlides);
         return introSlides;
     };
     $rootScope.signUpQuestions = [
@@ -6094,15 +6085,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title: 'Any Treatments?',
                 "backgroundColor": "#f09402",
                 circleColor: "#fab952",
-                iconClass: "icon positive ion-ios-medkit-outline",
-                image: {
-                    url: $rootScope.variableCategories.Treatments.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                variableCategoryName: "Treatments",
                 bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
                 'like meditation or psychotherapy? ',
-                moreInfo: $rootScope.variableCategories.Treatments.moreInfo,
                 buttons: [
                     {
                         id: "hideAddTreatmentRemindersCardButton",
@@ -6119,14 +6104,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title: 'Recurring Symptoms?',
                 "backgroundColor": "#3467d6",
                 circleColor: "#5b95f9",
-                iconClass: "icon positive ion-sad-outline",
-                image: {
-                    url: $rootScope.variableCategories.Symptoms.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                variableCategoryName: "Symptoms",
                 bodyText: 'Got any recurring symptoms that vary in their severity?',
-                moreInfo: $rootScope.variableCategories.Symptoms.moreInfo,
                 buttons: [
                     {
                         id: "hideAddSymptomRemindersCardButton",
@@ -6143,15 +6122,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title: 'Varying Emotions?',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
-                iconClass: "icon positive ion-happy-outline",
-                image: {
-                    url: $rootScope.variableCategories.Emotions.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                variableCategoryName: "Emotions",
                 bodyText: "Do you have any emotions that fluctuate regularly?<br><br>If so, add them so I can try to " +
                     "determine which factors are influencing them.",
-                moreInfo: $rootScope.variableCategories.Emotions.moreInfo,
                 buttons: [
                     {
                         id: "hideAddEmotionRemindersCardButton",
@@ -6168,14 +6141,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title: 'Common Foods or Drinks?',
                 "backgroundColor": "#3467d6",
                 circleColor: "#5b95f9",
-                iconClass: "icon positive ion-ios-nutrition-outline",
-                image: {
-                    url: $rootScope.variableCategories.Foods.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                variableCategoryName: "Foods",
                 bodyText: "Add any foods or drinks that you consume more than a few times a week",
-                moreInfo: $rootScope.variableCategories.Foods.moreInfo,
                 buttons: [
                     {
                         id: "hideAddFoodRemindersCardButton",
@@ -6192,12 +6159,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title: 'Location Tracking',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
-                iconClass: "icon positive ion-ios-location",
-                image: {
-                    url: $rootScope.variableCategories.Environment.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
                 bodyText: "Would you like to automatically log location? ",
                 moreInfo: $rootScope.variableCategories.Location.moreInfo,
                 buttons: [
@@ -6216,14 +6177,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title: 'Weather Tracking',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
-                iconClass: "icon positive ion-ios-thunderstorm",
-                image: {
-                    url: $rootScope.variableCategories.Environment.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
+                variableCategoryName: "Environment",
                 bodyText: "Would you like to automatically log the weather to see how it might be affecting you? ",
-                moreInfo: $rootScope.variableCategories.Location.moreInfo,
                 buttons: [
                     {
                         id: "hideLocationTrackingInfoCardButton",
