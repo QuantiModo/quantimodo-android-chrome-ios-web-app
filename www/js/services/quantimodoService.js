@@ -5821,6 +5821,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         ];
         if(config.appSettings.intro){return config.appSettings.intro;}
+        introSlides = addVariableCategoryInfo(introSlides);
+        introSlides = addColors(introSlides);
         return introSlides;
     };
     quantimodoService.getIntroSlidesNew = function () {
@@ -5920,10 +5922,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     width: "90"
                 },
                 bodyText: "I use bank-level encryption to keep your data secure.  Human eyes will never see your " +
-                "data unless you intentionally share it. ",
-            },
+                "data unless you intentionally share it. "
+            }
         ];
         if(config.appSettings.introNew){return config.appSettings.introNew;}
+        introSlides = addVariableCategoryInfo(introSlides);
+        introSlides = addColors(introSlides);
         return introSlides;
     };
     $rootScope.signUpQuestions = [
