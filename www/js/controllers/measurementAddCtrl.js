@@ -74,7 +74,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     });
     var trackBloodPressure = function(){
         if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-            quantimodoService.validationFailure('Please enter both values for blood pressure.');
+            quantimodoService.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
             return;
         }
         $scope.state.selectedDate = moment($scope.state.selectedDate);
@@ -103,22 +103,22 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         if($scope.state.measurement.value === null || $scope.state.measurement.value === '' ||
             typeof $scope.state.measurement.value === 'undefined'){
             if($scope.state.measurement.unitAbbreviatedName === '/5'){message = 'Please select a rating';} else {message = 'Please enter a value';}
-            quantimodoService.validationFailure(message);
+            quantimodoService.validationFailure(message, $scope.state.measurement);
             return false;
         }
         if(!$scope.state.measurement.variableName || $scope.state.measurement.variableName === ""){
             message = 'Please enter a variable name';
-            quantimodoService.validationFailure(message);
+            quantimodoService.validationFailure(message, $scope.state.measurement);
             return false;
         }
         if(!$scope.state.measurement.variableCategoryName){
             message = 'Please select a variable category';
-            quantimodoService.validationFailure(message);
+            quantimodoService.validationFailure(message, $scope.state.measurement);
             return false;
         }
         if(!$scope.state.measurement.unitAbbreviatedName){
-            message = 'Please select a unit';
-            quantimodoService.validationFailure(message);
+            message = 'Please select a unit for ' + $scope.state.measurement.variableName;
+            quantimodoService.validationFailure(message, $scope.state.measurement);
             return false;
         } else {
             if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.unitAbbreviatedName]){
