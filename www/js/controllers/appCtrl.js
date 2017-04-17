@@ -834,7 +834,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){ $rootScope.variableObject = null; }
         if(!hideLoader){ $ionicLoading.show(); }
         var params = {includeTags : true};
-        quantimodoService.getUserVariableByNameDeferred(variableName, params, refresh).then(function(variableObject){
+        quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
             $ionicLoading.hide();

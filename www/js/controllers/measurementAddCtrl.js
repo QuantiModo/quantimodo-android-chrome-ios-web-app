@@ -301,7 +301,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     var setupFromVariableNameStateParameter = function(){
         if($stateParams.variableName) {
             $ionicLoading.show();
-            quantimodoService.getUserVariableByNameDeferred($stateParams.variableName, {}).then(function(variableObject){
+            quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred($stateParams.variableName, {}).then(function(variableObject){
                 $ionicLoading.hide();
                 $rootScope.variableObject = variableObject;
                 $stateParams.variableObject = variableObject;
