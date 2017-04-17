@@ -3899,7 +3899,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(requestParams && requestParams.sort){variables = quantimodoService.sortByProperty(variables, requestParams.sort);}
         return variables;
     };
-    quantimodoService.getUserVariableByNameDeferred = function(name, params, refresh){
+    quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred = function(name, params, refresh){
         var deferred = $q.defer();
         quantimodoService.getLocalStorageItemAsStringWithCallback('userVariables', function (userVariables) {
             if(!refresh && userVariables){

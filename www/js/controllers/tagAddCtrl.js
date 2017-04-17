@@ -107,7 +107,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
-            quantimodoService.getUserVariableByNameDeferred('Anxiety').then(function (variable) {
+            quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety').then(function (variable) {
                 $scope.stateParams.userTagVariableObject = variable;
                 $ionicLoading.hide();
             });
@@ -117,7 +117,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
-            quantimodoService.getUserVariableByNameDeferred('Overall Mood').then(function (variable) {
+            quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
                 $scope.stateParams.userTaggedVariableObject = variable;
                 $ionicLoading.hide();
             });
