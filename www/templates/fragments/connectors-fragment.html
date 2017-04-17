@@ -40,7 +40,7 @@
             <button ng-if="connector.updateStatus === 'WAITING'" class="button button-clear button-royal"
                     style="text-overflow: clip;"
                     ng-click="">
-                <i class="ion-ios-cloud-download">Update Scheduled</i>
+                <i class="ion-ios-cloud-download"> &nbsp; Updating</i>
             </button>
             <button ng-if="connector.updateStatus === 'ERROR'" class="button button-clear button-balanced"
                     ng-click="editReminderSettingsByNotification(connector)"
@@ -50,7 +50,7 @@
             <button ng-if="!connector.qmClient" class="button button-clear button-assertive"
                     ng-click="disconnect(connector)"
                     style="text-overflow: clip;">
-                <i class="ion-close-circled"> Disconnect </i>
+                <i class="ion-close-circled"> &nbsp; Disconnect </i>
             </button>
         </div>
         <div class="button-bar" ng-if="connector.loadingText">
