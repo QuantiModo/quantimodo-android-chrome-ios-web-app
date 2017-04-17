@@ -353,7 +353,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     };
     function setupValueFieldType(unitAbbreviatedName, valence, variableName) {
         showMoreUnitsIfNecessary();
-        if($scope.state.measurement.inputType){return;}
+        //if($scope.state.measurement.inputType){return;} Why is this here?  It prevents updating when we change a unit!  :(
         if(!unitAbbreviatedName){
             console.error('No unitAbbreviatedName provided to setupValueFieldType');
             return false;

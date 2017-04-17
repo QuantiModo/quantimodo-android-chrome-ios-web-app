@@ -79,6 +79,20 @@
                         </div>
                     </div>
                 </div>
+                <label ng-if="state.measurement.inputType === 'yesOrNo'" class="item item-input item-select">
+                    <div class="input-label">
+                        Select Value
+                    </div>
+                    <select id="yesNoSelector"
+                            ng-model="state.measurement.value">
+                        <option value="1">
+                            Yes
+                        </option>
+                        <option value="0">
+                            No
+                        </option>
+                    </select>
+                </label>
                 <label ng-if="!bloodPressure.show" class="item item-input item-select">
                     <div class="input-label">
                         Unit
