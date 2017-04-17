@@ -292,8 +292,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $mdDialog.alert()
                 .parent(angular.element(document.querySelector('#popupContainer')))
                 .clickOutsideToClose(true)
-                .title(quantimodoService.helpInfo[id].title)
-                .textContent(quantimodoService.helpInfo[id].textContent)
+                .title(quantimodoService.explanations[id].title)
+                .textContent(quantimodoService.explanations[id].textContent)
                 .ariaLabel('Alert Dialog Demo')
                 .ok('Got it!')
                 .targetEvent(ev)
@@ -1698,8 +1698,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             fullscreen: false,
             locals: {
                 dataToPass: {
-                    title: "Select Outcome",
-                    helpText: quantimodoService.helpText.outcomeSearch,
+                    title: quantimodoService.explanations.outcomeSearch.title,
+                    helpText: quantimodoService.explanations.outcomeSearch.textContent,
                     placeholder: "Search for an outcome...",
                     buttonText: "Select Variable",
                     requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
@@ -1721,8 +1721,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             fullscreen: false,
             locals: {
                 dataToPass: {
-                    title: "Select Predictor",
-                    helpText: quantimodoService.helpText.predictorSearch,
+                    title: quantimodoService.explanations.predictorSearch.title,
+                    helpText: quantimodoService.explanations.predictorSearch.textContent,
                     placeholder: "Search for a predictor...",
                     buttonText: "Select Variable",
                     requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}
