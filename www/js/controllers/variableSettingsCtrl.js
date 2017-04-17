@@ -8,17 +8,16 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.loading = true;
-        $scope.showLoader('Getting variable details');
         if($stateParams.variableObject){
             $scope.setupVariableByVariableObject($stateParams.variableObject);
-            $scope.refreshUserVariable(true);
+            refreshUserVariable($stateParams.variableObject.name);
         } else if ($stateParams.variableName) {
             $rootScope.variableName = $stateParams.variableName;
             $scope.getUserVariableByName($rootScope.variableName);
-            $scope.refreshUserVariable(true);
+            refreshUserVariable($rootScope.variableName);
         } else if ($rootScope.variableObject) {
             $scope.setupVariableByVariableObject($rootScope.variableObject);
-            $scope.refreshUserVariable(true);
+            refreshUserVariable($rootScope.variableObject.name);
         } else {
             console.error("Variable name not provided to variable settings controller!");
             $state.go(config.appSettings.defaultState);
@@ -27,6 +26,9 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
     });
     function getTruncatedVariableName(variableName) {
         if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
+    }
+    function refreshUserVariable(variableName) {
+        quantimodoService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){$rootScope.variableObject = userVariable;});
     }
     $rootScope.showActionSheetMenu = function() {
         console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);

@@ -3880,8 +3880,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.refreshUserVariableDeferred = function (variableName) {
+    quantimodoService.refreshUserVariableByNameDeferred = function (variableName) {
         var deferred = $q.defer();
+        var params = {includeTags : true};
         quantimodoService.getVariablesByNameFromApi(variableName, {}, function(variable){
             deferred.resolve(variable);
         }, function(error){ deferred.reject(error); });
