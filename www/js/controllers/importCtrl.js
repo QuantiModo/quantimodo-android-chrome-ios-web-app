@@ -83,9 +83,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				if(connectors) {
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
-					$ionicLoading.hide().then(function(){
-						console.debug("The loading indicator is now hidden");
-					});
+					$ionicLoading.hide().then(function(){console.debug("The loading indicator is now hidden");});
 				}
 				$scope.refreshConnectors();
 			});
