@@ -6298,13 +6298,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }, function(response){deferred.reject(response);});
         return deferred.promise;
     };
-    quantimodoService.helpInfo = {
-        locationAndWeatherTracking: {title: "Location and Weather Tracking", textContent: $rootScope.variableCategories.Location.moreInfo}
-    };
-    quantimodoService.helpText = {
-        predictorSearch: "Search for a predictor like a food or treatment that you want to know the effects of...",
-        outcomeSearch: "Select an outcome variable to be optimized like overall mood or sleep quality..."
-    };
     quantimodoService.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
         if(!cordova || !cordova.plugins.email){
             quantimodoService.reportErrorDeferred('Trying to send with cordova.plugins.email even though it is not installed. ' +
@@ -7417,6 +7410,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return object;
     };
     quantimodoService.explanations = {
+        predictorSearch: {
+            title: "Select Predictor",
+            textContent: "Search for a predictor like a food or treatment that you want to know the effects of..."
+        },
+        outcomeSearch: {
+            title: "Select Outcome",
+            "Select an outcome variable to be optimized like overall mood or sleep quality..."
+        },
+        locationAndWeatherTracking: {
+            title: "Location and Weather Tracking",
+            textContent: quantimodoService.variableCategories.Location.moreInfo
+        },
         minimumAllowedValue: {
             title: "Minimum Allowed Value",
             explanation: "The minimum allowed value for measurements. While you can record a value below this minimum, it will be excluded from the correlation analysis.",
