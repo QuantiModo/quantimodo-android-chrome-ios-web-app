@@ -168,7 +168,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         });
     };
     var refreshUserVariable = function (variableName) {
-        quantimodoService.refreshUserVariableDeferred(variableName).then(function (variableObject) {$rootScope.variableObject = variableObject;});
+        quantimodoService.refreshUserVariableByNameDeferred(variableName).then(function (variableObject) {$rootScope.variableObject = variableObject;});
     };
     var getStatisticsForVariable = function (variableName) {
         $rootScope.variableObject = {name:  variableName};

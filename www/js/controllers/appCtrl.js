@@ -821,10 +821,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.setupVariableByVariableObject = function(variableObject) {
         $rootScope.variableName = variableObject.name;
         $rootScope.variableObject = variableObject;
-        $rootScope.variableObject.onsetDelayInHours = variableObject.onsetDelay/3600;
-        $rootScope.variableObject.durationOfActionInHours = variableObject.durationOfAction/3600;
         $scope.loading = false;
-        $scope.hideLoader() ;
+        $scope.hideLoader();
     };
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
