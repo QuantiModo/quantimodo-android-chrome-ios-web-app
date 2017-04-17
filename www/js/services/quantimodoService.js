@@ -1235,7 +1235,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var deferred = $q.defer();
         if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
             var errorMessage = 'Cannot sync because we do not have a user or access token in url';
-            console.error(errorMessage)
+            console.error(errorMessage);
             deferred.reject(errorMessage);
             return deferred.promise;
         }
@@ -7416,7 +7416,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         },
         outcomeSearch: {
             title: "Select Outcome",
-            "Select an outcome variable to be optimized like overall mood or sleep quality..."
+            textContent: "Select an outcome variable to be optimized like overall mood or sleep quality..."
         },
         locationAndWeatherTracking: {
             title: "Location and Weather Tracking",
