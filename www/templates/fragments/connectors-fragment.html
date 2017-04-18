@@ -25,7 +25,7 @@
             </div>
         </div>
         <div class="button-bar" ng-if="!connector.connected && !connector.loadingText">
-            <button ng-if="!connector.qmClient" class="button button-clear button-balanced"
+            <button ng-if="!connector.qmClient && !connector.connecting" class="button button-clear button-balanced"
                     style="text-overflow: clip;"
                     ng-click="connect(connector)">
                 <i class="ion-link"> &nbsp; Connect</i>
