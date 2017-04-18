@@ -3810,31 +3810,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
 
     // VARIABLE SERVICE
-    // DOES NOT WORK PROPERLY
-    quantimodoService.searchUserVariablesDeferredFancy = function(variableSearchQuery, params){
-        if($rootScope.lastsearchUserVariablesDeferredPromise){
-            var message = 'Got new search request before last one completed';
-            console.debug(message);
-            $rootScope.lastsearchUserVariablesDeferredPromise.reject();
-            $rootScope.lastsearchUserVariablesDeferredPromise = null;
-        }
-        $rootScope.lastsearchUserVariablesDeferredPromise = $q.defer();
-        if(!variableSearchQuery){variableSearchQuery = '*';}
-        quantimodoService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
-            if($rootScope.lastsearchUserVariablesDeferredPromise){
-                $rootScope.lastsearchUserVariablesDeferredPromise.resolve(variables);
-                $rootScope.lastsearchUserVariablesDeferredPromise = null;
-            } else {
-                console.warn('Not resolving variables because no $rootScope.lastsearchUserVariablesDeferredPromise: ' +
-                    JSON.stringify(variables));
-            }
-        }, function(error){
-            console.error(JSON.stringify(error));
-            $rootScope.lastsearchUserVariablesDeferredPromise.reject(error);
-            $rootScope.lastsearchUserVariablesDeferredPromise = null;
-        });
-        return $rootScope.lastsearchUserVariablesDeferredPromise.promise;
-    };
     // get user variables (without public)
     quantimodoService.searchUserVariablesDeferred = function(variableSearchQuery, params){
         var deferred = $q.defer();
