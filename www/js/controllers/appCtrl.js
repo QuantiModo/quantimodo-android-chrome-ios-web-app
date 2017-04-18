@@ -1515,7 +1515,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.sendEmailAfterVerification = function(emailType) {
         if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }
         if(emailType === 'fitbit'){ verifyEmailAddressAndExecuteCallback(sendFitbitEmail); }
-        if(emailType === 'chrome'){ verifyEmailAddressAndExecuteCallback(sendChromeEmail()); }
+        if(emailType === 'chrome'){ verifyEmailAddressAndExecuteCallback(sendChromeEmail); }
     };
     $scope.updateEmailAndExecuteCallback = function (callback) {
         if($rootScope.user.email){ $scope.data = { email: $rootScope.user.email }; }
