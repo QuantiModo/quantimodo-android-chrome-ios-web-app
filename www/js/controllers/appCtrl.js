@@ -292,8 +292,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $mdDialog.alert()
                 .parent(angular.element(document.querySelector('#popupContainer')))
                 .clickOutsideToClose(true)
-                .title(quantimodoService.helpInfo[id].title)
-                .textContent(quantimodoService.helpInfo[id].textContent)
+                .title(quantimodoService.explanations[id].title)
+                .textContent(quantimodoService.explanations[id].textContent)
                 .ariaLabel('Alert Dialog Demo')
                 .ok('Got it!')
                 .targetEvent(ev)
@@ -821,10 +821,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.setupVariableByVariableObject = function(variableObject) {
         $rootScope.variableName = variableObject.name;
         $rootScope.variableObject = variableObject;
-        $rootScope.variableObject.onsetDelayInHours = variableObject.onsetDelay/3600;
-        $rootScope.variableObject.durationOfActionInHours = variableObject.durationOfAction/3600;
         $scope.loading = false;
-        $scope.hideLoader() ;
+        $scope.hideLoader();
     };
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
@@ -834,7 +832,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){ $rootScope.variableObject = null; }
         if(!hideLoader){ $ionicLoading.show(); }
         var params = {includeTags : true};
-        quantimodoService.getUserVariableByNameDeferred(variableName, params, refresh).then(function(variableObject){
+        quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
             $ionicLoading.hide();
@@ -951,7 +949,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var scopes;
         var myPopup;
         var options;
-        connector.loadingText = 'Connecting...';
+        //connector.loadingText = 'Connecting...'; // TODO: Show Connecting... text again once we figure out how to update after connection is completed
+        connector.loadingText = null;
         var connectWithToken = function(response) {
             console.debug("Response Object -> " + JSON.stringify(response));
             var body = {
@@ -1277,7 +1276,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         }
     };
     $scope.disconnect = function (connector){
-        connector.loadingText = 'Disconnecting...';
+        connector.loadingText = 'Disconnected';
         quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){ $scope.refreshConnectors();
         }, function() { console.error("error disconnecting " + connector.name); });
     };
@@ -1697,8 +1696,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             fullscreen: false,
             locals: {
                 dataToPass: {
-                    title: "Select Outcome",
-                    helpText: quantimodoService.helpText.outcomeSearch,
+                    title: quantimodoService.explanations.outcomeSearch.title,
+                    helpText: quantimodoService.explanations.outcomeSearch.textContent,
                     placeholder: "Search for an outcome...",
                     buttonText: "Select Variable",
                     requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
@@ -1720,8 +1719,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             fullscreen: false,
             locals: {
                 dataToPass: {
-                    title: "Select Predictor",
-                    helpText: quantimodoService.helpText.predictorSearch,
+                    title: quantimodoService.explanations.predictorSearch.title,
+                    helpText: quantimodoService.explanations.predictorSearch.textContent,
                     placeholder: "Search for a predictor...",
                     buttonText: "Select Variable",
                     requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}

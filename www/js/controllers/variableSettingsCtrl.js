@@ -8,17 +8,16 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.loading = true;
-        $scope.showLoader('Getting variable details');
         if($stateParams.variableObject){
             $scope.setupVariableByVariableObject($stateParams.variableObject);
-            $scope.refreshUserVariable(true);
+            refreshUserVariable($stateParams.variableObject.name);
         } else if ($stateParams.variableName) {
             $rootScope.variableName = $stateParams.variableName;
             $scope.getUserVariableByName($rootScope.variableName);
-            $scope.refreshUserVariable(true);
+            refreshUserVariable($rootScope.variableName);
         } else if ($rootScope.variableObject) {
             $scope.setupVariableByVariableObject($rootScope.variableObject);
-            $scope.refreshUserVariable(true);
+            refreshUserVariable($rootScope.variableObject.name);
         } else {
             console.error("Variable name not provided to variable settings controller!");
             $state.go(config.appSettings.defaultState);
@@ -27,6 +26,9 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
     });
     function getTruncatedVariableName(variableName) {
         if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
+    }
+    function refreshUserVariable(variableName) {
+        quantimodoService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){$rootScope.variableObject = userVariable;});
     }
     $rootScope.showActionSheetMenu = function() {
         console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
@@ -80,7 +82,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             "when your tag variable is analyzed, measurements from " +
             $rootScope.variableObject.name.toUpperCase() + " will be included.";
         self.placeholder = "Search for a tag...";
-        self.newVariable = newVariable;
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event) {
             var userTagData;
@@ -92,12 +93,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                     userTagVariableObject: self.selectedItem.variable
                 });
             } else {
-                userTagData = {
-                    userTagVariableId: self.selectedItem.variable.id,
-                    userTaggedVariableId: $rootScope.variableObject.id,
-                    conversionFactor: 1
-                };
-
+                userTagData = {userTagVariableId: self.selectedItem.variable.id, userTaggedVariableId: $rootScope.variableObject.id, conversionFactor: 1};
                 $ionicLoading.show();
                 quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
                     $rootScope.variableObject = response.data.userTaggedVariable;
@@ -106,7 +102,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             }
             $mdDialog.hide();
         };
-        function newVariable(variable) { alert("Sorry! You'll need to create a Constitution for " + variable + " first!"); }
         function querySearch (query) {
             self.notFoundText = "No variables matching " + query + " were found.";
             var deferred = $q.defer();
@@ -130,11 +125,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             if(variables && $rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {
-                return {
-                    value: variable.name.toLowerCase(),
-                    name: variable.name,
-                    variable: variable
-                };
+                return {value: variable.name.toLowerCase(), name: variable.name, variable: variable};
             });
         }
         /**
@@ -143,7 +134,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         function filterByProperty(filterPropertyName, allowedFilterValue) {
             return function filterFn(item) { return (item[filterPropertyName] === allowedFilterValue); };
         }
-
         /**
          * Create filter function for a query string
          */

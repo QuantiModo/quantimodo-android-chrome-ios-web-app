@@ -159,7 +159,11 @@ gulp.task('unzipChromeExtension', function() {
 });
 
 gulp.task('sass', function(done) {
+<<<<<<< HEAD
 	gulp.src('./www/scss/app.scss')
+=======
+	gulp.src('./scss/ionic.app.scss')
+>>>>>>> 5724519af7e27df9ae890684373bccdef7699341
 		.pipe(sass({errLogToConsole: true}))
 		.pipe(gulp.dest('./www/css/'))
 		.pipe(minifyCss({keepSpecialComments: 0}))

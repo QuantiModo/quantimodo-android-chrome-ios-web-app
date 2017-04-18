@@ -27,7 +27,7 @@
                 </md-card-title-text>
             </md-card-title>
             <md-card-content>
-                <div layout="row" layout-align="space-between center">
+                <div ng-if="variableObject.availableDefaultUnits" layout="row" layout-align="space-between center">
                     <span>Default Unit</span>
                     <md-select ng-model="variableObject.userVariableDefaultUnitId">
                         <md-option ng-repeat="unit in variableObject.availableDefaultUnits"
@@ -36,7 +36,7 @@
                         </md-option>
                     </md-select>
                 </div>
-                <div layout="row" layout-align="space-between center">
+                <div ng-if="variableObject.userVariableVariableCategoryName" layout="row" layout-align="space-between center">
                     <span>Variable Category</span>
                     <md-select ng-model="variableObject.userVariableVariableCategoryName">
                         <md-option ng-repeat="variableCategoryName in variableCategoryNames"

@@ -219,7 +219,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             return false;
         }
         if(!$scope.state.trackingReminder.unitAbbreviatedName) {
-            validationFailure('Please select a unit');
+            validationFailure('Please select a unit for ' + $scope.state.trackingReminder.variableName);
             return false;
         } else {$scope.state.trackingReminder.unitId = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName].id;}
         if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName] &&
