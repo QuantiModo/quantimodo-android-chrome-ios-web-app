@@ -1,10 +1,5 @@
 ### Upload Alpha Builds to Play Store
 
-#### Check If We Need To Release Yet
-- Go to the [Play Dashboard](https://play.google.com/apps/publish) and check the version numbers
-- See if any of them are less than the version number in the Details tab of the most recent build at [https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) (credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029))
-- If so, move to the Build Them section.  Otherwise, you're done!
-
 #### Build Them
 - Go to [BuddyBuild](https://dashboard.buddybuild.com/apps/58544b2c77b9870100027394) (credentials [here](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029))
 - Sign in with the credentials in this [spreadsheet](https://docs.google.com/spreadsheets/d/1v_u6g6YHWxyrLqNeHMVg-C20MxOc7n1NepB3X6plVAY/edit?userstoinvite=quantimodo.chrome@gmail.com&ts=58ac6d3a#gid=2130660029) (not your own)
