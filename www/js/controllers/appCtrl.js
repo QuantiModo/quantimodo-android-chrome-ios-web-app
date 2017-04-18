@@ -820,6 +820,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var options;
         //connector.loadingText = 'Connecting...'; // TODO: Show Connecting... text again once we figure out how to update after connection is completed
         connector.loadingText = null;
+        connector.connecting = true;
         var connectWithToken = function(response) {
             console.debug("Response Object -> " + JSON.stringify(response));
             var body = {
