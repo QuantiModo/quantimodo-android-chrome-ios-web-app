@@ -82,7 +82,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             "when your tag variable is analyzed, measurements from " +
             $rootScope.variableObject.name.toUpperCase() + " will be included.";
         self.placeholder = "Search for a tag...";
-        self.newVariable = newVariable;
         self.cancel = function($event) { $mdDialog.cancel(); };
         self.finish = function($event) {
             var userTagData;
@@ -94,12 +93,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                     userTagVariableObject: self.selectedItem.variable
                 });
             } else {
-                userTagData = {
-                    userTagVariableId: self.selectedItem.variable.id,
-                    userTaggedVariableId: $rootScope.variableObject.id,
-                    conversionFactor: 1
-                };
-
+                userTagData = {userTagVariableId: self.selectedItem.variable.id, userTaggedVariableId: $rootScope.variableObject.id, conversionFactor: 1};
                 $ionicLoading.show();
                 quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
                     $rootScope.variableObject = response.data.userTaggedVariable;
@@ -108,7 +102,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             }
             $mdDialog.hide();
         };
-        function newVariable(variable) { alert("Sorry! You'll need to create a Constitution for " + variable + " first!"); }
         function querySearch (query) {
             self.notFoundText = "No variables matching " + query + " were found.";
             var deferred = $q.defer();
@@ -132,11 +125,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             if(variables && $rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {
-                return {
-                    value: variable.name.toLowerCase(),
-                    name: variable.name,
-                    variable: variable
-                };
+                return {value: variable.name.toLowerCase(), name: variable.name, variable: variable};
             });
         }
         /**
@@ -145,7 +134,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         function filterByProperty(filterPropertyName, allowedFilterValue) {
             return function filterFn(item) { return (item[filterPropertyName] === allowedFilterValue); };
         }
-
         /**
          * Create filter function for a query string
          */
