@@ -7473,6 +7473,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             locals: {dataToPass: {title: title, textContent: textContent}}
         })
         .then(function(answer) {
+            if(answer === "help"){$state.go('app.help');}
             //$scope.status = 'You said the information was "' + answer + '".';
         }, function() {
             //$scope.status = 'You cancelled the dialog.';

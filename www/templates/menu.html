@@ -28,8 +28,8 @@
                     </a>
                     <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="openCorrelationSearchDialog($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
-                    <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="onGenericHelpButtonPress()"></button>
-                    <button class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
+                    <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="goToState('app.help')"></button>
+                    <button class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="showMaterialAlert(stateParams.title, stateParams.helpText, $event)"></button>
                     <button class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>
