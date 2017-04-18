@@ -244,7 +244,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.post('api/v1/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
     };
     quantimodoService.postMeasurementsExport = function(type) {
-        quantimodoService.post('api/v2/measurements/request_' . type, [], [], quantimodoService.successHandler, quantimodoService.errorHandler);
+        quantimodoService.post('api/v2/measurements/request_' + type, [], [], quantimodoService.successHandler, quantimodoService.errorHandler);
     };
     // post new Measurements for user
     quantimodoService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
