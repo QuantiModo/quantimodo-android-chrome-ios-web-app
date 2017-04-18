@@ -13,7 +13,7 @@ More information about SASS can be found at: [http://sass-lang.com/guide](http:/
 
     Example: `_variable-settings.scss`
 
-3. Go to the `www/scss/app.scss`. You will see a comement that says `// Partials` followed by a list of import statements. At the bottom of the list add `@import 'your-file-name';` The `_` and `.scss` extension must be omitted. 
+3. Go to the `www/scss/app.scss`. You will see a comment that says `// Partials` followed by a list of import statements. At the bottom of the list add `@import 'your-file-name';` The `_` and `.scss` extension must be omitted. 
 4. Run `gulp watch` from the command line. This will do two things:
 
     First, take all files in the `www/scss` directory and merge them into one minified file thanks to the import statements in `www/scss/app.scss`. This file is called `app.min.css` and is located at `www/css/app.min.css`. The benefit of doing this is only one HTTP request has to be made in order to load all of your stylesheets into the project.
