@@ -5,9 +5,6 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
         image: { url: "img/robots/quantimodo-robot-waving.svg", height: "100", width: "100" },
         bodyText: "One moment please...",
     };
-    $scope.$on('$ionicView.beforeEnter', function(e) {
-        //quantimodoService.goToLoginIfNecessary();  Why do we need to login?
-    });
     if (!clipboard.supported) {
         console.debug('Sorry, copy to clipboard is not supported');
         $scope.hideClipboardButton = true;
