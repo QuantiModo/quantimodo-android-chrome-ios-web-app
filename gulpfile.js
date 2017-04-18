@@ -33,7 +33,7 @@ var appIds = {
 };
 
 var paths = {
-	sass: ['./scss/**/*.scss']
+	sass: ['./www/scss/**/*.scss']
 };
 
 var date = new Date();
@@ -1378,13 +1378,6 @@ gulp.task("scripts", function () {
 			.pipe(gulp.dest("www/scripts"));
 	}
 });
-
-//There was two gulp tasks for SASS compiling
-// gulp.task("sass", function () {
-// 	return gulp.src(paths.sass)
-// 		.pipe(sass().on("error", sass.logError))
-// 		.pipe(gulp.dest(paths.sassCssTarget));
-// });
 
 var templateCache = require('gulp-angular-templatecache');
 gulp.task('template', function(done){
