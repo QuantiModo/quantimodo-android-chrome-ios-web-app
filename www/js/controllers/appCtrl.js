@@ -265,35 +265,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
         });
     };
-    $scope.showHelpInfoPopup = function (ev, id) {
-        // Appending dialog to document.body to cover sidenav in docs app
-        // Modal dialogs should fully cover application
-        // to prevent interaction outside of dialog
-        $mdDialog.show(
-            $mdDialog.alert()
-                .parent(angular.element(document.querySelector('#popupContainer')))
-                .clickOutsideToClose(true)
-                .title(quantimodoService.explanations[id].title)
-                .textContent(quantimodoService.explanations[id].textContent)
-                .ariaLabel('Alert Dialog Demo')
-                .ok('Got it!')
-                .targetEvent(ev)
-        );
+    $scope.showHelpInfoPopup = function (explanationId, ev) {
+        quantimodoService.showMaterialAlert(quantimodoService.explanations[explanationId].title, quantimodoService.explanations[explanationId].textContent);
     };
-    $scope.onGenericHelpButtonPress = function () {$state.go('app.help');};
-    $scope.onHelpButtonPress = function (title, helpText) {
-        $rootScope.helpButtonPopup = $ionicPopup.show({
-            title: title,
-            //subTitle: '',
-            scope: $scope,
-            template: helpText,
-            buttons: [
-                {text: 'OK', type: 'button-positive'},
-                {text: 'More Help', type: 'button-positive', onTap: function(e) {$state.go('app.help');}}
-            ]
-        });
-    };
-
     $scope.tagAnotherVariable = function () {
         $state.go('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: $rootScope.variableObject});
     };

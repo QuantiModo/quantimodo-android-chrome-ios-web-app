@@ -33,7 +33,7 @@
         </div>
 
         <div ng-show="user" class="card sign-in" >
-            <div class="item item-divider" ng-click="showHelpInfoPopup($event, 'locationAndWeatherTracking')">
+            <div class="item item-divider" ng-click="showHelpInfoPopup('locationAndWeatherTracking', $event)">
                 Location Tracking &nbsp; <i class="icon ion-information-circled"></i>
             </div>
             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)">

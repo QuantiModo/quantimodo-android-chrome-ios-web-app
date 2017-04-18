@@ -38,9 +38,6 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         window.localStorage.onboarded = true;
         $state.go(config.appSettings.defaultState);
     };
-    $rootScope.showMoreOnboardingInfo = function () {
-        $scope.onHelpButtonPress($rootScope.onboardingPages[0].title, $rootScope.onboardingPages[0].moreInfo);
-    };
     $scope.goToReminderSearchCategoryFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
