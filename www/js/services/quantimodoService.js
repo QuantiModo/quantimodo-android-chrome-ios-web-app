@@ -7498,15 +7498,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             fullscreen: false,
             locals: {dataToPass: {title: title, textContent: textContent}}
         }).then(function(answer) {
-            if(answer === 'yes'){
-                if(yesCallbackFunction){
-                    yesCallbackFunction();
-                }
-            } else {
-                if(noCallbackFunction){
-                    noCallbackFunction();
-                }
-            }
+            if(answer === "help"){$state.go('app.help');}
+            if(answer === 'yes'){yesCallbackFunction();}
+            if(answer === 'no' && noCallbackFunction){noCallbackFunction();}
         }, function() {
             if(noCallbackFunction){noCallbackFunction();}
         });
