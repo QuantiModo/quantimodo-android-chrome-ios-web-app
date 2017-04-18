@@ -65,75 +65,48 @@ function execute(command, callback){
 }
 
 function generatePrivateConfigFromEnvs(callback) {
-
     if(!process.env.QUANTIMODO_CLIENT_ID){
         console.warn('Not going to generatePrivateConfigFromEnvs because QUANTIMODO_CLIENT_ID env is not set');
-        if(callback){
-            callback();
-        }
+        if(callback){callback();}
         return;
     }
-
     if(!process.env.QUANTIMODO_CLIENT_SECRET){
         console.error('ERROR: Please set QUANTIMODO_CLIENT_SECRET environmental variable!');
-        if(callback){
-            callback();
-        }
+        if(callback){callback();}
         return;
     }
-
-    var privateConfigKeys = {
-        client_ids : {},
-        client_secrets : {}
-    };
-
+    var privateConfigKeys = {client_ids : {}, client_secrets : {}};
     privateConfigKeys.client_ids.Web = process.env.QUANTIMODO_CLIENT_ID;
     console.log('Detected ' + process.env.QUANTIMODO_CLIENT_ID + ' QUANTIMODO_CLIENT_ID');
     privateConfigKeys.client_secrets.Web = process.env.QUANTIMODO_CLIENT_SECRET;
-
     if(typeof process.env.IONIC_BUGSNAG_KEY !== "undefined"){
         privateConfigKeys.bugsnag_key = process.env.IONIC_BUGSNAG_KEY;
         console.log('IONIC_BUGSNAG_KEY' +' Detected');
     }
-
     var privateConfigContent = 'private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
     fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
     fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
     console.log('Created '+ './www/private_configs/default.config.js');
-    if(callback){
-        callback();
-    }
+    if(callback){callback();}
 }
 
-
 var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
-    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
-        "https://code.google.com/archive/p/openssl-for-windows/downloads");
-
+    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads");
     if(!process.env.ENCRYPTION_SECRET){
         console.error('ERROR: Please set ENCRYPTION_SECRET environmental variable!');
-        if(callback){
-            callback();
-        }
+        if(callback){callback();}
         return;
     }
-
     console.log("DECRYPTING " + fileToDecryptPath);
-    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath +
-        '" -d -a -out "' + decryptedFilePath + '"';
-
+    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath + '" -d -a -out "' + decryptedFilePath + '"';
     //console.log('executing ' + cmd);
     execute(cmd, function(error){
         if(error !== null){
             console.error("ERROR: DECRYPTING: " + error);
-            if(callback){
-                callback();
-            }
+            if(callback){callback();}
         } else {
             console.log("DECRYPTED to " + decryptedFilePath);
-            if(callback){
-                callback();
-            }
+            if(callback){callback();}
         }
     });
 };
@@ -164,27 +137,18 @@ function loadConfigs(callback) {
 					}
                 });
             });*/
-
 			var appSettings = require(pathToConfig);
             process.env.APPLE_ID = appSettings.appleId;
             process.env.APP_DISPLAY_NAME = appSettings.appDisplayName;
             process.env.APP_IDENTIFIER = appSettings.appIdentifier;
             process.env.APP_DESCRIPTION = appSettings.appDescription;
             process.env.IONIC_APP_ID = appSettings.ionicAppId;
-
             //process.env.privateConfig = require(pathToPrivateConfig);
-
-            if(callback){
-                callback();
-            }
-        } else {
-            throw("ERROR: " + pathToConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);
-        }
+            if(callback){callback();}
+        } else {throw("ERROR: " + pathToConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);}
     });
 }
-
 //loadConfigs();
-
 gulp.task('default', ['sass']);
 
 gulp.task('unzipChromeExtension', function() {
@@ -194,30 +158,20 @@ gulp.task('unzipChromeExtension', function() {
         .pipe(gulp.dest('./build/' + process.env.LOWERCASE_APP_NAME + '-Chrome-Extension'));
 });
 
-
 gulp.task('sass', function(done) {
 	gulp.src('./www/scss/app.scss')
-		.pipe(sass({
-			errLogToConsole: true
-		}))
+		.pipe(sass({errLogToConsole: true}))
 		.pipe(gulp.dest('./www/css/'))
-		.pipe(minifyCss({
-			keepSpecialComments: 0
-		}))
+		.pipe(minifyCss({keepSpecialComments: 0}))
 		.pipe(rename({ extname: '.min.css' }))
 		.pipe(gulp.dest('./www/css/'))
 		.on('end', done);
 });
 
-gulp.task('watch', function() {
-	gulp.watch(paths.sass, ['sass']);
-});
+gulp.task('watch', function() {gulp.watch(paths.sass, ['sass']);});
 
 gulp.task('install', ['git-check'], function() {
-	return bower.commands.install()
-		.on('log', function(data) {
-			gutil.log('bower', gutil.colors.cyan(data.id), data.message);
-		});
+	return bower.commands.install().on('log', function(data) {gutil.log('bower', gutil.colors.cyan(data.id), data.message);});
 });
 
 gulp.task('deleteNodeModules', function(){
@@ -227,34 +181,24 @@ gulp.task('deleteNodeModules', function(){
 	return gulp.src("node_modules/*", { read: false }).pipe(clean());
 });
 
-gulp.task('generatePrivateConfigFromEnvs', function(callback){
-	generatePrivateConfigFromEnvs(callback);
-});
+gulp.task('generatePrivateConfigFromEnvs', function(callback){generatePrivateConfigFromEnvs(callback);});
 
 var answer = '';
 gulp.task('getAppName', function(){
 	var deferred = q.defer();
-
-	inquirer.prompt([{
-		type: 'input',
-		name: 'app',
-		message: 'Please enter the app name (moodimodo/energymodo/etc..)'
+	inquirer.prompt([{type: 'input', name: 'app', message: 'Please enter the app name (moodimodo/energymodo/etc..)'
 	}], function( answers ) {
 		answer = answers.app;
 		answer = answer.trim();
 		deferred.resolve();
 	});
-
 	return deferred.promise;
 });
 
 var updatedVersion = '';
 gulp.task('getUpdatedVersion', ['getAppName'], function(){
 	var deferred = q.defer();
-	inquirer.prompt([{
-		type : 'confirm',
-		name : 'updatedVersion',
-		'default' : false,
+	inquirer.prompt([{type : 'confirm', name : 'updatedVersion', 'default' : false,
 		message : 'Have you updated the app\'s version number in chromeApps/'+answer+'/manifest.json ?'
 	}], function(answers){
 		if (answers.updatedVersion){
@@ -281,13 +225,9 @@ gulp.task('zipChromeApp', ['copyWwwFolderToChromeApp'], function(){
 
 gulp.task('openChromeAuthorizationPage', ['zipChromeApp'], function(){
 	 var deferred = q.defer();
-
 	 gulp.src(__filename)
 	.pipe(open({uri: 'https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=1052648855194-h7mj5q7mmc31k0g3b9rj65ctk0uejo9p.apps.googleusercontent.com&redirect_uri=urn:ietf:wg:oauth:2.0:oob'}));
-
-
 	deferred.resolve();
-
 });
 
 var code = '';
@@ -295,10 +235,7 @@ gulp.task('getChromeAuthorizationCode', ['openChromeAuthorizationPage'], functio
 	var deferred = q.defer();
 	setTimeout(function(){
 		console.log("Starting getChromeAuthorizationCode");
-		inquirer.prompt([{
-			type : 'input',
-			name : 'code',
-			message : 'Please Enter the Code Generated from the opened website'
+		inquirer.prompt([{type : 'input', name : 'code', message : 'Please Enter the Code Generated from the opened website'
 		}], function(answers){
 			code = answers.code;
 			code = code.trim();
@@ -306,14 +243,12 @@ gulp.task('getChromeAuthorizationCode', ['openChromeAuthorizationPage'], functio
 			deferred.resolve();
 		});
 	}, 2000);
-
 	return deferred.promise;
 });
 
 var access_token = '';
 gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function(){
 	var deferred = q.defer();
-
 	var options = {
 		method : "POST",
 		url : "https://accounts.google.com/o/oauth2/token",
@@ -325,7 +260,6 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function()
 			redirect_uri : 'urn:ietf:wg:oauth:2.0:oob'
 		}
 	};
-
 	request(options, function(error, message, response){
 		if(error){
 			console.error('ERROR: Failed to generate the access code', error);
@@ -336,34 +270,24 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function()
 			deferred.resolve();
 		}
 	});
-
 	return deferred.promise;
 });
 
-var getAppIds = function(){
-	return appIds;
-};
+var getAppIds = function(){return appIds;};
 
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function(){
 	var deferred = q.defer();
 	var appIds = getAppIds();
-
 	var source = fs.createReadStream('./chromeApps/zips/'+answer+'.zip');
-
 	// upload the package
 	var options = {
 		url : "https://www.googleapis.com/upload/chromewebstore/v1.1/items/"+appIds[answer],
 		method : "PUT",
-		headers : {
-			'Authorization': 'Bearer '+ access_token,
-			'x-goog-api-version' : '2'
-		}
+		headers : {'Authorization': 'Bearer '+ access_token, 'x-goog-api-version' : '2'}
 	};
-
 	console.log('Generated URL for upload operation: ', options.url);
 	console.log('The Access Token: Bearer '+access_token);
 	console.log("UPLOADING. .. .. Please Wait! .. .");
-
 	source.pipe(request(options, function(error, message, data){
 		if(error){
 			console.error("ERROR: Error in Uploading Data", error);
@@ -371,7 +295,6 @@ gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function(){
 		} else {
 			console.log('Upload Response Received');
 			data = JSON.parse(data);
-
 			if(data.uploadState === "SUCCESS"){
 				console.log('Uploaded successfully!');
 				deferred.resolve();
@@ -382,7 +305,6 @@ gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function(){
 			}
 		}
 	}));
-
 	return deferred.promise;
 });
 
@@ -395,7 +317,6 @@ gulp.task('shouldPublish', ['uploadChromeApp'], function(){
 		message : 'Should we publish this version?',
 		default : true
 	}], function(answers){
-
 		if (answers.shouldPublish){
 			shouldPublish = answers.shouldPublish;
 			deferred.resolve();
@@ -409,19 +330,12 @@ gulp.task('shouldPublish', ['uploadChromeApp'], function(){
 
 gulp.task('publishToGoogleAppStore', ['shouldPublish'], function(){
 	var deferred = q.defer();
-
 	// upload the package
 	var options = {
 		url : "https://www.googleapis.com/chromewebstore/v1.1/items/"+appIds[answer]+'/publish?publishTarget=trustedTesters',
 		method : "POST",
-		headers : {
-			'Authorization': 'Bearer '+ access_token,
-			'x-goog-api-version' : '2',
-			'publishTarget' : 'trustedTesters',
-			'Content-Length': '0'
-		}
+		headers : {'Authorization': 'Bearer '+ access_token, 'x-goog-api-version' : '2', 'publishTarget' : 'trustedTesters', 'Content-Length': '0'}
 	};
-
 	request(options, function(error, message, publishResult){
 		if(error) {
 			console.error("ERROR: error in publishing to trusted Users", error);
@@ -438,13 +352,10 @@ gulp.task('publishToGoogleAppStore', ['shouldPublish'], function(){
 			}
 		}
 	});
-
 	return deferred.promise;
 });
 
-gulp.task('chrome', ['publishToGoogleAppStore'], function () {
-	console.log('Enjoy your day!');
-});
+gulp.task('chrome', ['publishToGoogleAppStore'], function () {console.log('Enjoy your day!');});
 
 gulp.task('git-check', function(done) {
 	if (!sh.which('git')) {
@@ -459,10 +370,8 @@ gulp.task('git-check', function(done) {
 	done();
 });
 
-
 gulp.task('deleteIOSApp', function () {
 	var deferred = q.defer();
-
 	execute("ionic platform rm ios", function(error){
 		if(error !== null){
 			console.error("ERROR: REMOVING IOS APP: " + error);
@@ -472,22 +381,16 @@ gulp.task('deleteIOSApp', function () {
 			deferred.resolve();
 		}
 	});
-
 	return deferred.promise;
 });
 
 var encryptFile = function (fileToEncryptPath, encryptedFilePath, callback) {
-    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: " +
-        "https://code.google.com/archive/p/openssl-for-windows/downloads");
-
+    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads");
     if(!process.env.ENCRYPTION_SECRET){
         console.error('ERROR: Please set ENCRYPTION_SECRET environmental variable!');
         return;
     }
-
-    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToEncryptPath +
-        '" -e -a -out "' + encryptedFilePath + '"';
-
+    var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToEncryptPath + '" -e -a -out "' + encryptedFilePath + '"';
     //console.log('executing ' + cmd);
     execute(cmd, function(error){
         if(error !== null){
@@ -1294,9 +1197,7 @@ var winPlatforms = ["windows"],
 	// Paths used by build
 	buildPaths = {
 		tsconfig: "scripts/tsconfig.json",
-		ts: "./scripts/**/*.ts",
-		sass: "./www/scss/app.scss",
-		sassCssTarget: "./www/css/",
+		ts: "./scripts/**/*.ts", 
 		apk:["./platforms/android/ant-build/*.apk",
 			"./platforms/android/bin/*.apk",
 			"./platforms/android/build/outputs/apk/*.apk"],
