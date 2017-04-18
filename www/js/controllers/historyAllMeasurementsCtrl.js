@@ -75,7 +75,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 					if(index === 3) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
 					return true;
 				},
-				destructiveButtonClicked: function() {$scope.showDeleteAllMeasurementsForVariablePopup(); return true;}
+				destructiveButtonClicked: function() {quantimodoService.showDeleteAllMeasurementsForVariablePopup(); return true;}
 			});
 			$timeout(function() {hideSheet();}, 20000);
 		};

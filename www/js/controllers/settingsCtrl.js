@@ -255,7 +255,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
 		}
 	}
-	$scope.logout = function() {
+	$scope.logout = function(ev) {
 		var completelyResetAppStateAndLogout = function(){
 			quantimodoService.completelyResetAppState();
 			logOutOfWebsite();
@@ -271,31 +271,17 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			window.localStorage.onboarded = false;
 			$state.go('app.intro');
 		};
-		$scope.showDataClearPopup = function(){
-			$ionicPopup.show({
-				title: 'Clear local storage?',
-				//subTitle: '',
-				template: 'Do you want do delete all data from local storage?',
-				scope: $scope,
-				buttons:[
-					{
-						text: 'No',
-						type: 'button-assertive',
-						onTap : afterLogoutDoNotDeleteMeasurements
-					},
-					{
-						text: 'Yes',
-						type: 'button-positive',
-						onTap: completelyResetAppStateAndLogout
-					}
-				]
-
-			});
+		var showDataClearPopup = function(ev){
+            var title = 'Clear local storage?';
+            var textContent = 'Do you want do delete all data from local storage?';
+            function yesCallback(){completelyResetAppStateAndLogout();}
+            function noCallback(){afterLogoutDoNotDeleteMeasurements();}
+            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		console.debug('Logging out...');
 		$scope.hideLoader();
 		$rootScope.user = null;
-		$scope.showDataClearPopup();
+		showDataClearPopup(ev);
 	};
 	// Convert all data Array to a CSV object
 	var convertToCSV = function(objArray) {
