@@ -26,10 +26,13 @@
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <md-button ng-click="answer('no')">
+      <md-button  id="helpButton" ng-click="answer('help')">
+        Help
+      </md-button>
+      <md-button id="noButton" ng-click="answer('no')">
        No
       </md-button>
-      <md-button ng-click="answer('yes')">
+      <md-button id="yesButton" ng-click="answer('yes')">
         Yes
       </md-button>
     </md-dialog-actions>
