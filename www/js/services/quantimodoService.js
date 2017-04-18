@@ -7473,9 +7473,42 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             locals: {dataToPass: {title: title, textContent: textContent}}
         })
         .then(function(answer) {
+            if(answer === "help"){$state.go('app.help');}
             //$scope.status = 'You said the information was "' + answer + '".';
         }, function() {
             //$scope.status = 'You cancelled the dialog.';
+        });
+    };
+    quantimodoService.showMaterialConfirmationDialog = function(title, textContent, yesCallbackFunction, noCallbackFunction, ev){
+        function ConfirmationDialogController($scope, $mdDialog, dataToPass) {
+            var self = this;
+            self.title = dataToPass.title;
+            self.textContent = dataToPass.textContent;
+            $scope.hide = function() {$mdDialog.hide();};
+            $scope.cancel = function() {$mdDialog.cancel();};
+            $scope.answer = function(answer) {$mdDialog.hide(answer);};
+        }
+        $mdDialog.show({
+            controller: ConfirmationDialogController,
+            controllerAs: 'ctrl',
+            templateUrl: 'templates/dialogs/robot-confirmation.html',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose:true,
+            fullscreen: false,
+            locals: {dataToPass: {title: title, textContent: textContent}}
+        }).then(function(answer) {
+            if(answer === 'yes'){
+                if(yesCallbackFunction){
+                    yesCallbackFunction();
+                }
+            } else {
+                if(noCallbackFunction){
+                    noCallbackFunction();
+                }
+            }
+        }, function() {
+            if(noCallbackFunction){noCallbackFunction();}
         });
     };
     quantimodoService.validationFailure = function (message, object) {
