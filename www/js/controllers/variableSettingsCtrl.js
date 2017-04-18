@@ -54,7 +54,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
                 return true;
             },
-            destructiveButtonClicked: function() {$scope.showDeleteAllMeasurementsForVariablePopup(); return true;}
+            destructiveButtonClicked: function() {quantimodoService.showDeleteAllMeasurementsForVariablePopup(); return true;}
         });
         console.debug('Setting hideSheet timeout');
         $timeout(function() { hideSheet(); }, 20000);

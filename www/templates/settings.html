@@ -14,7 +14,7 @@
               <p>Tap to sign in</p>
             </a>
 
-            <a id="userName" href="" ng-show="user" ng-click="logout()" class="item ">
+            <a id="userName" href="" ng-show="user" ng-click="logout($event)" class="item ">
                 <i class="icon ion-person"></i>
                 &nbsp
                 Signed in as {{user.displayName}}
@@ -91,7 +91,7 @@
         -->
         <div ng-if="!user" class="card sign-in" >
             <div class="item item-text-wrap">
-                <button class="button button-outline button-block icon-left ion-trash-a button-assertive" ng-click="logout()">
+                <button class="button button-outline button-block icon-left ion-trash-a button-assertive" ng-click="logout($event)">
                     Clear all user data
                 </button>
             </div>

@@ -68,7 +68,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                     return true;
                 },
                 destructiveButtonClicked: function() {
-                    $scope.showDeleteAllMeasurementsForVariablePopup();
+                    quantimodoService.showDeleteAllMeasurementsForVariablePopup();
                     return true;
                 }
             });

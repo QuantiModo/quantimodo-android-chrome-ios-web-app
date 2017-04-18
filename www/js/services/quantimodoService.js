@@ -7555,6 +7555,32 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         }
         return a;
-    }
+    };
+    var deleteAllMeasurementsForVariable = function() {
+        $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+        // Delete all measurements for a variable
+        quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
+            // If primaryOutcomeVariableName, delete local storage measurements
+            if ($rootScope.variableName === quantimodoService.getPrimaryOutcomeVariable().name) {
+                quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
+                quantimodoService.setLocalStorageItem('measurementsQueue',[]);
+                quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
+                quantimodoService.setLocalStorageItem('lastSyncTime',0);
+            }
+            $ionicLoading.hide();
+            $state.go(config.appSettings.defaultState);
+            console.debug("All measurements for " + $rootScope.variableName + " deleted!");
+        }, function(error) {
+            $ionicLoading.hide();
+            console.debug('Error deleting measurements: '+ JSON.stringify(error));
+        });
+    };
+    quantimodoService.showDeleteAllMeasurementsForVariablePopup = function(ev){
+        var title = 'Delete all ' + $rootScope.variableName + " measurements?";
+        var textContent = 'This cannot be undone!';
+        function yesCallback() {deleteAllMeasurementsForVariable();}
+        function noCallback() {}
+        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+    };
     return quantimodoService;
 });

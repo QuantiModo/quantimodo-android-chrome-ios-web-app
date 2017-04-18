@@ -586,41 +586,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }
         }, 2000);
     };
-    $scope.deleteAllMeasurementsForVariable = function() {
-        $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-        // Delete all measurements for a variable
-        quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
-            // If primaryOutcomeVariableName, delete local storage measurements
-            if ($rootScope.variableName === quantimodoService.getPrimaryOutcomeVariable().name) {
-                quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
-                quantimodoService.setLocalStorageItem('measurementsQueue',[]);
-                quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
-                quantimodoService.setLocalStorageItem('lastSyncTime',0);
-            }
-            $ionicLoading.hide();
-            $state.go(config.appSettings.defaultState);
-            console.debug("All measurements for " + $rootScope.variableName + " deleted!");
-        }, function(error) {
-            $ionicLoading.hide();
-            console.debug('Error deleting measurements: '+ JSON.stringify(error));
-        });
-    };
-    $scope.showDeleteAllMeasurementsForVariablePopup = function(){
-        $ionicPopup.show({
-            title:'Delete all ' + $rootScope.variableName + " measurements?",
-            //subTitle: '',
-            template: 'This cannot be undone!',
-            scope: $scope,
-            buttons:[
-                {
-                    text: 'Yes',
-                    type: 'button-positive',
-                    onTap: $scope.deleteAllMeasurementsForVariable
-                },
-                {text: 'No', type: 'button-assertive'}
-            ]
-        });
-    };
     // Triggered on a button click, or some other target
     $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
         var variableObject = {id: favorite.variableId, name: favorite.variableName};
