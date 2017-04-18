@@ -127,16 +127,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(typeof cordova !== "undefined"){ cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
         } else { window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes'); }
     };
-    $scope.shareCharts = function(variableObject, sharingUrl){
+    $scope.shareCharts = function(variableObject, sharingUrl, ev){
         if(!variableObject.shareUserMeasurements){
-            showShareVariableConfirmation(variableObject, sharingUrl);
+            showShareVariableConfirmation(variableObject, sharingUrl, ev);
             return;
         }
         quantimodoService.openSharingUrl(sharingUrl);
     };
-    $scope.shareStudy = function(correlationObject, sharingUrl){
+    $scope.shareStudy = function(correlationObject, sharingUrl, ev){
         if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
-            showShareStudyConfirmation(correlationObject, sharingUrl);
+            showShareStudyConfirmation(correlationObject, sharingUrl, ev);
             return;
         }
         quantimodoService.openSharingUrl(sharingUrl);
@@ -154,15 +154,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName) {
         quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
     };
-    var showShareStudyConfirmation = function(correlationObject, sharingUrl) {
-        var confirmPopup = $ionicPopup.confirm({
-            title: 'Share Study',
-            template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
-            ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? <br><br> You can ' +
-            'make them private again at any time on this study page.'
-        });
-        confirmPopup.then(function(res) {
-            if(res) {
+    var showShareStudyConfirmation = function(correlationObject, sharingUrl, ev) {
+        var title = 'Share Study';
+        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
+                ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? You can make them private again at any time on this study page.';
+        function yesCallback() {
                 correlationObject.shareUserMeasurements = true;
                 quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
                 var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
@@ -174,75 +170,60 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     $ionicLoading.hide();
                     console.error(error);
                 });
-            } else {correlationObject.shareUserMeasurements = false;}
-        });
+        }
+        function noCallback() {correlationObject.shareUserMeasurements = false;}
+        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    var showUnshareStudyConfirmation = function(correlationObject) {
-        var confirmPopup = $ionicPopup.confirm({
-            title: 'Share Study',
-            template: 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
-            ' and ' + correlationObject.effectVariableName + ' measurements private? <br><br> Links to studies you ' +
-            'previously shared with these variables will no longer work.'
-        });
-        confirmPopup.then(function(res) {
-            if(res) {
-                correlationObject.shareUserMeasurements = false;
-                var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
-                quantimodoService.postStudyDeferred(body);
-            } else {correlationObject.shareUserMeasurements = true;}
-        });
+    var showUnshareStudyConfirmation = function(correlationObject, ev) {
+        var title = 'Share Study';
+        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
+            ' and ' + correlationObject.effectVariableName + ' measurements private? Links to studies your ' +
+            'previously shared with these variables will no longer work.';
+        function yesCallback() {
+            correlationObject.shareUserMeasurements = false;
+            var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
+            quantimodoService.postStudyDeferred(body);
+        }
+        function noCallback() {correlationObject.shareUserMeasurements = true;}
+        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    $scope.toggleStudyShare = function (correlationObject) {
-        if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject);
-        } else {showUnshareStudyConfirmation(correlationObject);}
+    $scope.toggleStudyShare = function (correlationObject, ev) {
+        if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
     };
-    var showShareVariableConfirmation = function(variableObject, sharingUrl) {
-        var confirmPopup = $ionicPopup.confirm({
-            title: 'Share Variable',
-            template: 'Are you absolutely sure you want to make your ' + variableObject.name +
-            ' measurements publicly visible? <br><br> You can ' +
-            'make them private again at any time on this page.'
-        });
-        confirmPopup.then(function(res) {
-            if(res) {
-                variableObject.shareUserMeasurements = true;
-                var body = {variableId: variableObject.id, shareUserMeasurements: true};
-                $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
-                quantimodoService.postUserVariableDeferred(body).then(function () {
-                    $ionicLoading.hide();
-                    quantimodoService.openSharingUrl(sharingUrl);
-                }, function (error) {
-                    $ionicLoading.hide();
-                    console.error(error);
-                });
-            } else {
-                variableObject.shareUserMeasurements = false;
-                console.log('You are not sure');
-            }
-        });
+    var showShareVariableConfirmation = function(variableObject, sharingUrl, ev) {
+        var title = 'Share Variable';
+        var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
+            ' measurements publicly visible? You can make them private again at any time on this page.';
+        function yesCallback() {
+            variableObject.shareUserMeasurements = true;
+            var body = {variableId: variableObject.id, shareUserMeasurements: true};
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+            quantimodoService.postUserVariableDeferred(body).then(function () {
+                $ionicLoading.hide();
+                quantimodoService.openSharingUrl(sharingUrl);
+            }, function (error) {
+                $ionicLoading.hide();
+                console.error(error);
+            });
+        }
+        function noCallback() {variableObject.shareUserMeasurements = false;}
+        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    var showUnshareVariableConfirmation = function(variableObject) {
-        var confirmPopup = $ionicPopup.confirm({
-            title: 'Share Variable',
-            template: 'Are you absolutely sure you want to make your ' + variableObject.name +
-            ' and ' + variableObject.name + ' measurements private? <br><br> Links to studies you ' +
-            'previously shared with this variable will no longer work.'
-        });
-        confirmPopup.then(function(res) {
-            if(res) {
-                variableObject.shareUserMeasurements = false;
-                var body = {variableId: variableObject.id, shareUserMeasurements: false};
-                quantimodoService.postUserVariableDeferred(body).then(function () {
-                }, function (error) {console.error(error);});
-            } else {
-                variableObject.shareUserMeasurements = true;
-                console.log('You are not sure');
-            }
-        });
+    var showUnshareVariableConfirmation = function(variableObject, ev) {
+        var title = 'Share Variable';
+        var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
+            ' and ' + variableObject.name + ' measurements private? Links to studies you ' +
+            'previously shared with this variable will no longer work.';
+        function yesCallback() {
+            variableObject.shareUserMeasurements = false;
+            var body = {variableId: variableObject.id, shareUserMeasurements: false};
+            quantimodoService.postUserVariableDeferred(body).then(function () {}, function (error) {console.error(error);});
+        }
+        function noCallback() {variableObject.shareUserMeasurements = true;}
+        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    $scope.toggleVariableShare = function (variableObject) {
-        if(variableObject.shareUserMeasurements){showShareVariableConfirmation(variableObject);
-        } else {showUnshareVariableConfirmation(variableObject);}
+    $scope.toggleVariableShare = function (variableObject, ev) {
+        if(variableObject.shareUserMeasurements){showShareVariableConfirmation(variableObject, ev);} else {showUnshareVariableConfirmation(variableObject, ev);}
     };
     $rootScope.setLocalStorageFlagTrue = function (flagName) {
         console.debug('Set ' + flagName + ' to true');
@@ -483,9 +464,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.toggleHistorySubMenu = function () {$scope.showHistorySubMenu = !$scope.showHistorySubMenu;};
     $scope.toggleReminderSubMenu = function () {$scope.showReminderSubMenu = !$scope.showReminderSubMenu;};
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
-        if(primaryOutcomeRatingFrequencyDescription){
-            $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;
-        }
+        if(primaryOutcomeRatingFrequencyDescription){$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
         var intervals = {
             "minutely" : 60,
             "every five minutes" : 5 * 60,
@@ -505,97 +484,48 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         quantimodoService.addToTrackingReminderSyncQueue(reminderToSchedule);
         $scope.showIntervalCard = false;
     };
-    $scope.downVote = function(correlationObject, $index){
+    $scope.downVote = function(correlationObject, $index, ev){
         if (correlationObject.correlationCoefficient > 0) {$scope.increasesDecreases = "increases";} else {$scope.increasesDecreases = "decreases";}
+        var title, textContent, yesCallback, noCallback;
         if (correlationObject.userVote !== 0) {
-            $ionicPopup.show({
-                title:'Implausible relationship?',
-                //subTitle: '',
-                scope: $scope,
-                template: 'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
-                buttons:[
-                    {text: 'No'},
-                    {text: 'Yes',
-                        type: 'button-positive',
-                        onTap: function(){
-                            correlationObject.userVote = 0;
-                            correlationObject.vote = 0;
-                            quantimodoService.postVoteDeferred(correlationObject)
-                                .then(function () {
-                                    console.debug('Down voted!');
-                                }, function () {
-                                    console.error('Down vote failed!');
-                                });
-                        }
-                    }
-                ]
-            });
+            title = 'Implausible relationship?';
+            textContent =  'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?';
+            yesCallback = function() {
+                correlationObject.userVote = 0;
+                correlationObject.vote = 0;
+                quantimodoService.postVoteDeferred(correlationObject).then(function () {console.debug('Down voted!');}, function () {console.error('Down vote failed!');});
+            };
+            noCallback = function() {};
+            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         } else {
-            $ionicPopup.show({
-                title:'Delete Downvote',
-                //subTitle: '',
-                scope: $scope,
-                template: 'You previously voted that it is IMPOSSIBLE that ' + correlationObject.causeVariableName +
-                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this down vote?',
-                buttons:[
-                    {text: 'No'},
-                    {text: 'Yes',
-                        type: 'button-positive',
-                        onTap: function(){
-                            deleteVote(correlationObject, $index);
-                        }
-                    }
-                ]
-            });
+            title = 'Delete Downvote';
+            textContent = 'You previously voted that it is IMPOSSIBLE that ' + correlationObject.causeVariableName +
+                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this down vote?';
+            yesCallback = function() {deleteVote(correlationObject, $index);};
+            noCallback = function () {};
+            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         }
     };
-
-    $scope.upVote = function(correlationObject, $index){
-        if (correlationObject.correlationCoefficient > 0) {
-            $scope.increasesDecreases = "increases";
-        } else {
-            $scope.increasesDecreases = "decreases";
-        }
+    $scope.upVote = function(correlationObject, $index, ev){
+        if (correlationObject.correlationCoefficient > 0) {$scope.increasesDecreases = "increases";} else {$scope.increasesDecreases = "decreases";}
+        var title, textContent, yesCallback, noCallback;
         if (correlationObject.userVote !== 1) {
-            $ionicPopup.show({
-                title:'Plausible relationship?',
-                //subTitle: '',
-                scope: $scope,
-                template: 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
-                buttons:[
-                    {text: 'No'},
-                    {text: 'Yes',
-                        type: 'button-positive',
-                        onTap: function(){
-                            correlationObject.userVote = 1;
-                            correlationObject.vote = 1;
-                            quantimodoService.postVoteDeferred(correlationObject)
-                                .then(function () {
-                                    console.debug('upVote');
-                                }, function () {
-                                    console.error('upVote failed!');
-                                });
-                        }
-                    }
-                ]
-            });
+            title = 'Plausible relationship?';
+            textContent = 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?';
+            yesCallback = function() {
+                correlationObject.userVote = 1;
+                correlationObject.vote = 1;
+                quantimodoService.postVoteDeferred(correlationObject).then(function () {console.debug('upVote');}, function () {console.error('upVote failed!');});
+            };
+            noCallback = function () {};
+            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         } else {
-            $ionicPopup.show({
-                title:'Delete Upvote',
-                //subTitle: '',
-                scope: $scope,
-                template: 'You previously voted that it is POSSIBLE that '+ correlationObject.causeVariableName +
-                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this up vote?',
-                buttons:[
-                    {text: 'No'},
-                    {text: 'Yes',
-                        type: 'button-positive',
-                        onTap: function(){
-                            deleteVote(correlationObject, $index);
-                        }
-                    }
-                ]
-            });
+            title = 'Delete Upvote';
+            textContent = 'You previously voted that it is POSSIBLE that '+ correlationObject.causeVariableName +
+                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this up vote?';
+            yesCallback = function() {deleteVote(correlationObject, $index);};
+            noCallback = function () {};
+            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         }
     };
     function deleteVote(correlationObject, $index) {
