@@ -283,12 +283,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
-        quantimodoService.get('api/v1/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
+        params.searchPhrase = query;
+        quantimodoService.getUserVariablesFromApi(params, successHandler, errorHandler);
     };
     quantimodoService.getVariablesByNameFromApi = function(variableName, params, successHandler, errorHandler){
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
-        quantimodoService.get('api/v1/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
+        params.searchPhrase = variableName;
+        quantimodoService.getUserVariablesFromApi(params, successHandler, errorHandler);
     };
     quantimodoService.getPublicVariablesByNameFromApi = function(variableName, successHandler, errorHandler){
         var options = {};
@@ -296,7 +298,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.get('api/v1/public/variables', ['name'], {name: variableName}, successHandler, errorHandler);
     };
     quantimodoService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
-        quantimodoService.get('api/v1/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
+        quantimodoService.getUserVariablesFromApi({id: variableId}, successHandler, errorHandler);
     };
     quantimodoService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
         var options = {};
@@ -1881,7 +1883,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(getLocationNameFromResult(geoLookupResult)) {localStorage.lastLocationName = getLocationNameFromResult(geoLookupResult);}
         if(geoLookupResult.type){localStorage.lastLocationResultType = geoLookupResult.type;} else {quantimodoService.bugsnagNotify('Geolocation error', "No geolocation lookup type", geoLookupResult);}
         if(geoLookupResult.latitude){localStorage.lastLatitude = geoLookupResult.latitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No latitude!", geoLookupResult);}
-        if(geoLookupResult.longitude){localStorage.lastLongitude = geoLookupResult.longitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No longitude!", geoLookupResult);}
+        if(geoLookupResult.longitude){localStorage.lastLongitude = geoLookupResult.longitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No longitude in geoLookupResult!", geoLookupResult);}
         var currentTimeEpochMilliseconds = new Date().getTime();
         localStorage.lastLocationUpdateTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
         if(geoLookupResult.address) {
@@ -3887,9 +3889,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 }
             }
-            quantimodoService.getVariablesByNameFromApi(name, params, function(variable){
-                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variable);
-                deferred.resolve(variable);
+            quantimodoService.getVariablesByNameFromApi(name, params, function(variables){
+                quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variables[0]);
+                deferred.resolve(variables[0]);
             }, function(error){ deferred.reject(error); });
         });
         return deferred.promise;
