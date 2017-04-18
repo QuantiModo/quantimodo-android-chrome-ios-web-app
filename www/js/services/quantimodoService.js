@@ -7468,7 +7468,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             templateUrl: 'templates/dialogs/robot-alert.html',
             parent: angular.element(document.body),
             targetEvent: ev,
-            clickOutsideToClose:true,
+            clickOutsideToClose: false,
             fullscreen: false,
             locals: {dataToPass: {title: title, textContent: textContent}}
         })
