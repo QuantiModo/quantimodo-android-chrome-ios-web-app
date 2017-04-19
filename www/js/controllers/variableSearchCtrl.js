@@ -182,7 +182,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        quantimodoService.getUserVariablesDeferred($stateParams.variableSearchParameters).then(function (userVariables) {
+        quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred($stateParams.variableSearchParameters).then(function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     // Put user variables at top of list

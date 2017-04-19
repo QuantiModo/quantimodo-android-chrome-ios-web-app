@@ -922,7 +922,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.syncAllUserData = function(){
         quantimodoService.syncTrackingReminders();
-        quantimodoService.getUserVariablesDeferred();
+        quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred();
         quantimodoService.getUnits();
     };
     quantimodoService.refreshUser = function(){
@@ -3952,7 +3952,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.getUserVariablesDeferred = function(params){
+    quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred = function(params){
         var deferred = $q.defer();
         var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', params);
         if(userVariables && userVariables.length){
