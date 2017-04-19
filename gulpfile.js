@@ -1599,12 +1599,14 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
     if (process.env.PREPARE_IOS_APP){
     	console.log("process.env.PREPARE_IOS_APP is " + process.env.PREPARE_IOS_APP + " so going to prepareIosApp");
         runSequence(
+            'sass',
         	'deleteUnusedFiles',
             'prepareIosApp',
             callback);
     } else if (process.env.BUILD_ANDROID){
         console.log("process.env.BUILD_ANDROID is true so going to buildAndroid");
         runSequence(
+            'sass',
             'deleteUnusedFiles',
             'prepareRepositoryForAndroid',
         	'buildAndroidApp',
@@ -1612,6 +1614,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
             callback);
     } else {
         runSequence(
+            'sass',
             'deleteUnusedFiles',
             'configureApp',
             callback);
