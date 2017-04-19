@@ -1824,7 +1824,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         } else {deferred.reject('Bugsnag is not defined');}
         return deferred.promise;
     };
-    var geoLocationDebug = true;
+    var geoLocationDebug = false;
     quantimodoService.getLocationInfoFromFoursquareOrGoogleMaps = function (latitude, longitude) {
         if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){quantimodoService.reportErrorDeferred('getLocationInfoFromFoursquareOrGoogleMaps with longitude ' + longitude + ' and latitude,' + latitude);}
         var deferred = $q.defer();
