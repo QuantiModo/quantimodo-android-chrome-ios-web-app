@@ -13,6 +13,7 @@ config.appSettings  = {
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     appStorageIdentifier: 'MediModoData*',
     defaultState : 'app.remindersInbox',
+    floatingActionButtonColor: null,
     welcomeState : 'app.login',
     headline : 'Medications - Track, Learn, Connect',
     features: [
