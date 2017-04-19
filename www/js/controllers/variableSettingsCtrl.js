@@ -105,8 +105,8 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         function querySearch (query) {
             self.notFoundText = "No variables matching " + query + " were found.";
             var deferred = $q.defer();
-            var requestParams = {};
-            if($rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){ requestParams = {defaultUnitId: $rootScope.variableObject.defaultUnitId}; }
+            var requestParams = {defaultUnitCategoryName:  $rootScope.variableObject.defaultUnitCategoryName};
+            if($rootScope.variableObject.defaultUnitCategoryName !== "Rating"){requestParams.defaultUnitCategoryName = "(ne)Rating";}
             quantimodoService.searchUserVariablesDeferred(query, requestParams).then(function(results){ deferred.resolve(loadAll(results)); });
             return deferred.promise;
         }
@@ -184,7 +184,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         function querySearch (query) {
             self.notFoundText = "No variables matching " + query + " were found.";
             var deferred = $q.defer();
-            quantimodoService.searchUserVariablesDeferred(query, {defaultUnitId: $rootScope.variableObject.defaultUnitId})
+            quantimodoService.searchUserVariablesDeferred(query, {tagVariableId: $rootScope.variableObject.defaultUnitId})
                 .then(function(results){ deferred.resolve(loadAll(results)); });
             return deferred.promise;
         }

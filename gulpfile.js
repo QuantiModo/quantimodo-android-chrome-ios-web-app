@@ -33,7 +33,7 @@ var appIds = {
 };
 
 var paths = {
-	sass: ['./scss/**/*.scss']
+    sass: ['./www/scss/**/*.scss']
 };
 
 var date = new Date();
@@ -159,13 +159,13 @@ gulp.task('unzipChromeExtension', function() {
 });
 
 gulp.task('sass', function(done) {
-	gulp.src('./scss/ionic.app.scss')
-		.pipe(sass({errLogToConsole: true}))
-		.pipe(gulp.dest('./www/css/'))
-		.pipe(minifyCss({keepSpecialComments: 0}))
-		.pipe(rename({ extname: '.min.css' }))
-		.pipe(gulp.dest('./www/css/'))
-		.on('end', done);
+    gulp.src('./www/scss/app.scss')
+        .pipe(sass({errLogToConsole: true}))
+        .pipe(gulp.dest('./www/css/'))
+        .pipe(minifyCss({keepSpecialComments: 0}))
+        .pipe(rename({ extname: '.min.css' }))
+        .pipe(gulp.dest('./www/css/'))
+        .on('end', done);
 });
 
 gulp.task('watch', function() {gulp.watch(paths.sass, ['sass']);});
@@ -1198,8 +1198,6 @@ var winPlatforms = ["windows"],
 	buildPaths = {
 		tsconfig: "scripts/tsconfig.json",
 		ts: "./scripts/**/*.ts",
-		sass: "./scss/**/*.scss",
-		sassCssTarget: "./www/css/",
 		apk:["./platforms/android/ant-build/*.apk",
 			"./platforms/android/bin/*.apk",
 			"./platforms/android/build/outputs/apk/*.apk"],
@@ -1280,13 +1278,6 @@ gulp.task("scripts", function () {
 			}))
 			.pipe(gulp.dest("www/scripts"));
 	}
-});
-
-// SASS compile (ex in Ionic)
-gulp.task("sass", function () {
-	return gulp.src(paths.sass)
-		.pipe(sass().on("error", sass.logError))
-		.pipe(gulp.dest(paths.sassCssTarget));
 });
 
 var templateCache = require('gulp-angular-templatecache');
