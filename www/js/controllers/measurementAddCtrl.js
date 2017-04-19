@@ -218,13 +218,13 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     $scope.toggleShowUnits = function(){ $scope.state.showUnits = !$scope.state.showUnits; };
     $scope.showUnitsDropDown = function(){ $scope.showUnitsDropDown = true; };
     var setupFromUrlParameters = function() {
-        var unit = quantimodoService.getUrlParameter('unit', location.href, true);
+        var unitAbbreviatedName = quantimodoService.getUrlParameter('unitAbbreviatedName', location.href, true);
         var variableName = quantimodoService.getUrlParameter('variableName', location.href, true);
         var startTimeEpoch = quantimodoService.getUrlParameter('startTimeEpoch', location.href, true);
         var value = quantimodoService.getUrlParameter('value', location.href, true);
-        if (unit || variableName || startTimeEpoch || value) {
+        if (unitAbbreviatedName || variableName || startTimeEpoch || value) {
             var measurementObject = {};
-            measurementObject.unitAbbreviatedName = unit;
+            measurementObject.unitAbbreviatedName = unitAbbreviatedName;
             measurementObject.variableName = variableName;
             measurementObject.startTimeEpoch = startTimeEpoch;
             measurementObject.value = value;
@@ -233,16 +233,18 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     };
     var setupFromVariableObject = function(variableObject){
         $stateParams.variableObject = variableObject;
-        if(variableObject.userVariableDefaultUnitAbbreviatedName){
-            $scope.state.measurement.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
-        } else if (variableObject.defaultUnitAbbreviatedName){
-            $scope.state.measurement.unitAbbreviatedName = variableObject.defaultUnitAbbreviatedName;
-        }
         // Gets version from local storage in case we just updated unit in variable settings
         var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', {name: variableObject.name});
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
         $rootScope.variableObject = variableObject;
         $scope.state.title = "Record Measurement";
+        if(variableObject.userVariableDefaultUnitAbbreviatedName){
+            setupUnit(variableObject.userVariableDefaultUnitAbbreviatedName, variableObject.valence);
+        } else if (variableObject.defaultUnitAbbreviatedName){
+            setupUnit(variableObject.defaultUnitAbbreviatedName, variableObject.valence);
+        } else if (variableObject.variableCategoryName){
+            setupUnit(quantimodoService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName, variableObject.valence);
+        }
         $scope.state.measurement.inputType = variableObject.inputType;
         $scope.state.measurement.variableName = variableObject.name;
         $scope.state.measurement.maximumAllowedValue = variableObject.maximumAllowedValue;
@@ -255,7 +257,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         } else {$scope.state.showVariableCategorySelector = true;}
         $scope.state.measurement.combinationOperation = (variableObject.combinationOperation) ? variableObject.combinationOperation : 'MEAN';
         $scope.state.measurementIsSetup = true;
-        setupUnit($scope.state.measurement.unitAbbreviatedName, variableObject.valence);
         // Fill in default value as last value if not /5
         /** @namespace variableObject.lastValue */
         if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value && typeof variableObject.lastValue !== "undefined") {
@@ -342,7 +343,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     var setupTrackingByReminderNotification = function(reminderNotification){
         if(reminderNotification){
             $scope.state.title = "Record Measurement";
-            if(!$scope.state.measurement.unitAbbreviatedName){$scope.state.measurement.unitAbbreviatedName = reminderNotification.unitAbbreviatedName;}
+            if(!$scope.state.measurement.unitAbbreviatedName){setupUnit(reminderNotification.unitAbbreviatedName);}
             $scope.state.hideRemindMeButton = true;
             $scope.state.measurement.value = reminderNotification.defaultValue;
             $scope.state.measurement.variableName = reminderNotification.variableName;
