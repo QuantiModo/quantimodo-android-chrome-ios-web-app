@@ -189,6 +189,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         setupUnit($scope.state.measurement.unitAbbreviatedName);
     };
     function setupUnit(unitAbbreviatedName, valence){
+        if(!unitAbbreviatedName){return;}
         if(unitAbbreviatedName === 'Show more units'){
             $scope.state.showMoreUnits = true;
             $scope.state.measurement.unitAbbreviatedName = null;
