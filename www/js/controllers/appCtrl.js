@@ -35,7 +35,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
     if($rootScope.user){
         //quantimodoService.syncTrackingReminders();
-        //quantimodoService.getUserVariablesDeferred();  // I think this slows loading
+        //quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred();  // I think this slows loading
         if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
     }
     if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
