@@ -162,7 +162,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         $scope.goBack();
     };
     $scope.variableCategorySelectorChange = function(variableCategoryName) {
-        $scope.state.measurement.unitAbbreviatedName = quantimodoService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName;
+        setupUnit(quantimodoService.getVariableCategoryInfo(variableCategoryName).defaultUnitAbbreviatedName);
         $scope.state.defaultValuePlaceholderText = 'Enter a value';
         $scope.state.defaultValueLabel = 'Value';
         setupVariableCategory(variableCategoryName);
