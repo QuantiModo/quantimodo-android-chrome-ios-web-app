@@ -36,27 +36,29 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         console.debug($state.current.name + ": beforeEnter");
         $rootScope.hideNavigationMenu = false;
         $rootScope.bloodPressure = {diastolicValue: null, systolicValue: null, show: false};
-        if($stateParams.trackingReminder){$stateParams.reminderNotification = $stateParams.trackingReminder;}
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.state.title = 'Record a Measurement';
-        console.debug($state.current.name + ": " + "got units in init function");
-        if($stateParams.reminderNotification) {$scope.state.measurement.unitAbbreviatedName = $stateParams.reminderNotification.unitAbbreviatedName;}
         $scope.state.selectedDate = moment();
-        if(!$scope.state.measurementIsSetup) { setupFromUrlParameters(); }
-        if($stateParams.measurement){setupTrackingByMeasurement($stateParams.measurement);}
-        if(!$scope.state.measurementIsSetup) { setupFromMeasurementObjectInUrl(); }
-        if(!$scope.state.measurementIsSetup) { setupFromVariableStateParameter(); }
-        if(!$scope.state.measurementIsSetup) { setupFromReminderObjectInUrl(); }
-        if($stateParams.reminderNotification){setupTrackingByReminderNotification();}
-        if(quantimodoService.getUrlParameter('measurementId', location.href, true)){
+        if($stateParams.trackingReminder){
+            setupTrackingByReminderNotification($stateParams.trackingReminder);
+        } else if ($stateParams.measurement){
+            setupTrackingByMeasurement($stateParams.measurement);
+        } else if (quantimodoService.getUrlParameter('measurementObject', window.location.href, true)) {
+            setupTrackingByMeasurement(JSON.parse(quantimodoService.getUrlParameter('measurementObject', window.location.href, true))); 
+        } else if ($stateParams.variableObject) {
+            setupFromVariableObject($stateParams.variableObject);
+        } else if (quantimodoService.getUrlParameter('trackingReminderObject', window.location.href, true)) {
+            setupTrackingByReminderNotification(JSON.parse(quantimodoService.getUrlParameter('trackingReminderObject', window.location.href, true)));
+        } else if ($stateParams.reminderNotification){
+            setupTrackingByReminderNotification($stateParams.reminderNotification);
+        } else if (quantimodoService.getUrlParameter('measurementId', location.href, true)){
             setMeasurementVariablesByMeasurementId().then(function() {if(!$scope.state.measurementIsSetup){ $scope.goBack();}});
+        } else if ($stateParams.variableName){
+            setupFromVariableName($stateParams.variableName);
         }
-        if(!$scope.state.measurementIsSetup){ setupFromVariableNameStateParameter(); }
-        if(!$scope.state.measurementIsSetup){
-            $stateParams.variableObject = quantimodoService.getPrimaryOutcomeVariable();
-            setupFromVariableStateParameter();
-        }
+        if (!$scope.state.measurementIsSetup) {setupFromUrlParameters();}
+        if(!$scope.state.measurementIsSetup){setupFromVariableObject(quantimodoService.getPrimaryOutcomeVariable());}
     });
     $scope.$on('$ionicView.enter', function(e) {
         console.debug("$ionicView.enter " + $state.current.name);
@@ -213,7 +215,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     $scope.toggleShowUnits = function(){ $scope.state.showUnits = !$scope.state.showUnits; };
     $scope.showUnitsDropDown = function(){ $scope.showUnitsDropDown = true; };
     var setupFromUrlParameters = function() {
-        console.debug($state.current.name + ": " + "setupFromUrlParameters");
         var unit = quantimodoService.getUrlParameter('unit', location.href, true);
         var variableName = quantimodoService.getUrlParameter('variableName', location.href, true);
         var startTimeEpoch = quantimodoService.getUrlParameter('startTimeEpoch', location.href, true);
@@ -227,70 +228,44 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             setupTrackingByMeasurement(measurementObject);
         }
     };
-    var setupFromReminderObjectInUrl = function(){
-        if(!$stateParams.reminderNotification){
-            var reminderFromURL =  quantimodoService.getUrlParameter('trackingReminderObject', window.location.href, true);
-            if(reminderFromURL){
-                $stateParams.reminderNotification = JSON.parse(reminderFromURL);
-                console.debug($state.current.name + ": " + "setupFromReminderObjectInUrl: ", $stateParams.reminderNotification);
-                setupTrackingByReminderNotification();
-            }
+    var setupFromVariableObject = function(variableObject){
+        $stateParams.variableObject = variableObject;
+        $scope.state.measurement.unitAbbreviatedName = (variableObject.userVariableDefaultUnitAbbreviatedName) ? variableObject.userVariableDefaultUnitAbbreviatedName : variableObject.defaultUnitAbbreviatedName;
+        // Gets version from local storage in case we just updated unit in variable settings
+        var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', {name: variableObject.name});
+        if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
+        $rootScope.variableObject = variableObject;
+        $scope.state.title = "Record Measurement";
+        $scope.state.measurement.inputType = variableObject.inputType;
+        $scope.state.measurement.variableName = variableObject.name;
+        $scope.state.measurement.maximumAllowedValue = variableObject.maximumAllowedValue;
+        $scope.state.measurement.minimumAllowedValue = variableObject.minimumAllowedValue;
+        if (!$scope.state.measurement.variableName) {$scope.state.measurement.variableName = variableObject.variableName;}
+        if($scope.state.measurement.variableName.toLowerCase().indexOf('blood pressure') > -1) {$rootScope.bloodPressure.show = true;}
+        if(variableObject.variableCategoryName){
+            $scope.state.measurement.variableCategoryName = variableObject.variableCategoryName;
+            setupVariableCategory($scope.state.measurement.variableCategoryName);
+        } else {$scope.state.showVariableCategorySelector = true;}
+        $scope.state.measurement.combinationOperation = (variableObject.combinationOperation) ? variableObject.combinationOperation : 'MEAN';
+        $scope.state.measurementIsSetup = true;
+        setupUnit((variableObject.userVariableDefaultUnitAbbreviatedName) ? variableObject.userVariableDefaultUnitAbbreviatedName : variableObject.defaultUnitAbbreviatedName, variableObject.valence);
+        // Fill in default value as last value if not /5
+        /** @namespace variableObject.lastValue */
+        if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value && typeof variableObject.lastValue !== "undefined") {
+            $scope.state.measurement.value = Number((variableObject.lastValueInUserUnit) ? variableObject.lastValueInUserUnit : variableObject.lastValue);
         }
     };
-    var setupFromMeasurementObjectInUrl = function(){
-        if(!$stateParams.measurement){
-            var measurementFromURL =  quantimodoService.getUrlParameter('measurementObject', window.location.href, true);
-            if(measurementFromURL){
-                measurementFromURL = JSON.parse(measurementFromURL);
-                console.debug($state.current.name + ": " + "setupFromMeasurementObjectInUrl: ", measurementFromURL);
-                setupTrackingByMeasurement(measurementFromURL);
-            }
-        }
-    };
-    var setupFromVariableStateParameter = function(){
-        if($stateParams.variableObject) {
-            console.debug($state.current.name + ": " + 'setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
-            $scope.state.measurement.unitAbbreviatedName = ($stateParams.variableObject.userVariableDefaultUnitAbbreviatedName) ? $stateParams.variableObject.userVariableDefaultUnitAbbreviatedName : $stateParams.variableObject.defaultUnitAbbreviatedName;
-            // Gets version from local storage in case we just updated unit in variable settings
-            var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', {name: $stateParams.variableObject.name});
-            if(userVariables && userVariables.length){ $stateParams.variableObject = userVariables[0]; }
-            $rootScope.variableObject = $stateParams.variableObject;
-            $scope.state.title = "Record Measurement";
-            $scope.state.measurement.inputType = $stateParams.variableObject.inputType;
-            $scope.state.measurement.variableName = $stateParams.variableObject.name;
-            $scope.state.measurement.maximumAllowedValue = $stateParams.variableObject.maximumAllowedValue;
-            $scope.state.measurement.minimumAllowedValue = $stateParams.variableObject.minimumAllowedValue;
-            if (!$scope.state.measurement.variableName) {$scope.state.measurement.variableName = $stateParams.variableObject.variableName;}
-            if($scope.state.measurement.variableName.toLowerCase().indexOf('blood pressure') > -1) {$rootScope.bloodPressure.show = true;}
-            if($stateParams.variableObject.variableCategoryName){
-                $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
-                setupVariableCategory($scope.state.measurement.variableCategoryName);
-            } else {$scope.state.showVariableCategorySelector = true;}
-            $scope.state.measurement.combinationOperation = ($stateParams.variableObject.combinationOperation) ? $stateParams.variableObject.combinationOperation : 'MEAN';
-            $scope.state.measurementIsSetup = true;
-            setupUnit(($stateParams.variableObject.userVariableDefaultUnitAbbreviatedName) ? $stateParams.variableObject.userVariableDefaultUnitAbbreviatedName : $stateParams.variableObject.defaultUnitAbbreviatedName, $stateParams.variableObject.valence);
-            // Fill in default value as last value if not /5
-            /** @namespace $stateParams.variableObject.lastValue */
-            if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value && typeof $stateParams.variableObject.lastValue !== "undefined") {
-                $scope.state.measurement.value = Number(($stateParams.variableObject.lastValueInUserUnit) ? $stateParams.variableObject.lastValueInUserUnit : $stateParams.variableObject.lastValue);
-            }
-        }
-    };
-    var setupFromVariableNameStateParameter = function(){
-        if($stateParams.variableName) {
-            $ionicLoading.show();
-            quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred($stateParams.variableName, {}).then(function(variableObject){
-                $ionicLoading.hide();
-                $rootScope.variableObject = variableObject;
-                $stateParams.variableObject = variableObject;
-                setupFromVariableStateParameter();
-            }, function (error) {
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                $ionicLoading.hide();
-                console.error(error);
-            });
-        }
+    var setupFromVariableName = function(variableName){
+        $ionicLoading.show();
+        quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred($stateParams.variableName, {}).then(function(variableObject){
+            $ionicLoading.hide();
+            setupFromVariableObject(variableObject);
+        }, function (error) {
+            //Stop the ion-refresher from spinning
+            $scope.$broadcast('scroll.refreshComplete');
+            $ionicLoading.hide();
+            console.error(error);
+        });
     };
     var setMeasurementVariablesByMeasurementId = function(){
         var deferred = $q.defer();
@@ -357,34 +332,34 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         if ($scope.state.measurement.variable) { $scope.state.measurement.variableName = $scope.state.measurement.variable; }
         setVariableObject();
     };
-    var setupTrackingByReminderNotification = function(){
-        if($stateParams.reminderNotification){
+    var setupTrackingByReminderNotification = function(reminderNotification){
+        if(reminderNotification){
             $scope.state.title = "Record Measurement";
-            if(!$scope.state.measurement.unitAbbreviatedName){$scope.state.measurement.unitAbbreviatedName = $stateParams.reminderNotification.unitAbbreviatedName;}
+            if(!$scope.state.measurement.unitAbbreviatedName){$scope.state.measurement.unitAbbreviatedName = reminderNotification.unitAbbreviatedName;}
             $scope.state.hideRemindMeButton = true;
-            $scope.state.measurement.value = $stateParams.reminderNotification.defaultValue;
-            $scope.state.measurement.variableName = $stateParams.reminderNotification.variableName;
-            $scope.state.measurement.variableCategoryName = $stateParams.reminderNotification.variableCategoryName;
-            $scope.state.measurement.combinationOperation = $stateParams.reminderNotification.combinationOperation;
-            if($stateParams.reminderNotification.trackingReminderNotificationTimeEpoch !== "undefined" && $stateParams.reminderNotification.trackingReminderNotificationTimeEpoch){
-                $scope.state.selectedDate = moment($stateParams.reminderNotification.trackingReminderNotificationTimeEpoch * 1000);
+            $scope.state.measurement.value = reminderNotification.defaultValue;
+            $scope.state.measurement.variableName = reminderNotification.variableName;
+            $scope.state.measurement.variableCategoryName = reminderNotification.variableCategoryName;
+            $scope.state.measurement.combinationOperation = reminderNotification.combinationOperation;
+            if(reminderNotification.trackingReminderNotificationTimeEpoch !== "undefined" && reminderNotification.trackingReminderNotificationTimeEpoch){
+                $scope.state.selectedDate = moment(reminderNotification.trackingReminderNotificationTimeEpoch * 1000);
             }
             $scope.state.measurementIsSetup = true;
-            setupUnit($stateParams.reminderNotification.unitAbbreviatedName, $stateParams.reminderNotification.valence);
+            setupUnit(reminderNotification.unitAbbreviatedName, reminderNotification.valence);
             setVariableObject();
         }
         // Create variableObject
         if (!$rootScope.variableObject) {
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                 $rootScope.variableObject = $stateParams.variableObject;
-            } else if ($stateParams.reminderNotification) {
+            } else if (reminderNotification) {
                 $rootScope.variableObject = {
-                    unitAbbreviatedName : $stateParams.reminderNotification.unitAbbreviatedName,
-                    combinationOperation : $stateParams.reminderNotification.combinationOperation,
-                    userId : $stateParams.reminderNotification.userId,
-                    variableCategoryName : $stateParams.reminderNotification.variableCategoryName,
-                    id : $stateParams.reminderNotification.variableId,
-                    name : $stateParams.reminderNotification.variableName
+                    unitAbbreviatedName : reminderNotification.unitAbbreviatedName,
+                    combinationOperation : reminderNotification.combinationOperation,
+                    userId : reminderNotification.userId,
+                    variableCategoryName : reminderNotification.variableCategoryName,
+                    id : reminderNotification.variableId,
+                    name : reminderNotification.variableName
                 };
             }
         }
