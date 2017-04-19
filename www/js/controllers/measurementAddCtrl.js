@@ -172,7 +172,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         //$scope.state.showVariableCategorySelector = false;
         if(!variableCategoryName){ variableCategoryName = ''; }
         $scope.state.measurement.variableCategoryName = variableCategoryName;
-
         $scope.state.title = "Add Measurement";
         $scope.state.measurementSynonymSingularLowercase = quantimodoService.getVariableCategoryInfo(variableCategoryName).measurementSynonymSingularLowercase;
         if(quantimodoService.getVariableCategoryInfo(variableCategoryName).defaultValueLabel){
@@ -230,7 +229,11 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     };
     var setupFromVariableObject = function(variableObject){
         $stateParams.variableObject = variableObject;
-        $scope.state.measurement.unitAbbreviatedName = (variableObject.userVariableDefaultUnitAbbreviatedName) ? variableObject.userVariableDefaultUnitAbbreviatedName : variableObject.defaultUnitAbbreviatedName;
+        if(variableObject.userVariableDefaultUnitAbbreviatedName){
+            $scope.state.measurement.unitAbbreviatedName = variableObject.userVariableDefaultUnitAbbreviatedName;
+        } else if (variableObject.defaultUnitAbbreviatedName){
+            $scope.state.measurement.unitAbbreviatedName = variableObject.defaultUnitAbbreviatedName;
+        }
         // Gets version from local storage in case we just updated unit in variable settings
         var userVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('userVariables', {name: variableObject.name});
         if(userVariables && userVariables.length){ variableObject = userVariables[0]; }
@@ -248,7 +251,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         } else {$scope.state.showVariableCategorySelector = true;}
         $scope.state.measurement.combinationOperation = (variableObject.combinationOperation) ? variableObject.combinationOperation : 'MEAN';
         $scope.state.measurementIsSetup = true;
-        setupUnit((variableObject.userVariableDefaultUnitAbbreviatedName) ? variableObject.userVariableDefaultUnitAbbreviatedName : variableObject.defaultUnitAbbreviatedName, variableObject.valence);
+        setupUnit($scope.state.measurement.unitAbbreviatedName, variableObject.valence);
         // Fill in default value as last value if not /5
         /** @namespace variableObject.lastValue */
         if ($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value && typeof variableObject.lastValue !== "undefined") {
