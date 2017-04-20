@@ -198,7 +198,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
             $log.info('Item changed to ' + item.name);
         }
         function loadAll(correlations) {
-            if(!correlations){ return; }
+            if(!correlations){ return []; }
             return correlations.map( function (correlationObject) {
                 if($stateParams.effectVariableName){
                     return {
