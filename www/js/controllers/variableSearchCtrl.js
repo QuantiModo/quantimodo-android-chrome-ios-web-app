@@ -14,7 +14,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         variableSearchPlaceholderText: "Search for a variable here..."
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        console.debug("VariableSearchCtrl beforeEnter");
+        console.debug($state.current.name + " beforeEnter...");
         $scope.stateParams = $stateParams;
         if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
         if($stateParams.helpText){$scope.state.helpText = $stateParams.helpText;}
@@ -35,9 +35,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     });
     // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
-        console.debug("VariableSearchCtrl enter");
+        console.debug($state.current.name + " enter...");
         $scope.hideLoader();
-        console.debug($state.current.name + ' initializing...');
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){

@@ -4,7 +4,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                                 ionicDatePicker, $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
                                 $locale, $mdDialog, $mdToast, wikipediaFactory) {
 
-    console.debug('Starting AppCtrl');
+    //console.debug('Starting AppCtrl');
     $scope.controller_name = "AppCtrl";
     $scope.menu = quantimodoService.getMenu(config.appSettings.menuType);
     $rootScope.appSettings = config.appSettings;
