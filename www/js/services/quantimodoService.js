@@ -41,10 +41,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
-            console.debug('quantimodoService.get: ' + request.url);
+            console.debug('GET ' + route + " PARAMS: " + JSON.stringify(params));
             $http(request)
                 .success(function (data, status, headers) {
-                    console.debug("success response from " + request.url);
+                    console.debug("GET " + route + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...');
                     if(!data) {
                         if (typeof Bugsnag !== "undefined") {
                             var groupingHash = 'No data returned from this request';
@@ -93,7 +93,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.successHandler = function(data, baseURL, status){
         var maxLength = 140;
-        console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         if(data.message){ console.warn(data.message); }
     };
@@ -835,7 +834,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         // e.g., ga('accountName.set', 'dimension2', 'Paid');
         //Analytics.set('dimension2', 'Paid', 'accountName');
         Analytics.pageView(); // send data to Google Analytics
-        console.debug('Just set up Google Analytics');
+        //console.debug('Just set up Google Analytics');
     };
     quantimodoService.getUserAndSetupGoogleAnalytics = function(){
         if(Analytics){
@@ -905,14 +904,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.afterLoginGoToUrlOrState = function () {
         var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
-        console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
+        //console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
         if(afterLoginGoTo) {
             quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
             window.location.replace(afterLoginGoTo);
             return true;
         }
         var afterLoginGoToState = quantimodoService.getLocalStorageItemAsString('afterLoginGoToState');
-        console.debug("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
+        //console.debug("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
         if(afterLoginGoToState){
             quantimodoService.deleteItemFromLocalStorage('afterLoginGoToState');
             $state.go(afterLoginGoToState);
@@ -1622,7 +1621,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return $rootScope.clientId;
     };
     quantimodoService.setPlatformVariables = function () {
-        console.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
+        //console.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
         $rootScope.isWeb = window.location.href.indexOf('https://') !== -1;
         $rootScope.isWebView = ionic.Platform.isWebView();
         $rootScope.isIPad = ionic.Platform.isIPad() && !$rootScope.isWeb;
@@ -1984,11 +1983,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.backgroundGeolocationStart = function () {
         if(typeof backgroundGeoLocation === "undefined"){
-            console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
+            //console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
             return;
         }
         window.localStorage.setItem('bgGPS', 1);
-        console.debug('Starting quantimodoService.backgroundGeolocationStart');
+        //console.debug('Starting quantimodoService.backgroundGeolocationStart');
         var callbackFn = function(coordinates) {
             console.debug("background location is " + JSON.stringify(coordinates));
             var isBackground = true;
@@ -2020,13 +2019,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.backgroundGeolocationInit = function () {
         var deferred = $q.defer();
-        console.debug('Starting quantimodoService.backgroundGeolocationInit');
+        //console.debug('Starting quantimodoService.backgroundGeolocationInit');
         if ($rootScope.user && $rootScope.user.trackLocation) {
             $ionicPlatform.ready(function() { quantimodoService.backgroundGeolocationStart(); });
             deferred.resolve();
         } else {
             var error = 'quantimodoService.backgroundGeolocationInit failed because $rootScope.user.trackLocation is not true';
-            console.debug(error);
+            //console.debug(error);
             deferred.reject(error);
         }
         return deferred.promise;
