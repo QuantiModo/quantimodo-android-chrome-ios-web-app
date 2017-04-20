@@ -2043,7 +2043,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.setLocalStorageItem('trackingReminderNotifications',
             JSON.stringify(trackingReminderNotifications)).then(function () {
             $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
-            console.debug('Just put ' + trackingReminderNotifications.length + ' trackingReminderNotifications in local storage');
+            //console.debug('Just put ' + trackingReminderNotifications.length + ' trackingReminderNotifications in local storage');
         });
         $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
         return trackingReminderNotifications;
