@@ -588,7 +588,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(!isTestUser()){Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");}
         }
         if (accessToken && now < expiresAtMilliseconds) {
-            console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
+            //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
             deferred.resolve(accessToken);
         } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled') {
             console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
