@@ -15,7 +15,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.warn('Not making request to ' + route + ' user because we are in the intro state');
             return;
         }
-        console.debug('quantimodoService.get: Going to try to make request to ' + route + " with params: " + JSON.stringify(params));
         quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
             allowedParams.push('limit');
             allowedParams.push('offset');
@@ -41,10 +40,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
-            console.debug('GET ' + route + " PARAMS: " + JSON.stringify(params));
+            console.debug('Getting ' + route + " PARAMS: " + JSON.stringify(params));
             $http(request)
                 .success(function (data, status, headers) {
-                    console.debug("GET " + route + " " + status + " " + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...');
+                    console.debug("Got " + route + " " + status + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...');
                     if(!data) {
                         if (typeof Bugsnag !== "undefined") {
                             var groupingHash = 'No data returned from this request';
@@ -583,11 +582,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
         var refreshToken = localStorage.getItem("refreshToken");
         accessToken = localStorage.getItem("accessToken");
-        console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
-            expiresAtMilliseconds: expiresAtMilliseconds,
-            refreshToken: refreshToken,
-            accessToken: accessToken
-        }));
+        //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken}));
         if(refreshToken && !expiresAtMilliseconds){
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
             if(!isTestUser()){Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");}
