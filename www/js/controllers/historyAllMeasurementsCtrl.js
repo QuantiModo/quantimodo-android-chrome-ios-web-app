@@ -6,7 +6,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		limit : 50,
 		history : [],
 		units : [],
-		variableCategories : [],
 		showLocationToggle: false,
 		noHistory: false,
 		helpCardTitle: "Past Measurements",

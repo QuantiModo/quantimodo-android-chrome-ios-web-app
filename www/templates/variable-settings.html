@@ -39,9 +39,9 @@
                 <div ng-if="variableObject.userVariableVariableCategoryName" layout="row" layout-align="space-between center">
                     <span>Variable Category</span>
                     <md-select ng-model="variableObject.userVariableVariableCategoryName">
-                        <md-option ng-repeat="variableCategoryName in variableCategoryNames"
-                                   ng-value="variableCategoryName" >
-                            {{variableCategoryName}}
+                        <md-option ng-repeat="variableCategory in variableCategories"
+                                   ng-value="variableCategory.name" >
+                            {{variableCategory.name}}
                         </md-option>
                     </md-select>
                 </div>
