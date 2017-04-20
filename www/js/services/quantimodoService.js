@@ -44,7 +44,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.debug('GET ' + route + " PARAMS: " + JSON.stringify(params));
             $http(request)
                 .success(function (data, status, headers) {
-                    console.debug("GET " + route + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...');
+                    console.debug("GET " + route + " " + status + " " + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...');
                     if(!data) {
                         if (typeof Bugsnag !== "undefined") {
                             var groupingHash = 'No data returned from this request';
