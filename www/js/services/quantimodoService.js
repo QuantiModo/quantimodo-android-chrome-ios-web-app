@@ -330,9 +330,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getVariableCategoriesFromApi = function(successHandler, errorHandler){
         quantimodoService.get('api/variableCategories', [], {}, successHandler, errorHandler);
     };
-    quantimodoService.getUnitsFromApi = function(successHandler, errorHandler){
-        quantimodoService.get('api/units', [], {}, successHandler, errorHandler);
-    };
     quantimodoService.getConnectorsFromApi = function(successHandler, errorHandler){
         quantimodoService.get('api/v1/connectors/list', [], {}, successHandler, errorHandler);
     };
@@ -1533,36 +1530,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.getUnits = function(ignoreExpiration){
         var deferred = $q.defer();
-        var params = {};
-        var cachedUnits = quantimodoService.getCachedResponse('units', params, ignoreExpiration);
-        if(cachedUnits){
-            addUnitsToRootScope(cachedUnits);
-            deferred.resolve(cachedUnits);
-            return deferred.promise;
-        }
-        quantimodoService.refreshUnits().then(function(unitObjects){
-            quantimodoService.storeCachedResponse('units', params, unitObjects);
-            deferred.resolve(unitObjects);
-        }, function (error) {
-            console.error("Could not refresh units.  Falling back to stale ones in local storage. Error: " + error);
-            var ignoreExpiration = true;
-            var cachedUnits = quantimodoService.getCachedResponse('units', params, ignoreExpiration);
-            if(cachedUnits){
-                addUnitsToRootScope(cachedUnits);
-                deferred.resolve(cachedUnits);
-                return deferred.promise;
-            }
+        $http.get('js/units.json').success(function(units) {
+            addUnitsToRootScope(units);
+            deferred.resolve(units);
         });
-        return deferred.promise;
-    };
-    quantimodoService.refreshUnits = function(){
-        var deferred = $q.defer();
-        quantimodoService.getUnitsFromApi(function(unitObjects){
-            if(typeof $rootScope.unitAbbreviatedNames === "undefined"){$rootScope.unitAbbreviatedNames = [];}
-            quantimodoService.setLocalStorageItem('units', JSON.stringify(unitObjects));
-            addUnitsToRootScope(unitObjects);
-            deferred.resolve(unitObjects);
-        }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
     // refresh local variable categories with quantimodoService API
