@@ -27,14 +27,15 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
             if($scope.introSlides[index].textColor){$scope.myIntro.textColor = $scope.introSlides[index].textColor;}
         }
     };
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) {
+        //console.debug("Entering state " + $state.current.name);
         if($scope.introSlides[0].backgroundColor){ $scope.myIntro.backgroundColor = $scope.introSlides[0].backgroundColor; }
         if($scope.introSlides[0].textColor){ $scope.myIntro.textColor = $scope.introSlides[0].textColor; }
         if(quantimodoService.getUrlParameter('accessToken')){
             console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {
-            console.debug($state.current.name + ' initializing...');
+            //console.debug($state.current.name + ' initializing...');
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.myIntro.ready = true;

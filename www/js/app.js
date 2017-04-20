@@ -1458,13 +1458,13 @@ angular.module('starter',
         });
 
     if (!window.localStorage.introSeen) {
-        console.debug("Intro not seen so setting default route to intro");
+        //console.debug("Intro not seen so setting default route to intro");
         $urlRouterProvider.otherwise('/');
     } else if (!window.localStorage.onboarded) {
-        console.debug("Not onboarded so setting default route to onboarding");
+        //console.debug("Not onboarded so setting default route to onboarding");
         $urlRouterProvider.otherwise('/app/onboarding');
     } else {
-        console.debug("Intro seen so setting default route to inbox");
+        //console.debug("Intro seen so setting default route to inbox");
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     }
 });
