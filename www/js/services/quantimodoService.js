@@ -7333,6 +7333,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(!trackingReminders || !trackingReminders.length){return {};}
         for(var i = 0; i < trackingReminders.length; i++){
             trackingReminders[i].total = null;
+            trackingReminders[i].valueAndFrequencyTextDescriptionWithTime = quantimodoService.getValueAndFrequencyTextDescriptionWithTime(trackingReminders[i]);
             if(typeof trackingReminders[i].defaultValue === "undefined"){trackingReminders[i].defaultValue = null;}
         }
         trackingReminders = quantimodoService.attachVariableCategoryIcons(trackingReminders);
