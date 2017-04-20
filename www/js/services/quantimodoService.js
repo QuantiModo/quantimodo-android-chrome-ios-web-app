@@ -7546,6 +7546,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if(!a[i]){console.error('a[i] not defined!');}
                 if(!a[j]){
                     console.error('a[j] not defined!');
+                    return a;
                 }
                 if(a[i].id === a[j].id) {
                     a.splice(j--, 1);

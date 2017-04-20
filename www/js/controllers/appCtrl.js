@@ -1545,7 +1545,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
          */
         function loadAll(variables) {
             if(!variables){variables = quantimodoService.getVariablesFromLocalStorage(dataToPass.requestParams);}
-            if(!variables || !variables[0]){ return null; }
+            if(!variables || !variables[0]){ return []; }
             return variables.map( function (variable) {
                 return {
                     value: variable.name.toLowerCase(),
@@ -1656,7 +1656,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
          * Build `variables` list of key/value pairs
          */
         function loadAll(pages) {
-            if(!pages){ return null; }
+            if(!pages){ return []; }
             return pages.map( function (page) {
                 return {
                     value: page.title,
