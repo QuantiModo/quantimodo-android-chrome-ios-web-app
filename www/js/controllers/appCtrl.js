@@ -523,7 +523,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showLoader = function (loadingText) {
         $rootScope.isSyncing = true;
         $rootScope.syncDisplayText = loadingText;
-        console.debug('Showing Loader');
         if(!loadingText){loadingText = '';}
         $scope.loading = true;
         var seconds = 30;
