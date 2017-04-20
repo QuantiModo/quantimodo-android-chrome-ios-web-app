@@ -5168,6 +5168,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return matchingElements;
     };
     quantimodoService.sortByProperty = function(arrayToSort, propertyName){
+        if(!arrayToSort){return [];}
+        if(arrayToSort.length < 2){return arrayToSort;}
         if(propertyName.indexOf('-') > -1){
             arrayToSort.sort(function(a, b){return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];});
         } else {
