@@ -108,7 +108,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
                 console.debug("set afterLoginGoTo to " + window.location.href);
                 if (quantimodoService.getClientId() !== 'oAuthDisabled') {
-                    $rootScope.sendToLogin();
+                    quantimodoService.sendToLogin();
                 } else {
                     var register = true;
                     quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
@@ -7237,6 +7237,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         function yesCallback() {deleteAllMeasurementsForVariable();}
         function noCallback() {}
         quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+    };
+    quantimodoService.sendToLogin = function(params){
+        if(params.afterLoginGoTo){
+            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
+            console.debug("set afterLoginGoTo to " + window.location.href);
+        }
+        quantimodoService.completelyResetAppState();
+        $state.go("app.login");
     };
     return quantimodoService;
 });

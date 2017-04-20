@@ -16,12 +16,12 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     $rootScope.sendDailyEmailReminder = true;
     $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
         $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
-        $rootScope.sendToLogin();
+        quantimodoService.sendToLogin();
     };
     $scope.skipInterval = function(){
         $scope.showIntervalCard = false;
         console.debug('skipInterval: Going to login state...');
-        $rootScope.sendToLogin();
+        quantimodoService.sendToLogin();
     };
     $scope.storeRatingLocally = function(ratingValue){
         $scope.reportedVariableValue = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] ? quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] : false;

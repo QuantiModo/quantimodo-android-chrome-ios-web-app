@@ -68,9 +68,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		}, function(){
 			$ionicLoading.hide();
 			console.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
-			quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-			console.debug("set afterLoginGoTo to " + window.location.href);
-			$rootScope.sendToLogin();
+            quantimodoService.sendToLogin({afterLoginGoTo: window.location.href});
 		});
 	};
 	var loadNativeConnectorPage = function(){
