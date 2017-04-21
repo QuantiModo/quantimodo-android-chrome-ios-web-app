@@ -7248,5 +7248,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.completelyResetAppState();
         $state.go("app.login");
     };
+    quantimodoService.highchartsReflow = function() {
+        // Fixes chart width
+        //$(window).resize(); This doesn't seem to do anything
+        if(!$rootScope.reflowScheduled){
+            $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
+            var seconds = 0.1;
+            //console.debug('Setting highchartsReflow timeout for ' + seconds + ' seconds');
+            $timeout(function() {
+                //console.debug('executing broadcast(highchartsng.reflow)');
+                $rootScope.$broadcast('highchartsng.reflow');
+                $rootScope.reflowScheduled = false;
+            }, seconds * 1000);
+            //$scope.$broadcast('highchartsng.reflow'); This doesn't seem to do anything
+        } else {
+            console.debug('broadcast(highchartsng.reflow) already scheduled');
+        }
+    };
     return quantimodoService;
 });
