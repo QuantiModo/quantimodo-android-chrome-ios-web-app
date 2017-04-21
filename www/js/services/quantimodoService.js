@@ -2145,14 +2145,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getValueAndFrequencyTextDescriptionWithTime = function(trackingReminder){
         if(trackingReminder.reminderFrequency === 86400){
             if(trackingReminder.unitCategoryName === 'Rating'){return 'Daily at ' + quantimodoService.humanFormat(trackingReminder.reminderStartTimeLocal);}
-            return trackingReminder.defaultValue + ' ' + trackingReminder.unitAbbreviatedName + ' daily at ' + quantimodoService.humanFormat(trackingReminder.reminderStartTimeLocal);
+            if(trackingReminder.defaultValue){return trackingReminder.defaultValue + ' ' + trackingReminder.unitAbbreviatedName + ' daily at ' + quantimodoService.humanFormat(trackingReminder.reminderStartTimeLocal);}
+            return 'Daily at ' + quantimodoService.humanFormat(trackingReminder.reminderStartTimeLocal);
         } else if (trackingReminder.reminderFrequency === 0){
             if(trackingReminder.unitCategoryName === "Rating"){return "As-Needed";}
             if(trackingReminder.defaultValue){return trackingReminder.defaultValue + ' ' + trackingReminder.unitAbbreviatedName + ' as-needed';}
             return "As-Needed";
         } else {
             if(trackingReminder.unitCategoryName === 'Rating'){return 'Rate every ' + trackingReminder.reminderFrequency/3600 + " hours";}
-            return trackingReminder.defaultValue + ' ' + trackingReminder.unitAbbreviatedName + ' every ' + trackingReminder.reminderFrequency/3600 + " hours";
+            if(trackingReminder.defaultValue){return trackingReminder.defaultValue + ' ' + trackingReminder.unitAbbreviatedName + ' every ' + trackingReminder.reminderFrequency/3600 + " hours";}
+            return 'Every ' + trackingReminder.reminderFrequency/3600 + " hours";
         }
     };
     quantimodoService.convertReminderTimeStringToMoment = function(reminderTimeString) {
