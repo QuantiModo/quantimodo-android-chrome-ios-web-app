@@ -58,9 +58,7 @@ angular.module('starter')
         $ionicLoading.hide();
     }, function(){
         console.debug("iframeScreen: No access token. Need to log in.");
-        quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-        console.debug("set afterLoginGoTo to " + window.location.href);
-        $rootScope.sendToLogin();
+        quantimodoService.sendToLogin({afterLoginGoTo: window.location.href});
         $ionicLoading.hide();
     });
 });

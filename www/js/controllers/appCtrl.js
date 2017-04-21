@@ -510,10 +510,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             console.error("deleteVote response", response);
         });
     }
-    $rootScope.sendToLogin = function(){
-        quantimodoService.completelyResetAppState();
-        $state.go('app.login');
-    };
     $scope.safeApply = function(fn) {
         var phase = this.$root.$$phase;
         if(phase === '$apply' || phase === '$digest') {
