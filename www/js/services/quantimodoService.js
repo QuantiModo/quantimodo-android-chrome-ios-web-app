@@ -26,7 +26,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if (params.hasOwnProperty(property)) {
                     if (typeof params[property] !== "undefined" && params[property] !== null) {
                         urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
-                    } else {console.warn("Not including parameter " + property + " in request because it is null or undefined");}
+                    } else {
+                        //console.warn("Not including parameter " + property + " in request because it is null or undefined");
+                    }
                 }
             }
             urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
