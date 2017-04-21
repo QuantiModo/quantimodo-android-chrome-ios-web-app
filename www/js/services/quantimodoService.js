@@ -6153,6 +6153,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "href" : "#/app/import",
                 "icon" : "ion-ios-cloud-download-outline"
             },
+            chartSearch: {
+                "title" : "Charts",
+                "href" : "#/app/chart-search",
+                "icon" : "ion-arrow-graph-up-right"
+            },
         };
         var menus = {
             extended: [
@@ -6373,11 +6378,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "icon" : "ion-ios-location-outline"
                 },
                 menuItems.importData,
-                {
-                    "title" : "Charts",
-                    "href" : "#/app/chart-search",
-                    "icon" : "ion-arrow-graph-up-right"
-                },
+                menuItems.chartSearch,
                 {
                     "title" : "Relationships",
                     "click": "togglePredictorSearchSubMenu",
@@ -6491,7 +6492,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 },
                 menuItems.importData,
                 {
-                    title : 'Relationships',
+                    title : 'Discoveries',
                     click : 'togglePredictorSearchSubMenu',
                     showSubMenuVariable : 'showPredictorSearchSubMenu',
                     isSubMenuParent : true,
@@ -6512,6 +6513,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     href : '#/app/outcome-search',
                     icon : 'ion-log-out'
                 },
+                menuItems.chartSearch,
                 menuItems.settings,
             ],
             medication: [
