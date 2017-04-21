@@ -97,7 +97,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             }
             $scope.weekdayChartConfig = quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
             $scope.monthlyChartConfig = quantimodoService.processDataAndConfigureMonthlyChart($scope.state.dailyHistory, $rootScope.variableObject);
-            $scope.highchartsReflow();
+            quantimodoService.highchartsReflow();
         }
     };
     var updateCharts = function(){
@@ -107,7 +107,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.history, $rootScope.variableObject);
             }
             $scope.hourlyChartConfig = quantimodoService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
-            $scope.highchartsReflow();
+            quantimodoService.highchartsReflow();
         }
     };
     var getHistoryForVariable = function(params){

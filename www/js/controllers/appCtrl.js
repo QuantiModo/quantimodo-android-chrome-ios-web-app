@@ -287,21 +287,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
     $scope.welcomeText = config.appSettings.welcomeText;
     /*Wrapper Config End*/
-    $scope.highchartsReflow = function() {
-        // Fixes chart width
-        //$(window).resize(); This doesn't seem to do anything
-        if(!$rootScope.reflowScheduled){
-            $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
-            var seconds = 0.1;
-            console.debug('Setting highchartsReflow timeout for ' + seconds + ' seconds');
-            $timeout(function() {
-                console.debug('executing broadcast(highchartsng.reflow)');
-                $scope.$broadcast('highchartsng.reflow');
-                $rootScope.reflowScheduled = false;
-            }, seconds * 1000);
-            //$scope.$broadcast('highchartsng.reflow'); This doesn't seem to do anything
-        } else {console.debug('broadcast(highchartsng.reflow) already scheduled');}
-    };
+
 
 /*
     $scope.autoUpdateApp = function () {

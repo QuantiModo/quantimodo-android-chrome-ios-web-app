@@ -48,7 +48,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         quantimodoService.getLocalStorageItemAsStringWithCallback("lastStudy", function (lastStudy) {
             if(lastStudy){
                 $rootScope.correlationObject = JSON.parse(lastStudy);
-                $scope.highchartsReflow();  //Need callback to make sure we get the study before we reflow
+                quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
             }
         });
         $scope.state.loading = false;
@@ -140,7 +140,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
         /** @namespace $rootScope.correlationObject.effectProcessedDailyMeasurements */
         $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
-        $scope.highchartsReflow();
+        quantimodoService.highchartsReflow();
         $ionicLoading.hide();
     }
     function getStudy() {
