@@ -911,7 +911,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.syncAllUserData = function(){
         quantimodoService.syncTrackingReminders();
         quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred();
-        quantimodoService.getUnits();
     };
     quantimodoService.refreshUser = function(){
         var deferred = $q.defer();
@@ -1351,7 +1350,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = nonAdvancedUnitsIndexedByAbbreviatedName;
         $rootScope.nonAdvancedUnitObjects = nonAdvancedUnitObjects;
     }
-    quantimodoService.getUnits = function(ignoreExpiration){
+    quantimodoService.getUnits = function(){
         var deferred = $q.defer();
         $http.get('js/units.json').success(function(units) {
             addUnitsToRootScope(units);
@@ -3795,7 +3794,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }, function (error) {deferred.reject(error);});
         return deferred.promise;
     };
-
+    quantimodoService.getCommonVariablesDeferred();
     quantimodoService.refreshCommonVariables = function(){
         var deferred = $q.defer();
         var successHandler = function(commonVariables) {
