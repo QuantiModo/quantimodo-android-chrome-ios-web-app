@@ -1046,10 +1046,20 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return primaryOutcomeMeasurements;
     }
+    function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
+        if(getUnixTimeSeconds() - localStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
+            var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
+            console.error(errorMessage);
+            return false;
+        }
+        localStorage.setItem(localStorageItemName, getUnixTimeSeconds());
+        return true;
+    }
     quantimodoService.getAndStorePrimaryOutcomeMeasurements = function(){
         var deferred = $q.defer();
+        var errorMessage;
         if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
-            var errorMessage = 'Cannot sync because we do not have a user or access token in url';
+            errorMessage = 'Cannot sync because we do not have a user or access token in url';
             console.error(errorMessage);
             deferred.reject(errorMessage);
             return deferred.promise;
@@ -1060,11 +1070,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements', JSON.stringify(primaryOutcomeMeasurementsFromApi));
                 $rootScope.$broadcast('updateCharts');
             }
-            quantimodoService.setLocalStorageItem('lastSyncTime', moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
             deferred.resolve(primaryOutcomeMeasurementsFromApi);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
+    function getUnixTimeSeconds(){
+        return Math.floor(Date.now() / 1000);
+    }
     quantimodoService.postMeasurementQueueToServer = function(successHandler, errorHandler){
         var defer = $q.defer();
         if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
@@ -1099,6 +1111,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
             console.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
             defer.resolve();
+            return defer.promise;
+        }
+        var minimumSecondsBetweenGets = 10;
+        if(!canWeSyncYet("lastMeasurementSyncTime", minimumSecondsBetweenGets)){
+            defer.reject('Cannot sync because already did within the last ' + minimumSecondsBetweenGets + ' seconds');
             return defer.promise;
         }
         quantimodoService.postMeasurementQueueToServer(function(){
@@ -1241,12 +1258,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         } else {
             quantimodoService.addToMeasurementsQueue(measurementInfo);
         }
-        if (measurementInfo.variableName === quantimodoService.getPrimaryOutcomeVariable().name) {
-            //quantimodoService.addToLocalStorage('primaryOutcomeVariableMeasurements', measurementInfo);
-            quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-        } else {
-            quantimodoService.postMeasurementQueueToServer();
-        }
+        quantimodoService.syncPrimaryOutcomeVariableMeasurements();
+
     };
     quantimodoService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
         var value = trackingReminder.defaultValue;
@@ -7223,7 +7236,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
                 quantimodoService.setLocalStorageItem('measurementsQueue',[]);
                 quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
-                quantimodoService.setLocalStorageItem('lastSyncTime',0);
+                localStorage.setItem('lastMeasurementSyncTime', 0);
             }
             $ionicLoading.hide();
             $state.go(config.appSettings.defaultState);
