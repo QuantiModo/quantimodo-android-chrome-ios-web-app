@@ -19,6 +19,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     if(!$rootScope.user){
         quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
     }
+    quantimodoService.getCommonVariablesDeferred();
     quantimodoService.backgroundGeolocationInit();
     quantimodoService.setupBugsnag();
     quantimodoService.getUserAndSetupGoogleAnalytics();

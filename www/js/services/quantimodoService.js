@@ -3794,7 +3794,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }, function (error) {deferred.reject(error);});
         return deferred.promise;
     };
-    quantimodoService.getCommonVariablesDeferred();
     quantimodoService.refreshCommonVariables = function(){
         var deferred = $q.defer();
         var successHandler = function(commonVariables) {
