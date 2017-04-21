@@ -13,13 +13,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $rootScope.numberOfPendingNotifications = null;
     $scope.showReminderSubMenu = false;
     $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
-    quantimodoService.getUnits();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
     if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
     if(!$rootScope.user){
         quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
     }
+    quantimodoService.getCommonVariablesDeferred();
     quantimodoService.backgroundGeolocationInit();
     quantimodoService.setupBugsnag();
     quantimodoService.getUserAndSetupGoogleAnalytics();
