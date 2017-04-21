@@ -26,7 +26,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if (params.hasOwnProperty(property)) {
                     if (typeof params[property] !== "undefined" && params[property] !== null) {
                         urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
-                    } else {console.warn("Not including parameter " + property + " in request because it is null or undefined");}
+                    } else {
+                        //console.warn("Not including parameter " + property + " in request because it is null or undefined");
+                    }
                 }
             }
             urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
@@ -6153,6 +6155,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "href" : "#/app/import",
                 "icon" : "ion-ios-cloud-download-outline"
             },
+            chartSearch: {
+                "title" : "Charts",
+                "href" : "#/app/chart-search",
+                "icon" : "ion-arrow-graph-up-right"
+            },
         };
         var menus = {
             extended: [
@@ -6373,11 +6380,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "icon" : "ion-ios-location-outline"
                 },
                 menuItems.importData,
-                {
-                    "title" : "Charts",
-                    "href" : "#/app/chart-search",
-                    "icon" : "ion-arrow-graph-up-right"
-                },
+                menuItems.chartSearch,
                 {
                     "title" : "Relationships",
                     "click": "togglePredictorSearchSubMenu",
@@ -6491,7 +6494,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 },
                 menuItems.importData,
                 {
-                    title : 'Relationships',
+                    title : 'Discoveries',
                     click : 'togglePredictorSearchSubMenu',
                     showSubMenuVariable : 'showPredictorSearchSubMenu',
                     isSubMenuParent : true,
@@ -6512,6 +6515,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     href : '#/app/outcome-search',
                     icon : 'ion-log-out'
                 },
+                menuItems.chartSearch,
                 menuItems.settings,
             ],
             medication: [
