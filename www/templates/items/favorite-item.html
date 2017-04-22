@@ -7,7 +7,8 @@
             style="text-align: center;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal;">
             {{trackingReminder.displayTotal}}&nbsp{{trackingReminder.variableName}}
         </h2>
-        <button id="recordDefaultValue" ng-if="inputType === 'defaultValue'"
+        <!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+        <button id="recordDefaultValue" ng-if="trackingReminder.inputType === 'defaultValue' || (trackingReminder.inputType === 'value' && trackingReminder.defaultValue !== null)"
                 class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; "
                 ng-click="trackByFavorite(trackingReminder, null, $index)">
             <i class="ion-android-done"> &nbsp; Record {{trackingReminder.defaultValue}} {{trackingReminder.unitAbbreviatedName}}</i>

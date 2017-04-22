@@ -85,7 +85,8 @@
 								</i>
 							</span>
                         </label>
-                        <div class="row" ng-if="trackingReminderNotification.inputType === 'defaultValue'" >
+                        <!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+                        <div class="row" ng-if="trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null)" >
                             <div class="button-bar">
                                 <button ng-show="trackingReminderNotification.defaultValue"
                                         class="button button-clear button-assertive"
@@ -100,7 +101,8 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="row" ng-if="(trackingReminderNotification.inputType === 'defaultValue' || trackingReminderNotification.inputType === 'bloodPressure'" >
+                        <!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+                        <div class="row" ng-if="((trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null)) || trackingReminderNotification.inputType === 'bloodPressure'" >
                             <div class="button-bar">
                                 <button class="button button-clear button-calm"
                                         style="text-overflow: clip; font-size: 14px;"
