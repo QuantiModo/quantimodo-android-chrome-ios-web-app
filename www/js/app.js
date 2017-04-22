@@ -558,7 +558,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAdd', {
-            url: "/measurement-add",
+            url: "/measurement-add/:variableName",
             cache: false,
             params: {
                 trackingReminder: null,
@@ -566,8 +566,7 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null,
-                variableName: null
+                variableObject : null
             },
             views: {
                 'menuContent': {
@@ -602,7 +601,6 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableName : null,
                 variableObject : null
             },
             views: {
@@ -1185,7 +1183,6 @@ angular.module('starter',
             url: "/history-all-variable/:variableName",
             cache: true,
             params: {
-                variableName: null,
                 variableObject : null
             },
             views: {
@@ -1381,7 +1378,7 @@ angular.module('starter',
             }
         })
         .state('app.reminderAdd', {
-            url: "/reminder-add",
+            url: "/reminder-add/:variableName",
             cache: false,
             params: {
                 variableCategoryName : null,

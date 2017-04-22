@@ -115,12 +115,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
         /** @namespace correlationObject.causeVariable */
-        if(correlationObject.causeVariable){ $state.go('app.variableSettings', {variableObject: correlationObject.causeVariable});
+        if(correlationObject.causeVariable){ $state.go('app.variableSettings', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
         } else { $state.go('app.variableSettings', {variableName: correlationObject.causeVariableName}); }
     };
     $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
         /** @namespace correlationObject.effectVariable */
-        if(correlationObject.effectVariable){ $state.go('app.variableSettings', {variableObject: correlationObject.effectVariable});
+        if(correlationObject.effectVariable){ $state.go('app.variableSettings', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
         } else { $state.go('app.variableSettings', {variableName: correlationObject.effectVariableName}); }
     };
     $scope.openUrl = function(url){

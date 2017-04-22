@@ -8,7 +8,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
     var goBack = function () {
         $ionicLoading.hide();
         if($stateParams.fromState && $stateParams.fromStateParams){
-            $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject});
+            $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});
         } else {
             $scope.goBack();
         }
