@@ -2,7 +2,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                  $stateParams, $ionicHistory, $ionicActionSheet, quantimodoService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         console.debug($state.current.name + ' initializing...');
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
