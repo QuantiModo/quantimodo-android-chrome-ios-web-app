@@ -1375,7 +1375,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getUnits();
     // get variable categories
     quantimodoService.variableCategories = [];
-    quantimodoService.variableCategories.Anything = {
+    $rootScope.variableCategories = [];
+    $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
+    $rootScope.variableCategories.Anything = quantimodoService.variableCategories.Anything = {
         defaultUnitAbbreviatedName: '',
         helpText: "What do you want to record?",
         variableCategoryNameSingular: "Anything",
@@ -1386,13 +1388,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         defaultValue : '',
         measurementSynonymSingularLowercase : "measurement",
         ionIcon: "ion-speedometer"};
-    $rootScope.variableCategories = [];
-    $rootScope.variableCategories.Anything = quantimodoService.variableCategories;
+
     quantimodoService.getVariableCategories = function(){
         var deferred = $q.defer();
         $http.get('js/variableCategories.json').success(function(variableCategories) {
             angular.forEach(variableCategories, function(variableCategory, key) {
                 $rootScope.variableCategories[variableCategory.name] = variableCategory;
+                $rootScope.variableCategoryNames.push(variableCategory.name);
                 quantimodoService.variableCategories[variableCategory.name] = variableCategory;
             });
             setupExplanations();
