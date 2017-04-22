@@ -168,12 +168,12 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             quantimodoService.syncPrimaryOutcomeVariableMeasurements();
             quantimodoService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, quantimodoService.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
         }
-    };
+    }
 	function getFavorites() {
 		if(!$scope.favoritesArray){
             quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
 		}
-    };
+    }
 	var getFallbackInboxContent = function () {
 		if(!$scope.state.numberOfDisplayedNotifications){
 			getFavorites();
