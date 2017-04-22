@@ -25,7 +25,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			return;
 		}
 		if(!$rootScope.user){
-            quantimodoService.sendToLogin({afterLoginGoTo: window.location.href});
+            quantimodoService.sendToLogin(true);
 		}
 	});
     $scope.sendToLogin = function(){quantimodoService.sendToLogin();};
