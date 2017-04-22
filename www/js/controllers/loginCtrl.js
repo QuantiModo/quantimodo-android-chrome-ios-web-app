@@ -50,7 +50,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             if($rootScope.user && $state.current.name.indexOf('login') !== -1){
                 quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
             }
-        }, 30000);
+        }, 40000);
     };
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         leaveIfLoggedIn();

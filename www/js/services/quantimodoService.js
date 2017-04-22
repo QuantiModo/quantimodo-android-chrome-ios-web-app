@@ -7256,8 +7256,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         function noCallback() {}
         quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    quantimodoService.sendToLogin = function(params){
-        if(params.afterLoginGoTo){
+    quantimodoService.sendToLogin = function(comeBackAfterLogin){
+        if(comeBackAfterLogin){
             quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
             console.debug("set afterLoginGoTo to " + window.location.href);
         }
