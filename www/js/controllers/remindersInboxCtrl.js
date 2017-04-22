@@ -369,9 +369,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			buttonClicked: function(index) {
 				console.debug('BUTTON CLICKED', index);
 				if(index === 0){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
-				if(index === 1){$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject});}
-				if(index === 2){$state.go('app.charts', {variableObject: $rootScope.variableObject});}
-				if(index === 3){$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
+				if(index === 1){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+				if(index === 2){$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+				if(index === 3){$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
 				if(index === 4){$state.go('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
 				return true;
 			},

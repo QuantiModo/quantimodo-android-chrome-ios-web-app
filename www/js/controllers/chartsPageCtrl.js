@@ -61,10 +61,10 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 cancel: function() {console.debug('CANCELLED');},
                 buttonClicked: function(index) {
                     console.debug('BUTTON CLICKED', index);
-                    if(index === 0){$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject});}
-                    if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject});}
-                    if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject});}
-                    if(index === 3) {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject});}
+                    if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                    if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                    if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                    if(index === 3) {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
                     return true;
                 },
                 destructiveButtonClicked: function() {
@@ -88,7 +88,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         $state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});
     };
     $scope.recordMeasurementButtonClick = function() {$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});};
-    $scope.editSettingsButtonClick = function() {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject});};
+    $scope.editSettingsButtonClick = function() {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});};
     var updateDailyCharts = function(){
         if ($scope.state.dailyHistory.length > 0) {
             if($rootScope.variableObject.fillingValue !== null && $rootScope.variableObject.fillingValue !== -1){
