@@ -7,7 +7,7 @@
             style="text-align: center;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal;">
             {{trackingReminder.displayTotal}}&nbsp{{trackingReminder.variableName}}
         </h2>
-        <button id="recordDefaultValue" ng-if="trackingReminder.unitAbbreviatedName != '/5' && trackingReminder.defaultValue !== null"
+        <button id="recordDefaultValue" ng-if="inputType === 'defaultValue'"
                 class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; "
                 ng-click="trackByFavorite(trackingReminder, null, $index)">
             <i class="ion-android-done"> &nbsp; Record {{trackingReminder.defaultValue}} {{trackingReminder.unitAbbreviatedName}}</i>
@@ -17,34 +17,51 @@
         <i style="font-size: 20px; padding: 0;" class="icon positive ion-more"></i>
     </div>
 </div>
-<div ng-if="trackingReminder.defaultValue === null && trackingReminder.unitAbbreviatedName !== '/5'" class="item-input" style="padding-top: 0">
+<div ng-if="trackingReminder.inputType === 'value'" class="item-input" style="padding-top: 0">
     <input type="number" ng-model="trackingReminder.total" id="favoriteValueField"
            ng-click="onTextClick($event)"
            placeholder="Enter value"
            style="text-align: center">
     <span on-tap="trackFavoriteByValueField(trackingReminder, $index)" class="input-label">{{trackingReminder.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
 </div>
-<div id="favoriteNumericRatingButtons" class="primary-outcome-variable-reporting"
-     ng-if="trackingReminder.inputType === 'oneToFiveNumbers'">
+<div id="favoriteNumericRatingButtons" class="primary-outcome-variable-reporting" ng-if="trackingReminder.inputType === 'oneToFiveNumbers'">
     <div class="primary-outcome-variable-rating-buttons" >
         <img ng-repeat="option in numericRatingOptions"
              ng-click="trackByFavorite(trackingReminder, option.numericValue)"
              ng-src="{{option.img}}">
     </div>
 </div>
-<div id="favoritePositiveRatingButtons" class="primary-outcome-variable-reporting"
-     ng-if="trackingReminder.inputType === 'happiestFaceIsFive'">
+<div id="favoritePositiveRatingButtons" class="primary-outcome-variable-reporting" ng-if="trackingReminder.inputType === 'happiestFaceIsFive'">
     <div class="primary-outcome-variable-rating-buttons" >
         <img ng-repeat="option in positiveRatingOptions"
              ng-click="trackByFavorite(trackingReminder, option.numericValue)"
              ng-src="{{option.img}}">
     </div>
 </div>
-<div id="favoriteNegativeRatingButtons" class="primary-outcome-variable-reporting"
-     ng-if="trackingReminder.inputType === 'saddestFaceIsFive'">
+<div id="favoriteNegativeRatingButtons" class="primary-outcome-variable-reporting" ng-if="trackingReminder.inputType === 'saddestFaceIsFive'">
     <div class="primary-outcome-variable-rating-buttons" >
         <img ng-repeat="option in negativeRatingOptions"
              ng-click="trackByFavorite(trackingReminder, option.numericValue)"
              ng-src="{{option.img}}">
+    </div>
+</div>
+
+<div ng-if="trackingReminderNotification.inputType === 'oneToTen' || trackingReminderNotification.inputType === 'slider'">
+    <div class="row">
+        <div class="button-bar">
+            <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 16px;"
+                    ng-click="trackByFavorite(trackingReminder, trackingReminder.total)">
+                <i class="ion-android-done">&nbsp; Record {{trackingReminder.total}}{{trackingReminder.unitAbbreviatedName}} &nbsp</i>
+            </button>
+        </div>
+    </div>
+    <div class="row" >
+        <div style="width: 100%" class="range range-positive">
+            {{trackingReminder.minimumAllowedValue}}
+            <input ng-model="trackingReminder.total" type="range" name="valueSlider"
+                   min="{{state.trackingReminder.minimumAllowedValue}}" max="{{trackingReminder.maximumAllowedValue}}"
+                   value="{{trackingReminder.total}}">
+            {{trackingReminder.maximumAllowedValue}}
+        </div>
     </div>
 </div>
