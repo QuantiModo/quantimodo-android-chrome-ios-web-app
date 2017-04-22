@@ -45,29 +45,21 @@
             </ion-list>
         </div>
 
-        <div class="list card"  ng-if="state.noVariablesFoundCard.show && !state.searching  && !$scope.state.variableSearchResults">
-            <div class="item" style="padding-bottom:10px;">
+        <div class="list card"  ng-if="true || state.noVariablesFoundCard.show && !state.searching  && !$scope.state.variableSearchResults">
+            <div style="padding-bottom:10px;">
                 <div class="row">
                     <div class="span6" style="float: none; margin: 0 auto;">
                        <p style="line-height: normal; font-size: 20px;"> <i style="font-size: 30px;" class="icon positive ion-android-sad"></i> &nbsp {{state.noVariablesFoundCard.title}}</p>
                     </div>
                 </div>
-                <div class="item item-body" style="text-align: center">
+                <p style="text-align: center">
                     {{state.noVariablesFoundCard.body}}
-                </div>
+                </p>
                 <div class="row" >
                     <div class="button-bar">
                         <button class="button button-clear button-balanced" style="font-size: 14px;"
                                 ng-click="goToStateFromVariableSearch('app.reminderSearch')">
                             <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
-                        </button>
-                    </div>
-                </div>
-                <div class="row" >
-                    <div class="button-bar">
-                        <button class="button button-clear button-assertive" style="font-size: 14px;"
-                                ng-click="goToStateFromVariableSearch('app.favorites')">
-                            <i class="ion-star"> &nbsp; Go to favorites &nbsp;</i>
                         </button>
                     </div>
                 </div>
