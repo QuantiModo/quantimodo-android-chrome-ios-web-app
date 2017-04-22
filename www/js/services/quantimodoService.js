@@ -6789,7 +6789,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "name" : "Overall Mood",
                 "variableName": "Overall Mood",
                 variableCategoryName : "Mood",
-                "unitAbbreviatedName" : "/5",
+                "userVariableDefaultUnitAbbreviatedName" : "/5",
                 "combinationOperation": "MEAN",
                 "valence": "positive",
                 "unitName": "1 to 5 Rating",
