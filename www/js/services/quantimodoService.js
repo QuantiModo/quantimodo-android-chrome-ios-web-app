@@ -4843,6 +4843,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 var severity = 'error';
                 quantimodoService.bugsnagNotify(name, message, metaData, severity);
                 quantimodoService.deleteLargeLocalStorageItems(metaData.localStorageItems);
+                localStorage.setItem(keyIdentifier+key, value);
             }
         }
         return deferred.promise;
