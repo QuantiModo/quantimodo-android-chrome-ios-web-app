@@ -61,7 +61,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 cancel: function() {console.debug('CANCELLED');},
                 buttonClicked: function(index) {
                     console.debug('BUTTON CLICKED', index);
-                    if(index === 0){$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                    if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
                     if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
                     if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
                     if(index === 3) {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url

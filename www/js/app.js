@@ -558,7 +558,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAdd', {
-            url: "/measurement-add/:variableName",
+            url: "/measurement-add",
             cache: false,
             params: {
                 trackingReminder: null,
@@ -566,7 +566,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null
+                variableObject : null,
+                variableName: null
             },
             views: {
                 'menuContent': {

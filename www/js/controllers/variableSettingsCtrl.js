@@ -46,7 +46,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() { console.debug('CANCELLED'); },
             buttonClicked: function(index) {
-                if(index === 0){$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 2) {$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 3) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
