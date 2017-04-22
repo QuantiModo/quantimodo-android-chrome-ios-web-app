@@ -14,15 +14,13 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;
-        if($rootScope.user || quantimodoService.getUrlParameter('accessToken')){
-            $scope.showLoader(syncDisplayText);
-            console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
-            quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                $scope.hideLoader();
-                updateCharts();
-                $ionicLoading.hide();
-            });
-        } else {console.debug($state.current.name + ' has no user or access token so we cannot syncPrimaryOutcomeVariableMeasurements');}
+        $scope.showLoader(syncDisplayText);
+        console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
+        quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+            $scope.hideLoader();
+            updateCharts();
+            $ionicLoading.hide();
+        });
     });
     $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
         $scope.timeRemaining = true;
@@ -45,7 +43,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         $scope.averagePrimaryOutcomeVariableValue = Math.round(sum / $scope.state.primaryOutcomeMeasurements.length);
         $scope.averagePrimaryOutcomeVariableText = quantimodoService.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[$scope.averagePrimaryOutcomeVariableValue ];
         if($scope.averagePrimaryOutcomeVariableText){$scope.averagePrimaryOutcomeVariableImage = quantimodoService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);}
-        $scope.highchartsReflow();
+        quantimodoService.highchartsReflow();
     };
     var updateCharts = function(){
         $scope.state.primaryOutcomeMeasurements = quantimodoService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
@@ -59,7 +57,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
             updateAveragePrimaryOutcomeRatingView();
             $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements, quantimodoService.getPrimaryOutcomeVariable());
         }
-        $scope.highchartsReflow();
+        quantimodoService.highchartsReflow();
     };
     $scope.$on('updateCharts', function(){
         console.debug('updateCharts broadcast received..');
