@@ -5,8 +5,8 @@
 			<i style="font-size: 40px;" class="icon positive {{trackingReminderNotification.ionIcon}}"></i>
 		</div>
 		<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="col col-70">
-			<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
-			<h2 ng-if="trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null)"
+			<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+			<h2 ng-if="trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null)"
 				style="white-space: normal;
 				font-size: 20px;
 				line-height: normal; ">
@@ -65,7 +65,7 @@
 			</i>
 		</span>
 	</label>
-	<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+	<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
 	<div class="row" ng-if="trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null)" >
 		<div class="button-bar">
 			<button ng-show="trackingReminderNotification.defaultValue"
@@ -81,7 +81,7 @@
 			</button>
 		</div>
 	</div>
-	<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification..defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+	<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
 	<div class="row" ng-if="(trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null)" >
 		<div class="button-bar">
 			<button class="button button-clear button-calm"
