@@ -2,13 +2,6 @@
     <ion-nav-title>Study</ion-nav-title>
         <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
             <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
-            <div ng-show="state.loading && !state.studyNotFound" style="text-align: center">
-                <br>
-                <br>
-                <br>
-                <br>
-                <ion-spinner icon="android"></ion-spinner>
-            </div>
             <div ng-cloak ng-show="correlationObject" class="item-text-wrap card-item" style="border-style:hidden; text-align: center">
                 <br>
                 <h2 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h2>
