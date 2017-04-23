@@ -1011,9 +1011,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var study;
             if(response.userStudy){ study = response.userStudy; }
             if(response.publicStudy){ study = response.publicStudy; }
-            for(var i=0; i < study.charts.length; i++){
-                study.charts[i] = setChartExportingOptions(study.charts[i]);
-            }
+            if(study.charts){for(var i=0; i < study.charts.length; i++){study.charts[i] = setChartExportingOptions(study.charts[i]);}}
             deferred.resolve(study);
         }, function (error) {
             deferred.reject(error);
