@@ -544,15 +544,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             successHandler,
             errorHandler);
     };
-    // track tracking reminder with default value
-    quantimodoService.trackTrackingReminderNotification = function(params, successHandler, errorHandler){
-        var requiredProperties = ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'];
-        quantimodoService.post('api/v1/trackingReminderNotifications/track',
-            requiredProperties,
-            params,
-            successHandler,
-            errorHandler);
-    };
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1;}
     // if not logged in, returns rejects
     quantimodoService.getAccessTokenFromAnySource = function () {
@@ -1886,7 +1877,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var deferred = $q.defer();
         var trackingReminderNotificationsArray = quantimodoService.getLocalStorageItemAsObject('notificationsSyncQueue');
         quantimodoService.deleteItemFromLocalStorage('notificationsSyncQueue');
-        if(!trackingReminderNotificationsArray){
+        if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
             if(successHandler){successHandler();}
             deferred.resolve();
             return deferred.promise;
