@@ -28,16 +28,11 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         }
         if($stateParams.correlationObject){
             $rootScope.correlationObject = $stateParams.correlationObject;
-            $scope.state.loading = false;
             quantimodoService.setLocalStorageItem("lastStudy", JSON.stringify($rootScope.correlationObject));
             $ionicLoading.hide();
         }
         if($rootScope.correlationObject){
-            $scope.state.requestParams = {
-                causeVariableName: $rootScope.correlationObject.causeVariableName,
-                effectVariableName: $rootScope.correlationObject.effectVariableName
-            };
-            //addWikipediaInfo();
+            setupRequestParams();
             if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){ getStudy(); }
             return;
         }
@@ -48,17 +43,21 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         quantimodoService.getLocalStorageItemAsStringWithCallback("lastStudy", function (lastStudy) {
             if(lastStudy){
                 $rootScope.correlationObject = JSON.parse(lastStudy);
+                setupRequestParams();
                 quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
             }
         });
-        $scope.state.loading = false;
-        $scope.state.requestParams = {
-            causeVariableName: $rootScope.correlationObject.causeVariableName,
-            effectVariableName: $rootScope.correlationObject.effectVariableName
-        };
-        //addWikipediaInfo();
+        setupRequestParams();
         if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){ getStudy(); }
     });
+    function setupRequestParams() {
+        if($rootScope.correlationObject){
+            $scope.state.requestParams = {
+                causeVariableName: $rootScope.correlationObject.causeVariableName,
+                effectVariableName: $rootScope.correlationObject.effectVariableName
+            };
+        }
+    }
     $scope.refreshStudy = function() {
         quantimodoService.clearCorrelationCache();
         getStudy();
@@ -135,7 +134,6 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
     $scope.weightedPeriod = 5;
     function createUserCharts() {
         $scope.loadingCharts = false;
-        $scope.state.loading = false;
         /** @namespace $rootScope.correlationObject.causeProcessedDailyMeasurements */
         $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
         /** @namespace $rootScope.correlationObject.effectProcessedDailyMeasurements */
@@ -152,7 +150,6 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         }, function (error) {
             console.error(error);
             $scope.loadingCharts = false;
-            $scope.state.loading = false;
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
         });
