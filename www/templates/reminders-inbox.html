@@ -71,18 +71,15 @@
                                 <i class="ion-settings"> &nbsp; Settings</i>
                             </button>
                         </div>
-                        <label ng-if="trackingReminderNotification.inputType === 'value'"
+                        <label ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null"
                                class="item item-input">
                             <input type="number" ng-model="trackingReminderNotification.total" id="emptyValueField"
                                    ng-click="onTextClick($event)"
                                    placeholder="Enter value"
                                    style="text-align: center; max-width: 125px; padding-right: 10px">
-                            <span on-tap="trackByValueField(trackingReminderNotification, $event)"
-                                  class="input-label">
+                            <span on-tap="trackByValueField(trackingReminderNotification, $event)" class="input-label">
 								{{trackingReminderNotification.unitAbbreviatedName}} &nbsp
-								<i style="font-size: 20px;"
-                                   class="icon positive ion-checkmark-round">
-								</i>
+								<i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i>
 							</span>
                         </label>
                         <!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
@@ -102,15 +99,6 @@
                             </div>
                         </div>
                         <!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
-                        <div class="row" ng-if="(trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null)) || trackingReminderNotification.inputType === 'bloodPressure'" >
-                            <div class="button-bar">
-                                <button class="button button-clear button-calm"
-                                        style="text-overflow: clip; font-size: 14px;"
-                                        ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
-                                    <i class="ion-edit"> &nbsp; Other Value/Time/Note</i>
-                                </button>
-                            </div>
-                        </div>
                         <div class="primary-outcome-variable-reporting"
                              ng-if="trackingReminderNotification.inputType === 'oneToFiveNumbers'">
                             <div class="primary-outcome-variable-rating-buttons" >
@@ -166,6 +154,15 @@
                                            value="{{trackingReminderNotification.total}}">
                                     {{trackingReminderNotification.maximumAllowedValue}}
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <div class="button-bar">
+                                <button class="button button-clear button-calm"
+                                        style="text-overflow: clip; font-size: 14px;"
+                                        ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
+                                    <i class="ion-edit"> &nbsp; Other Value/Time/Note</i>
+                                </button>
                             </div>
                         </div>
                     </div>
