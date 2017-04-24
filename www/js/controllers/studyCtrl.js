@@ -2,7 +2,8 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
                                       $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog) {
     $scope.controller_name = "StudyCtrl";
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.$on("$ionicView.beforeEnter", function() { console.debug("Entering state " + $state.current.name);
+    $scope.$on("$ionicView.beforeEnter", function() {
+        console.debug("beforeEnter state " + $state.current.name);
         $scope.state = {
             title: "Loading study...",
             requestParams: {},
@@ -10,53 +11,35 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
             loading: true
         };
     });
-    $scope.$on("$ionicView.enter", function() { console.debug("Entering state " + $state.current.name);
+    $scope.$on("$ionicView.enter", function() {
+        console.debug("enter state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
-        console.debug($state.current.name + " initializing...");
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== "undefined")  { analytics.trackView($state.current.name); }
+        if($stateParams.correlationObject){$rootScope.correlationObject = $stateParams.correlationObject;}
+        if($rootScope.correlationObject){quantimodoService.setLocalStorageItem("lastStudy", JSON.stringify($rootScope.correlationObject));}
+        setupRequestParamsAndGetStudy();
+        quantimodoService.getLocalStorageItemAsStringWithCallback("lastStudy", function (lastStudy) {
+            if(lastStudy){
+                $rootScope.correlationObject = JSON.parse(lastStudy);
+                setupRequestParamsAndGetStudy();
+                quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
+            }
+        });
+    });
+    function setupRequestParamsAndGetStudy() {
         if(quantimodoService.getUrlParameter("causeVariableName")){ $scope.state.requestParams.causeVariableName = quantimodoService.getUrlParameter("causeVariableName", window.location.href, true); }
         if(quantimodoService.getUrlParameter("effectVariableName")){ $scope.state.requestParams.effectVariableName = quantimodoService.getUrlParameter("effectVariableName", window.location.href, true); }
         if($stateParams.causeVariableName){ $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName; }
         if($stateParams.effectVariableName){ $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName; }
-        $scope.predictorVariableName = $scope.state.requestParams.causeVariableName;
-        $scope.outcomeVariableName = $scope.state.requestParams.effectVariableName;
-        if(quantimodoService.getUrlParameter("userId")){
-            $scope.state.requestParams.userId = quantimodoService.getUrlParameter("userId");
-            getStudy();
-            return;
-        }
-        if($stateParams.correlationObject){
-            $rootScope.correlationObject = $stateParams.correlationObject;
-            quantimodoService.setLocalStorageItem("lastStudy", JSON.stringify($rootScope.correlationObject));
-            $ionicLoading.hide();
-        }
-        if($rootScope.correlationObject){
-            setupRequestParams();
-            if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){ getStudy(); }
-            return;
-        }
-        if($scope.state.requestParams.effectVariableName) {
-            getStudy();
-            return;
-        }
-        quantimodoService.getLocalStorageItemAsStringWithCallback("lastStudy", function (lastStudy) {
-            if(lastStudy){
-                $rootScope.correlationObject = JSON.parse(lastStudy);
-                setupRequestParams();
-                quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
-            }
-        });
-        setupRequestParams();
-        if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){ getStudy(); }
-    });
-    function setupRequestParams() {
-        if($rootScope.correlationObject){
+        if(quantimodoService.getUrlParameter("userId")){$scope.state.requestParams.userId = quantimodoService.getUrlParameter("userId");}
+        if($rootScope.correlationObject && !$scope.state.requestParams.causeVariableName){
             $scope.state.requestParams = {
                 causeVariableName: $rootScope.correlationObject.causeVariableName,
                 effectVariableName: $rootScope.correlationObject.effectVariableName
             };
         }
+        if($scope.state.requestParams.effectVariableName) {getStudy();}
     }
     $scope.refreshStudy = function() {
         quantimodoService.clearCorrelationCache();
