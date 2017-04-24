@@ -6,8 +6,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         $scope.state = {
             title: "Loading study...",
             requestParams: {},
-            hideStudyButton: true,
-            loading: true
+            hideStudyButton: true
         };
     });
     $scope.$on("$ionicView.enter", function() { console.debug("Entering state " + $state.current.name);
@@ -28,6 +27,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         }
         if($stateParams.correlationObject){
             $rootScope.correlationObject = $stateParams.correlationObject;
+            $scope.state.loading = false;
             quantimodoService.setLocalStorageItem("lastStudy", JSON.stringify($rootScope.correlationObject));
             $ionicLoading.hide();
         }
@@ -47,6 +47,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
                 quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
             }
         });
+        $scope.state.loading = false;
         setupRequestParams();
         if($rootScope.correlationObject.userId && !$rootScope.correlationObject.charts){ getStudy(); }
     });
@@ -134,6 +135,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
     $scope.weightedPeriod = 5;
     function createUserCharts() {
         $scope.loadingCharts = false;
+        $scope.state.loading = false;
         /** @namespace $rootScope.correlationObject.causeProcessedDailyMeasurements */
         $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
         /** @namespace $rootScope.correlationObject.effectProcessedDailyMeasurements */
@@ -143,13 +145,16 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
     }
     function getStudy() {
         $scope.loadingCharts = true;
+        $scope.state.loading = true;
         quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (study) {
             if(study){$scope.state.studyNotFound = false;}
             $rootScope.correlationObject = study;
+            $scope.state.loading = false;
             createUserCharts();
         }, function (error) {
             console.error(error);
             $scope.loadingCharts = false;
+            $scope.state.loading = false;
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
         });
