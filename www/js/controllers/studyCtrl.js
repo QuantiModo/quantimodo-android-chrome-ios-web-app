@@ -143,12 +143,15 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
     }
     function getStudy() {
         $scope.loadingCharts = true;
+        if(!$rootScope.correlationObject){$ionicLoading.show();}
         quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (study) {
+            $ionicLoading.hide();
             if(study){$scope.state.studyNotFound = false;}
             $rootScope.correlationObject = study;
             createUserCharts();
         }, function (error) {
             console.error(error);
+            $ionicLoading.hide();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
