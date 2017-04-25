@@ -169,6 +169,11 @@
                 </div>
             </div>
         </div>
+        <div class="list card" ng-if="!loading && state.numberOfDisplayedNotifications === 0 && favoritesArray && favoritesArray.length" id="Favorites">
+            <div class="item item-divider" style="">{{state.favoritesTitle}}</div>
+            <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
+            <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
+        </div>
         <div id="allCaughtUpCard" class="list card"  ng-if="!loading && state.numberOfDisplayedNotifications === 0 ">
             <div class="item" style="padding-bottom:10px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
@@ -215,11 +220,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="list card" ng-if="!loading && state.numberOfDisplayedNotifications === 0 && favoritesArray && favoritesArray.length" id="Favorites">
-            <div class="item item-divider" style="">{{state.favoritesTitle}}</div>
-            <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
-            <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
         </div>
         <div ng-if="state.correlationObjects && state.correlationObjects.length"  class="list card">
             <div ng-include="'templates/fragments/correlations-list-fragment.html'"></div>
