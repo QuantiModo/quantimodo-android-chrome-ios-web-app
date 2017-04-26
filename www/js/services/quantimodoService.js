@@ -873,7 +873,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         */
 
         if(localStorage.getItem('deviceTokenOnServer')){console.debug("This token is already on the server: " + localStorage.getItem('deviceTokenOnServer'));}
-        if (localStorage.getItem('deviceTokenToSync')){quantimodoService.registerDeviceToken(localStorage.getItem('deviceTokenToSync'));}
+        postDeviceTokenToServerIfNecessary();
         if($rootScope.sendReminderNotificationEmails){
             quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
             $rootScope.sendReminderNotificationEmails = null;
@@ -881,6 +881,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.afterLoginGoToUrlOrState();
         quantimodoService.updateUserTimeZoneIfNecessary();
     };
+    function postDeviceTokenToServerIfNecessary() {if(localStorage.getItem('deviceTokenToSync')){quantimodoService.registerDeviceToken(localStorage.getItem('deviceTokenToSync'));}}
     quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
         if(!quantimodoService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.defaultState);}
     };
@@ -2030,6 +2031,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             params.sort = '-reminderTime';
             quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
+                    postDeviceTokenToServerIfNecessary();  // Double check because it's not getting posted sometimes for some reason
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if (window.chrome && window.chrome.browserAction) {
                         chrome.browserAction.setBadgeText({text: "?"});

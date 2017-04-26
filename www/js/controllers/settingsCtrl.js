@@ -242,7 +242,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		};
 		ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
 	};
-	function storeDeviceTokenToSync(){
+	function saveDeviceTokenToSyncWhenWeLogInAgain(){
 		// Getting token so we can post as the new user if they log in again
 		if(localStorage.getItem('deviceTokenOnServer')){
 			localStorage.setItem('deviceTokenToSync', localStorage.getItem('deviceTokenOnServer'));
@@ -258,12 +258,12 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		var completelyResetAppStateAndLogout = function(){
 			quantimodoService.completelyResetAppState();
 			logOutOfWebsite();
-			storeDeviceTokenToSync();
+			saveDeviceTokenToSyncWhenWeLogInAgain();
 			$state.go('app.intro');
 		};
 		var afterLogoutDoNotDeleteMeasurements = function(){
 			$rootScope.user = null;
-			storeDeviceTokenToSync();
+			saveDeviceTokenToSyncWhenWeLogInAgain();
 			quantimodoService.clearOAuthTokensFromLocalStorage();
 			logOutOfWebsite();
 			window.localStorage.introSeen = false;
