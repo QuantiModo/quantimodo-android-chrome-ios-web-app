@@ -46,22 +46,21 @@
              ng-src="{{option.img}}">
     </div>
 </div>
-
 <div ng-if="trackingReminder.inputType === 'oneToTen' || trackingReminder.inputType === 'slider'">
     <div class="row">
         <div class="button-bar">
             <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 16px;"
-                    ng-click="trackByFavorite(trackingReminder, trackingReminder.total)">
-                <i class="ion-android-done">&nbsp; Record {{trackingReminder.total}}{{trackingReminder.unitAbbreviatedName}} &nbsp</i>
+                    ng-click="trackByFavorite(trackingReminder, trackingReminder.lastValueInUserVariableDefaultUnit)">
+                <i class="ion-android-done">&nbsp; Record {{trackingReminder.lastValueInUserVariableDefaultUnit}}{{trackingReminder.unitAbbreviatedName}} &nbsp</i>
             </button>
         </div>
     </div>
-    <div class="row" >
+    <div class="row">
         <div style="width: 100%" class="range range-positive">
             {{trackingReminder.minimumAllowedValue}}
-            <input ng-model="trackingReminder.total" type="range" name="valueSlider"
-                   min="{{state.trackingReminder.minimumAllowedValue}}" max="{{trackingReminder.maximumAllowedValue}}"
-                   value="{{trackingReminder.total}}">
+            <input ng-model="trackingReminder.lastValueInUserVariableDefaultUnit" type="range" name="valueSlider"
+                   min="{{trackingReminder.minimumAllowedValue}}" max="{{trackingReminder.maximumAllowedValue}}"
+                   value="{{trackingReminder.lastValueInUserVariableDefaultUnit}}">
             {{trackingReminder.maximumAllowedValue}}
         </div>
     </div>

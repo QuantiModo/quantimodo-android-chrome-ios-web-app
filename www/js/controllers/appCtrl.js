@@ -531,7 +531,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.favoriteValidationFailure('Please specify a value for ' + trackingReminder.variableName);
             return;
         }
-        trackingReminder.displayTotal = "Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName;
+        trackingReminder.displayTotal = "Recorded " + (trackingReminder.total + " " + trackingReminder.unitAbbreviatedName).replace(' /', '/');
         quantimodoService.postMeasurementByReminder(trackingReminder, trackingReminder.total)
             .then(function () {
                 console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
@@ -545,8 +545,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(!modifiedReminderValue){modifiedReminderValue = trackingReminder.defaultValue;}
         if(trackingReminder.unitAbbreviatedName !== '/5') {
             if(trackingReminder.combinationOperation === "SUM"){trackingReminder.total = trackingReminder.total + modifiedReminderValue;} else {trackingReminder.total = modifiedReminderValue;}
-            trackingReminder.displayTotal = trackingReminder.total + " " + trackingReminder.unitAbbreviatedName;
-        } else {trackingReminder.displayTotal = modifiedReminderValue + '/5';}
+            trackingReminder.displayTotal = "Recorded " + (trackingReminder.total + " " + trackingReminder.unitAbbreviatedName).replace(' /', '/');
+        } else {trackingReminder.displayTotal = "Recorded " + modifiedReminderValue + '/5';}
         if(!trackingReminder.tally){trackingReminder.tally = 0;}
         if(trackingReminder.combinationOperation === "SUM"){trackingReminder.tally += modifiedReminderValue;} else {trackingReminder.tally = modifiedReminderValue;}
         $timeout(function() {
