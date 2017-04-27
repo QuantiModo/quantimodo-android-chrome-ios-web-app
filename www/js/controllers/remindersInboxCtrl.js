@@ -45,6 +45,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         console.debug("RemindersInboxCtrl enter");
         $scope.defaultHelpCards = quantimodoService.setupHelpCards();
         getTrackingReminderNotifications();
+        getFavorites();
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
 		$scope.stateParams = $stateParams;
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -171,12 +172,14 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
     }
 	function getFavorites() {
 		if(!$scope.favoritesArray){
-            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
+            quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName)
+				.then(function(favorites){
+            		$scope.favoritesArray = favorites;
+				});
 		}
     }
 	var getFallbackInboxContent = function () {
 		if(!$scope.state.numberOfDisplayedNotifications){
-			getFavorites();
 			getWeekdayCharts();
             getDiscoveries();
 		}
