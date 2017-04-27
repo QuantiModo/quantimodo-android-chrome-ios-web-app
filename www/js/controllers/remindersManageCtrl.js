@@ -155,10 +155,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			buttonClicked: function(index) {
 				console.debug('BUTTON CLICKED', index);
 				if(index === 0){$scope.edit(trackingReminder);}
-				if(index === 1){$state.go('app.measurementAdd', {variableObject: variableObject});}
-				if(index === 2){$state.go('app.charts', {variableObject: variableObject});}
-				if(index === 3){$state.go('app.historyAllVariable', {variableObject: variableObject});}
-				if(index === 4){$state.go('app.variableSettings', {variableObject: variableObject});}
+				if(index === 1){$state.go('app.measurementAdd', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 2){$state.go('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 3){$state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 4){$state.go('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});}
 				return true;
 			},
 			destructiveButtonClicked: function() {
