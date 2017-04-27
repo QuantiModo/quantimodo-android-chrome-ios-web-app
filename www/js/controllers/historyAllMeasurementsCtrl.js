@@ -12,6 +12,28 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		title: "History",
 		loadingText: "Fetching measurements..."
 	};
+    $scope.$on('$ionicView.beforeEnter', function(e) {
+        $rootScope.hideHistoryPageInstructionsCard = quantimodoService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
+    });
+    $scope.$on('$ionicView.enter', function(e) {
+        console.debug($state.current.name + ": " + "Entering state " + $state.current.name);
+        $rootScope.hideNavigationMenu = false;
+        $scope.state.loading = true;
+        $scope.state.offset = 0;
+        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+        if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
+            $scope.state.title = $stateParams.variableCategoryName + ' History';
+            $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
+        }
+        if ($stateParams.variableCategoryName) {setupVariableCategoryActionSheet();}
+        if ($stateParams.variableObject) {
+            $scope.state.title = $stateParams.variableObject.name + ' History';
+            $rootScope.variableObject = $stateParams.variableObject;
+        }
+        if ($stateParams.variableName || $stateParams.variableObject) {$rootScope.showActionSheetMenu = quantimodoService.variableObjectActionSheet;}
+        $scope.getHistory();
+    });
 	$scope.editMeasurement = function(measurement){
 		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
 		$state.go('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
@@ -52,33 +74,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			$scope.hideLoader();
 		});
 	};
-	function setupVariableActionSheet() {
-		$rootScope.showActionSheetMenu = function() {
-			var hideSheet = $ionicActionSheet.show({
-				buttons: [
-					//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
-					quantimodoService.actionSheetButtons.recordMeasurement,
-					quantimodoService.actionSheetButtons.addReminder,
-					quantimodoService.actionSheetButtons.charts,
-					quantimodoService.actionSheetButtons.history,
-					{ text: '<i class="icon ion-pricetag"></i>Tag ' + $rootScope.variableObject.name},
-					{ text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
-				],
-				destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
-				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {console.debug('CANCELLED');},
-				buttonClicked: function(index) {
-					if(index === 0) {$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-					if(index === 1) {$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-					if(index === 2) {$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-					if(index === 3) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-					return true;
-				},
-				destructiveButtonClicked: function() {quantimodoService.showDeleteAllMeasurementsForVariablePopup(); return true;}
-			});
-			$timeout(function() {hideSheet();}, 20000);
-		};
-	}
 	function setupVariableCategoryActionSheet() {
 		$rootScope.showActionSheetMenu = function() {
 			var hideSheet = $ionicActionSheet.show({
@@ -113,28 +108,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		$scope.state.offset += $scope.state.limit;
 		$scope.getHistory(true);
 	};
-	$scope.$on('$ionicView.enter', function(e) {
-		console.debug($state.current.name + ": " + "Entering state " + $state.current.name);
-		$rootScope.hideNavigationMenu = false;
-		$scope.state.loading = true;
-		$scope.state.offset = 0;
-		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-		if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
-			$scope.state.title = $stateParams.variableCategoryName + ' History';
-			$scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
-		}
-		if ($stateParams.variableCategoryName) {setupVariableCategoryActionSheet();}
-		if ($stateParams.variableObject) {
-			$scope.state.title = $stateParams.variableObject.name + ' History';
-			$rootScope.variableObject = $stateParams.variableObject;
-			setupVariableActionSheet();
-		}
-		$scope.getHistory();
-	});
-	$scope.$on('$ionicView.beforeEnter', function(e) {
-		$rootScope.hideHistoryPageInstructionsCard = quantimodoService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
-	});
+
 	$scope.deleteMeasurement = function(measurement){
 		measurement.hide = true;
 		quantimodoService.deleteMeasurementFromServer(measurement);
