@@ -1,4 +1,4 @@
-angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, quantimodoService,
+angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, quantimodoService,
                                            $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {

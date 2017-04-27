@@ -1,5 +1,5 @@
 angular.module('starter').controller('ReminderAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
-                                             $ionicActionSheet, $ionicHistory, quantimodoService, ionicTimePicker, $ionicPopup) {
+                                             $ionicActionSheet, $ionicHistory, quantimodoService, ionicTimePicker) {
     $scope.controller_name = "ReminderAddCtrl";
     console.debug('Loading ' + $scope.controller_name);
     $rootScope.showFilterBarSearchIcon = false;
