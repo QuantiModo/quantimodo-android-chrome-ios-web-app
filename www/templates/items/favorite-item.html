@@ -7,7 +7,7 @@
             style="text-align: center;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal;">
             {{trackingReminder.displayTotal}}&nbsp{{trackingReminder.variableName}}
         </h2>
-        <!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
+        <!--TODO: Remove (trackingReminder.inputType === 'value' && trackingReminder.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
         <button id="recordDefaultValue" ng-if="trackingReminder.inputType === 'defaultValue' || (trackingReminder.inputType === 'value' && trackingReminder.defaultValue !== null)"
                 class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; "
                 ng-click="trackByFavorite(trackingReminder, null, $index)">
@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<div ng-if="trackingReminderNotification.inputType === 'oneToTen' || trackingReminderNotification.inputType === 'slider'">
+<div ng-if="trackingReminder.inputType === 'oneToTen' || trackingReminder.inputType === 'slider'">
     <div class="row">
         <div class="button-bar">
             <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 16px;"
