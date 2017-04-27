@@ -22,7 +22,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		$scope.getHistory(concat, refresh);
 	};
 	$scope.getHistory = function(concat, refresh){
-		var params = {offset: $scope.state.offset, limit: $scope.state.limit, sort: "-startTimeEpoch"};
+		var params = {offset: $scope.state.offset, limit: $scope.state.limit, sort: "-startTimeEpoch", doNotProcess: true};
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if($stateParams.variableObject){params.variableName = $stateParams.variableObject.name;}
 		if($stateParams.variableName){params.variableName = $stateParams.variableName;}
