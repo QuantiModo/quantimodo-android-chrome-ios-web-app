@@ -1704,7 +1704,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(isBackground){sourceName = sourceName + " (Background Geolocation)";}
         return sourceName;
     }
-    function weShouldPostLocation() {return $rootScope.isMobile && getLastLocationNameFromLocalStorage();}
+    function weShouldPostLocation() {return $rootScope.isMobile && getLastLocationNameFromLocalStorage() && getHoursAtLocation();}
     quantimodoService.postLocationMeasurementAndSetLocationVariables = function (geoLookupResult, isBackground) {
         if (weShouldPostLocation()) {
             var newMeasurement = {
