@@ -1,4 +1,4 @@
-angular.module('starter').controller('VariableSettingsCtrl', function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $mdDialog, $ionicLoading,
+angular.module('starter').controller('VariableSettingsCtrl', function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading,
                  $stateParams, $ionicHistory, $ionicActionSheet, quantimodoService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
