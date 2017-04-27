@@ -1,5 +1,5 @@
 angular.module('starter').factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog,
-                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory) {
+                                           $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory, $ionicActionSheet) {
     var quantimodoService = {};
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     // GET method with the added token
@@ -975,6 +975,34 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             deferred.resolve(allTrackingReminderTypes.favorites);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
+    };
+    quantimodoService.getTruncatedVariableName = function(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}};
+    quantimodoService.variableObjectActionSheet = function() {
+        console.debug("variablePageCtrl.showActionSheetMenu:  $rootScope.variableObject: ", $rootScope.variableObject);
+        var hideSheet = $ionicActionSheet.show({
+            buttons: [
+                quantimodoService.actionSheetButtons.recordMeasurement,
+                quantimodoService.actionSheetButtons.addReminder,
+                quantimodoService.actionSheetButtons.history,
+                quantimodoService.actionSheetButtons.analysisSettings,
+            ],
+            destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
+            cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+            cancel: function() {console.debug('CANCELLED');},
+            buttonClicked: function(index) {
+                console.debug('BUTTON CLICKED', index);
+                if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                if(index === 3) {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                return true;
+            },
+            destructiveButtonClicked: function() {
+                quantimodoService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject);
+                return true;
+            }
+        });
+        $timeout(function() {hideSheet();}, 20000);
     };
     quantimodoService.attachVariableCategoryIcons = function(dataArray){
         if(!dataArray){ return;}
@@ -7223,10 +7251,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return a;
     };
-    var deleteAllMeasurementsForVariable = function() {
+    var deleteAllMeasurementsForVariable = function(variableObject) {
         $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
         // Delete all measurements for a variable
-        quantimodoService.deleteAllMeasurementsForVariableDeferred($rootScope.variableObject.id).then(function() {
+        quantimodoService.deleteAllMeasurementsForVariableDeferred(variableObject.id).then(function() {
             // If primaryOutcomeVariableName, delete local storage measurements
             if ($rootScope.variableName === quantimodoService.getPrimaryOutcomeVariable().name) {
                 quantimodoService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
@@ -7236,16 +7264,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             $ionicLoading.hide();
             $state.go(config.appSettings.defaultState);
-            console.debug("All measurements for " + $rootScope.variableName + " deleted!");
+            console.debug("All measurements for " + variableObject.name + " deleted!");
         }, function(error) {
             $ionicLoading.hide();
             console.debug('Error deleting measurements: '+ JSON.stringify(error));
         });
     };
-    quantimodoService.showDeleteAllMeasurementsForVariablePopup = function(ev){
-        var title = 'Delete all ' + $rootScope.variableName + " measurements?";
+    quantimodoService.showDeleteAllMeasurementsForVariablePopup = function(variableObject, ev){
+        var title = 'Delete all ' + variableObject.name + " measurements?";
         var textContent = 'This cannot be undone!';
-        function yesCallback() {deleteAllMeasurementsForVariable();}
+        function yesCallback() {deleteAllMeasurementsForVariable(variableObject);}
         function noCallback() {}
         quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };

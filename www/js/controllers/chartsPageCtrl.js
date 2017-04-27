@@ -41,39 +41,11 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         if($rootScope.variableObject.name){
             $rootScope.variableName = $rootScope.variableObject.name;
             var params = {sort: "-startTimeEpoch", variableName: $rootScope.variableObject.name, limit: maximumMeasurements, offset: 0};
-            $scope.state.title = getTruncatedVariableName($rootScope.variableObject.name);
+            $scope.state.title = quantimodoService.getTruncatedVariableName($rootScope.variableObject.name);
             getDailyHistoryForVariable(params);
             getHistoryForVariable(params);
         } else {console.error($state.current.name + ' ERROR: $rootScope.variableObject.name not defined! $rootScope.variableObject: ' + JSON.stringify($rootScope.variableObject));}
-        $rootScope.showActionSheetMenu = function() {
-            console.debug("variablePageCtrl.showActionSheetMenu:  $rootScope.variableObject: ", $rootScope.variableObject);
-            var hideSheet = $ionicActionSheet.show({
-                buttons: [
-                    quantimodoService.actionSheetButtons.recordMeasurement,
-                    quantimodoService.actionSheetButtons.addReminder,
-                    quantimodoService.actionSheetButtons.history,
-                    quantimodoService.actionSheetButtons.analysisSettings,
-                    { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
-                    { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '},
-                ],
-                destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
-                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-                cancel: function() {console.debug('CANCELLED');},
-                buttonClicked: function(index) {
-                    console.debug('BUTTON CLICKED', index);
-                    if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                    if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                    if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                    if(index === 3) {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                    return true;
-                },
-                destructiveButtonClicked: function() {
-                    quantimodoService.showDeleteAllMeasurementsForVariablePopup();
-                    return true;
-                }
-            });
-            $timeout(function() {hideSheet();}, 20000);
-        };
+        $rootScope.showActionSheetMenu = quantimodoService.variableObjectActionSheet;
     });
     $scope.$on('$ionicView.beforeLeave', function(){
         console.debug('Leaving so setting $scope.stopGettingMeasurements to true');
