@@ -1,15 +1,12 @@
 /***
 ****	EVENT HANDLERS
 ***/
-
 var manifest = chrome.runtime.getManifest();
 console.log(manifest.name);
 console.log(manifest.version);
 var requestIdentificationParameters = "appName=" + manifest.name + "&appVersion=" + manifest.version + "&client_id=chromeExtension";
-
 var v = null;
 var vid = null;
-
 var introWindowParams = {
     url: "/www/index.html#/app/intro",
     type: 'panel',
@@ -18,7 +15,6 @@ var introWindowParams = {
     width: 450,
     height: 750
 };
-
 var facesRatingPopupWindowParams = {
     url: "www/templates/chrome/faces_popup.html",
     type: 'panel',
@@ -27,7 +23,6 @@ var facesRatingPopupWindowParams = {
     width: 390,
     height: 110
 };
-
 var loginPopupWindowParams = {
     url: "/www/index.html#/app/login",
     type: 'panel',
@@ -36,7 +31,6 @@ var loginPopupWindowParams = {
     width: 450,
     height: 750
 };
-
 var reminderInboxPopupWindowParams = {
     url: "/www/index.html",
     type: 'panel',
@@ -45,7 +39,6 @@ var reminderInboxPopupWindowParams = {
     width: 450,
     height: 750
 };
-
 var compactInboxPopupWindowParams = {
     url: "/www/index.html#/app/reminders-inbox-compact",
     type: 'panel',
@@ -54,7 +47,6 @@ var compactInboxPopupWindowParams = {
     width: 350,
     height: 360
 };
-
 var inboxNotificationParams = {
     type: "basic",
     title: "How are you?",
@@ -62,7 +54,6 @@ var inboxNotificationParams = {
     iconUrl: "www/img/icons/icon_700.png",
     priority: 2
 };
-
 var signInNotificationParams = {
     type: "basic",
     title: "How are you?",
@@ -70,20 +61,16 @@ var signInNotificationParams = {
     iconUrl: "www/img/icons/icon_700.png",
     priority: 2
 };
-
 if (!localStorage.introSeen) {
     window.localStorage.setItem('introSeen', true);
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
 }
-
 /*
 **	Called when the extension is installed
 */
-chrome.runtime.onInstalled.addListener(function()
-{
+chrome.runtime.onInstalled.addListener(function() {
 	var notificationInterval = parseInt(localStorage.notificationInterval || "60");
-
 	if(notificationInterval === -1) {
 		chrome.alarms.clear("moodReportAlarm");
 		console.debug("Alarm cancelled");
@@ -105,7 +92,6 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
         checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
     }
 });
-
 function openOrFocusPopupWindow(windowParams, focusWindow) {
     windowParams.focused = true;
     console.log('openOrFocusPopupWindow', windowParams );
@@ -136,16 +122,10 @@ function openOrFocusPopupWindow(windowParams, focusWindow) {
         );
     }
 }
-
 function openPopup(notificationId, focusWindow) {
-
-	if(!notificationId){
-		notificationId = null;
-	}
+	if(!notificationId){notificationId = null;}
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
-
-
 	if(notificationId === "moodReportNotification") {
         openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
 	} else if (notificationId === "signin") {
@@ -158,18 +138,13 @@ function openPopup(notificationId, focusWindow) {
         openOrFocusPopupWindow(reminderInboxPopupWindowParams, focusWindow);
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
-
 	//chrome.windows.create(windowParams);
-	if(notificationId){
-		chrome.notifications.clear(notificationId);
-	}
+	if(notificationId){chrome.notifications.clear(notificationId);}
 }
-
 /*
 **	Called when the notification is clicked
 */
-chrome.notifications.onClicked.addListener(function(notificationId)
-{
+chrome.notifications.onClicked.addListener(function(notificationId) {
     console.debug('onClicked: notificationId:', notificationId);
     var focusWindow = true;
 	openPopup(notificationId, focusWindow);
@@ -179,43 +154,26 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 **	Handles extension-specific requests that come in, such as a
 ** 	request to upload a new measurement
 */
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
-{
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	console.debug("Received request: " + request.message);
-	if(request.message === "uploadMeasurements")
-	{
-		pushMeasurements(request.payload, null);
-	}
+	if(request.message === "uploadMeasurements") {pushMeasurements(request.payload, null);}
 });
-
-
-
 /***
 ****	HELPER FUNCTIONS
 ***/
-
-function pushMeasurements(measurements, onDoneListener)
-{
+function pushMeasurements(measurements, onDoneListener) {
 	var xhr = new XMLHttpRequest();
 	var url = "https://app.quantimo.do/api/v1/measurements?" + requestIdentificationParameters;
-	if(localStorage.accessToken){
-		url = url + '?access_token=' + localStorage.accessToken;
-	}
+	if(localStorage.accessToken){url = url + '?access_token=' + localStorage.accessToken;}
 	xhr.open("POST", url, true);
-	xhr.onreadystatechange = function()
-		{
-			// If the request is completed
-			if (xhr.readyState === 4)
-			{
-				console.debug("quantimodoService responds:");
-				console.debug(xhr.responseText);
-
-				if(onDoneListener !== null)
-				{
-					onDoneListener(xhr.responseText);
-				}
-			}
-		};
+	xhr.onreadystatechange = function() {
+        // If the request is completed
+        if (xhr.readyState === 4) {
+            console.debug("quantimodoService responds:");
+            console.debug(xhr.responseText);
+            if(onDoneListener !== null) {onDoneListener(xhr.responseText);}
+        }
+    };
 	xhr.send(JSON.stringify(measurements));
 }
 
@@ -234,7 +192,6 @@ function showSignInNotification() {
     var notificationId = 'signin';
     chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
 }
-
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
     var url = "https://app.quantimo.do:443/api/v1/trackingReminderNotifications/past?" + requestIdentificationParameters;
@@ -244,9 +201,7 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
         showSignInNotification();
         return;
 	}
-
     xhr.open("GET", url, false);
-
     xhr.onreadystatechange = function () {
         var notificationId;
         if (xhr.status === 401) {
@@ -267,15 +222,12 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
             }
         }
     };
-
     xhr.send();
     return notificationParams;
 }
 
-function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm)
-{
+function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
 	console.debug('showNotificationOrPopupForAlarm alarm: ', alarm);
-
     var userString = localStorage.user;
     if(userString){
         var userObject = JSON.parse(userString);
@@ -290,7 +242,6 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
             }
         }
     }
-
 	if (IsJsonString(alarm.name)) {
         var notificationParams = inboxNotificationParams;
 		console.debug('alarm.name IsJsonString', alarm);
