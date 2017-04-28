@@ -6,6 +6,7 @@ config.appSettings  = {
     lowercaseAppName : 'medimodo',
     appDescription : "Better health through data.",
     appleId: "1115037661",
+    googleAnalyticsId: "UA-39222734-28",
     "appIdentifier": "com.quantimodo.medimodo",
     ionicAppId: 'e85b92b4',
     apiUrl : 'https://app.quantimo.do',
