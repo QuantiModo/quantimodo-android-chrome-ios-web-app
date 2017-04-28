@@ -7313,5 +7313,28 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.debug('broadcast(highchartsng.reflow) already scheduled');
         }
     };
+    // Doesn't work yet
+    function generateMovingAverageTimeSeries(rawMeasurements) {
+        var smoothedMeasurements = [];
+        var weightedPeriod = 10;
+        var sum = 0;
+        var j;
+        var numberOfMeasurements = rawMeasurements.length;
+        for (var i = 1; i <= numberOfMeasurements - weightedPeriod; i++) {
+            if(numberOfMeasurements < 1000){
+                for(j = 0; j < weightedPeriod; j++ ) {
+                    sum += rawMeasurements[ i + j ].y * ( weightedPeriod - j );
+                }
+                rawMeasurements[i].y = sum / (( weightedPeriod * ( weightedPeriod + 1 )) / 2 );
+            } else {
+                for(j = 0; j < weightedPeriod; j++ ) {
+                    sum += rawMeasurements[ i + j ][1] * ( weightedPeriod - j );
+                }
+                rawMeasurements[i][1] = sum / (( weightedPeriod * ( weightedPeriod + 1 )) / 2 );
+            }
+            smoothedMeasurements.push(rawMeasurements[i]);
+        }
+        return smoothedMeasurements;
+    }
     return quantimodoService;
 });
