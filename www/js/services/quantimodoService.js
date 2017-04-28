@@ -7304,7 +7304,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
     };
     // Doesn't work yet
-    function generateThreePointMovingAverageTimeSeries(rawMeasurements) {
+    function generateMovingAverageTimeSeries(rawMeasurements) {
         var smoothedMeasurements = [];
         var weightedPeriod = 10;
         var sum = 0;
