@@ -118,9 +118,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
         }
-        if(status === 502){quantimodoService.reportErrorDeferred('502 from ' + request.method + ' ' + request.url);}
-        if(status === 400){quantimodoService.reportErrorDeferred('400 from ' + request.method + ' ' + request.url);}
-        if(status === 404){quantimodoService.reportErrorDeferred('404 from ' + request.method + ' ' + request.url);}
+        quantimodoService.reportErrorDeferred(status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + request.url);
         var groupingHash;
         if(!data){
             if (typeof Bugsnag !== "undefined") {
