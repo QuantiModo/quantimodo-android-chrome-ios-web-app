@@ -118,7 +118,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
         }
-        quantimodoService.reportErrorDeferred(status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + request.url);
+        var pathWithQuery = request.url.replace(/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
+        var name = status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
+        var message = status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + request.url;
+        var metaData = {data: data, status: status, headers: headers, request: request, options: options};
+        var severity = 'error';
+        Bugsnag.notify(name, message, metaData, severity);
         var groupingHash;
         if(!data){
             if (typeof Bugsnag !== "undefined") {
