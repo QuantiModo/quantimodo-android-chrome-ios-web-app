@@ -3623,17 +3623,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             series :[{
                 name : variableObject.name + ' Over Time',
                 data : data,
-                marker: {
-                    enabled: true,
-                    radius: 2
-                },
-                tooltip: {valueDecimals: 2},
-                lineWidth: 0,
-                states: {
-                    hover: {lineWidthPlus: 0}
-                }
+                tooltip: {valueDecimals: 2}
             }]
         };
+        var doNotConnectPoints = variableObject.userVariableDefaultUnitCategoryName !== 'Rating';
+        if(doNotConnectPoints){
+            chartConfig.series.marker = {enabled: true, radius: 2};
+            chartConfig.series.lineWidth = 0;
+            chartConfig.series.states = {hover: {lineWidthPlus: 0}};
+        }
         return setChartExportingOptions(chartConfig);
     };
 
