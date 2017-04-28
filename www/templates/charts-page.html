@@ -16,6 +16,12 @@
                     <highchart id="lineChart" config="lineChartConfig"></highchart>
                 </div>
             </div>
+            <div ng-show="smoothedLineChartConfig" class="card primary-outcome-variable-reporting-chart">
+                <div class="item item-text-wrap">
+                    <h2 style="text-align: center">Smoothed and Processed Data</h2>
+                    <highchart id="smoothedLineChart" config="lineChartConfig"></highchart>
+                </div>
+            </div>
             <div ng-show="hourlyChartConfig" class="card primary-outcome-variable-reporting-chart">
                 <div class="item item-text-wrap">
                     <highchart id="hourlyChart" config="hourlyChartConfig"></highchart>
