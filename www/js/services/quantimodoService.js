@@ -3,7 +3,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     var quantimodoService = {};
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     // GET method with the added token
-    quantimodoService.get = function(route, allowedParams, params, successHandler, errorHandler, options){
+    quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
         if(!options){ options = {}; }
         var cache = false;
         if(params && params.cache){
@@ -52,21 +52,20 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                             Bugsnag.notify(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
                         }
                     } else if (data.error) {
-                        quantimodoService.errorHandler(data, status, headers, request, options);
-                        errorHandler(data);
+                        quantimodoService.generalApiErrorHandler(data, status, headers, request, options);
+                        requestSpecificErrorHandler(data);
                     } else {
                         quantimodoService.successHandler(data, route, status);
                         successHandler(data);
                     }
                 })
                 .error(function (data, status, headers) {
-                    console.error("error response from " + request.url);
-                    quantimodoService.errorHandler(data, status, headers, request, options);
-                    errorHandler(data);
+                    quantimodoService.generalApiErrorHandler(data, status, headers, request, options);
+                    requestSpecificErrorHandler(data);
                 }, onRequestFailed);
         });
     };
-    quantimodoService.post = function(baseURL, requiredFields, body, successHandler, errorHandler, options){
+    quantimodoService.post = function(baseURL, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(body).substring(0, 140));
         quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
@@ -87,26 +86,27 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};}
             $http(request).success(successHandler).error(function(data, status, headers){
-                quantimodoService.errorHandler(data, status, headers, request, options);
-                if(errorHandler){errorHandler(data);}
+                quantimodoService.generalApiErrorHandler(data, status, headers, request, options);
+                if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
             });
-        }, errorHandler);
+        }, requestSpecificErrorHandler);
     };
     quantimodoService.successHandler = function(data, baseURL, status){
         var maxLength = 140;
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         if(data.message){ console.warn(data.message); }
     };
-    quantimodoService.errorHandler = function(data, status, headers, request, options){
+    quantimodoService.generalApiErrorHandler = function(data, status, headers, request, options){
+        console.error("error response from " + request.url);
         if(status === 302){
-            console.warn('quantimodoService.errorHandler: Got 302 response from ' + JSON.stringify(request));
+            console.warn('Got 302 response from ' + JSON.stringify(request));
             return;
         }
         if(status === 401){
             if(options && options.doNotSendToLogin){
                 return;
             } else {
-                console.warn('quantimodoService.errorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request));
+                console.warn('quantimodoService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request));
                 quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
                 console.debug("set afterLoginGoTo to " + window.location.href);
                 if (quantimodoService.getClientId() !== 'oAuthDisabled') {
@@ -142,7 +142,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return;
         }
         if (typeof Bugsnag !== "undefined") {
-            groupingHash = "There was an error and the request object was not provided to the quantimodoService.errorHandler";
+            groupingHash = "There was an error and the request object was not provided to the quantimodoService.generalApiErrorHandler";
             if(request){groupingHash = request.url + ' error';}
             if(data.error){
                 groupingHash = JSON.stringify(data.error);
@@ -242,7 +242,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.post('api/v1/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
     };
     quantimodoService.postMeasurementsExport = function(type) {
-        quantimodoService.post('api/v2/measurements/request_' + type, [], [], quantimodoService.successHandler, quantimodoService.errorHandler);
+        quantimodoService.post('api/v2/measurements/request_' + type, [], [], quantimodoService.successHandler, quantimodoService.generalApiErrorHandler);
     };
     // post new Measurements for user
     quantimodoService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){

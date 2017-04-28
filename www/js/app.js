@@ -270,12 +270,15 @@ angular.module('starter',
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
         var getAppNameFromUrl = function () {
+            var i;
             var appName = false;
+            var availableApps = ["moodimodo", "energymodo", "mindfirst", "medimodo", "quantimodo"];
+            for(i = 0; i < availableApps.length; i++){if(window.location.href.indexOf(availableApps[i]) > -1){return availableApps[i];}}
             var queryString = document.location.toString().split('?')[1];
             if(!queryString) {return false;}
             var queryParameterStrings = queryString.split('&');
             if(!queryParameterStrings) {return false;}
-            for (var i = 0; i < queryParameterStrings.length; i++) {
+            for (i = 0; i < queryParameterStrings.length; i++) {
                 var queryKeyValuePair = queryParameterStrings[i].split('=');
                 if (queryKeyValuePair[0] === 'app') {appName = queryKeyValuePair[1].split('#')[0];}
             }
