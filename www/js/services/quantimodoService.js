@@ -118,13 +118,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
         }
-        var pathWithQuery = request.url.replace(/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-        var name = status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
-        var message = status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + request.url;
-        var metaData = {data: data, status: status, headers: headers, request: request, options: options};
-        var severity = 'error';
-        Bugsnag.notify(name, message, metaData, severity);
-        var groupingHash;
         if(!data){
             if (typeof Bugsnag !== "undefined") {
                 groupingHash = 'No data returned from this request';
@@ -146,6 +139,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             return;
         }
+        var pathWithQuery = request.url.replace(/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
+        var name = status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
+        var message = status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + request.url;
+        var metaData = {data: data, status: status, headers: headers, request: request, options: options};
+        var severity = 'error';
+        Bugsnag.notify(name, message, metaData, severity);
+        var groupingHash;
         if (typeof Bugsnag !== "undefined") {
             groupingHash = "There was an error and the request object was not provided to the quantimodoService.generalApiErrorHandler";
             if(request){groupingHash = request.url + ' error';}
