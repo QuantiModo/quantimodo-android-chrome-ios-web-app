@@ -66,6 +66,8 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             if($rootScope.variableObject.fillingValue !== null && $rootScope.variableObject.fillingValue !== -1){
                 $scope.distributionChartConfig = quantimodoService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
+            } else {
+                //$scope.smoothedLineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
             }
             $scope.weekdayChartConfig = quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
             $scope.monthlyChartConfig = quantimodoService.processDataAndConfigureMonthlyChart($scope.state.dailyHistory, $rootScope.variableObject);

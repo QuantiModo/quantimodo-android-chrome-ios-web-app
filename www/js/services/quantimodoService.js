@@ -118,18 +118,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
         }
-        var pathWithQuery = request.url.replace(/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-        var name = status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
-        var message = status + ' ' + JSON.stringify(data) + ' from ' + request.method + ' ' + request.url;
-        var metaData = {data: data, status: status, headers: headers, request: request, options: options};
+        var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
+        var name = status + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
+        var message = status + ' from ' + request.method + ' ' + request.url + ' DATA:' + JSON.stringify(data) ;
+        var metaData = {data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
         Bugsnag.notify(name, message, metaData, severity);
         var groupingHash;
         if(!data){
-            if (typeof Bugsnag !== "undefined") {
-                groupingHash = 'No data returned from this request';
-                Bugsnag.notify(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
-            }
             var doNotShowOfflineError = false;
             if(options && options.doNotShowOfflineError){doNotShowOfflineError = true;}
             if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
@@ -1540,6 +1536,20 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return null;
     };
+    function getAllQueryParamsFromUrlString(url){
+        if(!url){url = window.location.href;}
+        var keyValuePairsObject = {};
+        var array = [];
+        if(url.split('?').length > 1){
+            var queryString = url.split('?')[1];
+            var parameterKeyValueSubstrings = queryString.split('&');
+            for (var i = 0; i < parameterKeyValueSubstrings.length; i++) {
+                array = parameterKeyValueSubstrings[i].split('=');
+                keyValuePairsObject[array[0]] = array[1];
+            }
+        }
+        return keyValuePairsObject;
+    }
     quantimodoService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
         quantimodoService.getLocalStorageItemAsStringWithCallback('connectors', function(connectors){
