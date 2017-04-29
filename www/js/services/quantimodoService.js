@@ -168,7 +168,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     var canWeMakeRequestYet = function(type, route, options){
         var minimumSecondsBetweenRequests;
-        if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 1;}
+        if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 3;}
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
             var name = 'Cannot make ' + type + ' request to ' + route;
@@ -199,7 +199,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.getMeasurementsFromApi = function(params, successHandler, errorHandler){
         quantimodoService.get('api/v1/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
-            params, successHandler, errorHandler);
+            params, successHandler, errorHandler, {minimumSecondsBetweenRequests: 0.1});
     };
     quantimodoService.getMeasurementsDeferred = function(params, refresh){
         var deferred = $q.defer();
