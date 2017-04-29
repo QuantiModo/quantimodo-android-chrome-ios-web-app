@@ -1287,8 +1287,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         } else {
             quantimodoService.addToMeasurementsQueue(measurementInfo);
         }
-        quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-
+        if(measurementInfo.variableName === quantimodoService.getPrimaryOutcomeVariable().name){quantimodoService.syncPrimaryOutcomeVariableMeasurements();} else {quantimodoService.postMeasurementQueueToServer();}
     };
     quantimodoService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
         var value = trackingReminder.defaultValue;
