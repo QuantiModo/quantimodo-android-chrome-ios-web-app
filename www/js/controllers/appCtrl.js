@@ -449,7 +449,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var title, textContent, yesCallback, noCallback;
         if (correlationObject.userVote !== 0) {
             title = 'Implausible relationship?';
-            textContent =  'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?';
+            textContent =  'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '?';
             yesCallback = function() {
                 correlationObject.userVote = 0;
                 correlationObject.vote = 0;
@@ -460,7 +460,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         } else {
             title = 'Delete Downvote';
             textContent = 'You previously voted that it is IMPOSSIBLE that ' + correlationObject.causeVariableName +
-                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this down vote?';
+                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '. Do you want to delete this down vote?';
             yesCallback = function() {deleteVote(correlationObject, $index);};
             noCallback = function () {};
             quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -471,7 +471,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var title, textContent, yesCallback, noCallback;
         if (correlationObject.userVote !== 1) {
             title = 'Plausible relationship?';
-            textContent = 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?';
+            textContent = 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '?';
             yesCallback = function() {
                 correlationObject.userVote = 1;
                 correlationObject.vote = 1;
@@ -482,7 +482,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         } else {
             title = 'Delete Upvote';
             textContent = 'You previously voted that it is POSSIBLE that '+ correlationObject.causeVariableName +
-                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '. Do you want to delete this up vote?';
+                ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '. Do you want to delete this up vote?';
             yesCallback = function() {deleteVote(correlationObject, $index);};
             noCallback = function () {};
             quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
