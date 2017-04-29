@@ -10,7 +10,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             cache = params.cache;
             params.cache = null;
         }
-        if(!canWeMakeRequestYet('GET', route, options)){ return; }
+        if(!canWeMakeRequestYet('GET', route, options)){
+            if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
+            return;
+        }
         if($state.current.name === 'app.intro'){
             console.warn('Not making request to ' + route + ' user because we are in the intro state');
             return;
@@ -66,7 +69,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
     };
     quantimodoService.post = function(route, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
-        if(!canWeMakeRequestYet('POST', route, options)){ return; }
+        if(!canWeMakeRequestYet('POST', route, options)){
+            if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
+            return;
+        }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         console.debug('quantimodoService.post: About to try to post request to ' + route + ' with body: ' + JSON.stringify(body).substring(0, 140));
         quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
@@ -161,12 +167,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.error("Request error : " + error);
     };
     var canWeMakeRequestYet = function(type, route, options){
-        if(!options || !options.minimumSecondsBetweenRequests){options.minimumSecondsBetweenRequests = 3;}
+        var minimumSecondsBetweenRequests;
+        if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 3;}
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
-        if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
+        if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
             var name = 'Cannot make ' + type + ' request to ' + route;
-            var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + options.minimumSecondsBetweenRequests + ' seconds';
-            var metaData = {type: type, route: route,options: options};
+            var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
+            var metaData = {type: type, route: route};
             console.error(message);
             Bugsnag.notify(name, message, metaData, "error");
             return false;
