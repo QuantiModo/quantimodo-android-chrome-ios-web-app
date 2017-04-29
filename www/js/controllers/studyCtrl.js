@@ -17,15 +17,17 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== "undefined")  { analytics.trackView($state.current.name); }
         if($stateParams.correlationObject){$rootScope.correlationObject = $stateParams.correlationObject;}
-        if($rootScope.correlationObject){quantimodoService.setLocalStorageItem("lastStudy", JSON.stringify($rootScope.correlationObject));}
-        setupRequestParamsAndGetStudy();
-        quantimodoService.getLocalStorageItemAsStringWithCallback("lastStudy", function (lastStudy) {
-            if(lastStudy){
-                $rootScope.correlationObject = JSON.parse(lastStudy);
-                setupRequestParamsAndGetStudy();
-                quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
-            }
-        });
+        if($rootScope.correlationObject){
+            setupRequestParamsAndGetStudy();
+        } else {
+            quantimodoService.getLocalStorageItemAsStringWithCallback("lastStudy", function (lastStudy) {
+                if(lastStudy){
+                    $rootScope.correlationObject = JSON.parse(lastStudy);
+                    setupRequestParamsAndGetStudy();
+                    quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
+                }
+            });
+        }
     });
     function setupRequestParamsAndGetStudy() {
         if(quantimodoService.getUrlParameter("causeVariableName")){ $scope.state.requestParams.causeVariableName = quantimodoService.getUrlParameter("causeVariableName", window.location.href, true); }

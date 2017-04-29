@@ -1584,7 +1584,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             console.debug('User cancelled selection');
         });
     };
-    $scope.goToStudyPage = function(correlationObject) {$state.go('app.study', {correlationObject: correlationObject});};
+    $scope.goToStudyPage = function(correlationObject) {quantimodoService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
         $state.go('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
     };

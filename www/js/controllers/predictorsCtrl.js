@@ -169,7 +169,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         self.helpText = self.helpText + "  Then you can see a study exploring the relationship between those variables.";
         self.cancel = function() { $mdDialog.cancel(); };
         self.finish = function() {
-            $state.go('app.study', {correlationObject: self.correlationObject});
+            quantimodoService.goToStudyPageViaCorrelationObject(self.correlationObject);
             $mdDialog.hide();
         };
         function querySearch (query) {
