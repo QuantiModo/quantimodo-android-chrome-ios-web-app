@@ -10,7 +10,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             cache = params.cache;
             params.cache = null;
         }
-        if(!canWeMakeRequestYet('GET', route, options)){ return; }
+        if(!canWeMakeRequestYet('GET', route, options)){
+            if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
+            return;
+        }
         if($state.current.name === 'app.intro'){
             console.warn('Not making request to ' + route + ' user because we are in the intro state');
             return;
@@ -65,15 +68,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 }, onRequestFailed);
         });
     };
-    quantimodoService.post = function(baseURL, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
+    quantimodoService.post = function(route, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
+        if(!canWeMakeRequestYet('POST', route, options)){
+            if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
+            return;
+        }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-        console.debug('quantimodoService.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(body).substring(0, 140));
+        console.debug('quantimodoService.post: About to try to post request to ' + route + ' with body: ' + JSON.stringify(body).substring(0, 140));
         quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
                 var item = body[i];
                 for (var j = 0; j < requiredFields.length; j++) {
                     if (!(requiredFields[j] in item)) {
-                        quantimodoService.bugsnagNotify('Missing required field', requiredFields[j] + ' in ' + baseURL + ' request!', body);
+                        quantimodoService.bugsnagNotify('Missing required field', requiredFields[j] + ' in ' + route + ' request!', body);
                         //throw 'missing required field in POST data; required fields: ' + requiredFields.toString();
                     }
                 }
@@ -82,7 +89,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
             urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
             urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-            var url = quantimodoService.getQuantiModoUrl(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
+            var url = quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};}
             $http(request).success(successHandler).error(function(data, status, headers){
@@ -159,11 +166,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
         console.error("Request error : " + error);
     };
-    var canWeMakeRequestYet = function(type, baseURL, options){
-        if(!options || !options.minimumSecondsBetweenRequests){return true;}
-        var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
-        if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - options.minimumSecondsBetweenRequests){
-            console.debug('quantimodoService.get: Cannot make ' + type + ' request to ' + baseURL + " because " + "we made the same request within the last " + options.minimumSecondsBetweenRequests + ' seconds');
+    var canWeMakeRequestYet = function(type, route, options){
+        var minimumSecondsBetweenRequests;
+        if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 3;}
+        var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
+        if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+            var name = 'Cannot make ' + type + ' request to ' + route;
+            var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
+            var metaData = {type: type, route: route};
+            console.error(message);
+            Bugsnag.notify(name, message, metaData, "error");
             return false;
         }
         localStorage.setItem(requestVariableName, Math.floor(Date.now() / 1000));
@@ -187,7 +199,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.getMeasurementsFromApi = function(params, successHandler, errorHandler){
         quantimodoService.get('api/v1/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
-            params, successHandler, errorHandler);
+            params, successHandler, errorHandler, {minimumSecondsBetweenRequests: 0.1});
     };
     quantimodoService.getMeasurementsDeferred = function(params, refresh){
         var deferred = $q.defer();

@@ -2,10 +2,9 @@
     <ion-nav-title>{{state.title}}</ion-nav-title>
      <ion-content ng-class="{ isBrowserView : isWeb == true }">
          <ion-refresher on-refresh="refreshHistory()"></ion-refresher>
-         <div class="list card" ng-show="state.noHistory">
+         <div class="list card" ng-show="state.noHistory && (!state.history || !state.history.length)">
              <div class="item" style="padding-bottom:10px;">
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">No Measurements</p>
-
                  <div class="row">
                      <div class="col" style="padding-top: 0px;">
                          <i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sad"></i>
@@ -43,15 +42,11 @@
              </div>
          </div>
          <div ng-show="state.showLocationToggle" class="card sign-in" >
-             <ion-toggle ng-model="user.trackLocation"
-                         ng-change="trackLocationChange($event)">
-                 <i class="icon ion-map"></i>
-                 &nbsp
-                 Track my location
+             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)">
+                 <i class="icon ion-map"></i>&nbspTrack my location
              </ion-toggle>
           </div>
-
-         <div class="list card"  ng-if="!hideHistoryPageInstructionsCard && !state.noHistory">
+         <div class="list card" ng-if="!hideHistoryPageInstructionsCard && !(state.noHistory && (!state.history || !state.history.length))">
              <div class="item" >
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">{{state.helpCardTitle}}</p>
                  <div class="row">
