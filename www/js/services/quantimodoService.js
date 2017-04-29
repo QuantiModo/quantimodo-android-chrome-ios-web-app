@@ -199,7 +199,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.getMeasurementsFromApi = function(params, successHandler, errorHandler){
         quantimodoService.get('api/v1/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
-            params, successHandler, errorHandler, {minimumSecondsBetweenRequests: 0.1});
+            params, successHandler, errorHandler);
     };
     quantimodoService.getMeasurementsDeferred = function(params, refresh){
         var deferred = $q.defer();
