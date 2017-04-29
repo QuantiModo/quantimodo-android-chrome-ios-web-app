@@ -1043,6 +1043,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(response.userStudy){ study = response.userStudy; }
             if(response.publicStudy){ study = response.publicStudy; }
             if(study.charts){for(var i=0; i < study.charts.length; i++){study.charts[i] = setChartExportingOptions(study.charts[i]);}}
+            localStorage.setItem('lastStudy', JSON.stringify(study));
             deferred.resolve(study);
         }, function (error) {
             deferred.reject(error);
@@ -1286,8 +1287,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         } else {
             quantimodoService.addToMeasurementsQueue(measurementInfo);
         }
-        quantimodoService.syncPrimaryOutcomeVariableMeasurements();
-
+        if(measurementInfo.variableName === quantimodoService.getPrimaryOutcomeVariable().name){quantimodoService.syncPrimaryOutcomeVariableMeasurements();} else {quantimodoService.postMeasurementQueueToServer();}
     };
     quantimodoService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
         var value = trackingReminder.defaultValue;
@@ -7348,5 +7348,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return smoothedMeasurements;
     }
+    quantimodoService.goToStudyPageViaCorrelationObject = function(correlationObject){
+        $rootScope.correlationObject = correlationObject;
+        localStorage.setItem('lastStudy', JSON.stringify(correlationObject));
+        $state.go('app.study', {correlationObject: correlationObject});
+    };
     return quantimodoService;
 });
