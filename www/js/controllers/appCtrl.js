@@ -1587,6 +1587,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.goToStudyPage = function(correlationObject) {quantimodoService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
+        if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
+            $rootScope.correlationObject = null;
+        }
         $state.go('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
     };
     var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
