@@ -97,7 +97,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	}
 	$scope.refreshReminders = function () {
 		$scope.showLoader('Syncing...');
-		quantimodoService.syncTrackingReminders().then(function(){getTrackingReminders();});
+		quantimodoService.syncTrackingReminders(true).then(function(){getTrackingReminders();});
 	};
 	var getTrackingReminders = function(){
 		quantimodoService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {addRemindersToScope(allTrackingReminderTypes);});
@@ -134,7 +134,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId) .then(function(){
 			getTrackingReminders();
 		});
-		quantimodoService.deleteTrackingReminderDeferred(reminder.trackingReminderId).then(function(){console.debug("Reminder deleted");}, function(error){
+		quantimodoService.deleteTrackingReminderDeferred(reminder).then(function(){console.debug("Reminder deleted");}, function(error){
 			if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 			console.error('Failed to Delete Reminder!');
 		});

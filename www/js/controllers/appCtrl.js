@@ -599,7 +599,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             },
             destructiveButtonClicked: function() {
                 favorite.hide = true;
-                quantimodoService.deleteTrackingReminderDeferred(favorite.id);
+                quantimodoService.deleteTrackingReminderDeferred(favorite);
             }
         });
         $timeout(function() {hideSheet();}, 20000);

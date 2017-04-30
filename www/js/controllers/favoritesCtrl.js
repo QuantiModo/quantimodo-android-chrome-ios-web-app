@@ -49,7 +49,7 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
     $scope.refreshFavorites = function () {
         console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
         $scope.showLoader('Syncing...');
-        quantimodoService.syncTrackingReminders().then(function () {
+        quantimodoService.syncTrackingReminders(true).then(function () {
             $scope.hideLoader();
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning

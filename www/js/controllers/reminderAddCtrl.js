@@ -313,7 +313,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             var toastMessage = $scope.state.trackingReminder.variableName + ' reminder saved';
             if($stateParams.favorite){toastMessage = $scope.state.trackingReminder.variableName + ' saved to favorites';}
             $scope.showInfoToast(toastMessage);
-            quantimodoService.syncTrackingReminders();
+            quantimodoService.syncTrackingReminders(true);
             $scope.goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
         });
     };
@@ -430,7 +430,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     };
     $scope.deleteReminder = function(){
         quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id).then(function(){$scope.goBack();});
-        quantimodoService.deleteTrackingReminderDeferred($scope.state.trackingReminder.id).then(function(){}, function(error){console.error(error);});
+        quantimodoService.deleteTrackingReminderDeferred($scope.state.trackingReminder).then(function(){}, function(error){console.error(error);});
     };
     function setHideDefaultValueField(){
         if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 || $scope.state.trackingReminder.unitAbbreviatedName === '/5' ||

@@ -10,10 +10,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             cache = params.cache;
             params.cache = null;
         }
-        if(!canWeMakeRequestYet('GET', route, options)){
+        if(!canWeMakeRequestYet('GET', route, options) && !params.force){
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
+        delete params.force;
         if($state.current.name === 'app.intro'){
             console.warn('Not making request to ' + route + ' user because we are in the intro state');
             return;
@@ -2170,15 +2171,29 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return trackingReminderNotifications;
     };
-    quantimodoService.deleteTrackingReminderDeferred = function(reminderId){
+    quantimodoService.deleteTrackingReminderFromLocalStorage = function(reminderToDelete){
+        var allTrackingReminders = quantimodoService.getLocalStorageItemAsObject('trackingReminders');
+        var trackingRemindersToKeep = [];
+        angular.forEach(allTrackingReminders, function(reminderFromLocalStorage, key) {
+            if(!(reminderFromLocalStorage.variableName === reminderToDelete.variableName &&
+                reminderFromLocalStorage.reminderFrequency === reminderToDelete.reminderFrequency &&
+                reminderFromLocalStorage.reminderStartTime === reminderToDelete.reminderStartTime)){
+                trackingRemindersToKeep.push(reminderFromLocalStorage);
+            }
+        });
+        quantimodoService.setLocalStorageItem('trackingReminders', trackingRemindersToKeep);
+    };
+    quantimodoService.deleteTrackingReminderDeferred = function(reminderToDelete){
         var deferred = $q.defer();
-        quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminderId);
-        quantimodoService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'trackingReminderId', reminderId);
-        quantimodoService.deleteTrackingReminder(reminderId, function(response){
+        quantimodoService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
+        if(!reminderToDelete.id){
+            deferred.resolve();
+            return deferred.promise;
+        }
+        quantimodoService.deleteTrackingReminder(reminderToDelete.id, function(response){
             if(response.success) {
                 // Delete again in case we refreshed before deletion completed
-                quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminderId);
-                quantimodoService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'trackingReminderId', reminderId);
+                quantimodoService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
                 deferred.resolve();
             }
             else {deferred.reject();}
@@ -2231,7 +2246,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.addToTrackingReminderSyncQueue = function(trackingReminder) {
         quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder);
     };
-    quantimodoService.syncTrackingReminders = function() {
+    quantimodoService.syncTrackingReminders = function(force) {
         var deferred = $q.defer();
         var trackingReminderSyncQueue = quantimodoService.getLocalStorageItemAsObject('trackingReminderSyncQueue');
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
@@ -2239,7 +2254,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 deferred.resolve(response);
             }, function(error) { if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error); });
         } else {
-            quantimodoService.getTrackingRemindersFromApi({}, function(remindersResponse){
+            quantimodoService.getTrackingRemindersFromApi({force: force}, function(remindersResponse){
                 if(remindersResponse && remindersResponse.data) {
                     quantimodoService.setLocalStorageItem('trackingReminders', JSON.stringify(remindersResponse.data));
                     deferred.resolve(remindersResponse.data);
