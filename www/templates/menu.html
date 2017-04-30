@@ -91,7 +91,7 @@
                       ng-click="closeMenuIfNeeded(menuItem)"
                       ng-href="{{menuItem.href}}">
                     <i ng-if="menuItem.isSubMenuParent && this[menuItem.showSubMenuVariable]"
-                       class="{{menuItem.expandedIcon}}">
+                       class="ion-chevron-down">
                         &nbsp; {{menuItem.title}}
                     </i>
                     <i ng-if="menuItem.isSubMenuParent && !this[menuItem.showSubMenuVariable]"

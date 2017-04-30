@@ -6493,7 +6493,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     showSubMenuVariable : 'showHistorySubMenu',
                     isSubMenuParent : true,
                     collapsedIcon : 'ion-ios-list-outline',
-                    expandedIcon : 'ion-chevron-down'
                 },
                 {
                     title : 'All Measurements',
@@ -6558,7 +6557,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     showSubMenuVariable : 'showPredictorSearchSubMenu',
                     isSubMenuParent : true,
                     collapsedIcon : 'ion-ios-analytics',
-                    expandedIcon : 'ion-chevron-down'
                 },
                 {
                     title : 'Predictor Search',
