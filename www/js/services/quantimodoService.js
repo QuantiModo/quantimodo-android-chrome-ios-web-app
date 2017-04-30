@@ -6223,6 +6223,23 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title : 'Everything',
                 href : '#/app/reminders-list/Anything',
                 icon: "ion-android-globe"
+            },
+            studyCreation: {
+                title : 'Create Study',
+                href : '#/app/study-creation',
+                icon: "ion-erlenmeyer-flask"
+            },
+            predictorSearch: {
+                "title" : "Predictor Search",
+                "showSubMenuVariable" : "showPredictorSearchSubMenu",
+                "href" : "#/app/predictor-search",
+                icon: "ion-log-in"
+            },
+            outcomeSearch: {
+                "title" : "Outcome Search",
+                "showSubMenuVariable" : "showPredictorSearchSubMenu",
+                "href" : "#/app/outcome-search",
+                icon: "ion-log-out"
             }
         };
         var subMenus = {
@@ -6391,32 +6408,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 },
             ],
             discoveries: [
-                {
-                    "title" : "Predictor Search",
-                    "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                    "href" : "#/app/predictor-search",
-                    icon: "ion-log-in"
-                },
-                {
-                    "title" : "Outcome Search",
-                    "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                    "href" : "#/app/outcome-search",
-                    icon: "ion-log-out"
-                },
+                menuItems.predictorSearch,
+                menuItems.outcomeSearch,
+                menuItems.studyCreation
             ],
             discoveriesWithMood: [
-                {
-                    "title" : "Predictor Search",
-                    "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                    "href" : "#/app/predictor-search",
-                    icon: "ion-log-in"
-                },
-                {
-                    "title" : "Outcome Search",
-                    "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                    "href" : "#/app/outcome-search",
-                    icon: "ion-log-out"
-                },
+                menuItems.predictorSearch,
+                menuItems.outcomeSearch,
                 {
                     "title" : "Positive Mood",
                     "showSubMenuVariable" : "showPredictorSearchSubMenu",
@@ -6429,6 +6427,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     "href" : "#/app/predictors-negative",
                     icon: "ion-sad-outline"
                 },
+                menuItems.studyCreation
             ],
             medications: [
                 {
