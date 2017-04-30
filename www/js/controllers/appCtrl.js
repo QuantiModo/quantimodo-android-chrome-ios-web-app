@@ -275,7 +275,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $state.go('app.charts', {variableObject: variableObject});
     };
     $scope.closeMenuIfNeeded = function (menuItem) {
-        if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.isSubMenuParent) { $scope.closeMenu();}
+        if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}
     };
     $scope.showHistorySubMenu = false;
     $scope.loading = false;
