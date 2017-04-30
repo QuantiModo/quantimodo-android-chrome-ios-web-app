@@ -1038,6 +1038,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getStudyDeferred = function (params){
         var deferred = $q.defer();
+        if(quantimodoService.getUrlParameter('aggregated')){params.aggregated = true;}
         quantimodoService.getStudy(params, function (response) {
             var study;
             if(response.userStudy){ study = response.userStudy; }
