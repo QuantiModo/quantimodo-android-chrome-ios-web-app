@@ -348,8 +348,7 @@ config.appSettings  = {
             showSubMenuVariable : 'showTrackingSubMenu',
             isSubMenuParent : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-           collapsedIcon : 'ion-chevron-right',
-           expandedIcon : 'ion-chevron-down'
+           collapsedIcon : 'ion-chevron-right'
         },
         {
             title : 'Track anything',
@@ -398,8 +397,7 @@ config.appSettings  = {
             click : 'toggleReminderSubMenu',
             showSubMenuVariable : 'showReminderSubMenu',
             isSubMenuParent : true,
-            collapsedIcon : 'ion-chevron-right',
-            expandedIcon : 'ion-chevron-down'
+            collapsedIcon : 'ion-chevron-right'
         },
         {
             title : 'Inbox',
@@ -449,7 +447,6 @@ config.appSettings  = {
             showSubMenuVariable : 'showHistorySubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-chevron-right',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Moods',
@@ -481,7 +478,6 @@ config.appSettings  = {
             showSubMenuVariable : 'showPredictorSearchSubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-chevron-right',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Common',
@@ -503,7 +499,6 @@ config.appSettings  = {
             showSubMenuVariable : 'showOutcomePredictorSubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-chevron-right',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Positive Mood',
