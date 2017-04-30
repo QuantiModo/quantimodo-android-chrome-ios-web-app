@@ -6616,8 +6616,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             variables: {
                 "title" : "My Variables",
-                "click": "togglePredictorSearchSubMenu",
-                "showSubMenuVariable" : "showPredictorSearchSubMenu",
+                "click": "toggleVariablesSubMenu",
+                "showSubMenuVariable" : "showVariablesSubMenu",
                 subMenu: subMenus.variables,
                 icon: "ion-android-globe"
             },

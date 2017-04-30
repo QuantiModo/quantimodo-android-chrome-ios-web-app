@@ -423,6 +423,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.toggleOutcomePredictorSubMenu = function () {$scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;};
     $scope.toggleHistorySubMenu = function () {$scope.showHistorySubMenu = !$scope.showHistorySubMenu;};
     $scope.toggleReminderSubMenu = function () {$scope.showReminderSubMenu = !$scope.showReminderSubMenu;};
+    $scope.toggleVariablesSubMenu = function () {$scope.showVariablesSubMenu = !$scope.showVariablesSubMenu;};
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
         if(primaryOutcomeRatingFrequencyDescription){$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
         var intervals = {
