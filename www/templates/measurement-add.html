@@ -9,7 +9,7 @@
             <div ng-if="bloodPressure.show" class="item item-divider">
                 Blood Pressure
             </div>
-            <div class="list">
+            <div class="list margin-bottom-0">
                 <label class="item item-input item-select" ng-show="state.showVariableCategorySelector">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
                     <select id="variableCategorySelector" ng-model="state.measurement.variableCategoryName"
@@ -18,31 +18,35 @@
                                 value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
-                <label ng-if="state.measurement.abbreviatedUnitName !== '/5' && !bloodPressure.show" class="item item-input">
-                    <span class="input-label">{{state.defaultValueLabel}}</span>
-                    <input type="number" ng-model="state.measurement.value" id="defaultValue"
+
+                <label ng-if="state.measurement.inputType === 'value'" class="item item-input">
+                    <div class="input-label">
+                        {{state.defaultValueLabel}}
+                    </div>
+                    <input type="number" class="text-right" ng-model="state.measurement.value" id="defaultValue"
                            ng-click="onTextClick($event)" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
-                <label ng-if="state.measurement.abbreviatedUnitName !== '/5' && bloodPressure.show" class="item item-input">
+
+                <label ng-if="state.measurement.inputType === 'bloodPressure'" class="item item-input">
                     <input type="number" ng-model="bloodPressure.systolicValue" id="systolicValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter systolic value"
-                           style="text-align: center">
+                           class="text-right">
                     <span class="input-label">
                         mmHg
                     </span >
                 </label>
-                <label ng-if="state.measurement.abbreviatedUnitName !== '/5' && bloodPressure.show" class="item item-input">
+                <label ng-if="state.measurement.inputType === 'bloodPressure'" class="item item-input">
                     <input type="number" ng-model="bloodPressure.diastolicValue" id="diastolicValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter diastolic value"
-                           style="text-align: center">
+                           class="text-right">
                     <span class="input-label">
                         mmHg
                     </span>
                 </label>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
-                     ng-if="showNumericRatingNumberButtons">
+                     ng-if="state.measurement.inputType === 'oneToFiveNumbers'">
                     <img ng-repeat="option in numericRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          ng-src="{{option.img}}"
@@ -50,7 +54,7 @@
                          option.numericValue === state.measurement.value}">
                 </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
-                     ng-if="showPositiveRatingFaceButtons">
+                     ng-if="state.measurement.inputType === 'happiestFaceIsFive'">
                     <img ng-repeat="option in positiveRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          ng-src="{{option.img}}"
@@ -58,88 +62,107 @@
                          option.numericValue === state.measurement.value}">
                 </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
-                     ng-if="showNegativeRatingFaceButtons">
+                     ng-if="state.measurement.inputType === 'saddestFaceIsFive'">
                     <img ng-repeat="option in negativeRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          ng-src="{{option.img}}"
                          ng-class="{'active-primary-outcome-variable-rating-button' :
                          option.numericValue === state.measurement.value}">
                 </div>
-                <label ng-if="(state.measurement.abbreviatedUnitName !== '/5' && !bloodPressure.show)" class="item item-input item-select">
+                <div ng-if="state.measurement.inputType === 'slider' || state.measurement.inputType === 'oneToTen'">
+                    <div class="row" >
+                        <div style="width: 100%" class="range range-positive">
+                            {{state.measurement.minimumAllowedValue}}
+                            <input ng-model="state.measurement.value" type="range" name="valueSlider"
+                                   min="{{state.measurement.minimumAllowedValue}}" max="{{state.measurement.maximumAllowedValue}}" value="{{state.measurement.value}}">
+                            {{state.measurement.maximumAllowedValue}}
+                        </div>
+                    </div>
+                </div>
+                <label ng-if="state.measurement.inputType === 'yesOrNo'" class="item item-input item-select">
+                    <div class="input-label">
+                        Select Value
+                    </div>
+                    <select id="yesNoSelector"
+                            ng-model="state.measurement.value">
+                        <option value="1">
+                            Yes
+                        </option>
+                        <option value="0">
+                            No
+                        </option>
+                    </select>
+                </label>
+                <label ng-if="!bloodPressure.show" class="item item-input item-select">
                     <div class="input-label">
                         Unit
                     </div>
                     <select ng-if="!state.showMoreUnits"
                             id="unitSelector"
-                            ng-model="state.measurement.abbreviatedUnitName"
+                            ng-model="state.measurement.unitAbbreviatedName"
                             ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects"
                             ng-change="unitSelected()">
                     </select>
                     <select ng-if="state.showMoreUnits"
                             id="advancedUnitSelector"
-                            ng-model="state.measurement.abbreviatedUnitName"
+                            ng-model="state.measurement.unitAbbreviatedName"
                             ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
                             ng-change="unitSelected()">
                     </select>
 
                 </label>
-                <div class="row labeled-control">
-                    <div class="col col-l">
-                        <span>
-                            Date
-                        </span>
+                <label class="item item-input">
+                    <div class="input-label">
+                        Date
                     </div>
-                    <div class="col" style="padding-top: 15px;">
-                        <button class="button button-block measure-date up-top"
-                                style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
-                                ng-click="openMeasurementDatePicker()">
-                            {{ selectedDate | date:'dd - MMMM - yyyy' }}
-                        </button>
-                    </div>
-                </div>
+                    <input time="false" date="true" mdc-datetime-picker type="text" id="date2342"
+                               placeholder="Date"
+                               style="cursor: pointer;  background-color: white;"
+                               format="ddd, MMM Do YYYY"
+                               ng-model="state.selectedDate"
+                               class="md-input text-right">
+                </label>
 
-                <div class="row labeled-control">
-                    <div class="col col-l">
-                        <span>
-                            Time
-                        </span>
+                <label class="item item-input">
+                    <div class="input-label">
+                        Time
                     </div>
-                    <div class="col" style="padding-top: 11px;">
-                        <button class="button button-block up-top"
-                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                                ng-click="openMeasurementStartTimePicker()">
-                            {{selectedDate.getTime()/1000 | fromUnixTimestampToLocalTimeOfDay}}
-                        </button>
+                    <input style="cursor: pointer; background-color: white;"
+                               mdc-datetime-picker=""
+                               date="false"
+                               time="true"
+                               type="text"
+                               id="materialFirstReminderStartTime"
+                               short-time="true"
+                               placeholder="Time"
+                               min-date="minDate"
+                               format="h:mm A"
+                               ng-model="state.selectedDate"
+                               class="md-input text-right">
+                </label>
+
+                <label class="item item-input">
+                    <div class="input-label">
+                        Note
                     </div>
-                </div>
-                <div class="row labeled-control">
-                    <div class="col col-l">
-                        <span>
-                            Note
-                        </span>
-                    </div>
-                    <div class="col" style="padding-top: 11px;">
-                        <div class="col">
-                            <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="up-top">
-                        </div>
-                    </div>
-                </div>
+                    <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="text-right up-top">
+                </label>
             </div>
             <div class="row">
                 <div class="col col-50">
-                    <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                    <button id="cancelButton" class="button button-outline button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
                 </div>
                 <div class="col col-50">
-                    <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="done()">Save</button>
+                    <button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="done()">Save <span ng-if="state.measurement.value">{{state.measurement.value}}</span></button>
                 </div>
             </div>
             <div ng-hide="state.hideRemindMeButton" class="row">
-                <button id="reminderButton" ng-click="goToAddReminder()" class="button icon-left ion-android-notifications button-positive button-block">
+                <button id="reminderButton" ng-click="goToAddReminder()" class="button button-outline icon-left ion-android-notifications button-positive button-block">
                     Remind me to track
                 </button>
             </div>
             <div ng-show="state.measurement.id" class="row">
-                <button id="deleteButton" ng-click="deleteMeasurement()" class="button icon-left ion-trash-a button-assertive button-block">
+                <button id="deleteButton" ng-click="deleteMeasurementFromMeasurementAddCtrl()" class="button button-outline icon-left ion-trash-a button-assertive button-block">
                     Delete Measurement
                 </button>
             </div>

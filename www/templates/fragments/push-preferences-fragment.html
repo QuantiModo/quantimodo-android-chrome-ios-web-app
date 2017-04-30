@@ -5,7 +5,7 @@
         Push Notification Preferences
     </div>
     <ion-toggle ng-model="user.combineNotifications"
-                ng-change="combineNotificationChange()">
+                ng-change="combineNotificationChange($event)">
         Combine Notifications
     </ion-toggle>
     <label class="item item-input">
@@ -16,7 +16,7 @@
         </div>
         <button class="button button-block up-top"
                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                ng-click="openEarliestReminderTimePicker()">
+                ng-click="openEarliestReminderTimePicker($event)">
             {{user.earliestReminderTime | fromTwentyFourToTwelveHourFormat}}
         </button>
     </label>
@@ -28,7 +28,7 @@
         </div>
         <button class="button button-block up-top"
                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                ng-click="openLatestReminderTimePicker()">
+                ng-click="openLatestReminderTimePicker($event)">
             {{user.latestReminderTime | fromTwentyFourToTwelveHourFormat}}
         </button>
     </label>

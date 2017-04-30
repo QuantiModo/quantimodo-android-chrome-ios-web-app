@@ -13,15 +13,13 @@ config.appSettings  = {
         ' - Track diet, treatments, symptoms, and anything else',
         ' - Analyze your data to see the strongest predictors of your mood'
     ],
-
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
-        category : "Mood",
-        abbreviatedUnitName : "/5",
+        variableCategoryName : "Mood",
+        unitAbbreviatedName : "/5",
         combinationOperation: "MEAN"
     },
-
     primaryOutcomeVariableRatingOptionLabels : [
         'Depressed',
         'Sad',
@@ -32,25 +30,7 @@ config.appSettings  = {
 
 
     welcomeText:"Let's start off by reporting your first mood below",
-    primaryOutcomeVariableTrackingQuestion:"How are you?",
-    primaryOutcomeVariableAverageText:"Your average mood is ",
-    mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
-    ratingValueToTextConversionDataSet: {
-        "1": "depressed",
-        "2": "sad",
-        "3": "ok",
-        "4": "happy",
-        "5": "ecstatic"
-    },
-    ratingTextToValueConversionDataSet : {
-        "depressed" : 1,
-        "sad" : 2,
-        "ok" : 3,
-        "happy" : 4,
-        "ecstatic": 5
-    },
-
     intro : [
         // screen 1
         {
@@ -65,7 +45,7 @@ config.appSettings  = {
                     visible : true,
                     content : 'Welcome to MoodiModo',
                     classes : 'intro-header positive'
-                }, 
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
@@ -74,7 +54,7 @@ config.appSettings  = {
                     visible : true,
                     content : 'MoodiModo allows you track your <span class="positive">Mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
-                    buttonBarVisible : true   
+                    buttonBarVisible : true
                 }
             }
         },
@@ -93,7 +73,7 @@ config.appSettings  = {
                     content : 'Go to the <span class="positive">Track Mood</span> page to report your mood!',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true
-                } 
+                }
             }
         },
         // screen 3
@@ -109,7 +89,7 @@ config.appSettings  = {
                     visible : true,
                     content : 'Track Mood',
                     classes : 'intro-header positive'
-                },                 
+                },
                 logoDiv : {
                     visible : true,
                     id : ''
@@ -128,14 +108,14 @@ config.appSettings  = {
             img : {
                 width : '200',
                 height : '150',
-                url : 'img/history_page.png'
+                url : 'img/screenshots/history_page.png'
             },
             content : {
                 firstParagraph : {
                     visible : true,
                     content : 'History',
                     classes : 'intro-header positive'
-                }, 
+                },
                 showFirstLineBreak : true,
                 logoDiv : {
                     visible : true,
@@ -155,14 +135,14 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/mood_note.png'
+                url : 'img/screenshots/mood_note.png'
             },
             content : {
                 firstParagraph : {
                     visible : true,
                     content : 'Add a Note',
                     classes : 'intro-header positive'
-                }, 
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
@@ -180,14 +160,14 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '190',
-                url : 'img/track_foods.png'
+                url : 'img/screenshots/track_foods.png'
             },
             content : {
                 firstParagraph : {
                     visible : true,
                     content : 'Record a Meal',
                     classes : 'intro-header positive'
-                }, 
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
@@ -205,7 +185,7 @@ config.appSettings  = {
             img : {
                 width : '190',
                 height : '250',
-                url : 'img/track_symptoms.png'
+                url : 'img/screenshots/track_symptoms.png'
             },
             content : {
 
@@ -213,19 +193,19 @@ config.appSettings  = {
                     visible : true,
                     content : 'Track Symptoms',
                     classes : 'intro-header positive'
-                }, 
-                
+                },
+
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
-                
+
                 finalParagraph: {
                     visible : true,
                     content : 'Track any symptom on the <span class="positive">Track Symptoms</span> page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
                     classes : 'intro-paragraph-small',
                     buttonBarVisible : true
-                }   
+                }
             }
         },
         // screen 8
@@ -233,14 +213,14 @@ config.appSettings  = {
             img : {
                 width : '210',
                 height : '250',
-                url : 'img/track_treatments.png'
+                url : 'img/screenshots/track_treatments.png'
             },
             content : {
                 firstParagraph : {
                     visible : true,
                     content : 'Track Treatments',
                     classes : 'intro-header positive'
-                },                 
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
@@ -258,7 +238,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/positive_predictors.png'
+                url : 'img/screenshots/positive_predictors.png'
             },
             content : {
 
@@ -266,13 +246,13 @@ config.appSettings  = {
                     visible : true,
                     content : 'Positive Predictors',
                     classes : 'intro-header positive'
-                }, 
-                
+                },
+
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
-                
+
                 finalParagraph: {
                     visible : true,
                     content : 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Mood for the average QuantiModo user.',
@@ -286,7 +266,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/negative_predictors.png'
+                url : 'img/screenshots/negative_predictors.png'
             },
             content : {
 
@@ -295,18 +275,18 @@ config.appSettings  = {
                     content : 'Negative Predictors',
                     classes : 'intro-header positive'
                 },
-                
+
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
-                
+
                 finalParagraph: {
                     visible : true,
                     content : 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span> Mood for the average QuantiModo user.',
                     classes : 'intro-paragraph-small',
                     buttonBarVisible : true
-                }  
+                }
             }
         },
         // screen 11
@@ -314,7 +294,7 @@ config.appSettings  = {
             img : {
                 width : '250',
                 height : '250',
-                url : 'img/rating/ic_face_ecstatic.png'
+                url : 'img/rating/face_rating_button_256_ecstatic.png'
             },
             content : {
 
@@ -322,8 +302,8 @@ config.appSettings  = {
                     visible : true,
                     content : 'Thank you for helping us derive a mathematical equation for happiness!',
                     classes : 'intro-paragraph positive'
-                }, 
-                
+                },
+
                 logoDiv : {
                     visible : true,
                     id : 'logo'
@@ -339,13 +319,13 @@ config.appSettings  = {
     ],
 
     helpPopupMessages : {
-        "#/app/track" :'Here, you can view your <span class="positive">average Mood</span> as well as charts illustrating how it changes over time',
-        "#/app/history" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
-        "#/app/measurement-add-search-category/Foods" :'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
-        "#/app/measurement-add-search-category/Symptoms" :'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-        "#/app/measurement-add-search-category/Treatments" :'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-        "#/app/positive" :'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Mood for the average QuantiModo user.',
-        "#/app/negative" :'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span> for the average QuantiModo user.'
+        "#/app/track":'Here, you can view your <span class="positive">average Mood</span> as well as charts illustrating how it changes over time',
+        "#/app/history":'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
+        "#/app/measurement-add-search-category/Foods":'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
+        "#/app/measurement-add-search-category/Symptoms":'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+        "#/app/measurement-add-search-category/Treatments":'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+        "#/app/positive":'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Mood for the average QuantiModo user.',
+        "#/app/negative":'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span> for the average QuantiModo user.'
     },
 
     remindersInbox : {
@@ -353,7 +333,7 @@ config.appSettings  = {
     },
 
     wordAliases : {
-        
+
     },
 
     menu : [
@@ -376,7 +356,7 @@ config.appSettings  = {
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/measurement-add-search',
-            icon : 'ion-ios-world-outline'   
+            icon : 'ion-ios-world-outline'
         },
         {
             title : 'Track foods',
@@ -546,7 +526,7 @@ config.appSettings  = {
         },
         {
             title : 'Help & Feedback',
-            href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
+            href : window.chrome ? "mailto:help@quantimo.do": "#app/feedback",
             icon : 'ion-ios-help-outline'
         },
     ]
@@ -562,8 +542,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
-        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
+        val = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]?
+        quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
 
     // report
@@ -581,10 +561,10 @@ window.notification_callback = function(reportedVariable, reportingTime){
         };
 
         // update full data
-        if(localStorage[keyIdentifier+'allMeasurements']){
-            var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
+        if(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']){
+            var allMeasurements = JSON.parse(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']);
             allMeasurements.push(allMeasurementsObject);
-            localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
+            localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
         }
 
         //update measurementsQueue

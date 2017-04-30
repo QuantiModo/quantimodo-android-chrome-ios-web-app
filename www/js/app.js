@@ -1,11 +1,10 @@
 // Database
 //var db = null;
-
 angular.module('starter',
     [
         'ionic',
         //'ionic.service.core',
-        'ionic.cloud',
+        //'ionic.cloud',
         //'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
@@ -16,65 +15,46 @@ angular.module('starter',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
         //'templates',
-        'fabric',
+        //'fabric',  // Not sure if this does anything.  We might want to enable for native error logging sometime.
         'ngCordovaOauth',
-        'jtt_wikipedia'
+        'jtt_wikipedia',
+        'angular-clipboard',
+        'angular-google-analytics',
+        //'angular-google-adsense',
+        'ngMaterialDatePicker',
+        'ngMaterial',
+        'ngMessages',
+        'angular-cache',
+        'angular-d3-word-cloud'
     ]
 )
-
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService) {
-//.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
-// Database
-//.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
-
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {
+    quantimodoService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-
-        
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-                alert(errorMsg);
-                quantimodoService.reportError(errorMsg);
+                quantimodoService.reportErrorDeferred(errorMsg);
             };
         }
-
-
-         if (typeof PushNotification !== "undefined") {
-             console.debug("Going to try to register push");
-             var push = PushNotification.init({
-                 android: {
-                     senderID: "1052648855194",
-                     badge: true,
-                     sound: false,
-                     vibrate: false,
-                     icon: 'ic_stat_icon_bw',
-                     clearBadge: true
-                 },
-                 browser: {
-                     pushServiceURL: 'http://push.api.phonegap.com/v1/push'
-                 },
-                 ios: {
-                     alert: "false",
-                     badge: "true",
-                     sound: "false",
-                     clearBadge: true
-                 },
-                 windows: {}
-             });
-
+        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){quantimodoService.reportErrorDeferred('PushNotification is undefined');}}
+        if (typeof PushNotification !== "undefined") {
+            var pushConfig = {
+                android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
+                browser: {pushServiceURL: 'http://push.api.phonegap.com/v1/push'},
+                ios: {alert: "false", badge: "true", sound: "false", clearBadge: true},
+                windows: {}
+            };
+            console.debug("Going to try to register push with " + JSON.stringify(pushConfig));
+            var push = PushNotification.init(pushConfig);
              push.on('registration', function(registerResponse) {
                  console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
-                 // data.registrationId
-                 var newDeviceToken = registerResponse.registrationId;
+                 if(!registerResponse.registrationId){quantimodoService.bugsnagNotify('No registerResponse.registrationId from push registration');}
                  console.debug("Got device token for push notifications: " + registerResponse.registrationId);
-                 var deviceTokenOnServer = quantimodoService.getLocalStorageItemAsString('deviceTokenOnServer');
-                 $rootScope.deviceToken = deviceTokenOnServer;
-                 console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
-                 if(deviceTokenOnServer !== registerResponse.registrationId) {
-                     $rootScope.deviceToken = newDeviceToken;
-                     quantimodoService.setLocalStorageItem('deviceTokenToSync', newDeviceToken);
-                     console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
+                 var deviceTokenOnServer = localStorage.getItem('deviceTokenOnServer');
+                 if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
+                     localStorage.setItem('deviceTokenToSync', registerResponse.registrationId);
                  }
              });
 
@@ -98,331 +78,222 @@ angular.module('starter',
                      console.debug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
                      return;
                  }
-                 push.finish(function () {
-                     console.debug("processing of push data is finished: " + JSON.stringify(data));
-                 });
+                 push.finish(function () {console.debug("processing of push data is finished: " + JSON.stringify(data));});
              });
-
-             push.on('error', function(e) {
-                 alert(e.message);
-             });
-
+             push.on('error', function(e) {quantimodoService.reportException(e, e.message, pushConfig);});
              var finishPush = function (data) {
                  if(!finishPushes){
                      console.debug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
                      return;
                  }
-
                  push.finish(function() {
                      console.debug('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
                      console.debug('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
-
              };
-
              window.trackOneRatingAction = function (data){
-                 
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 1
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackTwoRatingAction = function (data){
-                 
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 2
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackThreeRatingAction = function (data){
-                 
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 3
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackFourRatingAction = function (data){
-                 
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 4
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackFiveRatingAction = function (data){
-                 
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: 5
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackDefaultValueAction = function (data){
-                 
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
-                 };
-
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.snoozeAction = function (data){
-                 
                  console.debug("snoozeAction push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
-                 };
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
                  quantimodoService.snoozeTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackLastValueAction = function (data){
-                 
                  console.debug("trackLastValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: data.additionalData.lastValue
-                 };
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.lastValue};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackSecondToLastValueAction = function (data){
-                 
                  console.debug("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: data.additionalData.secondToLastValue
-                 };
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.secondToLastValue};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
-
              window.trackThirdToLastValueAction = function (data){
-                 
                  console.debug("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
-                 var body = {
-                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-                     modifiedValue: data.additionalData.thirdToLastValue
-                 };
+                 var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.thirdToLastValue};
                  quantimodoService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
          }
-
         window.notification_callback = function(reportedVariable, reportingTime){
             var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
             var keyIdentifier = config.appSettings.appStorageIdentifier;
             var val = false;
-
-            // convert values
             if(reportedVariable === "repeat_rating"){
-                val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
-                    JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
+                val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
             } else {
-                val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
-                    config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
+                val = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
             }
-
-            // report
             if(val){
-                // update localstorage
                 localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
-
-                var allMeasurementsObject = {
-                    storedValue : val,
-                    value : val,
-                    startTime : startTime,
-                    humanTime : {
-                        date : new Date().toISOString()
-                    }
-                };
-
-                // update full data
-                if(localStorage[keyIdentifier+'allMeasurements']){
-                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
+                var allMeasurementsObject = {storedValue : val, value : val, startTime : startTime,};
+                if(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']){
+                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']);
                     allMeasurements.push(allMeasurementsObject);
-                    localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
+                    localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
                 }
-
-                //update measurementsQueue
-                if(!localStorage[keyIdentifier+'measurementsQueue']){
-                    localStorage[keyIdentifier+'measurementsQueue'] = '[]';
-                } else {
+                if(localStorage[keyIdentifier+'measurementsQueue']){
                     var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
                     measurementsQueue.push(allMeasurementsObject);
                     localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
                 }
             }
         };
-
-        if(typeof analytics !== "undefined") {
-            console.debug("Configuring Google Analytics");
-            //noinspection JSUnresolvedFunction
-            analytics.startTrackerWithId("UA-39222734-24");
-        } else {
-            //console.debug("Google Analytics Unavailable");
+        if(window.location.href.indexOf('ionic.quantimo') === -1 && window.location.href.indexOf('staging.quantimo') === -1 && window.location.href.indexOf('local.quantimo') === -1){
+            var googleAnalyticsId = (config.appSettings.googleAnalyticsId) ? config.appSettings.googleAnalyticsId : "UA-39222734-24";
+            if(typeof analytics !== "undefined") {analytics.startTrackerWithId(googleAnalyticsId);}
         }
-        
-        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-        // for form inputs)
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
         }
-        if (window.StatusBar) {
-            // org.apache.cordova.statusbar required
-            StatusBar.styleDefault();
-        }
-        // Database
-        /*
-         if (!$rootScope.isMobile) {
-         db = window.openDatabase("my.db", "1.0", "Cordova Demo", 200000);
-         }
-         else {
-         db = $cordovaSQLite.openDB("my.db");
-         }
-         */
-
+        if (window.StatusBar) {StatusBar.styleDefault();} // org.apache.cordova.statusbar required
     });
-
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
     };
-
-
     $ionicPlatform.registerBackButtonAction(function (event) {
+        if($rootScope.backButtonState){
+            $state.go($rootScope.backButtonState);
+            $rootScope.backButtonState = null;
+            return;
+        }
+        if($ionicHistory.currentStateName() === 'app.upgrade'){
+            console.debug('registerBackButtonAction from upgrade: Going to default state...');
+            $state.go(config.appSettings.defaultState);
+            return;
+        }
         if($ionicHistory.currentStateName() === config.appSettings.defaultState){
             ionic.Platform.exitApp();
+            return;
         }
-        else {
-            if($ionicHistory.backView()){
-                $ionicHistory.goBack();
-            } else if(localStorage.user){
-                $rootScope.hideNavigationMenu = false;
-                console.debug('registerBackButtonAction: Going to default state...');
-                $state.go(config.appSettings.defaultState);
-            } else {
-                /*
-                 console.debug('registerBackButtonAction: Going to welcome state...');
-                 $state.go(config.appSettings.welcomeState);
-                 */
-                console.debug('registerBackButtonAction: Closing the app');
-                ionic.Platform.exitApp();
-            }
+        if($ionicHistory.backView()){
+            $ionicHistory.goBack();
+            return;
         }
+        if(localStorage.user){
+            $rootScope.hideNavigationMenu = false;
+            console.debug('registerBackButtonAction: Going to default state...');
+            $state.go(config.appSettings.defaultState);
+            return;
+        }
+        console.debug('registerBackButtonAction: Closing the app');
+        ionic.Platform.exitApp();
     }, 100);
 
-    var intervalChecker = setInterval(function(){
-        if(typeof config !== "undefined"){
-            clearInterval(intervalChecker);
-        }
-    }, 500);
-
-    $rootScope.getAllUrlParams = function() {
-        $rootScope.urlParameters = {};
+    var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
+    String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+    function setIntoSeenAndOnboarded() {
+        var urlParameters = {};
         var queryString = document.location.toString().split('?')[1];
-        var sURLVariables;
-        var parameterNameValueArray;
-        if(queryString) {
-            sURLVariables = queryString.split('&');
-        }
-        if(sURLVariables) {
+        var sURLVariables, parameterNameValueArray;
+        if (queryString) {sURLVariables = queryString.split('&');}
+        if (sURLVariables) {
             for (var i = 0; i < sURLVariables.length; i++) {
                 parameterNameValueArray = sURLVariables[i].split('=');
-                if(parameterNameValueArray[1].indexOf('http') > -1){
-                    $rootScope.urlParameters[parameterNameValueArray[0]] = parameterNameValueArray[1];
-                } else {
-                    $rootScope.urlParameters[parameterNameValueArray[0]] = decodeURIComponent(parameterNameValueArray[1]);
-                }
-
+                if (parameterNameValueArray[1].indexOf('http') > -1) {urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];} else {urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);}
             }
         }
-    };
-
-    $rootScope.getAllUrlParams();
-    if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
-        window.localStorage.introSeen = true;
-        window.localStorage.isWelcomed = true;
-    }
-    console.debug('url params are ' + JSON.stringify($rootScope.urlParameters));
-})
-
-.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider, $ionicConfigProvider) {
-
-    /*  Trying to move to appCtrl
-    $ionicCloudProvider.init({
-        "core": {
-            "app_id": "__IONIC_APP_ID__"
+        if (urlParameters.accessToken || urlParameters.existingUser || urlParameters.introSeen || urlParameters.refreshUser) {
+            window.localStorage.introSeen = true;
+            window.localStorage.onboarded = true;
         }
-    });
-    */
+    }
+    setIntoSeenAndOnboarded();
+})
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
+    var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};
+    if(ionic.Platform.isAndroid()){
+        var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
+        if(!clientId){
+            clientId = Math.floor((Math.random() * 9999999999) + 1000000000);
+            clientId = clientId+'.'+Math.floor((Math.random() * 9999999999) + 1000000000);
+            window.localStorage.setItem('GA_LOCAL_STORAGE_KEY', clientId);
+        }
+        analyticsOptions.fields = {storage: 'none', fields: clientId};
+    }
+    AnalyticsProvider.setAccount(analyticsOptions);
+    AnalyticsProvider.delayScriptTag(true);  // Needed to set user id later
+    // Track all routes (default is true).
+    AnalyticsProvider.trackPages(true); // Track all URL query params (default is false).
+    AnalyticsProvider.trackUrlParams(true);  // Ignore first page view (default is false).
+    AnalyticsProvider.ignoreFirstPageLoad(true);  // Helpful when using hashes and whenever your bounce rate looks obscenely low.
+    //AnalyticsProvider.trackPrefix('my-application'); // Helpful when the app doesn't run in the root directory. URL prefix (default is empty).
+    AnalyticsProvider.setPageEvent('$stateChangeSuccess'); // Change the default page event name. Helpful when using ui-router, which fires $stateChangeSuccess instead of $routeChangeSuccess.
+    AnalyticsProvider.setHybridMobileSupport(true);  // Set hybrid mobile application support
+    //AnalyticsProvider.enterDebugMode(true);
+    AnalyticsProvider.useECommerce(true, true); // Enable e-commerce module (ecommerce.js)
+
+    //$ionicCloudProvider.init({"core": {"app_id": "42fe48d4"}}); Trying to move to appCtrl
 
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
-
+    $ionicConfigProvider.navBar.alignTitle('center');
+    if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+        $ionicConfigProvider.views.swipeBackEnabled(false);  // Prevents back swipe white screen on iOS when caching is disabled https://github.com/driftyco/ionic/issues/3216
+    }
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
         var getAppNameFromUrl = function () {
-            var sPageURL = document.location.toString().split('?')[1];
-            if(!sPageURL) {
-                return false;
+            var i;
+            var appName = false;
+            var availableApps = ["moodimodo", "energymodo", "mindfirst", "medimodo", "quantimodo"];
+            for(i = 0; i < availableApps.length; i++){if(window.location.href.indexOf(availableApps[i]) > -1){return availableApps[i];}}
+            var queryString = document.location.toString().split('?')[1];
+            if(!queryString) {return false;}
+            var queryParameterStrings = queryString.split('&');
+            if(!queryParameterStrings) {return false;}
+            for (i = 0; i < queryParameterStrings.length; i++) {
+                var queryKeyValuePair = queryParameterStrings[i].split('=');
+                if (queryKeyValuePair[0] === 'app') {appName = queryKeyValuePair[1].split('#')[0];}
             }
-            var sURLVariables = sPageURL.split('&');
-            if(!sURLVariables) {
-                return false;
-            }
-            for (var i = 0; i < sURLVariables.length; i++)
-            {
-                var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] === 'app') {
-                    return sParameterName[1].split('#')[0];
-                }
-            }
-            return false;
+            return appName;
         };
-
         var lowercaseAppName = getAppNameFromUrl();
+        console.debug('Loading config ' + appsManager.getAppConfig(lowercaseAppName) + ' and private config ' + appsManager.getPrivateConfig(lowercaseAppName));
         return $ocLazyLoad.load([appsManager.getAppConfig(lowercaseAppName), appsManager.getPrivateConfig(lowercaseAppName)]);
       }]
     };
 
-    // Configure timepicker
-    var timePickerObj = {
-        format: 12,
-        step: 1,
-        closeLabel: 'Cancel'
-    };
-    ionicTimePickerProvider.configTimePicker(timePickerObj);
-
-    // Configure datepicker
+    ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {
         inputDate: new Date(),
         setLabel: 'Set',
@@ -442,8 +313,9 @@ angular.module('starter',
 
     $stateProvider
         .state('intro', {
+            cache: true,
             url: '/',
-            templateUrl: 'templates/intro-tour.html',
+            templateUrl: 'templates/intro-tour-new.html',
             controller: 'IntroCtrl',
             resolve : config_resolver
         })
@@ -454,13 +326,26 @@ angular.module('starter',
             resolve : config_resolver
         })
         .state('app.welcome', {
-            cache: false,
+            cache: true,
             url: "/welcome",
             views: {
                 'menuContent': {
                     templateUrl: "templates/welcome.html",
                     controller: 'WelcomeCtrl'
                 }
+            }
+        })
+        .state('app.loginOld', {
+            url: "/login-old",
+            params: {
+                fromState : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/login-page-old.html",
+                    controller: 'LoginCtrl'
+              }
             }
         })
         .state('app.login', {
@@ -473,17 +358,44 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/login-page.html",
                     controller: 'LoginCtrl'
-              }
+                }
+            }
+        })
+        .state('app.loginLocal', {
+            url: "/login-local",
+            params: {
+                fromState : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/login-local.html",
+                    controller: 'IntroCtrl'
+                }
+            }
+        })
+        .state('app.introOld', {
+            cache: true,
+            url: "/intro-old",
+            params: {
+                doNotRedirect: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/intro-tour-old.html",
+                    controller: 'IntroCtrl'
+                }
             }
         })
         .state('app.intro', {
+            cache: true,
             url: "/intro",
             params: {
                 doNotRedirect: true
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/intro-tour.html",
+                    templateUrl: "templates/intro-tour-new.html",
                     controller: 'IntroCtrl'
                 }
             }
@@ -512,7 +424,9 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -534,7 +448,9 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -557,7 +473,10 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null,
+                skipReminderSettingsIfPossible: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -580,7 +499,10 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null,
+                skipReminderSettingsIfPossible: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -604,7 +526,9 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -628,7 +552,9 @@ angular.module('starter',
                     limit: 100,
                     includePublic: true,
                     manualTracking: true
-                }
+                },
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -638,7 +564,26 @@ angular.module('starter',
             }
         })
         .state('app.measurementAdd', {
-            url: "/measurement-add/:variableName",
+            url: "/measurement-add",
+            cache: false,
+            params: {
+                trackingReminder: null,
+                reminderNotification: null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null,
+                variableName: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/measurement-add.html",
+                    controller: 'MeasurementAddCtrl'
+                }
+            }
+        })
+        .state('app.measurementAddVariable', {
+            url: "/measurement-add-variable-name/:variableName",
             cache: false,
             params: {
                 trackingReminder: null,
@@ -663,7 +608,6 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableName : null,
                 variableObject : null
             },
             views: {
@@ -711,7 +655,8 @@ angular.module('starter',
                     limit: 100,
                     includePublic: false
                     //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -735,7 +680,8 @@ angular.module('starter',
                     limit: 100,
                     includePublic: false
                     //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -767,7 +713,8 @@ angular.module('starter',
                 },
                 commonVariableSearchParameters: {
                     numberOfAggregateCorrelationsAsEffect: '(gt)1'
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -780,7 +727,7 @@ angular.module('starter',
             url: "/tagee-search",
             cache: false,
             params: {
-                tagVariableObject: null,
+                userTagVariableObject: null,
                 title: "Select Tagee", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a variable to tag...",
                 variableCategoryName: null,
@@ -795,7 +742,9 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true
                 },
-                commonVariableSearchParameters: {}
+                commonVariableSearchParameters: {},
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -808,7 +757,7 @@ angular.module('starter',
             url: "/tag-search",
             cache: false,
             params: {
-                taggedVariableObject: null,
+                userTaggedVariableObject: null,
                 title: "Tags", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for a tag...",
                 variableCategoryName: null,
@@ -823,7 +772,9 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true
                 },
-                commonVariableSearchParameters: {}
+                commonVariableSearchParameters: {},
+                hideNavigationMenu: null,
+                doneState: null
             },
             views: {
                 'menuContent': {
@@ -840,8 +791,8 @@ angular.module('starter',
                 fromState : null,
                 fromStateParams: null,
                 fromUrl : null,
-                tagVariableObject : null,
-                taggedVariableObject : null,
+                userTagVariableObject : null,
+                userTaggedVariableObject : null,
                 variableObject: null,
                 helpText: "Say I want to track how much sugar I consume and see how that affects me.  I don't need to " +
                     "check the label every time.  I can just tag Candy Bar and Lollypop with the amount sugar. Then during " +
@@ -878,7 +829,8 @@ angular.module('starter',
                 },
                 commonVariableSearchParameters: {
                     numberOfAggregateCorrelationsAsCause: '(gt)1'
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -899,7 +851,8 @@ angular.module('starter',
                     includePublic: false,
                     //manualTracking: false,  Shouldn't do this because it will only include explicitly false variables
                     numberOfUserCorrelations: '(gt)1'
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -920,7 +873,8 @@ angular.module('starter',
                     includePublic: true,
                     //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
                     numberOfAggregatedCorrelations: '(gt)1'
-                }
+                },
+                hideNavigationMenu: null
             },
             views: {
                 'menuContent': {
@@ -934,7 +888,6 @@ angular.module('starter',
             cache: false,
             params: {
                 trackingReminder : null,
-                variableName : null,
                 variableObject: null,
                 measurementInfo: null,
                 noReload: false,
@@ -945,42 +898,6 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/charts-page.html",
                     controller: 'ChartsPageCtrl'
-                }
-            }
-        })
-        .state('app.searchCommonRelationships', {
-            url: "/search-common-relationships",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/iframe-embed.html",
-                    controller: 'IframeScreenCtrl'
-                }
-            }
-        })
-        .state('app.searchUserRelationships', {
-            url: "/search-user-relationships",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/iframe-embed.html",
-                    controller: 'IframeScreenCtrl'
-                }
-            }
-        })
-        .state('app.updateCard', {
-            url: "/update-card",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/iframe-embed.html",
-                    controller: 'IframeScreenCtrl'
-                }
-            }
-        })
-        .state('app.studyCreate', {
-            url: "/study-create",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/iframe-embed.html",
-                    controller: 'IframeScreenCtrl'
                 }
             }
         })
@@ -995,7 +912,7 @@ angular.module('starter',
                     correlationCoefficient: null
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1014,7 +931,7 @@ angular.module('starter',
                     correlationCoefficient: null
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1034,7 +951,7 @@ angular.module('starter',
                     correlationCoefficient: '(gt)0'
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1054,7 +971,7 @@ angular.module('starter',
                     correlationCoefficient: '(gt)0'
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1074,7 +991,7 @@ angular.module('starter',
                     correlationCoefficient: '(lt)0'
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1094,7 +1011,7 @@ angular.module('starter',
                     correlationCoefficient: '(lt)0'
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1113,7 +1030,7 @@ angular.module('starter',
                     correlationCoefficient: null
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1132,7 +1049,7 @@ angular.module('starter',
                     correlationCoefficient: null
                 }
             },
-            cache: false,
+            cache: true,
             views: {
                 'menuContent': {
                     templateUrl: "templates/predictors-list.html",
@@ -1141,15 +1058,43 @@ angular.module('starter',
             }
         })
         .state('app.study', {
-            cache: false,
+            cache: true,
             url: "/study",
             params: {
-                correlationObject: null
+                correlationObject: null,
+                causeVariableName: null,
+                effectVariableName: null
             },
             views: {
                 'menuContent': {
                     templateUrl: "templates/study-page.html",
                     controller: 'StudyCtrl'
+                }
+            }
+        })
+        .state('app.studyJoin', {
+            cache: false,
+            url: "/study-join",
+            params: {
+                correlationObject: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/study-join-page.html",
+                    controller: 'StudyJoinCtrl'
+                }
+            }
+        })
+        .state('app.studyCreation', {
+            cache: false,
+            url: "/study-creation",
+            params: {
+                correlationObject: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/study-creation-page.html",
+                    controller: 'StudyCreationCtrl'
                 }
             }
         })
@@ -1230,7 +1175,7 @@ angular.module('starter',
         })
         .state('app.historyAll', {
             url: "/history-all/:variableCategoryName",
-            cache: false,
+            cache: true,
             params: {
                 variableCategoryName : null
             },
@@ -1243,9 +1188,8 @@ angular.module('starter',
         })
         .state('app.historyAllVariable', {
             url: "/history-all-variable/:variableName",
-            cache: false,
+            cache: true,
             params: {
-                variableName: null,
                 variableObject : null
             },
             views: {
@@ -1267,6 +1211,27 @@ angular.module('starter',
                 value : null,
                 fromUrl : null,
                 showHelpCards: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.remindersInboxCompact', {
+            url: "/reminders-inbox-compact",
+            cache: false,
+            params: {
+                title: 'Reminder Inbox',
+                reminderFrequency: null,
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null,
+                showHelpCards: false,
+                hideNavigationMenu: true
             },
             views: {
                 'menuContent': {
@@ -1409,8 +1374,18 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.remindersList', {
+            cache: false,
+            url: "/reminders-list/:variableCategoryName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-list.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            }
+        })
         .state('app.reminderAdd', {
-            url: "/reminder-add",
+            url: "/reminder-add/:variableName",
             cache: false,
             params: {
                 variableCategoryName : null,
@@ -1419,12 +1394,48 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 variableObject : null,
-                favorite: false
+                favorite: false,
+                doneState: null
             },
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminder-add.html",
-                    controller: 'RemindersAddCtrl'
+                    controller: 'ReminderAddCtrl'
+                }
+            }
+        })
+        .state('app.onboarding', {
+            url: "/onboarding",
+            cache: true,
+            params: { },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/onboarding-page.html",
+                    controller: 'OnboardingCtrl'
+                }
+            }
+        })
+        .state('app.upgrade', {
+            url: "/upgrade",
+            cache: true,
+            params: {
+                litePlanState: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/upgrade-page-cards.html",
+                    controller: 'UpgradeCtrl'
+                }
+            }
+        })
+        .state('app.tabs', {
+            url: "/tabs",
+            cache: true,
+            params: { },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/tabs.html",
+                    controller: 'TabsCtrl'
                 }
             }
         })
@@ -1439,27 +1450,28 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 variableObject : null,
-                favorite: true
+                favorite: true,
+                doneState: null
             },
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminder-add.html",
-                    controller: 'RemindersAddCtrl'
+                    controller: 'ReminderAddCtrl'
                 }
             }
         });
 
-    if (window.localStorage.introSeen) {
-        console.debug("Intro seen so going to inbox");
-        $urlRouterProvider.otherwise('/app/reminders-inbox');
-    } else {
-        console.debug("Intro not seen so going to intro");
+    if (!window.localStorage.introSeen) {
+        //console.debug("Intro not seen so setting default route to intro");
         $urlRouterProvider.otherwise('/');
+    } else if (!window.localStorage.onboarded) {
+        //console.debug("Not onboarded so setting default route to onboarding");
+        $urlRouterProvider.otherwise('/app/onboarding');
+    } else {
+        //console.debug("Intro seen so setting default route to inbox");
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
     }
-      // if none of the above states are matched, use this as the fallback
-    
 });
-
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
         if (typeof Bugsnag !== "undefined") {

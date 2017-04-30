@@ -42,26 +42,18 @@
     "request": "^2.64.0",
     "run-sequence": "^1.1.4",
     "shelljs": "^0.5.3",
-    "swagger-js-codegen": "^1.1.4",
     "taco-team-build": "^0.2.1",
     "xcode": "0.8.9",
     "xml2js": "^0.4.15"
   },
   "scripts": {
-    "postinstall": "bower install && npm rebuild node-sass && ionic config build && gulp configureApp"
+    "postinstall": "bower install && npm rebuild node-sass && ionic config build && gulp configureAppAfterNpmInstall"
   },
   "cordovaPlugins": [
     "cordova-plugin-file-opener2",
     "cordova-plugin-ios-non-exempt-encryption",
     "cordova-plugin-email-composer",
-    "cordova-plugin-geolocation@2.3.0",
-    {
-      "variables": {
-        "SENDER_ID": "1052648855194"
-      },
-      "locator": "https://github.com/mikepsinn/phonegap-plugin-push#93cef15c1027353132bafdd49b66805aa917defb",
-      "id": "phonegap-plugin-push"
-    }
+    "cordova-plugin-geolocation@2.3.0"
   ],
   "cordovaPlatforms": [],
   "engines": {

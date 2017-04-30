@@ -1,33 +1,44 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Settings">
     <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
 
+        <div ng-if="user && !user.stripeActive && !appSettings.upgradeDisabled" class="list card" ng-click="goToState('app.upgrade')">
+            <a class="item">
+                <i class="icon ion-ios-color-wand"></i>
+                &nbsp;
+                {{appSettings.appDisplayName}} Plus
+            </a>
+        </div>
         <div class="list card">
             <a href="" ng-show="!user" ng-click="sendToLogin()" class="item ">
               Account
               <p>Tap to sign in</p>
             </a>
 
-            <a id="userName" href="" ng-show="user" ng-click="logout()" class="item ">
+            <a id="userName" href="" ng-show="user" ng-click="logout($event)" class="item ">
                 <i class="icon ion-person"></i>
                 &nbsp
                 Signed in as {{user.displayName}}
               <p>Tap to sign out</p>
             </a>
-    		
+
+        </div>
+
+        <div class="list card" ng-show="user && !user.email">
+            <a ng-click="updateEmailAndExecuteCallback()" class="item ">
+                <i class="icon ion-email"></i>
+                &nbsp
+                Add Your Email Address
+                <p style="white-space: normal">So you'll never lose access to your account</p>
+            </a>
         </div>
 
         <div ng-show="user" class="card sign-in" >
-            <ion-toggle ng-model="state.trackLocation"
-                        ng-change="trackLocationChange()">
-                <i class="icon ion-map"></i>
-                &nbsp
-                Track my location
+            <div class="item item-divider" ng-click="showHelpInfoPopup('locationAndWeatherTracking', $event)">
+                Location Tracking &nbsp; <i class="icon ion-information-circled"></i>
+            </div>
+            <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)">
+                <div><i class="icon ion-map"></i> &nbsp Record Location &nbsp</div>
             </ion-toggle>
-<!--            <div ng-show="state.trackLocation" class="list card">
-                <a ng-show="user" ng-click="goToState('app.map')" class="item ">
-                    Open Map
-                </a>
-            </div>-->
         </div>
         <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>
         <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
@@ -47,14 +58,15 @@
                 Export Your Data
             </div>
             <!-- PDF Export doesn't work
-            <a href="" ng-click="exportPdf()" class="item ">
+            <a href="" ng-click="exportMeasurements('pdf)" class="item ">
               Export as PDF File
             </a>
-            -->
-            <a href="" ng-click="exportXls()" class="item ">
+
+            <a href="" ng-click="exportMeasurements('xls)" class="item ">
                 Export as XLS File
             </a>
-            <a href="" ng-click="exportCsv()" class="item ">
+            -->
+            <a href="" ng-click="exportMeasurements('csv')" class="item ">
                 Export as CSV File
             </a>
         </div>
@@ -66,10 +78,20 @@
                 Help & Feedback
             </a>
         </div>
+<!--  iOS users can't get back to the app and it doesn't work if the avatar is from Google or Facebook
+        <div class="card" ng-if="user && user.avatar && user.email">
+            <a class="item item-avatar"
+               href="https://en.gravatar.com/emails/">
+                <img ng-src="{{user.avatar}}">
+                <h2>Update Avatar</h2>
+                <p>for {{user.email}}</p>
+            </a>
+        </div>
 
+        -->
         <div ng-if="!user" class="card sign-in" >
             <div class="item item-text-wrap">
-                <button class="button button-block icon-left ion-trash-a button-assertive" ng-click="logout()">
+                <button class="button button-outline button-block icon-left ion-trash-a button-assertive" ng-click="logout($event)">
                     Clear all user data
                 </button>
             </div>
@@ -78,7 +100,7 @@
 <!--
         <div ng-if="user" class="card sign-in" >
             <div class="item item-text-wrap">
-                <button class="button button-block icon-left ion-refresh button-assertive" ng-click="refreshUser()">
+                <button class="button button-outline button-block icon-left ion-refresh button-assertive" ng-click="refreshUser()">
                     Refresh User Settings
                 </button>
             </div>
@@ -92,7 +114,7 @@
                 Submit Bug Report
             </a>
         </div>
-        <div class="card" >
+        <div ng-if="false" class="card" >
             <div class="item item-divider">
                 <i class="icon ion-erlenmeyer-flask"></i>
                 &nbsp
@@ -106,6 +128,20 @@
                 <i class="icon ion-android-download"></i>
                 &nbsp;
                 Update App
+            </a>
+        </div>
+        <div ng-if="user && user.stripeActive" class="list card" ng-click="downgrade()">
+            <a class="item">
+                <i class="icon ion-ios-color-wand"></i>
+                &nbsp;
+                Downgrade to Lite
+            </a>
+        </div>
+        <div class="list card" ng-click="openUrl('https://quantimo.do/image-credits/')">
+            <a class="item">
+                <i class="icon ion-ios-camera-outline"></i>
+                &nbsp;
+                Image Credits
             </a>
         </div>
         <br>

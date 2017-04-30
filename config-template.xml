@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="YourAppIdentifierHere" version="IONIC_APP_VERSION_NUMBER_PLACEHOLDER" ios-CFBundleVersion="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="YourAppIdentifierHere" version="IONIC_APP_VERSION_NUMBER_PLACEHOLDER" ios-CFBundleVersion="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" android-versionCode="203024" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>YourAppDisplayNameHere</name>
   <description>
     YourAppDescriptionHere
@@ -7,14 +7,17 @@
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo
   </author>
-  <access origin="*" />
-  <allow-intent href="http://*/*" />
+  <access origin="tel:*" launch-external="yes"/>
+  <access origin="geo:*" launch-external="yes"/>
+  <access origin="mailto:*" launch-external="yes"/>
+  <access origin="sms:*" launch-external="yes"/>
+  <access origin="market:*" launch-external="yes"/>
   <allow-intent href="https://*/*" />
   <allow-intent href="tel:*" />
   <allow-intent href="sms:*" />
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
-  <allow-navigation href="*" />
+  <allow-navigation href="https://*/*" />
   <content src="index.html" />
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar" />
@@ -74,12 +77,19 @@
   <plugin name="cordova-plugin-device" spec="~1.1.2"/>
   <plugin name="cordova-plugin-geolocation" version="2.3.0"/>
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1"/>
+  <plugin name="cordova-plugin-inapppurchase" spec="~1.1.0" />
+  <plugin name="cordova-plugin-mauron85-background-geolocation" spec="^2.2.0"/>
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
   <plugin name="cordova-plugin-statusbar" version="2.2.0"/>
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2"/>
-  <plugin name="ionic-plugin-deploy" spec="~0.6.5"/>
   <plugin name="ionic-plugin-keyboard" version="2.2.1"/>
+  <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
+    <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d" />
+  </plugin>
+  <plugin name="phonegap-plugin-push" version="1.10.0">
+    <variable name="SENDER_ID" value="1052648855194"/>
+  </plugin>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
-    <vs:platformSpecificWidget platformName="windows" version="2.2.5.0" id="YourWindowsAppIdentifierHere" />
+    <vs:platformSpecificWidget platformName="windows" version="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" id="YourWindowsAppIdentifierHere" />
   </vs:platformSpecificValues>
 </widget>

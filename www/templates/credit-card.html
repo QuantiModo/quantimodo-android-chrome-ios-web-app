@@ -1,0 +1,66 @@
+<form novalidate name="paymentForm">
+    <md-radio-group ng-model="productId">
+
+        <md-radio-button value="yearly60" class="md-primary">Yearly ($59.99/yr)</md-radio-button>
+        <md-radio-button value="monthly7">Monthly ($6.99/mo)</md-radio-button>
+
+    </md-radio-group>
+    <input style="text-align: center; border: 1px solid #a2a2a2;"
+            type="text"
+            name="creditCard"
+            ng-model="ccinfo.number"
+            required
+            data-credit-card-type
+            data-ng-pattern="/^[0-9]+$/"
+            data-ng-minlength="15"
+            maxlength="19"
+            placeholder="Card Number" >{{ccinfo.type}}
+    <br/>
+    <ul ng-show="paymentForm.submitAttempt && !paymentForm.$valid">
+        <li ng-show="paymentForm.creditCard.$error.minlength">Credit card must be 15-19 digits</li>
+        <li ng-show="paymentForm.creditCard.$error.pattern">Credit card must consist of only numbers</li>
+        <li ng-show="paymentForm.creditCard.$error.invalid">Credit card must be a valid Amex, Visa, Discover, or Master Card</li>
+        <li ng-show="paymentForm.creditCard.$error.required">Enter card number</li>
+    </ul>
+    <input
+            style="text-align: center; border: 1px solid #a2a2a2;"
+            type="text"
+            name="securityCode"
+            ng-model="ccinfo.securityCode"
+            placeholder="Security Code"
+            required
+            data-ng-pattern="/^[0-9]+$/"
+            data-ng-minlength="3"
+            maxlength="4">
+    <br/>
+    <ul ng-show="paymentForm.submitAttempt && !paymentForm.$valid">
+        <li ng-show="paymentForm.securityCode.$error.pattern">Security code must contain only numbers</li>
+        <li ng-show="paymentForm.securityCode.$error.minlength">Security code must be 3-4 digits</li>
+        <li ng-show="paymentForm.securityCode.$error.required">Enter security code</li>
+    </ul>
+    <select ng-model="ccinfo.month" name="month" data-card-expiration required>
+        <option disabled selected value="">Month</option>
+        <option ng-repeat="month in months" value="{{$index+1}}" > {{$index+1}} - {{month}}</option>
+    </select>
+    <br/>
+    <ul ng-show="paymentForm.submitAttempt && !paymentForm.$valid">
+        <li ng-show="paymentForm.month.$error.required">Expiration month required</li>
+    </ul>
+    <br>
+    <select ng-model="ccinfo.year" name="year" required>
+        <option disabled selected value="">Year</option>
+        <option ng-repeat="year in [] | range:currentYear:currentYear+13">{{year}}</option>
+    </select>
+    <br/>
+    <ul ng-show="paymentForm.submitAttempt && !paymentForm.$valid">
+        <li ng-show="paymentForm.year.$error.required">Expiration year required</li>
+        <li ng-show="paymentForm.month.$error.invalid">Provided expiration date is invalid</li>
+    </ul>
+    <br>
+    <input
+            style="text-align: center; border: 1px solid #a2a2a2;"
+            type="text"
+            name="coupon"bower
+            ng-model="ccinfo.coupon"
+            placeholder="Coupon Code">
+</form>

@@ -1,0 +1,46 @@
+<md-dialog aria-label="Join Variable Dialog">
+
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2 style="color: white;">{{ctrl.title}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+                <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content ng-cloak>
+        <div class="md-dialog-content">
+            <form ng-submit="$event.preventDefault()">
+                <p>{{ctrl.helpText}}</p>
+                <md-autocomplete
+                        md-no-cache="true"
+                        md-selected-item="ctrl.selectedItem"
+                        md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+                        md-search-text="ctrl.searchText"
+                        md-selected-item-change="ctrl.selectedItemChange(item)"
+                        md-items="item in ctrl.querySearch(ctrl.searchText)"
+                        ng-model-options="{debounce: 500}"
+                        md-item-text="item.name"
+                        md-min-length="0"
+                        placeholder="{{ctrl.placeholder}}"
+                        md-autofocus>
+                    <md-item-template>
+                        <!--<i class="icon {{item.ionIcon}}"></i>-->
+                        <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">
+                            {{item.name}}
+                        </span>
+                    </md-item-template>
+                    <md-not-found>
+                        {{ctrl.notFoundText}}
+                    </md-not-found>
+                </md-autocomplete>
+            </form>
+        </div>
+    </md-dialog-content>
+
+    <md-dialog-actions>
+        <md-button ng-if="ctrl.buttonText" aria-label="Finished" ng-click="ctrl.finish($event, item)">{{ctrl.buttonText}}</md-button>
+    </md-dialog-actions>
+</md-dialog>

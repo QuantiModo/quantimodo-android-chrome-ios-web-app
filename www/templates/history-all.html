@@ -1,11 +1,10 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
     <ion-nav-title>{{state.title}}</ion-nav-title>
      <ion-content ng-class="{ isBrowserView : isWeb == true }">
-         <ion-refresher on-refresh="getHistory()"></ion-refresher>
-         <div class="list card" ng-show="state.noHistory">
+         <ion-refresher on-refresh="refreshHistory()"></ion-refresher>
+         <div class="list card" ng-show="state.noHistory && (!state.history || !state.history.length)">
              <div class="item" style="padding-bottom:10px;">
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">No Measurements</p>
-
                  <div class="row">
                      <div class="col" style="padding-top: 0px;">
                          <i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sad"></i>
@@ -21,14 +20,6 @@
                          <button class="button button-clear button-balanced" style="font-size: 14px;"
                                  ng-click="goToState('app.reminderSearch')">
                              <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
-                         </button>
-                     </div>
-                 </div>
-                 <div class="row" >
-                     <div class="button-bar">
-                         <button class="button button-clear button-assertive" style="font-size: 14px;"
-                                 ng-click="goToState('app.favorites')">
-                             <i class="ion-star"> &nbsp; Go to favorites &nbsp;</i>
                          </button>
                      </div>
                  </div>
@@ -51,15 +42,11 @@
              </div>
          </div>
          <div ng-show="state.showLocationToggle" class="card sign-in" >
-             <ion-toggle ng-model="state.trackLocation"
-                         ng-change="trackLocationChange()">
-                 <i class="icon ion-map"></i>
-                 &nbsp
-                 Track my location
+             <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationChange($event)">
+                 <i class="icon ion-map"></i>&nbspTrack my location
              </ion-toggle>
           </div>
-
-         <div class="list card"  ng-if="!hideHistoryPageInstructionsCard && !state.noHistory">
+         <div class="list card" ng-if="!hideHistoryPageInstructionsCard && !(state.noHistory && (!state.history || !state.history.length))">
              <div class="item" >
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">{{state.helpCardTitle}}</p>
                  <div class="row">
@@ -67,7 +54,7 @@
                          <i style="font-size: 60px;" class="icon positive ion-calendar"></i>
                      </div>
                      <div class="col col-75">
-                         <h2 style="white-space: normal; text-align: left; line-height: normal; ">Edit or add notes by tapping on any measurement below.</h2>
+                         <h2 style="white-space: normal; text-align: left; line-height: normal; ">Edit or add notes by tapping on any measurement below.  Drag down to refresh and get your most recent measurements.</h2>
                      </div>
                  </div>
                  <div class="row"  >
@@ -89,32 +76,36 @@
          </div>
 
       <ion-list id="historyList">
-          <div ng-repeat="historyItem in state.history"
-               data-measurementid="{{historyItem.id}}"
+          <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true"
                ng-hide="historyItem.hide"
-               on-hold="showActionSheet(historyItem, $index)" divider-collection-repeat>
-              <ion-item  ng-click="editMeasurement(historyItem)">
-                  <div style="display:inline-block;float:left;margin-left:5px;margin-right:5px;width:50px;text-align:center">
-                    <i ng-hide="historyItem.image" class="{{historyItem.icon }}" style="color:#11c1f3;font-size: 50px;"></i>
-                      <img ng-show="historyItem.image" ng-src="{{historyItem.image}}" style="width:50px;" />
-                  </div>
-                  <div class="history-block" style="margin-left:5px;">
-                      <p ng-hide="true">{{historyItem.id}}</p>
-                      <h2 style="font-weight:bold;white-space:normal"> {{historyItem.valueUnitVariableName}}</h2>
-                    <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | timeOfDayDayOfWeek) track by $index">
-                      {{line}}
-                    </h2>
-                      <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | justDate) track by $index">
-                          {{line}}
-                      </h2>
-                      <h2 class="" >{{historyItem.note}}</h2>
-                  </div>
-              </ion-item>
-
+               data-measurementid="{{historyItem.id}}"
+               class="item item-avatar"
+               id="historyItem"
+               on-hold="showActionSheetForMeasurement(historyItem, $index)"
+               ng-click="editMeasurement(historyItem)">
+              <i id="historyItemIcon" class="icon positive {{historyItem.icon}} icon-positive" ng-if="!historyItem.pngPath"
+                 style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							border-radius: 4px;">
+              </i>
+              <img ng-if="historyItem.pngPath" src="{{historyItem.pngPath}}" style="border-radius: 0">
+              <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal; line-height: normal;">
+                  {{historyItem.valueUnitVariableName}}
+              </h2>
+              <p id="historyItemBody" >
+                  <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
+                  {{historyItem.startTimeEpoch | dayOfWeekAndDate}}<br>
+                  {{historyItem.note | limitTo:40}}
+              </p>
           </div>
       </ion-list> 
-      <div class="button-bar" ng-hide="state.hideLoadMoreButton">
-        <a class="button button-clear button-calm" ng-click="getNext()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
+      <div class="button-bar" ng-show="state.showLoadMoreButton">
+        <a class="button button-clear button-positive" ng-click="getNext()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
       </div>
     </ion-content>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>

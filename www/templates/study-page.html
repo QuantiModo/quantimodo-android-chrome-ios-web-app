@@ -1,15 +1,8 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
     <ion-nav-title>Study</ion-nav-title>
-        <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
+        <ion-content scroll="{ isBrowserView : isWeb == false }" ng-class="{ isBrowserView : isWeb == true }">
             <ion-refresher on-refresh="refreshStudy()"></ion-refresher>
-            <div ng-show="state.loading && !state.studyNotFound" style="text-align: center">
-                <br>
-                <br>
-                <br>
-                <br>
-                <ion-spinner icon="android"></ion-spinner>
-            </div>
-            <div ng-show="correlationObject" class="item-text-wrap card-item" style="border-style:hidden; text-align: center">
+            <div ng-cloak ng-show="correlationObject" class="item-text-wrap card-item" style="border-style:hidden; text-align: center">
                 <br>
                 <h2 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h2>
                 <br>
@@ -20,8 +13,17 @@
                 <img ng-src="{{correlationObject.effectVariableImageUrl}}">-->
                 <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
                 <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div><br>
-                <h3 id="studyAbstract">Study Abstract</h3>
-                <p>{{correlationObject.studyAbstract}}</p><br>
+                <h3 id="studyAbstractTitle">Study Abstract</h3>
+                <p id="studyAbstractBody" style="padding: 5px;">{{correlationObject.studyAbstract}}</p><br>
+                <div ng-hide="user && correlationObject.userId === user.id" class="row">
+                    <div class="col">
+                        <button class="button button-outline button-block icon-left ion-ios-people button-positive"
+                                id="joinStudyButton"
+                                ng-click="joinStudy(correlationObject)">
+                            Join this Study
+                        </button>
+                    </div>
+                </div>
                 <div ng-show="loadingCharts" style="text-align: center">
                     <br>
                     <ion-spinner icon="android"></ion-spinner>
@@ -30,74 +32,17 @@
                     <br>
                 </div>
                 <div id="studyCharts">
-                    <div ng-show="causeTimelineChartConfig">
-                        <highchart id="causeTimeline"
-                                   config="causeTimelineChartConfig">
+                    <div ng-repeat="chart in correlationObject.charts">
+                        <h2>{{chart.chartTitle}}</h2>
+                        <highchart id="{{chart.chartId}}"
+                                   config="chart.chartConfig">
                         </highchart>
                         <br>
-                    </div>
-                    <div ng-show="effectTimelineChartConfig">
-                        <highchart id="effectTimeline"
-                                   config="effectTimelineChartConfig">
-                        </highchart>
-                        <br>
-                    </div>
-                    <div ng-show="aggregatedCauseScatterplotChartConfig">
-                        <highchart id="aggregatedCauseScatterplotChartConfig"
-                                   config="aggregatedCauseScatterplotChartConfig">
-                        </highchart>
-                        <br>
-                    </div>
-                    <div ng-show="aggregatedEffectScatterplotChartConfig">
-                        <highchart id="aggregatedEffectScatterplotChartConfig"
-                                   config="aggregatedEffectScatterplotChartConfig">
-
-                        </highchart>
-                        <br>
-                    </div>
-                    <div ng-show="correlationObject.scatterPlotConfig">
-                        <highchart id="scatterplot"
-                                   config="correlationObject.scatterPlotConfig">
-                        </highchart>
-                        <!--
-                        <label class="item item-input"
-                           ng-show="correlationsOverOnsetDelaysChartConfig">
-                        <span class="input-label">Moving Average Period</span>
-                        <input type="number"
-                               ng-change="createUserCharts()"
-                               ng-model="weightedPeriod"
-                               id="weightedPeriod" placeholder="" >
-                        </label>
-                        -->
-                        <br>
-                    </div>
-                    <div ng-show="correlationObject.correlationsOverOnsetDelaysChartConfig.series.length">
-                        <highchart id="correlationsOverOnsetDelaysChart"
-                                   config="correlationObject.correlationsOverOnsetDelaysChartConfig">
-                        </highchart>
-                        <p>
-                            {{correlationObject.correlationsOverOnsetDelaysChartConfig.explanation}}
-                        </p>
-                        <br>
-                    </div>
-                    <div ng-show="correlationObject.correlationsOverDurationsOfActionChartConfig.series.length">
-                        <highchart id="correlationsOverDurationsOfActionChart"
-                                   config="correlationObject.correlationsOverDurationsOfActionChartConfig">
-                        </highchart>
-                        <p>
-                            {{correlationObject.correlationsOverOnsetDelaysChartConfig.explanation}}
-                        </p>
-                        <br>
-                    </div>
-                    <div ng-show="correlationObject.pairsOverTimeChartConfig">
-                        <highchart id="pairsOverTimeChart"
-                                   config="correlationObject.pairsOverTimeChartConfig">
-                        </highchart>
                     </div>
                 </div>
                 <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id" class="row">
                     <div class="col">
-                        <button class="button button-block icon-left {{correlationObject.causeVariableIonIcon}} button-positive"
+                        <button class="button button-outline button-block icon-left {{correlationObject.causeVariableIonIcon}} button-positive"
                                 id="predictorVariableSettingsButton"
                                 ng-click="goToVariableSettingsForCauseVariable(correlationObject)">
                             {{correlationObject.causeVariableName}} Settings
@@ -106,14 +51,15 @@
                 </div>
                 <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id" class="row">
                     <div class="col">
-                        <button class="button button-block icon-left {{correlationObject.effectVariableIonIcon}} button-positive"
+                        <button class="button button-outline button-block icon-left {{correlationObject.effectVariableIonIcon}} button-positive"
                                 id="outcomeVariableSettingsButton"
                                 ng-click="goToVariableSettingsForEffectVariable(correlationObject)">
                             {{correlationObject.effectVariableName}} Settings
                         </button>
                     </div>
                 </div>
-                <div ng-show="correlationObject.userId && user && correlationObject.userId === user.id"
+                <div id="publicStudyToggle"
+                    ng-show="correlationObject.userId && user && correlationObject.userId === user.id"
                      class="card sign-in" >
                     <ion-toggle ng-model="correlationObject.shareUserMeasurements"
                                 ng-change="toggleStudyShare(correlationObject)">
@@ -124,8 +70,12 @@
                             &nbsp Study is Public
                         </i>
                     </ion-toggle>
+                    <label ng-click="copyStudyUrlToClipboard()" class="item item-content"
+                           ng-if="correlationObject.shareUserMeasurements === true && correlationObject.studyLinkStatic">
+                        <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
+                    </label>
                 </div>
-                <div id="studyBody" >
+                <div id="studyBody" style="padding-left: 20px; padding-right: 20px; text-align: justify;">
                     <h3 ng-if="causeWikiEntry || effectWikiEntry || correlationObject.studyBackground"
                         id="studyBackground">
                         Study Background
@@ -143,7 +93,6 @@
                             <p ng-bind-html="causeWikiEntry" style="text-align: left"></p>
                         </div>
                     </div>
-                    <br>
                     <div>
                         <div ng-if="effectWikiImage" style="width: 100%">
                             <img hspace="20" style="float:right; padding: 5px" ng-show="effectWikiImage" ng-src="{{effectWikiImage}}" >
@@ -152,18 +101,36 @@
                             <p ng-bind-html="effectWikiEntry" style="text-align: left"></p>
                         </div>
                     </div>
-                    <br>
+
                     <h3 ng-show="correlationObject.studyObjective" id="studyObjective">Study Objective</h3>
-                       <p>{{correlationObject.studyObjective}}</p><br>
+                       <p>{{correlationObject.studyObjective}}</p>
                     <h3 ng-show="correlationObject.studyDesign" id="studyDesign">Study Design</h3>
-                       <p>{{correlationObject.studyDesign}}</p><br>
+                       <p>{{correlationObject.studyDesign}}</p>
                     <h3 ng-show="correlationObject.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
-                       <p>{{correlationObject.dataAnalysis}}</p><br>
-                    <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
-                       <p ng-bind-html="correlationObject.dataSources"></p><br>
+                       <p>{{correlationObject.dataAnalysis}}</p>
+
+                    <h3 ng-show="correlationObject.dataSourcesParagraphForCause" id="causeDataSources">{{correlationObject.causeVariableName}} Data Sources</h3>
+                       <p ng-bind-html="correlationObject.dataSourcesParagraphForCause"></p>
+
+                    <div style="display:block; margin: 0 auto;" ng-show="correlationObject.dataSourceImageForCause">
+                        <a href="{{correlationObject.dataSourceUrlForCause}}">
+                            <img style="max-width: 100px;" title="dataSourceImageForCause" ng-src="{{correlationObject.dataSourceImageForCause}}"
+                                 alt="dataSourceImageForCause">
+                        </a>
+                    </div>
+                    <h3 ng-show="correlationObject.dataSourcesParagraphForEffect" id="effectDataSources">{{correlationObject.effectVariableName}} Data Sources</h3>
+                    <p ng-bind-html="correlationObject.dataSourcesParagraphForEffect"></p> <br>
+
+                    <div style="display:block; margin: 0 auto;" ng-show="correlationObject.dataSourceImageForEffect">
+                        <a href="{{correlationObject.dataSourceUrlForEffect}}">
+                            <img style="max-width: 100px;" title="dataSourceImageForEffect" ng-src="{{correlationObject.dataSourceImageForEffect}}" 
+                                 alt="dataSourceImageForEffect">
+                        </a>
+                    </div>
+
                     <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
-                        <p>{{correlationObject.studyLimitations}}</p><br>
-                    <br>
+                        <p ng-bind-html="correlationObject.studyLimitations"></p>
+
                 </div>
             </div>
             <div ng-show="correlationObject">
@@ -171,46 +138,21 @@
                 <br>
                 <br>
             </div>
-            <div class="list card"  ng-if="state.studyNotFound">
-                <div class="item" style="padding-bottom:10px;">
-                    <p style=" text-align: center; line-height: normal; font-size: 25px;">Study Not Found</p>
-                    <div class="row">
-                        <div class="col" style="padding-top: 0;">
-                            <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
-                        </div>
-                        <div class="col col-75">
-                            <h2 style="white-space: normal; text-align: justify; line-height: normal; ">
-                                We don't have enough data to determine the relationship between
-                                {{state.requestParams.causeVariableName}} and {{state.requestParams.effectVariableName}}!
-                                Want to help advance citizen science?  Start tracking or create a study!
-                            </h2>
-                        </div>
-                    </div>
-                    <div class="row" >
-                        <div class="button-bar">
-                            <button class="button button-clear button-balanced" style="font-size: 14px;"
-                                    ng-click="goToState('app.reminderSearch')">
-                                <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row" >
-                        <div class="button-bar">
-                            <button class="button button-clear button-royal" style="font-size: 14px;"
-                                    ng-click="goToState('app.measurementAddSearch')">
-                                <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row" >
-                        <div class="button-bar">
-                            <button class="button button-clear button-assertive" style="font-size: 14px;"
-                                    ng-click="goToState('app.studyCreate')">
-                                <i class="ion-ios-flask"> &nbsp; Create a Study &nbsp;</i>
-                            </button>
-                        </div>
-                    </div>
+            <div class="card"  style="text-align: center; padding-left: 10px; padding-right: 10px;" ng-if="state.studyNotFound">
+                <p style="line-height: normal; font-size: 25px;">Not Enough Data</p>
+                <img style="width:100px; height:100px;" ng-src="img/robots/quantimodo-robot-puzzled.svg">
+                <p>
+                    I don't have enough data to determine the relationship between
+                    {{state.requestParams.causeVariableName}} and {{state.requestParams.effectVariableName}}!
+                </p>
+                <br>
+                <p> Want to help advance citizen science? </p>
+                <div ng-include="'templates/buttons/join-study-button.html'"></div>
+                <div>
+                    <p style="font-size: 16px; line-height: 1; text-align: center"> or share it </p>
+                    <div ng-include="'templates/fragments/study-sharing-fragment.html'"></div>
                 </div>
+                <br>
             </div>
         </ion-content>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>

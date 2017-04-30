@@ -5,5 +5,7 @@ ls
 
 echo "PREPARE_IOS_APP env is ${PREPARE_IOS_APP}"
 
+echo "LOWERCASE_APP_NAME is ${LOWERCASE_APP_NAME}"
+
 #echo "cd ../.. && gulp prepareQuantiModoIos && cd platforms/ios"
 #cd ../.. && gulp prepareQuantiModoIos && cd platforms/ios

@@ -1,23 +1,35 @@
 <ion-side-menus enable-menu-with-back-views="true" >
     <ion-side-menu-content>
-        <ion-nav-bar class="{{appSettings.ionNavBarClass}}" ng-hide="hideNavigationMenu" >
+        <ion-nav-bar class="{{appSettings.ionNavBarClass}}" ng-show="hideNavigationMenu === false" >
             <ion-nav-buttons side="left">
-                <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+                <button ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left">
                 </button>
+                <button ng-show="showCloseMenuButton" class="button button-icon ion-android-close"
+                        ng-click="closeMenu()">
+                </button>
+                <button ng-hide="hideBackButton" class="button button-icon ion-android-arrow-back"
+                        ng-click="goBack()">
+                </button>
+                <!-- Gets cut off so hiding until I have time to implement this: http://ionicframework.com/docs/api/directive/ionHeaderBar/
+                Also, now back button goes home if we don't have a back view so we don't need a home button
+                <button ng-hide="hideHomeButton" class="button button-icon ion-home"
+                        ng-click="goToState('app.remindersInbox')">
+                </button>
+                -->
             </ion-nav-buttons>
 
             <ion-nav-buttons side="right">
 
                 <div class="buttons">
                     <a href="#/app/settings"
-                       ng-if="user && user.avatar"
+                       ng-if="user && user.avatar && !isMobile"
                        class="button button-clear" >
-                        <img id="navBarAvatar" ng-src="{{user.avatar}}">
+                        <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}">
                     </a>
-                    <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="toggleFilterBar($event)"></button>
+                    <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="openCorrelationSearchDialog($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
-                    <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText" ng-click="onGenericHelpButtonPress()"></button>
-                    <button class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
+                    <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="goToState('app.help')"></button>
+                    <button class="button button-icon ion-ios-help-outline" ng-show="stateParams.helpText" ng-click="showMaterialAlert(stateParams.title, stateParams.helpText, $event)"></button>
                     <button class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>
@@ -48,22 +60,36 @@
         </ion-nav-view>
     </ion-side-menu-content>
 
-    <ion-side-menu side="left" is-enabled="!hideNavigationMenu">
+    <ion-side-menu side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large">
         <ion-header-bar class="bar-positive">
-            <h1 class="title"></h1>
+            <div style="cursor:pointer;"
+                 ng-click="goToState('app.settings')"
+                 ng-if="user && user.displayName && (user.stripeActive || appSettings.upgradeDisabled)">
+                <a ng-if="user && user.avatar"
+                   class="button button-clear" >
+                    <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
+                </a>
+                <h1 class="title" style="position: fixed; bottom: 0;">
+                    {{user.displayName}}
+                </h1>
+            </div>
+            <div style="cursor:pointer;"
+                 ng-if="user && user.displayName && !user.stripeActive && !appSettings.upgradeDisabled"
+                 ng-click="goToState('app.upgrade')">
+                <button class="button button-icon ion-android-star-outline"></button>
+                <h1 class="title" style="position: fixed; bottom: 0;">
+                    {{appSettings.appDisplayName}} Plus
+                </h1>
+            </div>
         </ion-header-bar>
         <ion-content>
-                        
+
             <ion-list>
-               
-                <ion-item ng-show="menuItem.isSubMenuParent ||
-                    (!menuItem.isSubMenuParent && !menuItem.isSubMenuChild) ||
-                     this[menuItem.showSubMenuVariable]"
+                <ion-item ng-show="menuItem.isSubMenuParent || (!menuItem.isSubMenuParent && !menuItem.isSubMenuChild) || this[menuItem.showSubMenuVariable]"
                       ng-class="{'sub-menu': menuItem.isSubMenuChild}"
                       ng-repeat="menuItem in menu"
                       ng-click="closeMenuIfNeeded(menuItem)"
                       ng-href="{{menuItem.href}}">
-
                     <i ng-if="menuItem.isSubMenuParent && this[menuItem.showSubMenuVariable]"
                        class="{{menuItem.expandedIcon}}">
                         &nbsp; {{menuItem.title}}
@@ -72,7 +98,8 @@
                        class="{{menuItem.collapsedIcon}}">
                         &nbsp; {{menuItem.title}}
                     </i>
-                    <i ng-if="!menuItem.isSubMenuParent" class="{{menuItem.icon}}" menu-close>
+                    <!--Don't use menu-close instead of menu-toggle because it clears the state history-->
+                    <i ng-if="!menuItem.isSubMenuParent" class="{{menuItem.icon}}" menu-toggle>
                         &nbsp; {{menuItem.title}}
                     </i >
                 </ion-item>

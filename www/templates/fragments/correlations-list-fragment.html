@@ -1,0 +1,83 @@
+<div class="card" ng-show="state.correlationObjects.length">
+    <div class="item item-avatar">
+        <i class="icon positive {{state.correlationsExplanation.ionIcon}}"
+           style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							border-radius: 4px;"
+        ></i>
+        <p style="
+					  height: 40px;
+					  line-height: 40px;
+					  white-space: nowrap;
+					  color: black;
+					font-size: 18px;">
+            {{state.correlationsExplanation.title}}
+        </p>
+    </div>
+    <div class="item item-body" style="text-align: center;">
+        {{state.correlationsExplanation.description}}  {{state.correlationsExplanation.startTracking.description}}
+        <br>
+        <div class="button-bar">
+            <a class="button button-clear button-positive" ng-click="showExplanationsPopup('thumbs', $event)" style="text-overflow: clip;"><i class="ion-information-circled">  Improve Predictions</i></a>
+        </div>
+    </div>
+    <div ng-if="state.requestParams.sort && state.requestParams.sort === '-statisticalSignificance'"
+         class="item item-body"
+         style="text-align: center;">
+        Results in order of descending statistical significance.
+    </div>
+    <div ng-if="state.requestParams.sort && state.requestParams.sort === '-qmScore'"
+         class="item item-body"
+         style="text-align: center;">
+        Results in order of descending QM Score which is a combination of effect size and statistical significance.
+    </div>
+    <div ng-if="state.requestParams.sort && state.requestParams.sort === '-correlationCoefficient'"
+         class="item item-body"
+         style="text-align: center;">
+        Results in order of descending predictive correlation.  (So you'll probably just see positive correlations.)
+    </div>
+    <div ng-if="state.requestParams.sort && state.requestParams.sort === 'correlationCoefficient'"
+         class="item item-body"
+         style="text-align: center;">
+        Results in order of ascending predictive correlation.  (So you'll probably just see negative correlations.)
+    </div>
+</div>
+<div ng-show="searching" style="text-align: center">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <ion-spinner icon="android"></ion-spinner>
+    <br>
+</div>
+<ion-list>
+    <div id="correlationList" class="list card correlationResultList"
+         style="text-align: center"
+         ng-repeat="correlationObject in state.correlationObjects">
+        <div ng-if="outcomeList || predictorList" id="correlationHeader" class="item item-avatar" ng-click="goToStudyPage(correlationObject)">
+            <img ng-if="predictorList" ng-src="{{correlationObject.causeVariableImageUrl}}">
+            <img ng-if="outcomeList" ng-src="{{correlationObject.effectVariableImageUrl}}">
+            <p style="height: 40px; line-height: 40px; color: black; font-size: 18px; margin-left: -40px;">
+                <span ng-if="outcomeList">{{correlationObject.effectVariableName}}</span>
+                <span ng-if="predictorList">{{correlationObject.causeVariableName}}</span>
+            </p>
+        </div>
+        <div ng-if="!outcomeList && !predictorList" id="predictorExplanationHeader" class="item"
+             ng-click="goToStudyPage(correlationObject)">
+            <span style="white-space: normal;">{{correlationObject.predictorExplanation}}</span>
+        </div>
+        <div id="correlationBody" class="item item-body">
+            <img ng-src="{{correlationObject.gaugeImage}}" ng-click="goToStudyPage(correlationObject)">
+            <p ng-if="outcomeList || predictorList">{{correlationObject.predictorExplanation}}</p>
+            <div ng-include="'templates/fragments/study-excerpt-fragment.html'"></div>
+            <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
+            <div ng-include="'templates/buttons/join-study-button.html'"></div>
+        </div>
+    </div>
+</ion-list>
