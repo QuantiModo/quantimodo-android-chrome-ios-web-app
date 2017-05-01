@@ -8,11 +8,6 @@
       QuantiModo
   </author>
   <content src="index.html"/>
-  <access origin="tel:*" launch-external="yes"/>
-  <access origin="geo:*" launch-external="yes"/>
-  <access origin="mailto:*" launch-external="yes"/>
-  <access origin="sms:*" launch-external="yes"/>
-  <access origin="market:*" launch-external="yes"/>
   <access origin="https://widget.intercom.io/*"/>
   <allow-intent href="https://*/*"/>
   <allow-intent href="tel:*"/>
