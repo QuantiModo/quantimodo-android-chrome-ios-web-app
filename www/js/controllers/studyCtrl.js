@@ -16,20 +16,23 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         $rootScope.hideNavigationMenu = false;
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== "undefined")  { analytics.trackView($state.current.name); }
-        if($stateParams.correlationObject){$rootScope.correlationObject = $stateParams.correlationObject;}
-        setupRequestParams();
-        getStudy();
-        if(!$rootScope.correlationObject){
-            quantimodoService.getLocalStorageItemAsStringWithCallback("lastStudy", function (lastStudy) {
-                if(lastStudy){
-                    lastStudy = JSON.parse(lastStudy);
-                    if(lastStudy.causeVariableName === $scope.state.requestParams.causeVariableName && lastStudy.effectVariableName === $scope.state.requestParams.effectVariableName){
-                        $rootScope.correlationObject = lastStudy;
-                        quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
-                    }
-                }
-            });
+        if($stateParams.correlationObject){
+            quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify($stateParams.correlationObject));
+            $rootScope.correlationObject = $stateParams.correlationObject;
         }
+        setupRequestParams();
+        if(!$rootScope.correlationObject){
+            var lastStudy = quantimodoService.getLocalStorageItemAsObject("lastStudy");
+            if(lastStudy){
+                if((!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName) ||
+                    (lastStudy.causeVariableName === $scope.state.requestParams.causeVariableName && lastStudy.effectVariableName === $scope.state.requestParams.effectVariableName)){
+                    $rootScope.correlationObject = lastStudy;
+                    setupRequestParams();
+                    quantimodoService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
+                }
+            }
+        }
+        getStudy();
     });
     function setupRequestParams() {
         if(quantimodoService.getUrlParameter("causeVariableName")){ $scope.state.requestParams.causeVariableName = quantimodoService.getUrlParameter("causeVariableName", window.location.href, true); }
