@@ -25,11 +25,14 @@ var xml2js = require('xml2js');
 var parseString = require('xml2js').parseString;
 var clean = require('gulp-rimraf');
 var replace = require('gulp-string-replace');
+var git = require('gulp-git');
 
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
-    'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob'
+    'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob',
+    'quantimodo': null,
+    'medimodo': null
 };
 
 var paths = {
@@ -47,8 +50,16 @@ if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
 }
 
 if(!process.env.LOWERCASE_APP_NAME){
-    console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-    process.env.LOWERCASE_APP_NAME = 'quantimodo';
+    git.revParse({args:'--abbrev-ref HEAD'}, function (err, branch) {
+        console.log('current git branch: ' + branch);
+        if(appIds[branch]){
+            console.info('Setting LOWERCASE_APP_NAME using branch name ' + branch);
+            process.env.LOWERCASE_APP_NAME = branch;
+        } else{
+            console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
+            process.env.LOWERCASE_APP_NAME = 'quantimodo';
+        }
+    });
 }
 
 var exec = require('child_process').exec;
