@@ -50,8 +50,8 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$scope.stateParams = $stateParams;
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-		if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){$rootScope.variableCategoryName = $stateParams.variableCategoryName;
-		} else {$rootScope.variableCategoryName = null;}
+		if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){$scope.variableCategoryName = $stateParams.variableCategoryName;
+		} else {$scope.variableCategoryName = null;}
 		$rootScope.showActionSheetMenu = function() {
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
