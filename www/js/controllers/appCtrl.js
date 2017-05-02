@@ -275,7 +275,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $state.go('app.charts', {variableObject: variableObject});
     };
     $scope.closeMenuIfNeeded = function (menuItem) {
-        if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.isSubMenuParent) { $scope.closeMenu();}
+        if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}
     };
     $scope.showHistorySubMenu = false;
     $scope.loading = false;
@@ -423,6 +423,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.toggleOutcomePredictorSubMenu = function () {$scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;};
     $scope.toggleHistorySubMenu = function () {$scope.showHistorySubMenu = !$scope.showHistorySubMenu;};
     $scope.toggleReminderSubMenu = function () {$scope.showReminderSubMenu = !$scope.showReminderSubMenu;};
+    $scope.toggleVariablesSubMenu = function () {$scope.showVariablesSubMenu = !$scope.showVariablesSubMenu;};
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
         if(primaryOutcomeRatingFrequencyDescription){$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
         var intervals = {
@@ -598,7 +599,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             },
             destructiveButtonClicked: function() {
                 favorite.hide = true;
-                quantimodoService.deleteTrackingReminderDeferred(favorite.id);
+                quantimodoService.deleteTrackingReminderDeferred(favorite);
             }
         });
         $timeout(function() {hideSheet();}, 20000);
@@ -1586,6 +1587,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.goToStudyPage = function(correlationObject) {quantimodoService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
+        if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
+            $rootScope.correlationObject = null;
+        }
         $state.go('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
     };
     var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {

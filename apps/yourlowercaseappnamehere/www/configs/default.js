@@ -150,7 +150,6 @@ config.appSettings  = {
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-happy-outline',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Charts',
@@ -186,7 +185,6 @@ config.appSettings  = {
             showSubMenuVariable : 'showReminderSubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-android-notifications-none',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'All Reminders',
@@ -243,7 +241,6 @@ config.appSettings  = {
             showSubMenuVariable : 'showTrackingSubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-compose',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Track Anything',
@@ -300,7 +297,6 @@ config.appSettings  = {
             showSubMenuVariable : 'showHistorySubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-ios-list-outline',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'All Measurements',
@@ -374,7 +370,6 @@ config.appSettings  = {
             showSubMenuVariable : 'showPredictorSearchSubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-ios-analytics',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Predictor Search',
