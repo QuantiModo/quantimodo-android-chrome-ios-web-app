@@ -2315,7 +2315,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getTrackingRemindersFromLocalStorage = function (variableCategoryName){
         var deferred = $q.defer();
         var filteredReminders = [];
-        var unfilteredReminders = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminders'));
+        var unfilteredRemindersString = quantimodoService.getLocalStorageItemAsString('trackingReminders');
+        if(!unfilteredRemindersString){
+            deferred.resolve([]);
+            return deferred.promise;
+        }
+        var unfilteredReminders = JSON.parse(unfilteredRemindersString);
         if(!unfilteredReminders){unfilteredReminders = [];}
         var syncQueue = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminderSyncQueue'));
         if(syncQueue){unfilteredReminders = unfilteredReminders.concat(syncQueue);}
