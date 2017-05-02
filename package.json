@@ -58,6 +58,6 @@
   ],
   "cordovaPlatforms": [],
   "engines": {
-    "node": "0.10.x"
+    "node": "6.9.4"
   }
 }
