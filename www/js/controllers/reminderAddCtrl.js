@@ -32,7 +32,8 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             { id : 5, name : 'Vital Signs' },
             { id : 6, name : 'Physical Activity' },
             { id : 7, name : 'Sleep' },
-            { id : 8, name : 'Miscellaneous' }
+            { id : 8, name : 'Miscellaneous' },
+            { id : 9, name : 'Environment' }
         ],
         frequencyVariables : [
             { id : 2, name : 'Daily'},  // Default Daily has to be first because As-Needed will be above the fold on Android
