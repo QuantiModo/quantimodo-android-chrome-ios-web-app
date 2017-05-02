@@ -131,6 +131,10 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         $ionicLoading.hide();
     }
     function getStudy() {
+        if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
+            console.error('Cannot get study. Missing cause or effect variable name.');
+            return;
+        }
         $scope.loadingCharts = true;
         if(!$rootScope.correlationObject){$ionicLoading.show();}
         quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (study) {

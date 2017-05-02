@@ -20,15 +20,15 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         if($stateParams.helpText){$scope.state.helpText = $stateParams.helpText;}
         if($stateParams.title){$scope.state.title = $stateParams.title;}
         if($stateParams.variableSearchPlaceholderText){$scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;}
-        if ($rootScope.variableCategoryName === 'Anything') {$rootScope.variableCategoryName = null;}
+        if ($scope.variableCategoryName === 'Anything') {$scope.variableCategoryName = null;}
         if(!$stateParams.variableSearchParameters){$stateParams.variableSearchParameters = {};}
-        if(!$stateParams.variableSearchParameters.variableCategoryName){$stateParams.variableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;}
+        if(!$stateParams.variableSearchParameters.variableCategoryName){$stateParams.variableSearchParameters.variableCategoryName = $scope.variableCategoryName;}
         if(!$stateParams.commonVariableSearchParameters){$stateParams.commonVariableSearchParameters = $stateParams.variableSearchParameters;}
-        if(!$stateParams.commonVariableSearchParameters.variableCategoryName){$stateParams.commonVariableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;}
-        if($stateParams.variableCategoryName){$rootScope.variableCategoryName = $stateParams.variableCategoryName;}
-        if ($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything') {
-            $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";
-            $scope.state.title = "Select " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1));
+        if(!$stateParams.commonVariableSearchParameters.variableCategoryName){$stateParams.commonVariableSearchParameters.variableCategoryName = $scope.variableCategoryName;}
+        if($stateParams.variableCategoryName){$scope.variableCategoryName = $stateParams.variableCategoryName;}
+        if ($scope.variableCategoryName && $scope.variableCategoryName !== 'Anything') {
+            $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.variableCategoryName, 1).toLowerCase()) + " here...";
+            $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.variableCategoryName, 1));
             $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
         }
         setHelpText();
@@ -202,7 +202,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.addNewVariable = function(){
         var variableObject = {};
         variableObject.name = $scope.state.variableSearchQuery.name;
-        if($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $rootScope.variableCategoryName;}
+        if($scope.variableCategoryName && $scope.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $scope.variableCategoryName;}
         console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
         if ($stateParams.nextState) {
             $scope.stateParams.variableObject = variableObject;
