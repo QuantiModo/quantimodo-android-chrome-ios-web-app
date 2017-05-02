@@ -174,7 +174,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
             var name = 'Cannot make ' + type + ' request to ' + route;
             var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
-            var metaData = {type: type, route: route};
+            var metaData = {type: type, route: route, groupingHash: name};
             console.error(message);
             Bugsnag.notify(name, message, metaData, "error");
             return false;
@@ -1448,6 +1448,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(window.location.origin.indexOf('local') !== -1){env = "development";}
         if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
         if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
+        if($rootScope.user && $rootScope.user.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
         return env;
     };
     quantimodoService.getClientId = function(){
@@ -2315,7 +2316,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getTrackingRemindersFromLocalStorage = function (variableCategoryName){
         var deferred = $q.defer();
         var filteredReminders = [];
-        var unfilteredReminders = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminders'));
+        var unfilteredRemindersString = quantimodoService.getLocalStorageItemAsString('trackingReminders');
+        if(!unfilteredRemindersString){
+            deferred.resolve([]);
+            return deferred.promise;
+        }
+        var unfilteredReminders = JSON.parse(unfilteredRemindersString);
         if(!unfilteredReminders){unfilteredReminders = [];}
         var syncQueue = JSON.parse(quantimodoService.getLocalStorageItemAsString('trackingReminderSyncQueue'));
         if(syncQueue){unfilteredReminders = unfilteredReminders.concat(syncQueue);}

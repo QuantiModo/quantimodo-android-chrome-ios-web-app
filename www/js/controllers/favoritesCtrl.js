@@ -20,11 +20,11 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
         $scope.hideLoader();
         $rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
-            $rootScope.variableCategoryName = $stateParams.variableCategoryName;
+            $scope.variableCategoryName = $stateParams.variableCategoryName;
             $scope.state.addButtonText = "Add favorite " + $stateParams.variableCategoryName.toLowerCase();
             $scope.state.title = 'Favorite ' + $stateParams.variableCategoryName;
             $scope.state.moreHelpText = null;
-        } else {$rootScope.variableCategoryName = null;}
+        } else {$scope.variableCategoryName = null;}
         if($stateParams.variableCategoryName === 'Treatments') {
             $scope.state.addButtonText = "Add an as-needed medication";
             $scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
