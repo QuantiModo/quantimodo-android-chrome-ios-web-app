@@ -129,7 +129,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
         var name = status + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
         var message = status + ' from ' + request.method + ' ' + request.url + ' DATA:' + JSON.stringify(data) ;
-        var metaData = {data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
+        var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
         Bugsnag.notify(name, message, metaData, severity);
         var groupingHash;
