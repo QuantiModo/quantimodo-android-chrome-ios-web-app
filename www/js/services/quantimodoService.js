@@ -2192,7 +2192,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return deferred.promise;
         }
         quantimodoService.deleteTrackingReminder(reminderToDelete.id, function(response){
-            if(response.success) {
+            if(response && response.success) {
                 // Delete again in case we refreshed before deletion completed
                 quantimodoService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
                 deferred.resolve();
