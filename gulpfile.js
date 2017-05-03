@@ -43,10 +43,12 @@ var date = new Date();
 var longDate =  date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
 var monthNumber = (date.getMonth() + 1).toString();
 var dayOfMonth = ("0" + date.getDate()).slice(-2);
+var majorMinorVersionNumbers = '2.6.';
+var patchVersionNumber = monthNumber + dayOfMonth;
 
 if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
-    process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.6.' + monthNumber + dayOfMonth + '.0';
-    process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 6);
+    process.env.IONIC_IOS_APP_VERSION_NUMBER = majorMinorVersionNumbers + patchVersionNumber + '.0';
+    process.env.IONIC_APP_VERSION_NUMBER = majorMinorVersionNumbers + patchVersionNumber;
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
 
