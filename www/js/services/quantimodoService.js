@@ -1380,6 +1380,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var unitsIndexedByAbbreviatedName = [];
         var nonAdvancedUnitsIndexedByAbbreviatedName = [];
         var nonAdvancedUnitObjects = [];
+        var manualTrackingUnitsIndexedByAbbreviatedName = [];
         var manualTrackingUnitObjects = [];
         for (var i = 0; i < units.length; i++) {
             unitAbbreviatedNames[i] = units[i].abbreviatedName;
@@ -1390,7 +1391,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             if(units[i].manualTracking){
                 manualTrackingUnitObjects.push(units[i]);
-                manualTrackingUnitndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
+                manualTrackingUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
             }
         }
         var showMoreUnitsObject = {name: "Show more units", abbreviatedName: "Show more units"};
