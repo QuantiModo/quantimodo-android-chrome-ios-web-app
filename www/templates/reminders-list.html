@@ -23,11 +23,8 @@
 					{{state.noRemindersTitle}}
 				</p>
 			</div>
-			<div class="item item-body">
-				{{state.noRemindersText}} Press the pink button to add one now.
-			</div>
+			<div class="item item-body">{{state.noRemindersText}} Press the plus button to add one now.</div>
 		</div>
-
 		<div class="list" id="remindersList" ng-cloak>
 			<div class="item item-divider" ng-if="state.favorites && state.favorites.length">As-Needed</div>
 			<div class="item" id="favoriteItem" style="padding:0"
