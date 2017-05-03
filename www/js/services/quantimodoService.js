@@ -1380,12 +1380,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var unitsIndexedByAbbreviatedName = [];
         var nonAdvancedUnitsIndexedByAbbreviatedName = [];
         var nonAdvancedUnitObjects = [];
+        var manualTrackingUnitsIndexedByAbbreviatedName = [];
+        var manualTrackingUnitObjects = [];
         for (var i = 0; i < units.length; i++) {
             unitAbbreviatedNames[i] = units[i].abbreviatedName;
             unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
             if(!units[i].advanced){
                 nonAdvancedUnitObjects.push(units[i]);
                 nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
+            }
+            if(units[i].manualTracking){
+                manualTrackingUnitObjects.push(units[i]);
+                manualTrackingUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
             }
         }
         var showMoreUnitsObject = {name: "Show more units", abbreviatedName: "Show more units"};
@@ -1394,6 +1400,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $rootScope.unitsIndexedByAbbreviatedName = unitsIndexedByAbbreviatedName;
         $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = nonAdvancedUnitsIndexedByAbbreviatedName;
         $rootScope.nonAdvancedUnitObjects = nonAdvancedUnitObjects;
+        $rootScope.manualTrackingUnitsIndexedByAbbreviatedName = manualTrackingUnitsIndexedByAbbreviatedName;
+        $rootScope.manualTrackingUnitObjects = manualTrackingUnitObjects;
     }
     quantimodoService.getUnits = function(){
         var deferred = $q.defer();

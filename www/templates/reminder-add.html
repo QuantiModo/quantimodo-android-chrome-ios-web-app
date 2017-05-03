@@ -25,7 +25,7 @@
             <label id="advancedUnitSelectorBlock" class="item item-input item-select" ng-if="state.showMoreUnits || state.showMoreOptions">
                 <div class="input-label">Unit</div>
                 <select id="advancedUnitSelector" ng-model="state.trackingReminder.unitAbbreviatedName"
-                        ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
+                        ng-options="unit.abbreviatedName as unit.name for unit in state.moreUnits"
                         ng-change="unitSelected()">
                 </select>
             </label>
