@@ -23,11 +23,8 @@
 					{{state.noRemindersTitle}}
 				</p>
 			</div>
-			<div class="item item-body">
-				{{state.noRemindersText}} Press the pink button to add one now.
-			</div>
+			<div class="item item-body">{{state.noRemindersText}} Press the plus button to add one now.</div>
 		</div>
-
 		<div class="list" id="remindersList" ng-cloak>
 			<div class="item item-divider" ng-if="state.favorites && state.favorites.length">As-Needed</div>
 			<div class="item" id="favoriteItem" style="padding:0"
@@ -65,7 +62,7 @@
 		 ng-hide="hideNavigationMenu">
 		<button id="mfb1" mfb-button icon="ion-android-notifications-none" label="{{stateParams.addButtonText}}"
 				ng-click="addNewReminderButtonClick()"></button>
-		<button id="mfb2" mfb-button icon="ion-compose" label="{{state.addMeasurementButtonText}}"
+		<button id="mfb2" mfb-button icon="ion-compose" label="{{stateParams.addMeasurementButtonText}}"
 				ng-click="addNewMeasurementButtonClick()"></button>
 		<button id="mfb3" mfb-button icon="ion-ios-cloud-download-outline" label="Import Data"
 				ng-click="goToState('app.import')"></button>

@@ -39,7 +39,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 			if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
-			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add new reminder"; }
+			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add variable"; }
+            if(!$scope.stateParams.addMeasurementButtonText) { $scope.stateParams.addMeasurementButtonText = "Record Measurement"; }
 			actionButtons[2] = quantimodoService.actionSheetButtons.history;
             actionButtons[3] = quantimodoService.actionSheetButtons.addReminder;
 		} else {
@@ -50,7 +51,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			if(!$scope.stateParams.addButtonText) {
 				$scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
 			}
-			$scope.state.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
+			$scope.stateParams.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
             actionButtons[2] = { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
             actionButtons[3] = { text: '<i class="icon ' + quantimodoService.ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
 		}
@@ -131,9 +132,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		else { $state.go('app.measurementAddSearch'); }
 	};
 	$scope.deleteReminder = function(reminder){
-		quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId) .then(function(){
-			getTrackingReminders();
-		});
+		reminder.hide = true;
+		quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId).then(function(){getTrackingReminders();});
 		quantimodoService.deleteTrackingReminderDeferred(reminder).then(function(){console.debug("Reminder deleted");}, function(error){
 			if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 			console.error('Failed to Delete Reminder!');
