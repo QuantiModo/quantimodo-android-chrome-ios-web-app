@@ -10,7 +10,7 @@ machine:
     version: oraclejdk8
   environment:
     _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
-    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'  # Did not solve "Your build has exceeded the memory limit of 4G on 1 container"
 
 checkout:
   post:
