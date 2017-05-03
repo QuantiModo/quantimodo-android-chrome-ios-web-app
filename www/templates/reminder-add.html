@@ -115,7 +115,7 @@
             <label id="additionalTimeButton" ng-hide="state.hideAdditionalReminderTimeButton" ng-click="showAdditionalReminderTime()" class="item icon-left ion-clock">
 				<span> &nbsp; Add additional time</span>
             </label>
-            <label id="valenceSelectorBlock" class="item item-input item-select" ng-if="state.showMoreOptions || (state.trackingReminder.unitAbbreviatedName === '/5' && !state.trackingReminder.valence)">
+            <label id="valenceSelectorBlock" class="item item-input item-select" ng-if="state.trackingReminder.unitAbbreviatedName === '/5' && (state.showMoreOptions || !state.trackingReminder.valence)">
                 <div class="input-label">Higher {{state.trackingReminder.variableName}} is </div>
                 <select id="valenceSelector" ng-model="state.trackingReminder.valence">
                     <option selected value="positive">good</option>
