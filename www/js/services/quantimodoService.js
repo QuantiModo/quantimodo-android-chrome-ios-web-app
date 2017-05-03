@@ -169,7 +169,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     var canWeMakeRequestYet = function(type, route, options){
         var minimumSecondsBetweenRequests;
-        if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 3;}
+        if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 1;}
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
             var name = 'Cannot make ' + type + ' request to ' + route;
@@ -2192,7 +2192,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return deferred.promise;
         }
         quantimodoService.deleteTrackingReminder(reminderToDelete.id, function(response){
-            if(response.success) {
+            if(response && response.success) {
                 // Delete again in case we refreshed before deletion completed
                 quantimodoService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
                 deferred.resolve();
