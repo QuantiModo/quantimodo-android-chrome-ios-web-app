@@ -2,7 +2,6 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                                            $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
-        requestParams: $stateParams.requestParams,
         variableName: quantimodoService.getPrimaryOutcomeVariable().name,
         correlationObjects: [],
         showLoadMoreButton: false
@@ -10,9 +9,9 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     $scope.data = { "search" : '' };
     $scope.filterSearchQuery = '';
     $scope.searching = true;
-    $scope.showSearchFilterBox = false;
-    $rootScope.showFilterBarSearchIcon = true;
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+        $scope.showSearchFilterBox = false;
+        $rootScope.showFilterBarSearchIcon = true;
         $rootScope.hideNavigationMenu = false;
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }

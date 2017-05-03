@@ -31,8 +31,8 @@ var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
     'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob',
-    'quantimodo': null,
-    'medimodo': null
+    'quantimodo': true,
+    'medimodo': true
 };
 
 var paths = {
