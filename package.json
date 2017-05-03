@@ -53,7 +53,6 @@
   "cordovaPlugins": [
     "cordova-plugin-file-opener2",
     "cordova-plugin-ios-non-exempt-encryption",
-    "cordova-plugin-email-composer",
     "cordova-plugin-geolocation@2.3.0"
   ],
   "cordovaPlatforms": [],

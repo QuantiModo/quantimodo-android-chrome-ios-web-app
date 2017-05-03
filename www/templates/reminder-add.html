@@ -113,11 +113,8 @@
             <label id="oldAdditionalTimeButton" ng-hide="true" ng-click="oldShowAdditionalReminderTime()" class="item icon-left ion-clock">
             </label>
             <label id="additionalTimeButton" ng-hide="state.hideAdditionalReminderTimeButton" ng-click="showAdditionalReminderTime()" class="item icon-left ion-clock">
-				<span>Add additional time</span>
+				<span> &nbsp; Add additional time</span>
             </label>
-            <div class="margin-bottom-0" ng-if="!state.showMoreOptions" >
-                <div class="row" ng-click="showMoreOptions()"><label class="item icon-left ion-gear-a more-options-padding">More options...</label></div>
-            </div>
             <label id="valenceSelectorBlock" class="item item-input item-select" ng-if="state.showMoreOptions || (state.trackingReminder.unitAbbreviatedName === '/5' && !state.trackingReminder.valence)">
                 <div class="input-label">Higher {{state.trackingReminder.variableName}} is </div>
                 <select id="valenceSelector" ng-model="state.trackingReminder.valence">
@@ -125,6 +122,9 @@
                     <option selected value="negative">bad</option>
                 </select>
             </label>
+            <div class="margin-bottom-0" ng-if="!state.showMoreOptions" >
+                <div class="row" ng-click="showMoreOptions()"><label class="item icon-left ion-gear-a more-options-padding"> &nbsp; More options...</label></div>
+            </div>
             <div ng-if="state.showMoreOptions" class="row labeled-control date-fix">
                 <div class="col date-padding-fix"><span>Start</span></div>
                 <div class="col-6 date-padding-fix">
@@ -134,7 +134,7 @@
                                                         {{ state.selectedStartTrackingDate | date:'dd - MMMM - yyyy' }}
                                         </button>-->
                     <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStartTrackingDate"
-                           placeholder="Date"
+                           placeholder="Select Date"
                            style="cursor: pointer;  background-color: white;"
                            format="ddd, MMM Do YYYY"
                            ng-model="state.selectedStartTrackingDate">
@@ -149,7 +149,7 @@
                                     {{ state.selectedStopTrackingDate | date:'dd - MMMM - yyyy' }}
                     </button>-->
                     <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStopTrackingDate"
-                           placeholder="Date"
+                           placeholder="Select Date"
                            style="cursor: pointer;  background-color: white;"
                            format="ddd, MMM Do YYYY"
                            ng-model="state.selectedStopTrackingDate">
