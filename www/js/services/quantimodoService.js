@@ -302,11 +302,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         //options.cache = getCache(getCurrentFunctionName(), 15);
         quantimodoService.get('api/v1/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
     };
-    quantimodoService.getPublicVariablesByNameFromApi = function(variableName, successHandler, errorHandler){
-        var options = {};
-        //options.cache = getCache(getCurrentFunctionName(), 15);
-        quantimodoService.get('api/v1/public/variables', ['name'], {name: variableName}, successHandler, errorHandler);
-    };
     quantimodoService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
         quantimodoService.get('api/v1/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
     };
@@ -3784,13 +3779,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 deferred.resolve(variable);
             }, function(error){ deferred.reject(error); });
         });
-        return deferred.promise;
-    };
-    quantimodoService.getPublicVariablesByNameDeferred = function(name) {
-        var deferred = $q.defer();
-        quantimodoService.getPublicVariablesByNameFromApi(name, function(variable){
-            deferred.resolve(variable);
-        }, function(error){ deferred.reject(error); });
         return deferred.promise;
     };
     quantimodoService.addWikipediaExtractAndThumbnail = function(variableObject){
