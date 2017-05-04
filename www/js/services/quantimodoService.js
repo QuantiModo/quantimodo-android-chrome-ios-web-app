@@ -132,7 +132,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
         console.error(message);
-        if(status > -1 || quantimodoService.getEnv() === "production" ){Bugsnag.notify(name, message, metaData, severity);}
+        if(status > -1 || !isTestUser()){Bugsnag.notify(name, message, metaData, severity);}
         var groupingHash;
         if(!data){
             var doNotShowOfflineError = false;
@@ -552,7 +552,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             successHandler,
             errorHandler);
     };
-    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1;}
+    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
     // if not logged in, returns rejects
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
