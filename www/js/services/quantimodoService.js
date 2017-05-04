@@ -131,7 +131,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var message = status + ' from ' + request.method + ' ' + request.url + ' DATA:' + JSON.stringify(data) ;
         var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
-        Bugsnag.notify(name, message, metaData, severity);
+        console.error(message);
+        if(status > -1 || quantimodoService.getEnv() === "production" ){Bugsnag.notify(name, message, metaData, severity);}
         var groupingHash;
         if(!data){
             var doNotShowOfflineError = false;
