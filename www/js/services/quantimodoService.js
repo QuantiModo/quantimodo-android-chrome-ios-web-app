@@ -784,19 +784,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.registerDeviceToken = function(deviceToken){
+    quantimodoService.registerDeviceToken = function(){
         var deferred = $q.defer();
         if(!$rootScope.isMobile){
             deferred.reject('Not on mobile so not posting device token');
             return deferred.promise;
         }
-        console.debug("Posting deviceToken to server: ", deviceToken);
-        quantimodoService.postDeviceToken(deviceToken, function(response){
-            localStorage.clear('deviceTokenToSync');
-            localStorage.setItem('deviceTokenOnServer', deviceToken);
+        var deviceTokenToSync = localStorage.getItem('deviceTokenToSync');
+        if(!deviceTokenToSync){
+            deferred.reject('No deviceTokenToSync in localStorage');
+            return deferred.promise;
+        }
+        localStorage.clear('deviceTokenToSync');
+        console.debug("Posting deviceToken to server: ", deviceTokenToSync);
+        quantimodoService.postDeviceToken(deviceTokenToSync, function(response){
+            localStorage.setItem('deviceTokenOnServer', deviceTokenToSync);
             console.debug(response);
             deferred.resolve();
         }, function(error){
+            localStorage.setItem('deviceTokenToSync', deviceTokenToSync);
             if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
             deferred.reject(error);
         });
@@ -878,7 +884,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         */
 
         if(localStorage.getItem('deviceTokenOnServer')){console.debug("This token is already on the server: " + localStorage.getItem('deviceTokenOnServer'));}
-        postDeviceTokenToServerIfNecessary();
+        quantimodoService.registerDeviceToken();
         if($rootScope.sendReminderNotificationEmails){
             quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
             $rootScope.sendReminderNotificationEmails = null;
@@ -886,7 +892,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.afterLoginGoToUrlOrState();
         quantimodoService.updateUserTimeZoneIfNecessary();
     };
-    function postDeviceTokenToServerIfNecessary() {if(localStorage.getItem('deviceTokenToSync')){quantimodoService.registerDeviceToken(localStorage.getItem('deviceTokenToSync'));}}
     quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
         if(!quantimodoService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.defaultState);}
     };
@@ -2096,7 +2101,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             params.sort = '-reminderTime';
             quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
-                    postDeviceTokenToServerIfNecessary();  // Double check because it's not getting posted sometimes for some reason
+                    quantimodoService.registerDeviceToken();  // Double check because it's not getting posted sometimes for some reason
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if (window.chrome && window.chrome.browserAction) {
                         chrome.browserAction.setBadgeText({text: "?"});
