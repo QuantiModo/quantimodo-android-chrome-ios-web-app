@@ -177,7 +177,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
             var metaData = {type: type, route: route, groupingHash: name};
             console.error(message);
-            Bugsnag.notify(name, message, metaData, "error");
+            if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
             return false;
         }
         localStorage.setItem(requestVariableName, Math.floor(Date.now() / 1000));
