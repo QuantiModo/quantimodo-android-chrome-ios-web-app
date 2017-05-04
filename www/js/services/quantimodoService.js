@@ -363,7 +363,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getUserFromApi = function(successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
         var options = {};
-        options.minimumSecondsBetweenRequests = 5;
+        options.minimumSecondsBetweenRequests = 3;
         options.doNotSendToLogin = true;
         quantimodoService.get('api/user/me', [], {}, successHandler, errorHandler, options);
     };
