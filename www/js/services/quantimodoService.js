@@ -2325,13 +2325,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var deferred = $q.defer();
         var filteredReminders = [];
         var unfilteredRemindersString = quantimodoService.getLocalStorageItemAsString('trackingReminders');
-        if(unfilteredRemindersString.indexOf('[object Object]') !== -1){
-            quantimodoService.deleteLargeLocalStorageItems(['trackingReminders']);
-            unfilteredRemindersString = null;
-        }
         if(!unfilteredRemindersString){
             deferred.resolve([]);
             return deferred.promise;
+        }
+        if(unfilteredRemindersString.indexOf('[object Object]') !== -1){
+            quantimodoService.deleteLargeLocalStorageItems(['trackingReminders']);
+            unfilteredRemindersString = null;
         }
         var unfilteredReminders = JSON.parse(unfilteredRemindersString);
         if(!unfilteredReminders){unfilteredReminders = [];}
