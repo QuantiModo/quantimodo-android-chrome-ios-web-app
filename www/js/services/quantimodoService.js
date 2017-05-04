@@ -132,7 +132,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
         console.error(message);
-        if(status > -1 || quantimodoService.getEnv() === "production" ){Bugsnag.notify(name, message, metaData, severity);}
+        if(status > -1 || !isTestUser()){Bugsnag.notify(name, message, metaData, severity);}
         var groupingHash;
         if(!data){
             var doNotShowOfflineError = false;
@@ -177,7 +177,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
             var metaData = {type: type, route: route, groupingHash: name};
             console.error(message);
-            Bugsnag.notify(name, message, metaData, "error");
+            if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
             return false;
         }
         localStorage.setItem(requestVariableName, Math.floor(Date.now() / 1000));
@@ -552,7 +552,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             successHandler,
             errorHandler);
     };
-    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1;}
+    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
     // if not logged in, returns rejects
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
