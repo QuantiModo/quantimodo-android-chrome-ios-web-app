@@ -54,6 +54,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         ]
     };
     $scope.$on('$ionicView.beforeEnter', function(){
+        $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
         $rootScope.hideNavigationMenu = false;
         console.debug('ReminderAddCtrl beforeEnter...');
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
@@ -362,9 +363,12 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         showMoreUnitsIfNecessary();
     };
     var showMoreUnitsIfNecessary = function () {
-        if($scope.state.trackingReminder.unitAbbreviatedName &&
-            !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName]){
-            $scope.state.showMoreUnits = true;
+        if($scope.state.trackingReminder.unitAbbreviatedName && !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName]){
+            if($rootScope.manualTrackingUnitObjects[$scope.state.trackingReminder.unitAbbreviatedName]){
+                $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
+            } else {
+                $scope.state.moreUnits = $rootScope.unitObjects;
+            }
         }
     };
     var setupVariableCategory = function(variableCategoryName){
