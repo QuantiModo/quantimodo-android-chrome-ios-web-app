@@ -115,13 +115,13 @@
             <label id="additionalTimeButton" ng-hide="state.hideAdditionalReminderTimeButton" ng-click="showAdditionalReminderTime()" class="item icon-left ion-clock">
 				<span> &nbsp; Add additional time</span>
             </label>
-            <label id="valenceSelectorBlock" class="item item-input item-select" ng-if="state.trackingReminder.unitAbbreviatedName === '/5' && (state.showMoreOptions || !state.trackingReminder.valence)">
-                <div class="input-label">Higher {{state.trackingReminder.variableName}} is </div>
-                <select id="valenceSelector" ng-model="state.trackingReminder.valence">
-                    <option selected value="positive">good</option>
-                    <option selected value="negative">bad</option>
-                </select>
-            </label>
+            <div id="valenceSelectorBlock" class="item" ng-if="state.trackingReminder.unitAbbreviatedName === '/5' && (state.showMoreOptions || !state.trackingReminder.valence)" >
+                Higher {{state.trackingReminder.variableName}} is
+                <md-radio-group ng-model="state.trackingReminder.valence" layout="row" style="float: right">
+                    <md-radio-button value="positive" class="md-primary"> good </md-radio-button>
+                    <md-radio-button value="negative"> bad </md-radio-button>
+                </md-radio-group>
+            </div>
             <div class="margin-bottom-0" ng-if="!state.showMoreOptions" >
                 <div class="row" ng-click="showMoreOptions()"><label class="item icon-left ion-gear-a more-options-padding"> &nbsp; More options...</label></div>
             </div>
