@@ -107,6 +107,15 @@ function generatePrivateConfigFromEnvs(callback) {
     if(callback){callback();}
 }
 
+gulp.task('commonVariables', function () {
+    return request({url: 'https://app.quantimo.do/api/v1/public/variables', headers: {'User-Agent': 'request'}})
+        .pipe(source('commonVariables.json'))
+        .pipe(streamify(jeditor(function (commonVariables) {
+            return commonVariables;
+        })))
+        .pipe(gulp.dest('./'));
+});
+
 var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads");
     if(!process.env.ENCRYPTION_SECRET){
