@@ -25,7 +25,10 @@ var xml2js = require('xml2js');
 var parseString = require('xml2js').parseString;
 var clean = require('gulp-rimraf');
 var replace = require('gulp-string-replace');
-var git = require('gulp-git');
+var git = require('gulp-git'),
+    jeditor = require('gulp-json-editor'),
+    source = require('vinyl-source-stream'),
+    streamify = require('gulp-streamify');
 
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
