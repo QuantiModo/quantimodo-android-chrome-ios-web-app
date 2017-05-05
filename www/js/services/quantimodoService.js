@@ -132,7 +132,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
         console.error(message);
-        if(status > -1 || !isTestUser()){Bugsnag.notify(name, message, metaData, severity);}
+        if(status > -1 || !isTestUser()){
+            if(!envIsDevelopment()){Bugsnag.notify(name, message, metaData, severity);}
+        }
         var groupingHash;
         if(!data){
             var doNotShowOfflineError = false;
@@ -1459,14 +1461,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return 'ion-speedometer';
         }
     };
-    quantimodoService.getEnv = function(){
+    function getEnv(){
         var env = "production";
         if(window.location.origin.indexOf('local') !== -1){env = "development";}
         if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
         if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
         if($rootScope.user && $rootScope.user.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
         return env;
-    };
+    }
+    function envIsDevelopment() {return getEnv() === 'development';}
+    quantimodoService.getEnv = function(){return getEnv();};
     quantimodoService.getClientId = function(){
         if (window.chrome && chrome.runtime && chrome.runtime.id) {
             $rootScope.clientId = window.private_keys.client_ids.Chrome; //if chrome app
