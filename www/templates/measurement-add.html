@@ -68,7 +68,6 @@
                 <div ng-if="state.measurement.inputType === 'yesOrNo'" class="item" >
                     Value
                     <md-radio-group ng-model="state.measurement.value" layout="row" ng-init="state.measurement.value = 1" style="float: right">
-
                         <md-radio-button value="1" class="md-primary">Yes</md-radio-button>
                         <md-radio-button value="0"> No </md-radio-button>
                     </md-radio-group>
@@ -118,11 +117,8 @@
                                ng-model="state.selectedDate"
                                class="md-input text-right">
                 </label>
-
                 <label class="item item-input">
-                    <div class="input-label">
-                        Note
-                    </div>
+                    <div class="input-label">Note</div>
                     <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="text-right up-top">
                 </label>
             </div>
