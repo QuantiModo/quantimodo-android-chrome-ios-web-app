@@ -3871,34 +3871,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getCommonVariablesDeferred = function(params){
         var deferred = $q.defer();
         var commonVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('commonVariables', params);
-        if(commonVariables && commonVariables.length && typeof commonVariables[0].manualTracking !== "undefined"){
-            deferred.resolve(commonVariables);
-            return deferred.promise;
-        }
-        commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
-        if(commonVariables && commonVariables.length && typeof commonVariables[0].manualTracking !== "undefined"){
-            console.debug("We already have commonVariables that didn't match filters so no need to refresh them");
-            deferred.resolve([]);
-            return deferred.promise;
-        }
-        quantimodoService.refreshCommonVariables().then(function () {
-            commonVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('commonVariables', params);
-            deferred.resolve(commonVariables);
-        }, function (error) {deferred.reject(error);});
+        deferred.resolve(commonVariables);
         return deferred.promise;
     };
-    quantimodoService.refreshCommonVariables = function(){
+    quantimodoService.putCommonVariablesInLocalStorage = function(){
         var deferred = $q.defer();
-        var successHandler = function(commonVariables) {
+        $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
             quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
             deferred.resolve(commonVariables);
-        };
-        var errorHandler = function(error) {
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify("ERROR: " + JSON.stringify(error), JSON.stringify(error), {}, "error"); } console.error(error);
-            deferred.reject(error);
-        };
-        var parameters = {limit: 200, sort: "-numberOfUserVariables", numberOfUserVariables: "(gt)3"};
-        quantimodoService.get('api/v1/public/variables', ['category', 'includePublic', 'numberOfUserVariables'], parameters, successHandler, errorHandler);
+        });
         return deferred.promise;
     };
 

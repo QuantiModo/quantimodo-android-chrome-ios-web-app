@@ -107,13 +107,13 @@ function generatePrivateConfigFromEnvs(callback) {
     if(callback){callback();}
 }
 
-gulp.task('commonVariables', function () {
-    return request({url: 'https://app.quantimo.do/api/v1/public/variables', headers: {'User-Agent': 'request'}})
+gulp.task('getCommonVariables', function () {
+    return request({url: 'https://local.quantimo.do/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
             return commonVariables;
         })))
-        .pipe(gulp.dest('./'));
+        .pipe(gulp.dest('./www/data/'));
 });
 
 var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
@@ -1626,6 +1626,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
     	console.log("process.env.PREPARE_IOS_APP is " + process.env.PREPARE_IOS_APP + " so going to prepareIosApp");
         runSequence(
             'sass',
+            'getCommonVariables',
         	'deleteUnusedFiles',
             'prepareIosApp',
             callback);
@@ -1633,6 +1634,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
         console.log("process.env.BUILD_ANDROID is true so going to buildAndroid");
         runSequence(
             'sass',
+            'getCommonVariables',
             'deleteUnusedFiles',
             'prepareRepositoryForAndroid',
         	'buildAndroidApp',
@@ -1641,6 +1643,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
     } else {
         runSequence(
             'sass',
+            'getCommonVariables',
             'deleteUnusedFiles',
             'configureApp',
             callback);
