@@ -108,7 +108,7 @@ function generatePrivateConfigFromEnvs(callback) {
 }
 
 gulp.task('getCommonVariables', function () {
-    return request({url: 'https://local.quantimo.do/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
+    return request({url: 'https://app.quantimo.do/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
             return commonVariables;
