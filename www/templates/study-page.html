@@ -51,7 +51,7 @@
                     </ion-toggle>
                     <!--TODO: Add clipboard plugin for mobile-->
                     <label ng-click="copyStudyUrlToClipboard()" class="item item-content"
-                           ng-if="isMobile && correlationObject.shareUserMeasurements === true && correlationObject.studyLinkStatic">
+                           ng-if="!isMobile && correlationObject.shareUserMeasurements === true && correlationObject.studyLinkStatic">
                         <i class="icon ion-clipboard"> &nbsp {{copyLinkText}}</i>
                     </label>
                 </div>
