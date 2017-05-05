@@ -19,11 +19,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     if(!$rootScope.user){
         quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
     }
-    quantimodoService.getCommonVariablesDeferred();
+    quantimodoService.putCommonVariablesInLocalStorage();
     quantimodoService.backgroundGeolocationInit();
     quantimodoService.setupBugsnag();
     quantimodoService.getUserAndSetupGoogleAnalytics();
-    //quantimodoService.refreshCommonVariables();
     if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
     if(quantimodoService.getUrlParameter('refreshUser')){
         quantimodoService.clearLocalStorage();

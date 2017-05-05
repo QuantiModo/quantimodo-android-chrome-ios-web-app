@@ -132,7 +132,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
         console.error(message);
-        if(status > -1 || !isTestUser()){Bugsnag.notify(name, message, metaData, severity);}
+        if(status > -1 || !isTestUser()){
+            if(!envIsDevelopment()){Bugsnag.notify(name, message, metaData, severity);}
+        }
         var groupingHash;
         if(!data){
             var doNotShowOfflineError = false;
@@ -1459,14 +1461,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return 'ion-speedometer';
         }
     };
-    quantimodoService.getEnv = function(){
+    function getEnv(){
         var env = "production";
         if(window.location.origin.indexOf('local') !== -1){env = "development";}
         if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
         if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
         if($rootScope.user && $rootScope.user.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
         return env;
-    };
+    }
+    function envIsDevelopment() {return getEnv() === 'development';}
+    quantimodoService.getEnv = function(){return getEnv();};
     quantimodoService.getClientId = function(){
         if (window.chrome && chrome.runtime && chrome.runtime.id) {
             $rootScope.clientId = window.private_keys.client_ids.Chrome; //if chrome app
@@ -3871,34 +3875,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getCommonVariablesDeferred = function(params){
         var deferred = $q.defer();
         var commonVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('commonVariables', params);
-        if(commonVariables && commonVariables.length && typeof commonVariables[0].manualTracking !== "undefined"){
-            deferred.resolve(commonVariables);
-            return deferred.promise;
-        }
-        commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
-        if(commonVariables && commonVariables.length && typeof commonVariables[0].manualTracking !== "undefined"){
-            console.debug("We already have commonVariables that didn't match filters so no need to refresh them");
-            deferred.resolve([]);
-            return deferred.promise;
-        }
-        quantimodoService.refreshCommonVariables().then(function () {
-            commonVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('commonVariables', params);
-            deferred.resolve(commonVariables);
-        }, function (error) {deferred.reject(error);});
+        deferred.resolve(commonVariables);
         return deferred.promise;
     };
-    quantimodoService.refreshCommonVariables = function(){
+    quantimodoService.putCommonVariablesInLocalStorage = function(){
         var deferred = $q.defer();
-        var successHandler = function(commonVariables) {
+        $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
             quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
             deferred.resolve(commonVariables);
-        };
-        var errorHandler = function(error) {
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify("ERROR: " + JSON.stringify(error), JSON.stringify(error), {}, "error"); } console.error(error);
-            deferred.reject(error);
-        };
-        var parameters = {limit: 200, sort: "-numberOfUserVariables", numberOfUserVariables: "(gt)3"};
-        quantimodoService.get('api/v1/public/variables', ['category', 'includePublic', 'numberOfUserVariables'], parameters, successHandler, errorHandler);
+        });
         return deferred.promise;
     };
 
