@@ -25,7 +25,10 @@ var xml2js = require('xml2js');
 var parseString = require('xml2js').parseString;
 var clean = require('gulp-rimraf');
 var replace = require('gulp-string-replace');
-var git = require('gulp-git');
+var git = require('gulp-git'),
+    jeditor = require('gulp-json-editor'),
+    source = require('vinyl-source-stream'),
+    streamify = require('gulp-streamify');
 
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
@@ -103,6 +106,15 @@ function generatePrivateConfigFromEnvs(callback) {
     console.log('Created '+ './www/private_configs/default.config.js');
     if(callback){callback();}
 }
+
+gulp.task('commonVariables', function () {
+    return request({url: 'https://app.quantimo.do/api/v1/public/variables', headers: {'User-Agent': 'request'}})
+        .pipe(source('commonVariables.json'))
+        .pipe(streamify(jeditor(function (commonVariables) {
+            return commonVariables;
+        })))
+        .pipe(gulp.dest('./'));
+});
 
 var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads");
