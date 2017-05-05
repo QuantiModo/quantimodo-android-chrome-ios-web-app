@@ -1776,7 +1776,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     function weShouldPostLocation() {return $rootScope.isMobile && getLastLocationNameFromLocalStorage() && getHoursAtLocation();}
     quantimodoService.postLocationMeasurementAndSetLocationVariables = function (geoLookupResult, isBackground) {
         if (weShouldPostLocation()) {
-            checkIfStartTimeEpochIsWithinTheLastYear()
             var newMeasurement = {
                 variableName:  getLastLocationNameFromLocalStorage(),
                 unitAbbreviatedName: 'h',
