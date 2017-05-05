@@ -747,7 +747,7 @@ gulp.task('ionicUploadAllApps', function(callback){
 });
 
 gulp.task('ionicAddCrosswalk', function(callback){
-    var command = 'ionic plugin add cordova-plugin-crosswalk-webview';
+    var command = 'ionic plugin add cordova-plugin-crosswalk-webview@2.2.0';  // Trying 2.2.0 to fix XWalkWebViewEngine is not abstract and does not override abstract method evaluateJavascript
     executeCommand(command, callback);
 });
 

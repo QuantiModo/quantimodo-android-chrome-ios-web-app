@@ -131,7 +131,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var message = status + ' from ' + request.method + ' ' + request.url + ' DATA:' + JSON.stringify(data) ;
         var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
-        Bugsnag.notify(name, message, metaData, severity);
+        console.error(message);
+        if(status > -1 || !isTestUser()){Bugsnag.notify(name, message, metaData, severity);}
         var groupingHash;
         if(!data){
             var doNotShowOfflineError = false;
@@ -176,7 +177,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
             var metaData = {type: type, route: route, groupingHash: name};
             console.error(message);
-            Bugsnag.notify(name, message, metaData, "error");
+            if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
             return false;
         }
         localStorage.setItem(requestVariableName, Math.floor(Date.now() / 1000));
@@ -302,11 +303,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         //options.cache = getCache(getCurrentFunctionName(), 15);
         quantimodoService.get('api/v1/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
     };
-    quantimodoService.getPublicVariablesByNameFromApi = function(variableName, successHandler, errorHandler){
-        var options = {};
-        //options.cache = getCache(getCurrentFunctionName(), 15);
-        quantimodoService.get('api/v1/public/variables', ['name'], {name: variableName}, successHandler, errorHandler);
-    };
     quantimodoService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
         quantimodoService.get('api/v1/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
     };
@@ -363,7 +359,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getUserFromApi = function(successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
         var options = {};
-        options.minimumSecondsBetweenRequests = 10;
+        options.minimumSecondsBetweenRequests = 3;
         options.doNotSendToLogin = true;
         quantimodoService.get('api/user/me', [], {}, successHandler, errorHandler, options);
     };
@@ -556,7 +552,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             successHandler,
             errorHandler);
     };
-    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1;}
+    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
     // if not logged in, returns rejects
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
@@ -577,7 +573,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             deferred.resolve(accessToken);
             return deferred.promise;
         }
-        var now = new Date().getTime();
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
         var refreshToken = localStorage.getItem("refreshToken");
         accessToken = localStorage.getItem("accessToken");
@@ -586,11 +581,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
             if(!isTestUser()){Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");}
         }
-        if (accessToken && now < expiresAtMilliseconds) {
+        if (accessToken && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
             deferred.resolve(accessToken);
         } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled') {
-            console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
+            console.debug(getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
             quantimodoService.refreshAccessToken(refreshToken, deferred);
         } else if(accessToken){
             deferred.resolve(accessToken);
@@ -646,15 +641,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(accessResponse.accessTokenExpiresAtMilliseconds){
             expiresAtMilliseconds = accessResponse.accessTokenExpiresAtMilliseconds;
         } else if (typeof expiresAt === 'string' || expiresAt instanceof String){
-            expiresAtMilliseconds = new Date(expiresAt).getTime();
-        } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < new Date().getTime()) {
+            expiresAtMilliseconds = getUnixTimestampInMilliseconds(expiresAt);
+        } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < getUnixTimestampInMilliseconds()) {
             expiresAtMilliseconds = expiresAt * 1000;
-        } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > new Date().getTime()){
+        } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > getUnixTimestampInMilliseconds()){
             expiresAtMilliseconds = expiresAt;
         } else {
             // calculate expires at
             var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
-            expiresAtMilliseconds = new Date().getTime() + expiresInSeconds * 1000;
+            expiresAtMilliseconds = getUnixTimestampInMilliseconds() + expiresInSeconds * 1000;
             console.debug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
         }
         if(expiresAtMilliseconds){
@@ -789,19 +784,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.registerDeviceToken = function(deviceToken){
+    quantimodoService.registerDeviceToken = function(){
         var deferred = $q.defer();
         if(!$rootScope.isMobile){
             deferred.reject('Not on mobile so not posting device token');
             return deferred.promise;
         }
-        console.debug("Posting deviceToken to server: ", deviceToken);
-        quantimodoService.postDeviceToken(deviceToken, function(response){
-            localStorage.clear('deviceTokenToSync');
-            localStorage.setItem('deviceTokenOnServer', deviceToken);
+        var deviceTokenToSync = localStorage.getItem('deviceTokenToSync');
+        if(!deviceTokenToSync){
+            deferred.reject('No deviceTokenToSync in localStorage');
+            return deferred.promise;
+        }
+        localStorage.clear('deviceTokenToSync');
+        console.debug("Posting deviceToken to server: ", deviceTokenToSync);
+        quantimodoService.postDeviceToken(deviceTokenToSync, function(response){
+            localStorage.setItem('deviceTokenOnServer', deviceTokenToSync);
             console.debug(response);
             deferred.resolve();
         }, function(error){
+            localStorage.setItem('deviceTokenToSync', deviceTokenToSync);
             if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
             deferred.reject(error);
         });
@@ -852,13 +853,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
-        var date = new Date(user.userRegistered);
-        var userRegistered = date.getTime()/1000;
         if (typeof UserVoice !== "undefined") {
             UserVoice.push(['identify', {
                 email: user.email, // User’s email address
                 name: user.displayName, // User’s real name
-                created_at: userRegistered, // Unix timestamp for the date the user signed up
+                created_at: getUnixTimestampInSeconds(user.userRegistered), // Unix timestamp for the date the user signed up
                 id: user.id, // Optional: Unique id of the user (if set, this should not change)
                 type: getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
                 account: {
@@ -885,7 +884,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         */
 
         if(localStorage.getItem('deviceTokenOnServer')){console.debug("This token is already on the server: " + localStorage.getItem('deviceTokenOnServer'));}
-        postDeviceTokenToServerIfNecessary();
+        quantimodoService.registerDeviceToken();
         if($rootScope.sendReminderNotificationEmails){
             quantimodoService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
             $rootScope.sendReminderNotificationEmails = null;
@@ -893,7 +892,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.afterLoginGoToUrlOrState();
         quantimodoService.updateUserTimeZoneIfNecessary();
     };
-    function postDeviceTokenToServerIfNecessary() {if(localStorage.getItem('deviceTokenToSync')){quantimodoService.registerDeviceToken(localStorage.getItem('deviceTokenToSync'));}}
     quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
         if(!quantimodoService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.defaultState);}
     };
@@ -1078,12 +1076,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return primaryOutcomeMeasurements;
     }
     function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
-        if(getUnixTimeSeconds() - localStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
+        if(getUnixTimestampInSeconds() - localStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
             var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
             console.error(errorMessage);
             return false;
         }
-        localStorage.setItem(localStorageItemName, getUnixTimeSeconds());
+        localStorage.setItem(localStorageItemName, getUnixTimestampInSeconds());
         return true;
     }
     quantimodoService.getAndStorePrimaryOutcomeMeasurements = function(){
@@ -1105,8 +1103,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    function getUnixTimeSeconds(){
-        return Math.floor(Date.now() / 1000);
+    function getUnixTimestampInSeconds(dateTimeString) {
+        return Math.round(getUnixTimestampInMilliseconds(dateTimeString)/1000);
+    }
+    function getUnixTimestampInMilliseconds(dateTimeString) {
+        if(!dateTimeString){return new Date().getTime();}
+        return new Date(dateTimeString).getTime();
+    }
+    function checkIfStartTimeEpochIsWithinTheLastYear(startTimeEpoch) {
+        var result = startTimeEpoch > getUnixTimestampInSeconds() - 365 * 86400;
+        if(!result){
+            var errorName = 'startTimeEpoch is earlier than last year';
+            var errorMessage = startTimeEpoch + ' ' + errorName;
+            Bugsnag.notify(errorName, errorMessage, {startTimeEpoch :startTimeEpoch}, "error");
+            console.error(errorMessage);
+        }
+        return startTimeEpoch;
     }
     quantimodoService.postMeasurementQueueToServer = function(successHandler, errorHandler){
         var defer = $q.defer();
@@ -1195,14 +1207,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             numericRatingValue = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] ?
                 quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] : false;
         }
-        var startTimeEpoch  = new Date().getTime();
         var measurementObject = {
             id: null,
             variable: quantimodoService.getPrimaryOutcomeVariable().name,
             variableName: quantimodoService.getPrimaryOutcomeVariable().name,
             variableCategoryName: quantimodoService.getPrimaryOutcomeVariable().variableCategoryName,
             valence: quantimodoService.getPrimaryOutcomeVariable().valence,
-            startTimeEpoch: Math.floor(startTimeEpoch / 1000),
+            startTimeEpoch: getUnixTimestampInSeconds(),
             unitAbbreviatedName: quantimodoService.getPrimaryOutcomeVariable().unitAbbreviatedName,
             value: numericRatingValue,
             note: null
@@ -1269,8 +1280,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
     }
     function isStartTimeInMilliseconds(measurementInfo){
-        var nowMilliseconds = new Date();
-        var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
+        var oneWeekInFuture = getUnixTimestampInSeconds() + 7 * 86400;
         if(measurementInfo.startTimeEpoch > oneWeekInFuture){
             measurementInfo.startTimeEpoch = measurementInfo.startTimeEpoch / 1000;
             console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
@@ -1294,8 +1304,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.postMeasurementByReminder = function(trackingReminder, modifiedValue) {
         var value = trackingReminder.defaultValue;
         if(typeof modifiedValue !== "undefined" && modifiedValue !== null){value = modifiedValue;}
-        var startTimeEpochMilliseconds = new Date();
-        var startTimeEpochSeconds = startTimeEpochMilliseconds/1000;
         var measurementSet = [
             {
                 variableName: trackingReminder.variableName,
@@ -1304,9 +1312,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                 measurements : [
                     {
-                        startTimeEpoch:  startTimeEpochSeconds,
+                        startTimeEpoch:  getUnixTimestampInSeconds(),
                         value: value,
-                        note : null,
+                        note : null
                     }
                 ]
             }
@@ -1344,19 +1352,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.postBloodPressureMeasurements = function(parameters){
         var deferred = $q.defer();
         /** @namespace parameters.startTimeEpochSeconds */
-        if(!parameters.startTimeEpochSeconds){parameters.startTimeEpochSeconds = new Date()/1000;}
+        if(!parameters.startTimeEpochSeconds){parameters.startTimeEpochSeconds = getUnixTimestampInSeconds();}
         var measurementSets = [
             {
                 variableId: 1874,
                 sourceName: getSourceName(),
-                startTimeEpoch:  parameters.startTimeEpochSeconds,
+                startTimeEpoch:  checkIfStartTimeEpochIsWithinTheLastYear(parameters.startTimeEpochSeconds),
                 value: parameters.systolicValue,
                 note: parameters.note
             },
             {
                 variableId: 5554981,
                 sourceName: getSourceName(),
-                startTimeEpoch:  parameters.startTimeEpochSeconds,
+                startTimeEpoch:  checkIfStartTimeEpochIsWithinTheLastYear(parameters.startTimeEpochSeconds),
                 value: parameters.diastolicValue,
                 note: parameters.note
             }
@@ -1380,12 +1388,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var unitsIndexedByAbbreviatedName = [];
         var nonAdvancedUnitsIndexedByAbbreviatedName = [];
         var nonAdvancedUnitObjects = [];
+        var manualTrackingUnitsIndexedByAbbreviatedName = [];
+        var manualTrackingUnitObjects = [];
         for (var i = 0; i < units.length; i++) {
             unitAbbreviatedNames[i] = units[i].abbreviatedName;
             unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
             if(!units[i].advanced){
                 nonAdvancedUnitObjects.push(units[i]);
                 nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
+            }
+            if(units[i].manualTracking){
+                manualTrackingUnitObjects.push(units[i]);
+                manualTrackingUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
             }
         }
         var showMoreUnitsObject = {name: "Show more units", abbreviatedName: "Show more units"};
@@ -1394,6 +1408,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $rootScope.unitsIndexedByAbbreviatedName = unitsIndexedByAbbreviatedName;
         $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = nonAdvancedUnitsIndexedByAbbreviatedName;
         $rootScope.nonAdvancedUnitObjects = nonAdvancedUnitObjects;
+        $rootScope.manualTrackingUnitsIndexedByAbbreviatedName = manualTrackingUnitsIndexedByAbbreviatedName;
+        $rootScope.manualTrackingUnitObjects = manualTrackingUnitObjects;
     }
     quantimodoService.getUnits = function(){
         var deferred = $q.defer();
@@ -1737,8 +1753,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(geoLookupResult.type){localStorage.lastLocationResultType = geoLookupResult.type;} else {quantimodoService.bugsnagNotify('Geolocation error', "No geolocation lookup type", geoLookupResult);}
         if(geoLookupResult.latitude){localStorage.lastLatitude = geoLookupResult.latitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No latitude!", geoLookupResult);}
         if(geoLookupResult.longitude){localStorage.lastLongitude = geoLookupResult.longitude;} else {quantimodoService.bugsnagNotify('Geolocation error', "No longitude!", geoLookupResult);}
-        var currentTimeEpochMilliseconds = new Date().getTime();
-        localStorage.lastLocationUpdateTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
+        localStorage.lastLocationUpdateTimeEpochSeconds = getUnixTimestampInSeconds();
         if(geoLookupResult.address) {
             localStorage.lastLocationAddress = geoLookupResult.address;
             if(geoLookupResult.address === localStorage.lastLocationName){localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
@@ -1750,9 +1765,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (lastLocationName && lastLocationName !== "undefined") {return lastLocationName;}
     }
     function getHoursAtLocation(){
-        var currentTimeEpochMilliseconds = new Date().getTime();
-        var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds / 1000);
-        var secondsAtLocation = currentTimeEpochSeconds - localStorage.lastLocationUpdateTimeEpochSeconds;
+        var secondsAtLocation = getUnixTimestampInSeconds() - localStorage.lastLocationUpdateTimeEpochSeconds;
         return Math.round(secondsAtLocation/3600 * 100) / 100;
     }
     function getGeoLocationSourceName(isBackground) {
@@ -1766,7 +1779,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var newMeasurement = {
                 variableName:  getLastLocationNameFromLocalStorage(),
                 unitAbbreviatedName: 'h',
-                startTimeEpoch: localStorage.lastLocationUpdateTimeEpochSeconds,
+                startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(localStorage.lastLocationUpdateTimeEpochSeconds),
                 sourceName: getGeoLocationSourceName(isBackground),
                 value: getHoursAtLocation(),
                 variableCategoryName: 'Location',
@@ -1894,7 +1907,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     var delayBeforePostingNotifications = 3 * 60 * 1000;
     var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
-        localStorage.setItem('lastGotNotificationsAt', new Date().getTime());
+        localStorage.setItem('lastGotNotificationsAt', getUnixTimestampInMilliseconds());
         trackingReminderNotifications = quantimodoService.attachVariableCategoryIcons(trackingReminderNotifications);
         quantimodoService.setLocalStorageItem('trackingReminderNotifications',
             JSON.stringify(trackingReminderNotifications)).then(function () {
@@ -1907,7 +1920,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getSecondsSinceWeLastGotNotifications = function () {
         var lastGotNotificationsAt = localStorage.getItem('lastGotNotificationsAt');
         if(!lastGotNotificationsAt){ lastGotNotificationsAt = 0; }
-        return parseInt((new Date().getTime() - lastGotNotificationsAt)/1000);
+        return parseInt((getUnixTimestampInMilliseconds() - lastGotNotificationsAt)/1000);
     };
     quantimodoService.postTrackingRemindersDeferred = function(trackingRemindersArray){
         var deferred = $q.defer();
@@ -1956,8 +1969,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     var scheduleNotificationSync = function () {
         var trackingReminderNotificationSyncScheduled = localStorage.getItem('trackingReminderNotificationSyncScheduled');
         if(!trackingReminderNotificationSyncScheduled ||
-            parseInt(trackingReminderNotificationSyncScheduled) < new Date().getTime() - delayBeforePostingNotifications){
-            localStorage.setItem('trackingReminderNotificationSyncScheduled', new Date().getTime());
+            parseInt(trackingReminderNotificationSyncScheduled) < getUnixTimestampInMilliseconds() - delayBeforePostingNotifications){
+            localStorage.setItem('trackingReminderNotificationSyncScheduled', getUnixTimestampInMilliseconds());
             $timeout(function() {
                 localStorage.removeItem('trackingReminderNotificationSyncScheduled');
                 // Post notification queue in 5 minutes if it's still there
@@ -2087,7 +2100,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             params.sort = '-reminderTime';
             quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
-                    postDeviceTokenToServerIfNecessary();  // Double check because it's not getting posted sometimes for some reason
+                    quantimodoService.registerDeviceToken();  // Double check because it's not getting posted sometimes for some reason
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if (window.chrome && window.chrome.browserAction) {
                         chrome.browserAction.setBadgeText({text: "?"});
@@ -2317,13 +2330,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var deferred = $q.defer();
         var filteredReminders = [];
         var unfilteredRemindersString = quantimodoService.getLocalStorageItemAsString('trackingReminders');
-        if(unfilteredRemindersString.indexOf('[object Object]') !== -1){
-            quantimodoService.deleteLargeLocalStorageItems(['trackingReminders']);
-            unfilteredRemindersString = null;
-        }
         if(!unfilteredRemindersString){
             deferred.resolve([]);
             return deferred.promise;
+        }
+        if(unfilteredRemindersString.indexOf('[object Object]') !== -1){
+            quantimodoService.deleteLargeLocalStorageItems(['trackingReminders']);
+            unfilteredRemindersString = null;
         }
         var unfilteredReminders = JSON.parse(unfilteredRemindersString);
         if(!unfilteredReminders){unfilteredReminders = [];}
@@ -3771,13 +3784,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 deferred.resolve(variable);
             }, function(error){ deferred.reject(error); });
         });
-        return deferred.promise;
-    };
-    quantimodoService.getPublicVariablesByNameDeferred = function(name) {
-        var deferred = $q.defer();
-        quantimodoService.getPublicVariablesByNameFromApi(name, function(variable){
-            deferred.resolve(variable);
-        }, function(error){ deferred.reject(error); });
         return deferred.promise;
     };
     quantimodoService.addWikipediaExtractAndThumbnail = function(variableObject){
@@ -5264,7 +5270,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.debug("No recording weather because we're not logged in");
             return;
         }
-        var nowTimestamp = Math.floor(Date.now() / 1000);
         var lastPostedWeatherAt = Number(quantimodoService.getLocalStorageItemAsString('lastPostedWeatherAt'));
         var localMidnightMoment = moment(0, "HH");
         var localMidnightTimestamp = localMidnightMoment.unix();
@@ -5289,7 +5294,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 fillingValue: 0,
                 measurements: [{
                     value: 1,
-                    startTimeEpoch: yesterdayNoonTimestamp,
+                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp),
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
@@ -5301,7 +5306,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: "F",
                 measurements: [{
                     value: (data.daily.data[0].temperatureMax +  data.daily.data[0].temperatureMin)/2,
-                    startTimeEpoch: yesterdayNoonTimestamp
+                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
@@ -5313,7 +5318,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: "Pa",
                 measurements: [{
                     value: data.daily.data[0].pressure * 100,
-                    startTimeEpoch: yesterdayNoonTimestamp
+                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
@@ -5325,7 +5330,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].humidity * 100,
-                    startTimeEpoch: yesterdayNoonTimestamp
+                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
@@ -5338,7 +5343,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     unitAbbreviatedName: "miles",
                     measurements: [{
                         value: data.daily.data[0].visibility,
-                        startTimeEpoch: yesterdayNoonTimestamp
+                        startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
                         //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                     }]}
                 );
@@ -5351,7 +5356,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].cloudCover * 100,
-                    startTimeEpoch: yesterdayNoonTimestamp
+                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
                     //note: data.daily.data[0].icon  // We shouldn't add icon as note because it messes up the note analysis
                 }]}
             );
@@ -5360,7 +5365,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if(response && response.data && response.data.userVariables){
                     quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
                 }
-                if(!lastPostedWeatherAt){quantimodoService.setLocalStorageItem('lastPostedWeatherAt', nowTimestamp);}
+                if(!lastPostedWeatherAt){quantimodoService.setLocalStorageItem('lastPostedWeatherAt', getUnixTimestampInSeconds());}
             }, function (error) {console.debug("could not post weather measurements: " + error);});
         }).error(function (data) {console.debug("Request failed");});
     };
