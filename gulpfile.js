@@ -1625,16 +1625,12 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
     if (process.env.PREPARE_IOS_APP){
     	console.log("process.env.PREPARE_IOS_APP is " + process.env.PREPARE_IOS_APP + " so going to prepareIosApp");
         runSequence(
-            'sass',
-            'getCommonVariables',
         	'deleteUnusedFiles',
             'prepareIosApp',
             callback);
     } else if (process.env.BUILD_ANDROID){
         console.log("process.env.BUILD_ANDROID is true so going to buildAndroid");
         runSequence(
-            'sass',
-            'getCommonVariables',
             'deleteUnusedFiles',
             'prepareRepositoryForAndroid',
         	'buildAndroidApp',
@@ -1642,8 +1638,6 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
             callback);
     } else {
         runSequence(
-            'sass',
-            'getCommonVariables',
             'deleteUnusedFiles',
             'configureApp',
             callback);
@@ -1652,6 +1646,8 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
 
 gulp.task('configureApp', [], function(callback){
 	runSequence(
+        'sass',
+        'getCommonVariables',
 		'copyAppResources',
 		'generatePrivateConfigFromEnvs',
 		'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
