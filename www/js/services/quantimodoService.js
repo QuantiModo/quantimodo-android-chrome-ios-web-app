@@ -3881,6 +3881,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.putCommonVariablesInLocalStorage = function(){
         var deferred = $q.defer();
         $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
+            if(commonVariables.constructor !== Array){
+                quantimodoService.reportErrorDeferred('commonVariables.json is not present!');
+            }
             quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
             deferred.resolve(commonVariables);
         });
