@@ -125,6 +125,11 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
     }
     $scope.weightedPeriod = 5;
     function createUserCharts() {
+        if(!$scope.state.requestParams.includeCharts){
+            $scope.state.requestParams.includeCharts = true;
+            getStudy();
+            return;
+        }
         $scope.loadingCharts = false;
         /** @namespace $rootScope.correlationObject.causeProcessedDailyMeasurements */
         $scope.causeTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
