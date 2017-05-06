@@ -57,11 +57,11 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         if(config.appSettings.appDisplayName !== "MoodiModo"){
             $scope.hideFacebookButton = true;
         }
+        if(quantimodoService.getUrlParameter('loggingIn')){ loginTimeout(); }
     });
     $scope.$on('$ionicView.enter', function(){
         leaveIfLoggedIn();
         console.debug($state.current.name + ' initializing...');
-        if(quantimodoService.getUrlParameter('loggingIn')){ loginTimeout(); }
         $rootScope.hideNavigationMenu = true;
     });
     $scope.$on('$ionicView.afterEnter', function(){
