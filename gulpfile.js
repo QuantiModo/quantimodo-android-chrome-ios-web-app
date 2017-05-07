@@ -55,18 +55,26 @@ if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
 
-if(!process.env.LOWERCASE_APP_NAME){
-    git.revParse({args:'--abbrev-ref HEAD'}, function (err, branch) {
-        console.log('current git branch: ' + branch);
-        if(appIds[branch]){
-            console.info('Setting LOWERCASE_APP_NAME using branch name ' + branch);
-            process.env.LOWERCASE_APP_NAME = branch;
-        } else{
-            console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-            process.env.LOWERCASE_APP_NAME = 'quantimodo';
-        }
-    });
+
+function setLowerCaseAppName(callback) {
+    if(!process.env.LOWERCASE_APP_NAME){
+        git.revParse({args:'--abbrev-ref HEAD'}, function (err, branch) {
+            console.log('current git branch: ' + branch);
+            if(appIds[branch]){
+                console.info('Setting LOWERCASE_APP_NAME using branch name ' + branch);
+                process.env.LOWERCASE_APP_NAME = branch;
+            } else{
+                console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
+                process.env.LOWERCASE_APP_NAME = 'quantimodo';
+            }
+            if(callback){callback();}
+        });
+    }
 }
+
+gulp.task('setLowerCaseAppName', function(callback){setLowerCaseAppName(callback);});
+
+setLowerCaseAppName();
 
 var exec = require('child_process').exec;
 function execute(command, callback){
@@ -151,6 +159,11 @@ function decryptPrivateConfig(callback) {
 
 function loadConfigs(callback) {
     var pathToConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js';
+    var pathToJsonConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.config.json';
+    var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfig));
+    var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(config) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
+    require('fs').writeFileSync('./www/configs/default.js', defaultConfigFileContent);
+
     var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
     fs.stat(pathToConfig, function(err, stat) {
         if(err === null) {
@@ -164,7 +177,8 @@ function loadConfigs(callback) {
 					}
                 });
             });*/
-			var appSettings = require(pathToConfig);
+
+			//var appSettings = require(pathToConfig);
             process.env.APPLE_ID = appSettings.appleId;
             process.env.APP_DISPLAY_NAME = appSettings.appDisplayName;
             process.env.APP_IDENTIFIER = appSettings.appIdentifier;
@@ -1319,6 +1333,14 @@ gulp.task('template', function(done){
 
 gulp.task('loadConfigs', [], function(callback){
     loadConfigs(callback);
+});
+
+gulp.task('setEnvsFromBranchName', [], function(callback){
+    runSequence(
+        'setLowerCaseAppName',
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
 });
 
 gulp.task('setEnergyModoEnvs', [], function(callback){

@@ -1,20 +1,16 @@
-var config = {};
-
-config.appSettings  = {
+{
     "appDisplayName": "MoodiModo",
-    versionNumber: "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
+    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     "lowercaseAppName": "moodimodo",
     "appDescription": "Perfect your life!",
     "appleId": "1046797567",
     "appIdentifier": "com.quantimodo.moodimodoapp",
-    upgradeDisabled: false,
+    "upgradeDisabled": false,
     "ionicAppId": "470c1f1b",
     "cordovaLocalNotificationsEnabled": false,
     "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     "defaultState": "app.remindersInbox",
-    "welcomeState": "app.welcome",
     "appStorageIdentifier": "MoodiModoData*",
-    "headline": "Sync and Analyze Your Data",
     "features": [
         " - Automatically backup and sync your data across devices",
         " - Track diet, treatments, symptoms, and anything else",
@@ -26,11 +22,5 @@ config.appSettings  = {
     "intro": null,
     "remindersInbox": {},
     "wordAliases": {},
-    "menuType": 'extended'
-};
-
-if(!module){
-    var module = {};
+    "menuType": "extended"
 }
-
-module.exports = config.appSettings;
