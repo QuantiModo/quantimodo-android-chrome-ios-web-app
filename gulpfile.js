@@ -158,16 +158,15 @@ function decryptPrivateConfig(callback) {
 }
 
 function loadConfigs(callback) {
-    var pathToConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js';
     var pathToJsonConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.config.json';
     var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfig));
-    var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(config) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
+    var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
     require('fs').writeFileSync('./www/configs/default.js', defaultConfigFileContent);
 
     var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
-    fs.stat(pathToConfig, function(err, stat) {
+    fs.stat(pathToJsonConfig, function(err, stat) {
         if(err === null) {
-            console.log("Using this config file: " + pathToConfig);
+            console.log("Using this config file: " + pathToJsonConfig);
 /*            fs.readFile(pathToConfig, function (err, data) {
                 config = JSON.parse(data);
                 fs.readFile(pathToPrivateConfig, function (err, data) {
@@ -186,7 +185,7 @@ function loadConfigs(callback) {
             process.env.IONIC_APP_ID = appSettings.ionicAppId;
             //process.env.privateConfig = require(pathToPrivateConfig);
             if(callback){callback();}
-        } else {throw("ERROR: " + pathToConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);}
+        } else {throw("ERROR: " + pathToJsonConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);}
     });
 }
 //loadConfigs();
