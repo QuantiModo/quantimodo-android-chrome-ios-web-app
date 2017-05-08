@@ -16,7 +16,6 @@
         " - Analyze your data to see the strongest predictors of your mood"
     ],
     "welcomeText": "Let's start off by adding your first medication!",
-    "mobileNotificationText": "Time to track!",
     "intro": null,
     "remindersInbox": {},
     "wordAliases": {},
