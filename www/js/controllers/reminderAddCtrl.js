@@ -367,6 +367,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             if($rootScope.manualTrackingUnitObjects[$scope.state.trackingReminder.unitAbbreviatedName]){
                 $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
             } else {
+                $scope.state.showMoreUnits = true;
                 $scope.state.moreUnits = $rootScope.unitObjects;
             }
         }

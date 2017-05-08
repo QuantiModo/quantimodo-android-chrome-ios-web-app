@@ -55,18 +55,26 @@ if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
 
-if(!process.env.LOWERCASE_APP_NAME){
-    git.revParse({args:'--abbrev-ref HEAD'}, function (err, branch) {
-        console.log('current git branch: ' + branch);
-        if(appIds[branch]){
-            console.info('Setting LOWERCASE_APP_NAME using branch name ' + branch);
-            process.env.LOWERCASE_APP_NAME = branch;
-        } else{
-            console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-            process.env.LOWERCASE_APP_NAME = 'quantimodo';
-        }
-    });
+
+function setLowerCaseAppName(callback) {
+    if(!process.env.LOWERCASE_APP_NAME){
+        git.revParse({args:'--abbrev-ref HEAD'}, function (err, branch) {
+            console.log('current git branch: ' + branch);
+            if(appIds[branch]){
+                console.info('Setting LOWERCASE_APP_NAME using branch name ' + branch);
+                process.env.LOWERCASE_APP_NAME = branch;
+            } else{
+                console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
+                process.env.LOWERCASE_APP_NAME = 'quantimodo';
+            }
+            if(callback){callback();}
+        });
+    }
 }
+
+gulp.task('setLowerCaseAppName', function(callback){setLowerCaseAppName(callback);});
+
+setLowerCaseAppName();
 
 var exec = require('child_process').exec;
 function execute(command, callback){
@@ -108,6 +116,7 @@ function generatePrivateConfigFromEnvs(callback) {
 }
 
 gulp.task('getCommonVariables', function () {
+    console.log('Running getCommonVariables...');
     return request({url: 'https://app.quantimo.do/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
@@ -149,11 +158,15 @@ function decryptPrivateConfig(callback) {
 }
 
 function loadConfigs(callback) {
-    var pathToConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.js';
+    var pathToJsonConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.config.json';
+    var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfig));
+    var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
+    require('fs').writeFileSync('./www/configs/default.js', defaultConfigFileContent);
+
     var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
-    fs.stat(pathToConfig, function(err, stat) {
+    fs.stat(pathToJsonConfig, function(err, stat) {
         if(err === null) {
-            console.log("Using this config file: " + pathToConfig);
+            console.log("Using this config file: " + pathToJsonConfig);
 /*            fs.readFile(pathToConfig, function (err, data) {
                 config = JSON.parse(data);
                 fs.readFile(pathToPrivateConfig, function (err, data) {
@@ -163,7 +176,8 @@ function loadConfigs(callback) {
 					}
                 });
             });*/
-			var appSettings = require(pathToConfig);
+
+			//var appSettings = require(pathToConfig);
             process.env.APPLE_ID = appSettings.appleId;
             process.env.APP_DISPLAY_NAME = appSettings.appDisplayName;
             process.env.APP_IDENTIFIER = appSettings.appIdentifier;
@@ -171,7 +185,7 @@ function loadConfigs(callback) {
             process.env.IONIC_APP_ID = appSettings.ionicAppId;
             //process.env.privateConfig = require(pathToPrivateConfig);
             if(callback){callback();}
-        } else {throw("ERROR: " + pathToConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);}
+        } else {throw("ERROR: " + pathToJsonConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);}
     });
 }
 //loadConfigs();
@@ -1318,6 +1332,14 @@ gulp.task('template', function(done){
 
 gulp.task('loadConfigs', [], function(callback){
     loadConfigs(callback);
+});
+
+gulp.task('setEnvsFromBranchName', [], function(callback){
+    runSequence(
+        'setLowerCaseAppName',
+        'decryptPrivateConfig',
+        'loadConfigs',
+        callback);
 });
 
 gulp.task('setEnergyModoEnvs', [], function(callback){
