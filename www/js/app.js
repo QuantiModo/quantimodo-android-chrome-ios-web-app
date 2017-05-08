@@ -155,25 +155,24 @@ angular.module('starter',
          }
         window.notification_callback = function(reportedVariable, reportingTime){
             var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
-            var keyIdentifier = config.appSettings.appStorageIdentifier;
             var val = false;
             if(reportedVariable === "repeat_rating"){
-                val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
+                val = localStorage['lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage['lastReportedPrimaryOutcomeVariableValue']) : false;
             } else {
                 val = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
             }
             if(val){
-                localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
-                var allMeasurementsObject = {storedValue : val, value : val, startTime : startTime,};
-                if(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']){
-                    var allMeasurements = JSON.parse(localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements']);
+                localStorage['lastReportedPrimaryOutcomeVariableValue'] = val;
+                var allMeasurementsObject = {storedValue : val, value : val, startTime : startTime};
+                if(localStorage['primaryOutcomeVariableMeasurements']){
+                    var allMeasurements = JSON.parse(localStorage['primaryOutcomeVariableMeasurements']);
                     allMeasurements.push(allMeasurementsObject);
-                    localStorage[keyIdentifier+'primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
+                    localStorage['primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
                 }
-                if(localStorage[keyIdentifier+'measurementsQueue']){
-                    var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
+                if(localStorage['measurementsQueue']){
+                    var measurementsQueue = JSON.parse(localStorage['measurementsQueue']);
                     measurementsQueue.push(allMeasurementsObject);
-                    localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
+                    localStorage['measurementsQueue'] = JSON.stringify(measurementsQueue);
                 }
             }
         };

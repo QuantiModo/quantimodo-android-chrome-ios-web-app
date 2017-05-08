@@ -12,6 +12,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showTrackingSubMenu = false;
     $rootScope.numberOfPendingNotifications = null;
     $scope.showReminderSubMenu = false;
+    quantimodoService.removeAppStorageIdentifiers();
     $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
