@@ -142,7 +142,8 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
         } else {
             console.log("DECRYPTED to " + decryptedFilePath);
         }
-        outputSHA1ForAndroidKeystore(decryptedFilePath, callback);
+        if (callback) {callback();}
+        outputSHA1ForAndroidKeystore(decryptedFilePath);
     });
 };
 
@@ -465,9 +466,8 @@ gulp.task('encryptAndroidDebugKeystore', [], function(callback){
     encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 });
 
-function outputSHA1ForAndroidKeystore(decryptedFilePath, callback) {
+function outputSHA1ForAndroidKeystore(decryptedFilePath) {
     if(decryptedFilePath.indexOf('keystore') === -1){
-        if (callback) {callback();}
         return;
     }
     var cmd = "keytool -exportcert -list -v -alias androiddebugkey -keystore " + decryptedFilePath;
@@ -477,7 +477,6 @@ function outputSHA1ForAndroidKeystore(decryptedFilePath, callback) {
         } else {
             console.log("Should have output SHA1 for the production keystore " + decryptedFilePath);
         }
-        if (callback) {callback();}
     });
 }
 gulp.task('decryptAndroidKeystore', [], function(callback){
