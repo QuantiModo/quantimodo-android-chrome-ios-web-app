@@ -117,7 +117,7 @@ function generatePrivateConfigFromEnvs(callback) {
 }
 
 gulp.task('getCommonVariables', function () {
-    console.log('Running getCommonVariables...');
+    console.log('gulp getCommonVariables...');
     return request({url: 'https://app.quantimo.do/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
@@ -143,7 +143,7 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
             console.log("DECRYPTED to " + decryptedFilePath);
         }
         if (callback) {callback();}
-        outputSHA1ForAndroidKeystore(decryptedFilePath);
+        //outputSHA1ForAndroidKeystore(decryptedFilePath);
     });
 };
 
@@ -163,6 +163,7 @@ function loadConfigs(callback) {
     var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfig));
     appSettings.debugMode = process.env.DEBUG_MODE;
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
+    console.log("writing to www/configs/default.js: " + defaultConfigFileContent);
     require('fs').writeFileSync('./www/configs/default.js', defaultConfigFileContent);
 
     var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
@@ -1346,6 +1347,7 @@ gulp.task('template', function(done){
 });
 
 gulp.task('loadConfigs', [], function(callback){
+    console.log("gulp loadConfigs");
     loadConfigs(callback);
 });
 
@@ -1659,6 +1661,7 @@ gulp.task('zipChromeExtension', [], function(){
 
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function(callback){
+    console.log("gulp configureAppAfterNpmInstall");
     if (process.env.PREPARE_IOS_APP){
     	console.log("process.env.PREPARE_IOS_APP is " + process.env.PREPARE_IOS_APP + " so going to prepareIosApp");
         runSequence(
@@ -1682,6 +1685,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
 });
 
 gulp.task('configureApp', [], function(callback){
+    console.log("gulp configureApp");
 	runSequence(
         'sass',
         'getCommonVariables',
