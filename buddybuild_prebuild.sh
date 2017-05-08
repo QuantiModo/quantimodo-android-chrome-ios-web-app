@@ -8,7 +8,7 @@ echo "PREPARE_IOS_APP env is ${PREPARE_IOS_APP}"
 echo "LOWERCASE_APP_NAME is ${LOWERCASE_APP_NAME}"
 
 npm install -g gulp
-gulp getCommonVariables
+gulp configureAppAfterNpmInstall
 
 #echo "cd ../.. && gulp prepareQuantiModoIos && cd platforms/ios"
 #cd ../.. && gulp prepareQuantiModoIos && cd platforms/ios
