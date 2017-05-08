@@ -16,7 +16,6 @@
         " - Analyze your data to see the strongest predictors of your mood"
     ],
     "welcomeText": "Let's start off by reporting your first mood below",
-    "mobileNotificationText": "Time to track!",
     "intro": null,
     "remindersInbox": {},
     "wordAliases": {},
