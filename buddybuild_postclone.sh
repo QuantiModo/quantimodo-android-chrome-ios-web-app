@@ -42,8 +42,8 @@ if [ -z ${BUILD_ANDROID} ];
         echo "Running npm install -g gulp bower ionic cordova"
         npm install -g gulp bower ionic cordova
 
-        npm install
-        gulp configureAppAfterNpmInstall
+        #npm install
+        #gulp configureAppAfterNpmInstall
 
         #echo "Running npm install"
         #npm install  # Done in gulpfile now
