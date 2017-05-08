@@ -4829,11 +4829,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     // Local Storage Services
     quantimodoService.deleteItemFromLocalStorage  = function(key){
-        var keyIdentifier = config.appSettings.appStorageIdentifier;
         if ($rootScope.isChromeApp) {
             // Code running in a Chrome extension (content script, background page, etc.)
-            chrome.storage.local.remove(keyIdentifier+key);
-        } else {localStorage.removeItem(keyIdentifier+key);}
+            chrome.storage.local.remove(key);
+        } else {localStorage.removeItem(key);}
     };
     quantimodoService.deleteElementOfLocalStorageItemById = function(localStorageItemName, elementId){
         var deferred = $q.defer();
@@ -4902,17 +4901,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.setLocalStorageItem = function(key, value){
         var deferred = $q.defer();
-        var keyIdentifier = config.appSettings.appStorageIdentifier;
         if(typeof value !== "string"){value = JSON.stringify(value);}
         if ($rootScope.isChromeApp) {
             // Code running in a Chrome extension (content script, background page, etc.)
             var obj = {};
-            obj[keyIdentifier+key] = value;
+            obj[key] = value;
             chrome.storage.local.set(obj);
             deferred.resolve();
         } else {
             try {
-                localStorage.setItem(keyIdentifier+key, value);
+                localStorage.setItem(key, value);
                 deferred.resolve();
             } catch(error) {
                 var metaData = { localStorageItems: quantimodoService.getLocalStorageList() };
@@ -4921,63 +4919,72 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 var severity = 'error';
                 quantimodoService.bugsnagNotify(name, message, metaData, severity);
                 quantimodoService.deleteLargeLocalStorageItems(metaData.localStorageItems);
-                localStorage.setItem(keyIdentifier+key, value);
+                localStorage.setItem(key, value);
             }
         }
         return deferred.promise;
+    };
+    // TODO:  Remove removeAppStorageIdentifiers function and config.appSettings.appStorageIdentifier's after all apps have updated. Maybe after 6/1/17
+    quantimodoService.removeAppStorageIdentifiers = function(){
+        var localStorageItemsWithAppStorageIdentifier = quantimodoService.getLocalStorageList(true);
+        for (var i = 0; i < localStorageItemsWithAppStorageIdentifier.length; i++){
+            if(localStorageItemsWithAppStorageIdentifier[i].name.indexOf(config.appSettings.appStorageIdentifier) > -1){
+                localStorage.setItem(localStorageItemsWithAppStorageIdentifier[i].name.replace(config.appSettings.appStorageIdentifier, '') , localStorageItemsWithAppStorageIdentifier[i].value);
+                localStorage.removeItem(localStorageItemsWithAppStorageIdentifier[i].name);
+            }
+        }
     };
     quantimodoService.deleteLargeLocalStorageItems = function(localStorageItemsArray){
         for (var i = 0; i < localStorageItemsArray.length; i++){
             if(localStorageItemsArray[i].kB > 2000){ localStorage.removeItem(localStorageItemsArray[i].name); }
         }
     };
-    quantimodoService.getLocalStorageList = function(){
+    quantimodoService.getLocalStorageList = function(requireAppStorageIdentifier){
         var localStorageItemsArray = [];
         for (var i = 0; i < localStorage.length; i++){
-            localStorage.getItem(localStorage.key(i));
-            localStorageItemsArray.push({
-                name: localStorage.key(i),
-                kB: Math.round(localStorage.getItem(localStorage.key(i)).length*16/(8*1024))
-            });
+            if(!requireAppStorageIdentifier || (requireAppStorageIdentifier && localStorage.key(i).indexOf(config.appSettings.appStorageIdentifier) > -1)){
+                localStorageItemsArray.push({
+                    name: localStorage.key(i),
+                    value: localStorage.getItem(localStorage.key(i)),
+                    kB: Math.round(localStorage.getItem(localStorage.key(i)).length*16/(8*1024))
+                });
+            }
         }
         return localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
     };
     quantimodoService.getLocalStorageItemAsStringWithCallback = function(key, callback){
-        var keyIdentifier = config.appSettings.appStorageIdentifier;
         if ($rootScope.isChromeApp) {
             // Code running in a Chrome extension (content script, background page, etc.)
-            chrome.storage.local.get(keyIdentifier+key,function(val){
-                callback(val[keyIdentifier+key]);
+            chrome.storage.local.get(key,function(val){
+                callback(val[key]);
             });
         } else {
-            var val = localStorage.getItem(keyIdentifier+key);
+            var val = localStorage.getItem(key);
             callback(val);
         }
     };
     quantimodoService.getLocalStorageItemAsString = function(key) {
-        var keyIdentifier = config.appSettings.appStorageIdentifier;
         if ($rootScope.isChromeApp) {
             // Code running in a Chrome extension (content script, background page, etc.)
-            chrome.storage.local.get(keyIdentifier+key,function(val){
-                return val[keyIdentifier+key];
+            chrome.storage.local.get(key,function(val){
+                return val[key];
             });
-        } else {return localStorage.getItem(keyIdentifier+key);}
+        } else {return localStorage.getItem(key);}
     };
     quantimodoService.getElementsFromLocalStorageItemWithFilters = function (localStorageItemName, filterPropertyName, filterPropertyValue,
                                                                              lessThanPropertyName, lessThanPropertyValue,
                                                                              greaterThanPropertyName, greaterThanPropertyValue) {
-        var keyIdentifier = config.appSettings.appStorageIdentifier;
         var unfilteredElementArray = [];
         var itemAsString;
         var i;
         if ($rootScope.isChromeApp) {
             // Code running in a Chrome extension (content script, background page, etc.)
-            chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
-                itemAsString = localStorageItems[keyIdentifier + localStorageItemName];
+            chrome.storage.local.get(localStorageItemName,function(localStorageItems){
+                itemAsString = localStorageItems[localStorageItemName];
             });
         } else {
-            //console.debug(localStorage.getItem(keyIdentifier + localStorageItemName));
-            itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
+            //console.debug(localStorage.getItem(localStorageItemName));
+            itemAsString = localStorage.getItem(localStorageItemName);
         }
         if(!itemAsString){return null;}
         if(itemAsString === "undefined"){
@@ -5052,16 +5059,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return arrayToSort;
     };
     quantimodoService.getLocalStorageItemAsObject = function(key) {
-        var keyIdentifier = config.appSettings.appStorageIdentifier;
         if ($rootScope.isChromeApp) {
             // Code running in a Chrome extension (content script, background page, etc.)
-            chrome.storage.local.get(keyIdentifier+key,function(val){
-                var item = val[keyIdentifier+key];
+            chrome.storage.local.get(key,function(val){
+                var item = val[key];
                 item = convertToObjectIfJsonString(item);
                 return item;
             });
         } else {
-            var item = localStorage.getItem(keyIdentifier+key);
+            var item = localStorage.getItem(key);
             item = convertToObjectIfJsonString(item);
             return item;
         }
