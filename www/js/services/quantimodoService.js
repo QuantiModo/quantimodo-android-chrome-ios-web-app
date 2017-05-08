@@ -4924,6 +4924,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return deferred.promise;
     };
+    // TODO:  Remove removeAppStorageIdentifiers function and config.appSettings.appStorageIdentifier's after all apps have updated. Maybe after 6/1/17
     quantimodoService.removeAppStorageIdentifiers = function(){
         var localStorageItemsWithAppStorageIdentifier = quantimodoService.getLocalStorageList(true);
         for (var i = 0; i < localStorageItemsWithAppStorageIdentifier.length; i++){

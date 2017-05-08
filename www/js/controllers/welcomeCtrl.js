@@ -2,7 +2,6 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     $scope.controller_name = "WelcomeCtrl";
     $rootScope.hideNavigationMenu = true;
     $scope.reportedVariableValue = false;
-    $scope.headline = config.appSettings.headline;
     $scope.features = config.appSettings.features;
     $rootScope.showFilterBarSearchIcon = false;
     quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
