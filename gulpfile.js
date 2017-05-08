@@ -55,7 +55,7 @@ if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
 
-
+process.env.DEBUG_MODE = false;
 function setLowerCaseAppName(callback) {
     if(!process.env.LOWERCASE_APP_NAME){
         git.revParse({args:'--abbrev-ref HEAD'}, function (err, branch) {
@@ -64,6 +64,7 @@ function setLowerCaseAppName(callback) {
                 console.info('Setting LOWERCASE_APP_NAME using branch name ' + branch);
                 process.env.LOWERCASE_APP_NAME = branch;
             } else{
+                process.env.DEBUG_MODE = true;
                 console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
                 process.env.LOWERCASE_APP_NAME = 'quantimodo';
             }
@@ -138,11 +139,10 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
     execute(cmd, function(error){
         if(error !== null){
             console.error("ERROR: DECRYPTING: " + error);
-            if(callback){callback();}
         } else {
             console.log("DECRYPTED to " + decryptedFilePath);
-            if(callback){callback();}
         }
+        outputSHA1ForAndroidKeystore(decryptedFilePath, callback);
     });
 };
 
@@ -160,6 +160,7 @@ function decryptPrivateConfig(callback) {
 function loadConfigs(callback) {
     var pathToJsonConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.config.json';
     var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfig));
+    appSettings.debugMode = process.env.DEBUG_MODE;
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
     require('fs').writeFileSync('./www/configs/default.js', defaultConfigFileContent);
 
@@ -464,6 +465,21 @@ gulp.task('encryptAndroidDebugKeystore', [], function(callback){
     encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 });
 
+function outputSHA1ForAndroidKeystore(decryptedFilePath, callback) {
+    if(decryptedFilePath.indexOf('keystore') === -1){
+        if (callback) {callback();}
+        return;
+    }
+    var cmd = "keytool -exportcert -list -v -alias androiddebugkey -keystore " + decryptedFilePath;
+    execute(cmd, function (error) {
+        if (error !== null) {
+            console.error("ERROR: ENCRYPTING: " + error);
+        } else {
+            console.log("Should have output SHA1 for the production keystore " + decryptedFilePath);
+        }
+        if (callback) {callback();}
+    });
+}
 gulp.task('decryptAndroidKeystore', [], function(callback){
     var fileToDecryptPath = 'quantimodo.keystore.enc';
     var decryptedFilePath = 'quantimodo.keystore';
