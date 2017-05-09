@@ -1,5 +1,4 @@
 {
-    "apiUrl": "https://app.quantimo.do",
     "appDescription": "Better health through data.",
     "appDisplayName": "MediModo",
     "appIdentifier": "com.quantimodo.medimodo",
@@ -8,6 +7,7 @@
     "appType": "medication",
     "backgroundColor": "white",
     "cordovaLocalNotificationsEnabled": false,
+    "companyEmail": "hello@medimodo.com",
     "defaultState": "app.remindersInbox",
     "downloadLinks": {
         "chromeExtension": "https://chrome.google.com/webstore/detail/medimodo/nojnjdgmjaejpnpehgioddbimopnblga",
@@ -17,11 +17,14 @@
     },
     "floatingActionButtonColor": null,
     "googleAnalyticsId": "UA-39222734-28",
+    "homepage": "https://medimodo.com",
+    "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/jjpwj6LvyV_r2ncyb",
     "ionicAppId": "e85b92b4",
     "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     "lowercaseAppName": "medimodo",
     "menuType": "minimal",
     "remindersManage": {},
+    "textLogo": "https://app.quantimo.do/ionic/Modo/www/img/logos/medimodo/medimodo-text-logo-250-56.png",
     "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     "wordAliases": {},
     "features": [

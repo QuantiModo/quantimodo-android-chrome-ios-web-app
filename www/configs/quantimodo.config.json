@@ -5,6 +5,7 @@
   "appleId": "1115037060",
   "appStorageIdentifier": "QuantiModoData*",
   "backgroundColor": "#3467d6",
+  "companyEmail": "hello@medimodo.com",
   "cordovaLocalNotificationsEnabled": false,
   "defaultState": "app.remindersInbox",
   "downloadLinks": {
@@ -13,12 +14,15 @@
     "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo",
     "webApp": "https://app.quantimo.do"
   },
+  "homepage": "https://medimodo.com",
+  "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/jjpwj6LvyV_r2ncyb",
   "intro": null,
   "ionicAppId": "42fe48d4",
   "ionNavBarClass": "bar-positive",
   "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
   "lowercaseAppName": "quantimodo",
   "menuType": "minimal",
+  "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
   "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "welcomeState": "app.welcome",
   "wordAliases": {}
