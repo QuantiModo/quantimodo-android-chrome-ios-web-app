@@ -35,11 +35,11 @@ if [ -z ${PREPARE_IOS_APP} ];
         #gulp prepareIosApp  # Done in gulpfile now
 fi
 
-if [ -z ${BUILD_ANDROID} ];
+if [ -z ${ANDROID_HOME} ];
     then
-        echo "NOT BUILDING ANDROID APP because BUILD_ANDROID env is not true"
+        echo "NOT BUILDING ANDROID APP because ANDROID_HOME env is not set"
     else
-        echo "BUILDING ANDROID APP because BUILD_ANDROID is true"
+        echo "BUILDING ANDROID APP because ANDROID_HOME is set to ${ANDROID_HOME}"
 
         echo "Running apt-get install imagemagick"
         echo password | sudo -S apt-get install imagemagick

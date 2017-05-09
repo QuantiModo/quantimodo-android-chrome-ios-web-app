@@ -1695,10 +1695,8 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
         	'deleteUnusedFiles',
             'prepareIosApp',
             callback);
-    } else if (process.env.BUILD_ANDROID){
-        callback();
-        return;
-        console.log("process.env.BUILD_ANDROID is true so going to buildAndroid");
+    } else if (process.env.ANDROID_HOME){
+        console.log("Building Android because ANDROID_HOME is set to: " + process.env.ANDROID_HOME);
         runSequence(
             'deleteUnusedFiles',
             'prepareRepositoryForAndroid',
