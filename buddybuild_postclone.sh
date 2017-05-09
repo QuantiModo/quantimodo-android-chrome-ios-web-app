@@ -18,8 +18,8 @@ echo "LOWERCASE_APP_NAME is ${LOWERCASE_APP_NAME}"
 
 if [ -z ${BUDDYBUILD_SCHEME} ];
     then
-        echo "NOT BUILDING IOS APP because BUDDYBUILD_SCHEME env is ${BUDDYBUILD_SCHEME}"
-        echo "BUILDING ANDROID APP because BUDDYBUILD_SCHEME is set to ${BUDDYBUILD_SCHEME}"
+        echo "NOT BUILDING IOS APP because BUDDYBUILD_SCHEME env is not set ${BUDDYBUILD_SCHEME}"
+        echo "BUILDING ANDROID APP because BUDDYBUILD_SCHEME is not set ${BUDDYBUILD_SCHEME}"
 
         echo "Running apt-get install imagemagick"
         echo password | sudo -S apt-get install imagemagick
