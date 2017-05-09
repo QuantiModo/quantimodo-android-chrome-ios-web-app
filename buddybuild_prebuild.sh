@@ -2,6 +2,9 @@
 
 echo "=== buddybuild_prebuild.sh ==="
 
+echo "ENVIRONMENTAL VARIABLES"
+printenv | more
+
 echo "Running buddybuild_prebuild.sh. Current folder is $PWD and folder contents are:"
 ls
 
