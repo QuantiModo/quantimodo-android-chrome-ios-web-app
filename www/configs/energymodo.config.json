@@ -1,19 +1,23 @@
 {
-    "appDisplayName": "EnergyModo",
-    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
-    "lowercaseAppName": "energymodo",
     "appDescription": "Track and find out what affects your energy levels",
-    "appleId": null,
+    "appDisplayName": "EnergyModo",
     "appIdentifier": "com.quantimodo.energymodo",
-    "ionicAppId": "f837bb35",
-    "cordovaLocalNotificationsEnabled": false,
-    "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
-    "defaultState": "app.remindersInbox",
+    "appleId": null,
     "appStorageIdentifier": "EnergyModoData*",
-    "primaryOutcomeVariableName": "Energy Rating",
-    "welcomeText": "Let's start off by reporting your energy below",
+    "cordovaLocalNotificationsEnabled": false,
+    "defaultState": "app.remindersInbox",
+    "downloadLinks": {
+        "chromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
+        "iosApp": "https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8",
+        "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.energymodo",
+        "webApp": "https://app.quantimo.do"
+    },
     "intro": null,
-    "remindersInbox": {},
-    "wordAliases": {},
-    "menuType": "extended"
+    "ionicAppId": "f837bb35",
+    "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
+    "lowercaseAppName": "energymodo",
+    "menuType": "extended",
+    "primaryOutcomeVariableName": "Energy Rating",
+    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
+    "wordAliases": {}
 }

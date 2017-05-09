@@ -2,7 +2,6 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
     $scope.headline = config.appSettings.headline;
-    $scope.features = config.appSettings.features;
     $rootScope.showFilterBarSearchIcon = false;
     if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
     if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
