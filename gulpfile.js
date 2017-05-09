@@ -1696,7 +1696,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
             'prepareIosApp',
             callback);
     } else if (process.env.BUDDYBUILD_SECURE_FILES){
-        console.log("Building Android because BUDDYBUILD_SCHEME is not set and BUDDYBUILD_SECURE_FILES is set to: " + process.env.BUDDYBUILD_SECURE_FILES);
+        console.log("Building Android because BUDDYBUILD_SCHEME is not set and we know we're on BuddyBuild because BUDDYBUILD_SECURE_FILES is set to: " + process.env.BUDDYBUILD_SECURE_FILES);
         runSequence(
             'deleteUnusedFiles',
             'prepareRepositoryForAndroid',
