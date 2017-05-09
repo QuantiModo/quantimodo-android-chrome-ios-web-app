@@ -170,7 +170,7 @@ function loadConfigs(callback) {
 
     if(defaultConfigFileContent !== writtenDefaultJsContent){
         console.log('Could not create and read ./www/configs/default.js');
-        throw ('Could not create and read ./www/configs/default.js');
+        //throw ('Could not create and read ./www/configs/default.js');
     }
 
     var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
