@@ -1692,20 +1692,17 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
     if (process.env.BUDDYBUILD_SCHEME){
     	console.log("BUDDYBUILD_SCHEME is " + process.env.BUDDYBUILD_SCHEME + " so going to prepareIosApp");
         runSequence(
-        	'deleteUnusedFiles',
             'prepareIosApp',
             callback);
     } else if (process.env.BUDDYBUILD_SECURE_FILES){
         console.log("Building Android because BUDDYBUILD_SCHEME is not set and we know we're on BuddyBuild because BUDDYBUILD_SECURE_FILES is set to: " + process.env.BUDDYBUILD_SECURE_FILES);
         runSequence(
-            'deleteUnusedFiles',
             'prepareRepositoryForAndroid',
         	'buildAndroidApp',
             //'buildQuantiModoAndroid',  // Had to do this previously because buildAndroid wasn't working
             callback);
     } else {
         runSequence(
-            'deleteUnusedFiles',
             'configureApp',
             callback);
     }
@@ -1714,6 +1711,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
 gulp.task('configureApp', [], function(callback){
     console.log("gulp configureApp");
 	runSequence(
+	    'deleteUnusedFiles',
         'sass',
         'generateJsConfigs',
         'getCommonVariables',

@@ -2,6 +2,11 @@
 
 echo "=== buddybuild_postbuild.sh ==="
 
+echo "Current directory: $PWD"
+
+"Directory structure: "
+ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
+
 echo "www/configs FILE LIST:"
 cd www/configs && find .
 
