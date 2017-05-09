@@ -159,17 +159,24 @@ function decryptPrivateConfig(callback) {
 }
 
 function loadConfigs(callback) {
-    var pathToJsonConfig = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.config.json';
-    var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfig));
+    var pathToJsonConfigPath = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.config.json';
+    var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfigPath));
     appSettings.debugMode = process.env.DEBUG_MODE;
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
     console.log("writing to www/configs/default.js: " + defaultConfigFileContent);
     require('fs').writeFileSync('./www/configs/default.js', defaultConfigFileContent);
 
+    var writtenDefaultJsContent = JSON.parse(fs.readFileSync('./www/configs/default.js'));
+
+    if(defaultConfigFileContent !== writtenDefaultJsContent){
+        console.log('Could not create and read ./www/configs/default.js');
+        throw ('Could not create and read ./www/configs/default.js');
+    }
+
     var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
-    fs.stat(pathToJsonConfig, function(err, stat) {
+    fs.stat(pathToJsonConfigPath, function(err, stat) {
         if(err === null) {
-            console.log("Using this config file: " + pathToJsonConfig);
+            console.log("Using this config file: " + pathToJsonConfigPath);
 /*            fs.readFile(pathToConfig, function (err, data) {
                 config = JSON.parse(data);
                 fs.readFile(pathToPrivateConfig, function (err, data) {
@@ -188,7 +195,7 @@ function loadConfigs(callback) {
             process.env.IONIC_APP_ID = appSettings.ionicAppId;
             //process.env.privateConfig = require(pathToPrivateConfig);
             if(callback){callback();}
-        } else {throw("ERROR: " + pathToJsonConfig + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);}
+        } else {throw("ERROR: " + pathToJsonConfigPath + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);}
     });
 }
 //loadConfigs();
