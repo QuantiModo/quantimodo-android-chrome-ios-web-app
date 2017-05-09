@@ -29,6 +29,7 @@ var git = require('gulp-git'),
     jeditor = require('gulp-json-editor'),
     source = require('vinyl-source-stream'),
     streamify = require('gulp-streamify');
+var directoryMap = require("gulp-directory-map");
 
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
@@ -37,6 +38,22 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
+
+gulp.task('generateJsConfigs', function(){
+    var configListPath = 'configs-list.json';
+    gulp.src('./www/configs/*.json')
+        .pipe(directoryMap({filename: 'configs-list.json'}))
+        .pipe(gulp.dest('./'))
+        .on('end', function(){
+            gutil.log("Available apps:");
+            var configListJson = JSON.parse(fs.readFileSync(configListPath));
+            for(var property in configListJson){
+                var lowerCaseAppName = property.replace('.config.json', '');
+                gutil.log(lowerCaseAppName);
+                loadConfigsAndGenerateConfigJs(null, lowerCaseAppName);
+            }
+        });
+});
 
 var paths = {
     sass: ['./www/scss/**/*.scss']
@@ -158,19 +175,25 @@ function decryptPrivateConfig(callback) {
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 }
 
-function loadConfigs(callback) {
-    var pathToJsonConfigPath = './www/configs/'+ process.env.LOWERCASE_APP_NAME + '.config.json';
-    var pathToGeneratedDefaultJs = './www/configs/default.js';
+function loadConfigsAndGenerateConfigJs(callback, lowerCaseAppName) {
+    var pathToGeneratedConfigJs;
+    if(!lowerCaseAppName){
+        pathToGeneratedConfigJs = './www/configs/default.js';
+        lowerCaseAppName = process.env.LOWERCASE_APP_NAME;
+    } else {
+        pathToGeneratedConfigJs = './www/configs/'+ lowerCaseAppName +'.js';
+    }
+    var pathToJsonConfigPath = './www/configs/'+ lowerCaseAppName + '.config.json';
     var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfigPath));
     appSettings.debugMode = process.env.DEBUG_MODE;
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
-    console.log("writing to " + pathToGeneratedDefaultJs + ": " + defaultConfigFileContent);
-    require('fs').writeFileSync(pathToGeneratedDefaultJs, defaultConfigFileContent);
+    console.log("writing to " + pathToGeneratedConfigJs + ": " + defaultConfigFileContent);
+    require('fs').writeFileSync(pathToGeneratedConfigJs, defaultConfigFileContent);
 
-    var pathToPrivateConfig = './www/private_configs/'+ process.env.LOWERCASE_APP_NAME + '.config.js';
-    fs.stat(pathToGeneratedDefaultJs, function(err, stat) {
+    var pathToPrivateConfig = './www/private_configs/'+ lowerCaseAppName + '.config.js';
+    fs.stat(pathToGeneratedConfigJs, function(err, stat) {
         if(err === null) {
-            console.log("Using this config file: " + pathToGeneratedDefaultJs);
+            console.log("Using this config file: " + pathToGeneratedConfigJs);
 /*            fs.readFile(pathToConfig, function (err, data) {
                 config = JSON.parse(data);
                 fs.readFile(pathToPrivateConfig, function (err, data) {
@@ -190,12 +213,12 @@ function loadConfigs(callback) {
             //process.env.privateConfig = require(pathToPrivateConfig);
             if(callback){callback();}
         } else {
-            console.log('Could not create and read ' + pathToGeneratedDefaultJs);
-            throw("ERROR: " + pathToGeneratedDefaultJs + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);
+            console.log('Could not create and read ' + pathToGeneratedConfigJs);
+            throw("ERROR: " + pathToGeneratedConfigJs + ' not found! Please create it or use a different LOWERCASE_APP_NAME env. Error Code: ' + err.code);
         }
     });
 }
-//loadConfigs();
+//loadConfigsAndGenerateConfigJs();
 gulp.task('default', ['sass']);
 
 gulp.task('unzipChromeExtension', function() {
@@ -1350,16 +1373,16 @@ gulp.task('template', function(done){
 		.on('end', done);
 });
 
-gulp.task('loadConfigs', [], function(callback){
-    console.log("gulp loadConfigs");
-    loadConfigs(callback);
+gulp.task('loadConfigsAndGenerateConfigJs', [], function(callback){
+    console.log("gulp loadConfigsAndGenerateConfigJs");
+    loadConfigsAndGenerateConfigJs(callback);
 });
 
 gulp.task('setEnvsFromBranchName', [], function(callback){
     runSequence(
         'setLowerCaseAppName',
         'decryptPrivateConfig',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         callback);
 });
 
@@ -1367,7 +1390,7 @@ gulp.task('setEnergyModoEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "energymodo";
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         callback);
 });
 
@@ -1375,7 +1398,7 @@ gulp.task('setMediModoEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "medimodo";
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         callback);
 });
 
@@ -1383,7 +1406,7 @@ gulp.task('setMindFirstEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "mindfirst";
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         callback);
 });
 
@@ -1391,7 +1414,7 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "moodimodo";
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         callback);
 });
 
@@ -1401,7 +1424,7 @@ gulp.task('setAppEnvs', [], function(callback){
     }
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         callback);
 });
 
@@ -1409,7 +1432,7 @@ gulp.task('setQuantiModoEnvs', [], function(callback){
     process.env.LOWERCASE_APP_NAME = "quantimodo";
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         callback);
 });
 
@@ -1417,7 +1440,7 @@ gulp.task('setMindFirstEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "mindfirst";
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         callback);
 });
 
@@ -1673,6 +1696,8 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
             'prepareIosApp',
             callback);
     } else if (process.env.BUILD_ANDROID){
+        callback();
+        return;
         console.log("process.env.BUILD_ANDROID is true so going to buildAndroid");
         runSequence(
             'deleteUnusedFiles',
@@ -1692,12 +1717,13 @@ gulp.task('configureApp', [], function(callback){
     console.log("gulp configureApp");
 	runSequence(
         'sass',
+        'generateJsConfigs',
         'getCommonVariables',
 		'copyAppResources',
 		'generatePrivateConfigFromEnvs',
 		'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
 		'decryptPrivateConfigToDefault',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
 		// templates because of the git changes and weird stuff replacement does to config-template.xml
 		'copyAppConfigToDefault',
 		'setIonicAppId',
@@ -1715,7 +1741,7 @@ gulp.task('configureDefaultApp', [], function(callback){
     process.env.LOWERCASE_APP_NAME = 'yourlowercaseappnamehere';
     runSequence(
         'copyAppResources',
-        'loadConfigs',
+        'loadConfigsAndGenerateConfigJs',
         'copyAppConfigToDefault',
         'setIonicAppId',
         callback);
