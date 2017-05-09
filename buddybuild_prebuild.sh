@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "=== buddybuild_prebuild.sh ==="
+
 echo "Running buddybuild_prebuild.sh. Current folder is $PWD and folder contents are:"
 ls
 

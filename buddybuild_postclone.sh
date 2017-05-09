@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "=== buddybuild_postclone.sh ==="
+
 echo "Running buddybuild_postclone.sh. Current folder is $PWD..."
 #echo "folder contents are:"
 #ls
