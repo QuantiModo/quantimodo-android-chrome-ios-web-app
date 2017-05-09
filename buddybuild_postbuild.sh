@@ -3,6 +3,8 @@
 echo "=== buddybuild_postbuild.sh ==="
 
 echo "Current directory: $PWD"
+cd ../..
+echo "Current directory: $PWD"
 
 "Directory structure: "
 ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
