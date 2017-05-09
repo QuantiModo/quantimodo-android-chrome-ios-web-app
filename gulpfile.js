@@ -1689,14 +1689,14 @@ gulp.task('zipChromeExtension', [], function(){
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function(callback){
     console.log("gulp configureAppAfterNpmInstall");
-    if (process.env.PREPARE_IOS_APP){
-    	console.log("process.env.PREPARE_IOS_APP is " + process.env.PREPARE_IOS_APP + " so going to prepareIosApp");
+    if (process.env.BUDDYBUILD_SCHEME){
+    	console.log("BUDDYBUILD_SCHEME is " + process.env.BUDDYBUILD_SCHEME + " so going to prepareIosApp");
         runSequence(
         	'deleteUnusedFiles',
             'prepareIosApp',
             callback);
-    } else if (process.env.ANDROID_HOME){
-        console.log("Building Android because ANDROID_HOME is set to: " + process.env.ANDROID_HOME);
+    } else if (process.env.BUDDYBUILD_SECURE_FILES){
+        console.log("Building Android because BUDDYBUILD_SCHEME is not set and BUDDYBUILD_SECURE_FILES is set to: " + process.env.BUDDYBUILD_SECURE_FILES);
         runSequence(
             'deleteUnusedFiles',
             'prepareRepositoryForAndroid',

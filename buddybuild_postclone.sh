@@ -16,12 +16,20 @@ chmod -R a+x ./scripts
 
 echo "LOWERCASE_APP_NAME is ${LOWERCASE_APP_NAME}"
 
-if [ -z ${PREPARE_IOS_APP} ];
+if [ -z ${BUDDYBUILD_SCHEME} ];
     then
-        echo "NOT BUILDING IOS APP because PREPARE_IOS_APP env is ${PREPARE_IOS_APP}"
-    else
-        echo "BUILDING IOS APP because PREPARE_IOS_APP env is ${PREPARE_IOS_APP}"
+        echo "NOT BUILDING IOS APP because BUDDYBUILD_SCHEME env is ${BUDDYBUILD_SCHEME}"
+        echo "BUILDING ANDROID APP because BUDDYBUILD_SCHEME is set to ${BUDDYBUILD_SCHEME}"
 
+        echo "Running apt-get install imagemagick"
+        echo password | sudo -S apt-get install imagemagick
+
+        echo "Running npm install -g gulp bower ionic cordova"
+        npm install -g gulp bower ionic cordova
+
+    else
+        echo "BUILDING IOS APP because BUDDYBUILD_SCHEME env is ${BUDDYBUILD_SCHEME}"
+        echo "NOT BUILDING ANDROID APP because BUDDYBUILD_SCHEME env is set"
         echo "Running sudo brew install imagemagick"
         brew install imagemagick
 
@@ -33,26 +41,4 @@ if [ -z ${PREPARE_IOS_APP} ];
 
         #echo "gulp prepareIosApp"
         #gulp prepareIosApp  # Done in gulpfile now
-fi
-
-if [ -z ${ANDROID_HOME} ];
-    then
-        echo "NOT BUILDING ANDROID APP because ANDROID_HOME env is not set"
-    else
-        echo "BUILDING ANDROID APP because ANDROID_HOME is set to ${ANDROID_HOME}"
-
-        echo "Running apt-get install imagemagick"
-        echo password | sudo -S apt-get install imagemagick
-
-        echo "Running npm install -g gulp bower ionic cordova"
-        npm install -g gulp bower ionic cordova
-
-        #npm install
-        #gulp configureAppAfterNpmInstall
-
-        #echo "Running npm install"
-        #npm install  # Done in gulpfile now
-
-        #echo "gulp buildQuantiModoAndroid"
-        #gulp buildQuantiModoAndroid  # Done in gulpfile now
 fi
