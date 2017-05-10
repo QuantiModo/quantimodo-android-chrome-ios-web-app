@@ -12,7 +12,6 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
         $scope.copyLinkText = 'Copied!';
-        var studyLink = 'https://app.quantimo.do/api/v2/study?causeVariableName=' + encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
-        clipboard.copyText(studyLink);
+        clipboard.copyText(quantimodoService.getStudyLinkByVariableNames(causeVariableName, effectVariableName));
     };
 });

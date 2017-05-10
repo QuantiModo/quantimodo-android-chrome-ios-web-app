@@ -1,3 +1,8 @@
+var manifest = chrome.runtime.getManifest();
+var apiUrl = "https://quantimo.do";
+if(manifest.apiUrl){apiUrl = manifest.apiUrl;}
+console.log("API URL is " + manifest.apiUrl);
+
 function clearNotifications() {
     var badgeParams = {
         text: ""
@@ -89,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.resizeBy(wDiff, hDiff);
 
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://app.quantimo.do/api/user/me", true);
+    xhr.open("GET", apiUrl + "/api/user/me", true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             var userObject = JSON.parse(xhr.responseText);
@@ -99,11 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof userObject.displayName !== "undefined") {
                 console.debug(userObject.displayName + " is logged in.  ");
             } else {
-                var url = "https://app.quantimo.do/api/v2/auth/login";
-                chrome.tabs.create({
-                    "url": url,
-                    "selected": true
-                });
+                var url = apiUrl + "/api/v2/auth/login";
+                chrome.tabs.create({"url": url, "selected": true});
             }
         }
     };

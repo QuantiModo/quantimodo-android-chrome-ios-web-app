@@ -63,9 +63,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
         $scope.copyLinkText = "Copied!";
         var studyLink;
-        if(causeVariableName && effectVariableName){
-            studyLink = "https://app.quantimo.do/api/v2/study?causeVariableName=" + encodeURIComponent(causeVariableName) + "&effectVariableName=" + encodeURIComponent(effectVariableName);
-        }
+        if(causeVariableName && effectVariableName){studyLink = quantimodoService.getStudyLinkByVariableNames(causeVariableName, effectVariableName);}
         if($rootScope.correlationObject){
             /** @namespace $rootScope.correlationObject.studyLinkStatic */
             if($rootScope.correlationObject.studyLinkStatic){ studyLink = $rootScope.correlationObject.studyLinkStatic; }
