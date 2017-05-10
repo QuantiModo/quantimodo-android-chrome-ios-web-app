@@ -3876,7 +3876,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getCommonVariablesDeferred = function(params){
         var deferred = $q.defer();
         var commonVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('commonVariables', params);
-        deferred.resolve(commonVariables);
+        if(!commonVariables || !commonVariables.length){
+            quantimodoService.putCommonVariablesInLocalStorage().then(function (commonVariables) {deferred.resolve(commonVariables);});
+        } else {
+            deferred.resolve(commonVariables);
+        }
         return deferred.promise;
     };
     quantimodoService.putCommonVariablesInLocalStorage = function(){
@@ -5075,6 +5079,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.clearLocalStorage = function(){
         if ($rootScope.isChromeApp) {chrome.storage.local.clear();} else {localStorage.clear();}
+        quantimodoService.putCommonVariablesInLocalStorage();
     };
     var convertToObjectIfJsonString = function(stringOrObject) {
         try {stringOrObject = JSON.parse(stringOrObject);} catch (e) {return stringOrObject;}
