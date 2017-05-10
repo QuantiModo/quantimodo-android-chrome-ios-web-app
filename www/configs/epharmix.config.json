@@ -1,23 +1,33 @@
 {
-    "appDisplayName": "Epharmix",
-    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
-    "lowercaseAppName": "epharmix",
-    "appDescription": "Medication. Track. Learn. Connect.",
-    "appleId": null,
-    "appIdentifier": "com.quantimodo.epharmix",
-    "ionicAppId": "f837bb35",
     "apiUrl": "https://app.quantimo.do",
-    "cordovaLocalNotificationsEnabled": false,
-    "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
+    "appDescription": "Medication. Track. Learn. Connect.",
+    "appDisplayName": "Epharmix",
+    "appIdentifier": "com.quantimodo.epharmix",
+    "appleId": null,
     "appStorageIdentifier": "EpharmixData*",
+    "appType": "medication",
+    "cordovaLocalNotificationsEnabled": false,
+    "defaultRemindersType": "medication",
     "defaultState": "app.remindersInbox",
+    "downloadLinks": {
+        "chromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
+        "iosApp": "https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8",
+        "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo",
+        "webApp": "https://app.quantimo.do"
+    },
+    "ionicAppId": "f837bb35",
+    "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
+    "lowercaseAppName": "epharmix",
+    "menuType": "medication",
+    "remindersManage": {},
+    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
+    "wordAliases": {},
     "features": [
         " Follow These Quick Steps to Improve Your Health",
         " 1. Enter Your Medications",
         " 2. Record \"How I Feel\" Responses",
         " 3. Create Reports of Your Responses and Choose to Connect With Your Doctors"
     ],
-    "welcomeText": "Let's start off by adding your first medication!",
     "intro": [
         {
             "img": {
@@ -97,13 +107,5 @@
                 }
             }
         }
-    ],
-    "wordAliases": {},
-    "remindersInbox": {
-        "title": "Reminder Inbox"
-    },
-    "remindersManage": {},
-    "appType": "medication",
-    "defaultRemindersType": "medication",
-    "menuType": "medication"
+    ]
 }

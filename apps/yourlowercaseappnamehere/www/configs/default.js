@@ -20,7 +20,6 @@ config.appSettings  = {
     ],
     primaryOutcomeVariableName : "Overall Mood",
     welcomeText : "Let's start off by reporting your first mood below",
-    mobileNotificationText : "Time to track!",
     backgroundColor: '#3467d6',  // TODO: Make background color configurable
     intro : [
         // screen 1
