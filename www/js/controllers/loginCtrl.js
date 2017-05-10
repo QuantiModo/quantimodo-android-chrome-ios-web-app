@@ -2,7 +2,6 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
     $scope.headline = config.appSettings.headline;
-    $scope.features = config.appSettings.features;
     $rootScope.showFilterBarSearchIcon = false;
     if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
     if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
@@ -40,7 +39,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         $ionicLoading.show();
         $scope.loginPage.title = 'Logging in...';
         console.debug('Setting login timeout...');
-        $timeout(function () {
+        return $timeout(function () {
             console.debug('Finished login timeout');
             $ionicLoading.hide();
             if(!$rootScope.user){
@@ -164,7 +163,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     $scope.googleLogin = function(register) {
         var debugMode = false;
         $scope.hideGoogleLoginButton = true;
-        loginTimeout();
+        var timeout = loginTimeout();
         document.addEventListener('deviceready', deviceReady, false);
         function deviceReady() {
             //I get called when everything's ready for the plugin to be called!
@@ -175,7 +174,10 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                 'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                 'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
             }, function (userData) {
+                $timeout.cancel(timeout);
+                timeout = loginTimeout();
                 quantimodoService.getTokensAndUserViaNativeGoogleLogin(userData).then(function (response) {
+                    $timeout.cancel(timeout);
                     $ionicLoading.hide();
                     if(debugMode){alert('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));}
                     console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));

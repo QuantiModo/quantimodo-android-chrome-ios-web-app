@@ -11,11 +11,11 @@
 
 		<div class="card sign-in" ng-hide="state.loading">
 	        <div class="item item-text-wrap" >
-	            <h1 class="positive">{{headline}}</h1>
+	            <h1 class="positive">{{appSettings.headline}}</h1>
 	            <br/>
 				<ul>
 					<li>By creating a FREE account you'll be able to:</li>
-					<li ng-repeat="feature in features">{{feature}}</li>
+					<li ng-repeat="feature in appSettings.features">{{feature}}</li>
 				</ul>
 	            <button ng-show="showFacebookLoginButton && !hideFacebookButton" class="button button-block button-positive" ng-click="facebookLogin()">
 					<i class="icon ion-social-facebook"></i>
