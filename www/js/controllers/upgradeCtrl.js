@@ -6,7 +6,7 @@ angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $io
             $state.go('app.login');
             return;
         }
-        if($rootScope.isChromeExtension){chrome.tabs.create({url: 'https://app.quantimo.do/upgrade'}); window.close(); return;}
+        if($rootScope.isChromeExtension){chrome.tabs.create({url: quantimodoService.getApiUrl() + '/upgrade'}); window.close(); return;}
         $scope.planFeaturesCard = quantimodoService.getPlanFeatureCards()[1];
         $rootScope.upgradeFooterText = null;
         $rootScope.hideNavigationMenu = true;

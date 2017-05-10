@@ -82,7 +82,7 @@ deployment:
   staging:
     branch: develop
     commands:
-      - npm install -g gulp cordova ionic bower
+      - npm install -g gulp cordova ionic@2.2.3 bower
       - npm install
       - ionic info
       - ./scripts/circleci_install_dependencies.sh

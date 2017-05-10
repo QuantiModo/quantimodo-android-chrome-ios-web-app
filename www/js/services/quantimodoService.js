@@ -1523,13 +1523,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return 'https';
     };
     quantimodoService.getApiUrl = function () {
+        if(window.location.href.indexOf('local.quantimo.do') > -1){return "https://local.quantimo.do";}
         if(!window.private_keys){
-            console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".config.js or it does " +
-                "not contain window.private_keys");
+            console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".config.js or it does not contain window.private_keys");
             return "https://app.quantimo.do";
         }
         if(window.private_keys.apiUrl){return window.private_keys.apiUrl;}
         if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled' && window.location.origin) {return window.location.origin;}
+        if(config.appSettings.downloadLinks.webApp){return config.appSettings.downloadLinks.webApp;}
         return "https://app.quantimo.do";
     };
     quantimodoService.getQuantiModoUrl = function (path) {
@@ -6144,7 +6145,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getStudyLinks = function(predictorVariableName, outcomeVariableName){
         var subjectLine = "Help us discover the effect of " + predictorVariableName + " on " + outcomeVariableName;
-        var studyLinkStatic = "https://app.quantimo.do/api/v2/study?causeVariableName=" +
+        var studyLinkStatic = quantimodoService.getApiUrl() + "/api/v2/study?causeVariableName=" +
             encodeURIComponent(predictorVariableName) + '&effectVariableName=' + encodeURIComponent(outcomeVariableName);
         var bodyText = "Please join my study at " + studyLinkStatic + " .  Have a great day!";
         return {
@@ -6153,6 +6154,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             studyLinkGoogle : "https://plus.google.com/share?url=" + encodeURIComponent(studyLinkStatic),
             studyLinkEmail: "mailto:?subject=" + encodeURIComponent(subjectLine) + "&body=" + encodeURIComponent(bodyText)
         };
+    };
+    quantimodoService.getStudyLinkByVariableNames = function (causeVariableName, effectVariableName) {
+        return quantimodoService.getApiUrl() + '/api/v2/study?causeVariableName=' + encodeURIComponent(causeVariableName) + '&effectVariableName=' + encodeURIComponent(effectVariableName);
     };
     quantimodoService.getWikipediaArticle = function(title){
         var deferred = $q.defer();
