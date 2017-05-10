@@ -1,7 +1,7 @@
 # Customize the test machine
 machine:
   node:
-    version: 7.10.0
+    version: 6.10.3
   ruby:
     version: 2.1.2
   php:
@@ -82,6 +82,9 @@ deployment:
   staging:
     branch: develop
     commands:
+      - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
+      - npm install
+      - ionic info
       - ./scripts/circleci_install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - chmod +x do-exclusively

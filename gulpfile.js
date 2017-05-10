@@ -185,6 +185,7 @@ function loadConfigsAndGenerateConfigJs(callback, lowerCaseAppName) {
     }
     var pathToJsonConfigPath = './www/configs/'+ lowerCaseAppName + '.config.json';
     var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfigPath));
+    appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
     appSettings.debugMode = process.env.DEBUG_MODE;
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
     console.log("writing to " + pathToGeneratedConfigJs + ": " + defaultConfigFileContent);

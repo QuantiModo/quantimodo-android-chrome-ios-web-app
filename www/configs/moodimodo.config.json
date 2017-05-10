@@ -20,6 +20,10 @@
     "menuType": "extended",
     "remindersInbox": {},
     "upgradeDisabled": false,
-    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
+    "socialLinks": {
+        "facebook": "https://www.facebook.com/Quantimodology",
+        "twitter": "https://twitter.com/quantimodo",
+        "google": "https://plus.google.com/communities/100581500031158281444"
+    },
     "wordAliases": {}
 }

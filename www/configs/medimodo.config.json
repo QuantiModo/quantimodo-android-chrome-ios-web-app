@@ -24,8 +24,12 @@
     "lowercaseAppName": "medimodo",
     "menuType": "minimal",
     "remindersManage": {},
+    "socialLinks": {
+        "facebook": "https://www.facebook.com/medimodoapp",
+        "twitter": "https://twitter.com/MediModo",
+        "google": "https://plus.google.com/u/0/communities/107362763118382532721"
+    },
     "textLogo": "https://app.quantimo.do/ionic/Modo/www/img/logos/medimodo/medimodo-text-logo-250-56.png",
-    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     "wordAliases": {},
     "features": [
         " Follow These Quick Steps to Improve Your Health",
