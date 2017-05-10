@@ -16,6 +16,7 @@
     "cookies",
     "tabs",
     "https://app.quantimo.do/*",
+    "https://medimodo.quantimo.do/*",
     "*://cdn.rawgit.com/*"
   ],
   "browser_action": {
@@ -25,5 +26,6 @@
   "background": {
     "scripts": ["www/js/chrome/background.js"],
     "persistent": false
-  }
+  },
+  "apiUrl": "https://medimodo.quantimo.do"
 }
