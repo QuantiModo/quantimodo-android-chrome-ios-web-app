@@ -13,6 +13,7 @@
         "androidApp": "https://play.google.com/store/apps/details?id=com.moodimodo&hl=en",
         "webApp": "https://app.quantimo.do"
     },
+    "facebookAppId": 225078261031461,
     "intro": null,
     "ionicAppId": "470c1f1b",
     "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",

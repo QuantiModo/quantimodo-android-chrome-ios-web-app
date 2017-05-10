@@ -15,6 +15,7 @@
         "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.medimodo",
         "webApp": "https://medimodo.quantimo.do"
     },
+    "facebookAppId": 225078261031461,
     "floatingActionButtonColor": null,
     "googleAnalyticsId": "UA-39222734-28",
     "homepage": "https://medimodo.com",

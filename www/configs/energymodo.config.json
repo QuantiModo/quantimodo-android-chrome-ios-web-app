@@ -12,6 +12,7 @@
         "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.energymodo",
         "webApp": "https://app.quantimo.do"
     },
+    "facebookAppId": 225078261031461,
     "intro": null,
     "ionicAppId": "f837bb35",
     "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",

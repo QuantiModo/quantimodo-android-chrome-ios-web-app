@@ -15,6 +15,7 @@
         "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo",
         "webApp": "https://app.quantimo.do"
     },
+    "facebookAppId": 225078261031461,
     "ionicAppId": "f837bb35",
     "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     "lowercaseAppName": "epharmix",
