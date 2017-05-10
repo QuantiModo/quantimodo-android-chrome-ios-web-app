@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-npm install -g gulp cordova ionic@2.2.3 bower
+npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
 npm install && gulp configureApp
       # Android SDK Platform 25
 if [ ! -d "/usr/local/android-sdk-linux/platforms/android-25" ]; then echo y | android update sdk --no-ui --all --filter "android-25"; fi
