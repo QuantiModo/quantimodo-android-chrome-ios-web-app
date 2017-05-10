@@ -16,6 +16,11 @@
     "lowercaseAppName": "yourlowercaseappnamehere",
     "menuType": null,
     "primaryOutcomeVariableName": "Overall Mood",
+    "socialLinks": {
+        "facebook": "https://www.facebook.com/Quantimodology",
+        "twitter": "https://twitter.com/quantimodo",
+        "google": "https://plus.google.com/communities/100581500031158281444"
+    },
     "wordAliases": {},
     "features": [
         " - Automatically backup and sync your data across devices",

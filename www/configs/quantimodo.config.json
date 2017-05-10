@@ -22,6 +22,11 @@
   "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
   "lowercaseAppName": "quantimodo",
   "menuType": "minimal",
+  "socialLinks": {
+    "facebook": "https://www.facebook.com/Quantimodology",
+    "twitter": "https://twitter.com/quantimodo",
+    "google": "https://plus.google.com/communities/100581500031158281444"
+  },
   "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
   "welcomeState": "app.welcome",
   "wordAliases": {}

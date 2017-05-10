@@ -9,6 +9,11 @@
     "ionNavBarClass": "bar-positive",
     "defaultState": "app.measurements-variable-button-icons",
     "appStorageIdentifier": "MoodiModoData*",
+    "socialLinks": {
+        "facebook": "https://www.facebook.com/Quantimodology",
+        "twitter": "https://twitter.com/quantimodo",
+        "google": "https://plus.google.com/communities/100581500031158281444"
+    },
     "features": [
         " - Automatically backup and sync your data across devices",
         " - Track diet, treatments, symptoms, and anything else",

@@ -20,6 +20,11 @@
     "lowercaseAppName": "epharmix",
     "menuType": "medication",
     "remindersManage": {},
+    "socialLinks": {
+        "facebook": "https://www.facebook.com/Quantimodology",
+        "twitter": "https://twitter.com/quantimodo",
+        "google": "https://plus.google.com/communities/100581500031158281444"
+    },
     "wordAliases": {},
     "features": [
         " Follow These Quick Steps to Improve Your Health",
