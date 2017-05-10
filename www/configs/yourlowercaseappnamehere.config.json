@@ -16,7 +16,6 @@
     "lowercaseAppName": "yourlowercaseappnamehere",
     "menuType": null,
     "primaryOutcomeVariableName": "Overall Mood",
-    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
     "wordAliases": {},
     "features": [
         " - Automatically backup and sync your data across devices",

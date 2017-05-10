@@ -23,7 +23,6 @@
   "lowercaseAppName": "quantimodo",
   "menuType": "minimal",
   "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
-  "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "welcomeState": "app.welcome",
   "wordAliases": {}
 }

@@ -17,7 +17,6 @@
     "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
     "lowercaseAppName": "energymodo",
     "menuType": "extended",
-    "primaryOutcomeVariableName": "Energy Rating",
-    "versionNumber": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
+    "primaryOutcomeVariableName": "Energy",
     "wordAliases": {}
 }
