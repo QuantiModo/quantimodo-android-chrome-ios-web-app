@@ -2,11 +2,12 @@
 
 echo "=== buddybuild_prebuild.sh ==="
 
-echo "ENVIRONMENTAL VARIABLES"
-printenv | more
+#echo "ENVIRONMENTAL VARIABLES"
+#printenv | more
 
-echo "Running buddybuild_prebuild.sh. Current folder is $PWD and folder contents are:"
-ls
+echo "Current folder is $PWD"
+#echo "Folder contents are:"
+#ls
 
 echo "PREPARE_IOS_APP env is ${PREPARE_IOS_APP}"
 

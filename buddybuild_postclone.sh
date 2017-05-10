@@ -2,10 +2,10 @@
 
 echo "=== buddybuild_postclone.sh ==="
 
-echo "ENVIRONMENTAL VARIABLES"
-printenv | more
+#echo "ENVIRONMENTAL VARIABLES"
+#printenv | more
 
-echo "Running buddybuild_postclone.sh. Current folder is $PWD..."
+echo "Current folder is $PWD..."
 #echo "folder contents are:"
 #ls
 
