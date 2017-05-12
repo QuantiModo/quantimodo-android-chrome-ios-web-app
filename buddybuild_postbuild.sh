@@ -20,15 +20,15 @@ if [ -z ${BUDDYBUILD_SCHEME} ];
         echo "android-armv7-release.apk"
         keytool -list -printcert -jarfile ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-armv7-release.apk | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64
         #unzip android-armv7-release.apk >/dev/null
-        unzip ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-armv7-release.apk >/dev/null
-        keytool -printcert -file META-INF/CERT.RSA
+        #unzip ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-armv7-release.apk >/dev/null
+        #keytool -printcert -file META-INF/CERT.RSA
         echo "android-x86-release.apk"
-        keytool -list -printcert -jarfile ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-x86-release.apk | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64
-        unzip ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-x86-release.apk >/dev/null
-        keytool -printcert -file META-INF/CERT.RSA
+        #keytool -list -printcert -jarfile ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-x86-release.apk | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64
+        #unzip ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-x86-release.apk >/dev/null
+        #keytool -printcert -file META-INF/CERT.RSA
         echo "android-armv7-debug.apk"
         keytool -list -printcert -jarfile ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-armv7-debug.apk | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64 || true
-        unzip ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-armv7-debug.apk >/dev/null
+        unzip ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-armv7-debug.apk
         keytool -printcert -file META-INF/CERT.RSA
     else
         echo "BUILDING IOS APP because BUDDYBUILD_SCHEME env is ${BUDDYBUILD_SCHEME}"
