@@ -1613,7 +1613,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
         var deferred = $q.defer();
-        quantimodoService.connectConnectorWithParamsToApi(params, lowercaseConnectorName, function(){quantimodoService.refreshConnectors();}, function(error){deferred.reject(error);});
+        if(lowercaseConnectorName.indexOf('weather')> -1){
+            $http.get('//freegeoip.net/json/').success(function(data) {
+                console.log(JSON.stringify(data, null, 2));
+                quantimodoService.connectConnectorWithParamsToApi({location: data.ip}, lowercaseConnectorName, function(){quantimodoService.refreshConnectors();}, function(error){deferred.reject(error);});
+            });
+        } else {
+            quantimodoService.connectConnectorWithParamsToApi(params, lowercaseConnectorName, function(){quantimodoService.refreshConnectors();}, function(error){deferred.reject(error);});
+        }
         return deferred.promise;
     };
     quantimodoService.connectConnectorWithTokenDeferred = function(body){
