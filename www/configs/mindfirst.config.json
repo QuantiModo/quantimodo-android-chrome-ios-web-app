@@ -12,6 +12,13 @@
         "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo",
         "webApp": "https://app.quantimo.do"
     },
+    "facebookAppId": 225078261031461,
+    "googleAnalyticsTrackingIds": {
+        "laravel": "UA-39222734-29",
+        "ionic": "UA-39222734-25",
+        "api": "UA-39222734-24",
+        "wp": "UA-39222734-2"
+    },
     "intro": null,
     "ionicAppId": "6d8e312f",
     "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",
@@ -21,7 +28,8 @@
     "socialLinks": {
         "facebook": "https://www.facebook.com/Quantimodology",
         "twitter": "https://twitter.com/quantimodo",
-        "google": "https://plus.google.com/communities/100581500031158281444"
+        "google": "https://plus.google.com/communities/100581500031158281444",
+        "linkedIn": "https://www.linkedin.com/company/quantimodo"
     },
     "wordAliases": {}
 }

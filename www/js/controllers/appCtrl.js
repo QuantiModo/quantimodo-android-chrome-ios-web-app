@@ -763,38 +763,39 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
     };
     $scope.connectWeather = function () {
-        $scope.data = {};
-        var myPopup = $ionicPopup.show({
-            template: '<label class="item item-input">' +
-            '<i class="icon ion-location placeholder-icon"></i>' +
-            '<input type="text" placeholder="Zip Code or City, Country" ng-model="data.location"></label>',
-            title: 'Weather',
-            subTitle: 'Enter Your Zip Code or City, Country/State',
-            scope: $scope,
-            buttons: [
-                { text: 'Cancel' },
-                {
-                    text: '<b>Save</b>',
-                    type: 'button-positive',
-                    onTap: function(e) {
-                        if (!$scope.data.location) {
-                            //don't allow the user to close unless he enters wifi password
-                            e.preventDefault();
-                        } else {
-                            return $scope.data.location;
-                        }
-                    }
-                }
-            ]
-        });
-        myPopup.then(function(res) {
-            var params = {
-                location: String($scope.data.location)
-            };
-            connectWithParams(params, 'worldweatheronline');
-            $scope.showInfoToast('Weather logging activated');
-            console.debug('Entered zip code. Result: ', res);
-        });
+
+        connectWithParams({}, 'worldweatheronline');
+        //
+        // $scope.data = {};
+        // var myPopup = $ionicPopup.show({
+        //     template: '<label class="item item-input">' +
+        //     '<i class="icon ion-location placeholder-icon"></i>' +
+        //     '<input type="text" placeholder="Zip Code or City, Country" ng-model="data.location"></label>',
+        //     title: 'Weather',
+        //     subTitle: 'Enter Your Zip Code or City, Country/State',
+        //     scope: $scope,
+        //     buttons: [
+        //         { text: 'Cancel' },
+        //         {
+        //             text: '<b>Save</b>',
+        //             type: 'button-positive',
+        //             onTap: function(e) {
+        //                 if (!$scope.data.location) {
+        //                     //don't allow the user to close unless he enters wifi password
+        //                     e.preventDefault();
+        //                 } else {
+        //                     return $scope.data.location;
+        //                 }
+        //             }
+        //         }
+        //     ]
+        // });
+        // myPopup.then(function(res) {
+        //     var params = {location: String($scope.data.location)};
+        //     connectWithParams(params, 'worldweatheronline');
+        //     $scope.showInfoToast('Weather logging activated');
+        //     console.debug('Entered zip code. Result: ', res);
+        // });
     };
     $scope.connect = function(connector){
         var scopes;

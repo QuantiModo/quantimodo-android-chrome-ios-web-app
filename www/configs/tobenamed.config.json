@@ -1,18 +1,26 @@
 {
-    "appDisplayName": "ToBeNamed",
-    "lowercaseAppName": "tobenamed",
     "appDescription": "yourAppDescriptionHere",
+    "appDisplayName": "ToBeNamed",
     "appleId": null,
-    "ionicAppId": null,
-    "cordovaLocalNotificationsEnabled": false,
-    "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
-    "ionNavBarClass": "bar-positive",
-    "defaultState": "app.measurements-variable-button-icons",
     "appStorageIdentifier": "MoodiModoData*",
+    "cordovaLocalNotificationsEnabled": false,
+    "defaultState": "app.measurements-variable-button-icons",
+    "facebookAppId": 225078261031461,
+    "googleAnalyticsTrackingIds": {
+        "laravel": "UA-39222734-29",
+        "ionic": "UA-39222734-25",
+        "api": "UA-39222734-24",
+        "wp": "UA-39222734-2"
+    },
+    "ionicAppId": null,
+    "ionNavBarClass": "bar-positive",
+    "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
+    "lowercaseAppName": "tobenamed",
     "socialLinks": {
         "facebook": "https://www.facebook.com/Quantimodology",
         "twitter": "https://twitter.com/quantimodo",
-        "google": "https://plus.google.com/communities/100581500031158281444"
+        "google": "https://plus.google.com/communities/100581500031158281444",
+        "linkedIn": "https://www.linkedin.com/company/quantimodo"
     },
     "features": [
         " - Automatically backup and sync your data across devices",

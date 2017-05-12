@@ -390,6 +390,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if(variableCategoryName === 'Treatments'){$scope.state.showInstructionsField = true;}
         $scope.state.trackingReminder = quantimodoService.addImagePaths($scope.state.trackingReminder);
         showMoreUnitsIfNecessary();
+        setHideDefaultValueField();
     };
     function setupReminderEditingFromVariableId(variableId) {
         if(variableId){
@@ -439,7 +440,9 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         quantimodoService.deleteTrackingReminderDeferred($scope.state.trackingReminder).then(function(){}, function(error){console.error(error);});
     };
     function setHideDefaultValueField(){
-        if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 || $scope.state.trackingReminder.unitAbbreviatedName === '/5' ||
+        if(!$scope.state.trackingReminder.variableName){return;}
+        if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 ||
+            $scope.state.trackingReminder.unitAbbreviatedName === '/5' ||
             $scope.state.trackingReminder.unitAbbreviatedName === '/10' || $scope.state.trackingReminder.unitAbbreviatedName === 'yes/no'){
             $scope.state.hideDefaultValueField = true;
         } else {$scope.state.hideDefaultValueField = false;}

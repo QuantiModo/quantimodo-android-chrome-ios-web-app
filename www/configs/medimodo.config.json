@@ -15,8 +15,14 @@
         "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.medimodo",
         "webApp": "https://medimodo.quantimo.do"
     },
+    "facebookAppId": 225078261031461,
     "floatingActionButtonColor": null,
-    "googleAnalyticsId": "UA-39222734-28",
+    "googleAnalyticsTrackingIds": {
+        "laravel": "UA-98995949-4",
+        "ionic": "UA-98995949-3",
+        "api": "UA-98995949-2",
+        "wp": "UA-98995949-1"
+    },
     "homepage": "https://medimodo.com",
     "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/jjpwj6LvyV_r2ncyb",
     "ionicAppId": "e85b92b4",
@@ -27,7 +33,8 @@
     "socialLinks": {
         "facebook": "https://www.facebook.com/medimodoapp",
         "twitter": "https://twitter.com/MediModo",
-        "google": "https://plus.google.com/u/0/communities/107362763118382532721"
+        "google": "https://plus.google.com/u/0/communities/107362763118382532721",
+        "linkedIn": "https://www.linkedin.com/company/quantimodo"
     },
     "textLogo": "https://app.quantimo.do/ionic/Modo/www/img/logos/medimodo/medimodo-text-logo-250-56.png",
     "wordAliases": {},
