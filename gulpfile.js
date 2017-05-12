@@ -168,6 +168,15 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
     });
 };
 
+gulp.task('getSHA1FromAPK', function() {
+    var pathToAPK = 'android-armv7-release.apk';
+    console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads");
+    var cmd = 'keytool -list -printcert -jarfile ' + pathToAPK + ' | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64';
+    execute(cmd, function(error){
+        if(error !== null){console.error("ERROR: " + error);} else {console.log("DECRYPTED to " + pathToAPK);}
+    });
+});
+
 function decryptPrivateConfig(callback) {
 	if(process.env.QUANTIMODO_CLIENT_SECRET){
 		console.log("Not decrypting private config because we should generate it from envs instead");
