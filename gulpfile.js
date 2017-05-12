@@ -39,6 +39,8 @@ var appIds = {
     'medimodo': true
 };
 
+var appSettings;
+
 gulp.task('generateJsConfigs', function(){
     var configListPath = 'configs-list.json';
     gulp.src('./www/configs/*.json')
@@ -77,13 +79,15 @@ function setLowerCaseAppName(callback) {
     if(!process.env.LOWERCASE_APP_NAME){
         git.revParse({args:'--abbrev-ref HEAD'}, function (err, branch) {
             console.log('current git branch: ' + branch);
-            if(appIds[branch]){
-                console.info('Setting LOWERCASE_APP_NAME using branch name ' + branch);
-                process.env.LOWERCASE_APP_NAME = branch;
-            } else{
-                process.env.DEBUG_MODE = true;
-                console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-                process.env.LOWERCASE_APP_NAME = 'quantimodo';
+            if(!process.env.LOWERCASE_APP_NAME) {
+                if (appIds[branch]) {
+                    console.info('Setting LOWERCASE_APP_NAME using branch name ' + branch);
+                    process.env.LOWERCASE_APP_NAME = branch;
+                } else {
+                    process.env.DEBUG_MODE = true;
+                    console.warn('No LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
+                    process.env.LOWERCASE_APP_NAME = 'quantimodo';
+                }
             }
             if(callback){callback();}
         });
@@ -184,7 +188,7 @@ function loadConfigsAndGenerateConfigJs(callback, lowerCaseAppName) {
         pathToGeneratedConfigJs = './www/configs/'+ lowerCaseAppName +'.js';
     }
     var pathToJsonConfigPath = './www/configs/'+ lowerCaseAppName + '.config.json';
-    var appSettings = JSON.parse(fs.readFileSync(pathToJsonConfigPath));
+    appSettings = JSON.parse(fs.readFileSync(pathToJsonConfigPath));
     appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
     appSettings.debugMode = process.env.DEBUG_MODE;
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
@@ -206,11 +210,6 @@ function loadConfigsAndGenerateConfigJs(callback, lowerCaseAppName) {
             });*/
 
 			//var appSettings = require(pathToConfig);
-            process.env.APPLE_ID = appSettings.appleId;
-            process.env.APP_DISPLAY_NAME = appSettings.appDisplayName;
-            process.env.APP_IDENTIFIER = appSettings.appIdentifier;
-            process.env.APP_DESCRIPTION = appSettings.appDescription;
-            process.env.IONIC_APP_ID = appSettings.ionicAppId;
             //process.env.privateConfig = require(pathToPrivateConfig);
             if(callback){callback();}
         } else {
@@ -988,8 +987,8 @@ gulp.task('addGooglePlusPlugin', [] , function(){
 
 gulp.task('fixResourcesPlist', function(){
 	var deferred = q.defer();
-	if(!process.env.APP_DISPLAY_NAME){deferred.reject('Please export process.env.APP_DISPLAY_NAME');}
-	var myPlist = plist.parse(fs.readFileSync('platforms/ios/'+process.env.APP_DISPLAY_NAME+'/'+process.env.APP_DISPLAY_NAME+'-Info.plist', 'utf8'));
+	if(!appSettings.appDisplayName){deferred.reject('Please export appSettings.appDisplayName');}
+	var myPlist = plist.parse(fs.readFileSync('platforms/ios/'+appSettings.appDisplayName+'/'+appSettings.appDisplayName+'-Info.plist', 'utf8'));
 	var LSApplicationQueriesSchemes = [
 		"fbapi",
 		"fbapi20130214",
@@ -1031,7 +1030,7 @@ gulp.task('fixResourcesPlist', function(){
 		myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"] = akamaihdDotNet;
 		console.log("Updated akamaihd.net");
 	}
-	fs.writeFile('platforms/ios/'+process.env.APP_DISPLAY_NAME+'/'+process.env.APP_DISPLAY_NAME+'-Info.plist', plist.build(myPlist), 'utf8', function (err) {
+	fs.writeFile('platforms/ios/'+appSettings.appDisplayName+'/'+appSettings.appDisplayName+'-Info.plist', plist.build(myPlist), 'utf8', function (err) {
 		if (err) {
 			console.error("ERROR: error writing to plist", err);
 			deferred.reject();
@@ -1045,7 +1044,7 @@ gulp.task('fixResourcesPlist', function(){
 
 gulp.task('addPodfile', function(){
 	var deferred = q.defer();
-	if(!process.env.APP_DISPLAY_NAME){deferred.reject('Please export process.env.APP_DISPLAY_NAME');}
+	if(!appSettings.appDisplayName){deferred.reject('Please export appSettings.appDisplayName');}
 	var addBugsnagToPodfile = function(){
 		fs.readFile('./platforms/ios/Podfile', function (err, data) {
 			if (err) {throw err;}
@@ -1054,7 +1053,7 @@ gulp.task('addPodfile', function(){
 				console.log("no Bugsnag detected");
 				gulp.src('./platforms/ios/Podfile')
 				.pipe(change(function(content){
-					var bugsnag_str = 'target \''+process.env.APP_DISPLAY_NAME+'\' do \npod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"';
+					var bugsnag_str = 'target \''+appSettings.appDisplayName+'\' do \npod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"';
 					console.log("Bugsnag Added to Podfile");
 					deferred.resolve();
 					return content.replace(/target.*/g, bugsnag_str);
@@ -1091,17 +1090,17 @@ gulp.task('addPodfile', function(){
 });
 
 gulp.task('addInheritedToOtherLinkerFlags', function(){
-	if(!process.env.APP_DISPLAY_NAME){console.log('Please export process.env.APP_DISPLAY_NAME');}
-	return gulp.src('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/project.pbxproj')
+	if(!appSettings.appDisplayName){console.log('Please export appSettings.appDisplayName');}
+	return gulp.src('./platforms/ios/'+appSettings.appDisplayName+'.xcodeproj/project.pbxproj')
 	.pipe(change(function(content){
 		return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, "OTHER_LDFLAGS = (\n\t\t\t\t\t\"$(inherited)\",");
 	}))
-	.pipe(gulp.dest('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/'));
+	.pipe(gulp.dest('./platforms/ios/'+appSettings.appDisplayName+'.xcodeproj/'));
 });
 
 gulp.task('addDeploymentTarget', function(){
-	if(!process.env.APP_DISPLAY_NAME){console.log('Please export process.env.APP_DISPLAY_NAME');}
-	return gulp.src('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/project.pbxproj')
+	if(!appSettings.appDisplayName){console.log('Please export appSettings.appDisplayName');}
+	return gulp.src('./platforms/ios/'+appSettings.appDisplayName+'.xcodeproj/project.pbxproj')
 		.pipe(change(function(content){
 			if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1) {
                 return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;");
@@ -1111,7 +1110,7 @@ gulp.task('addDeploymentTarget', function(){
 		.pipe(change(function(content){
 			console.log("*****************\n\n\n",content,"\n\n\n*****************");
 		}))
-		.pipe(gulp.dest('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/'));
+		.pipe(gulp.dest('./platforms/ios/'+appSettings.appDisplayName+'.xcodeproj/'));
 });
 
 gulp.task('installPods', [ 'addPodfile' ] , function(){
@@ -1133,8 +1132,8 @@ gulp.task('installPods', [ 'addPodfile' ] , function(){
 });
 
 gulp.task('addBugsnagInObjC', function(){
-	if(!process.env.APP_DISPLAY_NAME){console.log('Please export process.env.APP_DISPLAY_NAME');}
-	return gulp.src('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'/Classes/AppDelegate.m')
+	if(!appSettings.appDisplayName){console.log('Please export appSettings.appDisplayName');}
+	return gulp.src('./platforms/ios/'+appSettings.appDisplayName+'/Classes/AppDelegate.m')
 	.pipe(change(function(content){
 		if(content.indexOf('Bugsnag') !== -1){
 			console.log("Bugsnag Already Present");
@@ -1146,16 +1145,16 @@ gulp.task('addBugsnagInObjC', function(){
 		}
 		return content;
 	}))
-	.pipe(gulp.dest('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'/Classes/'));
+	.pipe(gulp.dest('./platforms/ios/'+appSettings.appDisplayName+'/Classes/'));
 });
 
 gulp.task('enableBitCode', function(){
-	if(!process.env.APP_DISPLAY_NAME){console.log('Please export process.env.APP_DISPLAY_NAME');}
-	return gulp.src('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/project.pbxproj')
+	if(!appSettings.appDisplayName){console.log('Please export appSettings.appDisplayName');}
+	return gulp.src('./platforms/ios/'+appSettings.appDisplayName+'.xcodeproj/project.pbxproj')
 	.pipe(change(function(content){
 		return content.replace(/FRAMEWORK_SEARCH_PATHS(\s*)?=(\s*)?\(/g, "ENABLE_BITCODE = NO;\n\t\t\t\tFRAMEWORK_SEARCH_PATHS = (");
 	}))
-	.pipe(gulp.dest('./platforms/ios/'+process.env.APP_DISPLAY_NAME+'.xcodeproj/'));
+	.pipe(gulp.dest('./platforms/ios/'+appSettings.appDisplayName+'.xcodeproj/'));
 });
 
 gulp.task('makeIosApp', function(callback){
@@ -1243,15 +1242,15 @@ gulp.task('setVersionNumberInFiles', function(callback){
 });
 
 gulp.task('setIonicAppId', function(callback){
-	if(!process.env.IONIC_APP_ID){
-		console.error('ERROR: Cannot execute setIonicAppId because process.env.IONIC_APP_ID is not set');
+	if(!appSettings.ionicAppId){
+		console.error('ERROR: Cannot execute setIonicAppId because appSettings.ionicAppId is not set');
 		return;
 	}
 	var filesToUpdate = [
 		'www/js/app.js'
 	];
 	return gulp.src(filesToUpdate, {base: "."}) // Every file allown.
-		.pipe(replace('__IONIC_APP_ID__', process.env.IONIC_APP_ID))
+		.pipe(replace('__IONIC_APP_ID__', appSettings.ionicAppId))
 		.pipe(gulp.dest('./'));
 	// Returning instead of callback makes it complete before next task
 	//callback();
@@ -1557,16 +1556,16 @@ gulp.task('generateConfigXmlFromTemplate', [], function(callback){
 	parseString(xml, function (err, parsedXmlFile) {
 		if(err){throw new Error("ERROR: failed to read xml file", err);
 		} else {
-			if(process.env.APP_DISPLAY_NAME) {
-				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
+			if(appSettings.appDisplayName) {
+				parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
 				console.log("Setting config.xml name to " + parsedXmlFile.widget.name[0]);
 			} else {throw("APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME");}
-			if(process.env.APP_DESCRIPTION) {
-				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
+			if(appSettings.appDescription) {
+				parsedXmlFile.widget.description[0] = appSettings.appDescription;
                 console.log("Setting config.xml description to " + parsedXmlFile.widget.description[0]);
 			} else {throw("APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION");}
-			if(process.env.APP_IDENTIFIER) {
-				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
+			if(appSettings.appIdentifier) {
+				parsedXmlFile.widget.$["id"] = appSettings.appIdentifier;
                 console.log("Setting config.xml id to " + parsedXmlFile.widget.$["id"]);
 			} else {throw("APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER");}
             if(process.env.IONIC_APP_VERSION_NUMBER) {
