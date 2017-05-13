@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 echo "This script is an alternative to ionic state restore. I'm using it because ionic state restore is failing on OSX"
 export GCM_SENDER_ID="1052648855194"
-export REVERSED_CLIENT_ID="com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d"
 export FACEBOOK_APP_ID=225078261031461
 export FACEBOOK_APP_NAME=QuantiModo
 

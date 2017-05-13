@@ -511,7 +511,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 params,
                 successHandler,
                 errorHandler);
-            localStorage.clear('deviceTokenOnServer');
+            localStorage.removeItem('deviceTokenOnServer');
             deferred.resolve();
         }
         return deferred.promise;
@@ -797,7 +797,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             deferred.reject('No deviceTokenToSync in localStorage');
             return deferred.promise;
         }
-        localStorage.clear('deviceTokenToSync');
+        localStorage.removeItem('deviceTokenToSync');
         console.debug("Posting deviceToken to server: ", deviceTokenToSync);
         quantimodoService.postDeviceToken(deviceTokenToSync, function(response){
             localStorage.setItem('deviceTokenOnServer', deviceTokenToSync);
@@ -1613,8 +1613,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
         var deferred = $q.defer();
-        if(lowercaseConnectorName.indexOf('weather')> -1){
-            $http.get('//freegeoip.net/json/').success(function(data) {
+        if(lowercaseConnectorName.indexOf('weather')> -1 && !params.location){
+            $http.get('https://freegeoip.net/json/').success(function(data) {
                 console.log(JSON.stringify(data, null, 2));
                 quantimodoService.connectConnectorWithParamsToApi({location: data.ip}, lowercaseConnectorName, function(){quantimodoService.refreshConnectors();}, function(error){deferred.reject(error);});
             });

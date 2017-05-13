@@ -58,3 +58,6 @@ www/css/app.min.css
 www/data/commonVariables.json
 www/configs/*.js
 configs-list.json
+/android-armv7-debug/
+/android-armv7-release/
+/android-x86-release/

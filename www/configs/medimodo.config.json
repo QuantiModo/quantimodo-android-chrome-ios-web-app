@@ -2,7 +2,7 @@
     "appDescription": "Better health through data.",
     "appDisplayName": "MediModo",
     "appIdentifier": "com.quantimodo.medimodo",
-    "appleId": "1115037661",
+    "appleId": "1208212533",
     "appStorageIdentifier": "MediModoData*",
     "appType": "medication",
     "backgroundColor": "white",
@@ -23,6 +23,7 @@
         "api": "UA-98995949-2",
         "wp": "UA-98995949-1"
     },
+    "googleReversedClientId": "com.googleusercontent.apps.1052648855194-rg173ejobjht8vl53ss0k6shm0dl5938",
     "homepage": "https://medimodo.com",
     "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/jjpwj6LvyV_r2ncyb",
     "ionicAppId": "e85b92b4",
