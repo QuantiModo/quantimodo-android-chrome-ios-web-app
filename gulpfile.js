@@ -177,6 +177,7 @@ gulp.task('getSHA1FromAPK', function() {
 });
 
 function decryptPrivateConfig(callback) {
+    if(!process.env.LOWERCASE_APP_NAME){throw ("process.env.LOWERCASE_APP_NAME not set!");}
 	if(process.env.QUANTIMODO_CLIENT_SECRET){
 		console.log("Not decrypting private config because we should generate it from envs instead");
         generatePrivateConfigFromEnvs(callback);
@@ -1311,7 +1312,7 @@ gulp.task('template', function(done){
 		.on('end', done);
 });
 
-gulp.task('loadConfigsAndGenerateConfigJs', [], function(callback){
+gulp.task('loadConfigsAndGenerateConfigJs', ['setLowerCaseAppName'], function(callback){
     console.log("gulp loadConfigsAndGenerateConfigJs");
     loadConfigsAndGenerateConfigJs(callback);
 });
