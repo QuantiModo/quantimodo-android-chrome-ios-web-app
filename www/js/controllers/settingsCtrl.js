@@ -63,6 +63,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		template = template + "QuantiModo Client ID: " + quantimodoService.getClientId() + '\r\n';
 		template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
 		template = template + "App Name: " + config.appSettings.appDisplayName + '\r\n';
+        template = template + "User ID: " + $rootScope.user.id + '\r\n';
+        template = template + "User Email: " + $rootScope.user.email + '\r\n';
 		return template;
 	}
 	$scope.sendBugReport = function() {
