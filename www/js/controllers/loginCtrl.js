@@ -36,12 +36,10 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }
     };
     var loginTimeout = function () {
-        $ionicLoading.show();
         $scope.loginPage.title = 'Logging in...';
         console.debug('Setting login timeout...');
         return $timeout(function () {
             console.debug('Finished login timeout');
-            $ionicLoading.hide();
             if(!$rootScope.user){
                 $scope.loginPage.title = 'Please try logging in again';
                 quantimodoService.reportErrorDeferred('Login failure');
@@ -94,6 +92,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             quantimodoService.chromeExtensionLogin(register);
         } else if ($rootScope.isAndroid || $rootScope.isIOS || $rootScope.isWindows) {
             console.debug("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using quantimodoService.nonNativeMobileLogin");
+            loginTimeout();
             quantimodoService.nonNativeMobileLogin(register);
         } else {
             $ionicLoading.show();
