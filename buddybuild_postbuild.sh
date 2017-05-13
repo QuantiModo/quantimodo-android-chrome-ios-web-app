@@ -4,7 +4,7 @@ print_sha1(){
     APK_NAME=$1
     echo "=== android-${APK_NAME}.apk INFO ==="
     keytool -list -printcert -jarfile ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-${APK_NAME}.apk | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64
-    rm -r ${BUDDYBUILD_WORKSPACE}/android-${APK_NAME}
+    rm -r ${BUDDYBUILD_WORKSPACE}/android-${APK_NAME} > /dev/null 2>&1
     mkdir ${BUDDYBUILD_WORKSPACE}/android-${APK_NAME}
     cd ${BUDDYBUILD_WORKSPACE}/android-${APK_NAME}
     unzip ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-${APK_NAME}.apk >/dev/null

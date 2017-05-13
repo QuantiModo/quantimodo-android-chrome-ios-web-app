@@ -1901,12 +1901,13 @@ gulp.task('copyAndroidResources', [], function(){
 
 
 gulp.task('copyAndroidBuild', [], function(){
-    var copyApksToDropbox = gulp.src(['platforms/android/build/outputs/apk/*.apk'])
-        .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
-
-    // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
-    var copyApksToBuildFolder = gulp.src(['platforms/android/build/outputs/apk/*.apk'])
-        .pipe(gulp.dest('build/apks/' + process.env.LOWERCASE_APP_NAME));
+    if(!process.env.LOWERCASE_APP_NAME){throw "process.env.LOWERCASE_APP_NAME not set!";}
+    var pathToApks = 'platforms/android/build/outputs/apk/*.apk';
+    var dropboxPath = 'dropbox/' + process.env.LOWERCASE_APP_NAME;
+    var buildFolderPath = 'build/apks/' + process.env.LOWERCASE_APP_NAME; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
+    console.log("Copying from " + pathToApks + " to " + dropboxPath + " and " + buildFolderPath);
+    var copyApksToDropbox = gulp.src([pathToApks]).pipe(gulp.dest(dropboxPath));
+    var copyApksToBuildFolder = gulp.src([pathToApks]).pipe(gulp.dest(buildFolderPath));
     return es.concat(copyApksToDropbox, copyApksToBuildFolder);
 });
 
