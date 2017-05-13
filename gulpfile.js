@@ -91,6 +91,8 @@ function setLowerCaseAppName(callback) {
             }
             if(callback){callback();}
         });
+    } else {
+        if(callback){callback();}
     }
 }
 
