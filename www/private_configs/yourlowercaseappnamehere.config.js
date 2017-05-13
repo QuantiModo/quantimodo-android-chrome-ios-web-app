@@ -17,8 +17,7 @@ private_keys = {
         "Windows": "your_quantimodo_client_secret_here"
     },
     "FACEBOOK_APP_ID": "123456789",
-    "FACEBOOK_APP_NAME": "SOMEAPPNAME",
-    "REVERSED_CLIENT_ID": "com.google.someappname123345667"
+    "FACEBOOK_APP_NAME": "SOMEAPPNAME"
 };
 
 if(!module){
