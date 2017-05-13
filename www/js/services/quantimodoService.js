@@ -511,7 +511,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 params,
                 successHandler,
                 errorHandler);
-            localStorage.clear('deviceTokenOnServer');
+            localStorage.removeItem('deviceTokenOnServer');
             deferred.resolve();
         }
         return deferred.promise;
@@ -797,7 +797,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             deferred.reject('No deviceTokenToSync in localStorage');
             return deferred.promise;
         }
-        localStorage.clear('deviceTokenToSync');
+        localStorage.removeItem('deviceTokenToSync');
         console.debug("Posting deviceToken to server: ", deviceTokenToSync);
         quantimodoService.postDeviceToken(deviceTokenToSync, function(response){
             localStorage.setItem('deviceTokenOnServer', deviceTokenToSync);
