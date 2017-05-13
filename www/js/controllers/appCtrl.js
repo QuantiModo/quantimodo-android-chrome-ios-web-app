@@ -903,54 +903,44 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
                 .then(function(result) {connectWithToken(result);}, function(error) {errorHandler(error);});
         }
+        function connectGoogle(connector, scopes) {
+            document.addEventListener('deviceready', deviceReady, false);
+            function deviceReady() {
+                window.plugins.googleplus.login({
+                    'scopes': scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                    'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                    'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                }, function (response) {
+                    console.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
+                    connectWithAuthCode(response.serverCode, connector);
+                }, function (errorMessage) {
+                    quantimodoService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                });
+            }
+        }
         if(connector.name === 'googlefit') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = [
-                "https://www.googleapis.com/auth/fitness.activity.read",
-                "https://www.googleapis.com/auth/fitness.body.read",
-                "https://www.googleapis.com/auth/fitness.location.read"
-            ];
-            options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
-                .then(function(authorizationCode) {
-                    connectWithAuthCode(authorizationCode, connector);
-                }, function(error) {
-                    errorHandler(error);
-                });
+            scopes = 'https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.body.read https://www.googleapis.com/auth/fitness.nutrition.read https://www.googleapis.com/auth/fitness.location.read';
+            connectGoogle(connector, scopes);
         }
         if(connector.name === 'googlecalendar') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = [
-                "https://www.googleapis.com/auth/calendar",
-                "https://www.googleapis.com/auth/calendar.readonly"
-            ];
-            options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
-                .then(function(authorizationCode) {
-                    connectWithAuthCode(authorizationCode, connector);
-                }, function(error) {
-                    errorHandler(error);
-                });
+            scopes =  "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly";
+            connectGoogle(connector, scopes);
         }
         if(connector.name === 'sleepcloud') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
                 webConnect(connector);
                 return;
             }
-            scopes = ['https://www.googleapis.com/auth/userinfo.email'];
-            options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
-            $cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
-                .then(function(authorizationCode) {
-                    connectWithAuthCode(authorizationCode, connector);
-                }, function(error) {
-                    errorHandler(error);
-                });
+            scopes =  "https://www.googleapis.com/auth/userinfo.email";
+            connectGoogle(connector, scopes);
         }
         if(connector.name === 'up') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
