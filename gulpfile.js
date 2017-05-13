@@ -1707,7 +1707,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
         console.log("Building Android because BUDDYBUILD_SCHEME is not set and we know we're on BuddyBuild because BUDDYBUILD_SECURE_FILES is set to: " + process.env.BUDDYBUILD_SECURE_FILES);
         runSequence(
             'prepareRepositoryForAndroid',
-        	'buildAndroidApp',
+        	'prepareAndroidApp',
             //'buildQuantiModoAndroid',  // Had to do this previously because buildAndroid wasn't working
             callback);
     } else {
