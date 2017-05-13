@@ -201,7 +201,7 @@ function loadConfigsAndGenerateConfigJs(callback, lowerCaseAppName) {
     appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
     appSettings.debugMode = process.env.DEBUG_MODE;
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
-    console.log("writing to " + pathToGeneratedConfigJs + ": " + defaultConfigFileContent);
+    console.log("writing to " + pathToGeneratedConfigJs);
     require('fs').writeFileSync(pathToGeneratedConfigJs, defaultConfigFileContent);
 
     var pathToPrivateConfig = './www/private_configs/'+ lowerCaseAppName + '.config.js';
