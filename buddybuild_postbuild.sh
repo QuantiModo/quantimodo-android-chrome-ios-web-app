@@ -2,6 +2,14 @@
 
 echo "=== buddybuild_postbuild.sh ==="
 
+if [ -z ${CIRCLE_BRANCH} ];
+    then
+        echo "Not in CircleCI"
+    else
+        echo "Set BUDDYBUILD_WORKSPACE to $PWD"
+        BUDDYBUILD_WORKSPACE=$PWD
+fi
+
 if [ -z ${BUDDYBUILD_WORKSPACE} ];
     then
         BUDDYBUILD_WORKSPACE=/vagrant/public.built/ionic/Modo
@@ -22,7 +30,7 @@ if [ -z ${BUDDYBUILD_SCHEME} ];
     then
         echo "=== android-armv7-release.apk INFO ==="
         keytool -list -printcert -jarfile ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-armv7-release.apk | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64
-        unzip android-armv7-release.apk >/dev/null
+        #unzip android-armv7-release.apk >/dev/null
         #mkdir ${BUDDYBUILD_WORKSPACE}/android-armv7-release && cd ${BUDDYBUILD_WORKSPACE}/android-armv7-release && unzip ${BUDDYBUILD_WORKSPACE}/platforms/android/build/outputs/apk/android-armv7-release.apk >/dev/null
         #keytool -printcert -file META-INF/CERT.RSA
         echo "=== android-x86-release.apk INFO ==="

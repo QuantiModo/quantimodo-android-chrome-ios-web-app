@@ -89,6 +89,7 @@ deployment:
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - chmod +x do-exclusively
       - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
+      - bash buddybuild_postbuild.sh
       #- gulp ionicUploadStagingForAllApps
       #- aws s3 cp $CIRCLE_ARTIFACTS/* s3://quantimodo-docs/ Doesn't work for some reason
   production:

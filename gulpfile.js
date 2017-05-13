@@ -121,15 +121,19 @@ function generatePrivateConfigFromEnvs(callback) {
         if(callback){callback();}
         return;
     }
-    var privateConfigKeys = {client_ids : {}, client_secrets : {}};
-    privateConfigKeys.client_ids.Web = process.env.QUANTIMODO_CLIENT_ID;
+    var privateConfigObject = {client_ids : {}, client_secrets : {}};
+    privateConfigObject.client_ids.Web = process.env.QUANTIMODO_CLIENT_ID;
     console.log('Detected ' + process.env.QUANTIMODO_CLIENT_ID + ' QUANTIMODO_CLIENT_ID');
-    privateConfigKeys.client_secrets.Web = process.env.QUANTIMODO_CLIENT_SECRET;
+    privateConfigObject.client_secrets.Web = process.env.QUANTIMODO_CLIENT_SECRET;
     if(typeof process.env.IONIC_BUGSNAG_KEY !== "undefined"){
-        privateConfigKeys.bugsnag_key = process.env.IONIC_BUGSNAG_KEY;
+        privateConfigObject.bugsnag_key = process.env.IONIC_BUGSNAG_KEY;
         console.log('IONIC_BUGSNAG_KEY' +' Detected');
     }
-    var privateConfigContent = 'private_keys = '+ JSON.stringify(privateConfigKeys, 0, 2);
+    createPrivateConfigFiles(privateConfigObject, callback);
+}
+
+function createPrivateConfigFiles(privateConfigObject, callback) {
+    var privateConfigContent = 'private_keys = '+ JSON.stringify(privateConfigObject, 0, 2);
     fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
     fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
     console.log('Created '+ './www/private_configs/default.config.js');
@@ -202,23 +206,9 @@ function loadConfigsAndGenerateConfigJs(callback, lowerCaseAppName) {
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
     console.log("writing to " + pathToGeneratedConfigJs);
     require('fs').writeFileSync(pathToGeneratedConfigJs, defaultConfigFileContent);
-
     var pathToPrivateConfig = './www/private_configs/'+ lowerCaseAppName + '.config.js';
     fs.stat(pathToGeneratedConfigJs, function(err, stat) {
         if(err === null) {
-            console.log("Using this config file: " + pathToGeneratedConfigJs);
-/*            fs.readFile(pathToConfig, function (err, data) {
-                config = JSON.parse(data);
-                fs.readFile(pathToPrivateConfig, function (err, data) {
-                    privateConfig = JSON.parse(data);
-                    if(callback){
-                        callback();
-					}
-                });
-            });*/
-
-			//var appSettings = require(pathToConfig);
-            //process.env.privateConfig = require(pathToPrivateConfig);
             if(callback){callback();}
         } else {
             console.log('Could not create and read ' + pathToGeneratedConfigJs);
