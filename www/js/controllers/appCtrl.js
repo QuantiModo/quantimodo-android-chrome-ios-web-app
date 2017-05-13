@@ -912,7 +912,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                 }, function (response) {
                     console.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
-                    connectWithAuthCode(response.serverCode, connector);
+                    connectWithAuthCode(response.serverAuthCode, connector);
                 }, function (errorMessage) {
                     quantimodoService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                 });
