@@ -572,7 +572,7 @@ gulp.task('encryptAllPrivateConfigs', [], function(callback){
     encryptPrivateConfig();
 });
 
-gulp.task('decryptPrivateConfig', [], function(callback){
+gulp.task('decryptPrivateConfig', ['setLowerCaseAppName'], function(callback){
 	decryptPrivateConfig(callback);
 });
 
@@ -1651,6 +1651,7 @@ gulp.task('configureAppAfterNpmInstall', [], function(callback){
 gulp.task('configureApp', [], function(callback){
     console.log("gulp configureApp");
 	runSequence(
+        'setLowerCaseAppName',
 	    'deleteUnusedFiles',
         'sass',
         'generateJsConfigs',
