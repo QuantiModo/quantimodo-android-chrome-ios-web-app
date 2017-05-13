@@ -2013,8 +2013,8 @@ gulp.task('buildAndroidApp', function(callback){
 	runSequence(
 		'prepareAndroidApp',
 		'cordovaBuildAndroidRelease',
+		'cordovaBuildAndroidDebug',
         'copyAndroidBuild',
-		//'cordovaBuildAndroidDebug',
 		callback);
 });
 
