@@ -507,7 +507,7 @@ function outputSHA1ForAndroidKeystore(decryptedFilePath) {
     if(decryptedFilePath.indexOf('keystore') === -1){
         return;
     }
-    var cmd = "keytool -exportcert -list -v -alias androiddebugkey -keystore " + decryptedFilePath;
+    var cmd = "keytool -exportcert -list -v -alias androiddebugkey -keypass android -keystore " + decryptedFilePath;
     execute(cmd, function (error) {
         if (error !== null) {
             console.error("ERROR: ENCRYPTING: " + error);
