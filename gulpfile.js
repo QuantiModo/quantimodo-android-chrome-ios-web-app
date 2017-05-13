@@ -1901,11 +1901,11 @@ gulp.task('copyAndroidResources', [], function(){
 
 
 gulp.task('copyAndroidBuild', [], function(){
-    var copyApksToDropbox = gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
+    var copyApksToDropbox = gulp.src(['platforms/android/build/outputs/apk/*.apk'])
         .pipe(gulp.dest('dropbox/' + process.env.LOWERCASE_APP_NAME));
 
     // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
-    var copyApksToBuildFolder = gulp.src(['platforms/android/build/outputs/apk/*e.apk'])
+    var copyApksToBuildFolder = gulp.src(['platforms/android/build/outputs/apk/*.apk'])
         .pipe(gulp.dest('build/apks/' + process.env.LOWERCASE_APP_NAME));
     return es.concat(copyApksToDropbox, copyApksToBuildFolder);
 });
