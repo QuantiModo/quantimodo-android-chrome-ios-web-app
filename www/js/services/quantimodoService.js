@@ -171,16 +171,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.error("Request error : " + error);
     };
     var canWeMakeRequestYet = function(type, route, options){
+        var blockRequests = false;
         var minimumSecondsBetweenRequests;
         if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 1;}
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
             var name = 'Cannot make ' + type + ' request to ' + route;
             var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
-            var metaData = {type: type, route: route, groupingHash: name};
+            var metaData = {type: type, route: route, groupingHash: name, state: $state.current};
+            if(options){metaData.options = options;}
             console.error(message);
             if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
-            return false;
+            if(blockRequests){return false;}
         }
         localStorage.setItem(requestVariableName, Math.floor(Date.now() / 1000));
         return true;
