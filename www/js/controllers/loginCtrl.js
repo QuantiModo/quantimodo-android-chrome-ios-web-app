@@ -6,7 +6,11 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
     if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
     if($rootScope.isMobile){
-        if(window && window.plugins && window.plugins.googleplus){ $scope.showGoogleLoginButton = true; }
+        if(window && window.plugins && window.plugins.googleplus){
+            $scope.showGoogleLoginButton = true;
+        } else {
+            if($rootScope.isMobile){quantimodoService.reportErrorDeferred("Google login not available on mobile!");}
+        }
         var $cordovaFacebook = {};
         var disableFacebookLogin = true;  // Causing failures on IPv6 networks according to iTunes reviewer
         if (!disableFacebookLogin && $rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
