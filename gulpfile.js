@@ -66,12 +66,13 @@ var chromeExtensionManifestTemplate = {
 };
 
 gulp.task('createChromeExtensionManifest', function(){
-    chromeExtensionManifestTemplate.name = appSettings.appDisplayName;
-    chromeExtensionManifestTemplate.description = appSettings.appDescription;
-    chromeExtensionManifestTemplate.version = process.env.IONIC_APP_VERSION_NUMBER;
-    chromeExtensionManifestTemplate.permissions.push(appSettings.downloadLinks.webApp + '/*');
-    chromeExtensionManifestTemplate.appSettings = appSettings;
-    require('fs').writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifestTemplate));
+    var chromeExtensionManifest = chromeExtensionManifestTemplate;
+    chromeExtensionManifest.name = appSettings.appDisplayName;
+    chromeExtensionManifest.description = appSettings.appDescription;
+    chromeExtensionManifest.version = process.env.IONIC_APP_VERSION_NUMBER;
+    chromeExtensionManifest.permissions.push(appSettings.downloadLinks.webApp + '/*');
+    chromeExtensionManifest.appSettings = appSettings;
+    require('fs').writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifest));
 });
 
 
