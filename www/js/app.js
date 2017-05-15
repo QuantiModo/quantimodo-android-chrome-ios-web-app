@@ -82,6 +82,7 @@ angular.module('starter',
              });
              push.on('error', function(e) {quantimodoService.reportException(e, e.message, pushConfig);});
              var finishPush = function (data) {
+                 $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');  // Refresh Reminders Inbox
                  if(!finishPushes){
                      console.debug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
                      return;
