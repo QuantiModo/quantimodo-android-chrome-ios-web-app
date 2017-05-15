@@ -176,8 +176,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 1;}
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
-            var name = 'Cannot make ' + type + ' request to ' + route;
-            var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
+            var name = 'Just made a ' + type + ' request to ' + route;
+            var message = name + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
             var metaData = {type: type, route: route, groupingHash: name, state: $state.current};
             if(options){metaData.options = options;}
             console.error(message);
