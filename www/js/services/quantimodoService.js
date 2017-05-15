@@ -1046,7 +1046,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var study;
             if(response.userStudy){ study = response.userStudy; }
             if(response.publicStudy){ study = response.publicStudy; }
-            if(study.charts){for(var i=0; i < study.charts.length; i++){study.charts[i] = setChartExportingOptions(study.charts[i]);}}
+            if(study.charts){
+                study.charts = Object.keys(study.charts).map(function (key) { return study.charts[key]; });
+                for(var i=0; i < study.charts.length; i++){
+                    study.charts[i].chartConfig = setChartExportingOptions(study.charts[i].chartConfig);
+                }
+            }
             localStorage.setItem('lastStudy', JSON.stringify(study));
             deferred.resolve(study);
         }, function (error) {
