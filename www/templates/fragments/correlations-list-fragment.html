@@ -63,7 +63,7 @@
         <div ng-if="outcomeList || predictorList" id="correlationHeader" class="item item-avatar" ng-click="goToStudyPage(correlationObject)">
             <img ng-if="predictorList" ng-src="{{correlationObject.causeVariableImageUrl}}">
             <img ng-if="outcomeList" ng-src="{{correlationObject.effectVariableImageUrl}}">
-            <p style="height: 40px; line-height: 40px; color: black; font-size: 18px; margin-left: -40px;">
+            <p style="height: 40px; line-height: 40px; color: black; font-size: 18px; margin-left: -40px; padding-left: 15px;">
                 <span ng-if="outcomeList">{{correlationObject.effectVariableName}}</span>
                 <span ng-if="predictorList">{{correlationObject.causeVariableName}}</span>
             </p>
