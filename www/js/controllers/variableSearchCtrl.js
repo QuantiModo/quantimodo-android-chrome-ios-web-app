@@ -185,6 +185,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     // Put user variables at top of list
+                    userVariables = quantimodoService.sortByProperty(userVariables, '-latestMeasurementTime');
                     $scope.state.variableSearchResults = quantimodoService.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;
