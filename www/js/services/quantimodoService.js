@@ -171,16 +171,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.error("Request error : " + error);
     };
     var canWeMakeRequestYet = function(type, route, options){
+        var blockRequests = false;
         var minimumSecondsBetweenRequests;
         if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 1;}
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
-            var name = 'Cannot make ' + type + ' request to ' + route;
-            var message = 'quantimodoService.get: Cannot make ' + type + ' request to ' + route + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
-            var metaData = {type: type, route: route, groupingHash: name};
+            var name = 'Just made a ' + type + ' request to ' + route;
+            var message = name + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
+            var metaData = {type: type, route: route, groupingHash: name, state: $state.current};
+            if(options){metaData.options = options;}
             console.error(message);
             if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
-            return false;
+            if(blockRequests){return false;}
         }
         localStorage.setItem(requestVariableName, Math.floor(Date.now() / 1000));
         return true;
@@ -3762,7 +3764,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.refreshUserVariableByNameDeferred = function (variableName) {
         var deferred = $q.defer();
         var params = {includeTags : true};
-        quantimodoService.getVariablesByNameFromApi(variableName, {}, function(variable){
+        quantimodoService.getVariablesByNameFromApi(variableName, params, function(variable){
             deferred.resolve(variable);
         }, function(error){ deferred.reject(error); });
         return deferred.promise;
@@ -3773,7 +3775,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(requestParams.includePublic){
             if(!variables){variables = [];}
             var commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
-            variables = variables.concat(commonVariables);
+            if(commonVariables && commonVariables.constructor === Array){
+                variables = variables.concat(commonVariables);
+            } else {
+                quantimodoService.reportErrorDeferred("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
+                quantimodoService.putCommonVariablesInLocalStorage();
+            }
         }
         variables = quantimodoService.removeArrayElementsWithDuplicateIds(variables);
         if(requestParams && requestParams.sort){variables = quantimodoService.sortByProperty(variables, requestParams.sort);}
@@ -3895,9 +3902,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
             if(commonVariables.constructor !== Array){
                 quantimodoService.reportErrorDeferred('commonVariables.json is not present!');
+                deferred.reject('commonVariables.json is not present!');
+            } else {
+                quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
+                deferred.resolve(commonVariables);
             }
-            quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
-            deferred.resolve(commonVariables);
         });
         return deferred.promise;
     };

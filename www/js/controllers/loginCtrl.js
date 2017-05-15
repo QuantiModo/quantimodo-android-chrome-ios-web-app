@@ -6,7 +6,11 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
     if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
     if($rootScope.isMobile){
-        if(window && window.plugins && window.plugins.googleplus){ $scope.showGoogleLoginButton = true; }
+        if(window && window.plugins && window.plugins.googleplus){
+            $scope.showGoogleLoginButton = true;
+        } else {
+            if($rootScope.isMobile){quantimodoService.reportErrorDeferred("Google login not available on mobile!");}
+        }
         var $cordovaFacebook = {};
         var disableFacebookLogin = true;  // Causing failures on IPv6 networks according to iTunes reviewer
         if (!disableFacebookLogin && $rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
@@ -169,7 +173,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             if(debugMode){alert('Device is ready in googleLogin!');}
             console.debug('Device is ready in googleLogin!');
             window.plugins.googleplus.login({
-                'scopes': 'email https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.body.read https://www.googleapis.com/auth/fitness.nutrition.read https://www.googleapis.com/auth/fitness.location.read https://www.googleapis.com/auth/plus.login', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                'scopes': 'email https://www.googleapis.com/auth/plus.login', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
                 'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                 'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
             }, function (userData) {

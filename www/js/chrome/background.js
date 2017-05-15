@@ -2,9 +2,8 @@
 ****	EVENT HANDLERS
 ***/
 var manifest = chrome.runtime.getManifest();
-var apiUrl = "https://quantimo.do";
-if(manifest.apiUrl){apiUrl = manifest.apiUrl;}
-console.log("API URL is " + manifest.apiUrl);
+var apiUrl = manifest.appSettings.downloadLinks.webApp;
+console.log("API URL is " + apiUrl);
 var requestIdentificationParameters = "appName=" + manifest.name + "&appVersion=" + manifest.version + "&client_id=chromeExtension and apiUrl is " + apiUrl;
 var v = null;
 var vid = null;

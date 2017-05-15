@@ -41,6 +41,41 @@ var appIds = {
 
 var appSettings;
 
+var chromeExtensionManifestTemplate = {
+    "manifest_version": 2,
+    "options_page": "www/chrome_extension/options/options.html",
+    "icons": {
+        "16"	: "www/img/icons/icon_16.png",
+        "48"	: "www/img/icons/icon_48.png",
+        "128"	: "www/img/icons/icon_128.png"
+    },
+    "permissions": [
+        "alarms",
+        "notifications",
+        "storage",
+        "tabs"
+    ],
+    "browser_action": {
+        "default_icon": "www/img/icons/icon_700.png",
+        "default_popup": "www/templates/chrome/iframe.html"
+    },
+    "background": {
+        "scripts": ["www/js/chrome/background.js"],
+        "persistent": false
+    }
+};
+
+gulp.task('createChromeExtensionManifest', function(){
+    var chromeExtensionManifest = chromeExtensionManifestTemplate;
+    chromeExtensionManifest.name = appSettings.appDisplayName;
+    chromeExtensionManifest.description = appSettings.appDescription;
+    chromeExtensionManifest.version = process.env.IONIC_APP_VERSION_NUMBER;
+    chromeExtensionManifest.permissions.push(appSettings.downloadLinks.webApp + '/*');
+    chromeExtensionManifest.appSettings = appSettings;
+    require('fs').writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifest));
+});
+
+
 gulp.task('generateJsConfigs', function(){
     var configListPath = 'configs-list.json';
     gulp.src('./www/configs/*.json')
@@ -1691,7 +1726,7 @@ gulp.task('buildChromeExtension', [], function(callback){
         'resizeIcons',
         'copyIconsToWwwImg',
         'copyWwwFolderToChromeExtension',  //Can't use symlinks
-		'copyManifestToChromeExtension',
+		'createChromeExtensionManifest',
 		'removeFacebookFromChromeExtension',
         'removeAndroidManifestFromChromeExtension',
 		'zipChromeExtension',
