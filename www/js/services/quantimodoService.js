@@ -3764,7 +3764,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.refreshUserVariableByNameDeferred = function (variableName) {
         var deferred = $q.defer();
         var params = {includeTags : true};
-        quantimodoService.getVariablesByNameFromApi(variableName, {}, function(variable){
+        quantimodoService.getVariablesByNameFromApi(variableName, params, function(variable){
             deferred.resolve(variable);
         }, function(error){ deferred.reject(error); });
         return deferred.promise;
@@ -3775,7 +3775,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(requestParams.includePublic){
             if(!variables){variables = [];}
             var commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
-            variables = variables.concat(commonVariables);
+            if(commonVariables && commonVariables.constructor === Array){
+                variables = variables.concat(commonVariables);
+            } else {
+                quantimodoService.reportErrorDeferred("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
+                quantimodoService.putCommonVariablesInLocalStorage();
+            }
         }
         variables = quantimodoService.removeArrayElementsWithDuplicateIds(variables);
         if(requestParams && requestParams.sort){variables = quantimodoService.sortByProperty(variables, requestParams.sort);}
@@ -3897,9 +3902,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
             if(commonVariables.constructor !== Array){
                 quantimodoService.reportErrorDeferred('commonVariables.json is not present!');
+                deferred.reject('commonVariables.json is not present!');
+            } else {
+                quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
+                deferred.resolve(commonVariables);
             }
-            quantimodoService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
-            deferred.resolve(commonVariables);
         });
         return deferred.promise;
     };
