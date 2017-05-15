@@ -3764,7 +3764,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.refreshUserVariableByNameDeferred = function (variableName) {
         var deferred = $q.defer();
         var params = {includeTags : true};
-        quantimodoService.getVariablesByNameFromApi(variableName, {}, function(variable){
+        quantimodoService.getVariablesByNameFromApi(variableName, params, function(variable){
             deferred.resolve(variable);
         }, function(error){ deferred.reject(error); });
         return deferred.promise;
@@ -3775,7 +3775,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(requestParams.includePublic){
             if(!variables){variables = [];}
             var commonVariables = JSON.parse(quantimodoService.getLocalStorageItemAsString('commonVariables'));
-            if(commonVariables && commonVariables.isArray()){
+            if(commonVariables && commonVariables.constructor === Array){
                 variables = variables.concat(commonVariables);
             } else {
                 quantimodoService.reportErrorDeferred("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
