@@ -1486,12 +1486,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var deferred = $q.defer();
             if(!query){
                 console.error("Why are we searching without a query?");
+                if(!self.items || self.items.length < 10){self.items = loadAll();}
                 deferred.resolve(self.items);
                 return deferred.promise;
             }
             if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
                 self.items = quantimodoService.removeItemsWithDifferentName(self.items, query);
-                if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
+                var minimumNumberOfResultsRequiredToAvoidAPIRequest = 2;
+                if(quantimodoService.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
                     deferred.resolve(self.items);
                     return deferred.promise;
                 }
@@ -1503,14 +1505,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 });
             return deferred.promise;
         }
-        function searchTextChange(text) { $log.info('Text changed to ' + text); }
+        function searchTextChange(text) { console.debug('Text changed to ' + text); }
         function selectedItemChange(item) {
             if(!item){return;}
             self.selectedItem = item;
             self.buttonText = dataToPass.buttonText;
             $scope.variable = item.variable;
             quantimodoService.addVariableToLocalStorage(item.variable);
-            $log.info('Item changed to ' + item.variable.name);
+            console.debug('Item changed to ' + item.variable.name);
         }
 
         /**
@@ -1621,7 +1623,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }).catch(function (error) {console.error(error);});
             return deferred.promise;
         }
-        function searchTextChange(text) { $log.info('Text changed to ' + text); }
+        function searchTextChange(text) { console.debug('Text changed to ' + text); }
         function selectedItemChange(item) {
             $rootScope.variableObject.wikipediaPage = item.page;
             $rootScope.variableObject.wikipediaExtract = item.page.extract;
