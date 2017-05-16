@@ -2021,9 +2021,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var deferred = $q.defer();
         console.debug('quantimodoService.trackTrackingReminderNotificationDeferred: Going to track ' + JSON.stringify(trackingReminderNotification));
         if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
-            var notificationFromLocalStorage =
-                quantimodoService.getElementOfLocalStorageItemById('trackingReminderNotifications',
-                    trackingReminderNotification.trackingReminderNotificationId);
+            var notificationFromLocalStorage = quantimodoService.getElementOfLocalStorageItemById('trackingReminderNotifications', trackingReminderNotification.trackingReminderNotificationId);
             if(notificationFromLocalStorage){
                 if(typeof trackingReminderNotification.modifiedValue !== "undefined" && trackingReminderNotification.modifiedValue !== null){
                     notificationFromLocalStorage.modifiedValue = trackingReminderNotification.modifiedValue;
@@ -3734,7 +3732,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return deferred.promise;
     };
     function doWeHaveEnoughVariables(variables){
-        return variables && variables.length > 1;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
+        var numberOfMatchingLocalVariablesRequiredToSkipAPIRequest = 2;
+        return variables && variables.length > numberOfMatchingLocalVariablesRequiredToSkipAPIRequest;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
     }
     function doWeHaveExactMatch(variables, variableSearchQuery){
         return quantimodoService.arrayHasItemWithNameProperty(variables) && variables[0].name.toLowerCase() === variableSearchQuery.toLowerCase(); // No need for API request if we have exact match
