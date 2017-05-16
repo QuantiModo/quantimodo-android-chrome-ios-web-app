@@ -1505,14 +1505,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 });
             return deferred.promise;
         }
-        function searchTextChange(text) { $log.info('Text changed to ' + text); }
+        function searchTextChange(text) { console.debug('Text changed to ' + text); }
         function selectedItemChange(item) {
             if(!item){return;}
             self.selectedItem = item;
             self.buttonText = dataToPass.buttonText;
             $scope.variable = item.variable;
             quantimodoService.addVariableToLocalStorage(item.variable);
-            $log.info('Item changed to ' + item.variable.name);
+            console.debug('Item changed to ' + item.variable.name);
         }
 
         /**
@@ -1623,7 +1623,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }).catch(function (error) {console.error(error);});
             return deferred.promise;
         }
-        function searchTextChange(text) { $log.info('Text changed to ' + text); }
+        function searchTextChange(text) { console.debug('Text changed to ' + text); }
         function selectedItemChange(item) {
             $rootScope.variableObject.wikipediaPage = item.page;
             $rootScope.variableObject.wikipediaExtract = item.page.extract;
