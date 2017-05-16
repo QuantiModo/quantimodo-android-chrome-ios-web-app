@@ -1486,12 +1486,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var deferred = $q.defer();
             if(!query){
                 console.error("Why are we searching without a query?");
+                if(!self.items || self.items.length < 10){self.items = loadAll();}
                 deferred.resolve(self.items);
                 return deferred.promise;
             }
             if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
                 self.items = quantimodoService.removeItemsWithDifferentName(self.items, query);
-                if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
+                var minimumNumberOfResultsRequiredToAvoidAPIRequest = 2;
+                if(quantimodoService.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
                     deferred.resolve(self.items);
                     return deferred.promise;
                 }
