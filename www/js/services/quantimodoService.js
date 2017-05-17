@@ -14,11 +14,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
-        delete params.force;
-        if($state.current.name === 'app.intro'){
+        if($state.current.name === 'app.intro' && !params.force){
             console.warn('Not making request to ' + route + ' user because we are in the intro state');
             return;
         }
+        delete params.force;
         quantimodoService.getAccessTokenFromAnySource().then(function(accessToken) {
             allowedParams.push('limit');
             allowedParams.push('offset');
@@ -485,6 +485,32 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getUserTags = function(params, successHandler, errorHandler){
         quantimodoService.get('api/v1/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
+    };
+    quantimodoService.getAppSettingsFromUrlParameter = function(){
+        var appSettings = quantimodoService.getUrlParameter('appSettings');
+        if(appSettings) {
+            appSettings = decodeURIComponent(appSettings);
+            appSettings = JSON.parse(appSettings);
+            config.appSettings = appSettings;
+            return true;
+        }
+    };
+    quantimodoService.getAppSettingsDeferred = function() {
+        var deferred = $q.defer();
+        var lowercaseAppName = quantimodoService.getUrlParameter('lowercaseAppName');
+        if(!lowercaseAppName){
+            deferred.reject('No lowercaseAppName url parameter!');
+            return deferred.promise;
+        }
+        quantimodoService.getAppSettings({lowercaseAppName: lowercaseAppName, force: true}, function (response) {
+            config.appSettings = response.data;
+            $rootScope.appSettings = config.appSettings;
+            deferred.resolve(config.appSettings);
+        });
+        return deferred.promise;
+    };
+    quantimodoService.getAppSettings = function(params, successHandler, errorHandler){
+        quantimodoService.get('api/v1/appSettings', ['lowercaseAppName'], params, successHandler, errorHandler);
     };
     quantimodoService.updateUserTimeZoneIfNecessary = function () {
         var d = new Date();
