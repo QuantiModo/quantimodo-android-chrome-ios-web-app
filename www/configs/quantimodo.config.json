@@ -5,7 +5,7 @@
   "appleId": "1115037060",
   "appStorageIdentifier": "QuantiModoData*",
   "backgroundColor": "#3467d6",
-  "companyEmail": "hello@medimodo.com",
+  "companyEmail": "info@quantimo.do",
   "cordovaLocalNotificationsEnabled": false,
   "defaultState": "app.remindersInbox",
   "downloadLinks": {
@@ -22,7 +22,7 @@
     "wp": "UA-39222734-2"
   },
   "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
-  "homepage": "https://medimodo.com",
+  "homepage": "https://quantimo.do",
   "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/jjpwj6LvyV_r2ncyb",
   "intro": null,
   "ionicAppId": "42fe48d4",
@@ -30,6 +30,8 @@
   "linkToChromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
   "lowercaseAppName": "quantimodo",
   "menuType": "minimal",
+  "physicianAlias": "Physician",
+  "patientAlias": "Patient",
   "socialLinks": {
     "facebook": "https://www.facebook.com/Quantimodology",
     "twitter": "https://twitter.com/quantimodo",
