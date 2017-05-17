@@ -5716,11 +5716,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 color: "green",
                 image: {
                     height: "120",
-                    width: "120"
-                    url: "img/robots/robot-waving.svg",
+                    width: "120",
+                    url: "img/robots/robot-waving.svg"
                 },
                 overlayIcon: true,
-                bodyText: "I've been programmed to reduce human suffering with data.",
+                bodyText: "I've been programmed to reduce human suffering with data."
             },
             {
                 newIntroStyle: true,
