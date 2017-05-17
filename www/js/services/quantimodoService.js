@@ -5715,10 +5715,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title: "Hi! I'm " + config.appSettings.appDisplayName + "!",
                 color: "green",
                 image: {
-                    url: "img/robots/quantimodo-robot-waving.svg",
                     height: "120",
                     width: "120"
+                    url: "img/robots/robot-waving.svg",
                 },
+                overlayIcon: true,
                 bodyText: "I've been programmed to reduce human suffering with data.",
             },
             {
