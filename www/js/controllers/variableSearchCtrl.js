@@ -16,7 +16,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug($state.current.name + " beforeEnter...");
         $scope.stateParams = $stateParams;
-        if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
+        //if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
+        $rootScope.hideNavigationMenu = false;
         if($stateParams.helpText){$scope.state.helpText = $stateParams.helpText;}
         if($stateParams.title){$scope.state.title = $stateParams.title;}
         if($stateParams.variableSearchPlaceholderText){$scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;}
