@@ -12,107 +12,10 @@
         "webApp": null
     },
     "facebookAppId": 225078261031461,
-    "googleAnalyticsTrackingIds": {
-        "laravel": "UA-39222734-29",
-        "ionic": "UA-39222734-25",
-        "api": "UA-39222734-24",
-        "wp": "UA-39222734-2"
-    },
-    "ionicAppId": null,
-    "lowercaseAppName": "yourlowercaseappnamehere",
-    "menuType": null,
-    "primaryOutcomeVariableName": "Overall Mood",
-    "socialLinks": {
-        "facebook": "https://www.facebook.com/Quantimodology",
-        "twitter": "https://twitter.com/quantimodo",
-        "google": "https://plus.google.com/communities/100581500031158281444",
-        "linkedIn": "https://www.linkedin.com/company/medimodo"
-    },
-    "wordAliases": {},
     "features": [
         " - Automatically backup and sync your data across devices",
         " - Track diet, treatments, symptoms, and anything else",
         " - Analyze your data to see the strongest predictors of your mood"
-    ],
-    "introSlides": [
-        {
-            "img": {
-                "width": "250",
-                "height": "250",
-                "url": "img/intro/intro_import.png"
-            },
-            "textColor": "white",
-            "backgroundColor": "#3467d6",
-            "content": {
-                "firstParagraph": {
-                    "visible": true,
-                    "content": "Import Data",
-                    "classes": "intro-header"
-                },
-                "logoDiv": {
-                    "visible": true,
-                    "id": "logo"
-                },
-                "finalParagraph": {
-                    "visible": true,
-                    "content": "Import data from all your apps and devices",
-                    "classes": "intro-paragraph",
-                    "buttonBarVisible": true
-                }
-            }
-        },
-        {
-            "img": {
-                "width": "250",
-                "height": "250",
-                "url": "img/intro/intro_track_anything.png"
-            },
-            "textColor": "white",
-            "backgroundColor": "#f09402",
-            "content": {
-                "firstParagraph": {
-                    "visible": true,
-                    "content": "Track Anything",
-                    "classes": "intro-header"
-                },
-                "logoDiv": {
-                    "visible": true,
-                    "id": "logo"
-                },
-                "finalParagraph": {
-                    "visible": true,
-                    "content": "Log treatments, diet, symptoms, emotions, and anything else",
-                    "classes": "intro-paragraph",
-                    "buttonBarVisible": true
-                }
-            }
-        },
-        {
-            "img": {
-                "width": "250",
-                "height": "250",
-                "url": "img/intro/intro_make_discoveries.png"
-            },
-            "textColor": "white",
-            "backgroundColor": "#0f9d58",
-            "content": {
-                "firstParagraph": {
-                    "visible": true,
-                    "content": "Make Discoveries",
-                    "classes": "intro-header"
-                },
-                "logoDiv": {
-                    "visible": true,
-                    "id": "logo"
-                },
-                "finalParagraph": {
-                    "visible": true,
-                    "content": "Identify hidden factors most strongly linked to your well-being",
-                    "classes": "intro-paragraph",
-                    "buttonBarVisible": true
-                }
-            }
-        }
     ],
     "floatingMaterialButton": {
         "button1": {
@@ -136,6 +39,115 @@
             "stateAndParameters": "'app.favoriteSearch'"
         }
     },
+    "googleAnalyticsTrackingIds": {
+        "laravel": "UA-39222734-29",
+        "ionic": "UA-39222734-25",
+        "api": "UA-39222734-24",
+        "wp": "UA-39222734-2"
+    },
+    "ionicAppId": null,
+    "introSlides": [
+        {
+            newIntroStyle: true,
+            title: "Hi! I'm " + config.appSettings.appDisplayName + "!",
+            color: "green",
+            image: {
+                height: "120",
+                width: "120",
+                url: "img/robots/robot-waving.svg"
+            },
+            overlayIcon: true,
+            bodyText: (config.appSettings.intro && config.appSettings.intro.robotStatement) ? config.appSettings.intro.robotStatement : "I've been programmed to reduce human suffering with data."
+        },
+        {
+            newIntroStyle: true,
+            title: "Hidden Influences",
+            color: "blue",
+            image: {
+                url: "img/intro/patient-frown-factors.png",
+                height: "120",
+                width: "120"
+            },
+            bodyText: "Your symptoms can be worsened or improved by medical treatments, your sleep, exercise, " +
+            "the hundreds of chemicals you consume through your diet, and even the weather!",
+        },
+        {
+            newIntroStyle: true,
+            title: "Only Human",
+            color: "yellow",
+            image: {
+                url: "img/brains/brain-pink.svg",
+                height: "120",
+                width: "120"
+            },
+            bodyText: "Human brains can only hold 7 numbers in working-memory at a time.  " +
+            "So they're not able to determine which factors are most significant. ",
+        },
+        {
+            newIntroStyle: true,
+            title: "Treatment Determination",
+            color: "green",
+            image: {
+                url: "img/intro/doctor-frown-factors.png",
+                height: "120",
+                width: "120"
+            },
+            bodyText: "Indeed, your doctor has access to less than 1% of the relevant information when they use " +
+            "intuition to determine the best ways to treat your symptoms!",
+        },
+        {
+            newIntroStyle: true,
+            title: "Machine Learning",
+            color: "blue",
+            image: {
+                url: "img/robots/quantimodo-robot-brain.svg",
+                height: "120",
+                width: "120"
+            },
+            bodyText: "My brain can hold trillions of numbers!  I can also analyze it to determine which hidden " +
+            "factors are most likely to improve or exacerbate your condition! "
+        },
+        {
+            newIntroStyle: true,
+            title: "Automated Tracking",
+            color: "green",
+            image: {
+                url: "img/intro/download_2-96.png",
+                height: "100",
+                width: "100"
+            },
+            bodyText: "Weight, blood pressure, heart rate, physical activity data can be collected automatically " +
+            "and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, " +
+            "work, or doctors offices can be collected via your phone's GPS.",
+        },
+        {
+            newIntroStyle: true,
+            title: "Effortless Tracking",
+            color: "yellow",
+            image: {
+                url: "img/intro/inbox.svg",
+                height: "90",
+                width: "90"
+            },
+            bodyText: "By taking just a few minutes each day, you can easily record your symptoms," +
+            " treatments, and diet in the Reminder Inbox.  The more data you give me, the smarter I get!  Your" +
+            " data doesn't have to be perfect to be valuable, but it's important to track regularly. ",
+        },
+        {
+            newIntroStyle: true,
+            title: "Data Security",
+            color: "blue",
+            image: {
+                url: "img/intro/lock.svg",
+                height: "90",
+                width: "90"
+            },
+            bodyText: "I use bank-level encryption to keep your data secure.  Human eyes will never see your " +
+            "data unless you intentionally share it. "
+        }
+    ],
+    "lowercaseAppName": "yourlowercaseappnamehere",
+    "menuType": null,
     "menu": [
         {
             "title": "Reminder Inbox",
@@ -387,5 +399,104 @@
             "href": "#/app/feedback",
             "icon": "ion-ios-help-outline"
         }
-    ]
+    ],
+    "onboardingPages": [
+        {
+            id: "addEmotionRemindersCard",
+            ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
+            title: 'Varying Emotions?',
+            color: "green",
+            variableCategoryName: "Emotions",
+            addButtonText: 'Add Emotion',
+            nextPageButtonText: 'Maybe Later',
+            bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
+            "determine which factors are influencing them.",
+        },
+        {
+            id: "addSymptomRemindersCard",
+            title: 'Recurring Symptoms?',
+            color: "blue",
+            variableCategoryName: "Symptoms",
+            addButtonText: 'Add Symptom',
+            nextPageButtonText: 'Maybe Later',
+            bodyText: 'Got any recurring symptoms that vary in their severity?',
+        },
+        {
+            id: "addFoodRemindersCard",
+            ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
+            title: 'Common Foods or Drinks?',
+            color: "blue",
+            variableCategoryName: "Foods",
+            addButtonText: 'Add Food or Drink',
+            nextPageButtonText: 'Maybe Later',
+            bodyText: "Add any foods or drinks that you consume more than a few times a week",
+        },
+        {
+            id: "addTreatmentRemindersCard",
+            title: 'Any Treatments?',
+            color: "yellow",
+            variableCategoryName: "Treatments",
+            addButtonText: 'Add Treatment',
+            nextPageButtonText: 'Maybe Later',
+            bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
+            'like meditation or psychotherapy? ',
+        },
+        {
+            id: "locationTrackingPage",
+            title: 'Location Tracking',
+            color: "green",
+            variableCategoryName: "Location",
+            premiumFeature: true,
+            nextPageButtonText: 'Maybe Later',
+            bodyText: "Would you like to automatically log location to see how time spent at restaurants, " +
+            "the gym, work or doctors offices might be affecting you? ",
+        },
+        {
+            id: "weatherTrackingPage",
+            title: 'Weather Tracking',
+            color: "green",
+            variableCategoryName: "Environment",
+            premiumFeature: true,
+            nextPageButtonText: 'Maybe Later',
+            bodyText: "Would you like to automatically record the weather to see how temperature or sunlight " +
+            "exposure might be affecting you? ",
+        },
+        {
+            id: "importDataPage",
+            title: 'Import Your Data',
+            color: "yellow",
+            iconClass: "icon positive ion-ios-cloud-download-outline",
+            image: {
+                url: "img/intro/download_2-96.png",
+                height: "96",
+                width: "96"
+            },
+            premiumFeature: true,
+            bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and " +
+            "devices that I can automatically pull data from!",
+            nextPageButtonText: "Maybe Later",
+        },
+        {
+            id: "allDoneCard",
+            ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
+            title: 'Great job!',
+            color: "green",
+            iconClass: "icon positive ion-ios-cloud-download-outline",
+            image: {
+                url: "img/robots/quantimodo-robot-waving.svg",
+                height: "120",
+                width: "120"
+            },
+            bodyText: "You're all set up!  Let's take a minute to record your first measurements and then " +
+            "you're done for the day! "
+        }
+    ],
+    "primaryOutcomeVariableName": "Overall Mood",
+    "socialLinks": {
+        "facebook": "https://www.facebook.com/Quantimodology",
+        "twitter": "https://twitter.com/quantimodo",
+        "google": "https://plus.google.com/communities/100581500031158281444",
+        "linkedIn": "https://www.linkedin.com/company/medimodo"
+    },
+    "wordAliases": {}
 }

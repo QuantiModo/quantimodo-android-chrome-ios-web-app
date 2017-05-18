@@ -5746,7 +5746,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     url: "img/robots/robot-waving.svg"
                 },
                 overlayIcon: true,
-                bodyText: "I've been programmed to reduce human suffering with data."
+                bodyText: (config.appSettings.intro && config.appSettings.intro.robotStatement) ? config.appSettings.intro.robotStatement : "I've been programmed to reduce human suffering with data."
             },
             {
                 newIntroStyle: true,
@@ -5835,7 +5835,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "data unless you intentionally share it. "
             }
         ];
-        if(config.appSettings.introNew){return config.appSettings.introNew;}
+        if(config.appSettings.introSlides){introSlides = config.appSettings.introSlides}
         introSlides = addVariableCategoryInfo(introSlides);
         introSlides = addColors(introSlides);
         return introSlides;
