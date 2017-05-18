@@ -5609,8 +5609,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 title: 'Great job!',
                 color: "green",
                 iconClass: "icon positive ion-ios-cloud-download-outline",
+                overlayIcon: true,
                 image: {
-                    url: "img/robots/quantimodo-robot-waving.svg",
+                    url: "img/robots/robot-waving.svg",
                     height: "120",
                     width: "120"
                 },
@@ -6768,13 +6769,24 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 menuItems.settings,
             ],
             medication: [
-                parentMenus.medications,
-                parentMenus.symptoms,
-                parentMenus.vitalSigns,
-                parentMenus.physicalActivity,
-                parentMenus.emotions,
-                parentMenus.diet,
-                menuItems.favorites
+                menuItems.inbox,
+                menuItems.treatments,
+                parentMenus.variables,
+                parentMenus.history,
+                menuItems.importData,
+                parentMenus.discoveries,
+                menuItems.chartSearch,
+                menuItems.settings
+            ],
+            diet: [
+                menuItems.inbox,
+                menuItems.foods,
+                parentMenus.variables,
+                parentMenus.history,
+                menuItems.importData,
+                parentMenus.discoveries,
+                menuItems.chartSearch,
+                menuItems.settings
             ]
         };
         if(!menuType){menuType = 'extended';}
