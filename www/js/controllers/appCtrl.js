@@ -6,8 +6,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
     //console.debug('Starting AppCtrl');
     $scope.controller_name = "AppCtrl";
-    $scope.menu = quantimodoService.getMenu(config.appSettings.menuType);
     $rootScope.appSettings = config.appSettings;
+    if(!$rootScope.appSettings.menu){$rootScope.appSettings.menu = quantimodoService.getMenu(config.appSettings.menuType);}
     if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
     $scope.showTrackingSubMenu = false;
     $rootScope.numberOfPendingNotifications = null;
