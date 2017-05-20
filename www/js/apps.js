@@ -7,6 +7,7 @@ var appConfigFileNames = {
     "quantimodo" : "quantimodo",
     "local" : "quantimodo",
     "app" : "quantimodo",
+    "ionic" : "quantimodo",
     "yourlowercaseappnamehere": "yourlowercaseappnamehere"
 };
 
@@ -16,7 +17,7 @@ function getSubDomain(){
     return parts[0].toLowerCase();
 }
 
-function getLowerCaseAppNameFromUrl() {
+function getLocalConfigLowerCaseAppNameFromUrl() {
     var parameterValue;
 	if(appConfigFileNames[getSubDomain()]){return appConfigFileNames[getSubDomain()];}
     var queryString = document.location.toString().split('?')[1];
@@ -53,22 +54,22 @@ function getUrlParameter(parameterName, url, shouldDecode) {
 var appsManager = { // jshint ignore:line
 	defaultApp : "default",
 	getAppConfig : function(){
-        console.debug('getLowerCaseAppNameFromUrl returns ' + getLowerCaseAppNameFromUrl());
-		if(getLowerCaseAppNameFromUrl()){
-			return 'configs/' + getLowerCaseAppNameFromUrl() + '.js';
+        console.debug('getLocalConfigLowerCaseAppNameFromUrl returns ' + getLocalConfigLowerCaseAppNameFromUrl());
+		if(getLocalConfigLowerCaseAppNameFromUrl()){
+			return 'configs/' + getLocalConfigLowerCaseAppNameFromUrl() + '.js';
 		} else {
 			return 'configs/' + appsManager.defaultApp + '.js';
 		}
 	},
 	getPrivateConfig : function(){
-		if(getLowerCaseAppNameFromUrl()){
-			return './private_configs/'+ getLowerCaseAppNameFromUrl() + '.config.js';
+		if(getLocalConfigLowerCaseAppNameFromUrl()){
+			return './private_configs/'+ getLocalConfigLowerCaseAppNameFromUrl() + '.config.js';
 		} else {
 			return './private_configs/'+ appsManager.defaultApp + '.config.js';
 		}
 	},
 	doWeHaveLocalConfigFile: function () {
-        if(getLowerCaseAppNameFromUrl()){return true;}
+        if(getLocalConfigLowerCaseAppNameFromUrl()){return true;}
     },
 	getSubDomain: function(){
 		return getSubDomain();
