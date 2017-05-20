@@ -916,6 +916,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             $state.go(afterLoginGoToState);
             return true;
         }
+        if($state.current.name === 'app.login'){
+            $state.go(config.appSettings.defaultState);
+            return true;
+        }
         return false;
     };
     quantimodoService.syncAllUserData = function(){
