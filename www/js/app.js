@@ -218,7 +218,6 @@ angular.module('starter',
     }, 100);
 
     var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
-    String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
     function setIntoSeenAndOnboarded() {
         var urlParameters = {};
         var queryString = document.location.toString().split('?')[1];
@@ -269,6 +268,7 @@ angular.module('starter',
     if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
         $ionicConfigProvider.views.swipeBackEnabled(false);  // Prevents back swipe white screen on iOS when caching is disabled https://github.com/driftyco/ionic/issues/3216
     }
+    String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
     var config_resolver = {};
     if(!appsManager.getAppSettingsFromUrlParameter()){
         if(!appsManager.doWeHaveLocalConfigFile()){
