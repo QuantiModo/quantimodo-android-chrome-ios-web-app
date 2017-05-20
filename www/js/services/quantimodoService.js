@@ -1478,16 +1478,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     function envIsDevelopment() {return getEnv() === 'development';}
     quantimodoService.getEnv = function(){return getEnv();};
+    function getSubDomain(){return window.location.host.split('.')[0].toLowerCase();}
     quantimodoService.getClientId = function(){
-        if (window.chrome && chrome.runtime && chrome.runtime.id) {
-            $rootScope.clientId = window.private_keys.client_ids.Chrome; //if chrome app
-        } else if ($rootScope.isIOS) { $rootScope.clientId = window.private_keys.client_ids.iOS;
-        } else if ($rootScope.isAndroid) { $rootScope.clientId = window.private_keys.client_ids.Android;
-        } else if ($rootScope.isChromeExtension) { $rootScope.clientId = window.private_keys.client_ids.Chrome;
-        } else if ($rootScope.isWindows) { $rootScope.clientId = window.private_keys.client_ids.Windows;
-        } else { $rootScope.clientId = window.private_keys.client_ids.Web; }
-        if(!$rootScope.clientId || $rootScope.clientId === "undefined"){ quantimodoService.reportErrorDeferred('clientId is undefined!'); }
-        return $rootScope.clientId;
+        if(typeof config !== "undefined" && config.appSettings.clientId){return config.appSettings.clientId;}
+        if(!window.private_keys){return getSubDomain();}
+        if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
+        if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS;}
+        if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android;}
+        if ($rootScope.isChromeExtension) { return window.private_keys.client_ids.Chrome;}
+        if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows;}
+        return window.private_keys.client_ids.Web;
     };
     quantimodoService.setPlatformVariables = function () {
         //console.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
