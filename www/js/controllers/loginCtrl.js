@@ -78,7 +78,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     };
     var browserLogin = function(register) {
         console.debug("Browser Login");
-        if (window.private_keys.username) {
+        if (window.private_keys && window.private_keys.username) {
             quantimodoService.refreshUser().then(function () {$state.go(config.appSettings.defaultState);});
         } else if (quantimodoService.getClientId() !== 'oAuthDisabled') {
             // Using timeout to avoid "$apply already in progress" error caused by window.open

@@ -8,6 +8,7 @@ var appConfigFileNames = {
     "local" : "quantimodo",
     "app" : "quantimodo",
     "ionic" : "quantimodo",
+    "oauth" : "quantimodo",
     "yourlowercaseappnamehere": "yourlowercaseappnamehere"
 };
 
