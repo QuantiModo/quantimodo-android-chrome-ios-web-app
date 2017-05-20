@@ -6,7 +6,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
     //console.debug('Starting AppCtrl');
     $scope.controller_name = "AppCtrl";
-    quantimodoService.getAppSettingsFromUrlParameter();
     $scope.menu = quantimodoService.getMenu(config.appSettings.menuType);
     $rootScope.appSettings = config.appSettings;
     if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
