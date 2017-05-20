@@ -486,32 +486,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getUserTags = function(params, successHandler, errorHandler){
         quantimodoService.get('api/v1/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
     };
-    quantimodoService.getAppSettingsFromUrlParameter = function(){
-        var appSettings = quantimodoService.getUrlParameter('appSettings');
-        if(appSettings) {
-            appSettings = decodeURIComponent(appSettings);
-            appSettings = JSON.parse(appSettings);
-            config.appSettings = appSettings;
-            return true;
-        }
-    };
-    quantimodoService.getAppSettingsDeferred = function() {
-        var deferred = $q.defer();
-        var lowercaseAppName = quantimodoService.getUrlParameter('lowercaseAppName');
-        if(!lowercaseAppName){
-            deferred.reject('No lowercaseAppName url parameter!');
-            return deferred.promise;
-        }
-        quantimodoService.getAppSettings({lowercaseAppName: lowercaseAppName, force: true}, function (response) {
-            config.appSettings = response.data;
-            $rootScope.appSettings = config.appSettings;
-            deferred.resolve(config.appSettings);
-        });
-        return deferred.promise;
-    };
-    quantimodoService.getAppSettings = function(params, successHandler, errorHandler){
-        quantimodoService.get('api/v1/appSettings', ['lowercaseAppName'], params, successHandler, errorHandler);
-    };
     quantimodoService.updateUserTimeZoneIfNecessary = function () {
         var d = new Date();
         var timeZoneOffsetInMinutes = d.getTimezoneOffset();
@@ -1587,23 +1561,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     // if search param is found: returns its value
     // returns false if not found
     quantimodoService.getUrlParameter = function (parameterName, url, shouldDecode) {
-        if(!url){url = window.location.href;}
-        if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
-        if(url.split('?').length > 1){
-            var queryString = url.split('?')[1];
-            var parameterKeyValuePairs = queryString.split('&');
-            for (var i = 0; i < parameterKeyValuePairs.length; i++) {
-                var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-                if (currentParameterKeyValuePair[0] === parameterName || currentParameterKeyValuePair[0].toCamel() === parameterName) {
-                    if(typeof shouldDecode !== "undefined")  {
-                        return decodeURIComponent(currentParameterKeyValuePair[1]);
-                    } else {
-                        return currentParameterKeyValuePair[1];
-                    }
-                }
-            }
-        }
-        return null;
+        return appsManager.getUrlParameter(parameterName, url, shouldDecode);
     };
     function getAllQueryParamsFromUrlString(url){
         if(!url){url = window.location.href;}

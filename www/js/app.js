@@ -269,28 +269,31 @@ angular.module('starter',
     if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
         $ionicConfigProvider.views.swipeBackEnabled(false);  // Prevents back swipe white screen on iOS when caching is disabled https://github.com/driftyco/ionic/issues/3216
     }
-    var config_resolver = {
-      loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
-        var getLowerCaseAppNameFromUrl = function () {
-            var i;
-            var lowerCaseAppName = false;
-            var availableApps = ["moodimodo", "energymodo", "mindfirst", "medimodo", "quantimodo"];
-            for(i = 0; i < availableApps.length; i++){if(window.location.href.toLowerCase().indexOf(availableApps[i]) > -1){return availableApps[i];}}
-            var queryString = document.location.toString().split('?')[1];
-            if(!queryString) {return false;}
-            var queryParameterStrings = queryString.split('&');
-            if(!queryParameterStrings) {return false;}
-            for (i = 0; i < queryParameterStrings.length; i++) {
-                var queryKeyValuePair = queryParameterStrings[i].split('=');
-                if (queryKeyValuePair[0] === 'app') {lowerCaseAppName = queryKeyValuePair[1].split('#')[0];}
+    var config_resolver = {};
+    if(!appsManager.getAppSettingsFromUrlParameter()){
+        if(!appsManager.doWeHaveLocalConfigFile()){
+            var localStorageName = appsManager.getSubDomain() + 'AppSettings';
+            var locallyStoredAppSettings = localStorage.getItem(localStorageName);
+            if(locallyStoredAppSettings) {
+                window.config = {appSettings: JSON.parse(locallyStoredAppSettings)};
+            } else {
+                config_resolver = {
+                    appSettingsResponse: function ($http) {
+                        return $http.get(window.location.origin + '/api/v1/appSettings').then(function (response) {
+                            localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
+                            window.config = {appSettings: response.data.data};
+                        });
+                    }
+                };
             }
-            return lowerCaseAppName;
-        };
-        var lowercaseAppName = getLowerCaseAppNameFromUrl();
-        console.debug('Loading config ' + appsManager.getAppConfig(lowercaseAppName) + ' and private config ' + appsManager.getPrivateConfig(lowercaseAppName));
-        return $ocLazyLoad.load([appsManager.getAppConfig(lowercaseAppName), appsManager.getPrivateConfig(lowercaseAppName)]);
-      }]
-    };
+        } else {
+            config_resolver = {
+                loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);
+                }]
+            };
+        }
+    }
 
     ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {
