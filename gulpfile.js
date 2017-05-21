@@ -187,7 +187,11 @@ gulp.task('getCommonVariables', function () {
 
 var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads");
-    if(!process.env.ENCRYPTION_SECRET){throw 'ERROR: Please set ENCRYPTION_SECRET environmental variable!';}
+    if(!process.env.ENCRYPTION_SECRET){
+        console.error('ERROR: Please set ENCRYPTION_SECRET environmental variable!');
+        if(callback){callback();}
+        return;
+    }
     console.log("DECRYPTING " + fileToDecryptPath);
     var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath + '" -d -a -out "' + decryptedFilePath + '"';
     //console.log('executing ' + cmd);
