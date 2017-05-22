@@ -216,7 +216,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		}
 	}
 	function logOutOfWebsite() {
-		if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
+		if (!window.private_keys || quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 			window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
 		}
 	}
