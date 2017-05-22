@@ -1537,11 +1537,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return 'https';
     };
     quantimodoService.getApiUrl = function () {
-        if(window.location.href.indexOf('local.quantimo.do') > -1){return "https://local.quantimo.do";}
-        if(!window.private_keys){
-            console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".config.js or it does not contain window.private_keys");
-            return "https://app.quantimo.do";
-        }
+        if(!window.private_keys && $rootScope.isWeb){return window.location.origin;}
+        if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".config.js or it does not contain window.private_keys");}
         if(window.private_keys.apiUrl){return window.private_keys.apiUrl;}
         if ($rootScope.isWeb && (!window.private_keys || window.private_keys.client_ids.Web === 'oAuthDisabled') && window.location.origin) {return window.location.origin;}
         if(config.appSettings.downloadLinks.webApp){return config.appSettings.downloadLinks.webApp;}
