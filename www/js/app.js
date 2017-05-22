@@ -28,7 +28,8 @@ angular.module('starter',
         'angular-d3-word-cloud'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics, $ionicLoading) {
+    $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     quantimodoService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
