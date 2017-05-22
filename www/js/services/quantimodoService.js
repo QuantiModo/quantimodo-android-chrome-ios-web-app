@@ -119,7 +119,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 console.warn('quantimodoService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request));
                 quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
                 console.debug("set afterLoginGoTo to " + window.location.href);
-                if (quantimodoService.getClientId() !== 'oAuthDisabled') {
+                if (window.private_keys && quantimodoService.getClientId() !== 'oAuthDisabled') {
                     quantimodoService.sendToLogin();
                 } else {
                     var register = true;
@@ -590,15 +590,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (accessToken && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
             deferred.resolve(accessToken);
-        } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled') {
+        } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
             console.debug(getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
             quantimodoService.refreshAccessToken(refreshToken, deferred);
         } else if(accessToken){
             deferred.resolve(accessToken);
-        } else if(quantimodoService.getClientId() === 'oAuthDisabled') {
-                //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
-                deferred.resolve();
-                return deferred.promise;
+        } else if(quantimodoService.getClientId() === 'oAuthDisabled' || !window.private_keys) {
+            //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+            deferred.resolve();
+            return deferred.promise;
         } else {
             console.warn('Could not get or refresh access token at ' + window.location.href);
             deferred.resolve();
@@ -1543,7 +1543,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return "https://app.quantimo.do";
         }
         if(window.private_keys.apiUrl){return window.private_keys.apiUrl;}
-        if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled' && window.location.origin) {return window.location.origin;}
+        if ($rootScope.isWeb && (!window.private_keys || window.private_keys.client_ids.Web === 'oAuthDisabled') && window.location.origin) {return window.location.origin;}
         if(config.appSettings.downloadLinks.webApp){return config.appSettings.downloadLinks.webApp;}
         return "https://app.quantimo.do";
     };
