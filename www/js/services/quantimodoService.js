@@ -45,7 +45,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
             //We can't append access token to Ionic requests for some reason
             //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
-            var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
+            var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
             console.debug('Getting ' + route + " PARAMS: " + JSON.stringify(params));
@@ -92,7 +92,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
             urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
             urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-            var url = quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
+            var url = quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'));
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};}
             $http(request).success(successHandler).error(function(data, status, headers){
@@ -560,9 +560,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
     // if not logged in, returns rejects
+    quantimodoService.getAccessTokenFromUrlParameter = function(){
+        var accessToken = quantimodoService.getUrlParameter('accessToken');
+        if(!accessToken){accessToken = quantimodoService.getUrlParameter('quantimodoAccessToken');}
+        return accessToken;
+    };
+    quantimodoService.weHaveUserOrAccessToken = function(){
+        return $rootScope.user || quantimodoService.getAccessTokenFromUrlParameter();
+    };
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
-        var accessToken = quantimodoService.getUrlParameter('accessToken');
+        var accessToken = quantimodoService.getAccessTokenFromUrlParameter();
         if(accessToken){
             if(accessToken !== localStorage.getItem('accessToken')){
                 localStorage.clear();
@@ -1545,7 +1553,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return "https://app.quantimo.do";
     };
     quantimodoService.getQuantiModoUrl = function (path) {
-        if(typeof path === "undefined") {path = "";} else {path += "?";}
+        if(typeof path === "undefined") {path = "";}
         return quantimodoService.getApiUrl() + "/" + path;
     };
     quantimodoService.convertToObjectIfJsonString = function (stringOrObject) {
@@ -1572,7 +1580,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var parameterKeyValuePairs = queryString.split('&');
             for (var i = 0; i < parameterKeyValuePairs.length; i++) {
                 var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-                if (currentParameterKeyValuePair[0] === parameterName || currentParameterKeyValuePair[0].toCamel() === parameterName) {
+                if (currentParameterKeyValuePair[0].toLowerCase() === parameterName.toLowerCase()) {
                     if(typeof shouldDecode !== "undefined")  {
                         return decodeURIComponent(currentParameterKeyValuePair[1]);
                     } else {

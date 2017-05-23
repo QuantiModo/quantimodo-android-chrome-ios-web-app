@@ -17,7 +17,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
     if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
-    if(!$rootScope.user){
+    if(!$rootScope.user || quantimodoService.getAccessTokenFromUrlParameter()){
+        $ionicLoading.show({duration: 20000});
         quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
     }
     quantimodoService.putCommonVariablesInLocalStorage();

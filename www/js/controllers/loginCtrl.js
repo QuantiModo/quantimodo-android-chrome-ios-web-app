@@ -33,7 +33,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         //     "the NSA waterboards me, I will never divulge share your data without your permission.",
     };
     var leaveIfLoggedIn = function () {
-        if($rootScope.user){
+        if(quantimodoService.weHaveUserOrAccessToken()){
             $scope.hideLoader();
             console.debug("Already logged in on login page.  goToDefaultStateIfNoAfterLoginUrlOrState...");
             quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
