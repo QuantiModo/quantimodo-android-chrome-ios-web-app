@@ -237,6 +237,8 @@ angular.module('starter',
     setIntoSeenAndOnboarded();
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
+    if(appsManager.getUrlParameter('logout')){localStorage.clear();}
+    if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};
     if(ionic.Platform.isAndroid()){
         var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
@@ -258,9 +260,7 @@ angular.module('starter',
     AnalyticsProvider.setHybridMobileSupport(true);  // Set hybrid mobile application support
     //AnalyticsProvider.enterDebugMode(true);
     AnalyticsProvider.useECommerce(true, true); // Enable e-commerce module (ecommerce.js)
-
     //$ionicCloudProvider.init({"core": {"app_id": "42fe48d4"}}); Trying to move to appCtrl
-
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS

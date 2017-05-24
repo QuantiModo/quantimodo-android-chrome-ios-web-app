@@ -697,6 +697,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         url += "&state=testabcd";
         if(register === true){url += "&register=true";}
         //url += "&redirect_uri=" + quantimodoService.getRedirectUri();
+        console.debug("generateV1OAuthUrl: " + url);
         return url;
     };
     quantimodoService.generateV2OAuthUrl= function(JWTToken) {
@@ -708,6 +709,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         url += "&state=testabcd";
         if(JWTToken){url += "&token=" + JWTToken;}
         //url += "&redirect_uri=" + quantimodoService.getRedirectUri();
+        console.debug("generateV2OAuthUrl: " + url);
         return url;
     };
     quantimodoService.getAuthorizationCodeFromUrl = function(event) {
@@ -1545,6 +1547,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return 'https';
     };
     quantimodoService.getApiUrl = function () {
+        if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
         if(!window.private_keys && $rootScope.isWeb){return window.location.origin;}
         if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".config.js or it does not contain window.private_keys");}
         if(window.private_keys.apiUrl){return window.private_keys.apiUrl;}
