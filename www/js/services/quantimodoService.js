@@ -6831,7 +6831,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
     };
     quantimodoService.goToLoginIfNecessary = function(){
-        if(!$rootScope.user){
+        if(!quantimodoService.weHaveUserOrAccessToken()){
             console.debug('Setting afterLoginGoToState to ' + $state.current.name);
             quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
             $state.go('app.login');
