@@ -230,7 +230,7 @@ angular.module('starter',
                 if (parameterNameValueArray[1].indexOf('http') > -1) {urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];} else {urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);}
             }
         }
-        if (urlParameters.accessToken || urlParameters.existingUser || urlParameters.introSeen || urlParameters.refreshUser) {
+        if (urlParameters.existingUser || urlParameters.introSeen || urlParameters.refreshUser) {
             window.localStorage.introSeen = true;
             window.localStorage.onboarded = true;
         }
