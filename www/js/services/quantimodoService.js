@@ -1537,6 +1537,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return 'https';
     };
     quantimodoService.getApiUrl = function () {
+        if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
         if(!window.private_keys && $rootScope.isWeb){return window.location.origin;}
         if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".config.js or it does not contain window.private_keys");}
         if(window.private_keys.apiUrl){return window.private_keys.apiUrl;}

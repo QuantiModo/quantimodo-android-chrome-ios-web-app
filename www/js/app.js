@@ -238,6 +238,7 @@ angular.module('starter',
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
     if(appsManager.getUrlParameter('logout')){localStorage.clear();}
+    if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};
     if(ionic.Platform.isAndroid()){
         var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
