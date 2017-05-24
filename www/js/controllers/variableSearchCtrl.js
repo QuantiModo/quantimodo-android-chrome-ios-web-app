@@ -72,7 +72,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             } else {
                 userTagData = {userTagVariableId: variableObject.id, userTaggedVariableId: $stateParams.userTaggedVariableObject.id, conversionFactor: 1};
-                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+                quantimodoService.showLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
                     $ionicLoading.hide();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
@@ -89,7 +89,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             } else {
                 userTagData = {userTagVariableId: $stateParams.userTagVariableObject.id, userTaggedVariableId: variableObject.id, conversionFactor: 1};
-                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+                quantimodoService.showLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
                     $ionicLoading.hide();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});

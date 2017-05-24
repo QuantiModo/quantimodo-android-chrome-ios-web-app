@@ -94,7 +94,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 });
             } else {
                 userTagData = {userTagVariableId: self.selectedItem.variable.id, userTaggedVariableId: $rootScope.variableObject.id, conversionFactor: 1};
-                $ionicLoading.show();
+                quantimodoService.showLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
                     $rootScope.variableObject = response.data.userTaggedVariable;
                     $ionicLoading.hide();
@@ -171,7 +171,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 joinedVariableId: self.selectedItem.variable.id,
                 conversionFactor: 1
             };
-            $ionicLoading.show();
+            quantimodoService.showLoader();
             quantimodoService.postVariableJoinDeferred(variableData).then(function (response) {
                 $ionicLoading.hide();
                 $rootScope.variableObject = response.data.parentVariable;
