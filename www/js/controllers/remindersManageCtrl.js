@@ -28,7 +28,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		noRemindersIcon: "ion-android-notifications-none"
 	};
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter RemindersManageCtrl");
-		$ionicLoading.show();
+		quantimodoService.showLoader();
 		$rootScope.hideNavigationMenu = false;
 		$scope.stateParams = $stateParams;
 		var actionButtons = [

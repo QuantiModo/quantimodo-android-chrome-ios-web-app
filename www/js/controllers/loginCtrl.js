@@ -99,7 +99,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             loginTimeout();
             quantimodoService.nonNativeMobileLogin(register);
         } else {
-            $ionicLoading.show();
+            quantimodoService.showLoader();
             $scope.loginPage.title = 'Logging in...';
             console.debug("$scope.login: Not windows, android or is so assuming browser.");
             browserLogin(register);
