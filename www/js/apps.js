@@ -40,7 +40,7 @@ function getUrlParameter(parameterName, url, shouldDecode) {
         var parameterKeyValuePairs = queryString.split('&');
         for (var i = 0; i < parameterKeyValuePairs.length; i++) {
             var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-            if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
+            if (currentParameterKeyValuePair[0].replace('_', '').toLowerCase() === parameterName.replace('_', '').toLowerCase()) {
                 if(typeof shouldDecode !== "undefined")  {
                     return decodeURIComponent(currentParameterKeyValuePair[1]);
                 } else {
