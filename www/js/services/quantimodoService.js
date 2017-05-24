@@ -689,6 +689,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         url += "&state=testabcd";
         if(register === true){url += "&register=true";}
         //url += "&redirect_uri=" + quantimodoService.getRedirectUri();
+        console.debug("generateV1OAuthUrl: " + url);
         return url;
     };
     quantimodoService.generateV2OAuthUrl= function(JWTToken) {
@@ -700,6 +701,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         url += "&state=testabcd";
         if(JWTToken){url += "&token=" + JWTToken;}
         //url += "&redirect_uri=" + quantimodoService.getRedirectUri();
+        console.debug("generateV2OAuthUrl: " + url);
         return url;
     };
     quantimodoService.getAuthorizationCodeFromUrl = function(event) {
