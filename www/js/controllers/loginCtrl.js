@@ -26,9 +26,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         image: {
             url: "img/robots/quantimodo-robot-waving.svg",
             height: "120",
-            width: "120",
-            display: "block",
-            left: "10px"
+            width: "120"
         },
         bodyText: "Now let's get you signed in to make sure you never lose your precious data.",
         // moreInfo: "Your data belongs to you.  Security and privacy our top priorities. I promise that even if " +
