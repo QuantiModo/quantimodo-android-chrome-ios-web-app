@@ -4,9 +4,7 @@ angular.module('starter') // Controls the settings page
 
 		$rootScope.showFilterBarSearchIcon = false;
 
-		$ionicLoading.show({
-			template: '<ion-spinner icon="bubbles"></ion-spinner><br/>Acquiring location!'
-		});
+		$ionicLoading.show({template: '<ion-spinner icon="bubbles"></ion-spinner><br/>Acquiring location!'});
 
 		function callback(results, status) {
 			if (status === google.maps.places.PlacesServiceStatus.OK) {

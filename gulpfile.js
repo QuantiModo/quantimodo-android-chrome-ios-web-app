@@ -85,9 +85,9 @@ gulp.task('generateJsConfigs', function(){
             gutil.log("Available apps:");
             var configListJson = JSON.parse(fs.readFileSync(configListPath));
             for(var property in configListJson){
-                var lowerCaseAppName = property.replace('.config.json', '');
-                gutil.log(lowerCaseAppName);
-                loadConfigsAndGenerateConfigJs(null, lowerCaseAppName);
+                var lowercaseAppName = property.replace('.config.json', '');
+                gutil.log(lowercaseAppName);
+                loadConfigsAndGenerateConfigJs(null, lowercaseAppName);
             }
         });
 });
@@ -223,26 +223,26 @@ function decryptPrivateConfig(callback) {
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 }
 
-function loadConfigsAndGenerateConfigJs(callback, lowerCaseAppName) {
+function loadConfigsAndGenerateConfigJs(callback, lowercaseAppName) {
     var pathToGeneratedConfigJs;
-    if(!lowerCaseAppName){
+    if(!lowercaseAppName){
         pathToGeneratedConfigJs = './www/configs/default.js';
         if(!process.env.LOWERCASE_APP_NAME){
             console.error('No process.env.LOWERCASE_APP_NAME so falling back to quantimodo');
             process.env.LOWERCASE_APP_NAME = 'quantimodo';
         }
-        lowerCaseAppName = process.env.LOWERCASE_APP_NAME;
+        lowercaseAppName = process.env.LOWERCASE_APP_NAME;
     } else {
-        pathToGeneratedConfigJs = './www/configs/'+ lowerCaseAppName +'.js';
+        pathToGeneratedConfigJs = './www/configs/'+ lowercaseAppName +'.js';
     }
-    var pathToJsonConfigPath = './www/configs/'+ lowerCaseAppName + '.config.json';
+    var pathToJsonConfigPath = './www/configs/'+ lowercaseAppName + '.config.json';
     appSettings = JSON.parse(fs.readFileSync(pathToJsonConfigPath));
     appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
     appSettings.debugMode = process.env.DEBUG_MODE;
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
     console.log("writing to " + pathToGeneratedConfigJs);
     require('fs').writeFileSync(pathToGeneratedConfigJs, defaultConfigFileContent);
-    var pathToPrivateConfig = './www/private_configs/'+ lowerCaseAppName + '.config.js';
+    var pathToPrivateConfig = './www/private_configs/'+ lowercaseAppName + '.config.js';
     fs.stat(pathToGeneratedConfigJs, function(err, stat) {
         if(err === null) {
             if(callback){callback();}

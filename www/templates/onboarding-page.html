@@ -25,6 +25,11 @@
                         width:{{onboardingPages[0].image.width}}px;
                         height:{{onboardingPages[0].image.height}}px;"
                      ng-src="{{onboardingPages[0].image.url}}">
+                <div ng-if="onboardingPages[0].overlayIcon" style="position: absolute; display: block; z-index: 9; width: 15%; top:72px; left: 50%; margin-left: -12.5px;" >
+                    <div style="position: absolute; display: block;">
+                        <img src="{{appSettings.iconUrl}}" style="width: 25px; height: 25px; ">
+                    </div>
+                </div>
             </div>
             <br>
             <p style="font-size: 30px; line-height: 1;">
