@@ -35,10 +35,20 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         //     "the NSA waterboards me, I will never divulge share your data without your permission.",
     };
     var leaveIfLoggedIn = function () {
-        if(quantimodoService.weHaveUserOrAccessToken()){
+        if($rootScope.user){
             $scope.hideLoader();
             console.debug("Already logged in on login page.  goToDefaultStateIfNoAfterLoginUrlOrState...");
             quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
+            return;
+        }
+        if(quantimodoService.getAccessTokenFromUrlParameter()){
+            quantimodoService.showLoader();
+            quantimodoService.refreshUser().then(function () {
+                $ionicLoading.hide();
+            }, function (error) {
+                console.error(error);
+                $ionicLoading.hide();
+            });
         }
     };
     var loginTimeout = function () {
