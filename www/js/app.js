@@ -28,7 +28,8 @@ angular.module('starter',
         'angular-d3-word-cloud'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics, $ionicLoading) {
+    $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     quantimodoService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
@@ -218,7 +219,6 @@ angular.module('starter',
     }, 100);
 
     var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
-    String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
     function setIntoSeenAndOnboarded() {
         var urlParameters = {};
         var queryString = document.location.toString().split('?')[1];
@@ -230,7 +230,7 @@ angular.module('starter',
                 if (parameterNameValueArray[1].indexOf('http') > -1) {urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];} else {urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);}
             }
         }
-        if (urlParameters.accessToken || urlParameters.existingUser || urlParameters.introSeen || urlParameters.refreshUser) {
+        if (urlParameters.existingUser || urlParameters.introSeen || urlParameters.refreshUser) {
             window.localStorage.introSeen = true;
             window.localStorage.onboarded = true;
         }
@@ -238,6 +238,8 @@ angular.module('starter',
     setIntoSeenAndOnboarded();
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
+    if(appsManager.getUrlParameter('logout')){localStorage.clear();}
+    if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};
     if(ionic.Platform.isAndroid()){
         var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
@@ -259,9 +261,7 @@ angular.module('starter',
     AnalyticsProvider.setHybridMobileSupport(true);  // Set hybrid mobile application support
     //AnalyticsProvider.enterDebugMode(true);
     AnalyticsProvider.useECommerce(true, true); // Enable e-commerce module (ecommerce.js)
-
     //$ionicCloudProvider.init({"core": {"app_id": "42fe48d4"}}); Trying to move to appCtrl
-
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
@@ -269,28 +269,32 @@ angular.module('starter',
     if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
         $ionicConfigProvider.views.swipeBackEnabled(false);  // Prevents back swipe white screen on iOS when caching is disabled https://github.com/driftyco/ionic/issues/3216
     }
-    var config_resolver = {
-      loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
-        var getLowerCaseAppNameFromUrl = function () {
-            var i;
-            var lowerCaseAppName = false;
-            var availableApps = ["moodimodo", "energymodo", "mindfirst", "medimodo", "quantimodo"];
-            for(i = 0; i < availableApps.length; i++){if(window.location.href.toLowerCase().indexOf(availableApps[i]) > -1){return availableApps[i];}}
-            var queryString = document.location.toString().split('?')[1];
-            if(!queryString) {return false;}
-            var queryParameterStrings = queryString.split('&');
-            if(!queryParameterStrings) {return false;}
-            for (i = 0; i < queryParameterStrings.length; i++) {
-                var queryKeyValuePair = queryParameterStrings[i].split('=');
-                if (queryKeyValuePair[0] === 'app') {lowerCaseAppName = queryKeyValuePair[1].split('#')[0];}
+    String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+    var config_resolver = {};
+    if(!appsManager.getAppSettingsFromUrlParameter()){
+        if(!appsManager.doWeHaveLocalConfigFile() && window.location.href.indexOf('https://') !== -1 && window.location.href.indexOf('quantimo.do') !== -1){
+            var localStorageName = appsManager.getSubDomain() + 'AppSettings';
+            var locallyStoredAppSettings = localStorage.getItem(localStorageName);
+            if(locallyStoredAppSettings) {
+                window.config = {appSettings: JSON.parse(locallyStoredAppSettings)};
+            } else {
+                config_resolver = {
+                    appSettingsResponse: function ($http) {
+                        return $http.get(window.location.origin + '/api/v1/appSettings').then(function (response) {
+                            localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
+                            window.config = {appSettings: response.data.data};
+                        }, function errorCallback(response) {
+                            return $http.get('configs/medimodo.config.json').success(function(appSettings) {
+                                window.config = {appSettings: appSettings};
+                            });
+                        });
+                    }
+                };
             }
-            return lowerCaseAppName;
-        };
-        var lowercaseAppName = getLowerCaseAppNameFromUrl();
-        console.debug('Loading config ' + appsManager.getAppConfig(lowercaseAppName) + ' and private config ' + appsManager.getPrivateConfig(lowercaseAppName));
-        return $ocLazyLoad.load([appsManager.getAppConfig(lowercaseAppName), appsManager.getPrivateConfig(lowercaseAppName)]);
-      }]
-    };
+        } else {
+            config_resolver = {loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}]};
+        }
+    }
 
     ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {

@@ -19,7 +19,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             userTagVariableId: $scope.stateParams.userTagVariableObject.id,
             userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id
         };
-        $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+        quantimodoService.showLoader();
 
         if($rootScope.variableObject.userTagVariables){
             $rootScope.variableObject.userTagVariables =
@@ -82,7 +82,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             $rootScope.variableObject.userTagVariables.push($scope.stateParams.userTagVariableObject);
         }
 
-        $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+        quantimodoService.showLoader();
 
         quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
             $rootScope.variableObject);
@@ -104,9 +104,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         $scope.state.title = 'Record a Tag';
         $scope.stateParams = $stateParams;
         if(!$scope.stateParams.userTagVariableObject){
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            quantimodoService.showLoader();
             quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety').then(function (variable) {
                 $scope.stateParams.userTagVariableObject = variable;
                 $ionicLoading.hide();
@@ -114,9 +112,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         }
 
         if(!$scope.stateParams.userTaggedVariableObject){
-            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner>'
-            });
+            quantimodoService.showLoader();
             quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
                 $scope.stateParams.userTaggedVariableObject = variable;
                 $ionicLoading.hide();
