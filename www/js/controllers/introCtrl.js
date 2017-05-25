@@ -1,8 +1,6 @@
-angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
-                                                           $rootScope, $stateParams, quantimodoService) {
+angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService, introSlides, onboardingPages) {
     $scope.primaryOutcomeVariableName = quantimodoService.getPrimaryOutcomeVariable().name;
-    if($state.current.name === 'app.introOld'){ $scope.introSlides = quantimodoService.getIntroSlidesOld(); }
-    else { $scope.introSlides = quantimodoService.getIntroSlidesNew(); }
+    $scope.introSlides = quantimodoService.getIntroSlides(introSlides.data);
     $rootScope.showFilterBarSearchIcon = false;
     $scope.myIntro = {
         ready : false,
@@ -58,6 +56,6 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
             console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
         }
-        quantimodoService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
+        quantimodoService.setupOnboardingPages(onboardingPages.data); // Preemptive setup to avoid transition artifacts
     });
 });

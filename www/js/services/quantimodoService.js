@@ -1438,7 +1438,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.getUnits = function(){
         var deferred = $q.defer();
-        $http.get('js/units.json').success(function(units) {
+        $http.get('data/units.json').success(function(units) {
             addUnitsToRootScope(units);
             deferred.resolve(units);
         });
@@ -1463,7 +1463,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
 
     quantimodoService.getVariableCategories = function(){
         var deferred = $q.defer();
-        $http.get('js/variableCategories.json').success(function(variableCategories) {
+        $http.get('data/variableCategories.json').success(function(variableCategories) {
             angular.forEach(variableCategories, function(variableCategory, key) {
                 $rootScope.variableCategories[variableCategory.name] = variableCategory;
                 $rootScope.variableCategoryNames.push(variableCategory.name);
@@ -5404,210 +5404,21 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }, function (error) {console.debug("could not post weather measurements: " + error);});
         }).error(function (data) {console.debug("Request failed");});
     };
-    quantimodoService.setupHelpCards = function (force) {
-        if(window.localStorage.getItem('helpCardsSetup') && !force){
-            console.debug('Help cards already set up');
-            return quantimodoService.getLocalStorageItemAsObject('defaultHelpCards');
+    quantimodoService.setupHelpCards = function (defaultHelpCards) {
+        var locallyStoredHelpCards = localStorage.getItem('defaultHelpCards');
+        if(locallyStoredHelpCards && locallyStoredHelpCards !== "undefined"){
+            locallyStoredHelpCards = JSON.parse(locallyStoredHelpCards);
+            return locallyStoredHelpCards;
         }
-        window.localStorage.setItem('helpCardsSetup', true);
-        var defaultHelpCards = [
-            {
-                id: "getStartedHelpCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideGetStartedHelpCard",
-                title: 'Reminder Inbox',
-                "backgroundColor": "#f09402",
-                circleColor: "#fab952",
-                iconClass: "icon positive ion-archive",
-                image: {
-                    url: "img/variable_categories/vegetarian_food-96.png",
-                    height: "96",
-                    width: "96"
-                },
-                bodyText: "Scroll through the Inbox and press the appropriate button on each reminder notification. " +
-                "Each one only takes a few seconds. You'll be " +
-                "shocked at how much valuable data you can collect with just a few minutes in the Reminder Inbox each day!",
-                hideHelpCardText: "Got it!",
-                hideHelpCardIonIcon: "ion-checkmark"
-            },
-            {
-                id: "recordMeasurementInfoCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideRecordMeasurementInfoCard",
-                title: 'Record Measurements',
-                "backgroundColor": "#f09402",
-                circleColor: "#fab952",
-                iconClass: "icon positive ion-edit",
-                image: {
-                    url: $rootScope.variableCategories.Foods.imageUrl,
-                    height: "96",
-                    width: "96"
-                },
-                bodyText: "Want to just record a medication, food or symptom immediately instead of creating a reminder? " +
-                "Just go to the Record Measurement menu item and select the appropriate variable category. " +
-                "Alternatively, you can just press the little red button at the bottom of the screen.",
-                hideHelpCardText: "Got it!",
-                hideHelpCardIonIcon: "ion-checkmark"
-            },
-            {
-                id: "chromeExtensionInfoCard",
-                ngIfLogic: "stateParams.showHelpCards === true && isMobile && !hideChromeExtensionInfoCard",
-                title: 'Track on the Computer',
-                "backgroundColor": "#0f9d58",
-                circleColor: "#03c466",
-                iconClass: "icon positive ion-social-chrome",
-                image: {
-                    url: "img/chrome.ico",
-                    height: "96",
-                    width: "96"
-                },
-                bodyText: "Did you know that you can easily track everything on your laptop and desktop with our " +
-                "Google Chrome browser extension?  Your data is synced between devices so you'll never have to " +
-                "track twice!",
-                hideHelpCardText: "Dismiss",
-                hideHelpCardIonIcon: "ion-close-circled",
-                emailButton: {
-                    type: "chrome",
-                    text: "Send Me a Link",
-                    ionIcon: "ion-checkmark"
-                }
-            },
-            {
-                id: "getHelpInfoCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideGetHelpInfoCard",
-                title: 'Need Help?',
-                iconClass: "icon positive ion-help-circled",
-                bodyText: "If you need help or have any suggestions, please click the question mark in the upper right corner.",
-                hideHelpCardText: "Got it!",
-                hideHelpCardIonIcon: "ion-checkmark"
-            },
-            {
-                id: "getFitbitHelpInfoCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideGetFitbitHelpInfoCard",
-                title: 'Automated Tracking',
-                iconClass: "icon positive ion-wand",
-                bodyText: "Want to automatically record your sleep, exercise, and heart rate?",
-                hideHelpCardText: "No Thanks",
-                hideHelpCardIonIcon: "ion-android-cancel",
-                emailButton: {
-                    type: "fitbit",
-                    text: "Get Fitbit",
-                    ionIcon: "ion-checkmark"
-                }
-            }
-        ];
-        var debugMode = false;
-        var helpCards;
-        if(debugMode){
-            $rootScope.hideNavigationMenu = true;
-            helpCards = defaultHelpCards;
-        }
-        if(!helpCards){
-            quantimodoService.getLocalStorageItemAsStringWithCallback('defaultHelpCards', function (defaultHelpCardsFromLocalStorage) {
-                if(defaultHelpCardsFromLocalStorage === null){
-                    helpCards = defaultHelpCards;
-                    quantimodoService.setLocalStorageItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
-                } else {helpCards = JSON.parse(defaultHelpCardsFromLocalStorage);}
-            });
-        }
-        return helpCards;
+        localStorage.setItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
+        return defaultHelpCards;
     };
     quantimodoService.colors = {
         green: {backgroundColor: "#0f9d58", circleColor: "#03c466"},
         blue: {backgroundColor: "#3467d6", circleColor: "#5b95f9"},
         yellow: {backgroundColor: "#f09402", circleColor: "#fab952"}
     };
-    quantimodoService.setupOnboardingPages = function () {
-        var onboardingPages = [
-            {
-                id: "addEmotionRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
-                title: 'Varying Emotions?',
-                color: "green",
-                variableCategoryName: "Emotions",
-                addButtonText: 'Add Emotion',
-                nextPageButtonText: 'Maybe Later',
-                bodyText: "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to " +
-                    "determine which factors are influencing them.",
-            },
-            {
-                id: "addSymptomRemindersCard",
-                title: 'Recurring Symptoms?',
-                color: "blue",
-                variableCategoryName: "Symptoms",
-                addButtonText: 'Add Symptom',
-                nextPageButtonText: 'Maybe Later',
-                bodyText: 'Got any recurring symptoms that vary in their severity?',
-            },
-            {
-                id: "addFoodRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-                title: 'Common Foods or Drinks?',
-                color: "blue",
-                variableCategoryName: "Foods",
-                addButtonText: 'Add Food or Drink',
-                nextPageButtonText: 'Maybe Later',
-                bodyText: "Add any foods or drinks that you consume more than a few times a week",
-            },
-            {
-                id: "addTreatmentRemindersCard",
-                title: 'Any Treatments?',
-                color: "yellow",
-                variableCategoryName: "Treatments",
-                addButtonText: 'Add Treatment',
-                nextPageButtonText: 'Maybe Later',
-                bodyText: 'Are you taking any medications, treatments, supplements, or other interventions ' +
-                    'like meditation or psychotherapy? ',
-            },
-            {
-                id: "locationTrackingPage",
-                title: 'Location Tracking',
-                color: "green",
-                variableCategoryName: "Location",
-                premiumFeature: true,
-                nextPageButtonText: 'Maybe Later',
-                bodyText: "Would you like to automatically log location to see how time spent at restaurants, " +
-                    "the gym, work or doctors offices might be affecting you? ",
-            },
-            {
-                id: "weatherTrackingPage",
-                title: 'Weather Tracking',
-                color: "green",
-                variableCategoryName: "Environment",
-                premiumFeature: true,
-                nextPageButtonText: 'Maybe Later',
-                bodyText: "Would you like to automatically record the weather to see how temperature or sunlight " +
-                    "exposure might be affecting you? ",
-            },
-            {
-                id: "importDataPage",
-                title: 'Import Your Data',
-                color: "yellow",
-                iconClass: "icon positive ion-ios-cloud-download-outline",
-                image: {
-                    url: "img/intro/download_2-96.png",
-                    height: "96",
-                    width: "96"
-                },
-                premiumFeature: true,
-                bodyText: "Let's go to the Import Data page and see if you're using any of the dozens of apps and " +
-                    "devices that I can automatically pull data from!",
-                nextPageButtonText: "Maybe Later",
-            },
-            {
-                id: "allDoneCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
-                title: 'Great job!',
-                color: "green",
-                iconClass: "icon positive ion-ios-cloud-download-outline",
-                overlayIcon: true,
-                image: {
-                    url: "img/robots/robot-waving.svg",
-                    height: "120",
-                    width: "120"
-                },
-                bodyText: "You're all set up!  Let's take a minute to record your first measurements and then " +
-                    "you're done for the day! "
-            }
-        ];
+    quantimodoService.setupOnboardingPages = function (onboardingPages) {
         if(config.appSettings.onboardingPages){onboardingPages = config.appSettings.onboardingPages;}
         onboardingPages = addVariableCategoryInfo(onboardingPages);
         onboardingPages = addColors(onboardingPages);
@@ -5637,195 +5448,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return array;
     }
-    quantimodoService.getIntroSlidesOld = function () {
-        var introSlides = [
-            {
-                "img" : {
-                    "width" : "250",
-                    "height" : "250",
-                    "url" : "img/intro/intro_import.png"
-                },
-                "textColor": "white",
-                "backgroundColor": "#3467d6",
-                "content" : {
-                    "firstParagraph" : {
-                        "visible" : true,
-                        "content" : "Import Data",
-                        "classes" : "intro-header"
-                    },
-                    "logoDiv" : {
-                        "visible" : true,
-                        "id" : "logo"
-                    },
-                    "finalParagraph" : {
-                        "visible" : true,
-                        "content" : "Import data from all your apps and devices",
-                        "classes" : "intro-paragraph",
-                        "buttonBarVisible" : true
-                    }
-                }
-            },
-            {
-                "img" : {
-                    "width" : "250",
-                    "height" : "250",
-                    "url" : "img/intro/intro_track_anything.png"
-                },
-                "textColor": "white",
-                "backgroundColor": "#f09402",
-                "content" : {
-                    "firstParagraph" : {
-                        "visible" : true,
-                        "content" : "Track Anything",
-                        "classes" : "intro-header"
-                    },
-                    "logoDiv" : {
-                        "visible" : true,
-                        "id" : "logo"
-                    },
-                    "finalParagraph" : {
-                        "visible" : true,
-                        "content" : "Log treatments, diet, symptoms, emotions, and anything else",
-                        "classes" : "intro-paragraph",
-                        "buttonBarVisible" : true
-                    }
-                }
-            },
-            {
-                "img" : {
-                    "width" : "250",
-                    "height" : "250",
-                    "url" : "img/intro/intro_make_discoveries.png"
-                },
-                "textColor": "white",
-                "backgroundColor": "#0f9d58",
-                "content" : {
-                    "firstParagraph" : {
-                        "visible" : true,
-                        "content" : "Make Discoveries",
-                        "classes" : "intro-header"
-                    },
-                    "logoDiv" : {
-                        "visible" : true,
-                        "id" : "logo"
-                    },
-                    "finalParagraph": {
-                        "visible" : true,
-                        "content" : "After I have about a month of data, I analyze it to discover the hidden factors " +
-                        "linked to your well-being",
-                        "classes" : "intro-paragraph",
-                        "buttonBarVisible" : true
-                    }
-                }
-            }
-        ];
-        if(config.appSettings.intro){return config.appSettings.intro;}
-        introSlides = addVariableCategoryInfo(introSlides);
-        introSlides = addColors(introSlides);
-        return introSlides;
-    };
-    quantimodoService.getIntroSlidesNew = function () {
-        var introSlides = [
-            {
-                newIntroStyle: true,
-                title: "Hi! I'm " + config.appSettings.appDisplayName + "!",
-                color: "green",
-                image: {
-                    height: "120",
-                    width: "120",
-                    url: "img/robots/robot-waving.svg"
-                },
-                overlayIcon: true,
-                bodyText: (config.appSettings.intro && config.appSettings.intro.robotStatement) ? config.appSettings.intro.robotStatement : "I've been programmed to reduce human suffering with data."
-            },
-            {
-                newIntroStyle: true,
-                title: "Hidden Influences",
-                color: "blue",
-                image: {
-                    url: "img/intro/patient-frown-factors.png",
-                    height: "120",
-                    width: "120"
-                },
-                bodyText: "Your symptoms can be worsened or improved by medical treatments, your sleep, exercise, " +
-                "the hundreds of chemicals you consume through your diet, and even the weather!",
-            },
-            {
-                newIntroStyle: true,
-                title: "Only Human",
-                color: "yellow",
-                image: {
-                    url: "img/brains/brain-pink.svg",
-                    height: "120",
-                    width: "120"
-                },
-                bodyText: "Human brains can only hold 7 numbers in working-memory at a time.  " +
-                "So they're not able to determine which factors are most significant. ",
-            },
-            {
-                newIntroStyle: true,
-                title: "Treatment Determination",
-                color: "green",
-                image: {
-                    url: "img/intro/doctor-frown-factors.png",
-                    height: "120",
-                    width: "120"
-                },
-                bodyText: "Indeed, your doctor has access to less than 1% of the relevant information when they use " +
-                "intuition to determine the best ways to treat your symptoms!",
-            },
-            {
-                newIntroStyle: true,
-                title: "Machine Learning",
-                color: "blue",
-                image: {
-                    url: "img/robots/quantimodo-robot-brain.svg",
-                    height: "120",
-                    width: "120"
-                },
-                bodyText: "My brain can hold trillions of numbers!  I can also analyze it to determine which hidden " +
-                "factors are most likely to improve or exacerbate your condition! "
-            },
-            {
-                newIntroStyle: true,
-                title: "Automated Tracking",
-                color: "green",
-                image: {
-                    url: "img/intro/download_2-96.png",
-                    height: "100",
-                    width: "100"
-                },
-                bodyText: "Weight, blood pressure, heart rate, physical activity data can be collected automatically " +
-                "and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, " +
-                "work, or doctors offices can be collected via your phone's GPS.",
-            },
-            {
-                newIntroStyle: true,
-                title: "Effortless Tracking",
-                color: "yellow",
-                image: {
-                    url: "img/intro/inbox.svg",
-                    height: "90",
-                    width: "90"
-                },
-                bodyText: "By taking just a few minutes each day, you can easily record your symptoms," +
-                " treatments, and diet in the Reminder Inbox.  The more data you give me, the smarter I get!  Your" +
-                " data doesn't have to be perfect to be valuable, but it's important to track regularly. ",
-            },
-            {
-                newIntroStyle: true,
-                title: "Data Security",
-                color: "blue",
-                image: {
-                    url: "img/intro/lock.svg",
-                    height: "90",
-                    width: "90"
-                },
-                bodyText: "I use bank-level encryption to keep your data secure.  Human eyes will never see your " +
-                "data unless you intentionally share it. "
-            }
-        ];
-        if(config.appSettings.introSlides){introSlides = config.appSettings.introSlides}
+    quantimodoService.getIntroSlide = function (introSlides) {
+        if(config.appSettings.introSlides){introSlides = config.appSettings.introSlides;}
         introSlides = addVariableCategoryInfo(introSlides);
         introSlides = addColors(introSlides);
         return introSlides;
