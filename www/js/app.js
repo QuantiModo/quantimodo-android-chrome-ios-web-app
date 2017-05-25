@@ -272,7 +272,7 @@ angular.module('starter',
     String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
     var config_resolver = {};
     if(!appsManager.getAppSettingsFromUrlParameter()){
-        if(!appsManager.doWeHaveLocalConfigFile()){
+        if(!appsManager.doWeHaveLocalConfigFile() && window.location.href.indexOf('https://') !== -1 && window.location.href.indexOf('quantimo.do') !== -1){
             var localStorageName = appsManager.getSubDomain() + 'AppSettings';
             var locallyStoredAppSettings = localStorage.getItem(localStorageName);
             if(locallyStoredAppSettings) {
@@ -292,11 +292,7 @@ angular.module('starter',
                 };
             }
         } else {
-            config_resolver = {
-                loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
-                    return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);
-                }]
-            };
+            config_resolver = {loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}]};
         }
     }
 
