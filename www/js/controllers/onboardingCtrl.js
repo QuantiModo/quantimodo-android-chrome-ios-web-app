@@ -1,10 +1,10 @@
-angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService) {
+angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService, onboardingPages) {
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
         $rootScope.hideNavigationMenu = true;
         if(quantimodoService.goToLoginIfNecessary()){ return; }
         $scope.hideLoader();
-        quantimodoService.setupOnboardingPages();
+        quantimodoService.setupOnboardingPages(onboardingPages.data);
         if($rootScope.onboardingPages && $rootScope.user){
             $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
                 return obj.id !== 'loginOnboardingPage';

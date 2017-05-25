@@ -1,5 +1,5 @@
 angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast) {
+											   $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast, helpCards) {
 	$scope.controller_name = "RemindersInboxCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
@@ -43,7 +43,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	});
 	$scope.$on('$ionicView.enter', function(e) {
         console.debug("RemindersInboxCtrl enter");
-        $scope.defaultHelpCards = quantimodoService.setupHelpCards();
+        $scope.defaultHelpCards = quantimodoService.setupHelpCards(helpCards.data);
         getTrackingReminderNotifications();
         getFavorites();
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
