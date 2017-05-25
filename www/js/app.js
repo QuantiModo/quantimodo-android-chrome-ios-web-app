@@ -283,6 +283,10 @@ angular.module('starter',
                         return $http.get(window.location.origin + '/api/v1/appSettings').then(function (response) {
                             localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
                             window.config = {appSettings: response.data.data};
+                        }, function errorCallback(response) {
+                            return $http.get('configs/medimodo.config.json').success(function(appSettings) {
+                                window.config = {appSettings: appSettings};
+                            });
                         });
                     }
                 };
