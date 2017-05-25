@@ -5418,10 +5418,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         blue: {backgroundColor: "#3467d6", circleColor: "#5b95f9"},
         yellow: {backgroundColor: "#f09402", circleColor: "#fab952"}
     };
+    function addAppDisplayName(array){
+        angular.forEach(array, function(value, key) {
+            if(value.title){value.title = value.title.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
+            if(value.text){value.text = value.text.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
+        });
+        return array;
+    }
+    function addColorsCategoriesAndNames(array){
+        array = addVariableCategoryInfo(array);
+        array = addColors(array);
+        array = addAppDisplayName(array);
+        return array;
+    }
     quantimodoService.setupOnboardingPages = function (onboardingPages) {
         if(config.appSettings.onboardingPages){onboardingPages = config.appSettings.onboardingPages;}
-        onboardingPages = addVariableCategoryInfo(onboardingPages);
-        onboardingPages = addColors(onboardingPages);
+        onboardingPages = addColorsCategoriesAndNames(onboardingPages);
         var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
             onboardingPages = onboardingPagesFromLocalStorage;
@@ -5450,8 +5462,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.getIntroSlides = function (introSlides) {
         if(config.appSettings.introSlides){introSlides = config.appSettings.introSlides;}
-        introSlides = addVariableCategoryInfo(introSlides);
-        introSlides = addColors(introSlides);
+        introSlides = addColorsCategoriesAndNames(introSlides);
         return introSlides;
     };
     $rootScope.signUpQuestions = [
