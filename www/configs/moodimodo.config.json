@@ -26,12 +26,22 @@
     "lowercaseAppName": "moodimodo",
     "menuType": "extended",
     "remindersInbox": {},
-    "upgradeDisabled": false,
     "socialLinks": {
         "facebook": "https://www.facebook.com/Quantimodology",
         "twitter": "https://twitter.com/quantimodo",
         "google": "https://plus.google.com/communities/100581500031158281444",
         "linkedIn": "https://www.linkedin.com/company/quantimodo"
     },
+    "upgradePleadingCard": {
+        "web": {
+            "image": "img/ivy-sad-bw-300-300.png",
+            "text": "Please subscribe to my daddy's app or I'll be cold and hungry..."
+        },
+        "mobile": {
+            "image": "img/ivy-sad-bw.jpg",
+            "textHtml": "Please subscribe to my daddy's app or I'll be cold... <br> and hungry...</span>"
+        }
+    },
+    "upgradeDisabled": false,
     "wordAliases": {}
 }

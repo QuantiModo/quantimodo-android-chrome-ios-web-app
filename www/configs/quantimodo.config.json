@@ -38,6 +38,16 @@
     "linkedIn": "https://www.linkedin.com/company/quantimodo"
   },
   "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
+  "upgradePleadingCard": {
+    "web": {
+      "image": "img/ivy-sad-bw-300-300.png",
+      "text": "Please subscribe to my daddy's app or I'll be cold and hungry..."
+    },
+    "mobile": {
+      "image": "img/ivy-sad-bw.jpg",
+      "textHtml": "Please subscribe to my daddy's app or I'll be cold... <br> and hungry...</span>"
+    }
+  },
   "welcomeState": "app.welcome",
   "wordAliases": {}
 }
