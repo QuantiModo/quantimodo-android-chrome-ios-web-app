@@ -951,7 +951,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var apiUrlMatchesHostName = quantimodoService.getApiUrl().indexOf(window.location.hostname);
         if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
             quantimodoService.showLoader();
-            loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href + '?loggingIn=true');
+            loginUrl += "?redirect_uri=" + encodeURIComponent(window.location.href + '?loggingIn=true');
             // Have to come back to login page and wait for user request to complete
             window.location.replace(loginUrl);
         } else {
