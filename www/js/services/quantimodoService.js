@@ -5448,7 +5448,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return array;
     }
-    quantimodoService.getIntroSlide = function (introSlides) {
+    quantimodoService.getIntroSlides = function (introSlides) {
         if(config.appSettings.introSlides){introSlides = config.appSettings.introSlides;}
         introSlides = addVariableCategoryInfo(introSlides);
         introSlides = addColors(introSlides);
