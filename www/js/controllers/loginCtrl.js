@@ -33,7 +33,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         //     "the NSA waterboards me, I will never divulge share your data without your permission.",
     };
     var leaveIfLoggedIn = function () {
-        if($rootScope.user){
+        if(quantimodoService.weHaveUserOrAccessToken()){
             $scope.hideLoader();
             console.debug("Already logged in on login page.  goToDefaultStateIfNoAfterLoginUrlOrState...");
             quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
@@ -78,9 +78,9 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     };
     var browserLogin = function(register) {
         console.debug("Browser Login");
-        if (window.private_keys.username) {
+        if (window.private_keys && window.private_keys.username) {
             quantimodoService.refreshUser().then(function () {$state.go(config.appSettings.defaultState);});
-        } else if (quantimodoService.getClientId() !== 'oAuthDisabled') {
+        } else if (quantimodoService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
             // Using timeout to avoid "$apply already in progress" error caused by window.open
             if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);
             } else { quantimodoService.oAuthBrowserLogin(register); }
@@ -99,7 +99,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             loginTimeout();
             quantimodoService.nonNativeMobileLogin(register);
         } else {
-            $ionicLoading.show();
+            quantimodoService.showLoader();
             $scope.loginPage.title = 'Logging in...';
             console.debug("$scope.login: Not windows, android or is so assuming browser.");
             browserLogin(register);

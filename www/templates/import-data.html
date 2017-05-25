@@ -1,20 +1,16 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Import Data">
     <ion-content scroll="true" overflow-scroll="true">
         <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
-        <div class="card"
-             ng-show="showImportHelpCard"
-             id="importHelpCard" >
+        <div class="card" ng-show="showImportHelpCard" id="importHelpCard" >
             <div class="item item-avatar item-borderless">
-                <i class="icon positive ion-ios-cloud-download-outline"
-                   style="position: absolute;
+                <i class="icon positive ion-ios-cloud-download-outline" style="position: absolute;
 							top: 15px;
 							left: 15px;
 							font-size: 36px;
 							max-width: 40px;
 							max-height: 40px;
 							width: 100%;
-							border-radius: 4px;"
-                ></i>
+							border-radius: 4px;"></i>
                 <p style="  text-align: center;
 					  height: 40px;
 					  line-height: 40px;
@@ -25,8 +21,7 @@
                 </p>
             </div>
             <div class="item item-body item-borderless" style="text-align: center;">
-                Scroll down and press Connect for any apps or device you currently use.  Once you're finished, press
-                the Done bar at the bottom.
+                Scroll down and press Connect for any apps or device you currently use.  Once you're finished, press the Done bar at the bottom.
             </div>
             <div class="row" >
                 <div class="button-bar">
@@ -40,22 +35,13 @@
             </div>
             <br>
         </div>
-
-        <div  class="list card" ng-if="connectors">
-            <div ng-include="'templates/fragments/connectors-fragment.html'"></div>
-        </div>
+        <div class="list card" ng-if="connectors"><div ng-include="'templates/fragments/connectors-fragment.html'"></div></div>
 <!--        <div id="import-iframe" ng-if="!isMobile">
-
         </div>-->
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->
     </ion-content>
-    <div ng-click="goBack()" ng-if="hideNavigationMenu"
-         style="cursor:pointer;"
-         class="bar bar-footer bar-balanced">
-        <div class="title">
-            <i class="icon ion-reply"></i>
-            Done connecting data sources
-        </div>
+    <div ng-click="goBack()" ng-if="hideNavigationMenu" style="cursor:pointer;" class="bar bar-footer bar-balanced">
+        <div class="title"><i class="icon ion-reply"></i>Done connecting data sources</div>
     </div>
     <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>

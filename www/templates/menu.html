@@ -2,14 +2,9 @@
     <ion-side-menu-content>
         <ion-nav-bar class="{{appSettings.ionNavBarClass}}" ng-show="hideNavigationMenu === false" >
             <ion-nav-buttons side="left">
-                <button ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left">
-                </button>
-                <button ng-show="showCloseMenuButton" class="button button-icon ion-android-close"
-                        ng-click="closeMenu()">
-                </button>
-                <button ng-hide="hideBackButton" class="button button-icon ion-android-arrow-back"
-                        ng-click="goBack()">
-                </button>
+                <button ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+                <button ng-show="showCloseMenuButton" class="button button-icon ion-android-close" ng-click="closeMenu()"></button>
+                <button ng-hide="hideBackButton" class="button button-icon ion-android-arrow-back" ng-click="goBack()"></button>
                 <!-- Gets cut off so hiding until I have time to implement this: http://ionicframework.com/docs/api/directive/ionHeaderBar/
                 Also, now back button goes home if we don't have a back view so we don't need a home button
                 <button ng-hide="hideHomeButton" class="button button-icon ion-home"
@@ -17,9 +12,7 @@
                 </button>
                 -->
             </ion-nav-buttons>
-
             <ion-nav-buttons side="right">
-
                 <div class="buttons">
                     <a href="#/app/settings"
                        ng-if="user && user.avatar && !isMobile"
@@ -34,57 +27,34 @@
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
-        <div class="col"
-             ng-show="hideNavigationMenu && offlineConnectionErrorShowing;"
-             style="top:0px!important;"
-             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
+        <div class="col" ng-show="hideNavigationMenu && offlineConnectionErrorShowing;" style="top:0px!important;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
             <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
         </div>
-        <div class="col"
-             ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
-             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
+        <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
             <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
         </div>
-        <div class="col"
-             ng-show="!hideNavigationMenu && isSyncing"
-             ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
+        <div class="col" ng-show="!hideNavigationMenu && isSyncing" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
             <span>{{syncDisplayText}}</span>
         </div>
-        <div class="col"
-             ng-show="hideNavigationMenu && isSyncing"
-             style="top:0px!important;"
-             ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
+        <div class="col" ng-show="hideNavigationMenu && isSyncing" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
             <span>{{syncDisplayText}}</span>
         </div>
-        <ion-nav-view name="menuContent">
-        </ion-nav-view>
+        <ion-nav-view name="menuContent"></ion-nav-view>
     </ion-side-menu-content>
-
     <ion-side-menu side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large">
         <ion-header-bar class="bar-positive">
-            <div style="cursor:pointer;"
-                 ng-click="goToState('app.settings')"
-                 ng-if="user && user.displayName && (user.stripeActive || appSettings.upgradeDisabled)">
-                <a ng-if="user && user.avatar"
-                   class="button button-clear" >
-                    <img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}">
-                </a>
-                <h1 class="title" style="position: fixed; bottom: 0;">
-                    {{user.displayName}}
-                </h1>
+            <div style="cursor:pointer;" ng-click="goToState('app.settings')" ng-if="user && user.displayName && (user.stripeActive || appSettings.upgradeDisabled)">
+                <a ng-if="user && user.avatar" class="button button-clear" ><img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}"></a>
+                <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
             </div>
-            <div style="cursor:pointer;"
-                 ng-if="user && user.displayName && !user.stripeActive && !appSettings.upgradeDisabled"
-                 ng-click="goToState('app.upgrade')">
+            <div style="cursor:pointer;" ng-if="user && user.displayName && !user.stripeActive && !appSettings.upgradeDisabled" ng-click="goToState('app.upgrade')">
                 <button class="button button-icon ion-android-star-outline"></button>
-                <h1 class="title" style="position: fixed; bottom: 0;">
-                    {{appSettings.appDisplayName}} Plus
-                </h1>
+                <h1 class="title" style="position: fixed; bottom: 0;">{{appSettings.appDisplayName}} Plus</h1>
             </div>
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <div ng-repeat="menuItem in menu">
+                <div ng-repeat="menuItem in appSettings.menu">
                     <ion-item ng-click="closeMenuIfNeeded(menuItem)" ng-href="{{menuItem.href}}">
                         <i ng-if="this[menuItem.showSubMenuVariable]" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
                         <i ng-if="!this[menuItem.showSubMenuVariable]" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
@@ -95,7 +65,6 @@
                     </ion-item>
                 </div>
             </ion-list>
-
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>

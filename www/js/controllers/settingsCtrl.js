@@ -12,7 +12,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$rootScope.hideNavigationMenu = false;
 		if(quantimodoService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
-			$ionicLoading.show();
+			quantimodoService.showLoader();
 			quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: quantimodoService.getUrlParameter('userEmail')}, function(user){
 				$scope.user = user;
 				$scope.state.loading = false;
@@ -216,8 +216,9 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		}
 	}
 	function logOutOfWebsite() {
-		if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
-			window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
+		if (!window.private_keys || quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
+			var url = quantimodoService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(quantimodoService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
+			window.location.replace(url);
 		}
 	}
 	$scope.logout = function(ev) {

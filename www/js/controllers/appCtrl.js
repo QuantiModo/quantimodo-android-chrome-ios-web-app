@@ -6,8 +6,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
     //console.debug('Starting AppCtrl');
     $scope.controller_name = "AppCtrl";
-    $scope.menu = quantimodoService.getMenu(config.appSettings.menuType);
     $rootScope.appSettings = config.appSettings;
+    if(!$rootScope.appSettings.menu){$rootScope.appSettings.menu = quantimodoService.getMenu(config.appSettings.menuType);}
     if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
     $scope.showTrackingSubMenu = false;
     $rootScope.numberOfPendingNotifications = null;
@@ -17,7 +17,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
     if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
-    if(!$rootScope.user){
+    if(!$rootScope.user || quantimodoService.getAccessTokenFromUrlParameter()){
+        quantimodoService.showLoader();
         quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
     }
     quantimodoService.putCommonVariablesInLocalStorage();
@@ -162,7 +163,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 correlationObject.shareUserMeasurements = true;
                 quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
                 var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
-                $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+                quantimodoService.showLoader();
                 quantimodoService.postStudyDeferred(body).then(function () {
                     $ionicLoading.hide();
                     if(sharingUrl){quantimodoService.openSharingUrl(sharingUrl);}
@@ -197,7 +198,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function yesCallback() {
             variableObject.shareUserMeasurements = true;
             var body = {variableId: variableObject.id, shareUserMeasurements: true};
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+            quantimodoService.showLoader();
             quantimodoService.postUserVariableDeferred(body).then(function () {
                 $ionicLoading.hide();
                 quantimodoService.openSharingUrl(sharingUrl);
@@ -622,7 +623,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         quantimodoService.showMaterialAlert(quantimodoService.explanations[settingName].title, quantimodoService.explanations[settingName].explanation, ev);
     };
     $scope.saveVariableSettings = function(variableObject){
-        $ionicLoading.show({ template: '<ion-spinner></ion-spinner>' });
+        quantimodoService.showLoader();
         var body = {
             variableId: variableObject.id,
             durationOfAction: variableObject.durationOfActionInHours*60*60,
@@ -681,7 +682,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             return;
         }
         if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){ $rootScope.variableObject = null; }
-        if(!hideLoader){ $ionicLoading.show(); }
+        if(!hideLoader){ quantimodoService.showLoader(); }
         var params = {includeTags : true};
         quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
             //Stop the ion-refresher from spinning
@@ -704,7 +705,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.resetVariableToDefaultSettings = function(variableObject) {
         // Populate fields with original settings for variable
-        $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+        quantimodoService.showLoader();
         quantimodoService.resetUserVariableDeferred(variableObject.id).then(function(userVariable) {
             $rootScope.variableObject = userVariable;
             //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
@@ -722,7 +723,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $rootScope.sendChromeEmailLink = function(){
         var subjectLine = "Install%20the%20" + config.appSettings.appDisplayName + "%20Chrome%20Browser%20Extension";
-        var linkToChromeExtension = config.appSettings.linkToChromeExtension;
+        var linkToChromeExtension = config.appSettings.downloadLinks.chromeExtension;
         var emailBody = "Did%20you%20know%20that%20you%20can%20easily%20track%20everything%20on%20your%20laptop%20and%20desktop%20with%20our%20Google%20Chrome%20browser%20extension%3F%20%20Your%20data%20is%20synced%20between%20devices%20so%20you%27ll%20never%20have%20to%20track%20twice!%0A%0ADownload%20it%20here!%0A%0A" + encodeURIComponent(linkToChromeExtension)  + "%0A%0ALove%2C%20%0AYou";
         var fallbackUrl = null;
         var emailAddress = $rootScope.user.email;
@@ -1183,7 +1184,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 'coupon': answer.coupon
             };
             quantimodoService.recordUpgradeProductPurchase(answer.productId, null, 1);
-            $ionicLoading.show();
+            quantimodoService.showLoader();
             quantimodoService.postCreditCardDeferred(body).then(function (response) {
                 quantimodoService.reportErrorDeferred('Got successful upgrade response from API');
                 $ionicLoading.hide();
@@ -1305,7 +1306,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $rootScope.user.stripeActive = true;
     }
     function makeInAppPurchase(baseProductId) {
-        $ionicLoading.show();
+        quantimodoService.showLoader();
         var getReceipt = false;
         inAppPurchase.subscribe(getProductId(baseProductId))
             .then(function (data) {
@@ -1336,7 +1337,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             alert('Called makeInAppPurchase for ' + getProductId(baseProductId));
             quantimodoService.updateUserSettingsDeferred({ subscriptionProvider: getSubscriptionProvider(), productId: getProductId(baseProductId), trialEndsAt: moment().add(14, 'days').toISOString() });
         }
-        $ionicLoading.show();
+        quantimodoService.showLoader();
         //quantimodoService.recordUpgradeProductPurchase(baseProductId, null, 1);
         inAppPurchase
             .getProducts([getProductId(baseProductId)])
@@ -1351,7 +1352,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
     };
     var webDowngrade = function() {
-        $ionicLoading.show();
+        quantimodoService.showLoader();
         quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
             $ionicLoading.hide();
             console.debug(JSON.stringify(response));
