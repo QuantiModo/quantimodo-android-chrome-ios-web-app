@@ -6,7 +6,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         $ionicHistory.goBack();
     };
     var goBack = function () {
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
         if($stateParams.fromState && $stateParams.fromStateParams){
             $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});
         } else {
@@ -107,7 +107,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             quantimodoService.showLoader();
             quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety').then(function (variable) {
                 $scope.stateParams.userTagVariableObject = variable;
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
             });
         }
 
@@ -115,7 +115,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             quantimodoService.showLoader();
             quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
                 $scope.stateParams.userTaggedVariableObject = variable;
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
             });
         }
         console.debug($state.current.name + ": beforeEnter");

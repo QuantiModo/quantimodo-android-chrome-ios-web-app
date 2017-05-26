@@ -19,14 +19,14 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		// Check if user upgrade via web since last user refresh
 		quantimodoService.showLoader();
 		quantimodoService.refreshUser().then(function (user) {
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			if(user.stripeActive || config.appSettings.upgradeDisabled){
 				loadNativeConnectorPage();
 				return;
 			}
 			$state.go('app.upgrade', {litePlanState: config.appSettings.defaultState});
 		}, function (error) {
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			$state.go('app.login');
 		});
 	});
@@ -38,7 +38,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		console.debug('importCtrl.init: Going to quantimodoService.getAccessTokenFromAnySource');
 		$state.go(config.appSettings.defaultState);
 		quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
 				console.debug("Browser Detected");
 
@@ -67,7 +67,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				});
 			}
 		}, function(){
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			console.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
             quantimodoService.sendToLogin(true);
 		});

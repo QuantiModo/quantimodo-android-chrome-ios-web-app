@@ -3,14 +3,13 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
         $rootScope.hideNavigationMenu = true;
         if(quantimodoService.goToLoginIfNecessary()){ return; }
-        $scope.hideLoader();
         quantimodoService.setupOnboardingPages(onboardingPages.data);
         if($rootScope.onboardingPages && $rootScope.user){
             $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
                 return obj.id !== 'loginOnboardingPage';
             });
         }
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
         $rootScope.hideNavigationMenu = true;
     });
     $scope.$on('$ionicView.afterEnter', function(){

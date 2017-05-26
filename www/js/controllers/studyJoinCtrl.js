@@ -33,7 +33,7 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
             $scope.requestParams.effectVariableName;
     });
     $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
         if(getParameterByName('alreadyJoined')){ $scope.joinStudy(); }
     });
     $scope.$on('$ionicView.afterEnter', function(){ });
@@ -56,19 +56,19 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
         if(!$rootScope.user){
             console.debug('Setting afterLoginGoTo to ' + window.location.href + '&alreadyJoined=true');
             quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href + '&alreadyJoined=true');
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             $state.go('app.login');
             return;
         }
         $scope.state.title = "Joining study...";
         $scope.state.bodyText = "Thank you for helping us accelerate scientific discovery!";
         quantimodoService.joinStudyDeferred($scope.requestParams).then(function () {
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             $scope.state.title = "Thank you!";
             $scope.state.bodyText = "Let's record your first measurements!";
             $scope.showGetStartedButton = true;
         }, function (error) {
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             quantimodoService.reportErrorDeferred(error);
             quantimodoService.showMaterialAlert("Could not join study!", "Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
         });

@@ -62,7 +62,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     });
     $scope.$on('$ionicView.enter', function(e) {
         console.debug("$ionicView.enter " + $state.current.name);
-        $scope.hideLoader();
     });
     var trackBloodPressure = function(){
         if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
@@ -84,9 +83,9 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     };
     $scope.cancel = function(){ $scope.goBack(); };
     $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
-        $scope.showLoader('Deleting measurement...');
+        $scope.showSyncDisplayText('Deleting measurement...');
         quantimodoService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
-            $scope.hideLoader();
+            $scope.hideSyncDisplayText();
             $scope.goBack();
         });
     };
@@ -266,12 +265,12 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     var setupFromVariableName = function(variableName){
         quantimodoService.showLoader();
         quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {}).then(function(variableObject){
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             setupFromVariableObject(variableObject);
         }, function (error) {
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             console.error(error);
         });
     };
@@ -280,12 +279,12 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         quantimodoService.showLoader();
         quantimodoService.getMeasurementById(quantimodoService.getUrlParameter('measurementId', location.href, true))
             .then(function(measurementObject) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $scope.state.measurementIsSetup = true;
                 setupTrackingByMeasurement(measurementObject);
                 deferred.resolve();
             }, function(error) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 console.error($state.current.name + ": " + "Error response: " + error);
                 deferred.reject(error);
             }

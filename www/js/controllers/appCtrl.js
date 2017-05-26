@@ -165,10 +165,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
                 quantimodoService.showLoader();
                 quantimodoService.postStudyDeferred(body).then(function () {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     if(sharingUrl){quantimodoService.openSharingUrl(sharingUrl);}
                 }, function (error) {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     console.error(error);
                 });
         }
@@ -200,10 +200,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var body = {variableId: variableObject.id, shareUserMeasurements: true};
             quantimodoService.showLoader();
             quantimodoService.postUserVariableDeferred(body).then(function () {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 quantimodoService.openSharingUrl(sharingUrl);
             }, function (error) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 console.error(error);
             });
         }
@@ -278,11 +278,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.closeMenuIfNeeded = function (menuItem) {
         if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}
     };
-    $scope.showHistorySubMenu = false;
-    $scope.loading = false;
-    $ionicLoading.hide();
     /*Wrapper Config*/
-    $scope.primaryOutcomeVariableName = quantimodoService.getPrimaryOutcomeVariable().name;
     $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
     $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
     $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
@@ -339,13 +335,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 return;
             }
             message = 'Checking for ' + releaseTrack + ' updates...';
-            $scope.showLoader(message);
+            $scope.showSyncDisplayText(message);
             $ionicDeploy.check().then(function(snapshotAvailable) {
                 if (snapshotAvailable) {
                     message = 'Downloading ' + releaseTrack + ' update...';
                     console.debug(message);
                     if($rootScope.isAndroid){
-                        $scope.showLoader(message);
+                        $scope.showSyncDisplayText(message);
                     }
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                     // When snapshotAvailable is true, you can apply the snapshot
@@ -353,7 +349,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         message = 'Downloaded new version.  Extracting...';
                         console.debug(message);
                         if($rootScope.isAndroid){
-                            $scope.showLoader(message);
+                            $scope.showSyncDisplayText(message);
                         }
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                         $ionicDeploy.extract().then(function() {
@@ -378,14 +374,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 } else {
                     message = 'No updates available';
                     if($rootScope.isAndroid){
-                        $scope.showLoader(message);
+                        $scope.showSyncDisplayText(message);
                     }
                     console.debug(message);
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                 }
             });
             $timeout(function () {
-                $scope.hideLoader();
+                $scope.hideSyncDisplayText();
             }, 60 * 1000);
 
         });
@@ -504,20 +500,20 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             if(fn && (typeof(fn) === 'function')) {fn();}
         } else {this.$apply(fn);}
     };
-    $scope.showLoader = function (loadingText) {
+    $scope.showSyncDisplayText = function (loadingText) {
         $rootScope.isSyncing = true;
         $rootScope.syncDisplayText = loadingText;
         if(!loadingText){loadingText = '';}
         $scope.loading = true;
         var seconds = 30;
         console.debug('Setting showLoader timeout for ' + seconds + ' seconds.  loadingText is ' + loadingText);
-        $timeout(function () {$scope.hideLoader();}, seconds * 1000);
+        $timeout(function () {$scope.hideSyncDisplayText();}, seconds * 1000);
     };
-    $scope.hideLoader = function () {
+    $scope.hideSyncDisplayText = function () {
         $rootScope.isSyncing = false;
         $rootScope.syncDisplayText = '';
         $scope.loading = false;
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
     };
     $scope.onTextClick = function ($event) {
         console.debug("Auto selecting text so the user doesn't have to press backspace...");
@@ -641,11 +637,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             experimentEndTimeString: (variableObject.experimentEndTimeString) ? variableObject.experimentEndTimeString.toString() : null,
         };
         quantimodoService.postUserVariableDeferred(body).then(function(userVariable) {
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             $scope.showInfoToast('Saved ' + variableObject.name + ' settings');
             $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
         }, function(error) {
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             console.error(error);
         });
     };
@@ -673,8 +669,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.setupVariableByVariableObject = function(variableObject) {
         $rootScope.variableName = variableObject.name;
         $rootScope.variableObject = variableObject;
-        $scope.loading = false;
-        $scope.hideLoader();
     };
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
@@ -687,14 +681,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             $rootScope.variableObject = variableObject;
             //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             $scope.setupVariableByVariableObject(variableObject);
         }, function (error) {
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             console.error(error);
         });
     };
@@ -1187,7 +1181,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             quantimodoService.showLoader();
             quantimodoService.postCreditCardDeferred(body).then(function (response) {
                 quantimodoService.reportErrorDeferred('Got successful upgrade response from API');
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 console.debug(JSON.stringify(response));
                 $mdDialog.show(
                     $mdDialog.alert()
@@ -1206,7 +1200,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 quantimodoService.reportErrorDeferred(response);
                 var message = '';
                 if(response.error){ message = response.error; }
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $mdDialog.show(
                     $mdDialog.alert()
                         .parent(angular.element(document.querySelector('#popupContainer')))
@@ -1284,7 +1278,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     }
     function handleSubscribeResponse(baseProductId, data) {
         quantimodoService.reportErrorDeferred('inAppPurchase.subscribe response: ' + JSON.stringify(data));
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
         var alert;
         function showSuccessAlert() {
             alert = $mdDialog.alert({  title: 'Thank you!', textContent: "Let's get started!", ok: 'OK' });
@@ -1319,7 +1313,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 }
                 handleSubscribeResponse(baseProductId, data);
             }).catch(function (error) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 var alert;
                 function showErrorAlert() {
                     alert = $mdDialog.alert({ title: error.errorMessage,
@@ -1347,18 +1341,18 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                  //[{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', price: '...' }, ...]
                 makeInAppPurchase(baseProductId);
             }).catch(function (err) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 quantimodoService.reportErrorDeferred("couldn't get product " + getProductId(baseProductId) + ": " + JSON.stringify(err));
             });
     };
     var webDowngrade = function() {
         quantimodoService.showLoader();
         quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             console.debug(JSON.stringify(response));
             quantimodoService.showMaterialAlert('Downgraded', 'Successfully downgraded to QuantiModo Lite');
         }, function (error) {
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             quantimodoService.showMaterialAlert('Error', 'An error occurred while downgrading. Please email mike@quantimo.do');
             console.debug(JSON.stringify(error));
         });

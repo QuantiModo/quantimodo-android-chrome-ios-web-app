@@ -1,5 +1,4 @@
 angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService, introSlides, onboardingPages) {
-    $scope.primaryOutcomeVariableName = quantimodoService.getPrimaryOutcomeVariable().name;
     $scope.introSlides = quantimodoService.getIntroSlides(introSlides.data);
     $rootScope.showFilterBarSearchIcon = false;
     $scope.myIntro = {

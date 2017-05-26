@@ -16,11 +16,11 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: quantimodoService.getUrlParameter('userEmail')}, function(user){
 				$scope.user = user;
 				$scope.state.loading = false;
-				$ionicLoading.hide();
+				quantimodoService.hideLoader();
 			}, function(error){
 				console.error(error);
 				$scope.state.loading = false;
-				$ionicLoading.hide();
+				quantimodoService.hideLoader();
 			});
 			return;
 		}
@@ -90,12 +90,10 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
 	$scope.contactUs = function() {
-		$scope.hideLoader();
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
 		else {window.location = '#app/feedback';}
 	};
 	$scope.postIdea = function() {
-		$scope.hideLoader();
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
 		} else {window.open('http://help.quantimo.do/forums/211661-general', '_blank');}
 	};
@@ -245,7 +243,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		console.debug('Logging out...');
-		$scope.hideLoader();
 		$rootScope.user = null;
 		showDataClearPopup(ev);
 	};

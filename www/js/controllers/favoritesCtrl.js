@@ -17,7 +17,6 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
-        $scope.hideLoader();
         $rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
             $scope.variableCategoryName = $stateParams.variableCategoryName;
@@ -48,9 +47,9 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
     $scope.favoriteAddButtonClick = function () {$state.go('app.favoriteSearch');};
     $scope.refreshFavorites = function () {
         console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-        $scope.showLoader('Syncing...');
+        $scope.showSyncDisplayText('Syncing...');
         quantimodoService.syncTrackingReminders(true).then(function () {
-            $scope.hideLoader();
+            $scope.hideSyncDisplayText();
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');

@@ -11,7 +11,7 @@ angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $io
         $rootScope.upgradeFooterText = null;
         $rootScope.hideNavigationMenu = true;
         quantimodoService.setupUpgradePages();
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
     });
     $scope.useLitePlan = function () {if($stateParams.litePlanState){$state.go($stateParams.litePlanState);} else { $scope.goBack();}};
     $scope.hideUpgradePage = function () {

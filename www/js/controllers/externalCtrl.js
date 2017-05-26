@@ -1,9 +1,9 @@
 angular.module('starter')  // Handles all views that have an iFrame
-.controller('ExternalCtrl', function($scope, $stateParams, $rootScope, $state) {
+.controller('ExternalCtrl', function($scope, $stateParams, $rootScope, $state, quantimodoService) {
 	$scope.controller_name = "ExternalCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
 	// when page load completes
-	window.closeLoading = function(){$scope.hideLoader();};
+	window.closeLoading = function(){quantimodoService.hideLoader();};
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("beforeEnter state " + $state.current.name);
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
