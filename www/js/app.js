@@ -270,29 +270,31 @@ angular.module('starter',
         $ionicConfigProvider.views.swipeBackEnabled(false);  // Prevents back swipe white screen on iOS when caching is disabled https://github.com/driftyco/ionic/issues/3216
     }
     String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+    Array.prototype.contains = function(obj) {
+        var i = this.length;
+        while (i--) {if (this[i] === obj) {return true;}}
+    };
     var config_resolver = {};
-    if(!appsManager.getAppSettingsFromUrlParameter()){
-        if(!appsManager.doWeHaveLocalConfigFile() && window.location.href.indexOf('https://') !== -1 && window.location.href.indexOf('quantimo.do') !== -1){
-            var localStorageName = appsManager.getSubDomain() + 'AppSettings';
-            var locallyStoredAppSettings = localStorage.getItem(localStorageName);
-            if(locallyStoredAppSettings) {
-                window.config = {appSettings: JSON.parse(locallyStoredAppSettings)};
-            } else {
-                config_resolver = {
-                    appSettingsResponse: function ($http) {
-                        return $http.get(window.location.origin + '/api/v1/appSettings').then(function (response) {
-                            localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
-                            window.config = {appSettings: response.data.data};
-                        }, function errorCallback(response) {
-                            return $http.get('configs/medimodo.config.json').success(function(appSettings) {
-                                window.config = {appSettings: appSettings};
-                            });
-                        });
-                    }
-                };
-            }
+    if(appsManager.doWeHaveLocalConfigFile()) {
+        config_resolver = {loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}]};
+    } else {
+        var localStorageName = appsManager.getQuantiModoClientId() + 'AppSettings';
+        var locallyStoredAppSettings = localStorage.getItem(localStorageName);
+        if(locallyStoredAppSettings) {
+            window.config = {appSettings: JSON.parse(locallyStoredAppSettings)};
         } else {
-            config_resolver = {loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}]};
+            config_resolver = {
+                appSettingsResponse: function ($http) {
+                    return $http.get('https://app.quantimo.do/api/v1/appSettings?clientId=' + appsManager.getQuantiModoClientId()).then(function (response) {
+                        localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
+                        window.config = {appSettings: response.data.data};
+                    }, function errorCallback(response) {
+                        return $http.get('configs/quantimodo.config.json').success(function(response) {
+                            window.config = {appSettings: response};
+                        });
+                    });
+                }
+            };
         }
     }
     var getOnboardingPages = ['$http', function($http) {return $http({method: 'GET', url: 'data/onboardingPages.json'});}];
