@@ -97,7 +97,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 quantimodoService.showLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
                     $rootScope.variableObject = response.data.userTaggedVariable;
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                 });
             }
             $mdDialog.hide();
@@ -173,10 +173,10 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             };
             quantimodoService.showLoader();
             quantimodoService.postVariableJoinDeferred(variableData).then(function (response) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $rootScope.variableObject = response.data.parentVariable;
             }, function (error) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 console.error(error);
             });
             $mdDialog.hide();

@@ -84,7 +84,6 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
 	}
 	function addRemindersToScope(allTrackingReminderTypes) {
-		$scope.hideLoader();
 		$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
 			$scope.state.showNoRemindersCard = true;
@@ -97,7 +96,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		showAppropriateHelpInfoCards();
 	}
 	$scope.refreshReminders = function () {
-		$scope.showLoader('Syncing...');
+		$scope.showSyncDisplayText('Syncing...');
 		quantimodoService.syncTrackingReminders(true).then(function(){getTrackingReminders();});
 	};
 	var getTrackingReminders = function(){

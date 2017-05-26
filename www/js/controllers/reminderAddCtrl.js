@@ -399,10 +399,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                     $rootScope.variableObject = variables[0];
                     console.debug('setupReminderEditingFromVariableId got this variable object ' + JSON.stringify($rootScope.variableObject));
                     setupByVariableObject($rootScope.variableObject);
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     $scope.loading = false;
                 }, function () {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     $scope.loading = false;
                     console.error('ERROR: failed to get variable with id ' + variableId);
                 });
@@ -417,10 +417,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 }
                 $stateParams.reminder = reminders[0];
                 setupEditReminder($stateParams.reminder);
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $scope.loading = false;
             }, function () {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $scope.loading = false;
                 console.error('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
             });

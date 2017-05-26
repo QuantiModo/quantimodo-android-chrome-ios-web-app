@@ -47,10 +47,10 @@ angular.module('starter') // Controls the settings page
 			var service = new google.maps.places.PlacesService(map);
 			service.nearbySearch(request, callback);
 
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 
 		}, function(error) {
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			console.error(error);
 		});
 

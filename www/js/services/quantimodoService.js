@@ -5185,7 +5185,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
         quantimodoService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
             .then(function(response) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 if(response.error){
                     quantimodoService.reportErrorDeferred(response.error);
                     console.error("Error generating access token");
@@ -5196,16 +5196,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     console.debug('get user details from server and going to defaultState...');
                     quantimodoService.showLoader();
                     quantimodoService.refreshUser().then(function(user){
-                        $ionicLoading.hide();
+                        quantimodoService.hideLoader();
                         quantimodoService.syncAllUserData();
                         console.debug($state.current.name + ' quantimodoService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user));
                     }, function(error){
-                        $ionicLoading.hide();
+                        quantimodoService.hideLoader();
                         quantimodoService.reportErrorDeferred($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                     });
                 }
             }).catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 quantimodoService.setLocalStorageItem('user', null);
             });
     };
@@ -6921,11 +6921,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
                 localStorage.setItem('lastMeasurementSyncTime', 0);
             }
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             $state.go(config.appSettings.defaultState);
             console.debug("All measurements for " + variableObject.name + " deleted!");
         }, function(error) {
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             console.debug('Error deleting measurements: '+ JSON.stringify(error));
         });
     };
@@ -7137,7 +7137,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return planFeatureCards;
     };
     quantimodoService.showLoader = function(){
-        $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
+        $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 5000});
+    };
+    quantimodoService.hideLoader = function(){
+        //console.debug("Called $ionicLoading.hide()");
+        $ionicLoading.hide();
     };
     return quantimodoService;
 });

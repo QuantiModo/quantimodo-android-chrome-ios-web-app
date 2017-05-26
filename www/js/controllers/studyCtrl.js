@@ -134,7 +134,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         /** @namespace $rootScope.correlationObject.effectProcessedDailyMeasurements */
         $scope.effectTimelineChartConfig = quantimodoService.processDataAndConfigureLineChart($rootScope.correlationObject.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
         quantimodoService.highchartsReflow();
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
     }
     function getStudy() {
         if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
@@ -143,13 +143,13 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
         }
         $scope.loadingCharts = true;
         quantimodoService.getStudyDeferred($scope.state.requestParams).then(function (study) {
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
             $rootScope.correlationObject = study;
             createUserCharts();
         }, function (error) {
             console.error(error);
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;
             $scope.state.title = "Not Enough Data, Yet";
@@ -195,7 +195,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
                 }
             }
         }).then(function(variable) {
-            $scope.showLoader("Re-analyzing data using updated " + quantimodoService.explanations[propertyToUpdate].title);
+            $scope.showSyncDisplayText("Re-analyzing data using updated " + quantimodoService.explanations[propertyToUpdate].title);
             var postData = {variableName: variable.name};
             postData[propertyToUpdate] = variable[propertyToUpdate];
             quantimodoService.postUserVariableDeferred(postData).then(function (response) {

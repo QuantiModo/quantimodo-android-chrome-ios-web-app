@@ -14,12 +14,12 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;
-        $scope.showLoader(syncDisplayText);
+        $scope.showSyncDisplayText(syncDisplayText);
         console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
         quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-            $scope.hideLoader();
+            $scope.hideSyncDisplayText();
             updateCharts();
-            $ionicLoading.hide();
+            quantimodoService.hideLoader();
         });
     });
     $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
@@ -30,9 +30,9 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         quantimodoService.addToMeasurementsQueue(primaryOutcomeMeasurement);
         updateCharts();
         if(!$rootScope.isSyncing && $rootScope.user){
-            $scope.showLoader(syncDisplayText);
+            $scope.showSyncDisplayText(syncDisplayText);
             quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                $scope.hideLoader();
+                $scope.hideSyncDisplayText();
                 updateCharts();
             });
         }

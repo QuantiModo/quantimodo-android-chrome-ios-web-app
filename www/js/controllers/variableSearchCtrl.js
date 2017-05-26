@@ -37,7 +37,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
         console.debug($state.current.name + " enter...");
-        $scope.hideLoader();
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
@@ -74,7 +73,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 userTagData = {userTagVariableId: variableObject.id, userTaggedVariableId: $stateParams.userTaggedVariableObject.id, conversionFactor: 1};
                 quantimodoService.showLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
                     } else {$state.go(config.appSettings.defaultState);}
                 });
@@ -91,7 +90,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 userTagData = {userTagVariableId: $stateParams.userTagVariableObject.id, userTaggedVariableId: variableObject.id, conversionFactor: 1};
                 quantimodoService.showLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});
                     } else {$state.go(config.appSettings.defaultState);}
                 });
