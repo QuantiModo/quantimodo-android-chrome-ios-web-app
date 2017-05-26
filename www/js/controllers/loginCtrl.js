@@ -19,10 +19,13 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             $scope.showFacebookLoginButton = true;
         } else { console.debug("Could not inject $cordovaFacebook"); }
     }
-    $scope.loginPage = {
-        title: 'Sign In',
-        "backgroundColor": "#3467d6",
-        circleColor: "#5b95f9",
+    $scope.circlePage = {
+        title: null,
+        overlayIcon: false, //TODO: Figure out how to position properly in circle-page.html
+        color: {
+            "backgroundColor": "#3467d6",
+            circleColor: "#5b95f9"
+        },
         image: {
             url: "img/robots/robot-waving.svg",
             height: "120",
@@ -51,12 +54,13 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }
     };
     var loginTimeout = function () {
-        $scope.loginPage.title = 'Logging in...';
+        quantimodoService.showLoader();
+        $scope.circlePage.title = 'Logging in...';
         console.debug('Setting login timeout...');
         return $timeout(function () {
             console.debug('Finished login timeout');
             if(!$rootScope.user){
-                $scope.loginPage.title = 'Please try logging in again';
+                $scope.circlePage.title = 'Please try logging in again';
                 quantimodoService.reportErrorDeferred('Login failure');
             }
             if($rootScope.user && $state.current.name.indexOf('login') !== -1){
@@ -111,7 +115,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             quantimodoService.nonNativeMobileLogin(register);
         } else {
             quantimodoService.showLoader();
-            $scope.loginPage.title = 'Logging in...';
+            $scope.circlePage.title = 'Logging in...';
             console.debug("$scope.login: Not windows, android or is so assuming browser.");
             browserLogin(register);
         }

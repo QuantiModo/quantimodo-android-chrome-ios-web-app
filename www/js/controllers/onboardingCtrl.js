@@ -4,13 +4,9 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $rootScope.hideNavigationMenu = true;
         if(quantimodoService.goToLoginIfNecessary()){ return; }
         quantimodoService.setupOnboardingPages(onboardingPages.data);
-        if($rootScope.onboardingPages && $rootScope.user){
-            $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {
-                return obj.id !== 'loginOnboardingPage';
-            });
-        }
         quantimodoService.hideLoader();
         $rootScope.hideNavigationMenu = true;
+        $scope.circlePage = $rootScope.onboardingPages[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){
         console.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
@@ -20,12 +16,14 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
         var onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
         quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify(onboardingPages));
+        $scope.circlePage = $rootScope.onboardingPages[0];
     };
     $scope.onboardingGoToImportPage = function () {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         removeImportPage();
-        $rootScope.onboardingPages[0].nextPageButtonText = "Done connecting data sources";
+        $scope.circlePage = $rootScope.onboardingPages[0];
+        $scope.circlePage.nextPageButtonText = "Done connecting data sources";
         $state.go('app.import');
     };
     $scope.goToUpgradePage = function () {
@@ -46,7 +44,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
             $state.go('app.onboarding');
             return;
         }
-        $scope.goToReminderSearchCategory($rootScope.onboardingPages[0].variableCategoryName);
+        $scope.goToReminderSearchCategory($scope.circlePage.variableCategoryName);
     };
     $scope.enableLocationTracking = function (event) {
         $scope.trackLocationChange(event, true);
@@ -65,6 +63,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
     $scope.hideOnboardingPage = function () {
         $rootScope.onboardingPages = $rootScope.onboardingPages.filter(function( obj ) {return obj.id !== $rootScope.onboardingPages[0].id;});
         quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
+        $scope.circlePage = $rootScope.onboardingPages[0];
         if(!$rootScope.onboardingPages || $rootScope.onboardingPages.length === 0){
             $rootScope.hideMenuButton = false;
             $state.go(config.appSettings.defaultState);

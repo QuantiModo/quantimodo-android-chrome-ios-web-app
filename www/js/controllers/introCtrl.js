@@ -50,6 +50,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         }
     });
     $scope.$on('$ionicView.afterEnter', function(){
+        quantimodoService.hideLoader();
         $rootScope.hideNavigationMenu = true;
         if(navigator && navigator.splashscreen) {
             console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
