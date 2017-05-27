@@ -84,7 +84,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
             });
     }
     $scope.loadMore = function () {
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
         if($scope.state.correlationObjects.length){
             $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
             populateCorrelationList();

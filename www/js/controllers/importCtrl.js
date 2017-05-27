@@ -17,7 +17,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 			return;
 		}
 		// Check if user upgrade via web since last user refresh
-		quantimodoService.showLoader();
+		quantimodoService.showBlackRingLoader();
 		quantimodoService.refreshUser().then(function (user) {
 			quantimodoService.hideLoader();
 			if(user.stripeActive || config.appSettings.upgradeDisabled){
@@ -75,7 +75,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	var loadNativeConnectorPage = function(){
 		$scope.showImportHelpCard = (window.localStorage.hideImportHelpCard !== "true");
 		console.debug('importCtrl: $rootScope.isMobile so using native connector page');
-		quantimodoService.showLoader();
+		quantimodoService.showBlackRingLoader();
 		quantimodoService.getConnectorsDeferred()
 			.then(function(connectors){
 				$rootScope.connectors = connectors;

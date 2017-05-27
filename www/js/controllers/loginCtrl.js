@@ -44,7 +44,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }
         // Should already be doing this in AppCtrl
         // if(quantimodoService.getAccessTokenFromUrlParameter()){
-        //     quantimodoService.showLoader();
+        //     quantimodoService.showBlackRingLoader();
         //     quantimodoService.refreshUser().then(function () {
         //         //quantimodoService.hideLoader();  // Causes loader to hide while still refreshing inbox
         //     }, function (error) {
@@ -54,7 +54,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         // }
     };
     var loginTimeout = function () {
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
         $scope.circlePage.title = 'Logging in...';
         console.debug('Setting login timeout...');
         return $timeout(function () {
@@ -114,7 +114,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             loginTimeout();
             quantimodoService.nonNativeMobileLogin(register);
         } else {
-            quantimodoService.showLoader();
+            quantimodoService.showBlackRingLoader();
             $scope.circlePage.title = 'Logging in...';
             console.debug("$scope.login: Not windows, android or is so assuming browser.");
             browserLogin(register);

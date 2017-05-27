@@ -19,7 +19,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             userTagVariableId: $scope.stateParams.userTagVariableObject.id,
             userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id
         };
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
 
         if($rootScope.variableObject.userTagVariables){
             $rootScope.variableObject.userTagVariables =
@@ -82,7 +82,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             $rootScope.variableObject.userTagVariables.push($scope.stateParams.userTagVariableObject);
         }
 
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
 
         quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
             $rootScope.variableObject);
@@ -104,7 +104,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         $scope.state.title = 'Record a Tag';
         $scope.stateParams = $stateParams;
         if(!$scope.stateParams.userTagVariableObject){
-            quantimodoService.showLoader();
+            quantimodoService.showBlackRingLoader();
             quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety').then(function (variable) {
                 $scope.stateParams.userTagVariableObject = variable;
                 quantimodoService.hideLoader();
@@ -112,7 +112,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         }
 
         if(!$scope.stateParams.userTaggedVariableObject){
-            quantimodoService.showLoader();
+            quantimodoService.showBlackRingLoader();
             quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
                 $scope.stateParams.userTaggedVariableObject = variable;
                 quantimodoService.hideLoader();

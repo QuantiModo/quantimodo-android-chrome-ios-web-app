@@ -12,7 +12,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$rootScope.hideNavigationMenu = false;
 		if(quantimodoService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
-			quantimodoService.showLoader();
+			quantimodoService.showBlackRingLoader();
 			quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: quantimodoService.getUrlParameter('userEmail')}, function(user){
 				$scope.user = user;
 				$scope.state.loading = false;

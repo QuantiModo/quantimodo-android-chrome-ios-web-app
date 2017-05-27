@@ -263,7 +263,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         }
     };
     var setupFromVariableName = function(variableName){
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
         quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, {}).then(function(variableObject){
             quantimodoService.hideLoader();
             setupFromVariableObject(variableObject);
@@ -276,7 +276,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     };
     var setMeasurementVariablesByMeasurementId = function(){
         var deferred = $q.defer();
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
         quantimodoService.getMeasurementById(quantimodoService.getUrlParameter('measurementId', location.href, true))
             .then(function(measurementObject) {
                 quantimodoService.hideLoader();
