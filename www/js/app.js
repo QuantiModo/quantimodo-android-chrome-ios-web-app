@@ -352,19 +352,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.loginOld', {
-            url: "/login-old",
-            params: {
-                fromState : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/login-page-old.html",
-                    controller: 'LoginCtrl'
-              }
-            }
-        })
         .state('app.login', {
             url: "/login",
             params: {
@@ -375,19 +362,6 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/login-page.html",
                     controller: 'LoginCtrl'
-                }
-            }
-        })
-        .state('app.loginLocal', {
-            url: "/login-local",
-            params: {
-                fromState : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/login-local.html",
-                    controller: 'IntroCtrl'
                 }
             }
         })
