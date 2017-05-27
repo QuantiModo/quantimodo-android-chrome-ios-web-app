@@ -591,20 +591,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
         var refreshToken = localStorage.getItem("refreshToken");
-        accessToken = localStorage.getItem("accessToken");
         //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken}));
         if(refreshToken && !expiresAtMilliseconds){
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
             if(!isTestUser()){Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");}
         }
-        if (accessToken && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
+        if (existingAccessToken && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
-            deferred.resolve(accessToken);
+            deferred.resolve(existingAccessToken);
         } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
             console.debug(getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
             quantimodoService.refreshAccessToken(refreshToken, deferred);
-        } else if(accessToken){
-            deferred.resolve(accessToken);
+        } else if(existingAccessToken){
+            deferred.resolve(existingAccessToken);
         } else if(quantimodoService.getClientId() === 'oAuthDisabled' || !window.private_keys) {
             //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
             deferred.resolve();
