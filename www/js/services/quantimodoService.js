@@ -568,23 +568,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.weHaveUserOrAccessToken = function(){
         return $rootScope.user || quantimodoService.getAccessTokenFromUrlParameter();
     };
+    quantimodoService.clearLocalStorageAndDeleteUser = function(){
+        quantimodoService.clearLocalStorage();
+        $rootScope.user = null;
+    };
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
-        var accessToken = quantimodoService.getAccessTokenFromUrlParameter();
-        if(accessToken){
-            if(accessToken !== localStorage.getItem('accessToken')){
-                localStorage.clear();
-                localStorage.setItem('accessToken', accessToken);
-            }
+        var accessTokenFromUrl = quantimodoService.getAccessTokenFromUrlParameter();
+        var existingAccessToken = localStorage.getItem("accessToken");
+        if(!existingAccessToken && $rootScope.user){existingAccessToken = $rootScope.user.accessToken;}
+        if(!existingAccessToken){
             var user = JSON.parse(localStorage.getItem('user'));
-            if(!user && $rootScope.user){user = $rootScope.user;}
-            if(user && accessToken !== user.accessToken){
-                $rootScope.user = null;
-                localStorage.clear();
-                localStorage.setItem('accessToken', accessToken);
-                quantimodoService.refreshUser();
-            }
-            deferred.resolve(accessToken);
+            if(user && user.accessToken){existingAccessToken = user.accessToken;}
+        }
+        if(accessTokenFromUrl && existingAccessToken && accessTokenFromUrl !== existingAccessToken){
+            console.debug('Clearing local storage because we got a new access token in url parameter!');
+            quantimodoService.clearLocalStorageAndDeleteUser();
+            localStorage.setItem('accessToken', accessTokenFromUrl);
+            quantimodoService.refreshUser();
+            deferred.resolve(accessTokenFromUrl);
             return deferred.promise;
         }
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
