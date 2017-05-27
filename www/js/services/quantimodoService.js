@@ -573,14 +573,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var accessToken = quantimodoService.getAccessTokenFromUrlParameter();
         if(accessToken){
             if(accessToken !== localStorage.getItem('accessToken')){
-                localStorage.clear();
+                quantimodoService.clearLocalStorage();
                 localStorage.setItem('accessToken', accessToken);
             }
             var user = JSON.parse(localStorage.getItem('user'));
             if(!user && $rootScope.user){user = $rootScope.user;}
             if(user && accessToken !== user.accessToken){
                 $rootScope.user = null;
-                localStorage.clear();
+                quantimodoService.clearLocalStorage();
                 localStorage.setItem('accessToken', accessToken);
                 quantimodoService.refreshUser();
             }
@@ -5118,6 +5118,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
     };
     quantimodoService.clearLocalStorage = function(){
+        console.debug('Clearing local storage!');
         if ($rootScope.isChromeApp) {chrome.storage.local.clear();} else {localStorage.clear();}
         quantimodoService.putCommonVariablesInLocalStorage();
     };
