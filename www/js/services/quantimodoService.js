@@ -570,39 +570,38 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
-        var accessToken = quantimodoService.getAccessTokenFromUrlParameter();
-        if(accessToken){
-            if(accessToken !== localStorage.getItem('accessToken')){
+        var accessTokenFromUrl = quantimodoService.getAccessTokenFromUrlParameter();
+        var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
+        if(accessTokenFromUrl){
+            if(accessTokenFromLocalStorage && accessTokenFromUrl !== accessTokenFromLocalStorage){
                 quantimodoService.clearLocalStorage();
-                localStorage.setItem('accessToken', accessToken);
             }
             var user = JSON.parse(localStorage.getItem('user'));
             if(!user && $rootScope.user){user = $rootScope.user;}
-            if(user && accessToken !== user.accessToken){
+            if(user && accessTokenFromUrl !== user.accessToken){
                 $rootScope.user = null;
                 quantimodoService.clearLocalStorage();
-                localStorage.setItem('accessToken', accessToken);
                 quantimodoService.refreshUser();
             }
-            deferred.resolve(accessToken);
+            localStorage.setItem('accessToken', accessTokenFromUrl);
+            deferred.resolve(accessTokenFromUrl);
             return deferred.promise;
         }
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
         var refreshToken = localStorage.getItem("refreshToken");
-        accessToken = localStorage.getItem("accessToken");
         //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken}));
         if(refreshToken && !expiresAtMilliseconds){
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
             if(!isTestUser()){Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");}
         }
-        if (accessToken && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
+        if (accessTokenFromLocalStorage && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
-            deferred.resolve(accessToken);
+            deferred.resolve(accessTokenFromLocalStorage);
         } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
             console.debug(getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
             quantimodoService.refreshAccessToken(refreshToken, deferred);
-        } else if(accessToken){
-            deferred.resolve(accessToken);
+        } else if(accessTokenFromLocalStorage){
+            deferred.resolve(accessTokenFromLocalStorage);
         } else if(quantimodoService.getClientId() === 'oAuthDisabled' || !window.private_keys) {
             //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
             deferred.resolve();
