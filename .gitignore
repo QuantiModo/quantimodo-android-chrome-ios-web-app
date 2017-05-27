@@ -61,3 +61,4 @@ configs-list.json
 /android-armv7-debug/
 /android-armv7-release/
 /android-x86-release/
+www/manifest.json.enc
