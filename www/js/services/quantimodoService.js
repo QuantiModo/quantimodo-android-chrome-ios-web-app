@@ -568,41 +568,42 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.weHaveUserOrAccessToken = function(){
         return $rootScope.user || quantimodoService.getAccessTokenFromUrlParameter();
     };
+    quantimodoService.clearLocalStorageAndDeleteUser = function(){
+        quantimodoService.clearLocalStorage();
+        $rootScope.user = null;
+    };
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
-        var accessToken = quantimodoService.getAccessTokenFromUrlParameter();
-        if(accessToken){
-            if(accessToken !== localStorage.getItem('accessToken')){
-                localStorage.clear();
-                localStorage.setItem('accessToken', accessToken);
-            }
+        var accessTokenFromUrl = quantimodoService.getAccessTokenFromUrlParameter();
+        var existingAccessToken = localStorage.getItem("accessToken");
+        if(!existingAccessToken && $rootScope.user){existingAccessToken = $rootScope.user.accessToken;}
+        if(!existingAccessToken){
             var user = JSON.parse(localStorage.getItem('user'));
-            if(!user && $rootScope.user){user = $rootScope.user;}
-            if(user && accessToken !== user.accessToken){
-                $rootScope.user = null;
-                localStorage.clear();
-                localStorage.setItem('accessToken', accessToken);
-                quantimodoService.refreshUser();
-            }
-            deferred.resolve(accessToken);
+            if(user && user.accessToken){existingAccessToken = user.accessToken;}
+        }
+        if(accessTokenFromUrl && existingAccessToken && accessTokenFromUrl !== existingAccessToken){
+            console.debug('Clearing local storage because we got a new access token in url parameter!');
+            quantimodoService.clearLocalStorageAndDeleteUser();
+            localStorage.setItem('accessToken', accessTokenFromUrl);
+            quantimodoService.refreshUser();
+            deferred.resolve(accessTokenFromUrl);
             return deferred.promise;
         }
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
         var refreshToken = localStorage.getItem("refreshToken");
-        accessToken = localStorage.getItem("accessToken");
         //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken}));
         if(refreshToken && !expiresAtMilliseconds){
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
             if(!isTestUser()){Bugsnag.notify(errorMessage, quantimodoService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");}
         }
-        if (accessToken && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
+        if (existingAccessToken && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
             //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
-            deferred.resolve(accessToken);
+            deferred.resolve(existingAccessToken);
         } else if (refreshToken && expiresAtMilliseconds && quantimodoService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
             console.debug(getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
             quantimodoService.refreshAccessToken(refreshToken, deferred);
-        } else if(accessToken){
-            deferred.resolve(accessToken);
+        } else if(existingAccessToken){
+            deferred.resolve(existingAccessToken);
         } else if(quantimodoService.getClientId() === 'oAuthDisabled' || !window.private_keys) {
             //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
             deferred.resolve();
