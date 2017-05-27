@@ -938,6 +938,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.refreshUser = function(){
         var deferred = $q.defer();
+        if(quantimodoService.getUrlParameter('logout')){
+            console.debug('Not refreshing user because we have a logout parameter');
+            deferred.reject('Not refreshing user because we have a logout parameter');
+            return deferred.promise;
+        }
         quantimodoService.getUserFromApi(function(user){
             quantimodoService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
