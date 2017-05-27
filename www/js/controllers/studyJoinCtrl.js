@@ -51,8 +51,7 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
     }
     $scope.joinStudy = function () {
         $scope.hideJoinStudyButton = true;
-        $scope.state.image.url = "img/robots/quantimodo-robot-happy.svg"
-        quantimodoService.showLoader();
+        $scope.state.image.url = "img/robots/quantimodo-robot-happy.svg";
         if(!$rootScope.user){
             console.debug('Setting afterLoginGoTo to ' + window.location.href + '&alreadyJoined=true');
             quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href + '&alreadyJoined=true');
