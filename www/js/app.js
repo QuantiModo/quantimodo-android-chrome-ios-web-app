@@ -29,7 +29,11 @@ angular.module('starter',
     ]
 )
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics, $ionicLoading) {
-    $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
+    quantimodoService.showLoader();
+    if(appsManager.getUrlParameter('logout')){
+        localStorage.clear();
+        $rootScope.user = null;
+    }
     quantimodoService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
@@ -238,7 +242,6 @@ angular.module('starter',
     setIntoSeenAndOnboarded();
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
-    if(appsManager.getUrlParameter('logout')){localStorage.clear();}
     if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};
     if(ionic.Platform.isAndroid()){
