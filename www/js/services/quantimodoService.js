@@ -954,7 +954,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
         var apiUrlMatchesHostName = quantimodoService.getApiUrl().indexOf(window.location.hostname);
         if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
-            quantimodoService.showLoader();
+            quantimodoService.showBlackRingLoader();
             loginUrl += "?redirect_uri=" + encodeURIComponent(window.location.href + '?loggingIn=true');
             // Have to come back to login page and wait for user request to complete
             window.location.replace(loginUrl);
@@ -5199,7 +5199,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     console.debug("Access token received",response);
                     quantimodoService.saveAccessTokenInLocalStorage(response);
                     console.debug('get user details from server and going to defaultState...');
-                    quantimodoService.showLoader();
+                    quantimodoService.showBlackRingLoader();
                     quantimodoService.refreshUser().then(function(user){
                         quantimodoService.hideLoader();
                         quantimodoService.syncAllUserData();
@@ -5263,7 +5263,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.oAuthBrowserLogin = function (register) {
         var url = quantimodoService.generateV1OAuthUrl(register);
         console.debug("Going to try logging in by opening new tab at url " + url);
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
         var ref = window.open(url, '_blank');
         if (!ref) {
             alert("You must first unblock popups, and and refresh the page for this to work!");
@@ -6916,7 +6916,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return a;
     };
     var deleteAllMeasurementsForVariable = function(variableObject) {
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
         // Delete all measurements for a variable
         quantimodoService.deleteAllMeasurementsForVariableDeferred(variableObject.id).then(function() {
             // If primaryOutcomeVariableName, delete local storage measurements
@@ -7141,8 +7141,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return planFeatureCards;
     };
-    quantimodoService.showLoader = function(){
-        $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 5000});
+    quantimodoService.showBlackRingLoader = function(){
+        $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     };
     quantimodoService.hideLoader = function(){
         //console.debug("Called $ionicLoading.hide()");

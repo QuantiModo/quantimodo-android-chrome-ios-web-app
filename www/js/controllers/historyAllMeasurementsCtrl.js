@@ -55,7 +55,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 				}, function (error) {console.error(error);});
 			}
 		}
-        //quantimodoService.showLoader();  //Let's not lock the user during history loading.  We have a card to tell them that it's loading
+        //quantimodoService.showBlackRingLoader();  //Let's not lock the user during history loading.  We have a card to tell them that it's loading
 		quantimodoService.getMeasurementsDeferred(params, refresh).then(function(history){
 			if(!history ||!history.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
 			if (concat) {$scope.state.history = $scope.state.history.concat(history);} else {$scope.state.history = history;}

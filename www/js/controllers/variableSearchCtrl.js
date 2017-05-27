@@ -71,7 +71,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             } else {
                 userTagData = {userTagVariableId: variableObject.id, userTaggedVariableId: $stateParams.userTaggedVariableObject.id, conversionFactor: 1};
-                quantimodoService.showLoader();
+                quantimodoService.showBlackRingLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
                     quantimodoService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
@@ -88,7 +88,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             } else {
                 userTagData = {userTagVariableId: $stateParams.userTagVariableObject.id, userTaggedVariableId: variableObject.id, conversionFactor: 1};
-                quantimodoService.showLoader();
+                quantimodoService.showBlackRingLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
                     quantimodoService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});

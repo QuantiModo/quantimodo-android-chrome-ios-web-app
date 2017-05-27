@@ -29,7 +29,7 @@ angular.module('starter',
     ]
 )
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics, $ionicLoading) {
-    quantimodoService.showLoader();
+    quantimodoService.showBlackRingLoader();
     if(appsManager.getUrlParameter('logout')){
         localStorage.clear();
         $rootScope.user = null;
