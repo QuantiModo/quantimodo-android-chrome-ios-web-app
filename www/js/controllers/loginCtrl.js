@@ -41,17 +41,17 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         if($rootScope.user){
             console.debug("Already logged in on login page.  goToDefaultStateIfNoAfterLoginUrlOrState...");
             quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState();
-            return;
         }
-        if(quantimodoService.getAccessTokenFromUrlParameter()){
-            quantimodoService.showLoader();
-            quantimodoService.refreshUser().then(function () {
-                //quantimodoService.hideLoader();  // Causes loader to hide while still refreshing inbox
-            }, function (error) {
-                console.error(error);
-                quantimodoService.hideLoader();
-            });
-        }
+        // Should already be doing this in AppCtrl
+        // if(quantimodoService.getAccessTokenFromUrlParameter()){
+        //     quantimodoService.showLoader();
+        //     quantimodoService.refreshUser().then(function () {
+        //         //quantimodoService.hideLoader();  // Causes loader to hide while still refreshing inbox
+        //     }, function (error) {
+        //         console.error(error);
+        //         quantimodoService.hideLoader();
+        //     });
+        // }
     };
     var loginTimeout = function () {
         quantimodoService.showLoader();
@@ -69,23 +69,23 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }, 40000);
     };
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+        console.debug('afterLoginGoTo is ' + localStorage.getItem('afterLoginGoTo'));
         leaveIfLoggedIn();
-        if(config.appSettings.appDisplayName !== "MoodiModo"){
-            $scope.hideFacebookButton = true;
-        }
+        if(config.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
         if(quantimodoService.getUrlParameter('loggingIn')){ loginTimeout(); }
     });
     $scope.$on('$ionicView.enter', function(){
-        leaveIfLoggedIn();
-        console.debug($state.current.name + ' initializing...');
+        //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
+        console.debug($state.current.name + ' enter...');
         $rootScope.hideNavigationMenu = true;
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        leaveIfLoggedIn();
+        //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
         if(navigator && navigator.splashscreen) {
             console.debug('ReminderInbox: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
         }
+        quantimodoService.hideLoader();
     });
     $scope.register = function() {
         var register = true;
