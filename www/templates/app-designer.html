@@ -1,0 +1,21 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="App Designer">
+    <ion-nav-title>App Designer</ion-nav-title>
+    <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">App Design</span>
+                    <span class="md-subhead">What kind of app are you building?</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <div layout="row" layout-align="space-between center">
+                    <span>App Type</span>
+                    <md-select ng-model="state.appSettings.appType" md-on-close="appTypeChange()">
+                        <md-option ng-value="option" ng-repeat="option in state.appTypes" >{{option}}</md-option>
+                    </md-select>
+                </div>
+            </md-card-content>
+        </md-card>
+    </ion-content>
+</ion-view>
