@@ -7159,5 +7159,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         //console.debug("Called $ionicLoading.hide()");
         $ionicLoading.hide();
     };
+    quantimodoService.postAppSettingsDeferred = function(appSettings) {
+        var deferred = $q.defer();
+        quantimodoService.postAppSettings(appSettings, function(response){
+            deferred.resolve(response);
+        }, function(error){deferred.reject(error);});
+        return deferred.promise;
+    };
+    quantimodoService.postAppSettings = function(appSettings, successHandler, errorHandler) {
+        quantimodoService.post('api/v2/apps/' + appSettings.id + '/edit', [], appSettings, successHandler, errorHandler);
+    };
     return quantimodoService;
 });
