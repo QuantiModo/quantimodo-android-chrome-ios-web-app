@@ -782,8 +782,13 @@ img.intro-primary-outcome-variable-rating-buttons {
   color:white;
   text-align:center;
 }
-
 // Circle Page End
+
+
+// Fix for transparent md-dialog background on iPhone5
+.platform-ios .opaque-on-ios{
+  opacity: 1;
+}
 
 /*
 Cool animations at http://ianlunn.github.io/Hover/

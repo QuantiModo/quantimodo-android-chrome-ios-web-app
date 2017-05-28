@@ -7159,10 +7159,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return planFeatureCards;
     };
     quantimodoService.showBlackRingLoader = function(){
+        console.debug("Showing loader because we called $ionicLoading.show");
         $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     };
     quantimodoService.hideLoader = function(){
-        //console.debug("Called $ionicLoading.hide()");
+        console.debug("Hiding loader because we called $ionicLoading.hide");
         $ionicLoading.hide();
     };
     quantimodoService.postAppSettingsDeferred = function(appSettings) {
