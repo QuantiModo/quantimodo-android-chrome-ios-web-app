@@ -242,7 +242,6 @@ function loadConfigsAndGenerateConfigJs(callback, lowercaseAppName) {
     var defaultConfigFileContent = "var config = {}; config.appSettings = " + JSON.stringify(appSettings) + "; if(!module){var module = {};}  module.exports = config.appSettings;";
     console.log("writing to " + pathToGeneratedConfigJs);
     require('fs').writeFileSync(pathToGeneratedConfigJs, defaultConfigFileContent);
-    var pathToPrivateConfig = './www/private_configs/'+ lowercaseAppName + '.config.js';
     fs.stat(pathToGeneratedConfigJs, function(err, stat) {
         if(err === null) {
             if(callback){callback();}

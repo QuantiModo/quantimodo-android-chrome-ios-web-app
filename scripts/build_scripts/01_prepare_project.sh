@@ -36,8 +36,8 @@ if [ -d "${APP_PRIVATE_CONFIG_PATH}" ];
         exit 1
 fi
 
-if [ ! -f ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js ]; then
-    echo "ERROR: ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js file not found!";
+if [ ! -f ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.private_config.json ]; then
+    echo "ERROR: ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.private_config.json file not found!";
     exit 1
 fi
 
@@ -71,7 +71,7 @@ cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 echo "Removing ${BUILD_PATH}/${LOWERCASE_APP_NAME}"
 rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}"
 
-if [ ! -f ${INTERMEDIATE_PATH}/www/private_configs//${LOWERCASE_APP_NAME}.config.js ]; then
-    echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
-    cp "${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js" "${INTERMEDIATE_PATH}/www/private_configs/"
+if [ ! -f ${INTERMEDIATE_PATH}/www/private_configs//${LOWERCASE_APP_NAME}.private_config.json ]; then
+    echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.private_config.json private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
+    cp "${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.private_config.json" "${INTERMEDIATE_PATH}/www/private_configs/"
 fi

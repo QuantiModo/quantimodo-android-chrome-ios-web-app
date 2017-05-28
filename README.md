@@ -80,7 +80,7 @@ The main contents of the App are in the `www` folder. The structure is:
 ## App-Specific Config Files
 1. config.xml
 2. www/configs/{{appname}}.js
-3. www/private_configs/{{appname}}.config.js
+3. www/private_configs/{{appname}}.private_config.json
 
 ## [Contribute](docs/contributing.md)
 
