@@ -1462,8 +1462,8 @@ gulp.task('copyIconsToWwwImg', [], function(){
 });
 
 gulp.task('copyAppConfigToDefault', [], function () {
-    return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.js')
-        .pipe(rename('default.js'))
+    return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.config.json')
+        .pipe(rename('default.config.json'))
         .pipe(gulp.dest('www/configs'));
 });
 
