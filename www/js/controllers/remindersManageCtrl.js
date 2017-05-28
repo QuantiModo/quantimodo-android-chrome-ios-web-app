@@ -85,6 +85,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	}
 	function addRemindersToScope(allTrackingReminderTypes) {
 		$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
+		quantimodoService.hideLoader();
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
 			$scope.state.showNoRemindersCard = true;
 			return;
