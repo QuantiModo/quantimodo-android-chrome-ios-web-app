@@ -3,7 +3,6 @@
 node_modules/
 plugins/
 www/lib/
-www/private_configs/*.config.js
 .idea/
 *.app.dSYM.zip
 *.ipa
@@ -32,13 +31,11 @@ gradle-2.14.1-bin.zip
 /ionic.project
 /resources/
 /www/README.md
-apps/quantimodo/resources/chrome_extension/www
 build.json
 dropbox
 !/www/private_configs/
 /www/private_configs/*
-!/www/private_configs/yourlowercaseappnamehere.config.js
-www/configs/default.js
+!/www/private_configs/yourlowercaseappnamehere.private_config.json
 *.keystore
 ionic.config.json
 supply_json_key_for_google_play.json
@@ -62,3 +59,4 @@ configs-list.json
 /android-armv7-release/
 /android-x86-release/
 www/manifest.json.enc
+www/configs/default.config.json

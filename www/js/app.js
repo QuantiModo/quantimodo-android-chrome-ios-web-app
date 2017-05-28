@@ -278,27 +278,29 @@ angular.module('starter',
         while (i--) {if (this[i] === obj) {return true;}}
     };
     var config_resolver = {};
+    window.config = {};
     appsManager.getAppSettingsFromUrlParameter();
-    if(!window.config || !window.config.appSettings){
+    function getLocalJsonFile(path, successHandler) {return function($http){$http.get(path).success(successHandler);};}
+    function getLocalConfigJson(clientId) {return getLocalJsonFile('configs/' + clientId + '.config.json', function(response) {window.config.appSettings = response;});}
+    function getLocalPrivateConfigJson(clientId) {return getLocalJsonFile('private_configs/' + clientId + '.private_config.json', function(response) {window.private_keys = response;});}
+    if(!window.config.appSettings){
         if(appsManager.doWeHaveLocalConfigFile()) {
-            config_resolver = {loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}]};
+            config_resolver.appSettingsResponse = getLocalConfigJson(appsManager.getQuantiModoClientId());
+            config_resolver.privateKeysResponse = getLocalPrivateConfigJson(appsManager.getQuantiModoClientId());
+            //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
         } else {
             var localStorageName = appsManager.getQuantiModoClientId() + 'AppSettings';
             var locallyStoredAppSettings = localStorage.getItem(localStorageName);
             if(locallyStoredAppSettings) {
-                window.config = {appSettings: JSON.parse(locallyStoredAppSettings)};
+                window.config.appSettings = JSON.parse(locallyStoredAppSettings);
             } else {
-                config_resolver = {
-                    appSettingsResponse: function ($http) {
-                        return $http.get('https://app.quantimo.do/api/v1/appSettings?clientId=' + appsManager.getQuantiModoClientId()).then(function (response) {
-                            localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
-                            window.config = {appSettings: response.data.data};
-                        }, function errorCallback(response) {
-                            return $http.get('configs/quantimodo.config.json').success(function(response) {
-                                window.config = {appSettings: response};
-                            });
-                        });
-                    }
+                config_resolver.appSettingsResponse = function ($http) {
+                    return $http.get('https://app.quantimo.do/api/v1/appSettings?clientId=' + appsManager.getQuantiModoClientId()).then(function (response) {
+                        localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
+                        window.config.appSettings = response.data.data;
+                    }, function errorCallback(response) {
+                        return getLocalConfigJson('quantimodo');
+                    });
                 };
             }
         }

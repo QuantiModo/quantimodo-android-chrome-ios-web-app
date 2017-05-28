@@ -168,10 +168,10 @@ function generatePrivateConfigFromEnvs(callback) {
 }
 
 function createPrivateConfigFiles(privateConfigObject, callback) {
-    var privateConfigContent = 'private_keys = '+ JSON.stringify(privateConfigObject, 0, 2);
-    fs.writeFileSync("./www/private_configs/default.config.js", privateConfigContent);
-    fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".config.js", privateConfigContent);
-    console.log('Created '+ './www/private_configs/default.config.js');
+    //var privateConfigContent = 'private_keys = '+ JSON.stringify(privateConfigObject, 0, 2);
+    fs.writeFileSync("./www/private_configs/default.private_config.json", JSON.stringify(privateConfigObject));
+    fs.writeFileSync("./www/private_configs/" + process.env.LOWERCASE_APP_NAME + ".private_config.json", JSON.stringify(privateConfigObject));
+    console.log('Created '+ './www/private_configs/default.private_config.json');
     if(callback){callback();}
 }
 
@@ -218,8 +218,8 @@ function decryptPrivateConfig(callback) {
         generatePrivateConfigFromEnvs(callback);
         return;
 	}
-    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
-    var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
+    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
+    var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 }
 
@@ -585,8 +585,8 @@ gulp.task('decryptBuildJson', [], function(callback){
 });
 
 function encryptPrivateConfig(callback) {
-    var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
-    var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js';
+    var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
+    var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json';
     encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 }
 
@@ -612,8 +612,8 @@ gulp.task('decryptPrivateConfig', ['setLowerCaseAppName'], function(callback){
 });
 
 gulp.task('decryptPrivateConfigToDefault', [], function(callback){
-    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js.enc';
-    var decryptedFilePath = './www/private_configs/default.config.js';
+    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
+    var decryptedFilePath = './www/private_configs/default.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 
@@ -834,24 +834,24 @@ var FACEBOOK_APP_NAME = false;
 
 gulp.task('loadPrivateConfig', ['setLowerCaseAppName'] ,function(){
 	var deferred = q.defer();
-	fs.stat('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js', function(err, stat) {
+	fs.stat('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json', function(err, stat) {
 		if(!err) {
-			console.log('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js exists');
+			console.log('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json exists');
 		} else {
 			console.log(JSON.stringify(err));
 		}
 	});
-	fs.readFile('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js', function (err, data) {
+	fs.readFile('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json', function (err, data) {
 		if (err) {throw err;}
 		var exr = false;
 		if(data.indexOf('FACEBOOK_APP_ID') < 0){
 			exr = true;
-			console.error("ERROR: NO FACEBOOK_APP_ID found in ./www/private_configs/" + process.env.LOWERCASE_APP_NAME + '.config.js');
+			console.error("ERROR: NO FACEBOOK_APP_ID found in ./www/private_configs/" + process.env.LOWERCASE_APP_NAME + '.private_config.json');
 			deferred.reject();
 		}
 		if(data.indexOf('FACEBOOK_APP_NAME') < 0){
 			exr = true;
-			console.error("ERROR: NO FACEBOOK_APP_NAME found in ./www/private_configs/" + process.env.LOWERCASE_APP_NAME + '.config.js');
+			console.error("ERROR: NO FACEBOOK_APP_NAME found in ./www/private_configs/" + process.env.LOWERCASE_APP_NAME + '.private_config.json');
 			deferred.reject();
 		}
 		if(!exr){
@@ -1468,10 +1468,10 @@ gulp.task('copyAppConfigToDefault', [], function () {
 });
 
 gulp.task('copyPrivateConfigToDefault', [], function () {
-	console.log('Copying ./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js to ' +
-		'www/private_configs/default.config.js');
-    return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.config.js')
-        .pipe(rename('default.config.js'))
+	console.log('Copying ./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json to ' +
+		'www/private_configs/default.private_config.json');
+    return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json')
+        .pipe(rename('default.private_config.json'))
         .pipe(gulp.dest('www/private_configs'));
 });
 
