@@ -1,6 +1,14 @@
 angular.module('starter').factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog,
                                            $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory, $ionicActionSheet) {
     var quantimodoService = {};
+    quantimodoService.ionIcons = {
+        history: 'ion-ios-list-outline',
+        reminder: 'ion-android-notifications-none',
+        recordMeasurement: 'ion-compose',
+        charts: 'ion-arrow-graph-up-right',
+        settings: 'ion-settings',
+        help: 'ion-help'
+    };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     // GET method with the added token
     quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
@@ -5868,559 +5876,570 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.getMenu = function(menuType){
-        if(config.appSettings.menu){return config.appSettings.menu;}
-        var menuItems = {
-            inbox: {
-                "title" : "Reminder Inbox",
-                "href" : "#/app/reminders-inbox",
-                icon: "ion-archive"
-            },
-            favorites: {
-                "title" : "Favorites",
-                "href" : "#/app/favorites",
-                icon: "ion-ios-star"
-            },
-            settings: {
-                "title" : "Settings",
-                "href" : "#/app/settings",
-                icon: "ion-ios-gear-outline"
-            },
-            helpAndFeedback: {
-                "title" : "Help & Feedback",
-                "href" : "#/app/feedback",
-                icon: "ion-ios-help-outline"
-            },
-            treatments: {
-                title : 'Treatments',
-                href : '#/app/reminders-list/Treatments',
-                icon: 'ion-ios-medkit-outline'
-            },
-            symptoms: {
-                title : 'Symptoms',
-                href : '#/app/reminders-list/Symptoms',
-                icon: 'ion-sad-outline'
-            },
-            vitalSigns: {
-                title : 'Vital Signs',
-                href : '#/app/reminders-list/Vital Signs',
-                icon: 'ion-ios-pulse'
-            },
-            emotions: {
-                title : 'Emotions',
-                href : '#/app/reminders-list/Emotions',
-                icon: 'ion-happy-outline'
-            },
-            foods: {
-                title : 'Foods',
-                href : '#/app/reminders-list/Foods',
-                icon: 'ion-ios-nutrition-outline'
-            },
-            physicalActivity: {
-                title : 'Physical Activity',
-                href : '#/app/reminders-list/Physical Activity',
-                icon: 'ion-ios-body-outline'
-            },
-            importData: {
-                "title" : "Import Data",
-                "href" : "#/app/import",
-                icon: "ion-ios-cloud-download-outline"
-            },
-            chartSearch: {
-                "title" : "Charts",
-                "href" : "#/app/chart-search",
-                icon: "ion-arrow-graph-up-right"
-            },
-            everything: {
-                title : 'Everything',
-                href : '#/app/reminders-list/Anything',
-                icon: "ion-android-globe"
-            },
-            studyCreation: {
-                title : 'Create Study',
-                href : '#/app/study-creation',
-                icon: "ion-erlenmeyer-flask"
-            },
-            predictorSearch: {
-                "title" : "Predictor Search",
-                "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                "href" : "#/app/predictor-search",
-                icon: "ion-log-in"
-            },
-            outcomeSearch: {
-                "title" : "Outcome Search",
-                "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                "href" : "#/app/outcome-search",
-                icon: "ion-log-out"
-            }
-        };
-        var subMenus = {
-            manageReminders: [
-                {
-                    "title" : "All Reminders",
-                    "showSubMenuVariable" : "showReminderSubMenu",
-                    "href" : "#/app/reminders-manage/Anything",
-                    icon: "ion-android-globe"
-                },
-                {
-                    "title" : "Emotions",
-                    "showSubMenuVariable" : "showReminderSubMenu",
-                    "href" : "#/app/reminders-manage/Emotions",
-                    icon: "ion-happy-outline"
-                },
-                {
-                    "title" : "Foods",
-                    "showSubMenuVariable" : "showReminderSubMenu",
-                    "href": "#/app/reminders-manage/Foods",
-                    icon: "ion-ios-nutrition-outline"
-                },
-                {
-                    "title" : "Physical Activity",
-                    "showSubMenuVariable" : "showReminderSubMenu",
-                    "href" : "#/app/reminders-manage/Physical Activity",
-                    icon: "ion-ios-body-outline"
-                },
-                {
-                    "title" : "Symptoms",
-                    "showSubMenuVariable" : "showReminderSubMenu",
-                    "href" : "#/app/reminders-manage/Symptoms",
-                    icon: "ion-sad-outline"
-                },
-                {
-                    "title" : "Treatments",
-                    "showSubMenuVariable" : "showReminderSubMenu",
-                    "href" : "#/app/reminders-manage/Treatments",
-                    icon: "ion-ios-medkit-outline"
-                },
-                {
-                    "title" : "Vital Signs",
-                    "showSubMenuVariable" : "showReminderSubMenu",
-                    "href" : "#/app/reminders-manage/Vital Signs",
-                    icon: "ion-ios-pulse"
-                },
-            ],
-            recordMeasurement: [
-                {
-                    "title" : "Track Anything",
-                    "showSubMenuVariable" : "showTrackingSubMenu",
-                    "href": "#/app/measurement-add-search",
-                    icon: "ion-android-globe"
-                },
-                {
-                    "title" : "Record a Meal",
-                    "showSubMenuVariable" : "showTrackingSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Foods",
-                    icon: "ion-ios-nutrition-outline"
-                },
-                {
-                    "title" : "Rate an Emotion",
-                    "showSubMenuVariable" : "showTrackingSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Emotions",
-                    icon: "ion-happy-outline"
-                },
-                {
-                    "title" : "Rate a Symptom",
-                    "showSubMenuVariable" : "showTrackingSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Symptoms",
-                    icon: "ion-ios-pulse"
-                },
-                {
-                    "title" : "Record a Treatment",
-                    "showSubMenuVariable" : "showTrackingSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Treatments",
-                    icon: "ion-ios-medkit-outline"
-                },
-                {
-                    "title" : "Record Activity",
-                    "showSubMenuVariable" : "showTrackingSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Physical Activity",
-                    icon: "ion-ios-body-outline"
-                },
-                {
-                    "title" : "Record Vital Sign",
-                    "showSubMenuVariable" : "showTrackingSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Vital Signs",
-                    icon: "ion-ios-pulse"
-                }
-            ],
-            overallMood: [
-                {
-                    "title" : "Charts",
-                    "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                    "href" : "#/app/track",
-                    icon: "ion-arrow-graph-up-right"
-                },
-                {
-                    "title" : "History",
-                    "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                    "href" : "#/app/history",
-                    icon: quantimodoService.ionIcons.history
-                },
-                {
-                    "title" : "Positive Predictors",
-                    "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                    "href" : "#/app/predictors-positive",
-                    icon: "ion-happy-outline"
-                },
-                {
-                    "title" : "Negative Predictors",
-                    "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                    "href" : "#/app/predictors-negative",
-                    icon: "ion-sad-outline"
-                },
-            ],
-            history: [
-                {
-                    "title" : "All Measurements",
-                    "showSubMenuVariable" : "showHistorySubMenu",
-                    "href" : "#/app/history-all/Anything",
-                    icon: "ion-android-globe"
-                },
-                {
-                    "title" : "Emotions",
-                    "showSubMenuVariable" : "showHistorySubMenu",
-                    "href" : "#/app/history-all/Emotions",
-                    icon: "ion-happy-outline"
-                },
-                {
-                    "title" : "Foods",
-                    "showSubMenuVariable" : "showHistorySubMenu",
-                    "href" : "#/app/history-all/Foods",
-                    icon: "ion-ios-nutrition-outline"
-                },
-                {
-                    "title" : "Symptoms",
-                    "showSubMenuVariable" : "showHistorySubMenu",
-                    "href" : "#/app/history-all/Symptoms",
-                    icon: "ion-sad-outline"
-                },
-                {
-                    "title" : "Treatments",
-                    "showSubMenuVariable" : "showHistorySubMenu",
-                    "href": "#/app/history-all/Treatments",
-                    icon: "ion-ios-medkit-outline"
-                },
-                {
-                    "title" : "Physical Activity",
-                    "showSubMenuVariable" : "showHistorySubMenu",
-                    "href" : "#/app/history-all/Physical Activity",
-                    icon: "ion-ios-body-outline"
-                },
-                {
-                    "title" : "Vital Signs",
-                    "showSubMenuVariable" : "showHistorySubMenu",
-                    "href" : "#/app/history-all/Vital Signs",
-                    icon: "ion-ios-pulse"
-                },
-                {
-                    "title" : "Locations",
-                    "showSubMenuVariable" : "showHistorySubMenu",
-                    "href" : "#/app/history-all/Location",
-                    icon: "ion-ios-location-outline"
-                },
-            ],
-            discoveries: [
-                menuItems.predictorSearch,
-                menuItems.outcomeSearch,
-                menuItems.studyCreation
-            ],
-            discoveriesWithMood: [
-                menuItems.predictorSearch,
-                menuItems.outcomeSearch,
-                {
-                    "title" : "Positive Mood",
-                    "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                    "href" : "#/app/predictors-positive",
-                    icon: "ion-happy-outline"
-                },
-                {
-                    "title" : "Negative Mood",
-                    "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                    "href" : "#/app/predictors-negative",
-                    icon: "ion-sad-outline"
-                },
-                menuItems.studyCreation
-            ],
-            medications: [
-                {
-                    "title" : "Overdue",
-                    "showSubMenuVariable" : "showTreatmentsSubMenu",
-                    "href" : "#/app/reminders-inbox/Treatments",
-                    icon: "ion-clock"
-                },
-                {
-                    "title" : "Today's Schedule",
-                    "showSubMenuVariable" : "showTreatmentsSubMenu",
-                    "href" : "#/app/reminders-inbox-today/Treatments",
-                    icon: "ion-android-sunny"
-                },
-                {
-                    "title" : "Manage Scheduled",
-                    "showSubMenuVariable" : "showTreatmentsSubMenu",
-                    "href": "#/app/manage-scheduled-meds",
-                    icon: "ion-android-notifications-none"
-                },
-                {
-                    "title" : "As-Needed Meds",
-                    "showSubMenuVariable" : "showTreatmentsSubMenu",
-                    "href" : "#/app/as-needed-meds",
-                    icon: "ion-ios-medkit-outline"
-                },
-                {
-                    "title" : "Record a Dose",
-                    "showSubMenuVariable" : "showTreatmentsSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Treatments",
-                    icon: "ion-edit"
-                },
-                {
-                    "title" : "History",
-                    "showSubMenuVariable" : "showTreatmentsSubMenu",
-                    "href": "#/app/history-all/Treatments",
-                    icon: "ion-ios-paper-outline"
-                }
-            ],
-            symptoms: [
-                {
-                    "title" : "Manage Reminders",
-                    "showSubMenuVariable" : "showSymptomsSubMenu",
-                    "href" : "#/app/reminders-manage/Symptoms",
-                    icon: "ion-android-notifications-none"
-                },
-                {
-                    "title" : "Rate Symptom",
-                    "showSubMenuVariable" : "showSymptomsSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Symptoms",
-                    icon: "ion-edit"
-                },
-                {
-                    "title" : "History",
-                    "showSubMenuVariable" : "showSymptomsSubMenu",
-                    "href" : "#/app/history-all/Symptoms",
-                    icon: "ion-ios-paper-outline"
-                },
-            ],
-            vitalSigns: [
-                {
-                    "title" : "Manage Reminders",
-                    "showSubMenuVariable" : "showVitalSignsSubMenu",
-                    "href" : "#/app/reminders-manage/Vital Signs",
-                    icon: "ion-android-notifications-none"
-                },
-                {
-                    "title" : "Record Now",
-                    "showSubMenuVariable" : "showVitalSignsSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Vital Signs",
-                    icon: "ion-edit"
-                },
-                {
-                    "title" : "History",
-                    "showSubMenuVariable" : "showVitalSignsSubMenu",
-                    "href" : "#/app/history-all/Vital Signs",
-                    icon: "ion-ios-paper-outline"
-                }
-            ],
-            physicalActivity: [
-                {
-                    "title" : "Manage Reminders",
-                    "showSubMenuVariable": "showPhysicalActivitySubMenu",
-                    "href" : "#/app/reminders-manage/Physical Activity",
-                    icon: "ion-android-notifications-none"
-                },
-                {
-                    "title" : "Record Activity",
-                    "showSubMenuVariable": "showPhysicalActivitySubMenu",
-                    "href" : "#/app/measurement-add-search-category/Physical Activity",
-                    icon: "ion-edit"
-                },
-                {
-                    "title" : "History",
-                    "showSubMenuVariable": "showPhysicalActivitySubMenu",
-                    "href" : "#/app/history-all/Physical Activity",
-                    icon: "ion-ios-paper-outline"
-                }
-            ],
-            emotions: [
-                {
-                    "title" : "Manage Reminders",
-                    "showSubMenuVariable" : "showEmotionsSubMenu",
-                    "href" : "#/app/reminders-manage/Emotions",
-                    icon: "ion-android-notifications-none"
-                },
-                {
-                    "title" : "Record Rating",
-                    "showSubMenuVariable" : "showEmotionsSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Emotions",
-                    icon: "ion-edit"
-                },
-                {
-                    "title" : "History",
-                    "showSubMenuVariable" : "showEmotionsSubMenu",
-                    "href" : "#/app/history-all/Emotions",
-                    icon: "ion-ios-paper-outline"
-                }
-            ],
-            diet: [
-                {
-                    "title" : "Manage Reminders",
-                    "showSubMenuVariable" : "showDietSubMenu",
-                    "href": "#/app/reminders-manage/Foods",
-                    icon: "ion-android-notifications-none"
-                },
-                {
-                    "title" : "Record Meal",
-                    "showSubMenuVariable" : "showDietSubMenu",
-                    "href" : "#/app/measurement-add-search-category/Foods",
-                    icon: "ion-edit"
-                },
-                {
-                    "title" : "History",
-                    "showSubMenuVariable" : "showDietSubMenu",
-                    "href" : "#/app/history-all/Foods",
-                    icon: "ion-ios-paper-outline"
-                }
-            ],
-            variables: [
-                menuItems.everything,
-                menuItems.treatments,
-                menuItems.symptoms,
-                menuItems.vitalSigns,
-                menuItems.emotions,
-                menuItems.foods,
-                menuItems.physicalActivity,
-            ]
-        };
-        var parentMenus = {
-            overallMood: {
-                "title" : "Overall Mood",
-                "click": "togglePrimaryOutcomeSubMenu",
-                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                icon: "ion-happy-outline",
-                subMenu: subMenus.overallMood
-            },
-            manageReminders: {
-                "title" : "Manage Reminders",
-                "click" : "toggleReminderSubMenu",
+    var menuItems = {
+        inbox: {
+            "title" : "Reminder Inbox",
+            "href" : "#/app/reminders-inbox",
+            icon: "ion-archive"
+        },
+        favorites: {
+            "title" : "Favorites",
+            "href" : "#/app/favorites",
+            icon: "ion-ios-star"
+        },
+        settings: {
+            "title" : "Settings",
+            "href" : "#/app/settings",
+            icon: "ion-ios-gear-outline"
+        },
+        helpAndFeedback: {
+            "title" : "Help & Feedback",
+            "href" : "#/app/feedback",
+            icon: "ion-ios-help-outline"
+        },
+        treatments: {
+            title : 'Treatments',
+            href : '#/app/reminders-list/Treatments',
+            icon: 'ion-ios-medkit-outline'
+        },
+        symptoms: {
+            title : 'Symptoms',
+            href : '#/app/reminders-list/Symptoms',
+            icon: 'ion-sad-outline'
+        },
+        vitalSigns: {
+            title : 'Vital Signs',
+            href : '#/app/reminders-list/Vital Signs',
+            icon: 'ion-ios-pulse'
+        },
+        emotions: {
+            title : 'Emotions',
+            href : '#/app/reminders-list/Emotions',
+            icon: 'ion-happy-outline'
+        },
+        foods: {
+            title : 'Foods',
+            href : '#/app/reminders-list/Foods',
+            icon: 'ion-ios-nutrition-outline'
+        },
+        physicalActivity: {
+            title : 'Physical Activity',
+            href : '#/app/reminders-list/Physical Activity',
+            icon: 'ion-ios-body-outline'
+        },
+        importData: {
+            "title" : "Import Data",
+            "href" : "#/app/import",
+            icon: "ion-ios-cloud-download-outline"
+        },
+        chartSearch: {
+            "title" : "Charts",
+            "href" : "#/app/chart-search",
+            icon: "ion-arrow-graph-up-right"
+        },
+        everything: {
+            title : 'Everything',
+            href : '#/app/reminders-list/Anything',
+            icon: "ion-android-globe"
+        },
+        studyCreation: {
+            title : 'Create Study',
+            href : '#/app/study-creation',
+            icon: "ion-erlenmeyer-flask"
+        },
+        predictorSearch: {
+            "title" : "Predictor Search",
+            "showSubMenuVariable" : "showPredictorSearchSubMenu",
+            "href" : "#/app/predictor-search",
+            icon: "ion-log-in"
+        },
+        outcomeSearch: {
+            "title" : "Outcome Search",
+            "showSubMenuVariable" : "showPredictorSearchSubMenu",
+            "href" : "#/app/outcome-search",
+            icon: "ion-log-out"
+        }
+    };
+    var subMenus = {
+        manageReminders: [
+            {
+                "title" : "All Reminders",
                 "showSubMenuVariable" : "showReminderSubMenu",
-                subMenu: subMenus.manageReminders,
-                icon: "ion-android-notifications-none"
-            },
-            recordMeasurement: {
-                "title" : "Record Measurement",
-                "click" : "toggleTrackingSubMenu",
-                "showSubMenuVariable" : "showTrackingSubMenu",
-                subMenu: subMenus.recordMeasurement,
-                icon: "ion-compose"
-            },
-            history: {
-                "title" : "History",
-                "click" : "toggleHistorySubMenu",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                subMenu: subMenus.history,
-                icon: quantimodoService.ionIcons.history
-            },
-            discoveries: {
-                "title" : "Discoveries",
-                "click": "togglePredictorSearchSubMenu",
-                "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                subMenu: subMenus.discoveries,
-                icon: "ion-ios-analytics"
-            },
-            variables: {
-                "title" : "My Variables",
-                "click": "toggleVariablesSubMenu",
-                "showSubMenuVariable" : "showVariablesSubMenu",
-                subMenu: subMenus.variables,
+                "href" : "#/app/reminders-manage/Anything",
                 icon: "ion-android-globe"
             },
-            medications: {
-                "title" : "Medications",
-                "click" : "toggleTreatmentsSubMenu",
-                "showSubMenuVariable" : "showTreatmentsSubMenu",
-                subMenu: subMenus.medications,
-                icon: "ion-ios-medkit-outline"
-            },
-            symptoms: {
-                "title" : "Symptoms",
-                "click" : "toggleSymptomsSubMenu",
-                subMenu: subMenus.symptoms,
-                "showSubMenuVariable" : "showSymptomsSubMenu",
-                icon: "ion-sad-outline"
-            },
-            vitalSigns: {
-                "title" : "Vital Signs",
-                "click" : "toggleVitalSignsSubMenu",
-                "showSubMenuVariable" : "showVitalSignsSubMenu",
-                subMenu: subMenus.vitalSigns,
-                icon: "ion-ios-pulse"
-            },
-            physicalActivity: {
-                "title" : "Physical Activity",
-                "click" : "togglePhysicalActivitySubMenu",
-                "showSubMenuVariable": "showPhysicalActivitySubMenu",
-                subMenu: subMenus.physicalActivity,
-                icon: "ion-ios-body-outline"
-            },
-            emotions: {
+            {
                 "title" : "Emotions",
-                "click" : "toggleEmotionsSubMenu",
-                "showSubMenuVariable" : "showEmotionsSubMenu",
-                subMenu: subMenus.emotions,
+                "showSubMenuVariable" : "showReminderSubMenu",
+                "href" : "#/app/reminders-manage/Emotions",
                 icon: "ion-happy-outline"
             },
-            diet: {
-                "title" : "Diet",
-                "click" : "toggleDietSubMenu",
-                "showSubMenuVariable" : "showDietSubMenu",
-                subMenu: subMenus.diet,
+            {
+                "title" : "Foods",
+                "showSubMenuVariable" : "showReminderSubMenu",
+                "href": "#/app/reminders-manage/Foods",
                 icon: "ion-ios-nutrition-outline"
+            },
+            {
+                "title" : "Physical Activity",
+                "showSubMenuVariable" : "showReminderSubMenu",
+                "href" : "#/app/reminders-manage/Physical Activity",
+                icon: "ion-ios-body-outline"
+            },
+            {
+                "title" : "Symptoms",
+                "showSubMenuVariable" : "showReminderSubMenu",
+                "href" : "#/app/reminders-manage/Symptoms",
+                icon: "ion-sad-outline"
+            },
+            {
+                "title" : "Treatments",
+                "showSubMenuVariable" : "showReminderSubMenu",
+                "href" : "#/app/reminders-manage/Treatments",
+                icon: "ion-ios-medkit-outline"
+            },
+            {
+                "title" : "Vital Signs",
+                "showSubMenuVariable" : "showReminderSubMenu",
+                "href" : "#/app/reminders-manage/Vital Signs",
+                icon: "ion-ios-pulse"
+            },
+        ],
+        recordMeasurement: [
+            {
+                "title" : "Track Anything",
+                "showSubMenuVariable" : "showTrackingSubMenu",
+                "href": "#/app/measurement-add-search",
+                icon: "ion-android-globe"
+            },
+            {
+                "title" : "Record a Meal",
+                "showSubMenuVariable" : "showTrackingSubMenu",
+                "href" : "#/app/measurement-add-search-category/Foods",
+                icon: "ion-ios-nutrition-outline"
+            },
+            {
+                "title" : "Rate an Emotion",
+                "showSubMenuVariable" : "showTrackingSubMenu",
+                "href" : "#/app/measurement-add-search-category/Emotions",
+                icon: "ion-happy-outline"
+            },
+            {
+                "title" : "Rate a Symptom",
+                "showSubMenuVariable" : "showTrackingSubMenu",
+                "href" : "#/app/measurement-add-search-category/Symptoms",
+                icon: "ion-ios-pulse"
+            },
+            {
+                "title" : "Record a Treatment",
+                "showSubMenuVariable" : "showTrackingSubMenu",
+                "href" : "#/app/measurement-add-search-category/Treatments",
+                icon: "ion-ios-medkit-outline"
+            },
+            {
+                "title" : "Record Activity",
+                "showSubMenuVariable" : "showTrackingSubMenu",
+                "href" : "#/app/measurement-add-search-category/Physical Activity",
+                icon: "ion-ios-body-outline"
+            },
+            {
+                "title" : "Record Vital Sign",
+                "showSubMenuVariable" : "showTrackingSubMenu",
+                "href" : "#/app/measurement-add-search-category/Vital Signs",
+                icon: "ion-ios-pulse"
             }
-        };
-        var menus = {
-            extended: [
-                menuItems.inbox,
-                menuItems.favorites,
-                parentMenus.overallMood,
-                parentMenus.manageReminders,
-                parentMenus.recordMeasurement,
-                parentMenus.history,
-                menuItems.importData,
-                menuItems.chartSearch,
-                parentMenus.discoveries,
-                menuItems.settings,
-                menuItems.helpAndFeedback
-            ],
-            minimal: [
-                menuItems.inbox,
-                parentMenus.variables,
-                parentMenus.history,
-                menuItems.importData,
-                parentMenus.discoveries,
-                menuItems.chartSearch,
-                menuItems.settings,
-            ],
-            medication: [
-                menuItems.inbox,
-                menuItems.treatments,
-                parentMenus.variables,
-                parentMenus.history,
-                menuItems.importData,
-                parentMenus.discoveries,
-                menuItems.chartSearch,
-                menuItems.settings
-            ],
-            diet: [
-                menuItems.inbox,
-                menuItems.foods,
-                parentMenus.variables,
-                parentMenus.history,
-                menuItems.importData,
-                parentMenus.discoveries,
-                menuItems.chartSearch,
-                menuItems.settings
-            ]
-        };
-        if(!menuType){menuType = 'extended';}
-        return menus[menuType];
+        ],
+        overallMood: [
+            {
+                "title" : "Charts",
+                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
+                "href" : "#/app/track",
+                icon: "ion-arrow-graph-up-right"
+            },
+            {
+                "title" : "History",
+                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
+                "href" : "#/app/history",
+                icon: quantimodoService.ionIcons.history
+            },
+            {
+                "title" : "Positive Predictors",
+                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
+                "href" : "#/app/predictors-positive",
+                icon: "ion-happy-outline"
+            },
+            {
+                "title" : "Negative Predictors",
+                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
+                "href" : "#/app/predictors-negative",
+                icon: "ion-sad-outline"
+            },
+        ],
+        history: [
+            {
+                "title" : "All Measurements",
+                "showSubMenuVariable" : "showHistorySubMenu",
+                "href" : "#/app/history-all/Anything",
+                icon: "ion-android-globe"
+            },
+            {
+                "title" : "Emotions",
+                "showSubMenuVariable" : "showHistorySubMenu",
+                "href" : "#/app/history-all/Emotions",
+                icon: "ion-happy-outline"
+            },
+            {
+                "title" : "Foods",
+                "showSubMenuVariable" : "showHistorySubMenu",
+                "href" : "#/app/history-all/Foods",
+                icon: "ion-ios-nutrition-outline"
+            },
+            {
+                "title" : "Symptoms",
+                "showSubMenuVariable" : "showHistorySubMenu",
+                "href" : "#/app/history-all/Symptoms",
+                icon: "ion-sad-outline"
+            },
+            {
+                "title" : "Treatments",
+                "showSubMenuVariable" : "showHistorySubMenu",
+                "href": "#/app/history-all/Treatments",
+                icon: "ion-ios-medkit-outline"
+            },
+            {
+                "title" : "Physical Activity",
+                "showSubMenuVariable" : "showHistorySubMenu",
+                "href" : "#/app/history-all/Physical Activity",
+                icon: "ion-ios-body-outline"
+            },
+            {
+                "title" : "Vital Signs",
+                "showSubMenuVariable" : "showHistorySubMenu",
+                "href" : "#/app/history-all/Vital Signs",
+                icon: "ion-ios-pulse"
+            },
+            {
+                "title" : "Locations",
+                "showSubMenuVariable" : "showHistorySubMenu",
+                "href" : "#/app/history-all/Location",
+                icon: "ion-ios-location-outline"
+            },
+        ],
+        discoveries: [
+            menuItems.predictorSearch,
+            menuItems.outcomeSearch,
+            menuItems.studyCreation
+        ],
+        discoveriesWithMood: [
+            menuItems.predictorSearch,
+            menuItems.outcomeSearch,
+            {
+                "title" : "Positive Mood",
+                "showSubMenuVariable" : "showPredictorSearchSubMenu",
+                "href" : "#/app/predictors-positive",
+                icon: "ion-happy-outline"
+            },
+            {
+                "title" : "Negative Mood",
+                "showSubMenuVariable" : "showPredictorSearchSubMenu",
+                "href" : "#/app/predictors-negative",
+                icon: "ion-sad-outline"
+            },
+            menuItems.studyCreation
+        ],
+        medications: [
+            {
+                "title" : "Overdue",
+                "showSubMenuVariable" : "showTreatmentsSubMenu",
+                "href" : "#/app/reminders-inbox/Treatments",
+                icon: "ion-clock"
+            },
+            {
+                "title" : "Today's Schedule",
+                "showSubMenuVariable" : "showTreatmentsSubMenu",
+                "href" : "#/app/reminders-inbox-today/Treatments",
+                icon: "ion-android-sunny"
+            },
+            {
+                "title" : "Manage Scheduled",
+                "showSubMenuVariable" : "showTreatmentsSubMenu",
+                "href": "#/app/manage-scheduled-meds",
+                icon: "ion-android-notifications-none"
+            },
+            {
+                "title" : "As-Needed Meds",
+                "showSubMenuVariable" : "showTreatmentsSubMenu",
+                "href" : "#/app/as-needed-meds",
+                icon: "ion-ios-medkit-outline"
+            },
+            {
+                "title" : "Record a Dose",
+                "showSubMenuVariable" : "showTreatmentsSubMenu",
+                "href" : "#/app/measurement-add-search-category/Treatments",
+                icon: "ion-edit"
+            },
+            {
+                "title" : "History",
+                "showSubMenuVariable" : "showTreatmentsSubMenu",
+                "href": "#/app/history-all/Treatments",
+                icon: "ion-ios-paper-outline"
+            }
+        ],
+        symptoms: [
+            {
+                "title" : "Manage Reminders",
+                "showSubMenuVariable" : "showSymptomsSubMenu",
+                "href" : "#/app/reminders-manage/Symptoms",
+                icon: "ion-android-notifications-none"
+            },
+            {
+                "title" : "Rate Symptom",
+                "showSubMenuVariable" : "showSymptomsSubMenu",
+                "href" : "#/app/measurement-add-search-category/Symptoms",
+                icon: "ion-edit"
+            },
+            {
+                "title" : "History",
+                "showSubMenuVariable" : "showSymptomsSubMenu",
+                "href" : "#/app/history-all/Symptoms",
+                icon: "ion-ios-paper-outline"
+            },
+        ],
+        vitalSigns: [
+            {
+                "title" : "Manage Reminders",
+                "showSubMenuVariable" : "showVitalSignsSubMenu",
+                "href" : "#/app/reminders-manage/Vital Signs",
+                icon: "ion-android-notifications-none"
+            },
+            {
+                "title" : "Record Now",
+                "showSubMenuVariable" : "showVitalSignsSubMenu",
+                "href" : "#/app/measurement-add-search-category/Vital Signs",
+                icon: "ion-edit"
+            },
+            {
+                "title" : "History",
+                "showSubMenuVariable" : "showVitalSignsSubMenu",
+                "href" : "#/app/history-all/Vital Signs",
+                icon: "ion-ios-paper-outline"
+            }
+        ],
+        physicalActivity: [
+            {
+                "title" : "Manage Reminders",
+                "showSubMenuVariable": "showPhysicalActivitySubMenu",
+                "href" : "#/app/reminders-manage/Physical Activity",
+                icon: "ion-android-notifications-none"
+            },
+            {
+                "title" : "Record Activity",
+                "showSubMenuVariable": "showPhysicalActivitySubMenu",
+                "href" : "#/app/measurement-add-search-category/Physical Activity",
+                icon: "ion-edit"
+            },
+            {
+                "title" : "History",
+                "showSubMenuVariable": "showPhysicalActivitySubMenu",
+                "href" : "#/app/history-all/Physical Activity",
+                icon: "ion-ios-paper-outline"
+            }
+        ],
+        emotions: [
+            {
+                "title" : "Manage Reminders",
+                "showSubMenuVariable" : "showEmotionsSubMenu",
+                "href" : "#/app/reminders-manage/Emotions",
+                icon: "ion-android-notifications-none"
+            },
+            {
+                "title" : "Record Rating",
+                "showSubMenuVariable" : "showEmotionsSubMenu",
+                "href" : "#/app/measurement-add-search-category/Emotions",
+                icon: "ion-edit"
+            },
+            {
+                "title" : "History",
+                "showSubMenuVariable" : "showEmotionsSubMenu",
+                "href" : "#/app/history-all/Emotions",
+                icon: "ion-ios-paper-outline"
+            }
+        ],
+        diet: [
+            {
+                "title" : "Manage Reminders",
+                "showSubMenuVariable" : "showDietSubMenu",
+                "href": "#/app/reminders-manage/Foods",
+                icon: "ion-android-notifications-none"
+            },
+            {
+                "title" : "Record Meal",
+                "showSubMenuVariable" : "showDietSubMenu",
+                "href" : "#/app/measurement-add-search-category/Foods",
+                icon: "ion-edit"
+            },
+            {
+                "title" : "History",
+                "showSubMenuVariable" : "showDietSubMenu",
+                "href" : "#/app/history-all/Foods",
+                icon: "ion-ios-paper-outline"
+            }
+        ],
+        variables: [
+            menuItems.everything,
+            menuItems.treatments,
+            menuItems.symptoms,
+            menuItems.vitalSigns,
+            menuItems.emotions,
+            menuItems.foods,
+            menuItems.physicalActivity,
+        ]
+    };
+    var parentMenus = {
+        overallMood: {
+            "title" : "Overall Mood",
+            "click": "togglePrimaryOutcomeSubMenu",
+            "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
+            icon: "ion-happy-outline",
+            subMenu: subMenus.overallMood
+        },
+        manageReminders: {
+            "title" : "Manage Reminders",
+            "click" : "toggleReminderSubMenu",
+            "showSubMenuVariable" : "showReminderSubMenu",
+            subMenu: subMenus.manageReminders,
+            icon: "ion-android-notifications-none"
+        },
+        recordMeasurement: {
+            "title" : "Record Measurement",
+            "click" : "toggleTrackingSubMenu",
+            "showSubMenuVariable" : "showTrackingSubMenu",
+            subMenu: subMenus.recordMeasurement,
+            icon: "ion-compose"
+        },
+        history: {
+            "title" : "History",
+            "click" : "toggleHistorySubMenu",
+            "showSubMenuVariable" : "showHistorySubMenu",
+            subMenu: subMenus.history,
+            icon: quantimodoService.ionIcons.history
+        },
+        discoveries: {
+            "title" : "Discoveries",
+            "click": "togglePredictorSearchSubMenu",
+            "showSubMenuVariable" : "showPredictorSearchSubMenu",
+            subMenu: subMenus.discoveries,
+            icon: "ion-ios-analytics"
+        },
+        variables: {
+            "title" : "My Variables",
+            "click": "toggleVariablesSubMenu",
+            "showSubMenuVariable" : "showVariablesSubMenu",
+            subMenu: subMenus.variables,
+            icon: "ion-android-globe"
+        },
+        medications: {
+            "title" : "Medications",
+            "click" : "toggleTreatmentsSubMenu",
+            "showSubMenuVariable" : "showTreatmentsSubMenu",
+            subMenu: subMenus.medications,
+            icon: "ion-ios-medkit-outline"
+        },
+        symptoms: {
+            "title" : "Symptoms",
+            "click" : "toggleSymptomsSubMenu",
+            subMenu: subMenus.symptoms,
+            "showSubMenuVariable" : "showSymptomsSubMenu",
+            icon: "ion-sad-outline"
+        },
+        vitalSigns: {
+            "title" : "Vital Signs",
+            "click" : "toggleVitalSignsSubMenu",
+            "showSubMenuVariable" : "showVitalSignsSubMenu",
+            subMenu: subMenus.vitalSigns,
+            icon: "ion-ios-pulse"
+        },
+        physicalActivity: {
+            "title" : "Physical Activity",
+            "click" : "togglePhysicalActivitySubMenu",
+            "showSubMenuVariable": "showPhysicalActivitySubMenu",
+            subMenu: subMenus.physicalActivity,
+            icon: "ion-ios-body-outline"
+        },
+        emotions: {
+            "title" : "Emotions",
+            "click" : "toggleEmotionsSubMenu",
+            "showSubMenuVariable" : "showEmotionsSubMenu",
+            subMenu: subMenus.emotions,
+            icon: "ion-happy-outline"
+        },
+        diet: {
+            "title" : "Diet",
+            "click" : "toggleDietSubMenu",
+            "showSubMenuVariable" : "showDietSubMenu",
+            subMenu: subMenus.diet,
+            icon: "ion-ios-nutrition-outline"
+        }
+    };
+    quantimodoService.menus = {
+        extended: [
+            menuItems.inbox,
+            menuItems.favorites,
+            parentMenus.overallMood,
+            parentMenus.manageReminders,
+            parentMenus.recordMeasurement,
+            parentMenus.history,
+            menuItems.importData,
+            menuItems.chartSearch,
+            parentMenus.discoveries,
+            menuItems.settings,
+            menuItems.helpAndFeedback
+        ],
+        minimal: [
+            menuItems.inbox,
+            parentMenus.variables,
+            parentMenus.history,
+            menuItems.importData,
+            parentMenus.discoveries,
+            menuItems.chartSearch,
+            menuItems.settings,
+        ],
+        medication: [
+            menuItems.inbox,
+            menuItems.treatments,
+            parentMenus.variables,
+            parentMenus.history,
+            menuItems.importData,
+            parentMenus.discoveries,
+            menuItems.chartSearch,
+            menuItems.settings
+        ],
+        diet: [
+            menuItems.inbox,
+            menuItems.foods,
+            parentMenus.variables,
+            parentMenus.history,
+            menuItems.importData,
+            parentMenus.discoveries,
+            menuItems.chartSearch,
+            menuItems.settings
+        ],
+        mood: [
+            menuItems.inbox,
+            parentMenus.overallMood,
+            parentMenus.variables,
+            parentMenus.history,
+            menuItems.importData,
+            parentMenus.discoveries,
+            menuItems.chartSearch,
+            menuItems.settings
+        ]
+    };
+    quantimodoService.getMenu = function(menuType){
+        menuType = menuType.toLowerCase();
+        if(!menuType && config.appSettings.menu){return config.appSettings.menu;}
+        if(!quantimodoService.menus[menuType]){menuType = 'extended';}
+        return quantimodoService.menus[menuType];
     };
     quantimodoService.getFloatingMaterialButton = function(){
         if(config.appSettings.floatingMaterialButton){return config.appSettings.floatingMaterialButton;}
@@ -6718,14 +6737,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         variableObject.id = trackingReminder.variableId;
         variableObject.name = trackingReminder.variableName;
         return variableObject;
-    };
-    quantimodoService.ionIcons = {
-        history: 'ion-ios-list-outline',
-        reminder: 'ion-android-notifications-none',
-        recordMeasurement: 'ion-compose',
-        charts: 'ion-arrow-graph-up-right',
-        settings: 'ion-settings',
-        help: 'ion-help'
     };
     quantimodoService.actionSheetButtons = {
         history: { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>History'},
@@ -7148,6 +7159,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.hideLoader = function(){
         //console.debug("Called $ionicLoading.hide()");
         $ionicLoading.hide();
+    };
+    quantimodoService.postAppSettingsDeferred = function(appSettings) {
+        var deferred = $q.defer();
+        quantimodoService.postAppSettings(appSettings, function(response){
+            deferred.resolve(response);
+        }, function(error){deferred.reject(error);});
+        return deferred.promise;
+    };
+    quantimodoService.postAppSettings = function(appSettings, successHandler, errorHandler) {
+        quantimodoService.post('api/v2/apps/' + appSettings.id + '/edit', [], appSettings, successHandler, errorHandler);
     };
     return quantimodoService;
 });

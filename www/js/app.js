@@ -352,6 +352,16 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.appDesigner', {
+            cache: true,
+            url: "/app-designer",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/app-designer.html",
+                    controller: 'AppDesignerCtrl'
+                }
+            }
+        })
         .state('app.login', {
             url: "/login",
             params: {
