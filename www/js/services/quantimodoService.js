@@ -583,7 +583,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.clearLocalStorage();
                 quantimodoService.refreshUser();
             }
-            localStorage.setItem('accessToken', accessTokenFromUrl);
+            if(!quantimodoService.getUrlParameter('doNotRemember')){localStorage.setItem('accessToken', accessTokenFromUrl);}
             deferred.resolve(accessTokenFromUrl);
             return deferred.promise;
         }
@@ -861,10 +861,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
     };
     quantimodoService.setUserInLocalStorageBugsnagIntercomPush = function(user){
+        $rootScope.user = user;
+        if(quantimodoService.getUrlParameter('doNotRemember')){return;}
         quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
         localStorage.user = JSON.stringify(user); // For Chrome Extension
         quantimodoService.saveAccessTokenInLocalStorage(user);
-        $rootScope.user = user;
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
