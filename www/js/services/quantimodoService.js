@@ -569,9 +569,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
     // if not logged in, returns rejects
     quantimodoService.getAccessTokenFromUrlParameter = function(){
-        var accessToken = quantimodoService.getUrlParameter('accessToken');
-        if(!accessToken){accessToken = quantimodoService.getUrlParameter('quantimodoAccessToken');}
-        return accessToken;
+        var accessTokenFromUrl = quantimodoService.getUrlParameter('accessToken');
+        if(!accessTokenFromUrl){accessTokenFromUrl = quantimodoService.getUrlParameter('quantimodoAccessToken');}
+        if(accessTokenFromUrl){$rootScope.accessTokenFromUrl = accessToken;}
+        return accessTokenFromUrl;
     };
     quantimodoService.weHaveUserOrAccessToken = function(){
         return $rootScope.user || quantimodoService.getAccessTokenFromUrlParameter();
@@ -593,6 +594,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             if(!quantimodoService.getUrlParameter('doNotRemember')){localStorage.setItem('accessToken', accessTokenFromUrl);}
             deferred.resolve(accessTokenFromUrl);
+            return deferred.promise;
+        }
+        if($rootScope.accessTokenFromUrl){
+            deferred.resolve($rootScope.accessTokenFromUrl);
             return deferred.promise;
         }
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
