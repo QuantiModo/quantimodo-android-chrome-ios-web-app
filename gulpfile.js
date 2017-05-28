@@ -611,6 +611,7 @@ gulp.task('decryptPrivateConfig', ['setLowerCaseAppName'], function(callback){
 });
 
 gulp.task('decryptPrivateConfigToDefault', [], function(callback){
+    if(!process.env.LOWERCASE_APP_NAME){process.env.LOWERCASE_APP_NAME = 'quantimodo';}
     var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
     var decryptedFilePath = './www/private_configs/default.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
