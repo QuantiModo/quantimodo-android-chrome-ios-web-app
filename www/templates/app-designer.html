@@ -1,0 +1,30 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="App Designer">
+    <ion-nav-title>App Designer</ion-nav-title>
+    <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true }">
+        <form name="appDesign">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">App Design</span>
+                    <span class="md-subhead">What kind of app are you building?</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <div layout="row" layout-align="space-between center">
+                    <span>App Type</span>
+                    <md-select ng-model="appSettings.appType" md-on-close="appTypeChange()">
+                        <md-option ng-value="option" ng-repeat="option in state.appTypes" >{{option}}</md-option>
+                    </md-select>
+                </div>
+                <div ng-repeat="appSettingsField in state.appSettingsFields" layout="row" layout-align="space-between center">
+                    <md-input-container class="md-block">
+                        <label>{{appSettingsField.name}}</label>
+                        <input md-maxlength="30" required md-no-asterisk name="description" ng-model="appSettingsField.value">
+                    </md-input-container>
+                </div>
+            </md-card-content>
+        </md-card>
+        </form>
+        <md-button class="md-raised md-primary" ng-click="postAppSettings">Primary</md-button>
+    </ion-content>
+</ion-view>
