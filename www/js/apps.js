@@ -89,7 +89,7 @@ var appsManager = { // jshint ignore:line
         var appSettings = getUrlParameter('appSettings');
         if(appSettings) {
             appSettings = JSON.parse(decodeURIComponent(appSettings));
-            window.config = {appSettings: appSettings};
+            window.config.appSettings = appSettings;
             return appSettings;
         }
     },
