@@ -571,7 +571,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getAccessTokenFromUrlParameter = function(){
         var accessTokenFromUrl = quantimodoService.getUrlParameter('accessToken');
         if(!accessTokenFromUrl){accessTokenFromUrl = quantimodoService.getUrlParameter('quantimodoAccessToken');}
-        if(accessTokenFromUrl){$rootScope.accessTokenFromUrl = accessToken;}
+        if(accessTokenFromUrl){$rootScope.accessTokenFromUrl = accessTokenFromUrl;}
         return accessTokenFromUrl;
     };
     quantimodoService.weHaveUserOrAccessToken = function(){
