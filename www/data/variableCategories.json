@@ -27,7 +27,7 @@
     "variableCategoryName": "Emotions",
     "variableCategoryNameSingular": "Emotion",
     "measurementSynonymSingularLowercase" : "rating",
-    "moreInfo": "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to determine which factors are influencing them."
+    "moreInfo": "Do you have any emotions that fluctuate regularly?  If so, add them so I can try to determine which factors are influencing them."
   },
   {
     "id": 2,
