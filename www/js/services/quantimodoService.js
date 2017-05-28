@@ -139,13 +139,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
         var name = status + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
         var message = status + ' from ' + request.method + ' ' + request.url + ' DATA:' + JSON.stringify(data) ;
-        var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, requestParams: getAllQueryParamsFromUrlString(request.url)};
+        var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, currentUrl: window.location.href,
+            requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
         console.error(message);
         if(status > -1 || !isTestUser()){
             if(!envIsDevelopment()){Bugsnag.notify(name, message, metaData, severity);}
         }
-        var groupingHash;
         if(!data){
             var doNotShowOfflineError = false;
             if(options && options.doNotShowOfflineError){doNotShowOfflineError = true;}
@@ -164,13 +164,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return;
         }
         if (typeof Bugsnag !== "undefined") {
-            groupingHash = "There was an error and the request object was not provided to the quantimodoService.generalApiErrorHandler";
-            if(request){groupingHash = request.url + ' error';}
+            metaData.groupingHash = "There was an error and the request object was not provided to the quantimodoService.generalApiErrorHandler";
+            if(request){metaData.groupingHash = request.url + ' error';}
             if(data.error){
-                groupingHash = JSON.stringify(data.error);
-                if(data.error.message){groupingHash = JSON.stringify(data.error.message);}
+                metaData.groupingHash = JSON.stringify(data.error);
+                if(data.error.message){metaData.groupingHash = JSON.stringify(data.error.message);}
             }
-            Bugsnag.notify(groupingHash, status + " response from " + request.url + '. DATA: ' + JSON.stringify(data), {groupingHash: groupingHash}, "error");
+            Bugsnag.notify(metaData.groupingHash, status + " response from " + request.url + '. DATA: ' + JSON.stringify(data), metaData, "error");
         }
         console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data));
         if(data.success){console.error('Called error handler even though we have data.success');}
