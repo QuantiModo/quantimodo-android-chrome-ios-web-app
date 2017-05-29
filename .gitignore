@@ -34,7 +34,7 @@ gradle-2.14.1-bin.zip
 build.json
 dropbox
 !/www/private_configs/
-/www/private_configs/*
+/www/private_configs/*.json
 !/www/private_configs/yourlowercaseappnamehere.private_config.json
 *.keystore
 ionic.config.json

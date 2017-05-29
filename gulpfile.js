@@ -602,17 +602,14 @@ gulp.task('encryptPrivateConfig', [], function(){
     encryptPrivateConfig();
 });
 
-gulp.task('encryptAllPrivateConfigs', [], function(callback){
-	process.env.LOWERCASE_APP_NAME = 'energymodo';
-    encryptPrivateConfig();
-    process.env.LOWERCASE_APP_NAME = 'medimodo';
-    encryptPrivateConfig();
-    process.env.LOWERCASE_APP_NAME = 'mindfirst';
-    encryptPrivateConfig();
-    process.env.LOWERCASE_APP_NAME = 'moodimodo';
-    encryptPrivateConfig();
-    process.env.LOWERCASE_APP_NAME = 'quantimodo';
-    encryptPrivateConfig();
+gulp.task('encryptAllPrivateConfigs', [], function(){
+    var glob = require("glob");
+    glob("./scripts/private_configs/*", {}, function (er, files) {
+        console.log(JSON.stringify(files));
+        for(var i = 0; i < files.length; i++){
+            encryptFile(files[i], files[i] + '.enc');
+        }
+    });
 });
 
 gulp.task('decryptPrivateConfig', ['setLowerCaseAppName'], function(callback){
