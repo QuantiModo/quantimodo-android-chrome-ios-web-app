@@ -593,7 +593,7 @@ gulp.task('decryptBuildJson', [], function(callback){
 });
 
 function encryptPrivateConfig(callback) {
-    var encryptedFilePath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
+    var encryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
     var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json';
     encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 }
@@ -604,7 +604,7 @@ gulp.task('encryptPrivateConfig', [], function(){
 
 gulp.task('encryptAllPrivateConfigs', [], function(){
     var glob = require("glob");
-    glob("./scripts/private_configs/*", {}, function (er, files) {
+    glob("./www/private_configs/*.json", {}, function (er, files) {
         console.log(JSON.stringify(files));
         for(var i = 0; i < files.length; i++){
             encryptFile(files[i], files[i] + '.enc');
@@ -618,7 +618,7 @@ gulp.task('decryptPrivateConfig', ['setLowerCaseAppName'], function(callback){
 
 gulp.task('decryptPrivateConfigToDefault', [], function(callback){
     if(!process.env.LOWERCASE_APP_NAME){process.env.LOWERCASE_APP_NAME = 'quantimodo';}
-    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
+    var fileToDecryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
     var decryptedFilePath = './www/private_configs/default.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
