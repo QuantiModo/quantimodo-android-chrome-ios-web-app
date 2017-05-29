@@ -137,6 +137,7 @@ gulp.task('setLowerCaseAppName', function(callback){setLowerCaseAppName(callback
 
 var exec = require('child_process').exec;
 function execute(command, callback){
+    if(process.env.DEBUG){console.log('executing ' + command);}
     var my_child_process = exec(command, function(error, stdout, stderr){
         if (error !== null) {console.error('ERROR: exec ' + error);}
         callback(error, stdout);
@@ -192,11 +193,19 @@ var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
         if(callback){callback();}
         return;
     }
-    console.log("DECRYPTING " + fileToDecryptPath);
+    console.log("DECRYPTING " + fileToDecryptPath + " to " + decryptedFilePath);
     var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToDecryptPath + '" -d -a -out "' + decryptedFilePath + '"';
-    //console.log('executing ' + cmd);
+
     execute(cmd, function(error){
         if(error !== null){console.error("ERROR: DECRYPTING: " + error);} else {console.log("DECRYPTED to " + decryptedFilePath);}
+        fs.stat(decryptedFilePath, function(err, stat) {
+            if(!err) {
+                console.log(decryptedFilePath + ' exists');
+            } else {
+                console.log("Could not decrypt" + fileToDecryptPath);
+                console.log(err);
+            }
+        });
         if (callback) {callback();}
         //outputSHA1ForAndroidKeystore(decryptedFilePath);
     });
