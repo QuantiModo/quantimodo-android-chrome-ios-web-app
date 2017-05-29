@@ -354,16 +354,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.appDesigner', {
-            cache: true,
-            url: "/app-designer",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/app-designer.html",
-                    controller: 'AppDesignerCtrl'
-                }
-            }
-        })
         .state('app.login', {
             url: "/login",
             params: {
@@ -1247,6 +1237,16 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/favorites.html",
                     controller: 'FavoritesCtrl'
+                }
+            }
+        })
+        .state('app.configuration', {
+            cache: true,
+            url: "/configuration",
+            views: {
+                'menuContent': {
+                    templateUrl: "configuration/configuration.html",
+                    controller: 'ConfigurationCtrl'
                 }
             }
         })

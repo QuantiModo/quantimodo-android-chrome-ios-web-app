@@ -60,3 +60,4 @@ configs-list.json
 /android-x86-release/
 www/manifest.json.enc
 www/configs/default.config.json
+www/configuration/
