@@ -227,7 +227,7 @@ function decryptPrivateConfig(callback) {
         generatePrivateConfigFromEnvs(callback);
         return;
 	}
-    var fileToDecryptPath = './scripts/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
+    var fileToDecryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
     var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 }
