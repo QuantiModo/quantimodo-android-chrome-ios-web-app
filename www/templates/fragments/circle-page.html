@@ -14,10 +14,11 @@
                             background-color: {{circlePage.color.circleColor}};">
             <div style="position: relative; display: block; padding: 10px;">
                 <div style="z-index: 8; ">
-                    <img src="{{circlePage.image.url}}" style="width: {{circlePage.image.width}}px; height: {{circlePage.image.height}}px;">
+                    <img src="{{circlePage.image.url}}" style="width: 120px; height: 120px;">
                 </div>
             </div>
-            <div ng-if="circlePage.overlayIcon" style="position: absolute; display: block; z-index: 9; width: 15%; top:167px; left: 50%; margin-left: -12.5px;" >
+            <div ng-if="false && circlePage.overlayIcon" style="position: absolute; display: block; z-index: 9; width: 15%; top:167px; left: 50%; margin-left: -12.5px;" >
+            <!--TODO: Figure out how to center vertically-->
                 <div style="position: absolute; display: block;">
                     <img src="{{appSettings.iconUrl}}" style="width: 25px; height: 25px; ">
                 </div>
