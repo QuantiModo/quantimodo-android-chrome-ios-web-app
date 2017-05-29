@@ -291,7 +291,7 @@ angular.module('starter',
         } else {
             var localStorageName = appsManager.getQuantiModoClientId() + 'AppSettings';
             var locallyStoredAppSettings = localStorage.getItem(localStorageName);
-            if(locallyStoredAppSettings) {
+            if(!appsManager.getUrlParameter('refreshAppSettings') && locallyStoredAppSettings) {
                 window.config.appSettings = JSON.parse(locallyStoredAppSettings);
             } else {
                 config_resolver.appSettingsResponse = function ($http) {
