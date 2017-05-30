@@ -295,7 +295,7 @@ angular.module('starter',
                 window.config.appSettings = JSON.parse(locallyStoredAppSettings);
             } else {
                 config_resolver.appSettingsResponse = function ($http) {
-                    return $http.get('https://app.quantimo.do/api/v1/appSettings?clientId=' + appsManager.getQuantiModoClientId()).then(function (response) {
+                    return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getQuantiModoClientId()).then(function (response) {
                         localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
                         window.config.appSettings = response.data.data;
                     }, function errorCallback(response) {
