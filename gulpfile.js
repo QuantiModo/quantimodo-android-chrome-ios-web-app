@@ -557,6 +557,15 @@ gulp.task('encryptAllPrivateConfigs', [], function () {
         }
     });
 });
+gulp.task('decryptAllPrivateConfigs', [], function () {
+    var glob = require('glob');
+    glob('./www/private_configs/*.enc', {}, function (er, files) {
+        console.log(JSON.stringify(files));
+        for (var i = 0; i < files.length; i++) {
+            decryptFile(files[i], files[i].replace('.enc', ''));
+        }
+    });
+});
 gulp.task('decryptPrivateConfig', ['setLowerCaseAppName'], function (callback) {
     decryptPrivateConfig(callback);
 });
