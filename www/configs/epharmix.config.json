@@ -23,7 +23,7 @@
         "wp": "UA-39222734-2"
     },
     "ionicAppId": "f837bb35",
-    "lowercaseAppName": "epharmix",
+    "quantimodoClientId": "epharmix",
     "menuType": "medication",
     "remindersManage": {},
     "socialLinks": {
@@ -33,12 +33,6 @@
         "linkedIn": "https://www.linkedin.com/company/quantimodo"
     },
     "wordAliases": {},
-    "features": [
-        " Follow These Quick Steps to Improve Your Health",
-        " 1. Enter Your Medications",
-        " 2. Record \"How I Feel\" Responses",
-        " 3. Create Reports of Your Responses and Choose to Connect With Your Doctors"
-    ],
     "intro": [
         {
             "img": {
