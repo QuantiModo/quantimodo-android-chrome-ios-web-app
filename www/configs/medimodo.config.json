@@ -27,7 +27,7 @@
     "homepage": "https://medimodo.com",
     "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/jjpwj6LvyV_r2ncyb",
     "ionicAppId": "e85b92b4",
-    "lowercaseAppName": "medimodo",
+    "quantimodoClientId": "medimodo",
     "menuType": "minimal",
     "remindersManage": {},
     "socialLinks": {
@@ -38,12 +38,6 @@
     },
     "textLogo": "https://app.quantimo.do/ionic/Modo/www/img/logos/medimodo/medimodo-text-logo-250-56.png",
     "wordAliases": {},
-    "features": [
-        " Follow These Quick Steps to Improve Your Health",
-        " 1. Enter Your Medications",
-        " 2. Record \"How I Feel\" Responses",
-        " 3. Create Reports of Your Responses and Choose to Connect With Your Doctors"
-    ],
     "onboardingPages": [
         {
             "id": "addEmotionRemindersCard",

@@ -137,7 +137,7 @@
             "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
         }
     ],
-    "lowercaseAppName": "yourlowercaseappnamehere",
+    "quantimodoClientId": "your_quantimodo_client_id_here",
     "menuType": null,
     "menu": [
         {

@@ -79,9 +79,9 @@ gulp.task('generateJsConfigs', function () {
             gutil.log('Available apps:');
             var configListJson = JSON.parse(fs.readFileSync(configListPath));
             for (var property in configListJson) {
-                var lowercaseAppName = property.replace('.config.json', '');
-                gutil.log(lowercaseAppName);
-                loadConfigsAndGenerateConfigJs(null, lowercaseAppName);
+                var quantimodoClientId = property.replace('.config.json', '');
+                gutil.log(quantimodoClientId);
+                loadConfigsAndGenerateConfigJs(null, quantimodoClientId);
             }
         });
 });
@@ -101,17 +101,17 @@ if (!process.env.IONIC_IOS_APP_VERSION_NUMBER) {
 }
 process.env.DEBUG_MODE = (process.env.DEBUG_MODE) ? process.env.DEBUG_MODE : true;
 function setLowerCaseAppName(callback) {
-    if (!process.env.LOWERCASE_APP_NAME) {
+    if (!process.env.QUANTIMODO_CLIENT_ID) {
         git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
             console.log('current git branch: ' + branch);
-            if (!process.env.LOWERCASE_APP_NAME) {
+            if (!process.env.QUANTIMODO_CLIENT_ID) {
                 if (appIds[branch]) {
-                    console.info('Setting process.env.LOWERCASE_APP_NAME using branch name ' + branch);
-                    process.env.LOWERCASE_APP_NAME = branch;
+                    console.info('Setting process.env.QUANTIMODO_CLIENT_ID using branch name ' + branch);
+                    process.env.QUANTIMODO_CLIENT_ID = branch;
                 } else {
                     process.env.DEBUG_MODE = true;
-                    console.warn('No process.env.LOWERCASE_APP_NAME set.  Falling back to default QuantiModo configuration variables');
-                    process.env.LOWERCASE_APP_NAME = 'quantimodo';
+                    console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to default QuantiModo configuration variables');
+                    process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
                 }
             }
             if (callback) {callback();}
@@ -156,7 +156,7 @@ function generatePrivateConfigFromEnvs(callback) {
 function createPrivateConfigFiles(privateConfigObject, callback) {
     //var privateConfigContent = 'private_keys = '+ JSON.stringify(privateConfigObject, 0, 2);
     fs.writeFileSync('./www/private_configs/default.private_config.json', JSON.stringify(privateConfigObject));
-    fs.writeFileSync('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json', JSON.stringify(privateConfigObject));
+    fs.writeFileSync('./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json', JSON.stringify(privateConfigObject));
     console.log('Created ' + './www/private_configs/default.private_config.json');
     if (callback) {callback();}
 }
@@ -201,29 +201,29 @@ gulp.task('getSHA1FromAPK', function () {
     });
 });
 function decryptPrivateConfig(callback) {
-    if (!process.env.LOWERCASE_APP_NAME) {throw ('process.env.LOWERCASE_APP_NAME not set!');}
+    if (!process.env.QUANTIMODO_CLIENT_ID) {throw ('process.env.QUANTIMODO_CLIENT_ID not set!');}
     if (process.env.QUANTIMODO_CLIENT_SECRET) {
         console.log('Not decrypting private config because we should generate it from envs instead');
         generatePrivateConfigFromEnvs(callback);
         return;
     }
-    var fileToDecryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
-    var decryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json';
+    var fileToDecryptPath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
+    var decryptedFilePath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 }
-function loadConfigsAndGenerateConfigJs(callback, lowercaseAppName) {
+function loadConfigsAndGenerateConfigJs(callback, quantimodoClientId) {
     var pathToGeneratedConfigJs;
-    if (!lowercaseAppName) {
+    if (!quantimodoClientId) {
         pathToGeneratedConfigJs = './www/configs/default.js';
-        if (!process.env.LOWERCASE_APP_NAME) {
-            console.error('No process.env.LOWERCASE_APP_NAME so falling back to quantimodo');
-            process.env.LOWERCASE_APP_NAME = 'quantimodo';
+        if (!process.env.QUANTIMODO_CLIENT_ID) {
+            console.error('No process.env.QUANTIMODO_CLIENT_ID so falling back to quantimodo');
+            process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
         }
-        lowercaseAppName = process.env.LOWERCASE_APP_NAME;
+        quantimodoClientId = process.env.QUANTIMODO_CLIENT_ID;
     } else {
-        pathToGeneratedConfigJs = './www/configs/' + lowercaseAppName + '.js';
+        pathToGeneratedConfigJs = './www/configs/' + quantimodoClientId + '.js';
     }
-    var pathToJsonConfigPath = './www/configs/' + lowercaseAppName + '.config.json';
+    var pathToJsonConfigPath = './www/configs/' + quantimodoClientId + '.config.json';
     appSettings = JSON.parse(fs.readFileSync(pathToJsonConfigPath));
     appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
     appSettings.debugMode = process.env.DEBUG_MODE;
@@ -235,7 +235,7 @@ function loadConfigsAndGenerateConfigJs(callback, lowercaseAppName) {
             if (callback) {callback();}
         } else {
             console.log('Could not create and read ' + pathToGeneratedConfigJs);
-            throw('ERROR: ' + pathToGeneratedConfigJs + ' not found! Please create it or use a different process.env.LOWERCASE_APP_NAME env. Error Code: ' + err.code);
+            throw('ERROR: ' + pathToGeneratedConfigJs + ' not found! Please create it or use a different process.env.QUANTIMODO_CLIENT_ID env. Error Code: ' + err.code);
         }
     });
 }
@@ -243,9 +243,9 @@ function loadConfigsAndGenerateConfigJs(callback, lowercaseAppName) {
 gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
     var minimatch = require('minimatch');
-    gulp.src('./build/' + process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip')
+    gulp.src('./build/' + process.env.QUANTIMODO_CLIENT_ID + '-Chrome-Extension.zip')
         .pipe(unzip())
-        .pipe(gulp.dest('./build/' + process.env.LOWERCASE_APP_NAME + '-Chrome-Extension'));
+        .pipe(gulp.dest('./build/' + process.env.QUANTIMODO_CLIENT_ID + '-Chrome-Extension'));
 });
 gulp.task('sass', function (done) {
     gulp.src('./www/scss/app.scss')
@@ -541,8 +541,8 @@ gulp.task('decryptBuildJson', [], function (callback) {
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 function encryptPrivateConfig(callback) {
-    var encryptedFilePath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
-    var fileToEncryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json';
+    var encryptedFilePath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
+    var fileToEncryptPath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
     encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 }
 gulp.task('encryptPrivateConfig', [], function () {
@@ -561,8 +561,8 @@ gulp.task('decryptPrivateConfig', ['setLowerCaseAppName'], function (callback) {
     decryptPrivateConfig(callback);
 });
 gulp.task('decryptPrivateConfigToDefault', [], function (callback) {
-    if (!process.env.LOWERCASE_APP_NAME) {process.env.LOWERCASE_APP_NAME = 'quantimodo';}
-    var fileToDecryptPath = './www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json.enc';
+    if (!process.env.QUANTIMODO_CLIENT_ID) {process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';}
+    var fileToDecryptPath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
     var decryptedFilePath = './www/private_configs/default.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
@@ -611,7 +611,7 @@ gulp.task('ionicStateReset', function (callback) {
     executeCommand('ionic state reset', callback);
 });
 var fastlaneSupply = function (track, callback) {
-    var pathToApks = 'dropbox/' + process.env.LOWERCASE_APP_NAME;
+    var pathToApks = 'dropbox/' + process.env.QUANTIMODO_CLIENT_ID;
     executeCommand('supply' +
         ' --apk_paths ' + pathToApks + '/android-armv7-release.apk,' + pathToApks + '/android-x86-release.apk' +
         ' --track ' + track +
@@ -639,7 +639,7 @@ gulp.task('getAppNameFromUserInput', function () {
             name: 'app',
             message: 'Please enter the app name (moodimodo/energymodo/etc..)'
         }], function (answers) {
-            process.env.LOWERCASE_APP_NAME = answers.app;
+            process.env.QUANTIMODO_CLIENT_ID = answers.app;
             deferred.resolve();
         });
     };
@@ -754,24 +754,24 @@ var FACEBOOK_APP_ID = false;
 var FACEBOOK_APP_NAME = false;
 gulp.task('loadPrivateConfig', ['setLowerCaseAppName'], function () {
     var deferred = q.defer();
-    fs.stat('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json', function (err, stat) {
+    fs.stat('./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json', function (err, stat) {
         if (!err) {
-            console.log('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json exists');
+            console.log('./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json exists');
         } else {
             console.log(JSON.stringify(err));
         }
     });
-    fs.readFile('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json', function (err, data) {
+    fs.readFile('./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json', function (err, data) {
         if (err) {throw err;}
         var exr = false;
         if (data.indexOf('FACEBOOK_APP_ID') < 0) {
             exr = true;
-            console.error('ERROR: NO FACEBOOK_APP_ID found in ./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json');
+            console.error('ERROR: NO FACEBOOK_APP_ID found in ./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json');
             deferred.reject();
         }
         if (data.indexOf('FACEBOOK_APP_NAME') < 0) {
             exr = true;
-            console.error('ERROR: NO FACEBOOK_APP_NAME found in ./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json');
+            console.error('ERROR: NO FACEBOOK_APP_NAME found in ./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json');
             deferred.reject();
         }
         if (!exr) {
@@ -1243,28 +1243,28 @@ gulp.task('setEnvsFromBranchName', [], function (callback) {
         callback);
 });
 gulp.task('setEnergyModoEnvs', [], function (callback) {
-    process.env.LOWERCASE_APP_NAME = 'energymodo';
+    process.env.QUANTIMODO_CLIENT_ID = 'energymodo';
     runSequence(
         'decryptPrivateConfig',
         'loadConfigsAndGenerateConfigJs',
         callback);
 });
 gulp.task('setMediModoEnvs', [], function (callback) {
-    process.env.LOWERCASE_APP_NAME = 'medimodo';
+    process.env.QUANTIMODO_CLIENT_ID = 'medimodo';
     runSequence(
         'decryptPrivateConfig',
         'loadConfigsAndGenerateConfigJs',
         callback);
 });
 gulp.task('setMindFirstEnvs', [], function (callback) {
-    process.env.LOWERCASE_APP_NAME = 'mindfirst';
+    process.env.QUANTIMODO_CLIENT_ID = 'mindfirst';
     runSequence(
         'decryptPrivateConfig',
         'loadConfigsAndGenerateConfigJs',
         callback);
 });
 gulp.task('setMoodiModoEnvs', [], function (callback) {
-    process.env.LOWERCASE_APP_NAME = 'moodimodo';
+    process.env.QUANTIMODO_CLIENT_ID = 'moodimodo';
     runSequence(
         'decryptPrivateConfig',
         'loadConfigsAndGenerateConfigJs',
@@ -1277,14 +1277,14 @@ gulp.task('setAppEnvs', ['setLowerCaseAppName'], function (callback) {
         callback);
 });
 gulp.task('setQuantiModoEnvs', [], function (callback) {
-    process.env.LOWERCASE_APP_NAME = 'quantimodo';
+    process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
     runSequence(
         'decryptPrivateConfig',
         'loadConfigsAndGenerateConfigJs',
         callback);
 });
 gulp.task('setMindFirstEnvs', [], function (callback) {
-    process.env.LOWERCASE_APP_NAME = 'mindfirst';
+    process.env.QUANTIMODO_CLIENT_ID = 'mindfirst';
     runSequence(
         'decryptPrivateConfig',
         'loadConfigsAndGenerateConfigJs',
@@ -1318,23 +1318,23 @@ gulp.task('cleanBuildFolder', [], function () {
 });
 gulp.task('copyAppResources', ['cleanResources'], function () {
     console.log('If this doesn\'t work, make sure there are no symlinks in the apps folder!');
-    return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
-        base: 'apps/' + process.env.LOWERCASE_APP_NAME
+    return gulp.src(['apps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*'], {
+        base: 'apps/' + process.env.QUANTIMODO_CLIENT_ID
     }).pipe(gulp.dest('.'));
 });
 gulp.task('copyIconsToWwwImg', [], function () {
-    return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/resources/icon*.png'])
+    return gulp.src(['apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png'])
         .pipe(gulp.dest('www/img/icons'));
 });
 gulp.task('copyAppConfigToDefault', [], function () {
-    return gulp.src('./www/configs/' + process.env.LOWERCASE_APP_NAME + '.config.json')
+    return gulp.src('./www/configs/' + process.env.QUANTIMODO_CLIENT_ID + '.config.json')
         .pipe(rename('default.config.json'))
         .pipe(gulp.dest('www/configs'));
 });
 gulp.task('copyPrivateConfigToDefault', [], function () {
-    console.log('Copying ./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json to ' +
+    console.log('Copying ./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json to ' +
         'www/private_configs/default.private_config.json');
-    return gulp.src('./www/private_configs/' + process.env.LOWERCASE_APP_NAME + '.private_config.json')
+    return gulp.src('./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json')
         .pipe(rename('default.private_config.json'))
         .pipe(gulp.dest('www/private_configs'));
 });
@@ -1355,9 +1355,9 @@ gulp.task('useWhiteIcon', [], function () {
 gulp.task('ionicResourcesIos', [], function (callback) {
     return execute('ionic resources ios', function (error) {
         if (error !== null) {
-            console.error('ERROR:GENERATING iOS RESOURCES for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR:GENERATING iOS RESOURCES for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***iOS RESOURCES GENERATED for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***iOS RESOURCES GENERATED for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });
@@ -1507,7 +1507,7 @@ gulp.task('removeAndroidManifestFromChromeExtension', [], function () {
 gulp.task('zipChromeExtension', [], function () {
     console.log('If this fails, make sure there are no symlinks.');
     return gulp.src(['build/chrome_extension/**/*'])
-        .pipe(zip(process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip'))
+        .pipe(zip(process.env.QUANTIMODO_CLIENT_ID + '-Chrome-Extension.zip'))
         .pipe(gulp.dest('build'));
 });
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
@@ -1557,7 +1557,7 @@ gulp.task('configureApp', [], function (callback) {
         callback);
 });
 gulp.task('configureDefaultApp', [], function (callback) {
-    process.env.LOWERCASE_APP_NAME = 'yourlowercaseappnamehere';
+    process.env.QUANTIMODO_CLIENT_ID = 'your_quantimodo_client_id_here';
     runSequence(
         'copyAppResources',
         'loadConfigsAndGenerateConfigJs',
@@ -1698,9 +1698,9 @@ gulp.task('fastlaneBetaIos', function (callback) {
     var command = 'fastlane beta';
     return execute(command, function (error) {
         if (error !== null) {
-            console.error('ERROR: for ' + command + 'for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR: for ' + command + 'for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***' + command + ' for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***' + command + ' for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });
@@ -1709,9 +1709,9 @@ gulp.task('xcodeProjectFix', function (callback) {
     var command = 'ruby hooks/after_platform_add.bak/xcodeprojectfix.rb';
     return execute(command, function (error) {
         if (error !== null) {
-            console.error('ERROR: for ' + command + 'for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR: for ' + command + 'for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***' + command + ' for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***' + command + ' for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });
@@ -1719,9 +1719,9 @@ gulp.task('xcodeProjectFix', function (callback) {
 gulp.task('ionicPlatformAddAndroid', function (callback) {
     return execute('ionic platform add android@6.1.0', function (error) {
         if (error !== null) {
-            console.error('ERROR: for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***Android for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });
@@ -1729,9 +1729,9 @@ gulp.task('ionicPlatformAddAndroid', function (callback) {
 gulp.task('ionicPlatformRemoveAndroid', function (callback) {
     return execute('ionic platform remove android', function (error) {
         if (error !== null) {
-            console.error('ERROR: for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***Android for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });
@@ -1739,9 +1739,9 @@ gulp.task('ionicPlatformRemoveAndroid', function (callback) {
 gulp.task('cordovaBuildAndroidDebug', function (callback) {
     return execute('cordova build --debug android', function (error) {
         if (error !== null) {
-            console.error('ERROR: for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***Android for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });
@@ -1749,9 +1749,9 @@ gulp.task('cordovaBuildAndroidDebug', function (callback) {
 gulp.task('cordovaBuildAndroidRelease', function (callback) {
     return execute('cordova build --release android', function (error) {
         if (error !== null) {
-            console.error('ERROR: for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***Android for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });
@@ -1761,10 +1761,10 @@ gulp.task('copyAndroidResources', [], function () {
         .pipe(gulp.dest('platforms/android'));
 });
 gulp.task('copyAndroidBuild', [], function () {
-    if (!process.env.LOWERCASE_APP_NAME) {throw 'process.env.LOWERCASE_APP_NAME not set!';}
+    if (!process.env.QUANTIMODO_CLIENT_ID) {throw 'process.env.QUANTIMODO_CLIENT_ID not set!';}
     var pathToApks = 'platforms/android/build/outputs/apk/*.apk';
-    var dropboxPath = 'dropbox/' + process.env.LOWERCASE_APP_NAME;
-    var buildFolderPath = 'build/apks/' + process.env.LOWERCASE_APP_NAME; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
+    var dropboxPath = 'dropbox/' + process.env.QUANTIMODO_CLIENT_ID;
+    var buildFolderPath = 'build/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
     console.log('Copying from ' + pathToApks + ' to ' + dropboxPath + ' and ' + buildFolderPath);
     var copyApksToDropbox = gulp.src([pathToApks]).pipe(gulp.dest(dropboxPath));
     var copyApksToBuildFolder = gulp.src([pathToApks]).pipe(gulp.dest(buildFolderPath));
@@ -1785,9 +1785,9 @@ gulp.task('prepareMindFirstIos', function (callback) {
 gulp.task('generateAndroidResources', [], function (callback) {
     return execute('ionic resources android', function (error) {
         if (error !== null) {
-            console.error('ERROR: GENERATING Android RESOURCES for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR: GENERATING Android RESOURCES for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***Android RESOURCES GENERATED for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***Android RESOURCES GENERATED for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });
@@ -1795,9 +1795,9 @@ gulp.task('generateAndroidResources', [], function (callback) {
 gulp.task('ionicRunAndroid', [], function (callback) {
     return execute('ionic run android', function (error) {
         if (error !== null) {
-            console.error('ERROR: GENERATING Android RESOURCES for ' + process.env.LOWERCASE_APP_NAME + ': ' + error);
+            console.error('ERROR: GENERATING Android RESOURCES for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
-            console.log('\n***Android RESOURCES GENERATED for ' + process.env.LOWERCASE_APP_NAME);
+            console.log('\n***Android RESOURCES GENERATED for ' + process.env.QUANTIMODO_CLIENT_ID);
             callback();
         }
     });

@@ -14,7 +14,7 @@ chmod -R a+x ./hooks
 chmod -R a+x ./package-hooks
 chmod -R a+x ./scripts
 
-echo "LOWERCASE_APP_NAME is ${LOWERCASE_APP_NAME}"
+echo "QUANTIMODO_CLIENT_ID is ${QUANTIMODO_CLIENT_ID}"
 
 if [ -z ${BUDDYBUILD_SCHEME} ];
     then

@@ -1273,7 +1273,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         return subscriptionProvider;
     }
     function getProductId(baseProductId) {
-        if($rootScope.isIOS){ return config.appSettings.lowercaseAppName + '_' + baseProductId; }
+        if($rootScope.isIOS){ return config.appSettings.quantimodoClientId + '_' + baseProductId; }
         return baseProductId;
     }
     function handleSubscribeResponse(baseProductId, data) {

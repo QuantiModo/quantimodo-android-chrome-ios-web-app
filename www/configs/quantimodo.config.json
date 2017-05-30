@@ -27,7 +27,7 @@
   "intro": null,
   "ionicAppId": "42fe48d4",
   "ionNavBarClass": "bar-positive",
-  "lowercaseAppName": "quantimodo",
+  "quantimodoClientId": "quantimodo",
   "menuType": "minimal",
   "physicianAlias": "Physician",
   "patientAlias": "Patient",

@@ -10,7 +10,7 @@ var appConfigFileNames = {
     "moodimodo" : "moodimodo",
     "oauth" : "quantimodo",
     "quantimodo" : "quantimodo",
-    "yourlowercaseappnamehere": "yourlowercaseappnamehere"
+    "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
 
 function getSubDomain(){
