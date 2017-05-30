@@ -95,5 +95,12 @@ var appsManager = { // jshint ignore:line
     },
     getQuantiModoClientId: function () {
         return getQuantiModoClientId();
+    },
+    getQuantiModoApiUrl: function () {
+        var apiUrl = localStorage.getItem('apiUrl');
+        if(!apiUrl){apiUrl = getUrlParameter('apiUrl');}
+        if(apiUrl){return apiUrl;}
+        if(window.location.origin.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
+        return "https://app.quantimo.do";
     }
 };
