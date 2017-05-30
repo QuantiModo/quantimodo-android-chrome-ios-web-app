@@ -64,3 +64,4 @@ www/configuration/
 www/private_configs/sample_private.private_config.json.enc
 www/private_configs/your_quantimodo_client_id_here.private_config.json.enc
 www/private_configs/default.private_config.json.enc
+www/private_configs/yourlowercaseappnamehere.private_config.json.enc
