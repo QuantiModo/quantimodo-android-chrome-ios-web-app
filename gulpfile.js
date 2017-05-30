@@ -109,7 +109,7 @@ if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
     console.log("Falling back to IONIC_IOS_APP_VERSION_NUMBER " + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
 
-process.env.DEBUG_MODE = false;
+process.env.DEBUG_MODE = (process.env.DEBUG_MODE) ? process.env.DEBUG_MODE : true;
 function setLowerCaseAppName(callback) {
     if(!process.env.LOWERCASE_APP_NAME){
         git.revParse({args:'--abbrev-ref HEAD'}, function (err, branch) {
@@ -137,7 +137,7 @@ gulp.task('setLowerCaseAppName', function(callback){setLowerCaseAppName(callback
 
 var exec = require('child_process').exec;
 function execute(command, callback){
-    if(process.env.DEBUG){console.log('executing ' + command);}
+    if(process.env.DEBUG_MODE){console.log('executing ' + command);}
     var my_child_process = exec(command, function(error, stdout, stderr){
         if (error !== null) {console.error('ERROR: exec ' + error);}
         callback(error, stdout);
@@ -186,7 +186,7 @@ gulp.task('getCommonVariables', function () {
         .pipe(gulp.dest('./www/data/'));
 });
 
-var decryptFile = function (fileToDecryptPath, decryptedFilePath, callback) {
+function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
     console.log("Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads");
     if(!process.env.ENCRYPTION_SECRET){
         console.error('ERROR: Please set ENCRYPTION_SECRET environmental variable!');

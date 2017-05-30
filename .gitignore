@@ -61,3 +61,6 @@ configs-list.json
 www/manifest.json.enc
 www/configs/default.config.json
 www/configuration/
+www/private_configs/sample_private.private_config.json.enc
+www/private_configs/yourlowercaseappnamehere.private_config.json.enc
+www/private_configs/default.private_config.json.enc
