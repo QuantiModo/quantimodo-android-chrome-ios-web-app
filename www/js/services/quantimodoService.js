@@ -6399,6 +6399,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             "label": "Import Data",
             "stateName": "app.reminderSearch",
             "stateParameters": {}
+        },
+        recordMeasurement: {
+            "icon": "ion-compose",
+            "label": "Record a Measurement",
+            "stateName": "app.measurementAddSearch",
+            "stateParameters": {}
+        },
+        addReminder: {
+            "icon": "ion-android-notifications-none",
+            "label": "Add a Reminder",
+            "stateName": "app.reminderSearch",
+            "stateParameters": {}
         }
     };
     quantimodoService.defaultDesigns = {
@@ -6758,34 +6770,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 "button4": floatingActionButtons.help
             },
             "mood": {
-                "button1": {
-                    "icon": "ion-android-notifications-none",
-                    "label": "Add a Reminder",
-                    "stateName": "app.reminderSearch",
-                    "stateParameters": {}
-                },
-                "button2": {
-                    "icon": "ion-compose",
-                    "label": "Record a Measurement",
-                    "stateName": "app.reminderSearch",
-                    "stateParameters": {}
-                },
+                "button1": floatingActionButtons.addReminder,
+                "button2": floatingActionButtons.recordMeasurement,
                 "button3": floatingActionButtons.importData,
                 "button4": floatingActionButtons.help
             },
             "general": {
-                "button1": {
-                    "icon": "ion-android-notifications-none",
-                    "label": "Add a Reminder",
-                    "stateName": "app.reminderSearch",
-                    "stateParameters": {}
-                },
-                "button2": {
-                    "icon": "ion-compose",
-                    "label": "Record a Measurement",
-                    "stateName": "app.reminderSearch",
-                    "stateParameters": {}
-                },
+                "button1": floatingActionButtons.addReminder,
+                "button2": floatingActionButtons.recordMeasurement,
                 "button3": floatingActionButtons.importData,
                 "button4": floatingActionButtons.help
             }
