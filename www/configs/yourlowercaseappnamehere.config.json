@@ -4,7 +4,7 @@
     "appType": "your_quantimodo_client_id_here",
     "clientId": "your_your_quantimodo_client_id_here_client_id_here",
     "companyName": "YourAppDisplayNameHere",
-    "homepage": "https://YourAppDisplayNameHere.com",
+    "homepageUrl": "https://YourAppDisplayNameHere.com",
     "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/h_512,w_512/ijHsrk0B1s_ako7ow",
     "longDescription": "",
     "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",

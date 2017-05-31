@@ -2,7 +2,7 @@
   "appDescription": "Perfect your life!",
   "appDisplayName": "QuantiModo",
   "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/h_512,w_512/ijHsrk0B1s_ako7ow",
-  "homepage": "https://quantimo.do",
+  "homepageUrl": "https://quantimo.do",
   "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
   "clientId": "quantimodo",
   "appType": "general",
