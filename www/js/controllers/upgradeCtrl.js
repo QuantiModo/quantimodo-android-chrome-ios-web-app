@@ -20,7 +20,7 @@ angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $io
         if($rootScope.upgradePages.length === 1){ $scope.hideLearnMoreButton = true; }
         if(!$rootScope.upgradePages || $rootScope.upgradePages.length === 0){
             $rootScope.hideMenuButton = false;
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
         } else { $rootScope.hideMenuButton = true; }
     };
 });

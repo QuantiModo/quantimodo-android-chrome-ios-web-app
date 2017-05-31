@@ -139,7 +139,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
     function getStudy() {
         if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
             console.error('Cannot get study. Missing cause or effect variable name.');
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return;
         }
         $scope.loadingCharts = true;

@@ -33,7 +33,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
     $scope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
-        $state.go(config.appSettings.defaultState);
+        $state.go(config.appSettings.appDesign.defaultState);
     };
     $scope.goToReminderSearchCategoryFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
@@ -66,7 +66,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $scope.circlePage = $rootScope.onboardingPages[0];
         if(!$rootScope.onboardingPages || $rootScope.onboardingPages.length === 0){
             $rootScope.hideMenuButton = false;
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
         } else {
             $rootScope.hideMenuButton = true;
         }

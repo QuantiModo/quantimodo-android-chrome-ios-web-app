@@ -1,34 +1,63 @@
 {
     "appDescription": "Track and find out what affects your energy levels",
     "appDisplayName": "EnergyModo",
-    "appIdentifier": "com.quantimodo.energymodo",
-    "appleId": null,
-    "appStorageIdentifier": "EnergyModoData*",
-    "cordovaLocalNotificationsEnabled": false,
-    "defaultState": "app.remindersInbox",
-    "downloadLinks": {
-        "chromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
-        "iosApp": "https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8",
-        "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.energymodo",
-        "webApp": "https://app.quantimo.do"
+    "appType": "general",
+    "clientId": "energymodo",
+    "companyName": "QuantiModo",
+    "homepage": "https://quantimo.do",
+    "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/h_512,w_512/ijHsrk0B1s_ako7ow",
+    "longDescription": "",
+    "splashScreen": "",
+    "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
+    "userId": 230,
+    "additionalSettings": {
+        "companyEmail": "info@quantimo.do",
+        "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
+        "appIdentifier": "com.quantimodo.energymodo",
+        "appleId": null,
+        "appStorageIdentifier": "EnergyModoData*",
+        "downloadLinks": {
+            "chromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
+            "iosApp": "https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8",
+            "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.energymodo",
+            "webApp": "https://app.quantimo.do"
+        },
+        "facebookAppId": 225078261031461,
+        "googleAnalyticsTrackingIds": {
+            "laravel": "UA-39222734-29",
+            "ionic": "UA-39222734-25",
+            "api": "UA-39222734-24",
+            "wp": "UA-39222734-2"
+        },
+        "ionicAppId": "f837bb35",
+        "socialLinks": {
+            "facebook": "https://www.facebook.com/Quantimodology",
+            "twitter": "https://twitter.com/quantimodo",
+            "google": "https://plus.google.com/communities/100581500031158281444",
+            "linkedIn": "https://www.linkedin.com/company/quantimodo"
+        }
     },
-    "facebookAppId": 225078261031461,
-    "googleAnalyticsTrackingIds": {
-        "laravel": "UA-39222734-29",
-        "ionic": "UA-39222734-25",
-        "api": "UA-39222734-24",
-        "wp": "UA-39222734-2"
-    },
-    "intro": null,
-    "ionicAppId": "f837bb35",
-    "quantimodoClientId": "energymodo",
-    "menuType": "extended",
-    "primaryOutcomeVariableName": "Energy",
-    "socialLinks": {
-        "facebook": "https://www.facebook.com/Quantimodology",
-        "twitter": "https://twitter.com/quantimodo",
-        "google": "https://plus.google.com/communities/100581500031158281444",
-        "linkedIn": "https://www.linkedin.com/company/quantimodo"
-    },
-    "wordAliases": {}
+    "appDesign": {
+        "backgroundColor": "#3467d6",
+        "ionNavBarClass": "bar-positive",
+        "physicianAlias": "Physician",
+        "patientAlias": "Patient",
+        "upgradePleadingCard": {
+            "web": {
+                "image": "img/ivy-sad-bw-300-300.png",
+                "text": "Please subscribe to my daddy's app or I'll be cold and hungry..."
+            },
+            "mobile": {
+                "image": "img/ivy-sad-bw.jpg",
+                "textHtml": "Please subscribe to my daddy's app or I'll be cold... <br> and hungry...</span>"
+            }
+        },
+        "welcomeState": "app.welcome",
+        "cordovaLocalNotificationsEnabled": false,
+        "defaultState": "app.remindersInbox",
+        "intro": null,
+        "menuType": "extended",
+        "primaryOutcomeVariableName": "Energy",
+        "wordAliases": {}
+    }
 }

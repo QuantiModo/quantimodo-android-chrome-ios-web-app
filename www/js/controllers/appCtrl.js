@@ -8,7 +8,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.controller_name = "AppCtrl";
     $rootScope.appSettings = config.appSettings;
     quantimodoService.updateAppComponents();
-    if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
+    if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
     $scope.showTrackingSubMenu = false;
     $rootScope.numberOfPendingNotifications = null;
     $scope.showReminderSubMenu = false;
@@ -313,14 +313,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 return;
             }
             // We might need to move this back to app.js if it doesn't work
-            if(config.appSettings.ionicAppId){
+            if(config.appSettings.additionalSettings.ionicAppId){
                 $ionicCloudProvider.init({
                         "core": {
-                            "app_id": config.appSettings.ionicAppId
+                            "app_id": config.appSettings.additionalSettings.ionicAppId
                         }
                 });
             } else {
-                console.warn('Cannot initialize $ionicCloudProvider because appSettings.ionicAppId is not set');
+                console.warn('Cannot initialize $ionicCloudProvider because appSettings.additionalSettings.ionicAppId is not set');
                 return;
             }
             if($rootScope.user && $rootScope.user.getPreviewBuilds){
@@ -651,7 +651,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var stateId = backView.stateName;
             if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
                 $ionicHistory.goBack(-2);
-                //$state.go(config.appSettings.defaultState, stateParams);
+                //$state.go(config.appSettings.appDesign.defaultState, stateParams);
                 return;
             }
             if(stateParams){
@@ -663,7 +663,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }
             $ionicHistory.goBack();
         } else {
-            $state.go(config.appSettings.defaultState, stateParams);
+            $state.go(config.appSettings.appDesign.defaultState, stateParams);
         }
     };
     $scope.setupVariableByVariableObject = function(variableObject) {
@@ -1273,7 +1273,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         return subscriptionProvider;
     }
     function getProductId(baseProductId) {
-        if($rootScope.isIOS){ return config.appSettings.quantimodoClientId + '_' + baseProductId; }
+        if($rootScope.isIOS){ return config.appSettings.clientId + '_' + baseProductId; }
         return baseProductId;
     }
     function handleSubscribeResponse(baseProductId, data) {

@@ -1118,15 +1118,15 @@ gulp.task('setVersionNumberInFiles', function (callback) {
     //callback();
 });
 gulp.task('setIonicAppId', function (callback) {
-    if (!appSettings.ionicAppId) {
-        console.error('ERROR: Cannot execute setIonicAppId because appSettings.ionicAppId is not set');
+    if (!appSettings.additionalSettings.ionicAppId) {
+        console.error('ERROR: Cannot execute setIonicAppId because appSettings.additionalSettings.ionicAppId is not set');
         return;
     }
     var filesToUpdate = [
         'www/js/app.js'
     ];
     return gulp.src(filesToUpdate, {base: '.'}) // Every file allown.
-        .pipe(replace('__IONIC_APP_ID__', appSettings.ionicAppId))
+        .pipe(replace('__IONIC_APP_ID__', appSettings.additionalSettings.ionicAppId))
         .pipe(gulp.dest('./'));
     // Returning instead of callback makes it complete before next task
     //callback();
@@ -1391,8 +1391,8 @@ gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName'], function (ca
         return;
     }
     loadConfigsAndGenerateConfigJs();
-    if (appSettings.googleReversedClientId) {
-        xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.googleReversedClientId);
+    if (appSettings.additionalSettings.googleReversedClientId) {
+        xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.googleReversedClientId);
     }
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
@@ -1406,8 +1406,8 @@ gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName'], function (ca
                 parsedXmlFile.widget.description[0] = appSettings.appDescription;
                 console.log('Setting config.xml description to ' + parsedXmlFile.widget.description[0]);
             } else {throw('APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION');}
-            if (appSettings.appIdentifier) {
-                parsedXmlFile.widget.$['id'] = appSettings.appIdentifier;
+            if (appSettings.additionalSettings.googleReversedClientId) {
+                parsedXmlFile.widget.$['id'] = appSettings.additionalSettings.googleReversedClientId;
                 console.log('Setting config.xml id to ' + parsedXmlFile.widget.$['id']);
             } else {throw('APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER');}
             if (process.env.IONIC_APP_VERSION_NUMBER) {

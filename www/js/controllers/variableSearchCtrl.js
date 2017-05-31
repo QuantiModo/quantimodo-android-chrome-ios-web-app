@@ -75,7 +75,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
                     quantimodoService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
-                    } else {$state.go(config.appSettings.defaultState);}
+                    } else {$state.go(config.appSettings.appDesign.defaultState);}
                 });
             }
         } else if($stateParams.userTagVariableObject) {
@@ -92,7 +92,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
                     quantimodoService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});
-                    } else {$state.go(config.appSettings.defaultState);}
+                    } else {$state.go(config.appSettings.appDesign.defaultState);}
                 });
             }
         } else {

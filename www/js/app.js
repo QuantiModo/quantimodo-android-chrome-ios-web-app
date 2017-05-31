@@ -183,7 +183,7 @@ angular.module('starter',
             }
         };
         if(window.location.href.indexOf('ionic.quantimo') === -1 && window.location.href.indexOf('staging.quantimo') === -1 && window.location.href.indexOf('local.quantimo') === -1){
-            if(typeof analytics !== "undefined") {analytics.startTrackerWithId(config.appSettings.googleAnalyticsTrackingIds.ionic);}
+            if(typeof analytics !== "undefined") {analytics.startTrackerWithId(config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic);}
         }
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
@@ -206,10 +206,10 @@ angular.module('starter',
         }
         if($ionicHistory.currentStateName() === 'app.upgrade'){
             console.debug('registerBackButtonAction from upgrade: Going to default state...');
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return;
         }
-        if($ionicHistory.currentStateName() === config.appSettings.defaultState){
+        if($ionicHistory.currentStateName() === config.appSettings.appDesign.defaultState){
             ionic.Platform.exitApp();
             return;
         }
@@ -220,7 +220,7 @@ angular.module('starter',
         if(localStorage.user){
             $rootScope.hideNavigationMenu = false;
             console.debug('registerBackButtonAction: Going to default state...');
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return;
         }
         console.debug('registerBackButtonAction: Closing the app');

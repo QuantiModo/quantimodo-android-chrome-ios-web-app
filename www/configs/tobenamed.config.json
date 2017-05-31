@@ -14,7 +14,7 @@
     },
     "ionicAppId": null,
     "ionNavBarClass": "bar-positive",
-    "quantimodoClientId": "tobenamed",
+    "clientId": "tobenamed",
     "socialLinks": {
         "facebook": "https://www.facebook.com/Quantimodology",
         "twitter": "https://twitter.com/quantimodo",

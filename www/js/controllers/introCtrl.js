@@ -29,8 +29,8 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         if($scope.introSlides[0].backgroundColor){ $scope.myIntro.backgroundColor = $scope.introSlides[0].backgroundColor; }
         if($scope.introSlides[0].textColor){ $scope.myIntro.textColor = $scope.introSlides[0].textColor; }
         if(quantimodoService.getUrlParameter('accessToken')){
-            console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.defaultState);
-            $state.go(config.appSettings.defaultState);
+            console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.appDesign.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
         } else {
             //console.debug($state.current.name + ' initializing...');
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }

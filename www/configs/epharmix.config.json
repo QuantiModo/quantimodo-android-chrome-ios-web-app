@@ -1,116 +1,140 @@
 {
-    "apiUrl": "https://app.quantimo.do",
     "appDescription": "Medication. Track. Learn. Connect.",
     "appDisplayName": "Epharmix",
-    "appIdentifier": "com.quantimodo.epharmix",
-    "appleId": null,
-    "appStorageIdentifier": "EpharmixData*",
     "appType": "medication",
-    "cordovaLocalNotificationsEnabled": false,
-    "defaultRemindersType": "medication",
-    "defaultState": "app.remindersInbox",
-    "downloadLinks": {
-        "chromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
-        "iosApp": "https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8",
-        "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo",
-        "webApp": "https://app.quantimo.do"
+    "clientId": "epharmix",
+    "companyName": "QuantiModo",
+    "homepage": "https://quantimo.do",
+    "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/h_512,w_512/ijHsrk0B1s_ako7ow",
+    "longDescription": "",
+    "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
+    "userId": 230,
+    "additionalSettings": {
+        "companyEmail": "info@quantimo.do",
+        "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
+        "appIdentifier": "com.quantimodo.epharmix",
+        "appleId": null,
+        "appStorageIdentifier": "EpharmixData*",
+        "downloadLinks": {
+            "chromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
+            "iosApp": "https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8",
+            "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo",
+            "webApp": "https://app.quantimo.do"
+        },
+        "facebookAppId": 225078261031461,
+        "googleAnalyticsTrackingIds": {
+            "laravel": "UA-39222734-29",
+            "ionic": "UA-39222734-25",
+            "api": "UA-39222734-24",
+            "wp": "UA-39222734-2"
+        },
+        "ionicAppId": "f837bb35",
+        "socialLinks": {
+            "facebook": "https://www.facebook.com/Quantimodology",
+            "twitter": "https://twitter.com/quantimodo",
+            "google": "https://plus.google.com/communities/100581500031158281444",
+            "linkedIn": "https://www.linkedin.com/company/quantimodo"
+        },
     },
-    "facebookAppId": 225078261031461,
-    "googleAnalyticsTrackingIds": {
-        "laravel": "UA-39222734-29",
-        "ionic": "UA-39222734-25",
-        "api": "UA-39222734-24",
-        "wp": "UA-39222734-2"
-    },
-    "ionicAppId": "f837bb35",
-    "quantimodoClientId": "epharmix",
-    "menuType": "medication",
-    "remindersManage": {},
-    "socialLinks": {
-        "facebook": "https://www.facebook.com/Quantimodology",
-        "twitter": "https://twitter.com/quantimodo",
-        "google": "https://plus.google.com/communities/100581500031158281444",
-        "linkedIn": "https://www.linkedin.com/company/quantimodo"
-    },
-    "wordAliases": {},
-    "intro": [
-        {
-            "img": {
-                "width": "250",
-                "height": "250",
-                "url": "img/intro/intro_import.png"
+    "appDesign": {
+        "backgroundColor": "#3467d6",
+        "ionNavBarClass": "bar-positive",
+        "physicianAlias": "Physician",
+        "patientAlias": "Patient",
+        "upgradePleadingCard": {
+            "web": {
+                "image": "img/ivy-sad-bw-300-300.png",
+                "text": "Please subscribe to my daddy's app or I'll be cold and hungry..."
             },
-            "textColor": "white",
-            "backgroundColor": "#3467d6",
-            "content": {
-                "firstParagraph": {
-                    "visible": true,
-                    "content": "Import Data",
-                    "classes": "intro-header"
-                },
-                "logoDiv": {
-                    "visible": true,
-                    "id": "logo"
-                },
-                "finalParagraph": {
-                    "visible": true,
-                    "content": "Import data from all your apps and devices",
-                    "classes": "intro-paragraph",
-                    "buttonBarVisible": true
-                }
+            "mobile": {
+                "image": "img/ivy-sad-bw.jpg",
+                "textHtml": "Please subscribe to my daddy's app or I'll be cold... <br> and hungry...</span>"
             }
         },
-        {
-            "img": {
-                "width": "250",
-                "height": "250",
-                "url": "img/intro/intro_track_anything.png"
+        "welcomeState": "app.welcome",
+        "cordovaLocalNotificationsEnabled": false,
+        "defaultState": "app.remindersInbox",
+        "menuType": "medication",
+        "wordAliases": {},
+        "intro": [
+            {
+                "img": {
+                    "width": "250",
+                    "height": "250",
+                    "url": "img/intro/intro_import.png"
+                },
+                "textColor": "white",
+                "backgroundColor": "#3467d6",
+                "content": {
+                    "firstParagraph": {
+                        "visible": true,
+                        "content": "Import Data",
+                        "classes": "intro-header"
+                    },
+                    "logoDiv": {
+                        "visible": true,
+                        "id": "logo"
+                    },
+                    "finalParagraph": {
+                        "visible": true,
+                        "content": "Import data from all your apps and devices",
+                        "classes": "intro-paragraph",
+                        "buttonBarVisible": true
+                    }
+                }
             },
-            "textColor": "white",
-            "backgroundColor": "#f09402",
-            "content": {
-                "firstParagraph": {
-                    "visible": true,
-                    "content": "Track Anything",
-                    "classes": "intro-header"
+            {
+                "img": {
+                    "width": "250",
+                    "height": "250",
+                    "url": "img/intro/intro_track_anything.png"
                 },
-                "logoDiv": {
-                    "visible": true,
-                    "id": "logo"
+                "textColor": "white",
+                "backgroundColor": "#f09402",
+                "content": {
+                    "firstParagraph": {
+                        "visible": true,
+                        "content": "Track Anything",
+                        "classes": "intro-header"
+                    },
+                    "logoDiv": {
+                        "visible": true,
+                        "id": "logo"
+                    },
+                    "finalParagraph": {
+                        "visible": true,
+                        "content": "Log treatments, diet, symptoms, emotions, and anything else",
+                        "classes": "intro-paragraph",
+                        "buttonBarVisible": true
+                    }
+                }
+            },
+            {
+                "img": {
+                    "width": "250",
+                    "height": "250",
+                    "url": "img/intro/intro_make_discoveries.png"
                 },
-                "finalParagraph": {
-                    "visible": true,
-                    "content": "Log treatments, diet, symptoms, emotions, and anything else",
-                    "classes": "intro-paragraph",
-                    "buttonBarVisible": true
+                "textColor": "white",
+                "backgroundColor": "#0f9d58",
+                "content": {
+                    "firstParagraph": {
+                        "visible": true,
+                        "content": "Make Discoveries",
+                        "classes": "intro-header"
+                    },
+                    "logoDiv": {
+                        "visible": true,
+                        "id": "logo"
+                    },
+                    "finalParagraph": {
+                        "visible": true,
+                        "content": "Identify hidden factors most strongly linked to your well-being",
+                        "classes": "intro-paragraph",
+                        "buttonBarVisible": true
+                    }
                 }
             }
-        },
-        {
-            "img": {
-                "width": "250",
-                "height": "250",
-                "url": "img/intro/intro_make_discoveries.png"
-            },
-            "textColor": "white",
-            "backgroundColor": "#0f9d58",
-            "content": {
-                "firstParagraph": {
-                    "visible": true,
-                    "content": "Make Discoveries",
-                    "classes": "intro-header"
-                },
-                "logoDiv": {
-                    "visible": true,
-                    "id": "logo"
-                },
-                "finalParagraph": {
-                    "visible": true,
-                    "content": "Identify hidden factors most strongly linked to your well-being",
-                    "classes": "intro-paragraph",
-                    "buttonBarVisible": true
-                }
-            }
-        }
-    ]
+        ]
+    }
 }

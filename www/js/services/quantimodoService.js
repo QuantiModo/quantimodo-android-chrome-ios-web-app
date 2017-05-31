@@ -847,7 +847,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         Analytics.set('&cs', config.appSettings.appDisplayName);
         Analytics.set('&cm', $rootScope.currentPlatform);
         Analytics.set('&an', config.appSettings.appDisplayName);
-        Analytics.set('&aid', config.appSettings.appIdentifier);
+        Analytics.set('&aid', config.appSettings.additionalSettings.googleReversedClientId);
         Analytics.set('&av', config.appSettings.versionNumber);
         // Register a custom dimension for the default, unnamed account object
         // e.g., ga('set', 'dimension1', 'Paid');
@@ -922,7 +922,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.updateUserTimeZoneIfNecessary();
     };
     quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
-        if(!quantimodoService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.defaultState);}
+        if(!quantimodoService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.appDesign.defaultState);}
     };
     quantimodoService.afterLoginGoToUrlOrState = function () {
         var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
@@ -940,7 +940,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return true;
         }
         if($state.current.name === 'app.login'){
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return true;
         }
         return false;
@@ -3966,7 +3966,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.shouldWeUseIonicLocalNotifications = function(){
         $ionicPlatform.ready(function () {
-            if (!config.appSettings.cordovaLocalNotificationsEnabled || typeof cordova === "undefined" ||
+            if (!config.appSettings.appDesign.cordovaLocalNotificationsEnabled || typeof cordova === "undefined" ||
                 typeof cordova.plugins.notification === "undefined") {
                 if (typeof cordova !== "undefined") {
                     if(typeof cordova.plugins !== "undefined" && typeof cordova.plugins.notification !== "undefined") {
@@ -5481,7 +5481,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return array;
     }
     quantimodoService.getIntroSlides = function (introSlides) {
-        if(config.appSettings.introSlides){introSlides = config.appSettings.introSlides;}
+        if(config.appSettings.appDesign.introSlides){introSlides = config.appSettings.appDesign.introSlides;}
         introSlides = addColorsCategoriesAndNames(introSlides);
         return introSlides;
     };
@@ -7142,7 +7142,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             });
     };
     quantimodoService.addToRemindersUsingVariableObject = function (variableObject, options) {
-        var doneState = config.appSettings.defaultState;
+        var doneState = config.appSettings.appDesign.defaultState;
         if(options.doneState){doneState = options.doneState;}
         if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
             $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
@@ -7496,7 +7496,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 localStorage.setItem('lastMeasurementSyncTime', 0);
             }
             quantimodoService.hideLoader();
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             console.debug("All measurements for " + variableObject.name + " deleted!");
         }, function(error) {
             quantimodoService.hideLoader();
