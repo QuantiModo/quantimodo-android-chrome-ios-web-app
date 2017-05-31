@@ -53,21 +53,17 @@
 			</div>
 		</div>
 	</ion-content>
-	<nav id="floatingMaterialButton"
+	<nav id="floatingActionButton"
 		 mfb-menu position="br"
 		 effect="slidein-spring"
 		 active-icon="ion-minus-round"
 		 resting-icon="ion-plus-round"
 		 toggling-method="click"
 		 ng-hide="hideNavigationMenu">
-		<button id="mfb1" mfb-button icon="ion-android-notifications-none" label="{{stateParams.addButtonText}}"
-				ng-click="addNewReminderButtonClick()"></button>
-		<button id="mfb2" mfb-button icon="ion-compose" label="{{stateParams.addMeasurementButtonText}}"
-				ng-click="addNewMeasurementButtonClick()"></button>
-		<button id="mfb3" mfb-button icon="ion-ios-cloud-download-outline" label="Import Data"
-				ng-click="goToState('app.import')"></button>
-		<button id="mfb4" mfb-button icon="ion-help" label="Get Help"
-				ng-click="goToState('app.help')"></button>
+		<button id="mfb1" mfb-button icon="ion-android-notifications-none" label="{{stateParams.addButtonText}}" ng-click="addNewReminderButtonClick()"></button>
+		<button id="mfb2" mfb-button icon="ion-compose" label="{{stateParams.addMeasurementButtonText}}" ng-click="addNewMeasurementButtonClick()"></button>
+		<button id="mfb3" mfb-button icon="ion-ios-cloud-download-outline" label="Import Data" ng-click="goToState('app.import')"></button>
+		<button id="mfb4" mfb-button icon="ion-help" label="Get Help" ng-click="goToState('app.help')"></button>
 	</nav>
 
 </ion-view>

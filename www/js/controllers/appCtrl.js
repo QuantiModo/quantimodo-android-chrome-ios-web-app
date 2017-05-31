@@ -7,7 +7,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     //console.debug('Starting AppCtrl');
     $scope.controller_name = "AppCtrl";
     $rootScope.appSettings = config.appSettings;
-    if(!$rootScope.appSettings.menu){$rootScope.appSettings.menu = quantimodoService.getMenu(config.appSettings.menuType);}
+    quantimodoService.updateAppComponents();
     if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
     $scope.showTrackingSubMenu = false;
     $rootScope.numberOfPendingNotifications = null;
@@ -81,7 +81,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.hideMenuButton = false;
         }
     });
-    $scope.floatingMaterialButton = quantimodoService.getFloatingMaterialButton();
+
     //  Calendar and  Date picker
     // will update from showCalendarPopup
     $scope.fromDate = new Date();

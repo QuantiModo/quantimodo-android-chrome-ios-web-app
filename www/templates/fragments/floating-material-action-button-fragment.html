@@ -1,16 +1,6 @@
-<nav id="floatingMaterialButton"
-     mfb-menu position="br"
-     effect="slidein-spring"
-     active-icon="ion-minus-round"
-     resting-icon="ion-plus-round"
-     toggling-method="click"
-     ng-hide="hideNavigationMenu">
-    <button id="mfb1" mfb-button icon="ion-android-notifications-none" label="Add a Reminder"
-            ng-click="goToState('app.reminderSearch')"></button>
-    <button id="mfb2" mfb-button icon="ion-compose" label="Record a Measurement"
-            ng-click="goToState('app.measurementAddSearch')"></button>
-    <button id="mfb3" mfb-button icon="ion-ios-cloud-download-outline" label="Import Data"
-            ng-click="goToState('app.import')"></button>
-    <button id="mfb4" mfb-button icon="ion-help" label="Get Help"
-            ng-click="goToState('app.help')"></button>
+<nav id="floatingActionButton" mfb-menu position="br" effect="slidein-spring" active-icon="ion-minus-round" resting-icon="ion-plus-round" toggling-method="click" ng-hide="hideNavigationMenu">
+    <button id="mfb4" mfb-button icon="{{floatingActionButton.button4.icon}}" label="{{floatingActionButton.button4.label}}" ng-click="goToState('button4')"></button>
+    <button id="mfb3" mfb-button icon="{{floatingActionButton.button3.icon}}" label="{{floatingActionButton.button3.label}}" ng-click="goToState('button3')"></button>
+    <button id="mfb2" mfb-button icon="{{floatingActionButton.button2.icon}}" label="{{floatingActionButton.button2.label}}" ng-click="goToState('button2')"></button>
+    <button id="mfb1" mfb-button icon="{{floatingActionButton.button1.icon}}" label="{{floatingActionButton.button1.label}}" ng-click="goToState('button1')"></button>
 </nav>

@@ -374,4 +374,10 @@ angular.module('starter')
         if(originalText.length > 25){return originalText.substring(0,25)+'...';}
         return originalText;
     };
+})
+
+.filter('capitalizeFirstLetter', function() {
+    return function(input) {
+        return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
+    };
 });

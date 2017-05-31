@@ -33,7 +33,7 @@ function getClientIdFromQueryParameters() {
 }
 
 function getQuantiModoClientId() {
-    if(window.location.href.indexOf('https://') === -1 || window.location.href.indexOf('quantimo.do') === -1){return "default";} // On mobile
+    if(window.location.href.indexOf('http') === -1 || window.location.href.indexOf('quantimo.do') === -1){return "default";} // On mobile
     if(getClientIdFromQueryParameters()){return getClientIdFromQueryParameters();}
     if(appConfigFileNames[getSubDomain()]){return appConfigFileNames[getSubDomain()];}
     return getSubDomain();

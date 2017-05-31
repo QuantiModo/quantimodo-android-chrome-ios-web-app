@@ -28,7 +28,7 @@
   "ionicAppId": "42fe48d4",
   "ionNavBarClass": "bar-positive",
   "quantimodoClientId": "quantimodo",
-  "menuType": "minimal",
+  "menuType": "general",
   "physicianAlias": "Physician",
   "patientAlias": "Patient",
   "socialLinks": {
