@@ -214,9 +214,10 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		}
 	}
 	function logOutOfWebsite() {
-		if (!window.private_keys || quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
-			var url = quantimodoService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(quantimodoService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
-			window.location.replace(url);
+		if ($rootScope.isWeb || $rootScope.isChromeExtension) {
+			var afterLogoutGoToUrl = (window.location.href.indexOf('https') > -1) ? window.location.href.replace('/settings', '/intro') : quantimodoService.getQuantiModoUrl();
+			var logoutUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(afterLogoutGoToUrl));
+			window.location.replace(logoutUrl);
 		}
 	}
 	$scope.logout = function(ev) {
