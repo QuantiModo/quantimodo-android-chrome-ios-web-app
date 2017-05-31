@@ -289,18 +289,18 @@ angular.module('starter',
     function getLocalConfigJson(clientId) {return getLocalJsonFile('configs/' + clientId + '.config.json', function(response) {window.config.appSettings = response;});}
     function getLocalPrivateConfigJson(clientId) {return getLocalJsonFile('private_configs/' + clientId + '.private_config.json', function(response) {window.private_keys = response;});}
     if(!window.config.appSettings){
-        if(appsManager.doWeHaveLocalConfigFile()) {
-            config_resolver.appSettingsResponse = getLocalConfigJson(appsManager.getQuantiModoClientId());
-            config_resolver.privateKeysResponse = getLocalPrivateConfigJson(appsManager.getQuantiModoClientId());
+        if(!appsManager.getClientIdFromQueryParameters()) {
+            config_resolver.appSettingsResponse = getLocalConfigJson('default');
+            config_resolver.privateKeysResponse = getLocalPrivateConfigJson('default');
             //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
         } else {
-            var localStorageName = appsManager.getQuantiModoClientId() + 'AppSettings';
+            var localStorageName = appsManager.getClientIdFromQueryParameters() + 'AppSettings';
             var locallyStoredAppSettings = localStorage.getItem(localStorageName);
             if(!appsManager.getUrlParameter('refreshAppSettings') && locallyStoredAppSettings) {
                 window.config.appSettings = JSON.parse(locallyStoredAppSettings);
             } else {
                 config_resolver.appSettingsResponse = function ($http) {
-                    return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getQuantiModoClientId()).then(function (response) {
+                    return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters()).then(function (response) {
                         localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
                         window.config.appSettings = response.data.data;
                     }, function errorCallback(response) {

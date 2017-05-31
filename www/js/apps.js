@@ -102,5 +102,8 @@ var appsManager = { // jshint ignore:line
         if(apiUrl){return apiUrl;}
         if(window.location.origin.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
         return "https://app.quantimo.do";
+    },
+    getClientIdFromQueryParameters: function () {
+        return  getClientIdFromQueryParameters();
     }
 };
