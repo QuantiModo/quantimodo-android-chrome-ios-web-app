@@ -190,8 +190,13 @@ angular.module('starter',
         }
         if (window.StatusBar) {StatusBar.styleDefault();} // org.apache.cordova.statusbar required
     });
-    $rootScope.goToState = function(state, params){
-        $state.go(state, params);
+    $rootScope.goToState = function(stateName, stateParameters){
+        if(stateName.indexOf('button') !== -1){
+            var buttonName = stateName;
+            stateName = $rootScope.floatingActionButton[buttonName].stateName;
+            stateParameters = $rootScope.floatingActionButton[buttonName].stateParameters;
+        }
+        $state.go(stateName, stateParameters);
     };
     $ionicPlatform.registerBackButtonAction(function (event) {
         if($rootScope.backButtonState){

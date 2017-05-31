@@ -1568,7 +1568,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
         if(!window.private_keys && $rootScope.isWeb){return window.location.origin;}
         if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".private_config.json or it does not contain window.private_keys");}
-        if(window.private_keys.apiUrl){return window.private_keys.apiUrl;}
+        if(window.private_keys && window.private_keys.apiUrl){return window.private_keys.apiUrl;}
+        if(window.location.href.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
         if ($rootScope.isWeb && (!window.private_keys || window.private_keys.client_ids.Web === 'oAuthDisabled') && window.location.origin) {return window.location.origin;}
         if(config.appSettings.downloadLinks.webApp){return config.appSettings.downloadLinks.webApp;}
         return "https://app.quantimo.do";
@@ -6386,114 +6387,673 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             icon: "ion-ios-nutrition-outline"
         }
     };
-    quantimodoService.menus = {
-        extended: [
-            menuItems.inbox,
-            menuItems.favorites,
-            parentMenus.overallMood,
-            parentMenus.manageReminders,
-            parentMenus.recordMeasurement,
-            parentMenus.history,
-            menuItems.importData,
-            menuItems.chartSearch,
-            parentMenus.discoveries,
-            menuItems.settings,
-            menuItems.helpAndFeedback
-        ],
-        minimal: [
-            menuItems.inbox,
-            parentMenus.variables,
-            parentMenus.history,
-            menuItems.importData,
-            parentMenus.discoveries,
-            menuItems.chartSearch,
-            menuItems.settings,
-        ],
-        medication: [
-            menuItems.inbox,
-            menuItems.treatments,
-            parentMenus.variables,
-            parentMenus.history,
-            menuItems.importData,
-            parentMenus.discoveries,
-            menuItems.chartSearch,
-            menuItems.settings
-        ],
-        diet: [
-            menuItems.inbox,
-            menuItems.foods,
-            parentMenus.variables,
-            parentMenus.history,
-            menuItems.importData,
-            parentMenus.discoveries,
-            menuItems.chartSearch,
-            menuItems.settings
-        ],
-        mood: [
-            menuItems.inbox,
-            parentMenus.overallMood,
-            parentMenus.variables,
-            parentMenus.history,
-            menuItems.importData,
-            parentMenus.discoveries,
-            menuItems.chartSearch,
-            menuItems.settings
-        ]
-    };
-    quantimodoService.getMenu = function(menuType){
-        menuType = menuType.toLowerCase();
-        if(!menuType && config.appSettings.menu){return config.appSettings.menu;}
-        if(!quantimodoService.menus[menuType]){menuType = 'extended';}
-        return quantimodoService.menus[menuType];
-    };
-    quantimodoService.getFloatingMaterialButton = function(){
-        if(config.appSettings.floatingMaterialButton){return config.appSettings.floatingMaterialButton;}
-        if(config.appSettings.appType === 'medication'){
-            return {
-                button1 : {
-                    icon: quantimodoService.ionIcons.reminder,
-                        label: 'Add a Reminder',
-                        stateAndParameters: "'app.reminderSearch'"
-                },
-                button2 : {
-                    icon: 'ion-compose',
-                        label: 'Record a Measurement',
-                        stateAndParameters: "'app.measurementAddSearch'"
-                },
-                button3 : {
-                    icon: 'ion-ios-medkit-outline',
-                        label: 'Record a Dose',
-                        stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Treatments'}"
-                },
-                button4 : {
-                    icon: 'ion-sad-outline',
-                        label: 'Rate a Symptom',
-                        stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Symptoms'}"
-                }
-            };
+    var floatingActionButtons = {
+        help: {
+            "icon": "ion-help",
+            "label": "Get Help",
+            "stateName": "app.help",
+            "stateParameters": {}
+        },
+        importData: {
+            "icon": "ion-ios-cloud-download-outline",
+            "label": "Import Data",
+            "stateName": "app.reminderSearch",
+            "stateParameters": {}
         }
-        return {
-            "button1" : {
-                "icon": "ion-android-notifications-none",
-                "label": "Add a Reminder",
-                "stateAndParameters": "'app.reminderSearch'"
+    };
+    quantimodoService.defaultDesigns = {
+        "intro": {
+            "diet": [
+                {
+                    "newIntroStyle": true,
+                    "title": "Hi! I'm __APP_DISPLAY_NAME__!",
+                    "color": "green",
+                    "image": {
+                        "height": "120",
+                        "width": "120",
+                        "url": "img/robots/robot-waving.svg"
+                    },
+                    "overlayIcon": true,
+                    "bodyText": "I'm going to use data to help you take the guesswork out of healthy eating!"
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "You Are What You Eat",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/intro/patient-frown-factors.png",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "Chronic diseases with nutritional solutions cost the US healthcare system billions of dollars each year and less than 2% of Americans eat an ideal diet."
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Only Human",
+                    "color": "yellow",
+                    "image": {
+                        "url": "img/brains/brain-pink.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Machine Learning",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/robots/quantimodo-robot-brain.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Automated Tracking",
+                    "color": "green",
+                    "image": {
+                        "url": "img/intro/download_2-96.png",
+                        "height": "100",
+                        "width": "100"
+                    },
+                    "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Effortless Tracking",
+                    "color": "yellow",
+                    "image": {
+                        "url": "img/intro/inbox.svg",
+                        "height": "90",
+                        "width": "90"
+                    },
+                    "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Data Security",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/intro/lock.svg",
+                        "height": "90",
+                        "width": "90"
+                    },
+                    "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
+                }
+            ],
+            "medication": [
+                {
+                    "newIntroStyle": true,
+                    "title": "Hi! I'm __APP_DISPLAY_NAME__!",
+                    "color": "green",
+                    "image": {
+                        "height": "120",
+                        "width": "120",
+                        "url": "img/robots/robot-waving.svg"
+                    },
+                    "overlayIcon": true,
+                    "bodyText": "I'm going to use data to help you take the guesswork out of healthy eating!"
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "You Are What You Eat",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/intro/patient-frown-factors.png",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "Chronic diseases with nutritional solutions cost the US healthcare system billions of dollars each year and less than 2% of Americans eat an ideal diet."
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Only Human",
+                    "color": "yellow",
+                    "image": {
+                        "url": "img/brains/brain-pink.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Machine Learning",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/robots/quantimodo-robot-brain.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Automated Tracking",
+                    "color": "green",
+                    "image": {
+                        "url": "img/intro/download_2-96.png",
+                        "height": "100",
+                        "width": "100"
+                    },
+                    "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Effortless Tracking",
+                    "color": "yellow",
+                    "image": {
+                        "url": "img/intro/inbox.svg",
+                        "height": "90",
+                        "width": "90"
+                    },
+                    "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Data Security",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/intro/lock.svg",
+                        "height": "90",
+                        "width": "90"
+                    },
+                    "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
+                }
+            ],
+            "mood": [
+                {
+                    "newIntroStyle": true,
+                    "title": "Hi! I'm __APP_DISPLAY_NAME__!",
+                    "color": "green",
+                    "image": {
+                        "height": "120",
+                        "width": "120",
+                        "url": "img/robots/robot-waving.svg"
+                    },
+                    "overlayIcon": true,
+                    "bodyText": "I'm going to use data to help you take the guesswork out of healthy eating!"
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "You Are What You Eat",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/intro/patient-frown-factors.png",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "Chronic diseases with nutritional solutions cost the US healthcare system billions of dollars each year and less than 2% of Americans eat an ideal diet."
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Only Human",
+                    "color": "yellow",
+                    "image": {
+                        "url": "img/brains/brain-pink.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Machine Learning",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/robots/quantimodo-robot-brain.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Automated Tracking",
+                    "color": "green",
+                    "image": {
+                        "url": "img/intro/download_2-96.png",
+                        "height": "100",
+                        "width": "100"
+                    },
+                    "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Effortless Tracking",
+                    "color": "yellow",
+                    "image": {
+                        "url": "img/intro/inbox.svg",
+                        "height": "90",
+                        "width": "90"
+                    },
+                    "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Data Security",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/intro/lock.svg",
+                        "height": "90",
+                        "width": "90"
+                    },
+                    "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
+                }
+            ],
+            "general": [
+                {
+                    "newIntroStyle": true,
+                    "title": "Hi! I'm __APP_DISPLAY_NAME__!",
+                    "color": "green",
+                    "image": {
+                        "height": "120",
+                        "width": "120",
+                        "url": "img/robots/robot-waving.svg"
+                    },
+                    "overlayIcon": true,
+                    "bodyText": "I'm going to use data to help you take the guesswork out of healthy eating!"
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "You Are What You Eat",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/intro/patient-frown-factors.png",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "Chronic diseases with nutritional solutions cost the US healthcare system billions of dollars each year and less than 2% of Americans eat an ideal diet."
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Only Human",
+                    "color": "yellow",
+                    "image": {
+                        "url": "img/brains/brain-pink.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Machine Learning",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/robots/quantimodo-robot-brain.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Automated Tracking",
+                    "color": "green",
+                    "image": {
+                        "url": "img/intro/download_2-96.png",
+                        "height": "100",
+                        "width": "100"
+                    },
+                    "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Effortless Tracking",
+                    "color": "yellow",
+                    "image": {
+                        "url": "img/intro/inbox.svg",
+                        "height": "90",
+                        "width": "90"
+                    },
+                    "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
+                },
+                {
+                    "newIntroStyle": true,
+                    "title": "Data Security",
+                    "color": "blue",
+                    "image": {
+                        "url": "img/intro/lock.svg",
+                        "height": "90",
+                        "width": "90"
+                    },
+                    "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
+                }
+            ]
+        },
+        "floatingActionButton": {
+            "diet": {
+                "button1": {
+                    "icon": "ion-android-notifications-none",
+                    "label": "Add Frequent Food",
+                    "stateName": "app.reminderSearch",
+                    "stateParameters": {variableCategoryName: "Foods"}
+                },
+                "button2": {
+                    "icon": "ion-compose",
+                    "label": "Record a Meal",
+                    "stateName": "app.reminderSearch",
+                    "stateParameters": {variableCategoryName: "Foods"}
+                },
+                "button3": floatingActionButtons.importData,
+                "button4": floatingActionButtons.help
             },
-            "button2" : {
-                "icon": "ion-compose",
-                "label": "Record a Measurement",
-                "stateAndParameters": "'app.measurementAddSearch'"
+            "medication": {
+                "button1": {
+                    "icon": "ion-android-notifications-none",
+                    "label": "Add a Medication",
+                    "stateName": "app.reminderSearch",
+                    "stateParameters": {variableCategoryName: "Treatments"}
+                },
+                "button2": {
+                    "icon": "ion-compose",
+                    "label": "Record a Dose",
+                    "stateName": "app.reminderSearch",
+                    "stateParameters": {variableCategoryName: "Treatments"}
+                },
+                "button3": floatingActionButtons.importData,
+                "button4": floatingActionButtons.help
             },
-            "button3" : {
-                "icon": "ion-ios-cloud-download-outline",
-                "label": "Import Data",
-                "stateAndParameters": "'app.import'"
+            "mood": {
+                "button1": {
+                    "icon": "ion-android-notifications-none",
+                    "label": "Add a Reminder",
+                    "stateName": "app.reminderSearch",
+                    "stateParameters": {}
+                },
+                "button2": {
+                    "icon": "ion-compose",
+                    "label": "Record a Measurement",
+                    "stateName": "app.reminderSearch",
+                    "stateParameters": {}
+                },
+                "button3": floatingActionButtons.importData,
+                "button4": floatingActionButtons.help
             },
-            "button4" : {
-                "icon": "ion-ios-star",
-                "label": "Go to your favorites",
-                "stateAndParameters": "'app.favorites'"
+            "general": {
+                "button1": {
+                    "icon": "ion-android-notifications-none",
+                    "label": "Add a Reminder",
+                    "stateName": "app.reminderSearch",
+                    "stateParameters": {}
+                },
+                "button2": {
+                    "icon": "ion-compose",
+                    "label": "Record a Measurement",
+                    "stateName": "app.reminderSearch",
+                    "stateParameters": {}
+                },
+                "button3": floatingActionButtons.importData,
+                "button4": floatingActionButtons.help
             }
-        };
+        },
+        "onboarding": {
+            "diet": [
+                {
+                    "id": "addFoodRemindersCard",
+                    "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
+                    "title": "Common Foods or Drinks?",
+                    "color": "blue",
+                    "variableCategoryName": "Foods",
+                    "addButtonText": "Add Food or Drink",
+                    "nextPageButtonText": "Maybe Later",
+                    "bodyText": "Add any foods or drinks that you consume more than a few times a week"
+                },
+                {
+                    "id": "addSymptomRemindersCard",
+                    "title": "Recurring Symptoms?",
+                    "color": "blue",
+                    "variableCategoryName": "Symptoms",
+                    "addButtonText": "Add Symptom",
+                    "nextPageButtonText": "Maybe Later",
+                    "bodyText": "Got any recurring symptoms that vary in their severity?"
+                },
+                {
+                    "id": "importDataPage",
+                    "title": "Import Your Data",
+                    "color": "yellow",
+                    "iconClass": "icon positive ion-ios-cloud-download-outline",
+                    "image": {
+                        "url": "img/intro/download_2-96.png",
+                        "height": "96",
+                        "width": "96"
+                    },
+                    "premiumFeature": true,
+                    "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
+                    "nextPageButtonText": "Maybe Later"
+                },
+                {
+                    "id": "allDoneCard",
+                    "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
+                    "title": "Great job!",
+                    "color": "green",
+                    "iconClass": "icon positive ion-ios-cloud-download-outline",
+                    "image": {
+                        "url": "img/robots/robot-waving.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
+                }
+            ],
+            "medication": [
+                {
+                    "id": "addFoodRemindersCard",
+                    "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
+                    "title": "Common Foods or Drinks?",
+                    "color": "blue",
+                    "variableCategoryName": "Foods",
+                    "addButtonText": "Add Food or Drink",
+                    "nextPageButtonText": "Maybe Later",
+                    "bodyText": "Add any foods or drinks that you consume more than a few times a week"
+                },
+                {
+                    "id": "addSymptomRemindersCard",
+                    "title": "Recurring Symptoms?",
+                    "color": "blue",
+                    "variableCategoryName": "Symptoms",
+                    "addButtonText": "Add Symptom",
+                    "nextPageButtonText": "Maybe Later",
+                    "bodyText": "Got any recurring symptoms that vary in their severity?"
+                },
+                {
+                    "id": "importDataPage",
+                    "title": "Import Your Data",
+                    "color": "yellow",
+                    "iconClass": "icon positive ion-ios-cloud-download-outline",
+                    "image": {
+                        "url": "img/intro/download_2-96.png",
+                        "height": "96",
+                        "width": "96"
+                    },
+                    "premiumFeature": true,
+                    "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
+                    "nextPageButtonText": "Maybe Later"
+                },
+                {
+                    "id": "allDoneCard",
+                    "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
+                    "title": "Great job!",
+                    "color": "green",
+                    "iconClass": "icon positive ion-ios-cloud-download-outline",
+                    "image": {
+                        "url": "img/robots/robot-waving.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
+                }
+            ],
+            "mood": [
+                {
+                    "id": "addFoodRemindersCard",
+                    "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
+                    "title": "Common Foods or Drinks?",
+                    "color": "blue",
+                    "variableCategoryName": "Foods",
+                    "addButtonText": "Add Food or Drink",
+                    "nextPageButtonText": "Maybe Later",
+                    "bodyText": "Add any foods or drinks that you consume more than a few times a week"
+                },
+                {
+                    "id": "addSymptomRemindersCard",
+                    "title": "Recurring Symptoms?",
+                    "color": "blue",
+                    "variableCategoryName": "Symptoms",
+                    "addButtonText": "Add Symptom",
+                    "nextPageButtonText": "Maybe Later",
+                    "bodyText": "Got any recurring symptoms that vary in their severity?"
+                },
+                {
+                    "id": "importDataPage",
+                    "title": "Import Your Data",
+                    "color": "yellow",
+                    "iconClass": "icon positive ion-ios-cloud-download-outline",
+                    "image": {
+                        "url": "img/intro/download_2-96.png",
+                        "height": "96",
+                        "width": "96"
+                    },
+                    "premiumFeature": true,
+                    "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
+                    "nextPageButtonText": "Maybe Later"
+                },
+                {
+                    "id": "allDoneCard",
+                    "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
+                    "title": "Great job!",
+                    "color": "green",
+                    "iconClass": "icon positive ion-ios-cloud-download-outline",
+                    "image": {
+                        "url": "img/robots/robot-waving.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
+                }
+            ],
+            "general": [
+                {
+                    "id": "addFoodRemindersCard",
+                    "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
+                    "title": "Common Foods or Drinks?",
+                    "color": "blue",
+                    "variableCategoryName": "Foods",
+                    "addButtonText": "Add Food or Drink",
+                    "nextPageButtonText": "Maybe Later",
+                    "bodyText": "Add any foods or drinks that you consume more than a few times a week"
+                },
+                {
+                    "id": "addSymptomRemindersCard",
+                    "title": "Recurring Symptoms?",
+                    "color": "blue",
+                    "variableCategoryName": "Symptoms",
+                    "addButtonText": "Add Symptom",
+                    "nextPageButtonText": "Maybe Later",
+                    "bodyText": "Got any recurring symptoms that vary in their severity?"
+                },
+                {
+                    "id": "importDataPage",
+                    "title": "Import Your Data",
+                    "color": "yellow",
+                    "iconClass": "icon positive ion-ios-cloud-download-outline",
+                    "image": {
+                        "url": "img/intro/download_2-96.png",
+                        "height": "96",
+                        "width": "96"
+                    },
+                    "premiumFeature": true,
+                    "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
+                    "nextPageButtonText": "Maybe Later"
+                },
+                {
+                    "id": "allDoneCard",
+                    "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
+                    "title": "Great job!",
+                    "color": "green",
+                    "iconClass": "icon positive ion-ios-cloud-download-outline",
+                    "image": {
+                        "url": "img/robots/robot-waving.svg",
+                        "height": "120",
+                        "width": "120"
+                    },
+                    "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
+                }
+            ]
+        },
+        "menu": {
+            extended: [
+                menuItems.inbox,
+                menuItems.favorites,
+                parentMenus.overallMood,
+                parentMenus.manageReminders,
+                parentMenus.recordMeasurement,
+                parentMenus.history,
+                menuItems.importData,
+                menuItems.chartSearch,
+                parentMenus.discoveries,
+                menuItems.settings,
+                menuItems.helpAndFeedback
+            ],
+            general: [
+                menuItems.inbox,
+                parentMenus.variables,
+                parentMenus.history,
+                menuItems.importData,
+                parentMenus.discoveries,
+                menuItems.chartSearch,
+                menuItems.settings,
+            ],
+            medication: [
+                menuItems.inbox,
+                menuItems.treatments,
+                parentMenus.variables,
+                parentMenus.history,
+                menuItems.importData,
+                parentMenus.discoveries,
+                menuItems.chartSearch,
+                menuItems.settings
+            ],
+            diet: [
+                menuItems.inbox,
+                menuItems.foods,
+                parentMenus.variables,
+                parentMenus.history,
+                menuItems.importData,
+                parentMenus.discoveries,
+                menuItems.chartSearch,
+                menuItems.settings
+            ],
+            mood: [
+                menuItems.inbox,
+                parentMenus.overallMood,
+                parentMenus.variables,
+                parentMenus.history,
+                menuItems.importData,
+                parentMenus.discoveries,
+                menuItems.chartSearch,
+                menuItems.settings
+            ]
+        }
+    };
+    function getAppComponent(appComponentName){
+        var appComponentNameFollowedByType = appComponentName + 'Type';
+        var appComponentNameFollowedByCustom = appComponentName + 'Custom';
+        var selectedType = $rootScope.appSettings[appComponentNameFollowedByType];
+        var defaultComponent = quantimodoService.defaultDesigns[appComponentName][selectedType];
+        if(defaultComponent){return defaultComponent;}
+        if(!$rootScope.appSettings[appComponentNameFollowedByCustom]){$rootScope.appSettings[appComponentNameFollowedByCustom] = quantimodoService.defaultDesigns[appComponentName].general;}
+        return $rootScope.appSettings[appComponentNameFollowedByCustom];
+    }
+    quantimodoService.updateAppComponents = function(){
+        config.appSettings = $rootScope.appSettings;
+        $rootScope.menu = getAppComponent('menu');
+        $rootScope.floatingActionButton = getAppComponent('floatingActionButton');
+        $rootScope.introSlides = getAppComponent('intro');
+        $rootScope.onboardingPages = getAppComponent('onboarding');
     };
     quantimodoService.goToLoginIfNecessary = function(){
         if(!quantimodoService.weHaveUserOrAccessToken()){
@@ -7174,7 +7734,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return deferred.promise;
     };
     quantimodoService.postAppSettings = function(appSettings, successHandler, errorHandler) {
-        quantimodoService.post('api/v2/apps/' + appSettings.id + '/edit', [], appSettings, successHandler, errorHandler);
+        quantimodoService.post('api/v2/apps/' + appSettings.id + '/edit', [], {app_settings: appSettings}, successHandler, errorHandler);
     };
     return quantimodoService;
 });

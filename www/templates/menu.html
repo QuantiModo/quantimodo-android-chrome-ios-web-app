@@ -54,7 +54,7 @@
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <div ng-repeat="menuItem in appSettings.menu">
+                <div ng-repeat="menuItem in menu">
                     <ion-item ng-click="closeMenuIfNeeded(menuItem)" ng-href="{{menuItem.href}}">
                         <i ng-if="this[menuItem.showSubMenuVariable]" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
                         <i ng-if="!this[menuItem.showSubMenuVariable]" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
