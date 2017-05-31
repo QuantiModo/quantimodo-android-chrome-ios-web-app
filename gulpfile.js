@@ -70,21 +70,6 @@ gulp.task('createChromeExtensionManifest', function () {
     chromeExtensionManifest.appSettings = appSettings;
     require('fs').writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifest));
 });
-gulp.task('generateJsConfigs', function () {
-    var configListPath = 'configs-list.json';
-    gulp.src('./www/configs/*.json')
-        .pipe(directoryMap({filename: 'configs-list.json'}))
-        .pipe(gulp.dest('./'))
-        .on('end', function () {
-            gutil.log('Available apps:');
-            var configListJson = JSON.parse(fs.readFileSync(configListPath));
-            for (var property in configListJson) {
-                var quantimodoClientId = property.replace('.config.json', '');
-                gutil.log(quantimodoClientId);
-                loadConfigsAndGenerateConfigJs(null, quantimodoClientId);
-            }
-        });
-});
 var paths = {
     sass: ['./www/scss/**/*.scss']
 };
@@ -861,7 +846,7 @@ gulp.task('addGooglePlusPlugin', [], function () {
     }
     var commands = [
         'cordova -d plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git#89ac9f2e8d521bacaaf3989a22b50e4d0b5d6d09',
-        'REVERSED_CLIENT_ID="' + REVERSED_CLIENT_ID + '"'
+        'REVERSED_CLIENT_ID="' + process.env.REVERSED_CLIENT_ID + '"'
     ].join(' --variable ');
     execute(commands, function (error) {
         if (error !== null) {
@@ -1546,7 +1531,6 @@ gulp.task('configureApp', [], function (callback) {
         'setLowerCaseAppName',
         'deleteUnusedFiles',
         'sass',
-        'generateJsConfigs',
         'getCommonVariables',
         'copyAppResources',
         'generatePrivateConfigFromEnvs',

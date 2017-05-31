@@ -5,7 +5,7 @@
   "homepage": "https://quantimo.do",
   "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
   "clientId": "quantimodo",
-  "appType": "quantimodo",
+  "appType": "general",
   "longDescription": "",
   "userId": 230,
   "companyName": "QuantiModo",
