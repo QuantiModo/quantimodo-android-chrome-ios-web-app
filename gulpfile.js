@@ -145,6 +145,17 @@ function createPrivateConfigFiles(privateConfigObject, callback) {
     console.log('Created ' + './www/private_configs/default.private_config.json');
     if (callback) {callback();}
 }
+gulp.task('getAppSettings', function () {
+    console.log('gulp getAppSettings...');
+    if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
+    return request({url: 'https://local.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID, headers: {'User-Agent': 'request'}})
+        .pipe(source('default.config.json'))
+        .pipe(streamify(jeditor(function (response) {
+            appSettings = response.data;
+            return appSettings;
+        })))
+        .pipe(gulp.dest('./www/configs/'));
+});
 gulp.task('getCommonVariables', function () {
     console.log('gulp getCommonVariables...');
     return request({url: 'https://app.quantimo.do/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
@@ -196,35 +207,7 @@ function decryptPrivateConfig(callback) {
     var decryptedFilePath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 }
-function loadConfigsAndGenerateConfigJs(callback, quantimodoClientId) {
-    var pathToGeneratedConfigJs;
-    if (!quantimodoClientId) {
-        pathToGeneratedConfigJs = './www/configs/default.js';
-        if (!process.env.QUANTIMODO_CLIENT_ID) {
-            console.error('No process.env.QUANTIMODO_CLIENT_ID so falling back to quantimodo');
-            process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
-        }
-        quantimodoClientId = process.env.QUANTIMODO_CLIENT_ID;
-    } else {
-        pathToGeneratedConfigJs = './www/configs/' + quantimodoClientId + '.js';
-    }
-    var pathToJsonConfigPath = './www/configs/' + quantimodoClientId + '.config.json';
-    appSettings = JSON.parse(fs.readFileSync(pathToJsonConfigPath));
-    appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
-    appSettings.debugMode = process.env.DEBUG_MODE;
-    var defaultConfigFileContent = 'var config = {}; config.appSettings = ' + JSON.stringify(appSettings) + '; if(!module){var module = {};}  module.exports = config.appSettings;';
-    console.log('writing to ' + pathToGeneratedConfigJs);
-    require('fs').writeFileSync(pathToGeneratedConfigJs, defaultConfigFileContent);
-    fs.stat(pathToGeneratedConfigJs, function (err, stat) {
-        if (err === null) {
-            if (callback) {callback();}
-        } else {
-            console.log('Could not create and read ' + pathToGeneratedConfigJs);
-            throw('ERROR: ' + pathToGeneratedConfigJs + ' not found! Please create it or use a different process.env.QUANTIMODO_CLIENT_ID env. Error Code: ' + err.code);
-        }
-    });
-}
-//loadConfigsAndGenerateConfigJs();
+
 gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
     var minimatch = require('minimatch');
@@ -1225,63 +1208,59 @@ gulp.task('template', function (done) {
         .pipe(gulp.dest('./public'))
         .on('end', done);
 });
-gulp.task('loadConfigsAndGenerateConfigJs', ['setLowerCaseAppName'], function (callback) {
-    console.log('gulp loadConfigsAndGenerateConfigJs');
-    loadConfigsAndGenerateConfigJs(callback);
-});
 gulp.task('setEnvsFromBranchName', [], function (callback) {
     runSequence(
         'setLowerCaseAppName',
         'decryptPrivateConfig',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         callback);
 });
 gulp.task('setEnergyModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'energymodo';
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         callback);
 });
 gulp.task('setMediModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'medimodo';
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         callback);
 });
 gulp.task('setMindFirstEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'mindfirst';
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         callback);
 });
 gulp.task('setMoodiModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'moodimodo';
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         callback);
 });
 gulp.task('setAppEnvs', ['setLowerCaseAppName'], function (callback) {
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         callback);
 });
 gulp.task('setQuantiModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         callback);
 });
 gulp.task('setMindFirstEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'mindfirst';
     runSequence(
         'decryptPrivateConfig',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         callback);
 });
 gulp.task('setAndroidEnvs', [], function (callback) {
@@ -1375,7 +1354,7 @@ gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName'], function (ca
         console.log('Could not find template at CONFIG_XML_TEMPLATE_PATH ' + process.env.CONFIG_XML_TEMPLATE_PATH);
         return;
     }
-    loadConfigsAndGenerateConfigJs();
+    getAppSettings();
     if (appSettings.additionalSettings.googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.googleReversedClientId);
     }
@@ -1536,7 +1515,7 @@ gulp.task('configureApp', [], function (callback) {
         'generatePrivateConfigFromEnvs',
         'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
         'decryptPrivateConfigToDefault',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         // templates because of the git changes and weird stuff replacement does to config-template.xml
         'copyAppConfigToDefault',
         'setIonicAppId',
@@ -1553,7 +1532,7 @@ gulp.task('configureDefaultApp', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'your_quantimodo_client_id_here';
     runSequence(
         'copyAppResources',
-        'loadConfigsAndGenerateConfigJs',
+        'getAppSettings',
         'copyAppConfigToDefault',
         'setIonicAppId',
         callback);

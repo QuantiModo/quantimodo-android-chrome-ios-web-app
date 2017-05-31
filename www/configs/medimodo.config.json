@@ -10,25 +10,25 @@
     "textLogo": "https://app.quantimo.do/ionic/Modo/www/img/logos/medimodo/medimodo-text-logo-250-56.png",
     "userId": 230,
     "additionalSettings": {
-        "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
         "appIdentifier": "com.quantimodo.medimodo",
         "appleId": "1208212533",
         "appStorageIdentifier": "MediModoData*",
         "companyEmail": "hello@medimodo.com",
+        "facebookAppId": 225078261031461,
+        "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
+        "ionicAppId": "e85b92b4",
         "downloadLinks": {
             "chromeExtension": "https://chrome.google.com/webstore/detail/medimodo/nojnjdgmjaejpnpehgioddbimopnblga",
             "iosApp": "https://itunes.apple.com/us/app/medimodo/id1208212533?mt=8",
             "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.medimodo",
             "webApp": "https://medimodo.quantimo.do"
         },
-        "facebookAppId": 225078261031461,
         "googleAnalyticsTrackingIds": {
             "laravel": "UA-98995949-4",
             "ionic": "UA-98995949-3",
             "api": "UA-98995949-2",
             "wp": "UA-98995949-1"
         },
-        "ionicAppId": "e85b92b4",
         "socialLinks": {
             "facebook": "https://www.facebook.com/medimodoapp",
             "twitter": "https://twitter.com/MediModo",
@@ -40,21 +40,12 @@
         "intro": null,
         "physicianAlias": "Physician",
         "patientAlias": "Patient",
-        "upgradePleadingCard": {
-            "web": {
-                "image": "img/ivy-sad-bw-300-300.png",
-                "text": "Please subscribe to my daddy's app or I'll be cold and hungry..."
-            },
-            "mobile": {
-                "image": "img/ivy-sad-bw.jpg",
-                "textHtml": "Please subscribe to my daddy's app or I'll be cold... <br> and hungry...</span>"
-            }
-        },
+        "upgradePleadingCard": null,
         "welcomeState": "app.welcome",
         "backgroundColor": "white",
         "cordovaLocalNotificationsEnabled": false,
         "defaultState": "app.remindersInbox",
         "menuType": "general",
-        "wordAliases": {},
+        "wordAliases": {}
     }
 }

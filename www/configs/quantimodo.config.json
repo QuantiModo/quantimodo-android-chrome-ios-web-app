@@ -1,20 +1,22 @@
 {
   "appDescription": "Perfect your life!",
   "appDisplayName": "QuantiModo",
-  "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/h_512,w_512/ijHsrk0B1s_ako7ow",
-  "homepageUrl": "https://quantimo.do",
-  "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
-  "clientId": "quantimodo",
   "appType": "general",
-  "longDescription": "",
-  "userId": 230,
+  "clientId": "quantimodo",
   "companyName": "QuantiModo",
+  "homepageUrl": "https://quantimo.do",
+  "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/h_512,w_512/ijHsrk0B1s_ako7ow",
+  "longDescription": "",
+  "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
+  "userId": 230,
   "additionalSettings": {
     "appIdentifier": "com.quantimodo.quantimodo",
     "appleId": "1115037060",
     "appStorageIdentifier": "QuantiModoData*",
     "companyEmail": "info@quantimo.do",
     "facebookAppId": 225078261031461,
+    "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
+    "ionicAppId": "42fe48d4",
     "googleAnalyticsTrackingIds": {
       "laravel": "UA-39222734-29",
       "ionic": "UA-39222734-25",
@@ -27,8 +29,6 @@
       "androidApp": "https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo",
       "webApp": "https://app.quantimo.do"
     },
-    "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
-    "ionicAppId": "42fe48d4",
     "socialLinks": {
       "facebook": "https://www.facebook.com/Quantimodology",
       "twitter": "https://twitter.com/quantimodo",
@@ -43,8 +43,10 @@
     "intro": null,
     "ionNavBarClass": "bar-positive",
     "menuType": "general",
-    "physicianAlias": "Physician",
     "patientAlias": "Patient",
+    "physicianAlias": "Physician",
+    "welcomeState": "app.welcome",
+    "wordAliases": {},
     "upgradePleadingCard": {
       "web": {
         "image": "img/ivy-sad-bw-300-300.png",
@@ -54,8 +56,6 @@
         "image": "img/ivy-sad-bw.jpg",
         "textHtml": "Please subscribe to my daddy's app or I'll be cold... <br> and hungry...</span>"
       }
-    },
-    "welcomeState": "app.welcome",
-    "wordAliases": {}
+    }
   }
 }

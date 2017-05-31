@@ -193,8 +193,8 @@ angular.module('starter',
     $rootScope.goToState = function(stateName, stateParameters){
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
-            stateName = $rootScope.floatingActionButton[buttonName].stateName;
-            stateParameters = $rootScope.floatingActionButton[buttonName].stateParameters;
+            stateName = $rootScope.appSettings.appDesign.floatingActionButton[buttonName].stateName;
+            stateParameters = $rootScope.appSettings.appDesign.floatingActionButton[buttonName].stateParameters;
         }
         $state.go(stateName, stateParameters);
     };
