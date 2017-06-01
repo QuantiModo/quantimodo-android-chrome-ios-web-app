@@ -11,6 +11,21 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     // GET method with the added token
+    function addGlobalUrlParams(urlParams) {
+        urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
+        urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
+        urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
+        if(window.private_keys){
+            if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
+            if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
+        }
+        if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
+        //We can't append access token to Ionic requests for some reason
+        //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
+        if(quantimodoService.getUrlParameter('log')){urlParams.push(encodeURIComponent('log') + '=' + quantimodoService.getUrlParameter('log'));}
+        if(quantimodoService.getUrlParameter('pwd')){urlParams.push(encodeURIComponent('pwd') + '=' + quantimodoService.getUrlParameter('pwd'));}
+        return urlParams;
+    }
     quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
         if(!options){ options = {}; }
         var cache = false;
@@ -43,16 +58,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 }
             }
-            urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
-            urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-            if(window.private_keys){
-                if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
-                if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
-            }
-            if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
-            //We can't append access token to Ionic requests for some reason
-            //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
+            urlParams = addGlobalUrlParams(urlParams);
             var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
@@ -96,11 +102,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 }
             }
-            var urlParams = [];
-            urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
-            urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-            var url = quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'));
+            var url = quantimodoService.getQuantiModoUrl(route) + '?' + addGlobalUrlParams([]).join('&');
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};}
             $http(request).success(successHandler).error(function(data, status, headers){
