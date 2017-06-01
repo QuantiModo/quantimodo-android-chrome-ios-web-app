@@ -5430,8 +5430,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             locallyStoredHelpCards = JSON.parse(locallyStoredHelpCards);
             return locallyStoredHelpCards;
         }
-        localStorage.setItem('defaultHelpCards', JSON.stringify(config.appSettings.appDesign.helpCard));
-        return config.appSettings.appDesign.helpCard;
+        localStorage.setItem('defaultHelpCards', JSON.stringify(config.appSettings.appDesign.helpCard.active));
+        return config.appSettings.appDesign.helpCard.active;
     };
     quantimodoService.colors = {
         green: {backgroundColor: "#0f9d58", circleColor: "#03c466"},
@@ -5441,7 +5441,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.setupOnboardingPages = function (onboardingPages) {
         var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
-            $rootScope.appSettings.appDesign.onboarding = onboardingPagesFromLocalStorage;
+            $rootScope.appSettings.appDesign.onboarding.active = onboardingPagesFromLocalStorage;
         }
     };
     $rootScope.signUpQuestions = [
@@ -5938,15 +5938,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.addToRemindersUsingVariableObject = function (variableObject, options) {
         var doneState = config.appSettings.appDesign.defaultState;
         if(options.doneState){doneState = options.doneState;}
-        if($rootScope.appSettings.appDesign.onboarding && $rootScope.appSettings.appDesign.onboarding[0] &&
-            $rootScope.appSettings.appDesign.onboarding[0].id.toLowerCase().indexOf('reminder') !== -1){
-            $rootScope.appSettings.appDesign.onboarding[0].title = $rootScope.appSettings.appDesign.onboarding[0].title.replace('Any', 'More');
-            $rootScope.appSettings.appDesign.onboarding[0].addButtonText = "Add Another";
-            $rootScope.appSettings.appDesign.onboarding[0].nextPageButtonText = "All Done";
-            $rootScope.appSettings.appDesign.onboarding[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+        if($rootScope.appSettings.appDesign.onboarding.active && $rootScope.appSettings.appDesign.onboarding.active[0] &&
+            $rootScope.appSettings.appDesign.onboarding.active[0].id.toLowerCase().indexOf('reminder') !== -1){
+            $rootScope.appSettings.appDesign.onboarding.active[0].title = $rootScope.appSettings.appDesign.onboarding.active[0].title.replace('Any', 'More');
+            $rootScope.appSettings.appDesign.onboarding.active[0].addButtonText = "Add Another";
+            $rootScope.appSettings.appDesign.onboarding.active[0].nextPageButtonText = "All Done";
+            $rootScope.appSettings.appDesign.onboarding.active[0].bodyText = "Great job!  Now you'll be able to instantly record " +
                 variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
                 variableObject.variableCategoryName.toLowerCase() + '?';
-            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding));
+            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
         }
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
@@ -6511,16 +6511,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.hideLoader = function(){
         console.debug("Hiding loader because we called $ionicLoading.hide");
         $ionicLoading.hide();
-    };
-    quantimodoService.postAppSettingsDeferred = function(appSettings) {
-        var deferred = $q.defer();
-        quantimodoService.postAppSettings(appSettings, function(response){
-            deferred.resolve(response);
-        }, function(error){deferred.reject(error);});
-        return deferred.promise;
-    };
-    quantimodoService.postAppSettings = function(appSettings, successHandler, errorHandler) {
-        quantimodoService.post('api/v2/apps/' + appSettings.id + '/edit', [], {app_settings: appSettings}, successHandler, errorHandler);
     };
     return quantimodoService;
 });

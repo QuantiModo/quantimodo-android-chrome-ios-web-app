@@ -193,8 +193,8 @@ angular.module('starter',
     $rootScope.goToState = function(stateName, stateParameters){
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
-            stateName = $rootScope.appSettings.appDesign.floatingActionButton[buttonName].stateName;
-            stateParameters = $rootScope.appSettings.appDesign.floatingActionButton[buttonName].stateParameters;
+            stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
+            stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
         }
         $state.go(stateName, stateParameters);
     };
@@ -294,16 +294,16 @@ angular.module('starter',
             config_resolver.privateKeysResponse = getLocalPrivateConfigJson('default');
             //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
         } else {
-            var localStorageName = appsManager.getClientIdFromQueryParameters() + 'AppSettings';
-            var locallyStoredAppSettings = localStorage.getItem(localStorageName);
-            if(!appsManager.getUrlParameter('refreshAppSettings') && locallyStoredAppSettings) {
+            //var localStorageName = appsManager.getClientIdFromQueryParameters() + 'AppSettings';
+            //var locallyStoredAppSettings = localStorage.getItem(localStorageName);
+            if(!appsManager.getUrlParameter('designMode') && locallyStoredAppSettings) {
                 window.config.appSettings = JSON.parse(locallyStoredAppSettings);
             } else {
                 config_resolver.appSettingsResponse = function ($http) {
                     return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters()).then(function (response) {
-                        localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
+                        //localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
                         window.config.appSettings = response.data.data;
-                        window.config.appSettings.designMode = appsManager.getUrlParameter('refreshAppSettings');
+                        window.config.appSettings.designMode = appsManager.getUrlParameter('designMode');
                     }, function errorCallback(response) {
                         return getLocalConfigJson('quantimodo');
                     });

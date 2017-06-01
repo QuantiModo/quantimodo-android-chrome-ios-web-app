@@ -15,19 +15,19 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
             $state.go('app.onboarding');
         },
         next : function(index) {
-            if(index === $rootScope.appSettings.appDesign.intro.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
+            if(index === $rootScope.appSettings.appDesign.intro.active.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
         },
         previous : function() { $ionicSlideBoxDelegate.previous(); },
         slideChanged : function(index) {
             $scope.myIntro.slideIndex = index;
-            if($rootScope.appSettings.appDesign.intro[index].backgroundColor){$scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro[index].backgroundColor;}
-            if($rootScope.appSettings.appDesign.intro[index].textColor){$scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro[index].textColor;}
+            if($rootScope.appSettings.appDesign.intro.active[index].backgroundColor){$scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[index].backgroundColor;}
+            if($rootScope.appSettings.appDesign.intro.active[index].textColor){$scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[index].textColor;}
         }
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
         //console.debug("Entering state " + $state.current.name);
-        if($rootScope.appSettings.appDesign.intro[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro[0].backgroundColor; }
-        if($rootScope.appSettings.appDesign.intro[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro[0].textColor; }
+        if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
+        if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
         if(quantimodoService.getUrlParameter('accessToken')){
             console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.appDesign.defaultState);
             $state.go(config.appSettings.appDesign.defaultState);

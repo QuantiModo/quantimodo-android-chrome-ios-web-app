@@ -153,11 +153,10 @@ gulp.task('getAppSettings', function () {
         .pipe(streamify(jeditor(function (response) {
             appSettings = response.data;
                 for (var propertyName in appSettings.appDesign) {
-                    if (appSettings.appDesign.hasOwnProperty(propertyName) && propertyName.indexOf('Type') !== -1) {
-                        if(appSettings.appDesign[propertyName] === "custom"){
-                            appSettings.appDesign[propertyName.replace('Type', '')] = appSettings.appDesign[propertyName.replace('Type', '') + 'Custom'];
-                            delete appSettings.appDesign[propertyName.replace('Type', '') + 'Custom'];
-                        }
+                    if (appSettings.appDesign.hasOwnProperty(propertyName) && appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
+                        appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
+                        delete appSettings.appDesign[propertyName].custom;
+                        delete appSettings.appDesign[propertyName].type;
                     }
                 }
             return appSettings;

@@ -6,7 +6,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         quantimodoService.setupOnboardingPages();
         quantimodoService.hideLoader();
         $rootScope.hideNavigationMenu = true;
-        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding[0];
+        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){
         console.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
@@ -14,15 +14,15 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
     });
     var removeImportPage = function () {
         quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-        $rootScope.appSettings.appDesign.onboarding = $rootScope.appSettings.appDesign.onboarding.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
-        quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding));
-        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding[0];
+        $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
+        quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
+        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     };
     $scope.onboardingGoToImportPage = function () {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         removeImportPage();
-        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding[0];
+        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         $scope.circlePage.nextPageButtonText = "Done connecting data sources";
         $state.go('app.import');
     };
@@ -39,7 +39,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         if(!$rootScope.user){
-            $rootScope.appSettings.appDesign.onboarding = null;
+            $rootScope.appSettings.appDesign.onboarding.active = null;
             quantimodoService.deleteItemFromLocalStorage('onboardingPages');
             $state.go('app.onboarding');
             return;
@@ -61,10 +61,10 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         quantimodoService.deleteItemFromLocalStorage('onboardingPages');
     };
     $scope.hideOnboardingPage = function () {
-        $rootScope.appSettings.appDesign.onboarding = $rootScope.appSettings.appDesign.onboarding.filter(function( obj ) {return obj.id !== $rootScope.appSettings.appDesign.onboarding[0].id;});
-        quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding));
-        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding[0];
-        if(!$rootScope.appSettings.appDesign.onboarding || $rootScope.appSettings.appDesign.onboarding.length === 0){
+        $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id !== $rootScope.appSettings.appDesign.onboarding.active[0].id;});
+        quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
+        $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
+        if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             $rootScope.hideMenuButton = false;
             $state.go(config.appSettings.appDesign.defaultState);
         } else {
