@@ -64,6 +64,9 @@
                         <i class="{{subMenuItem.icon}}" menu-toggle>&nbsp; {{subMenuItem.title}}</i>
                     </ion-item>
                 </div>
+                <ion-item ng-show="appSettings.designMode" ng-href="#/app/configuration">
+                    <i class="ion-edit" menu-toggle>&nbsp; App Designer</i>
+                </ion-item>
             </ion-list>
         </ion-content>
     </ion-side-menu>

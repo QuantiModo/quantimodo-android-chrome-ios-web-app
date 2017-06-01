@@ -303,6 +303,7 @@ angular.module('starter',
                     return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters()).then(function (response) {
                         localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
                         window.config.appSettings = response.data.data;
+                        window.config.appSettings.designMode = appsManager.getUrlParameter('refreshAppSettings');
                     }, function errorCallback(response) {
                         return getLocalConfigJson('quantimodo');
                     });
