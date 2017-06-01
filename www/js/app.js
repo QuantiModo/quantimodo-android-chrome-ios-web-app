@@ -310,12 +310,6 @@ angular.module('starter',
             }
         }
     }
-    var getOnboardingPages = ['$http', function($http) {return $http({method: 'GET', url: 'data/onboardingPages.json'});}];
-    var intro_resolver = config_resolver;
-    intro_resolver.introSlides = ['$http', function($http) {return $http({method: 'GET', url: 'data/introSlides.json'});}];
-    intro_resolver.onboardingPages = getOnboardingPages;
-    var onboarding_resolver = {onboardingPages: getOnboardingPages};
-    var inbox_resolver = {helpCards: ['$http', function($http) {return $http({method: 'GET', url: 'data/helpCards.json'});}]};
 
     ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {
@@ -341,7 +335,7 @@ angular.module('starter',
             url: '/',
             templateUrl: 'templates/intro-tour-new.html',
             controller: 'IntroCtrl',
-            resolve : intro_resolver
+            resolve : config_resolver
         })
         .state('app', {
             url: "/app",
@@ -1202,8 +1196,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.remindersInboxCompact', {
             url: "/reminders-inbox-compact",
@@ -1224,8 +1217,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.favorites', {
             url: "/favorites",
@@ -1283,8 +1275,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.remindersInboxTodayCategory', {
             url: "/reminders-inbox-today/:variableCategoryName",
@@ -1301,8 +1292,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.manageScheduledMeds', {
             url: "/manage-scheduled-meds",
@@ -1332,8 +1322,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.asNeededMeds', {
             url: "/as-needed-meds",
@@ -1362,8 +1351,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.remindersManage', {
             cache: false,
@@ -1414,8 +1402,7 @@ angular.module('starter',
                     templateUrl: "templates/onboarding-page.html",
                     controller: 'OnboardingCtrl'
                 }
-            },
-            resolve : onboarding_resolver
+            }
         })
         .state('app.upgrade', {
             url: "/upgrade",

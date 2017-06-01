@@ -152,6 +152,14 @@ gulp.task('getAppSettings', function () {
         .pipe(source('default.config.json'))
         .pipe(streamify(jeditor(function (response) {
             appSettings = response.data;
+                for (var propertyName in appSettings.appDesign) {
+                    if (appSettings.appDesign.hasOwnProperty(propertyName) && propertyName.indexOf('Type') !== -1) {
+                        if(appSettings.appDesign[propertyName] === "custom"){
+                            appSettings.appDesign[propertyName.replace('Type', '')] = appSettings.appDesign[propertyName.replace('Type', '') + 'Custom'];
+                            delete appSettings.appDesign[propertyName.replace('Type', '') + 'Custom'];
+                        }
+                    }
+                }
             return appSettings;
         })))
         .pipe(gulp.dest('./www/configs/'));

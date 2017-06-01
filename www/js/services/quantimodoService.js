@@ -5424,66 +5424,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }, function (error) {console.debug("could not post weather measurements: " + error);});
         }).error(function (data) {console.debug("Request failed");});
     };
-    quantimodoService.setupHelpCards = function (defaultHelpCards) {
+    quantimodoService.setupHelpCards = function () {
         var locallyStoredHelpCards = localStorage.getItem('defaultHelpCards');
         if(locallyStoredHelpCards && locallyStoredHelpCards !== "undefined"){
             locallyStoredHelpCards = JSON.parse(locallyStoredHelpCards);
             return locallyStoredHelpCards;
         }
-        localStorage.setItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
-        return defaultHelpCards;
+        localStorage.setItem('defaultHelpCards', JSON.stringify(config.appSettings.appDesign.helpCard));
+        return config.appSettings.appDesign.helpCard;
     };
     quantimodoService.colors = {
         green: {backgroundColor: "#0f9d58", circleColor: "#03c466"},
         blue: {backgroundColor: "#3467d6", circleColor: "#5b95f9"},
         yellow: {backgroundColor: "#f09402", circleColor: "#fab952"}
     };
-    function addAppDisplayName(array){
-        angular.forEach(array, function(value, key) {
-            if(value.title){value.title = value.title.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
-            if(value.text){value.text = value.text.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
-        });
-        return array;
-    }
-    function addColorsCategoriesAndNames(array){
-        array = addVariableCategoryInfo(array);
-        array = addColors(array);
-        array = addAppDisplayName(array);
-        return array;
-    }
     quantimodoService.setupOnboardingPages = function (onboardingPages) {
-        if(config.appSettings.onboardingPages){onboardingPages = config.appSettings.onboardingPages;}
-        onboardingPages = addColorsCategoriesAndNames(onboardingPages);
         var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
-            onboardingPages = onboardingPagesFromLocalStorage;
+            $rootScope.appSettings.appDesign.onboarding = onboardingPagesFromLocalStorage;
         }
-        $rootScope.onboardingPages = onboardingPages;
-    };
-    function addVariableCategoryInfo(array){
-        angular.forEach(array, function(value, key) {
-            if(value.variableCategoryName && quantimodoService.variableCategories[value.variableCategoryName]){
-                value.iconClass = 'icon positive ' + quantimodoService.variableCategories[value.variableCategoryName].ionIcon;
-                value.moreInfo = quantimodoService.variableCategories[value.variableCategoryName].moreInfo;
-                value.image = {
-                    url: quantimodoService.variableCategories[value.variableCategoryName].imageUrl,
-                    height: "96",
-                    width: "96"
-                };
-            }
-        });
-        return array;
-    }
-    function addColors(array){
-        angular.forEach(array, function(value, key) {
-            if(value.color && quantimodoService.colors[value.color]){value.color = quantimodoService.colors[value.color];}
-        });
-        return array;
-    }
-    quantimodoService.getIntroSlides = function (introSlides) {
-        if(config.appSettings.appDesign.introSlides){introSlides = config.appSettings.appDesign.introSlides;}
-        introSlides = addColorsCategoriesAndNames(introSlides);
-        return introSlides;
     };
     $rootScope.signUpQuestions = [
         {
@@ -5979,15 +5938,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.addToRemindersUsingVariableObject = function (variableObject, options) {
         var doneState = config.appSettings.appDesign.defaultState;
         if(options.doneState){doneState = options.doneState;}
-        if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
-            $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
-            $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
-            $rootScope.onboardingPages[0].addButtonText = "Add Another";
-            $rootScope.onboardingPages[0].nextPageButtonText = "All Done";
-            $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+        if($rootScope.appSettings.appDesign.onboarding && $rootScope.appSettings.appDesign.onboarding[0] &&
+            $rootScope.appSettings.appDesign.onboarding[0].id.toLowerCase().indexOf('reminder') !== -1){
+            $rootScope.appSettings.appDesign.onboarding[0].title = $rootScope.appSettings.appDesign.onboarding[0].title.replace('Any', 'More');
+            $rootScope.appSettings.appDesign.onboarding[0].addButtonText = "Add Another";
+            $rootScope.appSettings.appDesign.onboarding[0].nextPageButtonText = "All Done";
+            $rootScope.appSettings.appDesign.onboarding[0].bodyText = "Great job!  Now you'll be able to instantly record " +
                 variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
                 variableObject.variableCategoryName.toLowerCase() + '?';
-            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
+            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding));
         }
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
