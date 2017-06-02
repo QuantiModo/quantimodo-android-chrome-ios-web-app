@@ -6,7 +6,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
     //console.debug('Starting AppCtrl');
     $scope.controller_name = "AppCtrl";
-    $rootScope.appSettings = config.appSettings;
+    if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
     $scope.showTrackingSubMenu = false;
     $rootScope.numberOfPendingNotifications = null;

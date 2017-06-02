@@ -285,13 +285,24 @@ angular.module('starter',
     var config_resolver = {};
     window.config = {};
     appsManager.getAppSettingsFromUrlParameter();
-    function getLocalJsonFile(path, successHandler) {return function($http){$http.get(path).success(successHandler);};}
-    function getLocalConfigJson(clientId) {return getLocalJsonFile('configs/' + clientId + '.config.json', function(response) {window.config.appSettings = response;});}
-    function getLocalPrivateConfigJson(clientId) {return getLocalJsonFile('private_configs/' + clientId + '.private_config.json', function(response) {window.private_keys = response;});}
     if(!window.config.appSettings){
         if(!appsManager.getClientIdFromQueryParameters()) {
-            config_resolver.appSettingsResponse = getLocalConfigJson('default');
-            config_resolver.privateKeysResponse = getLocalPrivateConfigJson('default');
+            config_resolver.appSettingsResponse = function($http){$http.get('configs/default.config.json').then(function(response) {
+                if(typeof response.data === "string"){
+                    console.error('configs/default.config.json not found');
+                }
+                window.config.appSettings = response.data;
+            }).catch(function(error) {
+                console.error(error);
+            });};
+            config_resolver.privateKeysResponse = function($http){$http.get('private_configs/default.private_config.json').success(function(response) {
+                if(typeof response.data === "string"){
+                    console.error('private_configs/default.private_config.json not found');
+                }
+                window.private_keys = response.data;
+            }).catch(function(error) {
+                console.error(error);
+            });};
             //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
         } else {
             var localStorageName = appsManager.getClientIdFromQueryParameters() + 'AppSettings';
