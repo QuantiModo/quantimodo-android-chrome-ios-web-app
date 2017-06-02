@@ -15,7 +15,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
     var removeImportPage = function () {
         quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
-        quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
+        if(!$rootScope.appSettings.designMode){quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));}
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     };
     $scope.onboardingGoToImportPage = function () {

@@ -5443,7 +5443,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.setupOnboardingPages = function (onboardingPages) {
         var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
-            $rootScope.appSettings.appDesign.onboarding.active = onboardingPagesFromLocalStorage;
+            if(!$rootScope.appSettings.designMode){$rootScope.appSettings.appDesign.onboarding.active = onboardingPagesFromLocalStorage;}
         }
     };
     $rootScope.signUpQuestions = [

@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
-        <ion-slide ng-repeat="circlePage in introSlides" ng-show="myIntro.ready" style="background-color: {{circlePage.color.backgroundColor}};">
+        <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready" style="background-color: {{circlePage.color.backgroundColor}};">
             <div ng-if="circlePage.newIntroStyle">
                 <div ng-include="'templates/fragments/circle-page.html'"></div>
             </div>

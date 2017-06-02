@@ -46,6 +46,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         populateUserVariables();
         populateCommonVariables();
         setHelpText();
+        quantimodoService.hideLoader();
     });
     $scope.selectVariable = function(variableObject) {
         console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject).substring(0, 140) + '...');

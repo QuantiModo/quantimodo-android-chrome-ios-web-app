@@ -294,16 +294,18 @@ angular.module('starter',
             config_resolver.privateKeysResponse = getLocalPrivateConfigJson('default');
             //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
         } else {
-            //var localStorageName = appsManager.getClientIdFromQueryParameters() + 'AppSettings';
-            //var locallyStoredAppSettings = localStorage.getItem(localStorageName);
-            if(!appsManager.getUrlParameter('designMode') && locallyStoredAppSettings) {
+            var localStorageName = appsManager.getClientIdFromQueryParameters() + 'AppSettings';
+            var locallyStoredAppSettings = localStorage.getItem(localStorageName);
+            var designMode = (appsManager.getUrlParameter('designMode')) ? appsManager.getUrlParameter('designMode') : localStorage.getItem('designMode');
+            if(!designMode && locallyStoredAppSettings) {
                 window.config.appSettings = JSON.parse(locallyStoredAppSettings);
             } else {
                 config_resolver.appSettingsResponse = function ($http) {
                     return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters()).then(function (response) {
                         //localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
                         window.config.appSettings = response.data.data;
-                        window.config.appSettings.designMode = appsManager.getUrlParameter('designMode');
+                        window.config.appSettings.designMode = designMode;
+                        localStorage.setItem('designMode', window.config.appSettings.designMode);
                     }, function errorCallback(response) {
                         return getLocalConfigJson('quantimodo');
                     });

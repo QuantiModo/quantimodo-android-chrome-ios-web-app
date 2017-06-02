@@ -21,15 +21,18 @@ function getSubDomain(){
 
 function getClientIdFromQueryParameters() {
     var queryString = document.location.toString().split('?')[1];
-    if(!queryString) {return false;}
+    if(!queryString) {return localStorage.getItem('clientId');}
     var queryParameterStrings = queryString.split('&');
-    if(!queryParameterStrings) {return false;}
+    if(!queryParameterStrings) {return localStorage.getItem('clientId');}
     for (var i = 0; i < queryParameterStrings.length; i++) {
         var queryKeyValuePair = queryParameterStrings[i].split('=');
         if (['app','appname','lowercaseappname','clientid'].contains(queryKeyValuePair[0].toLowerCase().replace('_',''))) {
-            return queryKeyValuePair[1].split('#')[0].toLowerCase();
+            var clientId = queryKeyValuePair[1].split('#')[0].toLowerCase();
+            localStorage.setItem('clientId', clientId);
+            return clientId;
         }
     }
+    return localStorage.getItem('clientId');
 }
 
 function getQuantiModoClientId() {
