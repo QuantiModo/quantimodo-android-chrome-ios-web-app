@@ -148,7 +148,7 @@ function createPrivateConfigFiles(privateConfigObject, callback) {
 gulp.task('getAppSettings', function () {
     console.log('gulp getAppSettings...');
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
-    return request({url: 'https://local.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID, headers: {'User-Agent': 'request'}})
+    return request({url: 'https://staging.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID, headers: {'User-Agent': 'request'}})
         .pipe(source('default.config.json'))
         .pipe(streamify(jeditor(function (response) {
             appSettings = response.data;
