@@ -32,6 +32,7 @@ var git = require('gulp-git'),
 var directoryMap = require('gulp-directory-map');
 var argv = require('yargs').argv;
 var exec = require('child_process').exec;
+var rp = require('request-promise');
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
@@ -39,6 +40,11 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
+var privateConfigPath = './www/private_configs/';
+var appConfigPath = './www/configs/';
+var defaultPrivateConfigPath = privateConfigPath + 'default.private_config.json';
+var defaultAppConfigPath = appConfigPath + 'default.config.json';
+
 var appSettings, privateConfig;
 var chromeExtensionManifestTemplate = {
     'manifest_version': 2,
@@ -81,6 +87,7 @@ process.env.DEBUG_MODE = (process.env.DEBUG_MODE) ? process.env.DEBUG_MODE : tru
 if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId;}
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 
+function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
 function setLowerCaseAppName(callback) {
     if (!process.env.QUANTIMODO_CLIENT_ID) {
         git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
@@ -110,13 +117,7 @@ function execute(command, callback) {
     my_child_process.stdout.pipe(process.stdout);
     my_child_process.stderr.pipe(process.stderr);
 }
-function createPrivateConfigFiles(privateConfigObject, callback) {
-    //var privateConfigContent = 'private_keys = '+ JSON.stringify(privateConfigObject, 0, 2);
-    fs.writeFileSync('./www/private_configs/default.private_config.json', JSON.stringify(privateConfigObject));
-    fs.writeFileSync('./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json', JSON.stringify(privateConfigObject));
-    console.log('Created ' + './www/private_configs/default.private_config.json');
-    if (callback) {callback();}
-}
+
 gulp.task('createChromeExtensionManifest', function () {
     var chromeExtensionManifest = chromeExtensionManifestTemplate;
     chromeExtensionManifest.name = appSettings.appDisplayName;
@@ -124,44 +125,45 @@ gulp.task('createChromeExtensionManifest', function () {
     chromeExtensionManifest.version = process.env.IONIC_APP_VERSION_NUMBER;
     chromeExtensionManifest.permissions.push(appSettings.downloadLinks.webApp + '/*');
     chromeExtensionManifest.appSettings = appSettings;
-    require('fs').writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifest));
+    fs.writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifest));
 });
 gulp.task('setLowerCaseAppName', function (callback) {setLowerCaseAppName(callback);});
-gulp.task('getAppSettings', function () {
-    if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
-    console.log('gulp getAppSettings from https://staging.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID);
-    return request({url: 'https://staging.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID, headers: {'User-Agent': 'request'}})
-        .pipe(source('default.config.json'))
-        .pipe(streamify(jeditor(function (response) {
-            appSettings = response.appSettings;
-                for (var propertyName in appSettings.appDesign) {
-                    if (appSettings.appDesign.hasOwnProperty(propertyName)){
-                        if (appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
-                            appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
-                        }
-                        delete appSettings.appDesign[propertyName].custom;
-                    }
-                }
-            return appSettings;
-        })))
-        .pipe(gulp.dest('./www/configs/'));
-});
-gulp.task('getPrivateConfig', function () {
+function removeCustomPropertiesFromAppSettings(appSettings) {
+    for (var propertyName in appSettings.appDesign) {
+        if (appSettings.appDesign.hasOwnProperty(propertyName)){
+            if (appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
+                appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
+            }
+            delete appSettings.appDesign[propertyName].custom;
+        }
+    }
+    return appSettings;
+}
+gulp.task('getAppConfigs', function () {
+    process.env.QUANTIMODO_CLIENT_ID = 'local';
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
     if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
     if(!process.env.QUANTIMODO_CLIENT_SECRET){throw "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env";}
-    console.log('gulp getPrivateConfig from https://staging.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID);
-    return request({url: 'https://local.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID + '&clientSecret=' + process.env.QUANTIMODO_CLIENT_SECRET, headers: {'User-Agent': 'request'}})
-        .pipe(source('default.private_config.json'))
-        .pipe(streamify(jeditor(function (response) {
-            privateConfig = response.privateConfig;
-            return privateConfig;
-        })))
-        .pipe(gulp.dest('./www/private_configs/'));
+    var options = {
+        uri: 'https://' + process.env.QUANTIMODO_CLIENT_ID + '.quantimo.do/api/v1/appSettings',
+        qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
+        headers: {'User-Agent': 'Request-Promise'},
+        json: true // Automatically parses the JSON string in the response
+    };
+    console.log('gulp QUANTIMODO_CLIENT_ID from ' + options.uri);
+    return rp(options).then(function (response) {
+        if(!response.privateConfig){throw "Could not get privateConfig from " + options.uri + ' Please double check your clientId and clientSecret or contact mike@quantimo.do for help.';}
+        privateConfig = response.privateConfig;
+        appSettings = removeCustomPropertiesFromAppSettings(response.appSettings);
+        fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+        fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
+    }).catch(function (err) {
+        throw err;
+    });
 });
 gulp.task('verifyExistenceOfDefaultConfig', function () {
-    fs.stat('./www/configs/default.config.json', function (err, stat) {
-        if (!err) {console.log('./www/configs/default.config.json exists');} else {throw 'Could not create ./www/configs/default.config.json: ' + err;}
+    fs.stat(defaultAppConfigPath, function (err, stat) {
+        if (!err) {console.log(defaultAppConfigPath + ' exists');} else {throw 'Could not create ' + defaultAppConfigPath + ': '+ err;}
     });
 });
 gulp.task('getCommonVariables', function () {
@@ -504,8 +506,8 @@ gulp.task('decryptBuildJson', [], function (callback) {
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 function encryptPrivateConfig(callback) {
-    var encryptedFilePath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
-    var fileToEncryptPath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
+    var encryptedFilePath = privateConfigPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
+    var fileToEncryptPath = privateConfigPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
     encryptFile(fileToEncryptPath, encryptedFilePath, callback);
 }
 gulp.task('encryptPrivateConfig', [], function () {
@@ -513,7 +515,7 @@ gulp.task('encryptPrivateConfig', [], function () {
 });
 gulp.task('encryptAllPrivateConfigs', [], function () {
     var glob = require('glob');
-    glob('./www/private_configs/*.json', {}, function (er, files) {
+    glob(privateConfigPath + '*.json', {}, function (er, files) {
         console.log(JSON.stringify(files));
         for (var i = 0; i < files.length; i++) {
             encryptFile(files[i], files[i] + '.enc');
@@ -522,7 +524,7 @@ gulp.task('encryptAllPrivateConfigs', [], function () {
 });
 gulp.task('decryptAllPrivateConfigs', [], function () {
     var glob = require('glob');
-    glob('./www/private_configs/*.enc', {}, function (er, files) {
+    glob(privateConfigPath + '*.enc', {}, function (er, files) {
         console.log(JSON.stringify(files));
         for (var i = 0; i < files.length; i++) {
             decryptFile(files[i], files[i].replace('.enc', ''));
@@ -713,7 +715,7 @@ gulp.task('downloadGradle', function () {
     return request('https://services.gradle.org/distributions/gradle-2.14.1-bin.zip')
         .pipe(fs.createWriteStream('gradle-2.14.1-bin.zip'));
 });
-gulp.task('addFacebookPlugin', ['getPrivateConfig'], function () {
+gulp.task('addFacebookPlugin', ['getAppConfigs'], function () {
     var deferred = q.defer();
     var addFacebookPlugin = function () {
         var commands = [
@@ -1008,11 +1010,11 @@ gulp.task('setVersionNumberInIosConfigXml', [], function (callback) {
     var configFilePath = './config-template-ios.xml';
     setVersionNumberInConfigXml(configFilePath, callback);
 });
-gulp.task('setVersionNumberInFiles', function (callback) {
+gulp.task('setVersionNumberInFiles', function () {
     if (!process.env.IONIC_IOS_APP_VERSION_NUMBER) {throw 'Please set process.env.IONIC_IOS_APP_VERSION_NUMBER';}
     if (!process.env.IONIC_APP_VERSION_NUMBER) {throw 'Please set process.env.IONIC_APP_VERSION_NUMBER';}
     var filesToUpdate = [
-        'www/configs/default.js',
+        defaultAppConfigPath,
         //'gulp.js',
         '.travis.yml',
         //'config.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
@@ -1026,8 +1028,6 @@ gulp.task('setVersionNumberInFiles', function (callback) {
         .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_IOS_APP_VERSION_NUMBER))
         .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_APP_VERSION_NUMBER))
         .pipe(gulp.dest('./'));
-    // Using callback results in the next task starting before this on is completed
-    //callback();
 });
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
@@ -1141,56 +1141,48 @@ gulp.task('template', function (done) {
 gulp.task('setEnvsFromBranchName', [], function (callback) {
     runSequence(
         'setLowerCaseAppName',
-        'getPrivateConfig',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('setEnergyModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'energymodo';
     runSequence(
-        'getPrivateConfig',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('setMediModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'medimodo';
     runSequence(
-        'getPrivateConfig',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('setMindFirstEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'mindfirst';
     runSequence(
-        'getPrivateConfig',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('setMoodiModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'moodimodo';
     runSequence(
-        'getPrivateConfig',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('setAppEnvs', ['setLowerCaseAppName'], function (callback) {
     runSequence(
-        'getPrivateConfig',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('setQuantiModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
     runSequence(
-        'getPrivateConfig',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('setMindFirstEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'mindfirst';
     runSequence(
-        'getPrivateConfig',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('setAndroidEnvs', [], function (callback) {
@@ -1262,7 +1254,7 @@ var getIsoString = function () {
     nowString = nowString.slice(0, 14);
     return nowString;
 };
-gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName', 'getAppSettings'], function (callback) {
+gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName', 'getAppConfigs'], function (callback) {
     if (!process.env.CONFIG_XML_TEMPLATE_PATH) {
         process.env.CONFIG_XML_TEMPLATE_PATH = './config-template.xml';
         console.warn('CONFIG_XML_TEMPLATE_PATH not set!  Falling back to ' + process.env.CONFIG_XML_TEMPLATE_PATH);
@@ -1429,8 +1421,7 @@ gulp.task('configureApp', [], function (callback) {
         'sass',
         'getCommonVariables',
         'copyAppResources',
-        'getPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
-        'getAppSettings',
+        'getAppConfigs',
         'verifyExistenceOfDefaultConfig',
         // templates because of the git changes and weird stuff replacement does to config-template.xml
         //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
@@ -1446,7 +1437,7 @@ gulp.task('configureDefaultApp', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'your_quantimodo_client_id_here';
     runSequence(
         'copyAppResources',
-        'getAppSettings',
+        'getAppConfigs',
         callback);
 });
 gulp.task('buildChromeExtension', [], function (callback) {
