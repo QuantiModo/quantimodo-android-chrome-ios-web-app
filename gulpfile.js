@@ -133,7 +133,7 @@ gulp.task('getAppSettings', function () {
     return request({url: 'https://staging.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID, headers: {'User-Agent': 'request'}})
         .pipe(source('default.config.json'))
         .pipe(streamify(jeditor(function (response) {
-            appSettings = response.data;
+            appSettings = response.appSettings;
                 for (var propertyName in appSettings.appDesign) {
                     if (appSettings.appDesign.hasOwnProperty(propertyName)){
                         if (appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){

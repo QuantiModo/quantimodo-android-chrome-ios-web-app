@@ -303,7 +303,7 @@ angular.module('starter',
                 config_resolver.appSettingsResponse = function ($http) {
                     return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters()).then(function (response) {
                         //localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
-                        window.config.appSettings = response.data.data;
+                        window.config.appSettings = response.data.appSettings;
                         window.config.appSettings.designMode = designMode;
                         localStorage.setItem('designMode', window.config.appSettings.designMode);
                     }, function errorCallback(response) {
