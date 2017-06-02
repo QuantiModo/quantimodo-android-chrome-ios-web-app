@@ -153,8 +153,10 @@ gulp.task('getAppSettings', function () {
         .pipe(streamify(jeditor(function (response) {
             appSettings = response.data;
                 for (var propertyName in appSettings.appDesign) {
-                    if (appSettings.appDesign.hasOwnProperty(propertyName) && appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
-                        appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
+                    if (appSettings.appDesign.hasOwnProperty(propertyName)){
+                        if (appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
+                            appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
+                        }
                         delete appSettings.appDesign[propertyName].custom;
                         delete appSettings.appDesign[propertyName].type;
                     }
@@ -1306,11 +1308,6 @@ gulp.task('copyIconsToWwwImg', [], function () {
     return gulp.src(['apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png'])
         .pipe(gulp.dest('www/img/icons'));
 });
-gulp.task('copyAppConfigToDefault', [], function () {
-    return gulp.src('./www/configs/' + process.env.QUANTIMODO_CLIENT_ID + '.config.json')
-        .pipe(rename('default.config.json'))
-        .pipe(gulp.dest('www/configs'));
-});
 gulp.task('copyPrivateConfigToDefault', [], function () {
     console.log('Copying ./www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json to ' +
         'www/private_configs/default.private_config.json');
@@ -1524,7 +1521,6 @@ gulp.task('configureApp', [], function (callback) {
         'decryptPrivateConfigToDefault',
         'getAppSettings',
         // templates because of the git changes and weird stuff replacement does to config-template.xml
-        'copyAppConfigToDefault',
         'setIonicAppId',
         //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
         //'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
@@ -1540,7 +1536,6 @@ gulp.task('configureDefaultApp', [], function (callback) {
     runSequence(
         'copyAppResources',
         'getAppSettings',
-        'copyAppConfigToDefault',
         'setIonicAppId',
         callback);
 });
