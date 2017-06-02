@@ -149,7 +149,7 @@ gulp.task('getAppConfigs', function () {
         headers: {'User-Agent': 'Request-Promise'},
         json: true // Automatically parses the JSON string in the response
     };
-    console.log('gulp QUANTIMODO_CLIENT_ID from ' + options.uri);
+    console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return rp(options).then(function (response) {
         if(!response.privateConfig){throw "Could not get privateConfig from " + options.uri + ' Please double check your clientId and clientSecret or contact mike@quantimo.do for help.';}
         privateConfig = response.privateConfig;
