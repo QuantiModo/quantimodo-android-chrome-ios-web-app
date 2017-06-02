@@ -26,6 +26,39 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(quantimodoService.getUrlParameter('pwd')){urlParams.push(encodeURIComponent('pwd') + '=' + quantimodoService.getUrlParameter('pwd'));}
         return urlParams;
     }
+    function addVariableCategoryInfo(array){
+        angular.forEach(array, function(value, key) {
+            if(value.variableCategoryName && quantimodoService.variableCategories[value.variableCategoryName]){
+                value.iconClass = 'icon positive ' + quantimodoService.variableCategories[value.variableCategoryName].ionIcon;
+                value.moreInfo = quantimodoService.variableCategories[value.variableCategoryName].moreInfo;
+                value.image = {
+                    url: quantimodoService.variableCategories[value.variableCategoryName].imageUrl,
+                    height: "96",
+                    width: "96"
+                };
+            }
+        });
+        return array;
+    }
+    function addColors(array){
+        angular.forEach(array, function(value, key) {
+            if(value.color && quantimodoService.colors[value.color]){value.color = quantimodoService.colors[value.color];}
+        });
+        return array;
+    }
+    function addAppDisplayName(array){
+        angular.forEach(array, function(value, key) {
+            if(value.title){value.title = value.title.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
+            if(value.text){value.text = value.text.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
+        });
+        return array;
+    }
+    quantimodoService.addColorsCategoriesAndNames = function(array){
+        array = addVariableCategoryInfo(array);
+        array = addColors(array);
+        array = addAppDisplayName(array);
+        return array;
+    };
     quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
         if(!options){ options = {}; }
         var cache = false;
