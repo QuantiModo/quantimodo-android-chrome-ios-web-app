@@ -380,7 +380,8 @@ angular.module('starter',
                     templateUrl: "templates/intro-tour-new.html",
                     controller: 'IntroCtrl'
                 }
-            }
+            },
+            resolve : config_resolver
         })
         .state('app.track', {
             url: "/track",
