@@ -146,8 +146,8 @@ function createPrivateConfigFiles(privateConfigObject, callback) {
     if (callback) {callback();}
 }
 gulp.task('getAppSettings', function () {
-    console.log('gulp getAppSettings...');
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
+    console.log('gulp getAppSettings from https://staging.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID);
     return request({url: 'https://staging.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID, headers: {'User-Agent': 'request'}})
         .pipe(source('default.config.json'))
         .pipe(streamify(jeditor(function (response) {
@@ -163,6 +163,11 @@ gulp.task('getAppSettings', function () {
             return appSettings;
         })))
         .pipe(gulp.dest('./www/configs/'));
+});
+gulp.task('verifyExistenceOfDefaultConfig', function () {
+    fs.stat('./www/configs/default.config.json', function (err, stat) {
+        if (!err) {console.log('./www/configs/default.config.json exists');} else {throw 'Could not create ./www/configs/default.config.json: ' + err;}
+    });
 });
 gulp.task('getCommonVariables', function () {
     console.log('gulp getCommonVariables...');
@@ -1333,7 +1338,7 @@ var getIsoString = function () {
     nowString = nowString.slice(0, 14);
     return nowString;
 };
-gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName'], function (callback) {
+gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName', 'getAppSettings'], function (callback) {
     if (!process.env.CONFIG_XML_TEMPLATE_PATH) {
         process.env.CONFIG_XML_TEMPLATE_PATH = './config-template.xml';
         console.warn('CONFIG_XML_TEMPLATE_PATH not set!  Falling back to ' + process.env.CONFIG_XML_TEMPLATE_PATH);
@@ -1343,7 +1348,6 @@ gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName'], function (ca
         console.log('Could not find template at CONFIG_XML_TEMPLATE_PATH ' + process.env.CONFIG_XML_TEMPLATE_PATH);
         return;
     }
-    getAppSettings();
     if (appSettings.additionalSettings.googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.googleReversedClientId);
     }
@@ -1505,6 +1509,7 @@ gulp.task('configureApp', [], function (callback) {
         'decryptPrivateConfig', // Need this because defaultApp is mysteriously getting changed to quantimodo on staging
         'decryptPrivateConfigToDefault',
         'getAppSettings',
+        'verifyExistenceOfDefaultConfig',
         // templates because of the git changes and weird stuff replacement does to config-template.xml
         //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
         //'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
