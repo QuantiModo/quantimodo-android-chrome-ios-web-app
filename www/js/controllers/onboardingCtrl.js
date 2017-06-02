@@ -1,4 +1,5 @@
 angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService) {
+    if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
         $rootScope.hideNavigationMenu = true;

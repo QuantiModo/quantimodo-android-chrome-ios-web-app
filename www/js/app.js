@@ -28,7 +28,7 @@ angular.module('starter',
         'angular-d3-word-cloud'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics, $ionicLoading) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {
     quantimodoService.showBlackRingLoader();
     if(appsManager.getUrlParameter('logout')){
         localStorage.clear();
@@ -318,7 +318,8 @@ angular.module('starter',
                         window.config.appSettings.designMode = designMode;
                         localStorage.setItem('designMode', window.config.appSettings.designMode);
                     }, function errorCallback(response) {
-                        return getLocalConfigJson('quantimodo');
+                        console.error(repsponse);
+                        //return getLocalConfigJson('quantimodo');
                     });
                 };
             }
