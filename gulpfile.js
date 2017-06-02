@@ -158,7 +158,6 @@ gulp.task('getAppSettings', function () {
                             appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
                         }
                         delete appSettings.appDesign[propertyName].custom;
-                        delete appSettings.appDesign[propertyName].type;
                     }
                 }
             return appSettings;
