@@ -30,6 +30,8 @@ var git = require('gulp-git'),
     source = require('vinyl-source-stream'),
     streamify = require('gulp-streamify');
 var directoryMap = require('gulp-directory-map');
+var argv = require('yargs').argv;
+var exec = require('child_process').exec;
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
@@ -61,15 +63,6 @@ var chromeExtensionManifestTemplate = {
         'persistent': false
     }
 };
-gulp.task('createChromeExtensionManifest', function () {
-    var chromeExtensionManifest = chromeExtensionManifestTemplate;
-    chromeExtensionManifest.name = appSettings.appDisplayName;
-    chromeExtensionManifest.description = appSettings.appDescription;
-    chromeExtensionManifest.version = process.env.IONIC_APP_VERSION_NUMBER;
-    chromeExtensionManifest.permissions.push(appSettings.downloadLinks.webApp + '/*');
-    chromeExtensionManifest.appSettings = appSettings;
-    require('fs').writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifest));
-});
 var paths = {
     sass: ['./www/scss/**/*.scss']
 };
@@ -85,6 +78,7 @@ if (!process.env.IONIC_IOS_APP_VERSION_NUMBER) {
     console.log('Falling back to IONIC_IOS_APP_VERSION_NUMBER ' + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
 process.env.DEBUG_MODE = (process.env.DEBUG_MODE) ? process.env.DEBUG_MODE : true;
+if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId;}
 function setLowerCaseAppName(callback) {
     if (!process.env.QUANTIMODO_CLIENT_ID) {
         git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
@@ -105,9 +99,6 @@ function setLowerCaseAppName(callback) {
         if (callback) {callback();}
     }
 }
-gulp.task('setLowerCaseAppName', function (callback) {setLowerCaseAppName(callback);});
-//setLowerCaseAppName();
-var exec = require('child_process').exec;
 function execute(command, callback) {
     if (process.env.DEBUG_MODE) {console.log('executing ' + command);}
     var my_child_process = exec(command, function (error, stdout, stderr) {
@@ -145,6 +136,16 @@ function createPrivateConfigFiles(privateConfigObject, callback) {
     console.log('Created ' + './www/private_configs/default.private_config.json');
     if (callback) {callback();}
 }
+gulp.task('createChromeExtensionManifest', function () {
+    var chromeExtensionManifest = chromeExtensionManifestTemplate;
+    chromeExtensionManifest.name = appSettings.appDisplayName;
+    chromeExtensionManifest.description = appSettings.appDescription;
+    chromeExtensionManifest.version = process.env.IONIC_APP_VERSION_NUMBER;
+    chromeExtensionManifest.permissions.push(appSettings.downloadLinks.webApp + '/*');
+    chromeExtensionManifest.appSettings = appSettings;
+    require('fs').writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifest));
+});
+gulp.task('setLowerCaseAppName', function (callback) {setLowerCaseAppName(callback);});
 gulp.task('getAppSettings', function () {
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
     console.log('gulp getAppSettings from https://staging.quantimo.do/api/v1/appSettings?clientId=' + process.env.QUANTIMODO_CLIENT_ID);
@@ -200,7 +201,7 @@ function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
         if (callback) {callback();}
         //outputSHA1ForAndroidKeystore(decryptedFilePath);
     });
-};
+}
 gulp.task('getSHA1FromAPK', function () {
     var pathToAPK = 'android-armv7-release.apk';
     console.log('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
@@ -220,7 +221,6 @@ function decryptPrivateConfig(callback) {
     var decryptedFilePath = './www/private_configs/' + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 }
-
 gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
     var minimatch = require('minimatch');
