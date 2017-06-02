@@ -182,8 +182,10 @@ angular.module('starter',
                 }
             }
         };
-        if(window.location.href.indexOf('ionic.quantimo') === -1 && window.location.href.indexOf('staging.quantimo') === -1 && window.location.href.indexOf('local.quantimo') === -1){
+        if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.googleAnalyticsTrackingIds){
             if(typeof analytics !== "undefined") {analytics.startTrackerWithId(config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic);}
+        } else {
+            console.error("No config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic!");
         }
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
