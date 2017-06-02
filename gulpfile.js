@@ -140,7 +140,6 @@ function removeCustomPropertiesFromAppSettings(appSettings) {
     return appSettings;
 }
 gulp.task('getAppConfigs', function () {
-    process.env.QUANTIMODO_CLIENT_ID = 'local';
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
     if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
     if(!process.env.QUANTIMODO_CLIENT_SECRET){throw "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env";}
