@@ -1093,20 +1093,6 @@ gulp.task('setVersionNumberInFiles', function (callback) {
     // Using callback results in the next task starting before this on is completed
     //callback();
 });
-gulp.task('setIonicAppId', function (callback) {
-    if (!appSettings.additionalSettings.ionicAppId) {
-        console.error('ERROR: Cannot execute setIonicAppId because appSettings.additionalSettings.ionicAppId is not set');
-        return;
-    }
-    var filesToUpdate = [
-        'www/js/app.js'
-    ];
-    return gulp.src(filesToUpdate, {base: '.'}) // Every file allown.
-        .pipe(replace('__IONIC_APP_ID__', appSettings.additionalSettings.ionicAppId))
-        .pipe(gulp.dest('./'));
-    // Returning instead of callback makes it complete before next task
-    //callback();
-});
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
         .pipe(gulp.dest('./platforms/android/res'));
@@ -1520,7 +1506,6 @@ gulp.task('configureApp', [], function (callback) {
         'decryptPrivateConfigToDefault',
         'getAppSettings',
         // templates because of the git changes and weird stuff replacement does to config-template.xml
-        'setIonicAppId',
         //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
         //'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
         'copyIconsToWwwImg',
@@ -1535,7 +1520,6 @@ gulp.task('configureDefaultApp', [], function (callback) {
     runSequence(
         'copyAppResources',
         'getAppSettings',
-        'setIonicAppId',
         callback);
 });
 gulp.task('buildChromeExtension', [], function (callback) {
