@@ -42,7 +42,9 @@
     "defaultState": "app.remindersInbox",
     "intro": null,
     "ionNavBarClass": "bar-positive",
-    "menuType": "general",
+    "menu": {
+      "type": "general"
+    },
     "patientAlias": "Patient",
     "physicianAlias": "Physician",
     "welcomeState": "app.welcome",

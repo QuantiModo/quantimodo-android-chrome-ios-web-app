@@ -54,7 +54,9 @@
         "welcomeState": "app.welcome",
         "cordovaLocalNotificationsEnabled": false,
         "defaultState": "app.remindersInbox",
-        "menuType": "medication",
+        "menu": {
+            "type": "medication"
+        },
         "wordAliases": {},
         "intro": [
             {

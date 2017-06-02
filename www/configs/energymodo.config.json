@@ -56,7 +56,9 @@
         "cordovaLocalNotificationsEnabled": false,
         "defaultState": "app.remindersInbox",
         "intro": null,
-        "menuType": "extended",
+        "menu": {
+            "type": "extended"
+        },
         "primaryOutcomeVariableName": "Energy",
         "wordAliases": {}
     }

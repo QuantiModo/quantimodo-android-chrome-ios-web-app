@@ -54,7 +54,9 @@
         "backgroundColor": "#3467d6",
         "cordovaLocalNotificationsEnabled": false,
         "defaultState": "app.remindersInbox",
-        "menuType": "custom",
+        "menu": {
+            "type": "custom"
+        },
         "wordAliases": {}
     }
 }
