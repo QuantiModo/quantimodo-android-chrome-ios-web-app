@@ -2,11 +2,15 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 .controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                 $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, quantimodoService,
                                 ionicDatePicker, $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
-                                $locale, $mdDialog, $mdToast, wikipediaFactory) {
+                                $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
 
     $scope.controller_name = "AppCtrl";
     if(window.debugMode){console.debug($scope.controller_name + ' first starting in state: ' + $state.current.name);}
-    if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
+    if(window.debugMode){console.debug('appSettingsResponse: ' + JSON.stringify(appSettingsResponse.data.appSettings));}
+    window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
+    window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+    $rootScope.appSettings = window.config.appSettings;
+    quantimodoService.getPrivateKeys();
     if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
     if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
     $scope.showTrackingSubMenu = false;

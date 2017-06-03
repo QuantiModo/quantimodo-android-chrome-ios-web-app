@@ -280,48 +280,15 @@ angular.module('starter',
         var i = this.length;
         while (i--) {if (this[i] === obj) {return true;}}
     };
-    var config_resolver = {};
-    window.config = {};
     var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-    if(!designMode && !appsManager.getClientIdFromQueryParameters()) {
-        config_resolver.appSettingsResponse = function($http){$http.get('configs/default.config.json').success(function(response) {
-            if(typeof response === "string"){console.error('configs/default.config.json not found');}
-            window.config.appSettings = response;
-            if(window.debugMode){console.debug('configs/default.config.json: ' + JSON.stringify(response));}
-        }).catch(function(error) {
-            console.error(error);
-        });};
-        config_resolver.privateKeysResponse = function($http){$http.get('private_configs/default.private_config.json').success(function(response) {
-            if(typeof response === "string"){console.error('private_configs/default.private_config.json not found');}
-            window.private_keys = response;
-        }).catch(function(error) {
-            console.error(error);
-        });};
-        //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
-    } else {
-        var locallyStoredAppSettings;
-        if(!designMode){locallyStoredAppSettings = localStorage.getItem(appsManager.getClientIdFromQueryParameters() + 'AppSettings');}
-        if(locallyStoredAppSettings) {
-            window.config.appSettings = JSON.parse(locallyStoredAppSettings);
-        } else {
-            config_resolver.appSettingsResponse = function ($http) {
-                var settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters(true);
-                return $http.get(settingsUrl).then(function (response) {
-                    //localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
-                    window.config.appSettings = response.data.appSettings;
-                    if(window.debugMode){console.debug(settingsUrl + ' response.data.appSettings: ' + JSON.stringify(response.data.appSettings));}
-                    if(designMode){
-                        window.config.appSettings.designMode = designMode;
-                        localStorage.setItem('designMode', window.config.appSettings.designMode);
-                    }
-                }, function errorCallback(response) {
-                    console.error(response);
-                    //return getLocalConfigJson('quantimodo');
-                });
-            };
+    var config_resolver = {
+        appSettingsResponse: function($http){
+            var settingsUrl = 'configs/default.config.json';
+            if(designMode || appsManager.getClientIdFromQueryParameters()){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters(true);}
+            return $http({method: 'GET', url: settingsUrl});
         }
-    }
-
+    };
+    //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
     ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {
         inputDate: new Date(),

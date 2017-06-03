@@ -1504,8 +1504,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
+    quantimodoService.getPrivateKeys = function(){
+        var deferred = $q.defer();
+        $http.get('private_configs/default.private_config.json').success(function(response) {
+            if(typeof response === "string"){console.error('private_configs/default.response.json not found');}
+            window.private_keys = response;
+            deferred.resolve(response);
+        });
+        return deferred.promise;
+    };
     quantimodoService.getUnits();
-    // get variable categories
     quantimodoService.variableCategories = [];
     $rootScope.variableCategories = [];
     $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
