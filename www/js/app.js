@@ -284,18 +284,16 @@ angular.module('starter',
     window.config = {};
     var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
     if(!designMode && !appsManager.getClientIdFromQueryParameters()) {
-        config_resolver.appSettingsResponse = function($http, q){$http.get('configs/default.config.json').then(function(response) {
-            if(typeof response.data === "string"){console.error('configs/default.config.json not found');}
-            window.config.appSettings = response.data;
-            if(window.debugMode){console.debug('configs/default.config.json: ' + JSON.stringify(response.data));}
-            q.resolve(response.data);
+        config_resolver.appSettingsResponse = function($http){$http.get('configs/default.config.json').success(function(response) {
+            if(typeof response === "string"){console.error('configs/default.config.json not found');}
+            window.config.appSettings = response;
+            if(window.debugMode){console.debug('configs/default.config.json: ' + JSON.stringify(response));}
         }).catch(function(error) {
             console.error(error);
         });};
-        config_resolver.privateKeysResponse = function($http, q){$http.get('private_configs/default.private_config.json').then(function(response) {
-            if(typeof response.data === "string"){console.error('private_configs/default.private_config.json not found');}
-            window.private_keys = response.data;
-            q.resolve(response.data);
+        config_resolver.privateKeysResponse = function($http){$http.get('private_configs/default.private_config.json').success(function(response) {
+            if(typeof response === "string"){console.error('private_configs/default.private_config.json not found');}
+            window.private_keys = response;
         }).catch(function(error) {
             console.error(error);
         });};
