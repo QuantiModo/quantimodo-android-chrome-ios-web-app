@@ -144,7 +144,7 @@ gulp.task('getAppConfigs', function () {
     if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
     if(!process.env.QUANTIMODO_CLIENT_SECRET){throw "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env";}
     var options = {
-        uri: 'https://staging.quantimo.do/api/v1/appSettings',
+        uri: 'https://app.quantimo.do/api/v1/appSettings',
         qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
         headers: {'User-Agent': 'Request-Promise'},
         json: true // Automatically parses the JSON string in the response
