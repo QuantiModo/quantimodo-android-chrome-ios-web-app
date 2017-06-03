@@ -287,6 +287,7 @@ angular.module('starter',
         config_resolver.appSettingsResponse = function($http){$http.get('configs/default.config.json').then(function(response) {
             if(typeof response.data === "string"){console.error('configs/default.config.json not found');}
             window.config.appSettings = response.data;
+            if(window.debugMode){console.debug('configs/default.config.json: ' + JSON.stringify(response.data));}
         }).catch(function(error) {
             console.error(error);
         });};
@@ -304,9 +305,11 @@ angular.module('starter',
             window.config.appSettings = JSON.parse(locallyStoredAppSettings);
         } else {
             config_resolver.appSettingsResponse = function ($http) {
-                return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters(true)).then(function (response) {
+                var settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters(true);
+                return $http.get(settingsUrl).then(function (response) {
                     //localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
                     window.config.appSettings = response.data.appSettings;
+                    if(window.debugMode){console.debug(settingsUrl + ' response.data.appSettings: ' + JSON.stringify(response.data.appSettings));}
                     if(designMode){
                         window.config.appSettings.designMode = designMode;
                         localStorage.setItem('designMode', window.config.appSettings.designMode);
