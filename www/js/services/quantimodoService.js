@@ -1614,6 +1614,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(window.location.href.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
         if ($rootScope.isWeb && (!window.private_keys || window.private_keys.client_ids.Web === 'oAuthDisabled') && window.location.origin) {return window.location.origin;}
         if(config.appSettings.additionalSettings.downloadLinks.webApp){return config.appSettings.additionalSettings.downloadLinks.webApp;}
+        if(!quantimodoService.weShouldUseOAuthLogin()){return "https://" + quantimodoService.getClientId() + ".quantimo.do";}
         return "https://app.quantimo.do";
     };
     quantimodoService.getQuantiModoUrl = function (path) {
@@ -6553,6 +6554,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.hideLoader = function(){
         console.debug("Hiding loader because we called $ionicLoading.hide");
         $ionicLoading.hide();
+    };
+    quantimodoService.weShouldUseOAuthLogin = function(){
+        if(quantimodoService.getClientId() === "oAuthDisabled"){return false;}
+        if(quantimodoService.getClientId() === "staging"){return false;}
+        if(quantimodoService.getClientId() === "app"){return false;}
+        if(quantimodoService.getClientId() === "local"){return false;}
+        if(quantimodoService.getClientId() === "local"){return false;}
+        return window.private_keys;
     };
     return quantimodoService;
 });
