@@ -27,6 +27,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
         //console.debug("Entering state " + $state.current.name);
+        if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
         if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
         if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
         if(quantimodoService.getUrlParameter('accessToken')){
