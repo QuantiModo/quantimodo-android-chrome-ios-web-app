@@ -1,5 +1,6 @@
 angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService) {
 
+    if(window.debugMode){console.debug('IntroCtrl first starting in state: ' + $state.current.name);}
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $rootScope.showFilterBarSearchIcon = false;
     $scope.myIntro = {

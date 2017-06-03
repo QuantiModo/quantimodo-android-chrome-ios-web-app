@@ -1,5 +1,6 @@
 angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, quantimodoService, $rootScope, $stateParams, $ionicLoading) {
     $scope.controller_name = "StudyJoinCtrl";
+    if(window.debugMode){console.debug($scope.controller_name + ' first starting in state: ' + $state.current.name);}
     var green = { backgroundColor: "#0f9d58", circleColor: "#03c466" };
     var blue = { backgroundColor: "#3467d6", circleColor: "#5b95f9" };
     var yellow = { backgroundColor: "#f09402", circleColor: "#fab952" };
@@ -12,6 +13,7 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
             "aggregated form as is done in epidemiological studies."
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
+        if(window.debugMode){console.debug($scope.controller_name + ' $ionicView.beforeEnter in state: ' + $state.current.name);}
         if(!$rootScope.user){
             console.debug('Hiding nav menu because we do not have a user');
             $rootScope.hideNavigationMenu = true;
@@ -32,7 +34,8 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
             " showing the likely effects of " + $scope.requestParams.causeVariableName + " on your own " +
             $scope.requestParams.effectVariableName;
     });
-    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.enter', function(e) {
+        if(window.debugMode){console.debug($scope.controller_name + ' $ionicView.enter in state: ' + $state.current.name);}
         quantimodoService.hideLoader();
         if(getParameterByName('alreadyJoined')){ $scope.joinStudy(); }
     });
