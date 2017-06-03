@@ -1,4 +1,4 @@
-angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, quantimodoService, $rootScope, $stateParams, $ionicLoading) {
+angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, quantimodoService, $rootScope, $stateParams) {
     $scope.controller_name = "StudyJoinCtrl";
     if(window.debugMode){console.debug($scope.controller_name + ' first starting in state: ' + $state.current.name);}
     var green = { backgroundColor: "#0f9d58", circleColor: "#03c466" };
