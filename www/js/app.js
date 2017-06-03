@@ -182,11 +182,6 @@ angular.module('starter',
                 }
             }
         };
-        if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.googleAnalyticsTrackingIds){
-            if(typeof analytics !== "undefined") {analytics.startTrackerWithId(config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic);}
-        } else {
-            console.error("No config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic!");
-        }
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
         }
@@ -286,45 +281,40 @@ angular.module('starter',
     };
     var config_resolver = {};
     window.config = {};
-    appsManager.getAppSettingsFromUrlParameter();
-    if(!window.config.appSettings){
-        if(!appsManager.getClientIdFromQueryParameters()) {
-            config_resolver.appSettingsResponse = function($http){$http.get('configs/default.config.json').then(function(response) {
-                if(typeof response.data === "string"){
-                    console.error('configs/default.config.json not found');
-                }
-                window.config.appSettings = response.data;
-            }).catch(function(error) {
-                console.error(error);
-            });};
-            config_resolver.privateKeysResponse = function($http){$http.get('private_configs/default.private_config.json').success(function(response) {
-                if(typeof response.data === "string"){
-                    console.error('private_configs/default.private_config.json not found');
-                }
-                window.private_keys = response.data;
-            }).catch(function(error) {
-                console.error(error);
-            });};
-            //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
+    var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+    if(!designMode && !appsManager.getClientIdFromQueryParameters()) {
+        config_resolver.appSettingsResponse = function($http){$http.get('configs/default.config.json').then(function(response) {
+            if(typeof response.data === "string"){console.error('configs/default.config.json not found');}
+            window.config.appSettings = response.data;
+        }).catch(function(error) {
+            console.error(error);
+        });};
+        config_resolver.privateKeysResponse = function($http){$http.get('private_configs/default.private_config.json').then(function(response) {
+            if(typeof response.data === "string"){console.error('private_configs/default.private_config.json not found');}
+            window.private_keys = response.data;
+        }).catch(function(error) {
+            console.error(error);
+        });};
+        //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
+    } else {
+        var locallyStoredAppSettings;
+        if(!designMode){locallyStoredAppSettings = localStorage.getItem(appsManager.getClientIdFromQueryParameters() + 'AppSettings');}
+        if(locallyStoredAppSettings) {
+            window.config.appSettings = JSON.parse(locallyStoredAppSettings);
         } else {
-            var localStorageName = appsManager.getClientIdFromQueryParameters() + 'AppSettings';
-            var locallyStoredAppSettings = localStorage.getItem(localStorageName);
-            var designMode = (appsManager.getUrlParameter('designMode')) ? appsManager.getUrlParameter('designMode') : localStorage.getItem('designMode');
-            if(!designMode && locallyStoredAppSettings) {
-                window.config.appSettings = JSON.parse(locallyStoredAppSettings);
-            } else {
-                config_resolver.appSettingsResponse = function ($http) {
-                    return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters()).then(function (response) {
-                        //localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
-                        window.config.appSettings = response.data.appSettings;
+            config_resolver.appSettingsResponse = function ($http) {
+                return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters(true)).then(function (response) {
+                    //localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
+                    window.config.appSettings = response.data.appSettings;
+                    if(designMode){
                         window.config.appSettings.designMode = designMode;
                         localStorage.setItem('designMode', window.config.appSettings.designMode);
-                    }, function errorCallback(response) {
-                        console.error(repsponse);
-                        //return getLocalConfigJson('quantimodo');
-                    });
-                };
-            }
+                    }
+                }, function errorCallback(response) {
+                    console.error(response);
+                    //return getLocalConfigJson('quantimodo');
+                });
+            };
         }
     }
 

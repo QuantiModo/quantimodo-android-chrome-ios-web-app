@@ -19,20 +19,24 @@ function getSubDomain(){
     return parts[0].toLowerCase();
 }
 
-function getClientIdFromQueryParameters() {
+function getClientIdFromQueryParameters(fallbackToSubDomain) {
+    var clientId;
     var queryString = document.location.toString().split('?')[1];
-    if(!queryString) {return localStorage.getItem('clientId');}
-    var queryParameterStrings = queryString.split('&');
-    if(!queryParameterStrings) {return localStorage.getItem('clientId');}
-    for (var i = 0; i < queryParameterStrings.length; i++) {
-        var queryKeyValuePair = queryParameterStrings[i].split('=');
-        if (['app','appname','lowercaseappname','clientid'].contains(queryKeyValuePair[0].toLowerCase().replace('_',''))) {
-            var clientId = queryKeyValuePair[1].split('#')[0].toLowerCase();
-            localStorage.setItem('clientId', clientId);
-            return clientId;
+    if(queryString) {
+        var queryParameterStrings = queryString.split('&');
+        if (queryParameterStrings) {
+            for (var i = 0; i < queryParameterStrings.length; i++) {
+                var queryKeyValuePair = queryParameterStrings[i].split('=');
+                if (['app', 'appname', 'lowercaseappname', 'clientid'].contains(queryKeyValuePair[0].toLowerCase().replace('_', ''))) {
+                    clientId = queryKeyValuePair[1].split('#')[0].toLowerCase();
+                    localStorage.setItem('clientId', clientId);
+                }
+            }
         }
     }
-    return localStorage.getItem('clientId');
+    if(!clientId){clientId = localStorage.getItem('clientId');}
+    if(!clientId && fallbackToSubDomain){clientId = getSubDomain();}
+    return clientId;
 }
 
 function getQuantiModoClientId() {
@@ -106,7 +110,7 @@ var appsManager = { // jshint ignore:line
         if(window.location.origin.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
         return "https://app.quantimo.do";
     },
-    getClientIdFromQueryParameters: function () {
-        return  getClientIdFromQueryParameters();
+    getClientIdFromQueryParameters: function (fallbackToSubDomain) {
+        return  getClientIdFromQueryParameters(fallbackToSubDomain);
     }
 };

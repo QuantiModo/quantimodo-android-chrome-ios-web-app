@@ -873,6 +873,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
 
     var setupGoogleAnalytics = function(user){
+        if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.googleAnalyticsTrackingIds){
+            if(typeof analytics !== "undefined") {analytics.startTrackerWithId(config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic);}
+        } else {
+            console.error("No config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic!");
+        }
         Analytics.registerScriptTags();
         Analytics.registerTrackers();
         // you can set any advanced configuration here
