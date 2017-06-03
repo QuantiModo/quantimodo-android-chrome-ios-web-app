@@ -1,5 +1,5 @@
-angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast) {
+angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast) {
+    if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
 	$scope.controller_name = "RemindersInboxCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
