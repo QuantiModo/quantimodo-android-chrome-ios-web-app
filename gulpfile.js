@@ -1234,6 +1234,15 @@ gulp.task('useWhiteIcon', [], function () {
         .pipe(rename('icon.png'))
         .pipe(gulp.dest('resources'));
 });
+gulp.task('bowerInstall', [], function (callback) {
+    return execute('bower install', function (error) {
+        if (error !== null) {
+            console.error('ERROR:' + error);
+        } else {
+            callback();
+        }
+    });
+});
 gulp.task('ionicResourcesIos', [], function (callback) {
     return execute('ionic resources ios', function (error) {
         if (error !== null) {

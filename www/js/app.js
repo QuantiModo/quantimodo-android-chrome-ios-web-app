@@ -25,7 +25,8 @@ angular.module('starter',
         'ngMaterial',
         'ngMessages',
         'angular-cache',
-        'angular-d3-word-cloud'
+        'angular-d3-word-cloud',
+        //'ui-iconpicker'
     ]
 )
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics) {

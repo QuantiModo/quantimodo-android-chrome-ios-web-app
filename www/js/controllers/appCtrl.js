@@ -5,53 +5,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                                 $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
 
     $scope.controller_name = "AppCtrl";
-    if(window.debugMode){console.debug($scope.controller_name + ' first starting in state: ' + $state.current.name);}
-    if(window.debugMode){console.debug('appSettingsResponse: ' + JSON.stringify(appSettingsResponse.data.appSettings));}
-    window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
-    window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-    $rootScope.appSettings = window.config.appSettings;
-    quantimodoService.getPrivateKeys();
-    if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
-    if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
+    quantimodoService.initializeApplication(appSettingsResponse);
     $scope.showTrackingSubMenu = false;
     $rootScope.numberOfPendingNotifications = null;
     $scope.showReminderSubMenu = false;
     quantimodoService.removeAppStorageIdentifiers();
     $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
-    if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
-    if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
-    if(!$rootScope.user || quantimodoService.getAccessTokenFromUrlParameter()){
-        quantimodoService.showBlackRingLoader();
-        quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
-    }
-    quantimodoService.putCommonVariablesInLocalStorage();
-    quantimodoService.backgroundGeolocationInit();
-    quantimodoService.setupBugsnag();
-    quantimodoService.getUserAndSetupGoogleAnalytics();
-    if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
-    if(quantimodoService.getUrlParameter('refreshUser')){
-        quantimodoService.clearLocalStorage();
-        window.localStorage.introSeen = true;
-        window.localStorage.onboarded = true;
-        $rootScope.user = null;
-        $rootScope.refreshUser = false;
-    }
-    if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
-    if($rootScope.user){
-        //quantimodoService.syncTrackingReminders();
-        //quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred();  // I think this slows loading
-        if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
-    }
-    if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
-        console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
-        $ionicPlatform.ready(function () {
-            console.debug("Setting on trigger and on click actions for notifications");
-            quantimodoService.setOnTriggerActionForLocalNotifications();
-            quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
-            quantimodoService.setOnUpdateActionForLocalNotifications();
-        });
-    }
     $scope.$on('$ionicView.enter', function (e) {
         console.debug('appCtrl enter in state ' + $state.current.name);
         //$scope.showHelpInfoPopupIfNecessary(e);
