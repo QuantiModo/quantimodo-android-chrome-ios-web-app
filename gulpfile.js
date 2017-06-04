@@ -139,10 +139,14 @@ gulp.task('setLowerCaseAppName', function (callback) {setLowerCaseAppName(callba
 function removeCustomPropertiesFromAppSettings(appSettings) {
     for (var propertyName in appSettings.appDesign) {
         if (appSettings.appDesign.hasOwnProperty(propertyName)){
-            if (appSettings.appDesign[propertyName] && appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
-                appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
+            if(appSettings.appDesign[propertyName]){
+                if (appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
+                    appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
+                }
+                delete appSettings.appDesign[propertyName].custom;
+            } else {
+                console.log("Could not find property " + propertyName + " in appDesign");
             }
-            delete appSettings.appDesign[propertyName].custom;
         }
     }
     return appSettings;

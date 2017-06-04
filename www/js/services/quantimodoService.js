@@ -5517,7 +5517,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "addTreatmentRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
                 title: 'Any Treatments?',
                 "backgroundColor": "#f09402",
                 circleColor: "#fab952",
@@ -5536,7 +5535,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "addSymptomRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
                 title: 'Recurring Symptoms?',
                 "backgroundColor": "#3467d6",
                 circleColor: "#5b95f9",
@@ -5554,7 +5552,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "addEmotionRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
                 title: 'Varying Emotions?',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
@@ -5573,7 +5570,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "addFoodRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
                 title: 'Common Foods or Drinks?',
                 "backgroundColor": "#3467d6",
                 circleColor: "#5b95f9",
@@ -5591,7 +5587,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "locationTrackingInfoCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !user.trackLocation",
                 title: 'Location Tracking',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
@@ -5609,7 +5604,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "weatherTrackingInfoCard",
-                ngIfLogic: "stateParams.showHelpCards === true",
                 title: 'Weather Tracking',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
@@ -5627,7 +5621,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "importDataCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                 title: 'Import Your Data',
                 "backgroundColor": "#f09402",
                 circleColor: "#fab952",
@@ -5651,7 +5644,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "allDoneCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                 title: 'Great job!',
                 "backgroundColor": "#3467d6",
                 circleColor: "#fefdfc",

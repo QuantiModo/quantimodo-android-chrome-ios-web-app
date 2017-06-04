@@ -6,7 +6,7 @@
   "companyName": null,
   "homepageUrl": "",
   "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/ijHsrk0B1s_ako7ow",
-  "longDescription": "{\"appDescription\":null,\"appDisplayName\":\"QuantiModo\",\"appIdentifier\":\"com.quantimodo.quantimodo\",\"appleId\":\"1115037060\",\"appStorageIdentifier\":\"QuantiModoData*\",\"backgroundColor\":\"#3467d6\",\"companyEmail\":\"info@quantimo.do\",\"cordovaLocalNotificationsEnabled\":false,\"defaultState\":\"app.remindersInbox\",\"downloadLinks\":{\"chromeExtension\":\"https:\\/\\/chrome.google.com\\/webstore\\/detail\\/quantimodo-life-tracking\\/jioloifallegdkgjklafkkbniianjbgi\",\"iosApp\":\"https:\\/\\/itunes.apple.com\\/us\\/app\\/quantimodo-life-tracker\\/id1115037060?mt=8\",\"androidApp\":\"https:\\/\\/play.google.com\\/store\\/apps\\/details?id=com.quantimodo.quantimodo\",\"webApp\":null},\"facebookAppId\":225078261031461,\"googleAnalyticsTrackingIds\":{\"laravel\":\"UA-39222734-29\",\"ionic\":\"UA-39222734-25\",\"api\":\"UA-39222734-24\",\"wp\":\"UA-39222734-2\"},\"googleReversedClientId\":\"com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl\",\"homepage\":\"https:\\/\\/quantimo.do\",\"iconUrl\":\"ijHsrk0B1s_ako7ow\",\"intro\":null,\"ionicAppId\":\"42fe48d4\",\"ionNavBarClass\":\"bar-positive\",\"lowercaseAppName\":\"{\\r\\n    \\\"appIdentifier\\\": \\\"com.quantimodo.quantimodo\\\",\\r\\n    \\\"appleId\\\": \\\"1115037060\\\",\\r\\n    \\\"appStorageIdentifier\\\": \\\"QuantiModoData*\\\",\\r\\n    \\\"backgroundColor\\\": \\\"#3467d6\\\",\\r\\n    \\\"companyEmail\\\": \\\"info@quantimo.do\\\",\\r\\n    \\\"cordovaLocalNotificationsEnabled\\\": false,\\r\\n    \\\"defaultState\\\": \\\"app.remindersInbox\\\",\\r\\n    \\\"downloadLinks\\\": {\\r\\n        \\\"chromeExtension\\\": \\\"https:\\\\\\/\\\\\\/chrome.google.com\\\\\\/webstore\\\\\\/detail\\\\\\/quantimodo-life-tracking\\\\\\/jioloifallegdkgjklafkkbniianjbgi\\\",\\r\\n        \\\"iosApp\\\": \\\"https:\\\\\\/\\\\\\/itunes.apple.com\\\\\\/us\\\\\\/app\\\\\\/quantimodo-life-tracker\\\\\\/id1115037060?mt=8\\\",\\r\\n        \\\"androidApp\\\": \\\"https:\\\\\\/\\\\\\/play.google.com\\\\\\/store\\\\\\/apps\\\\\\/details?id=com.quantimodo.quantimodo\\\"\\r\\n    },\\r\\n    \\\"facebookAppId\\\": 225078261031461,\\r\\n    \\\"googleAnalyticsTrackingIds\\\": {\\r\\n        \\\"laravel\\\": \\\"UA-39222734-29\\\",\\r\\n        \\\"ionic\\\": \\\"UA-39222734-25\\\",\\r\\n        \\\"api\\\": \\\"UA-39222734-24\\\",\\r\\n        \\\"wp\\\": \\\"UA-39222734-2\\\"\\r\\n    },\\r\\n    \\\"googleReversedClientId\\\": \\\"com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl\\\",\\r\\n    \\\"homepage\\\": \\\"https:\\\\\\/\\\\\\/quantimo.do\\\",\\r\\n    \\\"iconUrl\\\": \\\"ijHsrk0B1s_ako7ow\\\",\\r\\n    \\\"intro\\\": null,\\r\\n    \\\"ionicAppId\\\": \\\"42fe48d4\\\",\\r\\n    \\\"ionNavBarClass\\\": \\\"bar-positive\\\",\\r\\n    \\\"menuType\\\": \\\"minimal\\\",\\r\\n    \\\"physicianAlias\\\": \\\"Physician\\\",\\r\\n    \\\"patientAlias\\\": \\\"Patient\\\",\\r\\n    \\\"socialLinks\\\": {\\r\\n        \\\"facebook\\\": \\\"https:\\\\\\/\\\\\\/www.facebook.com\\\\\\/Quantimodology\\\",\\r\\n        \\\"twitter\\\": \\\"https:\\\\\\/\\\\\\/twitter.com\\\\\\/quantimodo\\\",\\r\\n        \\\"google\\\": \\\"https:\\\\\\/\\\\\\/plus.google.com\\\\\\/communities\\\\\\/100581500031158281444\\\",\\r\\n        \\\"linkedIn\\\": \\\"https:\\\\\\/\\\\\\/www.linkedin.com\\\\\\/company\\\\\\/quantimodo\\\"\\r\\n    },\\r\\n    \\\"textLogo\\\": \\\"https:\\\\\\/\\\\\\/app.quantimo.do\\\\\\/api\\\\\\/v2\\\\\\/img\\\\\\/logo.png\\\",\\r\\n    \\\"welcomeState\\\": \\\"app.welcome\\\",\\r\\n    \\\"wordAliases\\\": {}\\r\\n}\",\"menuType\":\"minimal\",\"physicianAlias\":\"Physician\",\"patientAlias\":\"Patient\",\"socialLinks\":{\"facebook\":\"https:\\/\\/www.facebook.com\\/Quantimodology\",\"twitter\":\"https:\\/\\/twitter.com\\/quantimodo\",\"google\":\"https:\\/\\/plus.google.com\\/communities\\/100581500031158281444\",\"linkedIn\":\"https:\\/\\/www.linkedin.com\\/company\\/quantimodo\"},\"textLogo\":\"daHJCh6GxL_fvrlmq\",\"welcomeState\":\"app.welcome\",\"wordAliases\":{},\"splashScreen\":\"ALs6idqd93_k7ipov\"}",
+  "longDescription": "",
   "splashScreen": "https://res.cloudinary.com/hxo7b0gvz/image/upload/ALs6idqd93_k7ipov",
   "textLogo": "https://res.cloudinary.com/hxo7b0gvz/image/upload/daHJCh6GxL_fvrlmq",
   "userId": 230,
@@ -162,7 +162,6 @@
     "helpCard": {
       "active": [{
         "id": "getStartedHelpCard",
-        "ngIfLogic": "stateParams.showHelpCards === true && !hideGetStartedHelpCard",
         "title": "Reminder Inbox",
         "backgroundColor": "#f09402",
         "circleColor": "#fab952",
@@ -172,7 +171,6 @@
         "hideHelpCardIonIcon": "ion-checkmark"
       }, {
         "id": "recordMeasurementInfoCard",
-        "ngIfLogic": "stateParams.showHelpCards === true && !hideRecordMeasurementInfoCard",
         "title": "Record Measurements",
         "backgroundColor": "#f09402",
         "circleColor": "#fab952",
@@ -182,7 +180,6 @@
         "hideHelpCardIonIcon": "ion-checkmark"
       }, {
         "id": "chromeExtensionInfoCard",
-        "ngIfLogic": "stateParams.showHelpCards === true && isMobile && !hideChromeExtensionInfoCard",
         "title": "Track on the Computer",
         "backgroundColor": "#0f9d58",
         "circleColor": "#03c466",
@@ -197,7 +194,6 @@
         }
       }, {
         "id": "getHelpInfoCard",
-        "ngIfLogic": "stateParams.showHelpCards === true && !hideGetHelpInfoCard",
         "title": "Need Help?",
         "iconClass": "icon positive ion-help-circled",
         "bodyText": "If you need help or have any suggestions, please click the question mark in the upper right corner.",
@@ -205,7 +201,6 @@
         "hideHelpCardIonIcon": "ion-checkmark"
       }, {
         "id": "getFitbitHelpInfoCard",
-        "ngIfLogic": "stateParams.showHelpCards === true && !hideGetFitbitHelpInfoCard",
         "title": "Automated Tracking",
         "iconClass": "icon positive ion-wand",
         "bodyText": "Want to automatically record your sleep, exercise, and heart rate?",
@@ -365,7 +360,6 @@
     "onboarding": {
       "active": [{
         "id": "addFoodRemindersCard",
-        "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
         "title": "Common Foods or Drinks?",
         "color": "blue",
         "variableCategoryName": "Foods",
@@ -395,7 +389,6 @@
         "nextPageButtonText": "Maybe Later"
       }, {
         "id": "allDoneCard",
-        "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
         "title": "Great job!",
         "color": "green",
         "iconClass": "icon positive ion-ios-cloud-download-outline",
