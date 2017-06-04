@@ -15,9 +15,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
         urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
         urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-        if(window.private_keys){
-            if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
-            if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
+        if(window.developmentMode && window.private_keys && window.private_keys.devCredentials){
+            if(window.private_keys.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.devCredentials.username));}
+            if(window.private_keys.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.devCredentials.password));}
         }
         if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
         //We can't append access token to Ionic requests for some reason
@@ -1607,6 +1607,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getApiUrl = function () {
         if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
+        if(window.location.origin.indexOf('.quantimo.do') === -1){ return "https://app.quantimo.do";}
         if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".private_config.json or it does not contain window.private_keys");}
         if(config.appSettings.additionalSettings.downloadLinks.webApp){return config.appSettings.additionalSettings.downloadLinks.webApp;}
         return "https://app.quantimo.do";
@@ -5477,9 +5478,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.setupOnboardingPages = function (onboardingPages) {
         var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
+        var activeOnboardingPages = $rootScope.appSettings.appDesign.onboarding.active;
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
-            if(!$rootScope.appSettings.designMode){$rootScope.appSettings.appDesign.onboarding.active = onboardingPagesFromLocalStorage;}
+            if(!$rootScope.appSettings.designMode){activeOnboardingPages = onboardingPagesFromLocalStorage;}
         }
+        $rootScope.appSettings.appDesign.onboarding.active = quantimodoService.addColorsCategoriesAndNames(activeOnboardingPages);
     };
     $rootScope.signUpQuestions = [
         {
@@ -5514,7 +5517,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "addTreatmentRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard",
                 title: 'Any Treatments?',
                 "backgroundColor": "#f09402",
                 circleColor: "#fab952",
@@ -5533,7 +5535,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "addSymptomRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddSymptomRemindersCard",
                 title: 'Recurring Symptoms?',
                 "backgroundColor": "#3467d6",
                 circleColor: "#5b95f9",
@@ -5551,7 +5552,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "addEmotionRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
                 title: 'Varying Emotions?',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
@@ -5570,7 +5570,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "addFoodRemindersCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
                 title: 'Common Foods or Drinks?',
                 "backgroundColor": "#3467d6",
                 circleColor: "#5b95f9",
@@ -5588,7 +5587,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "locationTrackingInfoCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !user.trackLocation",
                 title: 'Location Tracking',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
@@ -5606,7 +5604,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "weatherTrackingInfoCard",
-                ngIfLogic: "stateParams.showHelpCards === true",
                 title: 'Weather Tracking',
                 "backgroundColor": "#0f9d58",
                 circleColor: "#03c466",
@@ -5624,7 +5621,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "importDataCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                 title: 'Import Your Data',
                 "backgroundColor": "#f09402",
                 circleColor: "#fab952",
@@ -5648,7 +5644,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             },
             {
                 id: "allDoneCard",
-                ngIfLogic: "stateParams.showHelpCards === true && !hideImportDataCard",
                 title: 'Great job!',
                 "backgroundColor": "#3467d6",
                 circleColor: "#fefdfc",
