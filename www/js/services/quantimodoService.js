@@ -608,9 +608,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return $rootScope.accessTokenFromUrl;
     };
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
-    quantimodoService.weHaveUserOrAccessToken = function(){
-        return $rootScope.user || quantimodoService.getAccessTokenFromUrl();
-    };
+    function weHaveUserOrAccessToken(){return $rootScope.user || quantimodoService.getAccessTokenFromUrl();};
     quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         if($rootScope.user && $rootScope.user.accessToken === quantimodoService.getAccessTokenFromUrl()){return;}
         if(quantimodoService.getAccessTokenFromUrl()){
@@ -1170,7 +1168,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getAndStorePrimaryOutcomeMeasurements = function(){
         var deferred = $q.defer();
         var errorMessage;
-        if(!quantimodoService.weHaveUserOrAccessToken()){
+        if(!weHaveUserOrAccessToken()){
             errorMessage = 'Cannot sync because we do not have a user or access token in url';
             console.error(errorMessage);
             deferred.reject(errorMessage);
@@ -1205,7 +1203,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.postMeasurementQueueToServer = function(successHandler, errorHandler){
         var defer = $q.defer();
-        if(!quantimodoService.weHaveUserOrAccessToken()){
+        if(!weHaveUserOrAccessToken()){
             var errorMessage = 'Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user or access token in url';
             console.error(errorMessage);
             defer.reject(errorMessage);
@@ -1234,7 +1232,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.syncPrimaryOutcomeVariableMeasurements = function(){
         var defer = $q.defer();
-        if(!quantimodoService.weHaveUserOrAccessToken()){
+        if(!weHaveUserOrAccessToken()){
             console.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
             defer.resolve();
             return defer.promise;
@@ -5878,7 +5876,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.goToLoginIfNecessary = function(goToState){
         quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
-        if(!quantimodoService.weHaveUserOrAccessToken()){
+        if(!weHaveUserOrAccessToken()){
             if(!goToState){goToState = $state.current.name;}
             console.debug('Setting afterLoginGoToState to ' + goToState);
             quantimodoService.setLocalStorageItem('afterLoginGoToState', goToState);
