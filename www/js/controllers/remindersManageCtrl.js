@@ -2,7 +2,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	$scope.controller_name = "RemindersManageCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
-    quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
+    quantimodoService.goToLoginIfNecessary();
 	$scope.state = {
 		showButtons : false,
 		variableCategory : $stateParams.variableCategoryName,

@@ -3,7 +3,6 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	$scope.controller_name = "RemindersInboxCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
-    quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
 	$scope.state = {
 		showMeasurementBox : false,
 		selectedReminder : false,
@@ -32,11 +31,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("RemindersInboxCtrl beforeEnter ");
 		$scope.loading = true;
-		if(!quantimodoService.getUrlParameter('accessToken') && !$rootScope.user){
-			console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-			quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
-			$state.go('app.login');
-		}
+        if(quantimodoService.goToLoginIfNecessary()){ return; }
 		$rootScope.hideBackButton = true;
 		$rootScope.hideHomeButton = true;
         if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}

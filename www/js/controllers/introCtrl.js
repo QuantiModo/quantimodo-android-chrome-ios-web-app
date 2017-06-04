@@ -9,11 +9,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         textColor : 'black',
         slideIndex : 0,
         startApp : function() { // Called to navigate to the main app
-            if(!$rootScope.user){ // Prevents onboarding page flicker
-                console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-                quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
-                $state.go('app.login'); return;
-            }
+            if(quantimodoService.goToLoginIfNecessary('app.onboarding')){ return; }
             $state.go('app.onboarding');
         },
         next : function(index) {
@@ -31,7 +27,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
         if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
         if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
-        if(quantimodoService.getUrlParameter('accessToken')){
+        if(quantimodoService.getAccessTokenFromUrl()){
             console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.appDesign.defaultState);
             $state.go(config.appSettings.appDesign.defaultState);
         } else {

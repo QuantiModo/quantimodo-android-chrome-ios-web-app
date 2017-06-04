@@ -57,7 +57,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
         $rootScope.hideNavigationMenu = false;
         console.debug('ReminderAddCtrl beforeEnter...');
-        quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
+        quantimodoService.goToLoginIfNecessary();
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
         if($stateParams.reminder){ $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName; }
         $scope.stateParams = $stateParams;

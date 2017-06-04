@@ -6,12 +6,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-		if(!$rootScope.user){
-			console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-			quantimodoService.setLocalStorageItem('afterLoginGoToState', $state.current.name);
-			$state.go('app.login');
-			return;
-		}
+        if(quantimodoService.goToLoginIfNecessary()){ return; }
 		if($rootScope.user.stripeActive || config.appSettings.upgradeDisabled){
 			loadNativeConnectorPage();
 			return;
