@@ -1,5 +1,7 @@
-angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService, introSlides, onboardingPages) {
-    $scope.introSlides = quantimodoService.getIntroSlides(introSlides.data);
+angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService, appSettingsResponse) {
+
+    if(window.debugMode){console.debug('IntroCtrl first starting in state: ' + $state.current.name);}
+    quantimodoService.initializeApplication(appSettingsResponse);
     $rootScope.showFilterBarSearchIcon = false;
     $scope.myIntro = {
         ready : false,
@@ -7,30 +9,27 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         textColor : 'black',
         slideIndex : 0,
         startApp : function() { // Called to navigate to the main app
-            if(!$rootScope.user){ // Prevents onboarding page flicker
-                console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-                quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
-                $state.go('app.login'); return;
-            }
+            if(quantimodoService.goToLoginIfNecessary('app.onboarding')){ return; }
             $state.go('app.onboarding');
         },
         next : function(index) {
-            if(index === $scope.introSlides.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
+            if(index === $rootScope.appSettings.appDesign.intro.active.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
         },
         previous : function() { $ionicSlideBoxDelegate.previous(); },
         slideChanged : function(index) {
             $scope.myIntro.slideIndex = index;
-            if($scope.introSlides[index].backgroundColor){$scope.myIntro.backgroundColor = $scope.introSlides[index].backgroundColor;}
-            if($scope.introSlides[index].textColor){$scope.myIntro.textColor = $scope.introSlides[index].textColor;}
+            if($rootScope.appSettings.appDesign.intro.active[index].backgroundColor){$scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[index].backgroundColor;}
+            if($rootScope.appSettings.appDesign.intro.active[index].textColor){$scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[index].textColor;}
         }
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
         //console.debug("Entering state " + $state.current.name);
-        if($scope.introSlides[0].backgroundColor){ $scope.myIntro.backgroundColor = $scope.introSlides[0].backgroundColor; }
-        if($scope.introSlides[0].textColor){ $scope.myIntro.textColor = $scope.introSlides[0].textColor; }
-        if(quantimodoService.getUrlParameter('accessToken')){
-            console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.defaultState);
-            $state.go(config.appSettings.defaultState);
+        if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
+        if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
+        if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
+        if(quantimodoService.getAccessTokenFromUrl()){
+            console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.appDesign.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
         } else {
             //console.debug($state.current.name + ' initializing...');
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -56,6 +55,6 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
             console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
         }
-        quantimodoService.setupOnboardingPages(onboardingPages.data); // Preemptive setup to avoid transition artifacts
+        quantimodoService.setupOnboardingPages(); // Preemptive setup to avoid transition artifacts
     });
 });

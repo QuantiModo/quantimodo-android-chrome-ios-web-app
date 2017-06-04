@@ -1,6 +1,6 @@
 <ion-side-menus enable-menu-with-back-views="true" >
     <ion-side-menu-content>
-        <ion-nav-bar class="{{appSettings.ionNavBarClass}}" ng-show="hideNavigationMenu === false" >
+        <ion-nav-bar class="{{appSettings.appDesign.ionNavBarClass}}" ng-show="hideNavigationMenu === false" >
             <ion-nav-buttons side="left">
                 <button ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
                 <button ng-show="showCloseMenuButton" class="button button-icon ion-android-close" ng-click="closeMenu()"></button>
@@ -54,7 +54,7 @@
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <div ng-repeat="menuItem in menu">
+                <div ng-repeat="menuItem in appSettings.appDesign.menu.active">
                     <ion-item ng-click="closeMenuIfNeeded(menuItem)" ng-href="{{menuItem.href}}">
                         <i ng-if="this[menuItem.showSubMenuVariable]" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
                         <i ng-if="!this[menuItem.showSubMenuVariable]" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
@@ -64,6 +64,9 @@
                         <i class="{{subMenuItem.icon}}" menu-toggle>&nbsp; {{subMenuItem.title}}</i>
                     </ion-item>
                 </div>
+                <ion-item ng-show="appSettings.designMode" ng-href="#/app/configuration">
+                    <i class="ion-edit" menu-toggle>&nbsp; App Designer</i>
+                </ion-item>
             </ion-list>
         </ion-content>
     </ion-side-menu>

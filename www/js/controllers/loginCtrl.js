@@ -91,14 +91,14 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         var register = true;
         $scope.login(register);
     };
+
     var browserLogin = function(register) {
         console.debug("Browser Login");
         if (window.private_keys && window.private_keys.username) {
-            quantimodoService.refreshUser().then(function () {$state.go(config.appSettings.defaultState);});
-        } else if (quantimodoService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
+            quantimodoService.refreshUser().then(function () {$state.go(config.appSettings.appDesign.defaultState);});
+        } else if (quantimodoService.weShouldUseOAuthLogin()) {
             // Using timeout to avoid "$apply already in progress" error caused by window.open
-            if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);
-            } else { quantimodoService.oAuthBrowserLogin(register); }
+            if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);} else { quantimodoService.oAuthBrowserLogin(register); }
         } else {
             quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
         }

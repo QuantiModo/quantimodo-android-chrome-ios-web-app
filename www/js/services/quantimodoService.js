@@ -11,6 +11,54 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     // GET method with the added token
+    function addGlobalUrlParams(urlParams) {
+        urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
+        urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
+        urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
+        if(window.private_keys){
+            if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
+            if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
+        }
+        if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
+        //We can't append access token to Ionic requests for some reason
+        //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
+        if(quantimodoService.getUrlParameter('log')){urlParams.push(encodeURIComponent('log') + '=' + quantimodoService.getUrlParameter('log'));}
+        if(quantimodoService.getUrlParameter('pwd')){urlParams.push(encodeURIComponent('pwd') + '=' + quantimodoService.getUrlParameter('pwd'));}
+        return urlParams;
+    }
+    function addVariableCategoryInfo(array){
+        angular.forEach(array, function(value, key) {
+            if(value.variableCategoryName && quantimodoService.variableCategories[value.variableCategoryName]){
+                value.iconClass = 'icon positive ' + quantimodoService.variableCategories[value.variableCategoryName].ionIcon;
+                value.moreInfo = quantimodoService.variableCategories[value.variableCategoryName].moreInfo;
+                value.image = {
+                    url: quantimodoService.variableCategories[value.variableCategoryName].imageUrl,
+                    height: "96",
+                    width: "96"
+                };
+            }
+        });
+        return array;
+    }
+    function addColors(array){
+        angular.forEach(array, function(value, key) {
+            if(value.color && quantimodoService.colors[value.color]){value.color = quantimodoService.colors[value.color];}
+        });
+        return array;
+    }
+    function addAppDisplayName(array){
+        angular.forEach(array, function(value, key) {
+            if(value.title){value.title = value.title.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
+            if(value.text){value.text = value.text.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
+        });
+        return array;
+    }
+    quantimodoService.addColorsCategoriesAndNames = function(array){
+        array = addVariableCategoryInfo(array);
+        array = addColors(array);
+        array = addAppDisplayName(array);
+        return array;
+    };
     quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
         if(!options){ options = {}; }
         var cache = false;
@@ -43,20 +91,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 }
             }
-            urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
-            urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-            if(window.private_keys){
-                if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
-                if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
-            }
-            if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
-            //We can't append access token to Ionic requests for some reason
-            //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
+            urlParams = addGlobalUrlParams(urlParams);
             var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
-            console.debug('Getting ' + route + " PARAMS: " + JSON.stringify(params));
+            console.debug('GET ' + request.url);
             $http(request)
                 .success(function (data, status, headers) {
                     console.debug("Got " + route + " " + status + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...');
@@ -96,11 +135,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                     }
                 }
             }
-            var urlParams = [];
-            urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
-            urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-            var url = quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'));
+            var url = quantimodoService.getQuantiModoUrl(route) + '?' + addGlobalUrlParams([]).join('&');
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};}
             $http(request).success(successHandler).error(function(data, status, headers){
@@ -566,40 +601,36 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             successHandler,
             errorHandler);
     };
-    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
-    // if not logged in, returns rejects
-    quantimodoService.getAccessTokenFromUrlParameter = function(){
-        var accessTokenFromUrl = quantimodoService.getUrlParameter('accessToken');
-        if(!accessTokenFromUrl){accessTokenFromUrl = quantimodoService.getUrlParameter('quantimodoAccessToken');}
-        if(accessTokenFromUrl){$rootScope.accessTokenFromUrl = accessTokenFromUrl;}
-        return accessTokenFromUrl;
+    quantimodoService.getAccessTokenFromUrl = function(){
+        if(!$rootScope.accessTokenFromUrl){
+            $rootScope.accessTokenFromUrl = (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
+        }
+        return $rootScope.accessTokenFromUrl;
     };
-    quantimodoService.weHaveUserOrAccessToken = function(){
-        return $rootScope.user || quantimodoService.getAccessTokenFromUrlParameter();
+    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
+    function weHaveUserOrAccessToken(){return $rootScope.user || quantimodoService.getAccessTokenFromUrl();};
+    quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
+        if($rootScope.user && $rootScope.user.accessToken === quantimodoService.getAccessTokenFromUrl()){return;}
+        if(quantimodoService.getAccessTokenFromUrl()){
+            var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
+            if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){quantimodoService.clearLocalStorage();}
+            var user = JSON.parse(localStorage.getItem('user'));
+            if(!user && $rootScope.user){user = $rootScope.user;}
+            if(user && $rootScope.accessTokenFromUrl !== user.accessToken){
+                $rootScope.user = null;
+                quantimodoService.clearLocalStorage();
+            }
+            if(!quantimodoService.getUrlParameter('doNotRemember')){localStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);}
+            if(!$rootScope.user){quantimodoService.refreshUser();}
+        }
     };
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
-        var accessTokenFromUrl = quantimodoService.getAccessTokenFromUrlParameter();
-        var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
-        if(accessTokenFromUrl){
-            if(accessTokenFromLocalStorage && accessTokenFromUrl !== accessTokenFromLocalStorage){
-                quantimodoService.clearLocalStorage();
-            }
-            var user = JSON.parse(localStorage.getItem('user'));
-            if(!user && $rootScope.user){user = $rootScope.user;}
-            if(user && accessTokenFromUrl !== user.accessToken){
-                $rootScope.user = null;
-                quantimodoService.clearLocalStorage();
-                quantimodoService.refreshUser();
-            }
-            if(!quantimodoService.getUrlParameter('doNotRemember')){localStorage.setItem('accessToken', accessTokenFromUrl);}
-            deferred.resolve(accessTokenFromUrl);
-            return deferred.promise;
-        }
-        if($rootScope.accessTokenFromUrl){
+         if(quantimodoService.getAccessTokenFromUrl()){
             deferred.resolve($rootScope.accessTokenFromUrl);
             return deferred.promise;
         }
+        var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
         var refreshToken = localStorage.getItem("refreshToken");
         //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken}));
@@ -838,6 +869,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
 
     var setupGoogleAnalytics = function(user){
+        if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.googleAnalyticsTrackingIds){
+            if(typeof analytics !== "undefined") {analytics.startTrackerWithId(config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic);}
+        } else {
+            console.error("No config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic!");
+        }
         Analytics.registerScriptTags();
         Analytics.registerTrackers();
         // you can set any advanced configuration here
@@ -847,7 +883,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         Analytics.set('&cs', config.appSettings.appDisplayName);
         Analytics.set('&cm', $rootScope.currentPlatform);
         Analytics.set('&an', config.appSettings.appDisplayName);
-        Analytics.set('&aid', config.appSettings.appIdentifier);
+        if(config.appSettings.additionalSettings &&  config.appSettings.additionalSettings.googleReversedClientId){
+            Analytics.set('&aid', config.appSettings.additionalSettings.googleReversedClientId);
+        }
         Analytics.set('&av', config.appSettings.versionNumber);
         // Register a custom dimension for the default, unnamed account object
         // e.g., ga('set', 'dimension1', 'Paid');
@@ -922,7 +960,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.updateUserTimeZoneIfNecessary();
     };
     quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
-        if(!quantimodoService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.defaultState);}
+        if(!quantimodoService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.appDesign.defaultState);}
     };
     quantimodoService.afterLoginGoToUrlOrState = function () {
         var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
@@ -940,7 +978,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return true;
         }
         if($state.current.name === 'app.login'){
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return true;
         }
         return false;
@@ -1130,7 +1168,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getAndStorePrimaryOutcomeMeasurements = function(){
         var deferred = $q.defer();
         var errorMessage;
-        if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
+        if(!weHaveUserOrAccessToken()){
             errorMessage = 'Cannot sync because we do not have a user or access token in url';
             console.error(errorMessage);
             deferred.reject(errorMessage);
@@ -1165,7 +1203,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.postMeasurementQueueToServer = function(successHandler, errorHandler){
         var defer = $q.defer();
-        if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
+        if(!weHaveUserOrAccessToken()){
             var errorMessage = 'Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user or access token in url';
             console.error(errorMessage);
             defer.reject(errorMessage);
@@ -1194,7 +1232,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.syncPrimaryOutcomeVariableMeasurements = function(){
         var defer = $q.defer();
-        if(!$rootScope.user && !quantimodoService.getUrlParameter('accessToken')){
+        if(!weHaveUserOrAccessToken()){
             console.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
             defer.resolve();
             return defer.promise;
@@ -1463,7 +1501,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return deferred.promise;
     };
     quantimodoService.getUnits();
-    // get variable categories
     quantimodoService.variableCategories = [];
     $rootScope.variableCategories = [];
     $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
@@ -1566,12 +1603,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getApiUrl = function () {
         if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
-        if(!window.private_keys && $rootScope.isWeb){return window.location.origin;}
         if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".private_config.json or it does not contain window.private_keys");}
-        if(window.private_keys && window.private_keys.apiUrl){return window.private_keys.apiUrl;}
-        if(window.location.href.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
-        if ($rootScope.isWeb && (!window.private_keys || window.private_keys.client_ids.Web === 'oAuthDisabled') && window.location.origin) {return window.location.origin;}
-        if(config.appSettings.downloadLinks.webApp){return config.appSettings.downloadLinks.webApp;}
+        if(config.appSettings.additionalSettings.downloadLinks.webApp){return config.appSettings.additionalSettings.downloadLinks.webApp;}
         return "https://app.quantimo.do";
     };
     quantimodoService.getQuantiModoUrl = function (path) {
@@ -3966,7 +3999,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.shouldWeUseIonicLocalNotifications = function(){
         $ionicPlatform.ready(function () {
-            if (!config.appSettings.cordovaLocalNotificationsEnabled || typeof cordova === "undefined" ||
+            if (!config.appSettings.appDesign.cordovaLocalNotificationsEnabled || typeof cordova === "undefined" ||
                 typeof cordova.plugins.notification === "undefined") {
                 if (typeof cordova !== "undefined") {
                     if(typeof cordova.plugins !== "undefined" && typeof cordova.plugins.notification !== "undefined") {
@@ -5424,66 +5457,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }, function (error) {console.debug("could not post weather measurements: " + error);});
         }).error(function (data) {console.debug("Request failed");});
     };
-    quantimodoService.setupHelpCards = function (defaultHelpCards) {
+    quantimodoService.setupHelpCards = function () {
         var locallyStoredHelpCards = localStorage.getItem('defaultHelpCards');
         if(locallyStoredHelpCards && locallyStoredHelpCards !== "undefined"){
             locallyStoredHelpCards = JSON.parse(locallyStoredHelpCards);
             return locallyStoredHelpCards;
         }
-        localStorage.setItem('defaultHelpCards', JSON.stringify(defaultHelpCards));
-        return defaultHelpCards;
+        localStorage.setItem('defaultHelpCards', JSON.stringify(config.appSettings.appDesign.helpCard.active));
+        return config.appSettings.appDesign.helpCard.active;
     };
     quantimodoService.colors = {
         green: {backgroundColor: "#0f9d58", circleColor: "#03c466"},
         blue: {backgroundColor: "#3467d6", circleColor: "#5b95f9"},
         yellow: {backgroundColor: "#f09402", circleColor: "#fab952"}
     };
-    function addAppDisplayName(array){
-        angular.forEach(array, function(value, key) {
-            if(value.title){value.title = value.title.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
-            if(value.text){value.text = value.text.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
-        });
-        return array;
-    }
-    function addColorsCategoriesAndNames(array){
-        array = addVariableCategoryInfo(array);
-        array = addColors(array);
-        array = addAppDisplayName(array);
-        return array;
-    }
     quantimodoService.setupOnboardingPages = function (onboardingPages) {
-        if(config.appSettings.onboardingPages){onboardingPages = config.appSettings.onboardingPages;}
-        onboardingPages = addColorsCategoriesAndNames(onboardingPages);
         var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
-            onboardingPages = onboardingPagesFromLocalStorage;
+            if(!$rootScope.appSettings.designMode){$rootScope.appSettings.appDesign.onboarding.active = onboardingPagesFromLocalStorage;}
         }
-        $rootScope.onboardingPages = onboardingPages;
-    };
-    function addVariableCategoryInfo(array){
-        angular.forEach(array, function(value, key) {
-            if(value.variableCategoryName && quantimodoService.variableCategories[value.variableCategoryName]){
-                value.iconClass = 'icon positive ' + quantimodoService.variableCategories[value.variableCategoryName].ionIcon;
-                value.moreInfo = quantimodoService.variableCategories[value.variableCategoryName].moreInfo;
-                value.image = {
-                    url: quantimodoService.variableCategories[value.variableCategoryName].imageUrl,
-                    height: "96",
-                    width: "96"
-                };
-            }
-        });
-        return array;
-    }
-    function addColors(array){
-        angular.forEach(array, function(value, key) {
-            if(value.color && quantimodoService.colors[value.color]){value.color = quantimodoService.colors[value.color];}
-        });
-        return array;
-    }
-    quantimodoService.getIntroSlides = function (introSlides) {
-        if(config.appSettings.introSlides){introSlides = config.appSettings.introSlides;}
-        introSlides = addColorsCategoriesAndNames(introSlides);
-        return introSlides;
     };
     $rootScope.signUpQuestions = [
         {
@@ -5882,1175 +5874,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    var menuItems = {
-        inbox: {
-            "title" : "Reminder Inbox",
-            "href" : "#/app/reminders-inbox",
-            icon: "ion-archive"
-        },
-        favorites: {
-            "title" : "Favorites",
-            "href" : "#/app/favorites",
-            icon: "ion-ios-star"
-        },
-        settings: {
-            "title" : "Settings",
-            "href" : "#/app/settings",
-            icon: "ion-ios-gear-outline"
-        },
-        helpAndFeedback: {
-            "title" : "Help & Feedback",
-            "href" : "#/app/feedback",
-            icon: "ion-ios-help-outline"
-        },
-        treatments: {
-            title : 'Treatments',
-            href : '#/app/reminders-list/Treatments',
-            icon: 'ion-ios-medkit-outline'
-        },
-        symptoms: {
-            title : 'Symptoms',
-            href : '#/app/reminders-list/Symptoms',
-            icon: 'ion-sad-outline'
-        },
-        vitalSigns: {
-            title : 'Vital Signs',
-            href : '#/app/reminders-list/Vital Signs',
-            icon: 'ion-ios-pulse'
-        },
-        emotions: {
-            title : 'Emotions',
-            href : '#/app/reminders-list/Emotions',
-            icon: 'ion-happy-outline'
-        },
-        foods: {
-            title : 'Foods',
-            href : '#/app/reminders-list/Foods',
-            icon: 'ion-ios-nutrition-outline'
-        },
-        physicalActivity: {
-            title : 'Physical Activity',
-            href : '#/app/reminders-list/Physical Activity',
-            icon: 'ion-ios-body-outline'
-        },
-        importData: {
-            "title" : "Import Data",
-            "href" : "#/app/import",
-            icon: "ion-ios-cloud-download-outline"
-        },
-        chartSearch: {
-            "title" : "Charts",
-            "href" : "#/app/chart-search",
-            icon: "ion-arrow-graph-up-right"
-        },
-        everything: {
-            title : 'Everything',
-            href : '#/app/reminders-list/Anything',
-            icon: "ion-android-globe"
-        },
-        studyCreation: {
-            title : 'Create Study',
-            href : '#/app/study-creation',
-            icon: "ion-erlenmeyer-flask"
-        },
-        predictorSearch: {
-            "title" : "Predictor Search",
-            "showSubMenuVariable" : "showPredictorSearchSubMenu",
-            "href" : "#/app/predictor-search",
-            icon: "ion-log-in"
-        },
-        outcomeSearch: {
-            "title" : "Outcome Search",
-            "showSubMenuVariable" : "showPredictorSearchSubMenu",
-            "href" : "#/app/outcome-search",
-            icon: "ion-log-out"
-        }
-    };
-    var subMenus = {
-        manageReminders: [
-            {
-                "title" : "All Reminders",
-                "showSubMenuVariable" : "showReminderSubMenu",
-                "href" : "#/app/reminders-manage/Anything",
-                icon: "ion-android-globe"
-            },
-            {
-                "title" : "Emotions",
-                "showSubMenuVariable" : "showReminderSubMenu",
-                "href" : "#/app/reminders-manage/Emotions",
-                icon: "ion-happy-outline"
-            },
-            {
-                "title" : "Foods",
-                "showSubMenuVariable" : "showReminderSubMenu",
-                "href": "#/app/reminders-manage/Foods",
-                icon: "ion-ios-nutrition-outline"
-            },
-            {
-                "title" : "Physical Activity",
-                "showSubMenuVariable" : "showReminderSubMenu",
-                "href" : "#/app/reminders-manage/Physical Activity",
-                icon: "ion-ios-body-outline"
-            },
-            {
-                "title" : "Symptoms",
-                "showSubMenuVariable" : "showReminderSubMenu",
-                "href" : "#/app/reminders-manage/Symptoms",
-                icon: "ion-sad-outline"
-            },
-            {
-                "title" : "Treatments",
-                "showSubMenuVariable" : "showReminderSubMenu",
-                "href" : "#/app/reminders-manage/Treatments",
-                icon: "ion-ios-medkit-outline"
-            },
-            {
-                "title" : "Vital Signs",
-                "showSubMenuVariable" : "showReminderSubMenu",
-                "href" : "#/app/reminders-manage/Vital Signs",
-                icon: "ion-ios-pulse"
-            },
-        ],
-        recordMeasurement: [
-            {
-                "title" : "Track Anything",
-                "showSubMenuVariable" : "showTrackingSubMenu",
-                "href": "#/app/measurement-add-search",
-                icon: "ion-android-globe"
-            },
-            {
-                "title" : "Record a Meal",
-                "showSubMenuVariable" : "showTrackingSubMenu",
-                "href" : "#/app/measurement-add-search-category/Foods",
-                icon: "ion-ios-nutrition-outline"
-            },
-            {
-                "title" : "Rate an Emotion",
-                "showSubMenuVariable" : "showTrackingSubMenu",
-                "href" : "#/app/measurement-add-search-category/Emotions",
-                icon: "ion-happy-outline"
-            },
-            {
-                "title" : "Rate a Symptom",
-                "showSubMenuVariable" : "showTrackingSubMenu",
-                "href" : "#/app/measurement-add-search-category/Symptoms",
-                icon: "ion-ios-pulse"
-            },
-            {
-                "title" : "Record a Treatment",
-                "showSubMenuVariable" : "showTrackingSubMenu",
-                "href" : "#/app/measurement-add-search-category/Treatments",
-                icon: "ion-ios-medkit-outline"
-            },
-            {
-                "title" : "Record Activity",
-                "showSubMenuVariable" : "showTrackingSubMenu",
-                "href" : "#/app/measurement-add-search-category/Physical Activity",
-                icon: "ion-ios-body-outline"
-            },
-            {
-                "title" : "Record Vital Sign",
-                "showSubMenuVariable" : "showTrackingSubMenu",
-                "href" : "#/app/measurement-add-search-category/Vital Signs",
-                icon: "ion-ios-pulse"
-            }
-        ],
-        overallMood: [
-            {
-                "title" : "Charts",
-                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                "href" : "#/app/track",
-                icon: "ion-arrow-graph-up-right"
-            },
-            {
-                "title" : "History",
-                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                "href" : "#/app/history",
-                icon: quantimodoService.ionIcons.history
-            },
-            {
-                "title" : "Positive Predictors",
-                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                "href" : "#/app/predictors-positive",
-                icon: "ion-happy-outline"
-            },
-            {
-                "title" : "Negative Predictors",
-                "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-                "href" : "#/app/predictors-negative",
-                icon: "ion-sad-outline"
-            },
-        ],
-        history: [
-            {
-                "title" : "All Measurements",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                "href" : "#/app/history-all/Anything",
-                icon: "ion-android-globe"
-            },
-            {
-                "title" : "Emotions",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                "href" : "#/app/history-all/Emotions",
-                icon: "ion-happy-outline"
-            },
-            {
-                "title" : "Foods",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                "href" : "#/app/history-all/Foods",
-                icon: "ion-ios-nutrition-outline"
-            },
-            {
-                "title" : "Symptoms",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                "href" : "#/app/history-all/Symptoms",
-                icon: "ion-sad-outline"
-            },
-            {
-                "title" : "Treatments",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                "href": "#/app/history-all/Treatments",
-                icon: "ion-ios-medkit-outline"
-            },
-            {
-                "title" : "Physical Activity",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                "href" : "#/app/history-all/Physical Activity",
-                icon: "ion-ios-body-outline"
-            },
-            {
-                "title" : "Vital Signs",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                "href" : "#/app/history-all/Vital Signs",
-                icon: "ion-ios-pulse"
-            },
-            {
-                "title" : "Locations",
-                "showSubMenuVariable" : "showHistorySubMenu",
-                "href" : "#/app/history-all/Location",
-                icon: "ion-ios-location-outline"
-            },
-        ],
-        discoveries: [
-            menuItems.predictorSearch,
-            menuItems.outcomeSearch,
-            menuItems.studyCreation
-        ],
-        discoveriesWithMood: [
-            menuItems.predictorSearch,
-            menuItems.outcomeSearch,
-            {
-                "title" : "Positive Mood",
-                "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                "href" : "#/app/predictors-positive",
-                icon: "ion-happy-outline"
-            },
-            {
-                "title" : "Negative Mood",
-                "showSubMenuVariable" : "showPredictorSearchSubMenu",
-                "href" : "#/app/predictors-negative",
-                icon: "ion-sad-outline"
-            },
-            menuItems.studyCreation
-        ],
-        medications: [
-            {
-                "title" : "Overdue",
-                "showSubMenuVariable" : "showTreatmentsSubMenu",
-                "href" : "#/app/reminders-inbox/Treatments",
-                icon: "ion-clock"
-            },
-            {
-                "title" : "Today's Schedule",
-                "showSubMenuVariable" : "showTreatmentsSubMenu",
-                "href" : "#/app/reminders-inbox-today/Treatments",
-                icon: "ion-android-sunny"
-            },
-            {
-                "title" : "Manage Scheduled",
-                "showSubMenuVariable" : "showTreatmentsSubMenu",
-                "href": "#/app/manage-scheduled-meds",
-                icon: "ion-android-notifications-none"
-            },
-            {
-                "title" : "As-Needed Meds",
-                "showSubMenuVariable" : "showTreatmentsSubMenu",
-                "href" : "#/app/as-needed-meds",
-                icon: "ion-ios-medkit-outline"
-            },
-            {
-                "title" : "Record a Dose",
-                "showSubMenuVariable" : "showTreatmentsSubMenu",
-                "href" : "#/app/measurement-add-search-category/Treatments",
-                icon: "ion-edit"
-            },
-            {
-                "title" : "History",
-                "showSubMenuVariable" : "showTreatmentsSubMenu",
-                "href": "#/app/history-all/Treatments",
-                icon: "ion-ios-paper-outline"
-            }
-        ],
-        symptoms: [
-            {
-                "title" : "Manage Reminders",
-                "showSubMenuVariable" : "showSymptomsSubMenu",
-                "href" : "#/app/reminders-manage/Symptoms",
-                icon: "ion-android-notifications-none"
-            },
-            {
-                "title" : "Rate Symptom",
-                "showSubMenuVariable" : "showSymptomsSubMenu",
-                "href" : "#/app/measurement-add-search-category/Symptoms",
-                icon: "ion-edit"
-            },
-            {
-                "title" : "History",
-                "showSubMenuVariable" : "showSymptomsSubMenu",
-                "href" : "#/app/history-all/Symptoms",
-                icon: "ion-ios-paper-outline"
-            },
-        ],
-        vitalSigns: [
-            {
-                "title" : "Manage Reminders",
-                "showSubMenuVariable" : "showVitalSignsSubMenu",
-                "href" : "#/app/reminders-manage/Vital Signs",
-                icon: "ion-android-notifications-none"
-            },
-            {
-                "title" : "Record Now",
-                "showSubMenuVariable" : "showVitalSignsSubMenu",
-                "href" : "#/app/measurement-add-search-category/Vital Signs",
-                icon: "ion-edit"
-            },
-            {
-                "title" : "History",
-                "showSubMenuVariable" : "showVitalSignsSubMenu",
-                "href" : "#/app/history-all/Vital Signs",
-                icon: "ion-ios-paper-outline"
-            }
-        ],
-        physicalActivity: [
-            {
-                "title" : "Manage Reminders",
-                "showSubMenuVariable": "showPhysicalActivitySubMenu",
-                "href" : "#/app/reminders-manage/Physical Activity",
-                icon: "ion-android-notifications-none"
-            },
-            {
-                "title" : "Record Activity",
-                "showSubMenuVariable": "showPhysicalActivitySubMenu",
-                "href" : "#/app/measurement-add-search-category/Physical Activity",
-                icon: "ion-edit"
-            },
-            {
-                "title" : "History",
-                "showSubMenuVariable": "showPhysicalActivitySubMenu",
-                "href" : "#/app/history-all/Physical Activity",
-                icon: "ion-ios-paper-outline"
-            }
-        ],
-        emotions: [
-            {
-                "title" : "Manage Reminders",
-                "showSubMenuVariable" : "showEmotionsSubMenu",
-                "href" : "#/app/reminders-manage/Emotions",
-                icon: "ion-android-notifications-none"
-            },
-            {
-                "title" : "Record Rating",
-                "showSubMenuVariable" : "showEmotionsSubMenu",
-                "href" : "#/app/measurement-add-search-category/Emotions",
-                icon: "ion-edit"
-            },
-            {
-                "title" : "History",
-                "showSubMenuVariable" : "showEmotionsSubMenu",
-                "href" : "#/app/history-all/Emotions",
-                icon: "ion-ios-paper-outline"
-            }
-        ],
-        diet: [
-            {
-                "title" : "Manage Reminders",
-                "showSubMenuVariable" : "showDietSubMenu",
-                "href": "#/app/reminders-manage/Foods",
-                icon: "ion-android-notifications-none"
-            },
-            {
-                "title" : "Record Meal",
-                "showSubMenuVariable" : "showDietSubMenu",
-                "href" : "#/app/measurement-add-search-category/Foods",
-                icon: "ion-edit"
-            },
-            {
-                "title" : "History",
-                "showSubMenuVariable" : "showDietSubMenu",
-                "href" : "#/app/history-all/Foods",
-                icon: "ion-ios-paper-outline"
-            }
-        ],
-        variables: [
-            menuItems.everything,
-            menuItems.treatments,
-            menuItems.symptoms,
-            menuItems.vitalSigns,
-            menuItems.emotions,
-            menuItems.foods,
-            menuItems.physicalActivity,
-        ]
-    };
-    var parentMenus = {
-        overallMood: {
-            "title" : "Overall Mood",
-            "click": "togglePrimaryOutcomeSubMenu",
-            "showSubMenuVariable" : "showPrimaryOutcomeSubMenu",
-            icon: "ion-happy-outline",
-            subMenu: subMenus.overallMood
-        },
-        manageReminders: {
-            "title" : "Manage Reminders",
-            "click" : "toggleReminderSubMenu",
-            "showSubMenuVariable" : "showReminderSubMenu",
-            subMenu: subMenus.manageReminders,
-            icon: "ion-android-notifications-none"
-        },
-        recordMeasurement: {
-            "title" : "Record Measurement",
-            "click" : "toggleTrackingSubMenu",
-            "showSubMenuVariable" : "showTrackingSubMenu",
-            subMenu: subMenus.recordMeasurement,
-            icon: "ion-compose"
-        },
-        history: {
-            "title" : "History",
-            "click" : "toggleHistorySubMenu",
-            "showSubMenuVariable" : "showHistorySubMenu",
-            subMenu: subMenus.history,
-            icon: quantimodoService.ionIcons.history
-        },
-        discoveries: {
-            "title" : "Discoveries",
-            "click": "togglePredictorSearchSubMenu",
-            "showSubMenuVariable" : "showPredictorSearchSubMenu",
-            subMenu: subMenus.discoveries,
-            icon: "ion-ios-analytics"
-        },
-        variables: {
-            "title" : "My Variables",
-            "click": "toggleVariablesSubMenu",
-            "showSubMenuVariable" : "showVariablesSubMenu",
-            subMenu: subMenus.variables,
-            icon: "ion-android-globe"
-        },
-        medications: {
-            "title" : "Medications",
-            "click" : "toggleTreatmentsSubMenu",
-            "showSubMenuVariable" : "showTreatmentsSubMenu",
-            subMenu: subMenus.medications,
-            icon: "ion-ios-medkit-outline"
-        },
-        symptoms: {
-            "title" : "Symptoms",
-            "click" : "toggleSymptomsSubMenu",
-            subMenu: subMenus.symptoms,
-            "showSubMenuVariable" : "showSymptomsSubMenu",
-            icon: "ion-sad-outline"
-        },
-        vitalSigns: {
-            "title" : "Vital Signs",
-            "click" : "toggleVitalSignsSubMenu",
-            "showSubMenuVariable" : "showVitalSignsSubMenu",
-            subMenu: subMenus.vitalSigns,
-            icon: "ion-ios-pulse"
-        },
-        physicalActivity: {
-            "title" : "Physical Activity",
-            "click" : "togglePhysicalActivitySubMenu",
-            "showSubMenuVariable": "showPhysicalActivitySubMenu",
-            subMenu: subMenus.physicalActivity,
-            icon: "ion-ios-body-outline"
-        },
-        emotions: {
-            "title" : "Emotions",
-            "click" : "toggleEmotionsSubMenu",
-            "showSubMenuVariable" : "showEmotionsSubMenu",
-            subMenu: subMenus.emotions,
-            icon: "ion-happy-outline"
-        },
-        diet: {
-            "title" : "Diet",
-            "click" : "toggleDietSubMenu",
-            "showSubMenuVariable" : "showDietSubMenu",
-            subMenu: subMenus.diet,
-            icon: "ion-ios-nutrition-outline"
-        }
-    };
-    var floatingActionButtons = {
-        help: {
-            "icon": "ion-help",
-            "label": "Get Help",
-            "stateName": "app.help",
-            "stateParameters": {}
-        },
-        importData: {
-            "icon": "ion-ios-cloud-download-outline",
-            "label": "Import Data",
-            "stateName": "app.reminderSearch",
-            "stateParameters": {}
-        },
-        recordMeasurement: {
-            "icon": "ion-compose",
-            "label": "Record a Measurement",
-            "stateName": "app.measurementAddSearch",
-            "stateParameters": {}
-        },
-        addReminder: {
-            "icon": "ion-android-notifications-none",
-            "label": "Add a Reminder",
-            "stateName": "app.reminderSearch",
-            "stateParameters": {}
-        }
-    };
-    quantimodoService.defaultDesigns = {
-        "intro": {
-            "diet": [
-                {
-                    "newIntroStyle": true,
-                    "title": "Hi! I'm __APP_DISPLAY_NAME__!",
-                    "color": "green",
-                    "image": {
-                        "height": "120",
-                        "width": "120",
-                        "url": "img/robots/robot-waving.svg"
-                    },
-                    "overlayIcon": true,
-                    "bodyText": "I'm going to use data to help you take the guesswork out of healthy eating!"
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "You Are What You Eat",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/intro/patient-frown-factors.png",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "Chronic diseases with nutritional solutions cost the US healthcare system billions of dollars each year and less than 2% of Americans eat an ideal diet."
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Only Human",
-                    "color": "yellow",
-                    "image": {
-                        "url": "img/brains/brain-pink.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Machine Learning",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/robots/quantimodo-robot-brain.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Automated Tracking",
-                    "color": "green",
-                    "image": {
-                        "url": "img/intro/download_2-96.png",
-                        "height": "100",
-                        "width": "100"
-                    },
-                    "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Effortless Tracking",
-                    "color": "yellow",
-                    "image": {
-                        "url": "img/intro/inbox.svg",
-                        "height": "90",
-                        "width": "90"
-                    },
-                    "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Data Security",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/intro/lock.svg",
-                        "height": "90",
-                        "width": "90"
-                    },
-                    "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
-                }
-            ],
-            "medication": [
-                {
-                    "newIntroStyle": true,
-                    "title": "Hi! I'm __APP_DISPLAY_NAME__!",
-                    "color": "green",
-                    "image": {
-                        "height": "120",
-                        "width": "120",
-                        "url": "img/robots/robot-waving.svg"
-                    },
-                    "overlayIcon": true,
-                    "bodyText": "I'm going to use data to help you take the guesswork out of healthy eating!"
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "You Are What You Eat",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/intro/patient-frown-factors.png",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "Chronic diseases with nutritional solutions cost the US healthcare system billions of dollars each year and less than 2% of Americans eat an ideal diet."
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Only Human",
-                    "color": "yellow",
-                    "image": {
-                        "url": "img/brains/brain-pink.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Machine Learning",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/robots/quantimodo-robot-brain.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Automated Tracking",
-                    "color": "green",
-                    "image": {
-                        "url": "img/intro/download_2-96.png",
-                        "height": "100",
-                        "width": "100"
-                    },
-                    "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Effortless Tracking",
-                    "color": "yellow",
-                    "image": {
-                        "url": "img/intro/inbox.svg",
-                        "height": "90",
-                        "width": "90"
-                    },
-                    "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Data Security",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/intro/lock.svg",
-                        "height": "90",
-                        "width": "90"
-                    },
-                    "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
-                }
-            ],
-            "mood": [
-                {
-                    "newIntroStyle": true,
-                    "title": "Hi! I'm __APP_DISPLAY_NAME__!",
-                    "color": "green",
-                    "image": {
-                        "height": "120",
-                        "width": "120",
-                        "url": "img/robots/robot-waving.svg"
-                    },
-                    "overlayIcon": true,
-                    "bodyText": "I'm going to use data to help you take the guesswork out of healthy eating!"
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "You Are What You Eat",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/intro/patient-frown-factors.png",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "Chronic diseases with nutritional solutions cost the US healthcare system billions of dollars each year and less than 2% of Americans eat an ideal diet."
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Only Human",
-                    "color": "yellow",
-                    "image": {
-                        "url": "img/brains/brain-pink.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Machine Learning",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/robots/quantimodo-robot-brain.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Automated Tracking",
-                    "color": "green",
-                    "image": {
-                        "url": "img/intro/download_2-96.png",
-                        "height": "100",
-                        "width": "100"
-                    },
-                    "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Effortless Tracking",
-                    "color": "yellow",
-                    "image": {
-                        "url": "img/intro/inbox.svg",
-                        "height": "90",
-                        "width": "90"
-                    },
-                    "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Data Security",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/intro/lock.svg",
-                        "height": "90",
-                        "width": "90"
-                    },
-                    "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
-                }
-            ],
-            "general": [
-                {
-                    "newIntroStyle": true,
-                    "title": "Hi! I'm __APP_DISPLAY_NAME__!",
-                    "color": "green",
-                    "image": {
-                        "height": "120",
-                        "width": "120",
-                        "url": "img/robots/robot-waving.svg"
-                    },
-                    "overlayIcon": true,
-                    "bodyText": "I'm going to use data to help you take the guesswork out of healthy eating!"
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "You Are What You Eat",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/intro/patient-frown-factors.png",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "Chronic diseases with nutritional solutions cost the US healthcare system billions of dollars each year and less than 2% of Americans eat an ideal diet."
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Only Human",
-                    "color": "yellow",
-                    "image": {
-                        "url": "img/brains/brain-pink.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So on their own, they're not able to determine which diet is best for you. "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Machine Learning",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/robots/quantimodo-robot-brain.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to help your dietitian determine how different foods could be affecting your health! "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Automated Tracking",
-                    "color": "green",
-                    "image": {
-                        "url": "img/intro/download_2-96.png",
-                        "height": "100",
-                        "width": "100"
-                    },
-                    "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Effortless Tracking",
-                    "color": "yellow",
-                    "image": {
-                        "url": "img/intro/inbox.svg",
-                        "height": "90",
-                        "width": "90"
-                    },
-                    "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
-                },
-                {
-                    "newIntroStyle": true,
-                    "title": "Data Security",
-                    "color": "blue",
-                    "image": {
-                        "url": "img/intro/lock.svg",
-                        "height": "90",
-                        "width": "90"
-                    },
-                    "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
-                }
-            ]
-        },
-        "floatingActionButton": {
-            "diet": {
-                "button1": {
-                    "icon": "ion-android-notifications-none",
-                    "label": "Add Frequent Food",
-                    "stateName": "app.reminderSearch",
-                    "stateParameters": {variableCategoryName: "Foods"}
-                },
-                "button2": {
-                    "icon": "ion-compose",
-                    "label": "Record a Meal",
-                    "stateName": "app.reminderSearch",
-                    "stateParameters": {variableCategoryName: "Foods"}
-                },
-                "button3": floatingActionButtons.importData,
-                "button4": floatingActionButtons.help
-            },
-            "medication": {
-                "button1": {
-                    "icon": "ion-android-notifications-none",
-                    "label": "Add a Medication",
-                    "stateName": "app.reminderSearch",
-                    "stateParameters": {variableCategoryName: "Treatments"}
-                },
-                "button2": {
-                    "icon": "ion-compose",
-                    "label": "Record a Dose",
-                    "stateName": "app.reminderSearch",
-                    "stateParameters": {variableCategoryName: "Treatments"}
-                },
-                "button3": floatingActionButtons.importData,
-                "button4": floatingActionButtons.help
-            },
-            "mood": {
-                "button1": floatingActionButtons.addReminder,
-                "button2": floatingActionButtons.recordMeasurement,
-                "button3": floatingActionButtons.importData,
-                "button4": floatingActionButtons.help
-            },
-            "general": {
-                "button1": floatingActionButtons.addReminder,
-                "button2": floatingActionButtons.recordMeasurement,
-                "button3": floatingActionButtons.importData,
-                "button4": floatingActionButtons.help
-            }
-        },
-        "onboarding": {
-            "diet": [
-                {
-                    "id": "addFoodRemindersCard",
-                    "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-                    "title": "Common Foods or Drinks?",
-                    "color": "blue",
-                    "variableCategoryName": "Foods",
-                    "addButtonText": "Add Food or Drink",
-                    "nextPageButtonText": "Maybe Later",
-                    "bodyText": "Add any foods or drinks that you consume more than a few times a week"
-                },
-                {
-                    "id": "addSymptomRemindersCard",
-                    "title": "Recurring Symptoms?",
-                    "color": "blue",
-                    "variableCategoryName": "Symptoms",
-                    "addButtonText": "Add Symptom",
-                    "nextPageButtonText": "Maybe Later",
-                    "bodyText": "Got any recurring symptoms that vary in their severity?"
-                },
-                {
-                    "id": "importDataPage",
-                    "title": "Import Your Data",
-                    "color": "yellow",
-                    "iconClass": "icon positive ion-ios-cloud-download-outline",
-                    "image": {
-                        "url": "img/intro/download_2-96.png",
-                        "height": "96",
-                        "width": "96"
-                    },
-                    "premiumFeature": true,
-                    "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
-                    "nextPageButtonText": "Maybe Later"
-                },
-                {
-                    "id": "allDoneCard",
-                    "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
-                    "title": "Great job!",
-                    "color": "green",
-                    "iconClass": "icon positive ion-ios-cloud-download-outline",
-                    "image": {
-                        "url": "img/robots/robot-waving.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
-                }
-            ],
-            "medication": [
-                {
-                    "id": "addFoodRemindersCard",
-                    "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-                    "title": "Common Foods or Drinks?",
-                    "color": "blue",
-                    "variableCategoryName": "Foods",
-                    "addButtonText": "Add Food or Drink",
-                    "nextPageButtonText": "Maybe Later",
-                    "bodyText": "Add any foods or drinks that you consume more than a few times a week"
-                },
-                {
-                    "id": "addSymptomRemindersCard",
-                    "title": "Recurring Symptoms?",
-                    "color": "blue",
-                    "variableCategoryName": "Symptoms",
-                    "addButtonText": "Add Symptom",
-                    "nextPageButtonText": "Maybe Later",
-                    "bodyText": "Got any recurring symptoms that vary in their severity?"
-                },
-                {
-                    "id": "importDataPage",
-                    "title": "Import Your Data",
-                    "color": "yellow",
-                    "iconClass": "icon positive ion-ios-cloud-download-outline",
-                    "image": {
-                        "url": "img/intro/download_2-96.png",
-                        "height": "96",
-                        "width": "96"
-                    },
-                    "premiumFeature": true,
-                    "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
-                    "nextPageButtonText": "Maybe Later"
-                },
-                {
-                    "id": "allDoneCard",
-                    "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
-                    "title": "Great job!",
-                    "color": "green",
-                    "iconClass": "icon positive ion-ios-cloud-download-outline",
-                    "image": {
-                        "url": "img/robots/robot-waving.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
-                }
-            ],
-            "mood": [
-                {
-                    "id": "addFoodRemindersCard",
-                    "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-                    "title": "Common Foods or Drinks?",
-                    "color": "blue",
-                    "variableCategoryName": "Foods",
-                    "addButtonText": "Add Food or Drink",
-                    "nextPageButtonText": "Maybe Later",
-                    "bodyText": "Add any foods or drinks that you consume more than a few times a week"
-                },
-                {
-                    "id": "addSymptomRemindersCard",
-                    "title": "Recurring Symptoms?",
-                    "color": "blue",
-                    "variableCategoryName": "Symptoms",
-                    "addButtonText": "Add Symptom",
-                    "nextPageButtonText": "Maybe Later",
-                    "bodyText": "Got any recurring symptoms that vary in their severity?"
-                },
-                {
-                    "id": "importDataPage",
-                    "title": "Import Your Data",
-                    "color": "yellow",
-                    "iconClass": "icon positive ion-ios-cloud-download-outline",
-                    "image": {
-                        "url": "img/intro/download_2-96.png",
-                        "height": "96",
-                        "width": "96"
-                    },
-                    "premiumFeature": true,
-                    "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
-                    "nextPageButtonText": "Maybe Later"
-                },
-                {
-                    "id": "allDoneCard",
-                    "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
-                    "title": "Great job!",
-                    "color": "green",
-                    "iconClass": "icon positive ion-ios-cloud-download-outline",
-                    "image": {
-                        "url": "img/robots/robot-waving.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
-                }
-            ],
-            "general": [
-                {
-                    "id": "addFoodRemindersCard",
-                    "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-                    "title": "Common Foods or Drinks?",
-                    "color": "blue",
-                    "variableCategoryName": "Foods",
-                    "addButtonText": "Add Food or Drink",
-                    "nextPageButtonText": "Maybe Later",
-                    "bodyText": "Add any foods or drinks that you consume more than a few times a week"
-                },
-                {
-                    "id": "addSymptomRemindersCard",
-                    "title": "Recurring Symptoms?",
-                    "color": "blue",
-                    "variableCategoryName": "Symptoms",
-                    "addButtonText": "Add Symptom",
-                    "nextPageButtonText": "Maybe Later",
-                    "bodyText": "Got any recurring symptoms that vary in their severity?"
-                },
-                {
-                    "id": "importDataPage",
-                    "title": "Import Your Data",
-                    "color": "yellow",
-                    "iconClass": "icon positive ion-ios-cloud-download-outline",
-                    "image": {
-                        "url": "img/intro/download_2-96.png",
-                        "height": "96",
-                        "width": "96"
-                    },
-                    "premiumFeature": true,
-                    "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
-                    "nextPageButtonText": "Maybe Later"
-                },
-                {
-                    "id": "allDoneCard",
-                    "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
-                    "title": "Great job!",
-                    "color": "green",
-                    "iconClass": "icon positive ion-ios-cloud-download-outline",
-                    "image": {
-                        "url": "img/robots/robot-waving.svg",
-                        "height": "120",
-                        "width": "120"
-                    },
-                    "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
-                }
-            ]
-        },
-        "menu": {
-            extended: [
-                menuItems.inbox,
-                menuItems.favorites,
-                parentMenus.overallMood,
-                parentMenus.manageReminders,
-                parentMenus.recordMeasurement,
-                parentMenus.history,
-                menuItems.importData,
-                menuItems.chartSearch,
-                parentMenus.discoveries,
-                menuItems.settings,
-                menuItems.helpAndFeedback
-            ],
-            general: [
-                menuItems.inbox,
-                parentMenus.variables,
-                parentMenus.history,
-                menuItems.importData,
-                parentMenus.discoveries,
-                menuItems.chartSearch,
-                menuItems.settings,
-            ],
-            medication: [
-                menuItems.inbox,
-                menuItems.treatments,
-                parentMenus.variables,
-                parentMenus.history,
-                menuItems.importData,
-                parentMenus.discoveries,
-                menuItems.chartSearch,
-                menuItems.settings
-            ],
-            diet: [
-                menuItems.inbox,
-                menuItems.foods,
-                parentMenus.variables,
-                parentMenus.history,
-                menuItems.importData,
-                parentMenus.discoveries,
-                menuItems.chartSearch,
-                menuItems.settings
-            ],
-            mood: [
-                menuItems.inbox,
-                parentMenus.overallMood,
-                parentMenus.variables,
-                parentMenus.history,
-                menuItems.importData,
-                parentMenus.discoveries,
-                menuItems.chartSearch,
-                menuItems.settings
-            ]
-        }
-    };
-    function getAppComponent(appComponentName){
-        var appComponentNameFollowedByType = appComponentName + 'Type';
-        var appComponentNameFollowedByCustom = appComponentName + 'Custom';
-        var selectedType = $rootScope.appSettings[appComponentNameFollowedByType];
-        var defaultComponent = quantimodoService.defaultDesigns[appComponentName][selectedType];
-        if(defaultComponent){return defaultComponent;}
-        if(!$rootScope.appSettings[appComponentNameFollowedByCustom]){$rootScope.appSettings[appComponentNameFollowedByCustom] = quantimodoService.defaultDesigns[appComponentName].general;}
-        return $rootScope.appSettings[appComponentNameFollowedByCustom];
-    }
-    quantimodoService.updateAppComponents = function(){
-        config.appSettings = $rootScope.appSettings;
-        $rootScope.menu = getAppComponent('menu');
-        $rootScope.floatingActionButton = getAppComponent('floatingActionButton');
-        $rootScope.introSlides = getAppComponent('intro');
-        $rootScope.onboardingPages = getAppComponent('onboarding');
-    };
-    quantimodoService.goToLoginIfNecessary = function(){
-        if(!quantimodoService.weHaveUserOrAccessToken()){
-            console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-            quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
+    quantimodoService.goToLoginIfNecessary = function(goToState){
+        quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
+        if(!weHaveUserOrAccessToken()){
+            if(!goToState){goToState = $state.current.name;}
+            console.debug('Setting afterLoginGoToState to ' + goToState);
+            quantimodoService.setLocalStorageItem('afterLoginGoToState', goToState);
             $state.go('app.login');
             return true;
         }
@@ -7142,17 +5971,17 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             });
     };
     quantimodoService.addToRemindersUsingVariableObject = function (variableObject, options) {
-        var doneState = config.appSettings.defaultState;
+        var doneState = config.appSettings.appDesign.defaultState;
         if(options.doneState){doneState = options.doneState;}
-        if($rootScope.onboardingPages && $rootScope.onboardingPages[0] &&
-            $rootScope.onboardingPages[0].id.toLowerCase().indexOf('reminder') !== -1){
-            $rootScope.onboardingPages[0].title = $rootScope.onboardingPages[0].title.replace('Any', 'More');
-            $rootScope.onboardingPages[0].addButtonText = "Add Another";
-            $rootScope.onboardingPages[0].nextPageButtonText = "All Done";
-            $rootScope.onboardingPages[0].bodyText = "Great job!  Now you'll be able to instantly record " +
+        if($rootScope.appSettings.appDesign.onboarding.active && $rootScope.appSettings.appDesign.onboarding.active[0] &&
+            $rootScope.appSettings.appDesign.onboarding.active[0].id.toLowerCase().indexOf('reminder') !== -1){
+            $rootScope.appSettings.appDesign.onboarding.active[0].title = $rootScope.appSettings.appDesign.onboarding.active[0].title.replace('Any', 'More');
+            $rootScope.appSettings.appDesign.onboarding.active[0].addButtonText = "Add Another";
+            $rootScope.appSettings.appDesign.onboarding.active[0].nextPageButtonText = "All Done";
+            $rootScope.appSettings.appDesign.onboarding.active[0].bodyText = "Great job!  Now you'll be able to instantly record " +
                 variableObject.name + " in the Reminder Inbox. <br><br>   Want to add any more " +
                 variableObject.variableCategoryName.toLowerCase() + '?';
-            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.onboardingPages));
+            quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
         }
         var trackingReminder = {};
         trackingReminder.variableId = variableObject.id;
@@ -7496,7 +6325,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 localStorage.setItem('lastMeasurementSyncTime', 0);
             }
             quantimodoService.hideLoader();
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             console.debug("All measurements for " + variableObject.name + " deleted!");
         }, function(error) {
             quantimodoService.hideLoader();
@@ -7718,15 +6547,46 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.debug("Hiding loader because we called $ionicLoading.hide");
         $ionicLoading.hide();
     };
-    quantimodoService.postAppSettingsDeferred = function(appSettings) {
-        var deferred = $q.defer();
-        quantimodoService.postAppSettings(appSettings, function(response){
-            deferred.resolve(response);
-        }, function(error){deferred.reject(error);});
-        return deferred.promise;
+    quantimodoService.weShouldUseOAuthLogin = function(){
+        return window.location.href.indexOf(quantimodoService.getApiUrl()) === -1;
     };
-    quantimodoService.postAppSettings = function(appSettings, successHandler, errorHandler) {
-        quantimodoService.post('api/v2/apps/' + appSettings.id + '/edit', [], {app_settings: appSettings}, successHandler, errorHandler);
+    quantimodoService.initializeApplication = function(appSettingsResponse){
+        if(window.config){return;}
+        window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
+        window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        $rootScope.appSettings = window.config.appSettings;
+        if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
+        if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
+        quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary();
+        quantimodoService.putCommonVariablesInLocalStorage();
+        quantimodoService.backgroundGeolocationInit();
+        quantimodoService.setupBugsnag();
+        quantimodoService.getUserAndSetupGoogleAnalytics();
+        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
+        if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
+            console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
+            $ionicPlatform.ready(function () {
+                console.debug("Setting on trigger and on click actions for notifications");
+                quantimodoService.setOnTriggerActionForLocalNotifications();
+                quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
+                quantimodoService.setOnUpdateActionForLocalNotifications();
+            });
+        }
+    };
+    quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
+        if(quantimodoService.getUrlParameter('refreshUser')){
+            quantimodoService.clearLocalStorage();
+            window.localStorage.introSeen = true;
+            window.localStorage.onboarded = true;
+            $rootScope.user = null;
+            $rootScope.refreshUser = false;
+        }
+        if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
+        quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
+        if($rootScope.user){
+            if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
+            if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
+        }
     };
     return quantimodoService;
 });

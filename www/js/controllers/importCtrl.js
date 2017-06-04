@@ -6,12 +6,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-		if(!$rootScope.user){
-			console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-			quantimodoService.setLocalStorageItem('afterLoginGoToState', $state.current.name);
-			$state.go('app.login');
-			return;
-		}
+        if(quantimodoService.goToLoginIfNecessary()){ return; }
 		if($rootScope.user.stripeActive || config.appSettings.upgradeDisabled){
 			loadNativeConnectorPage();
 			return;
@@ -24,7 +19,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				loadNativeConnectorPage();
 				return;
 			}
-			$state.go('app.upgrade', {litePlanState: config.appSettings.defaultState});
+			$state.go('app.upgrade', {litePlanState: config.appSettings.appDesign.defaultState});
 		}, function (error) {
 			quantimodoService.hideLoader();
 			$state.go('app.login');
@@ -36,7 +31,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	};
 	var goToWebImportDataPage = function() {
 		console.debug('importCtrl.init: Going to quantimodoService.getAccessTokenFromAnySource');
-		$state.go(config.appSettings.defaultState);
+		$state.go(config.appSettings.appDesign.defaultState);
 		quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
 			quantimodoService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
@@ -53,7 +48,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				}
 				$rootScope.hideNavigationMenu = false;
 				//noinspection JSCheckFunctionSignatures
-				$state.go(config.appSettings.defaultState);
+				$state.go(config.appSettings.appDesign.defaultState);
 			} else {
 				var targetUrl = quantimodoService.getQuantiModoUrl("api/v1/connect/mobile", true);
 				if(accessToken){
@@ -63,7 +58,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				ref.addEventListener('exit', function(){
 					$rootScope.hideNavigationMenu = false;
 					//noinspection JSCheckFunctionSignatures
-					$state.go(config.appSettings.defaultState);
+					$state.go(config.appSettings.appDesign.defaultState);
 				});
 			}
 		}, function(){

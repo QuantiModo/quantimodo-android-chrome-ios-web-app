@@ -25,10 +25,14 @@ angular.module('starter',
         'ngMaterial',
         'ngMessages',
         'angular-cache',
-        'angular-d3-word-cloud'
+        'angular-d3-word-cloud',
+        //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics, $ionicLoading) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, $http) {
+    $http.get('private_configs/default.private_config.json').success(function(response) {
+        if(typeof response === "string"){console.error('private_configs/default.response.json not found');} else {window.private_keys = response;}
+    });
     quantimodoService.showBlackRingLoader();
     if(appsManager.getUrlParameter('logout')){
         localStorage.clear();
@@ -182,9 +186,6 @@ angular.module('starter',
                 }
             }
         };
-        if(window.location.href.indexOf('ionic.quantimo') === -1 && window.location.href.indexOf('staging.quantimo') === -1 && window.location.href.indexOf('local.quantimo') === -1){
-            if(typeof analytics !== "undefined") {analytics.startTrackerWithId(config.appSettings.googleAnalyticsTrackingIds.ionic);}
-        }
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
         }
@@ -193,8 +194,8 @@ angular.module('starter',
     $rootScope.goToState = function(stateName, stateParameters){
         if(stateName.indexOf('button') !== -1){
             var buttonName = stateName;
-            stateName = $rootScope.floatingActionButton[buttonName].stateName;
-            stateParameters = $rootScope.floatingActionButton[buttonName].stateParameters;
+            stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
+            stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
         }
         $state.go(stateName, stateParameters);
     };
@@ -206,10 +207,10 @@ angular.module('starter',
         }
         if($ionicHistory.currentStateName() === 'app.upgrade'){
             console.debug('registerBackButtonAction from upgrade: Going to default state...');
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return;
         }
-        if($ionicHistory.currentStateName() === config.appSettings.defaultState){
+        if($ionicHistory.currentStateName() === config.appSettings.appDesign.defaultState){
             ionic.Platform.exitApp();
             return;
         }
@@ -220,7 +221,7 @@ angular.module('starter',
         if(localStorage.user){
             $rootScope.hideNavigationMenu = false;
             console.debug('registerBackButtonAction: Going to default state...');
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return;
         }
         console.debug('registerBackButtonAction: Closing the app');
@@ -247,6 +248,7 @@ angular.module('starter',
     setIntoSeenAndOnboarded();
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
+    if(appsManager.getUrlParameter('debug')){window.debugMode = true;}
     if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};
     if(ionic.Platform.isAndroid()){
@@ -282,41 +284,15 @@ angular.module('starter',
         var i = this.length;
         while (i--) {if (this[i] === obj) {return true;}}
     };
-    var config_resolver = {};
-    window.config = {};
-    appsManager.getAppSettingsFromUrlParameter();
-    function getLocalJsonFile(path, successHandler) {return function($http){$http.get(path).success(successHandler);};}
-    function getLocalConfigJson(clientId) {return getLocalJsonFile('configs/' + clientId + '.config.json', function(response) {window.config.appSettings = response;});}
-    function getLocalPrivateConfigJson(clientId) {return getLocalJsonFile('private_configs/' + clientId + '.private_config.json', function(response) {window.private_keys = response;});}
-    if(!window.config.appSettings){
-        if(appsManager.doWeHaveLocalConfigFile()) {
-            config_resolver.appSettingsResponse = getLocalConfigJson(appsManager.getQuantiModoClientId());
-            config_resolver.privateKeysResponse = getLocalPrivateConfigJson(appsManager.getQuantiModoClientId());
-            //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
-        } else {
-            var localStorageName = appsManager.getQuantiModoClientId() + 'AppSettings';
-            var locallyStoredAppSettings = localStorage.getItem(localStorageName);
-            if(!appsManager.getUrlParameter('refreshAppSettings') && locallyStoredAppSettings) {
-                window.config.appSettings = JSON.parse(locallyStoredAppSettings);
-            } else {
-                config_resolver.appSettingsResponse = function ($http) {
-                    return $http.get(appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getQuantiModoClientId()).then(function (response) {
-                        localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
-                        window.config.appSettings = response.data.data;
-                    }, function errorCallback(response) {
-                        return getLocalConfigJson('quantimodo');
-                    });
-                };
-            }
+    var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+    var config_resolver = {
+        appSettingsResponse: function($http){
+            var settingsUrl = 'configs/default.config.json';
+            if(designMode || appsManager.getClientIdFromQueryParameters()){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters(true);}
+            return $http({method: 'GET', url: settingsUrl});
         }
-    }
-    var getOnboardingPages = ['$http', function($http) {return $http({method: 'GET', url: 'data/onboardingPages.json'});}];
-    var intro_resolver = config_resolver;
-    intro_resolver.introSlides = ['$http', function($http) {return $http({method: 'GET', url: 'data/introSlides.json'});}];
-    intro_resolver.onboardingPages = getOnboardingPages;
-    var onboarding_resolver = {onboardingPages: getOnboardingPages};
-    var inbox_resolver = {helpCards: ['$http', function($http) {return $http({method: 'GET', url: 'data/helpCards.json'});}]};
-
+    };
+    //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
     ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {
         inputDate: new Date(),
@@ -341,7 +317,7 @@ angular.module('starter',
             url: '/',
             templateUrl: 'templates/intro-tour-new.html',
             controller: 'IntroCtrl',
-            resolve : intro_resolver
+            resolve : config_resolver
         })
         .state('app', {
             url: "/app",
@@ -383,7 +359,8 @@ angular.module('starter',
                     templateUrl: "templates/intro-tour-new.html",
                     controller: 'IntroCtrl'
                 }
-            }
+            },
+            resolve : config_resolver
         })
         .state('app.track', {
             url: "/track",
@@ -1202,8 +1179,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.remindersInboxCompact', {
             url: "/reminders-inbox-compact",
@@ -1224,8 +1200,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.favorites', {
             url: "/favorites",
@@ -1250,7 +1225,7 @@ angular.module('starter',
             url: "/configuration",
             views: {
                 'menuContent': {
-                    templateUrl: "configuration/configuration.html",
+                    templateUrl: "../../app-configuration/configuration.html",
                     controller: 'ConfigurationCtrl'
                 }
             }
@@ -1283,8 +1258,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.remindersInboxTodayCategory', {
             url: "/reminders-inbox-today/:variableCategoryName",
@@ -1301,8 +1275,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.manageScheduledMeds', {
             url: "/manage-scheduled-meds",
@@ -1332,8 +1305,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.asNeededMeds', {
             url: "/as-needed-meds",
@@ -1362,8 +1334,7 @@ angular.module('starter',
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
                 }
-            },
-            resolve : inbox_resolver
+            }
         })
         .state('app.remindersManage', {
             cache: false,
@@ -1414,8 +1385,7 @@ angular.module('starter',
                     templateUrl: "templates/onboarding-page.html",
                     controller: 'OnboardingCtrl'
                 }
-            },
-            resolve : onboarding_resolver
+            }
         })
         .state('app.upgrade', {
             url: "/upgrade",
