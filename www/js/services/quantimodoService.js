@@ -604,6 +604,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
             $rootScope.accessTokenFromUrl = (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
+            if($rootScope.accessTokenFromUrl){
+                quantimodoService.setLocalStorageItem('onboarded', true);
+                quantimodoService.setLocalStorageItem('introSeen', true);
+            }
         }
         return $rootScope.accessTokenFromUrl;
     };
@@ -6576,8 +6580,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         if(quantimodoService.getUrlParameter('refreshUser')){
             quantimodoService.clearLocalStorage();
-            window.localStorage.introSeen = true;
-            window.localStorage.onboarded = true;
+            quantimodoService.setLocalStorageItem('onboarded', true);
+            quantimodoService.setLocalStorageItem('introSeen', true);
             $rootScope.user = null;
             $rootScope.refreshUser = false;
         }
