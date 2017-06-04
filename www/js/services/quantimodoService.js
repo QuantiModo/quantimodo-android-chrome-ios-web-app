@@ -95,7 +95,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
-            console.debug('Getting ' + route + " PARAMS: " + JSON.stringify(params));
+            console.debug('GET ' + request.url);
             $http(request)
                 .success(function (data, status, headers) {
                     console.debug("Got " + route + " " + status + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...');
