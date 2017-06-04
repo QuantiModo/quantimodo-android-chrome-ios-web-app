@@ -131,7 +131,7 @@ gulp.task('setLowerCaseAppName', function (callback) {setLowerCaseAppName(callba
 function removeCustomPropertiesFromAppSettings(appSettings) {
     for (var propertyName in appSettings.appDesign) {
         if (appSettings.appDesign.hasOwnProperty(propertyName)){
-            if (appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
+            if (appSettings.appDesign[propertyName] && appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
                 appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
             }
             delete appSettings.appDesign[propertyName].custom;
