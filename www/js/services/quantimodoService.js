@@ -15,9 +15,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
         urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
         urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-        if(window.private_keys){
-            if(window.private_keys.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.username));}
-            if(window.private_keys.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.password));}
+        if(window.developmentMode && window.private_keys && window.private_keys.devCredentials){
+            if(window.private_keys.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.devCredentials.username));}
+            if(window.private_keys.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.devCredentials.password));}
         }
         if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
         //We can't append access token to Ionic requests for some reason
