@@ -3,6 +3,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	$scope.controller_name = "RemindersInboxCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
+    quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary();
 	$scope.state = {
 		showMeasurementBox : false,
 		selectedReminder : false,

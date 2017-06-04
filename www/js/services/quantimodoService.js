@@ -6557,33 +6557,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         $rootScope.appSettings = window.config.appSettings;
-        quantimodoService.getPrivateKeys();
         if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
-        if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
-        if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
-        if(!$rootScope.user || quantimodoService.getAccessTokenFromUrlParameter()){
-            quantimodoService.showBlackRingLoader();
-            quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
-        }
+        quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary();
         quantimodoService.putCommonVariablesInLocalStorage();
         quantimodoService.backgroundGeolocationInit();
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
-        if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
-        if(quantimodoService.getUrlParameter('refreshUser')){
-            quantimodoService.clearLocalStorage();
-            window.localStorage.introSeen = true;
-            window.localStorage.onboarded = true;
-            $rootScope.user = null;
-            $rootScope.refreshUser = false;
-        }
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
-        if($rootScope.user){
-            //quantimodoService.syncTrackingReminders();
-            //quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred();  // I think this slows loading
-            if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
-        }
         if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
             console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
             $ionicPlatform.ready(function () {
@@ -6592,6 +6573,24 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
                 quantimodoService.setOnUpdateActionForLocalNotifications();
             });
+        }
+    };
+    quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
+        if(quantimodoService.getUrlParameter('refreshUser')){
+            quantimodoService.clearLocalStorage();
+            window.localStorage.introSeen = true;
+            window.localStorage.onboarded = true;
+            $rootScope.user = null;
+            $rootScope.refreshUser = false;
+        }
+        if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
+        if(!$rootScope.user || quantimodoService.getAccessTokenFromUrlParameter()){
+            quantimodoService.showBlackRingLoader();
+            quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
+        }
+        if($rootScope.user){
+            if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
+            if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
         }
     };
     return quantimodoService;
