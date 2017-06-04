@@ -602,39 +602,30 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             errorHandler);
     };
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
-    // if not logged in, returns rejects
-    quantimodoService.getAccessTokenFromUrlParameter = function(){
-        var accessTokenFromUrl = quantimodoService.getUrlParameter('accessToken');
-        if(!accessTokenFromUrl){accessTokenFromUrl = quantimodoService.getUrlParameter('quantimodoAccessToken');}
-        if(accessTokenFromUrl){$rootScope.accessTokenFromUrl = accessTokenFromUrl;}
-        return accessTokenFromUrl;
-    };
     quantimodoService.weHaveUserOrAccessToken = function(){
-        return $rootScope.user || quantimodoService.getAccessTokenFromUrlParameter();
+        return $rootScope.user || $rootScope.accessTokenFromUrl;
+    };
+    quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
+        if($rootScope.accessTokenFromUrl){
+            var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
+            if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){quantimodoService.clearLocalStorage();}
+            var user = JSON.parse(localStorage.getItem('user'));
+            if(!user && $rootScope.user){user = $rootScope.user;}
+            if(user && $rootScope.accessTokenFromUrl !== user.accessToken){
+                $rootScope.user = null;
+                quantimodoService.clearLocalStorage();
+            }
+            if(!quantimodoService.getUrlParameter('doNotRemember')){localStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);}
+            if(!$rootScope.user){quantimodoService.refreshUser();}
+        }
     };
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
-        var accessTokenFromUrl = quantimodoService.getAccessTokenFromUrlParameter();
-        var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
-        if(accessTokenFromUrl){
-            if(accessTokenFromLocalStorage && accessTokenFromUrl !== accessTokenFromLocalStorage){
-                quantimodoService.clearLocalStorage();
-            }
-            var user = JSON.parse(localStorage.getItem('user'));
-            if(!user && $rootScope.user){user = $rootScope.user;}
-            if(user && accessTokenFromUrl !== user.accessToken){
-                $rootScope.user = null;
-                quantimodoService.clearLocalStorage();
-                quantimodoService.refreshUser();
-            }
-            if(!quantimodoService.getUrlParameter('doNotRemember')){localStorage.setItem('accessToken', accessTokenFromUrl);}
-            deferred.resolve(accessTokenFromUrl);
-            return deferred.promise;
-        }
         if($rootScope.accessTokenFromUrl){
             deferred.resolve($rootScope.accessTokenFromUrl);
             return deferred.promise;
         }
+        var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
         var refreshToken = localStorage.getItem("refreshToken");
         //console.debug('quantimodoService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken}));
@@ -6584,10 +6575,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             $rootScope.refreshUser = false;
         }
         if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
-        if(!$rootScope.user || quantimodoService.getAccessTokenFromUrlParameter()){
-            quantimodoService.showBlackRingLoader();
-            quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
-        }
+        quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
             if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
             if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
