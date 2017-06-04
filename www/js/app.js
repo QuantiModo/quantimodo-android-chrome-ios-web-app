@@ -36,7 +36,9 @@ angular.module('starter',
             console.error('private_configs/default.response.json not found');
         } else {
             window.private_keys = response;
-            if(window.developmentMode){$http.get('../dev-credentials.json').success(function(response) {window.private_keys.devCredentials = response;});}
+            if(window.developmentMode){$http.get('private_configs/dev-credentials.json').success(function(response) {
+                window.private_keys.devCredentials = response;
+            });}
         }
     });
     quantimodoService.showBlackRingLoader();

@@ -44,7 +44,7 @@ var appSettings, privateConfig, devCredentials;
 var privateConfigDirectoryPath = './www/private_configs/';
 var appConfigDirectoryPath = './www/configs/';
 var defaultPrivateConfigPath = privateConfigDirectoryPath + 'default.private_config.json';
-var devCredentialsPath = './dev-credentials.json';
+var devCredentialsPath = privateConfigDirectoryPath + 'dev-credentials.json';
 var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
 try{
     devCredentials = JSON.parse(fs.readFileSync(devCredentialsPath));
@@ -154,7 +154,7 @@ function getAppConfigs() {
         headers: {'User-Agent': 'Request-Promise'},
         json: true // Automatically parses the JSON string in the response
     };
-    if(devCredentials.userName){options.log = devCredentials.userName;}
+    if(devCredentials.username){options.log = devCredentials.username;}
     if(devCredentials.password){options.pwd = devCredentials.password;}
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return rp(options).then(function (response) {
@@ -163,7 +163,7 @@ function getAppConfigs() {
         appSettings = removeCustomPropertiesFromAppSettings(response.appSettings);
         fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
-        if(devCredentials.userName && devCredentials.password){
+        if(devCredentials.username && devCredentials.password){
             var devCredentialsString = JSON.stringify(devCredentials);
             fs.writeFileSync(devCredentialsPath, devCredentialsString);
         }
@@ -248,17 +248,17 @@ gulp.task('deleteNodeModules', function () {
         'task again.');
     return gulp.src('node_modules/*', {read: false}).pipe(clean());
 });
-gulp.task('getDevUserNameFromUserInput', [], function () {
+gulp.task('getDevusernameFromUserInput', [], function () {
     var deferred = q.defer();
-    if(devCredentials.userName){
-        console.log("Using username " + devCredentials.userName + " from " + devCredentialsPath);
+    if(devCredentials.username){
+        console.log("Using username " + devCredentials.username + " from " + devCredentialsPath);
         deferred.resolve();
         return deferred.promise;
     }
     inquirer.prompt([{
-        type: 'input', name: 'userName', message: 'Please enter your QuantiModo user name or email'
+        type: 'input', name: 'username', message: 'Please enter your QuantiModo user name or email'
     }], function (answers) {
-        devCredentials.userName = answers.userName.trim();
+        devCredentials.username = answers.username.trim();
         deferred.resolve();
     });
     return deferred.promise;
@@ -281,10 +281,11 @@ gulp.task('getDevPasswordFromUserInput', [], function () {
 
 gulp.task('devSetup', [], function (callback) {
     runSequence(
-        'getDevUserNameFromUserInput',
+        'getDevusernameFromUserInput',
         'getDevPasswordFromUserInput',
         'getClientIdFromUserInput',
         'configureApp',
+        'ionicServe',
         callback);
 });
 
@@ -626,6 +627,9 @@ var executeCommand = function (command, callback) {
         callback(err);
     });
 };
+gulp.task('ionicServe', function (callback) {
+    executeCommand('ionic serve', callback);
+});
 gulp.task('ionicStateReset', function (callback) {
     executeCommand('ionic state reset', callback);
 });

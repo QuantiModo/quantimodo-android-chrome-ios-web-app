@@ -1607,6 +1607,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getApiUrl = function () {
         if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
+        if(window.location.origin.indexOf('.quantimo.do') === -1){ return "https://app.quantimo.do";}
         if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".private_config.json or it does not contain window.private_keys");}
         if(config.appSettings.additionalSettings.downloadLinks.webApp){return config.appSettings.additionalSettings.downloadLinks.webApp;}
         return "https://app.quantimo.do";
@@ -5477,9 +5478,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.setupOnboardingPages = function (onboardingPages) {
         var onboardingPagesFromLocalStorage = quantimodoService.getLocalStorageItemAsObject('onboardingPages');
+        var activeOnboardingPages = $rootScope.appSettings.appDesign.onboarding.active;
         if(onboardingPagesFromLocalStorage && onboardingPagesFromLocalStorage.length && onboardingPagesFromLocalStorage !== "undefined"){
-            if(!$rootScope.appSettings.designMode){$rootScope.appSettings.appDesign.onboarding.active = onboardingPagesFromLocalStorage;}
+            if(!$rootScope.appSettings.designMode){activeOnboardingPages = onboardingPagesFromLocalStorage;}
         }
+        $rootScope.appSettings.appDesign.onboarding.active = quantimodoService.addColorsCategoriesAndNames(activeOnboardingPages);
     };
     $rootScope.signUpQuestions = [
         {
