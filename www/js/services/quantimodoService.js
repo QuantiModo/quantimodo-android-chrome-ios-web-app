@@ -1616,13 +1616,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getApiUrl = function () {
         if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
-        if(!window.private_keys && $rootScope.isWeb){return window.location.origin;}
-        if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".private_config.json or it does not contain window.private_keys");}
-        if(window.private_keys && window.private_keys.apiUrl){return window.private_keys.apiUrl;}
-        if(window.location.href.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
-        if ($rootScope.isWeb && (!window.private_keys || window.private_keys.client_ids.Web === 'oAuthDisabled') && window.location.origin) {return window.location.origin;}
+        if(!window.private_keys){
+            if($rootScope.isWeb){return window.location.origin;}
+            console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".private_config.json or it does not contain window.private_keys");
+        }
         if(config.appSettings.additionalSettings.downloadLinks.webApp){return config.appSettings.additionalSettings.downloadLinks.webApp;}
-        if(!quantimodoService.weShouldUseOAuthLogin()){return "https://" + quantimodoService.getClientId() + ".quantimo.do";}
         return "https://app.quantimo.do";
     };
     quantimodoService.getQuantiModoUrl = function (path) {
@@ -6564,12 +6562,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $ionicLoading.hide();
     };
     quantimodoService.weShouldUseOAuthLogin = function(){
-        if(quantimodoService.getClientId() === "oAuthDisabled"){return false;}
-        if(quantimodoService.getClientId() === "staging"){return false;}
-        if(quantimodoService.getClientId() === "app"){return false;}
-        if(quantimodoService.getClientId() === "local"){return false;}
-        if(quantimodoService.getClientId() === "local"){return false;}
-        return window.private_keys;
+        return window.location.href.indexOf(quantimodoService.getApiUrl()) === -1;
     };
     quantimodoService.initializeApplication = function(appSettingsResponse){
         if(window.config){return;}
