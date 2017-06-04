@@ -612,6 +612,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return $rootScope.user || quantimodoService.getAccessTokenFromUrl();
     };
     quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
+        if($rootScope.user && $rootScope.user.accessToken === quantimodoService.getAccessTokenFromUrl()){return;}
         if(quantimodoService.getAccessTokenFromUrl()){
             var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
             if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){quantimodoService.clearLocalStorage();}
