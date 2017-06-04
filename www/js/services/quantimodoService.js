@@ -1170,7 +1170,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.getAndStorePrimaryOutcomeMeasurements = function(){
         var deferred = $q.defer();
         var errorMessage;
-        if(quantimodoService.weHaveUserOrAccessToken()){
+        if(!quantimodoService.weHaveUserOrAccessToken()){
             errorMessage = 'Cannot sync because we do not have a user or access token in url';
             console.error(errorMessage);
             deferred.reject(errorMessage);
@@ -1205,7 +1205,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.postMeasurementQueueToServer = function(successHandler, errorHandler){
         var defer = $q.defer();
-        if(quantimodoService.weHaveUserOrAccessToken()){
+        if(!quantimodoService.weHaveUserOrAccessToken()){
             var errorMessage = 'Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user or access token in url';
             console.error(errorMessage);
             defer.reject(errorMessage);
