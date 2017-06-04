@@ -606,6 +606,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return $rootScope.user || $rootScope.accessTokenFromUrl;
     };
     quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
+        if(!$rootScope.accessTokenFromUrl){$rootScope.accessTokenFromUrl = (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');}
         if($rootScope.accessTokenFromUrl){
             var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
             if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){quantimodoService.clearLocalStorage();}
@@ -621,6 +622,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getAccessTokenFromAnySource = function () {
         var deferred = $q.defer();
+        if(!$rootScope.accessTokenFromUrl){$rootScope.accessTokenFromUrl = (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');}
         if($rootScope.accessTokenFromUrl){
             deferred.resolve($rootScope.accessTokenFromUrl);
             return deferred.promise;

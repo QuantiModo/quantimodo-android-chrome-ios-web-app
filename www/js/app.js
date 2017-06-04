@@ -33,7 +33,6 @@ angular.module('starter',
     $http.get('private_configs/default.private_config.json').success(function(response) {
         if(typeof response === "string"){console.error('private_configs/default.response.json not found');} else {window.private_keys = response;}
     });
-    $rootScope.accessTokenFromUrl = (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
     quantimodoService.showBlackRingLoader();
     if(appsManager.getUrlParameter('logout')){
         localStorage.clear();
