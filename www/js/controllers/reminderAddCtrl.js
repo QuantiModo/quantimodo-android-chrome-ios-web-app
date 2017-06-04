@@ -281,6 +281,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
         $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
         var dateFormat = 'YYYY-MM-DD';
+        $scope.state.trackingReminder.stopTrackingDate = $scope.state.trackingReminder.startTrackingDate = null;
         if($scope.state.selectedStopTrackingDate){$scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);}
         if($scope.state.selectedStartTrackingDate){$scope.state.trackingReminder.startTrackingDate = moment($scope.state.selectedStartTrackingDate).format(dateFormat);}
         var remindersArray = [];
