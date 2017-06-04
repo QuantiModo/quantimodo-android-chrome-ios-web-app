@@ -1234,7 +1234,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.syncPrimaryOutcomeVariableMeasurements = function(){
         var defer = $q.defer();
-        if(quantimodoService.weHaveUserOrAccessToken()){
+        if(!quantimodoService.weHaveUserOrAccessToken()){
             console.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
             defer.resolve();
             return defer.promise;
