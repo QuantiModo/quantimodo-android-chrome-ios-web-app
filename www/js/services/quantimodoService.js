@@ -28,7 +28,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     function addVariableCategoryInfo(array){
         angular.forEach(array, function(value, key) {
-            if(value.variableCategoryName && quantimodoService.variableCategories[value.variableCategoryName]){
+            if(!value){console.error("no value for key " + key + " in array " + JSON.stringify(array));}
+            if(value && value.variableCategoryName && quantimodoService.variableCategories[value.variableCategoryName]){
                 value.iconClass = 'icon positive ' + quantimodoService.variableCategories[value.variableCategoryName].ionIcon;
                 value.moreInfo = quantimodoService.variableCategories[value.variableCategoryName].moreInfo;
                 value.image = {
@@ -42,17 +43,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     function addColors(array){
         angular.forEach(array, function(value, key) {
-            if(value.color && quantimodoService.colors[value.color]){value.color = quantimodoService.colors[value.color];}
+            if(!value){console.error("no value for key " + key + " in array " + JSON.stringify(array));}
+            if(value && value.color && quantimodoService.colors[value.color]){value.color = quantimodoService.colors[value.color];}
         });
         return array;
     }
-    function addAppDisplayName(array){
-        angular.forEach(array, function(value, key) {
-            if(value.title){value.title = value.title.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
-            if(value.text){value.text = value.text.replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName);}
-        });
-        return array;
-    }
+    function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName));}
     quantimodoService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
         array = addColors(array);

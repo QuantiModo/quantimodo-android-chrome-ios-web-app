@@ -131,7 +131,7 @@ gulp.task('createChromeExtensionManifest', function () {
     chromeExtensionManifest.name = appSettings.appDisplayName;
     chromeExtensionManifest.description = appSettings.appDescription;
     chromeExtensionManifest.version = process.env.IONIC_APP_VERSION_NUMBER;
-    chromeExtensionManifest.permissions.push(appSettings.additionalSettings.downloadLinks.webApp + '/*');
+    chromeExtensionManifest.permissions.push("https://" + appSettings.clientId + '.quantimo.do/*');
     chromeExtensionManifest.appSettings = appSettings;
     fs.writeFileSync('build/chrome_extension/manifest.json', JSON.stringify(chromeExtensionManifest));
 });
