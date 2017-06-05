@@ -164,9 +164,16 @@ function getAppConfigs() {
     return rp(options).then(function (response) {
         if(!response.privateConfig){throw "Could not get privateConfig from " + options.uri + ' Please double check your clientId and clientSecret or contact mike@quantimo.do for help.';}
         privateConfig = response.privateConfig;
-        appSettings = removeCustomPropertiesFromAppSettings(response.appSettings);
+        appSettings = response.appSettings;
+        //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
+        fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
+        if(response.allConfigs){
+            for (var i = 0; i < response.allConfigs.length; i++) {
+                fs.writeFileSync(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
+            }
+        }
         if(devCredentials.username && devCredentials.password){
             var devCredentialsString = JSON.stringify(devCredentials);
             fs.writeFileSync(devCredentialsPath, devCredentialsString);
