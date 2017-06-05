@@ -35,6 +35,12 @@
             <button id="goToInboxButton" class="button circle-page-button" ng-if="circlePage.id === 'allDoneCard'" ng-click="doneOnboarding()">
                 <i class="ion-ios-filing-outline"> &nbsp; GO TO INBOX &nbsp;</i>
             </button>
+            <div ng-if="appSettings.designMode" style="font-size: 30px;">
+                <br>
+                &nbsp&nbsp<i ng-click="openEditAppSettingsModal('onboarding', circlePage)" ><i class="icon ion-edit"></i></i>
+                &nbsp&nbsp<i ng-click="addAppComponentElement('onboarding', circlePage)" class="icon ion-ios-copy-outline" ></i>
+                &nbsp&nbsp<i ng-click="deleteAppComponentElement('onboarding', circlePage)" class="icon ion-trash-a" ></i>
+            </div>
             <br>
 <!-- <div class="button-bar"> <button id="skipButtonWelcome" class="button circle-page-button" ng-click="skipOnboarding()"> &nbsp; SKIP SETUP &nbsp;</i></button> </div> </div>-->
             </div>

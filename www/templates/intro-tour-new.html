@@ -33,6 +33,11 @@
                     NEXT
                 </a>
             </div>
+            <div ng-if="appSettings.designMode">
+                &nbsp&nbsp<i ng-click="openEditAppSettingsModal('intro', circlePage)" ><i class="icon ion-edit"></i></i>
+                &nbsp&nbsp<i ng-click="addAppComponentElement('intro', circlePage)" class="icon ion-ios-copy-outline" ></i>
+                &nbsp&nbsp<i ng-click="deleteAppComponentElement('intro', circlePage)" class="icon ion-trash-a" ></i>
+            </div>
         </ion-slide>
     </ion-slide-box>
 </ion-view>

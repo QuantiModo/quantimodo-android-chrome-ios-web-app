@@ -345,7 +345,7 @@ angular.module('starter')
 })
 .filter('camelCaseToTitleCase', function() {
     return function(input) {
-        if(!input){return;}
+        if(!input || typeof input !== "string"){return input;}
         var result = input.replace('app.', '');
         result = result.replace( /([A-Z])/g, " $1" );
         return result.charAt(0).toUpperCase() + result.slice(1); // capitalize the first letter - as an example.
