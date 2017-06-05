@@ -1347,7 +1347,7 @@ gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName', 'getAppConfig
                 console.log('Setting config.xml description to ' + parsedXmlFile.widget.description[0]);
             } else {throw('APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION');}
             if (appSettings.additionalSettings.googleReversedClientId) {
-                parsedXmlFile.widget.$['id'] = appSettings.additionalSettings.googleReversedClientId;
+                parsedXmlFile.widget.$['id'] = appSettings.additionalSettings.appIdentifier;
                 console.log('Setting config.xml id to ' + parsedXmlFile.widget.$['id']);
             } else {throw('APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER');}
             if (process.env.IONIC_APP_VERSION_NUMBER) {
