@@ -6,9 +6,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
     $scope.controller_name = "AppCtrl";
     quantimodoService.initializeApplication(appSettingsResponse);
-    $scope.showTrackingSubMenu = false;
     $rootScope.numberOfPendingNotifications = null;
-    $scope.showReminderSubMenu = false;
     quantimodoService.removeAppStorageIdentifiers();
     $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
@@ -240,6 +238,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $state.go('app.charts', {variableObject: variableObject});
     };
     $scope.closeMenuIfNeeded = function (menuItem) {
+        menuItem.showSubMenu = !menuItem.showSubMenu;
         if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}
     };
     /*Wrapper Config*/
@@ -371,20 +370,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             userTagVariableObject: $rootScope.variableObject
         });
     };
-    $scope.togglePrimaryOutcomeSubMenu = function () {$scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;};
-    $scope.toggleEmotionsSubMenu = function () {$scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;};
-    $scope.toggleDietSubMenu = function () {$scope.showDietSubMenu = !$scope.showDietSubMenu;};
-    $scope.toggleTreatmentsSubMenu = function () {$scope.showTreatmentsSubMenu = !$scope.showTreatmentsSubMenu;};
-    $scope.toggleSymptomsSubMenu = function () {$scope.showSymptomsSubMenu = !$scope.showSymptomsSubMenu;};
-    $scope.togglePhysicalActivitySubMenu = function () {$scope.showPhysicalActivitySubMenu = !$scope.showPhysicalActivitySubMenu;};
-    $scope.toggleVitalSignsSubMenu = function () {$scope.showVitalSignsSubMenu = !$scope.showVitalSignsSubMenu;};
-    $scope.toggleTrackingSubMenu = function () {$scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;};
-    $scope.togglePredictorSearchSubMenu = function () {$scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;};
-    $scope.toggleChartSearchSubMenu = function () {$scope.showChartSearchSubMenu = !$scope.showChartSearchSubMenu;};
-    $scope.toggleOutcomePredictorSubMenu = function () {$scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;};
-    $scope.toggleHistorySubMenu = function () {$scope.showHistorySubMenu = !$scope.showHistorySubMenu;};
-    $scope.toggleReminderSubMenu = function () {$scope.showReminderSubMenu = !$scope.showReminderSubMenu;};
-    $scope.toggleVariablesSubMenu = function () {$scope.showVariablesSubMenu = !$scope.showVariablesSubMenu;};
+
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
         if(primaryOutcomeRatingFrequencyDescription){$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
         var intervals = {
