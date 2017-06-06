@@ -162,11 +162,13 @@ function getAppConfigs() {
     if(devCredentials.password){options.pwd = devCredentials.password;}
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return rp(options).then(function (response) {
-        if(!response.privateConfig){throw "Could not get privateConfig from " + options.uri + ' Please double check your clientId and clientSecret or contact mike@quantimo.do for help.';}
-        privateConfig = response.privateConfig;
+        if(!response.privateConfig){console.error("Could not get privateConfig from " + options.uri + ' Please double check your clientId and clientSecret or contact mike@quantimo.do for help.');}
         appSettings = response.appSettings;
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
-        fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+        if(response.privateConfig){
+            privateConfig = response.privateConfig;
+            fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+        }
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
         fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         if(response.allConfigs){
@@ -185,7 +187,7 @@ function getAppConfigs() {
 gulp.task('getAppConfigs', function () {
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
     if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET){throw "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env";}
+    if(!process.env.QUANTIMODO_CLIENT_SECRET){console.error( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
     return getAppConfigs();
 });
 gulp.task('verifyExistenceOfDefaultConfig', function () {
