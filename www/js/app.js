@@ -31,21 +31,9 @@ angular.module('starter',
 )
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, $http) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
-    $http.get('private_configs/default.private_config.json').success(function(response) {
-        if(typeof response === "string"){
-            console.error('private_configs/default.response.json not found');
-        } else {
-            window.private_keys = response;
-            if(window.developmentMode){$http.get('private_configs/dev-credentials.json').success(function(response) {
-                window.private_keys.devCredentials = response;
-            });}
-        }
-    });
+    quantimodoService.getPrivateConfigs();
     quantimodoService.showBlackRingLoader();
-    if(appsManager.getUrlParameter('logout')){
-        localStorage.clear();
-        $rootScope.user = null;
-    }
+    if(appsManager.getUrlParameter('logout')){localStorage.clear(); $rootScope.user = null;}
     quantimodoService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
@@ -237,23 +225,10 @@ angular.module('starter',
     }, 100);
 
     var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
-    function setIntoSeenAndOnboarded() {
-        var urlParameters = {};
-        var queryString = document.location.toString().split('?')[1];
-        var sURLVariables, parameterNameValueArray;
-        if (queryString) {sURLVariables = queryString.split('&');}
-        if (sURLVariables) {
-            for (var i = 0; i < sURLVariables.length; i++) {
-                parameterNameValueArray = sURLVariables[i].split('=');
-                if (parameterNameValueArray[1].indexOf('http') > -1) {urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];} else {urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);}
-            }
-        }
-        if (urlParameters.existingUser || urlParameters.introSeen || urlParameters.refreshUser) {
-            window.localStorage.introSeen = true;
-            window.localStorage.onboarded = true;
-        }
+    if (appsManager.getUrlParameter('existingUser') || appsManager.getUrlParameter('introSeen') || appsManager.getUrlParameter('refreshUser')) {
+        window.localStorage.introSeen = true;
+        window.localStorage.onboarded = true;
     }
-    setIntoSeenAndOnboarded();
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
     if(appsManager.getUrlParameter('debug')){window.debugMode = true;}
