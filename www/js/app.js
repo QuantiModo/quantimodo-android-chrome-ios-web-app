@@ -26,6 +26,7 @@ angular.module('starter',
         'ngMessages',
         'angular-cache',
         'angular-d3-word-cloud',
+        'ngFileUpload'
         //'ui-iconpicker'
     ]
 )
