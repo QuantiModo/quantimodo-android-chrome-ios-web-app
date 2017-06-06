@@ -2,6 +2,7 @@
   {
     "id": 1,
     "name": "Emotions",
+    "appType": "Mood",
     "fillingValue": -1,
     "maximumAllowedValue": null,
     "minimumAllowedValue": null,
@@ -123,6 +124,7 @@
   {
     "id": 5,
     "name": "Miscellaneous",
+    "appType": "General",
     "fillingValue": -1,
     "maximumAllowedValue": null,
     "minimumAllowedValue": null,
@@ -337,6 +339,7 @@
   {
     "id": 13,
     "name": "Treatments",
+    "appType": "Medication",
     "fillingValue": 0,
     "maximumAllowedValue": null,
     "minimumAllowedValue": 0,
@@ -398,6 +401,7 @@
   {
     "id": 15,
     "name": "Foods",
+    "appType": "Diet",
     "fillingValue": 0,
     "maximumAllowedValue": null,
     "minimumAllowedValue": 0,
