@@ -1,4 +1,4 @@
-private_keys = {
+{
     "username": null,
     "password": null,
     "bugsnag_key": "xyz",
@@ -18,10 +18,4 @@ private_keys = {
     },
     "FACEBOOK_APP_ID": "123456789",
     "FACEBOOK_APP_NAME": "SOMEAPPNAME"
-};
-
-if(!module){
-    var module = {};
 }
-
-module.exports = private_keys;

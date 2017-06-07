@@ -11,7 +11,7 @@ echo "Current folder is $PWD"
 
 echo "PREPARE_IOS_APP env is ${PREPARE_IOS_APP}"
 
-echo "LOWERCASE_APP_NAME is ${LOWERCASE_APP_NAME}"
+echo "QUANTIMODO_CLIENT_ID is ${QUANTIMODO_CLIENT_ID}"
 
 #npm install -g gulp
 #npm install

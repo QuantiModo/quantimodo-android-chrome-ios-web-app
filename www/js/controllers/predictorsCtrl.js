@@ -72,11 +72,11 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 } else {
                     $scope.state.noCorrelations = true;
                 }
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $scope.searching = false;
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             }, function (error) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 $scope.searching = false;
@@ -84,7 +84,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
             });
     }
     $scope.loadMore = function () {
-        quantimodoService.showLoader();
+        quantimodoService.showBlackRingLoader();
         if($scope.state.correlationObjects.length){
             $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
             populateCorrelationList();

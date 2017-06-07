@@ -17,32 +17,18 @@ angular.module('starter')
     };
 })
 .filter('range', function() {
-        var filter =
-            function(arr, lower, upper) {
-                for (var i = lower; i <= upper; i++) {
-                    arr.push(i);
-                }
-                return arr;
-            };
-        return filter;
-    })
-.filter('fromUnixTimestampToLocalTimeOfDay', function(){
-    return function(epochTime){
-        if (epochTime){
-            return moment(epochTime*1000).format('h:mm A');
-        } else {
-            return "";
-        }
+    return function(arr, lower, upper) {
+        for (var i = lower; i <= upper; i++) {arr.push(i);}
+        return arr;
     };
+})
+.filter('fromUnixTimestampToLocalTimeOfDay', function(){
+    return function(epochTime){if (epochTime){return moment(epochTime*1000).format('h:mm A');} else {return "";}};
 })
 .filter('fromTwentyFourToTwelveHourFormat', function(){
     return function(twentyFourHourFormatString){
         var twentyFourHourFormatSetting = "HH:mm:ss";
-        if (twentyFourHourFormatString){
-            return moment(twentyFourHourFormatString, twentyFourHourFormatSetting).format('h:mm A');
-        } else {
-            return "";
-        }
+        if (twentyFourHourFormatString){return moment(twentyFourHourFormatString, twentyFourHourFormatSetting).format('h:mm A');} else {return "";}
     };
 })
 .filter('fromNow', function(){
@@ -50,16 +36,13 @@ angular.module('starter')
         if(value){
             var d = new Date(value * 1000);
             return moment(d).fromNow();
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('unique', function() {
     return function(collection, keyname) {
-        var output = [],
-            keys = [];
-
+        var output = [], keys = [];
         angular.forEach(collection, function(item) {
             var key = item[keyname];
             if(keys.indexOf(key) === -1) {
@@ -67,7 +50,6 @@ angular.module('starter')
                 output.push(item);
             }
         });
-
         return output;
     };
 })
@@ -81,9 +63,8 @@ angular.module('starter')
             }
             localDateAndTime = moment.utc(epochTime).local().format(" dddd, MMMM Do");
             return localDateAndTime;
-        } else {
-            return "";
-        }
+        } 
+        return "";
     };
 })
 .filter('fromUtcToLocalDateAndTime', function(){
@@ -96,9 +77,8 @@ angular.module('starter')
             }
             localDateAndTime = moment.utc(epochTime).local().format(" h:mm a ddd, MMMM Do");
             return localDateAndTime;
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('fromUtcToLocalDateAndTimeCompact', function(){
@@ -111,9 +91,8 @@ angular.module('starter')
             }
             localDateAndTime = moment.utc(epochTime).local().format(" h A dddd, MMM Do");
             return localDateAndTime;
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('groupRemindersByDateRanges', function() {
@@ -179,7 +158,6 @@ angular.module('starter')
             "4": 75,
             "5": 100
         };
-
         return track_factors[value]? track_factors[value] : 0;
     };
 })
@@ -210,9 +188,8 @@ angular.module('starter')
                 return moment(time * 1000).format("MMM Do YYYY, h:mm a").split(/,/g);
             }
             return moment.utc(time).local().format("dddd, MMMM Do YYYY, h:mm:ss a").split(/,/g);
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('timeDateOneLine', function(){
@@ -222,9 +199,8 @@ angular.module('starter')
                 return moment(time * 1000).format("h:mm a MMM Do YYYY").split(/,/g);
             }
             return moment.utc(time).local().format("h:mm a dddd MMMM Do YYYY").split(/,/g);
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('timeDayDate', function(){
@@ -234,9 +210,8 @@ angular.module('starter')
                 return moment(time * 1000).format("h:mm a dddd MMM Do YYYY").split(/,/g);
             }
             return moment.utc(time).local().format("dddd h:mm a dddd MMMM Do YYYY").split(/,/g);
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('timeOfDay', function(){
@@ -246,9 +221,8 @@ angular.module('starter')
                 return moment(time * 1000).format("hA");
             }
             return moment.utc(time).local().format("hA");
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('timeOfDayDayOfWeek', function(){
@@ -258,9 +232,8 @@ angular.module('starter')
                 return moment(time * 1000).format("h:mm a dddd").split(/,/g);
             }
             return moment.utc(time).local().format("h:mm a dddd").split(/,/g);
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('timeOfDayDayOfWeekNoArray', function(){
@@ -270,9 +243,8 @@ angular.module('starter')
                 return moment(time * 1000).format("h:mm a dddd");
             }
             return moment.utc(time).local().format("h:mm a dddd");
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('timeOfDayDayOfWeekDate', function(){
@@ -282,9 +254,8 @@ angular.module('starter')
                 return moment(time * 1000).format("h:mm a dddd, MMMM Do YYYY");
             }
             return moment.utc(time).local().format("h:mm a dddd, MMMM Do YYYY");
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('justDate', function(){
@@ -294,9 +265,8 @@ angular.module('starter')
                 return moment(time * 1000).format("MMMM Do YYYY").split(/,/g);
             }
             return moment.utc(time).local().format("MMMM Do YYYY").split(/,/g);
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('justDateNoArray', function(){
@@ -306,9 +276,8 @@ angular.module('starter')
                 return moment(time * 1000).format("MMMM Do YYYY");
             }
             return moment.utc(time).local().format("MMMM Do YYYY");
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('dayOfWeekAndDate', function(){
@@ -318,9 +287,8 @@ angular.module('starter')
                 return moment(time * 1000).format("ddd, MMM Do, YYYY");
             }
             return moment.utc(time).local().format("ddd, MMM Do, YYYY");
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('reminderTime', function(){
@@ -328,9 +296,8 @@ angular.module('starter')
         if(time){
             var reminderTime = moment.utc(time).local().calendar();
             return reminderTime;
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('reminderStartTimeUtcToLocal', function(){
@@ -340,16 +307,13 @@ angular.module('starter')
             var reminderStartTimeFormat = "HH:mm:ss Z";
             var localStartTimeString = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("h:mm a");
             return localStartTimeString;
-        } else {
-            return "";
         }
+        return "";
     };
 })
 .filter('unique', function() {
     return function(collection, keyname) {
-        var output = [],
-            keys = [];
-
+        var output = [], keys = [];
         angular.forEach(collection, function(item) {
             var key = item[keyname];
             if(keys.indexOf(key) === -1) {
@@ -357,14 +321,13 @@ angular.module('starter')
                 output.push(item);
             }
         });
-
         return output;
     };
 })
 // returns the Image string against value
 .filter('wordAliases', function(){
     return function(originalName){
-        var aliasName = config.appSettings.wordAliases[originalName];
+        var aliasName = config.appSettings.appDesign.wordAliases[originalName];
         if(typeof(aliasName) !== "undefined"){return aliasName;}
         return originalName;
     };
@@ -374,4 +337,23 @@ angular.module('starter')
         if(originalText.length > 25){return originalText.substring(0,25)+'...';}
         return originalText;
     };
+})
+.filter('capitalizeFirstLetter', function() {
+    return function(input) {
+        return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
+    };
+})
+.filter('camelCaseToTitleCase', function() {
+    return function(input) {
+        if(!input || typeof input !== "string"){return input;}
+        var result = input.replace('app.', '');
+        result = result.replace( /([A-Z])/g, " $1" );
+        return result.charAt(0).toUpperCase() + result.slice(1); // capitalize the first letter - as an example.
+    };
+})
+.filter('prettyJSON', function () {
+    function prettyPrintJson(json) {
+        return JSON ? JSON.stringify(json, null, '  ') : 'your browser doesnt support JSON so cant pretty print';
+    }
+    return prettyPrintJson;
 });

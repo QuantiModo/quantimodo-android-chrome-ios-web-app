@@ -1,8 +1,8 @@
-angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout,
-												$ionicLoading, $filter, $ionicActionSheet,  quantimodoService) {
+angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  quantimodoService) {
 	$scope.controller_name = "RemindersManageCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
+    quantimodoService.goToLoginIfNecessary();
 	$scope.state = {
 		showButtons : false,
 		variableCategory : $stateParams.variableCategoryName,
@@ -28,7 +28,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		noRemindersIcon: "ion-android-notifications-none"
 	};
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter RemindersManageCtrl");
-		quantimodoService.showLoader();
+		quantimodoService.showBlackRingLoader();
 		$rootScope.hideNavigationMenu = false;
 		$scope.stateParams = $stateParams;
 		var actionButtons = [
@@ -84,8 +84,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
 	}
 	function addRemindersToScope(allTrackingReminderTypes) {
-		$scope.hideLoader();
 		$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
+		quantimodoService.hideLoader();
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
 			$scope.state.showNoRemindersCard = true;
 			return;
@@ -97,7 +97,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		showAppropriateHelpInfoCards();
 	}
 	$scope.refreshReminders = function () {
-		$scope.showLoader('Syncing...');
+		$scope.showSyncDisplayText('Syncing...');
 		quantimodoService.syncTrackingReminders(true).then(function(){getTrackingReminders();});
 	};
 	var getTrackingReminders = function(){

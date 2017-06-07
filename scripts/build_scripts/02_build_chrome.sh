@@ -21,7 +21,7 @@ if [ -d "${INTERMEDIATE_PATH}/apps" ];
         exit
 fi
 
-echo "Generating images for ${LOWERCASE_APP_NAME} Chrome at ${PWD}..."
+echo "Generating images for ${QUANTIMODO_CLIENT_ID} Chrome at ${PWD}..."
 convert resources/icon_transparent.png -resize 700x700 www/img/icons/icon_700.png
 convert resources/icon_transparent.png -resize 16x16 www/img/icons/icon_16.png
 convert resources/icon_transparent.png -resize 48x48 www/img/icons/icon_48.png
@@ -29,32 +29,32 @@ convert resources/icon_transparent.png -resize 128x128 www/img/icons/icon_128.pn
 
 
 echo -e "${GREEN}Copying www folder into app and extension${NC}"
-mkdir -p "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www"
-mkdir -p "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www"
+mkdir -p "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app/www"
+mkdir -p "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www"
 
-cp -R ${INTERMEDIATE_PATH}/resources/chrome_app/* "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/"
-cp -R ${INTERMEDIATE_PATH}/resources/chrome_extension/* "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/"
+cp -R ${INTERMEDIATE_PATH}/resources/chrome_app/* "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app/"
+cp -R ${INTERMEDIATE_PATH}/resources/chrome_extension/* "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/"
 
-#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/"
-#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/"
-cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/"
-cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/"
+#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app/www/"
+#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www/"
+cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app/www/"
+cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www/"
 
-rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/android"
-rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/ios"
-cd "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension" && zip -r "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-Extension.zip" * >/dev/null
-rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension"
-cp "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-Extension.zip" "$DROPBOX_PATH/QuantiModo/apps/"
-echo "${LOWERCASE_APP_NAME} Chrome extension is ready"
+rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/android"
+rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/ios"
+cd "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension" && zip -r "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/${QUANTIMODO_CLIENT_ID}-Chrome-Extension.zip" * >/dev/null
+rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension"
+cp "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/${QUANTIMODO_CLIENT_ID}-Chrome-Extension.zip" "$DROPBOX_PATH/QuantiModo/apps/"
+echo "${QUANTIMODO_CLIENT_ID} Chrome extension is ready"
 
-rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/android"
-rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/ios"
-cd "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app" && zip -r "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-App.zip" * >/dev/null
-rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app"
-cp "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-App.zip" "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
-echo "${LOWERCASE_APP_NAME} Chrome app is ready"
+rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/android"
+rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/ios"
+cd "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app" && zip -r "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/${QUANTIMODO_CLIENT_ID}-Chrome-App.zip" * >/dev/null
+rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app"
+cp "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/${QUANTIMODO_CLIENT_ID}-Chrome-App.zip" "$DROPBOX_PATH/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/"
+echo "${QUANTIMODO_CLIENT_ID} Chrome app is ready"
 
-#mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME" || true
-#echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
-#cp -R ${BUILD_PATH}/${LOWERCASE_APP_NAME}/* "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
-#rsync ${BUILD_PATH}/${LOWERCASE_APP_NAME}/* "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+#mkdir "$DROPBOX_PATH/QuantiModo/apps/$QUANTIMODO_CLIENT_ID" || true
+#echo -e "${GREEN}Copying ${BUILD_PATH}/${QUANTIMODO_CLIENT_ID} to $DROPBOX_PATH/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/${NC}"
+#cp -R ${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/* "$DROPBOX_PATH/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/"
+#rsync ${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/* "$DROPBOX_PATH/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/"

@@ -1,5 +1,5 @@
-angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast) {
+angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast) {
+    if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
 	$scope.controller_name = "RemindersInboxCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
@@ -31,11 +31,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("RemindersInboxCtrl beforeEnter ");
 		$scope.loading = true;
-		if(!quantimodoService.getUrlParameter('accessToken') && !$rootScope.user){
-			console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-			quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
-			$state.go('app.login');
-		}
+        if(quantimodoService.goToLoginIfNecessary()){ return; }
 		$rootScope.hideBackButton = true;
 		$rootScope.hideHomeButton = true;
         if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}
@@ -77,12 +73,14 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 					return true;
 				},
 				destructiveButtonClicked: function() {
-					$scope.showLoader('Skipping all reminder notifications...');
+					$scope.showSyncDisplayText('Skipping all reminder notifications...');
 					quantimodoService.skipAllTrackingReminderNotificationsDeferred()
 						.then(function(){
+                            $scope.hideSyncDisplayText();
 							if($rootScope.localNotificationsEnabled){quantimodoService.setNotificationBadge(0);}
 							$scope.refreshTrackingReminderNotifications();
 						}, function(error){
+                            $scope.hideSyncDisplayText();
 							if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 							console.error(error);
 							quantimodoService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
@@ -272,6 +270,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		var trackingReminderNotifications = quantimodoService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName);
 		//console.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
 		$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
+		if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}
 		if($state.current.name === "app.remindersInboxCompact"){
 			$scope.trackingReminderNotifications = trackingReminderNotifications;
 		} else {
@@ -279,10 +278,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			//console.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
 			getFallbackInboxContent();
 		}
-		hideInboxLoader();
 	};
 	var hideInboxLoader = function(){
-		$ionicLoading.hide();
+        quantimodoService.hideLoader();
 		//Stop the ion-refresher from spinning
 		$scope.$broadcast('scroll.refreshComplete');
 		$scope.loading = false;
@@ -293,18 +291,12 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 				$scope.filteredTrackingReminderNotifications = quantimodoService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
 				getFallbackInboxContent();
-				//Stop the ion-refresher from spinning
-				$scope.$broadcast('scroll.refreshComplete');
 				hideInboxLoader();
-				$scope.loading = false;
 			}, function(error){
 				getFallbackInboxContent();
 				console.error(error);
 				hideInboxLoader();
 				console.error("failed to get reminder notifications!");
-				//Stop the ion-refresher from spinning
-				$scope.$broadcast('scroll.refreshComplete');
-				$scope.loading = false;
 			});
 	};
 	$scope.$on('getTrackingReminderNotificationsFromLocalStorage', function(){
@@ -381,12 +373,14 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			destructiveButtonClicked: function() {
 				console.debug("Skipping all notifications for trackingReminder", $scope.state.trackingReminderNotification);
 				var params = {trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId};
-				$scope.showLoader('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
+				$scope.showSyncDisplayText('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
 				quantimodoService.skipAllTrackingReminderNotificationsDeferred(params)
 					.then(function(){
+						$scope.hideSyncDisplayText();
 						hideInboxLoader();
 						$scope.refreshTrackingReminderNotifications();
 					}, function(error){
+                        $scope.hideSyncDisplayText();
 						hideInboxLoader();
 						if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 						console.error(error);

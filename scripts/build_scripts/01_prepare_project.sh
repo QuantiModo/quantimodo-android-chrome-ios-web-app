@@ -12,19 +12,19 @@ if [ -z "$BUILD_PATH" ]
       echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
-if [ -z "$LOWERCASE_APP_NAME" ]
+if [ -z "$QUANTIMODO_CLIENT_ID" ]
     then
-      echo "ERROR: No LOWERCASE_APP_NAME given!"
+      echo "ERROR: No QUANTIMODO_CLIENT_ID given!"
       exit 1
 fi
 
-rm -rf ${BUILD_PATH}/${LOWERCASE_APP_NAME}
+rm -rf ${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}
 
-if [ -d "${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}" ];
+if [ -d "${INTERMEDIATE_PATH}/apps/${QUANTIMODO_CLIENT_ID}" ];
     then
-        echo "${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME} path exists";
+        echo "${INTERMEDIATE_PATH}/apps/${QUANTIMODO_CLIENT_ID} path exists";
     else
-        echo "ERROR: ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME} path not found!";
+        echo "ERROR: ${INTERMEDIATE_PATH}/apps/${QUANTIMODO_CLIENT_ID} path not found!";
         exit 1
 fi
 
@@ -36,8 +36,8 @@ if [ -d "${APP_PRIVATE_CONFIG_PATH}" ];
         exit 1
 fi
 
-if [ ! -f ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js ]; then
-    echo "ERROR: ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js file not found!";
+if [ ! -f ${APP_PRIVATE_CONFIG_PATH}/${QUANTIMODO_CLIENT_ID}.private_config.json ]; then
+    echo "ERROR: ${APP_PRIVATE_CONFIG_PATH}/${QUANTIMODO_CLIENT_ID}.private_config.json file not found!";
     exit 1
 fi
 
@@ -46,9 +46,9 @@ rm -rf ${INTERMEDIATE_PATH}/resources/*
 
 export LC_CTYPE=C
 export LANG=C
-echo -e "${GREEN}Replacing LOWERCASE_APP_NAME with ${LOWERCASE_APP_NAME}...${NC}"
-cp ${INTERMEDIATE_PATH}/config-template.xml ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/config.xml
-cd ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}
+echo -e "${GREEN}Replacing QUANTIMODO_CLIENT_ID with ${QUANTIMODO_CLIENT_ID}...${NC}"
+cp ${INTERMEDIATE_PATH}/config-template.xml ${INTERMEDIATE_PATH}/apps/${QUANTIMODO_CLIENT_ID}/config.xml
+cd ${INTERMEDIATE_PATH}/apps/${QUANTIMODO_CLIENT_ID}
 
 find . -type f -exec sed -i '' -e 's/YourAppDisplayNameHere/'${APP_DISPLAY_NAME}'/g' {} \; >> /dev/null 2>&1
 find . -type f -exec sed -i '' -e 's/YourAppIdentifierHere/'${APP_IDENTIFIER}'/g' {} \; >> /dev/null 2>&1
@@ -58,8 +58,8 @@ find . -type f -exec sed -i '' -e 's/YourAppDescriptionHere/'${APP_DESCRIPTION}'
 
 export LANG=en_US.UTF-8
 
-echo -e "${GREEN}Copy ${LOWERCASE_APP_NAME} config and resource files${NC}"
-cp -R ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/*  "${INTERMEDIATE_PATH}"
+echo -e "${GREEN}Copy ${QUANTIMODO_CLIENT_ID} config and resource files${NC}"
+cp -R ${INTERMEDIATE_PATH}/apps/${QUANTIMODO_CLIENT_ID}/*  "${INTERMEDIATE_PATH}"
 ionic config build
 
 cd "${INTERMEDIATE_PATH}"
@@ -68,10 +68,10 @@ cd "${INTERMEDIATE_PATH}"
 echo "Copying generated images from ${INTERMEDIATE_PATH}/resources/android to ${INTERMEDIATE_PATH}/www/img/"
 cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 
-echo "Removing ${BUILD_PATH}/${LOWERCASE_APP_NAME}"
-rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}"
+echo "Removing ${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}"
+rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}"
 
-if [ ! -f ${INTERMEDIATE_PATH}/www/private_configs//${LOWERCASE_APP_NAME}.config.js ]; then
-    echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
-    cp "${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js" "${INTERMEDIATE_PATH}/www/private_configs/"
+if [ ! -f ${INTERMEDIATE_PATH}/www/private_configs//${QUANTIMODO_CLIENT_ID}.private_config.json ]; then
+    echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${QUANTIMODO_CLIENT_ID}.private_config.json private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
+    cp "${APP_PRIVATE_CONFIG_PATH}/${QUANTIMODO_CLIENT_ID}.private_config.json" "${INTERMEDIATE_PATH}/www/private_configs/"
 fi

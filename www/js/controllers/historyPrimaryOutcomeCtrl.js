@@ -10,14 +10,14 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.refreshMeasurementHistory = function () {
 		$scope.history = quantimodoService.getLocalPrimaryOutcomeMeasurements();
-        $scope.showLoader($scope.syncDisplayText);
+        $scope.showSyncDisplayText($scope.syncDisplayText);
         quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-            $scope.hideLoader();
+            $scope.hideSyncDisplayText();
             $scope.history = quantimodoService.getLocalPrimaryOutcomeMeasurements();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
         });
-		$scope.hideLoader();
+		$scope.hideSyncDisplayText();
 	};
 	$scope.$on('$ionicView.beforeEnter', function(){
 		$rootScope.hideNavigationMenu = false;

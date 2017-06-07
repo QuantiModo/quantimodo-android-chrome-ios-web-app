@@ -7,11 +7,11 @@ echo "Prerequisites:  http://brew.sh/"
 
 if [ -z "$1" ]
   then
-    echo -e "${RED}Please provide LOWERCASE_APP_NAME as first parameter ${NC}"
+    echo -e "${RED}Please provide QUANTIMODO_CLIENT_ID as first parameter ${NC}"
     exit
 else
-    export LOWERCASE_APP_NAME=$1
-    echo -e "${GREEN}LOWERCASE_APP_NAME is $LOWERCASE_APP_NAME ${NC}"
+    export QUANTIMODO_CLIENT_ID=$1
+    echo -e "${GREEN}QUANTIMODO_CLIENT_ID is $QUANTIMODO_CLIENT_ID ${NC}"
 fi
 
 if [ -z "$2" ]
@@ -20,7 +20,7 @@ if [ -z "$2" ]
     exit
 else
     export APP_DISPLAY_NAME="$2"
-    echo -e "${GREEN}APP_DISPLAY_NAME is $LOWERCASE_APP_NAME ${NC}"
+    echo -e "${GREEN}APP_DISPLAY_NAME is $QUANTIMODO_CLIENT_ID ${NC}"
 fi
 
 if [ -z "$3" ]
@@ -46,14 +46,14 @@ chmod a+x ./scripts/decrypt-key.sh
 chmod a+x ./scripts/add-key.sh
 ./scripts/add-key.sh
 
-cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
+cp -R apps/${QUANTIMODO_CLIENT_ID}/* $PWD
 ionic state reset
 npm install && gulp configureApp
 echo "npm has installed"
 gulp -v
 echo "ran through gulp"
 gulp generateXmlConfigAndUpdateAppsJs
-cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
+cp apps/${QUANTIMODO_CLIENT_ID}/resources/icon_white.png $PWD/resources/icon.png
 #ionic resources - We already do this in gulp makeIosApp
 gulp updateConfigXmlUsingEnvs
 gulp makeIosApp
