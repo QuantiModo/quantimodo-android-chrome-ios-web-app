@@ -268,11 +268,12 @@ angular.module('starter',
         var i = this.length;
         while (i--) {if (this[i] === obj) {return true;}}
     };
-    var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+
     var config_resolver = {
         appSettingsResponse: function($http){
             var settingsUrl = 'configs/default.config.json';
-            if(designMode || appsManager.getClientIdFromQueryParameters()){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + appsManager.getClientIdFromQueryParameters(true);}
+            var clientId = appsManager.getClientIdFromQueryParameters(true);
+            if(!appsManager.shouldWeUseLocalConfig()){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;}
             return $http({method: 'GET', url: settingsUrl});
         }
     };
