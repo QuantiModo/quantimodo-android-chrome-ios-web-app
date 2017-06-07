@@ -169,7 +169,7 @@ gulp.task('validateCredentials', function () {
         if(!response.accessToken){throw "Could not get user from " + options.uri + ' Please double check your credentials or contact mike@quantimo.do for help.';}
     }).catch(function (err) {
         console.error(err.message);
-        if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in ./dev-credentials.json and try again.";}
+        if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
     });
 });
 
