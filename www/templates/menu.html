@@ -1,6 +1,6 @@
 <ion-side-menus enable-menu-with-back-views="true" >
     <ion-side-menu-content>
-        <ion-nav-bar class="{{appSettings.appDesign.ionNavBarClass}}" ng-show="hideNavigationMenu === false" >
+        <ion-nav-bar class="{{appSettings.appDesign.ionNavBarClass}}" ng-show="hideNavigationMenu === false || appSettings.designMode" >
             <ion-nav-buttons side="left">
                 <button ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
                 <button ng-show="showCloseMenuButton" class="button button-icon ion-android-close" ng-click="closeMenu()"></button>
@@ -12,6 +12,9 @@
             <ion-nav-buttons side="right">
                 <div class="buttons">
                     <a href="#/app/settings" ng-if="user && user.avatar && !isMobile" class="button button-clear" > <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}"> </a>
+                    <a ng-if="showPopOut" href="/ionic/Modo/www/configuration-index.html#/app/configuration?clientId={{appSettings.clientId}}&apiUrl={{apiUrl}}&quantimodoAccessToken={{user.accessToken}}" target="_blank">
+                        <button class="button button-icon ion-android-open"></button>
+                    </a>
                     <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="openCorrelationSearchDialog($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="goToState('app.help')"></button>
