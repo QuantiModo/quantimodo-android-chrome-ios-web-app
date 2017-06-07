@@ -151,7 +151,32 @@ function removeCustomPropertiesFromAppSettings(appSettings) {
     }
     return appSettings;
 }
-function getAppConfigs() {
+
+gulp.task('validateCredentials', function () {
+    if(!devCredentials.username || !devCredentials.password){
+        console.error("No developer credentials");
+        return;
+    }
+    var options = {
+        uri: 'https://app.quantimo.do/api/v1/user',
+        qs: {log: devCredentials.username, pwd: devCredentials.password},
+        headers: {'User-Agent': 'Request-Promise'},
+        json: true // Automatically parses the JSON string in the response
+    };
+    fs.writeFileSync(devCredentialsPath, JSON.stringify(devCredentials));
+    console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
+    return rp(options).then(function (response) {
+        if(!response.accessToken){throw "Could not get user from " + options.uri + ' Please double check your credentials or contact mike@quantimo.do for help.';}
+    }).catch(function (err) {
+        console.error(err.message);
+        if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in ./dev-credentials.json and try again.";}
+    });
+});
+
+gulp.task('getAppConfigs', ['validateCredentials'], function () {
+    if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
+    if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
+    if(!process.env.QUANTIMODO_CLIENT_SECRET){console.error( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
     var options = {
         uri: 'https://app.quantimo.do/api/v1/appSettings',
         qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
@@ -162,9 +187,11 @@ function getAppConfigs() {
     if(devCredentials.password){options.pwd = devCredentials.password;}
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return rp(options).then(function (response) {
-        if(!response.privateConfig){console.error("Could not get privateConfig from " + options.uri + ' Please double check your clientId and clientSecret or contact mike@quantimo.do for help.');}
         appSettings = response.appSettings;
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
+        if(!response.privateConfig && devCredentials.username && devCredentials.password){
+            throw "Could not get privateConfig from " + options.uri + ' Please contact ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at https://app.quantimo.do/api/v2/apps.";
+        }
         if(response.privateConfig){
             privateConfig = response.privateConfig;
             fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
@@ -176,19 +203,9 @@ function getAppConfigs() {
                 fs.writeFileSync(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
             }
         }
-        if(devCredentials.username && devCredentials.password){
-            var devCredentialsString = JSON.stringify(devCredentials);
-            fs.writeFileSync(devCredentialsPath, devCredentialsString);
-        }
     }).catch(function (err) {
         throw err;
     });
-}
-gulp.task('getAppConfigs', function () {
-    if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET){console.error( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
-    return getAppConfigs();
 });
 gulp.task('verifyExistenceOfDefaultConfig', function () {
     fs.stat(defaultAppConfigPath, function (err, stat) {
