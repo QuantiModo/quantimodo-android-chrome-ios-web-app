@@ -597,9 +597,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             successHandler,
             errorHandler);
     };
+    quantimodoService.getAccessTokenFromCurrentUrl = function(){
+        return (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
+    };
     quantimodoService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
-            $rootScope.accessTokenFromUrl = (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
+            $rootScope.accessTokenFromUrl = quantimodoService.getAccessTokenFromCurrentUrl();
             if($rootScope.accessTokenFromUrl){
                 quantimodoService.setLocalStorageItem('onboarded', true);
                 quantimodoService.setLocalStorageItem('introSeen', true);

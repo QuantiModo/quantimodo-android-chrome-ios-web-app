@@ -11,10 +11,11 @@
             </ion-nav-buttons>
             <ion-nav-buttons side="right">
                 <div class="buttons">
-                    <a href="#/app/settings" ng-if="user && user.avatar && !isMobile" class="button button-clear" > <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}"> </a>
+                    <button class="button button-icon ion-checkmark-circled" ng-show="appSettings.designMode" ng-click="postAppSettings($event)"><md-tooltip md-direction="down">Save Changes</md-tooltip></button>
                     <a ng-if="showPopOut" href="/ionic/Modo/www/configuration-index.html#/app/configuration?clientId={{appSettings.clientId}}&apiUrl={{apiUrl}}&quantimodoAccessToken={{user.accessToken}}" target="_blank">
-                        <button class="button button-icon ion-android-open"></button>
+                        <button class="button button-icon ion-android-open"><md-tooltip md-direction="down">Pop Out</md-tooltip></button>
                     </a>
+                    <a href="#/app/settings" ng-if="user && user.avatar && !isMobile" class="button button-clear" > <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}"> </a>
                     <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="openCorrelationSearchDialog($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="goToState('app.help')"></button>
