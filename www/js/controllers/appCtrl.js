@@ -27,7 +27,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             e.targetScope.controller_name === "RemindersManageCtrl" ||
             e.targetScope.controller_name === "StudyCtrl" ||
             e.targetScope.controller_name === "PredictorsCtrl" ||
-            e.targetScope.controller_name === "historyAllMeasurementsCtrl"
+            e.targetScope.controller_name === "historyAllMeasurementsCtrl" ||
+            e.targetScope.controller_name === "ConfigurationCtrl"
         ) { $scope.showMoreMenuButton = true;
         } else { $scope.showMoreMenuButton = false; }
     });

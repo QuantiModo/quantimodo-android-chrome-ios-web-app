@@ -5,20 +5,13 @@
                 <button ng-hide="hideMenuButton" class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
                 <button ng-show="showCloseMenuButton" class="button button-icon ion-android-close" ng-click="closeMenu()"></button>
                 <button ng-hide="hideBackButton" class="button button-icon ion-android-arrow-back" ng-click="goBack()"></button>
-                <!-- Gets cut off so hiding until I have time to implement this: http://ionicframework.com/docs/api/directive/ionHeaderBar/
-                Also, now back button goes home if we don't have a back view so we don't need a home button
-                <button ng-hide="hideHomeButton" class="button button-icon ion-home"
-                        ng-click="goToState('app.remindersInbox')">
-                </button>
+                <!-- Gets cut off so hiding until I have time to implement this: http://ionicframework.com/docs/api/directive/ionHeaderBar/ Also, now back button goes home if we don't have a back view so we don't need a home button
+                <button ng-hide="hideHomeButton" class="button button-icon ion-home" ng-click="goToState('app.remindersInbox')"> </button>
                 -->
             </ion-nav-buttons>
             <ion-nav-buttons side="right">
                 <div class="buttons">
-                    <a href="#/app/settings"
-                       ng-if="user && user.avatar && !isMobile"
-                       class="button button-clear" >
-                        <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}">
-                    </a>
+                    <a href="#/app/settings" ng-if="user && user.avatar && !isMobile" class="button button-clear" > <img class="menu-avatar" id="navBarAvatar" ng-src="{{user.avatar}}"> </a>
                     <button class="button button-icon ion-ios-search" ng-show="showFilterBarSearchIcon" ng-click="openCorrelationSearchDialog($event)"></button>
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
                     <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText || hideHelpButton" ng-click="goToState('app.help')"></button>
@@ -27,29 +20,19 @@
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
-        <div class="col" ng-show="hideNavigationMenu && offlineConnectionErrorShowing;" style="top:0px!important;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
-            <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
-        </div>
-        <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}">
-            <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
-        </div>
-        <div class="col" ng-show="!hideNavigationMenu && isSyncing" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
-            <span>{{syncDisplayText}}</span>
-        </div>
-        <div class="col" ng-show="hideNavigationMenu && isSyncing" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
-            <span>{{syncDisplayText}}</span>
-        </div>
+        <div class="col" ng-show="hideNavigationMenu && offlineConnectionErrorShowing;" style="top:0px!important;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
+        <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
+        <div class="col" ng-show="!hideNavigationMenu && isSyncing" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}"> <span>{{syncDisplayText}}</span> </div>
+        <div class="col" ng-show="hideNavigationMenu && isSyncing" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}"> <span>{{syncDisplayText}}</span> </div>
         <ion-nav-view name="menuContent"></ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large">
         <ion-header-bar class="bar-positive">
             <div style="cursor:pointer;" ng-click="goToState('app.settings')" ng-if="user && user.displayName && (user.stripeActive || appSettings.upgradeDisabled)">
-                <a ng-if="user && user.avatar" class="button button-clear" ><img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}"></a>
-                <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
+                <a ng-if="user && user.avatar" class="button button-clear" ><img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}"></a> <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
             </div>
             <div style="cursor:pointer;" ng-if="user && user.displayName && !user.stripeActive && !appSettings.upgradeDisabled" ng-click="goToState('app.upgrade')">
-                <button class="button button-icon ion-android-star-outline"></button>
-                <h1 class="title" style="position: fixed; bottom: 0;">{{appSettings.appDisplayName}} Plus</h1>
+                <button class="button button-icon ion-android-star-outline"></button> <h1 class="title" style="position: fixed; bottom: 0;">{{appSettings.appDisplayName}} Plus</h1>
             </div>
         </ion-header-bar>
         <ion-content>
