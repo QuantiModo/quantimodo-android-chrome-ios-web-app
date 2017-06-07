@@ -112,5 +112,12 @@ var appsManager = { // jshint ignore:line
     },
     getClientIdFromQueryParameters: function (fallbackToSubDomain) {
         return  getClientIdFromQueryParameters(fallbackToSubDomain);
+    },
+    shouldWeUseLocalConfig: function () {
+        var onMobile = window.location.href.indexOf('https://') === -1;
+        if(onMobile){return true;}
+        var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        if(designMode){return false;}
+        if(getClientIdFromQueryParameters(true) === 'app'){return true;}
     }
 };
