@@ -11,7 +11,6 @@ config.appSettings  = {
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
-    appStorageIdentifier: 'YourAppDisplayNameHereData*',
     headline : 'Sync and Analyze Your Data',
     features: [
         ' - Automatically backup and sync your data across devices',

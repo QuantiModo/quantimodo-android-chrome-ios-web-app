@@ -5021,31 +5021,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return deferred.promise;
     };
-    // TODO:  Remove removeAppStorageIdentifiers function and config.appSettings.appStorageIdentifier's after all apps have updated. Maybe after 6/1/17
-    quantimodoService.removeAppStorageIdentifiers = function(){
-        var localStorageItemsWithAppStorageIdentifier = quantimodoService.getLocalStorageList(true);
-        for (var i = 0; i < localStorageItemsWithAppStorageIdentifier.length; i++){
-            if(localStorageItemsWithAppStorageIdentifier[i].name.indexOf(config.appSettings.appStorageIdentifier) > -1){
-                localStorage.setItem(localStorageItemsWithAppStorageIdentifier[i].name.replace(config.appSettings.appStorageIdentifier, '') , localStorageItemsWithAppStorageIdentifier[i].value);
-                localStorage.removeItem(localStorageItemsWithAppStorageIdentifier[i].name);
-            }
-        }
-    };
     quantimodoService.deleteLargeLocalStorageItems = function(localStorageItemsArray){
         for (var i = 0; i < localStorageItemsArray.length; i++){
             if(localStorageItemsArray[i].kB > 2000){ localStorage.removeItem(localStorageItemsArray[i].name); }
         }
     };
-    quantimodoService.getLocalStorageList = function(requireAppStorageIdentifier){
+    quantimodoService.getLocalStorageList = function(){
         var localStorageItemsArray = [];
         for (var i = 0; i < localStorage.length; i++){
-            if(!requireAppStorageIdentifier || (requireAppStorageIdentifier && localStorage.key(i).indexOf(config.appSettings.appStorageIdentifier) > -1)){
-                localStorageItemsArray.push({
-                    name: localStorage.key(i),
-                    value: localStorage.getItem(localStorage.key(i)),
-                    kB: Math.round(localStorage.getItem(localStorage.key(i)).length*16/(8*1024))
-                });
-            }
+            localStorageItemsArray.push({
+                name: localStorage.key(i),
+                value: localStorage.getItem(localStorage.key(i)),
+                kB: Math.round(localStorage.getItem(localStorage.key(i)).length*16/(8*1024))
+            });
         }
         return localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
     };
