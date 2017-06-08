@@ -1,19 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
         <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready" style="background-color: {{circlePage.color.backgroundColor}};">
-            <div ng-if="circlePage.newIntroStyle"> <div ng-include="'templates/fragments/circle-page.html'"></div> </div>
-            <div ng-if="!circlePage.newIntroStyle">
-                <div ng-if="!circlePage.newIntroStyle" class="content intro-content" >
-                    <div ng-if="circlePage.content.logoDiv" id="{{circlePage.content.logoDiv.id}}">
-                        <img style="width:{{circlePage.image.width}}px; height:{{circlePage.image.height}}px;" ng-src="{{circlePage.image.url}}">
-                    </div>
-                    <p ng-click="myIntro.startApp()" ng-if="circlePage.content.firstParagraph" class="{{circlePage.content.firstParagraph.classes}}"
-                       ng-bind-html="circlePage.content.firstParagraph.content" style="color: white"> </p>
-                    <p ng-if="circlePage.content.finalParagraph" class="{{circlePage.content.finalParagraph.classes}}" style="color: white">
-                        <span ng-bind-html="circlePage.content.finalParagraph.content" style="color: white"></span>
-                    </p>
-                </div>
-            </div>
+            <div> <div ng-include="'templates/fragments/circle-page.html'"></div> </div>
             <a id="goButtonIntro" class="button circle-page-button" ng-show="myIntro.slideIndex == appSettings.appDesign.intro.active.length-1" ng-click="myIntro.startApp()">
                 GET STARTED
             </a>
