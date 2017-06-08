@@ -7,7 +7,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.controller_name = "AppCtrl";
     quantimodoService.initializeApplication(appSettingsResponse);
     $rootScope.numberOfPendingNotifications = null;
-    quantimodoService.removeAppStorageIdentifiers();
     $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
