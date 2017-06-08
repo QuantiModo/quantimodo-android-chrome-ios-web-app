@@ -887,8 +887,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         Analytics.set('&cs', config.appSettings.appDisplayName);
         Analytics.set('&cm', $rootScope.currentPlatform);
         Analytics.set('&an', config.appSettings.appDisplayName);
-        if(config.appSettings.additionalSettings &&  config.appSettings.additionalSettings.googleReversedClientId){
-            Analytics.set('&aid', config.appSettings.additionalSettings.googleReversedClientId);
+        if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.appIds && config.appSettings.additionalSettings.appIds.googleReversedClientId){
+            Analytics.set('&aid', config.appSettings.additionalSettings.appIds.googleReversedClientId);
         }
         Analytics.set('&av', config.appSettings.versionNumber);
         // Register a custom dimension for the default, unnamed account object
