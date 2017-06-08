@@ -49,11 +49,41 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return array;
     }
+    function toObject(arr) {
+        var rv = {};
+        for (var i = 0; i < arr.length; ++i) {
+            rv[i] = arr[i];
+        }
+        return rv;
+    }
+
+
+    function addVariableCategoryStateParam(object){
+        if(typeof object !== "object"){
+            console.error("not an object", object);
+            return object;
+        }
+        for (var prop in object) {
+            // skip loop if the property is from prototype
+            if(!object.hasOwnProperty(prop)) continue;
+            if(object[prop].stateParameters){
+                if(object[prop].stateParameters.constructor === Array){
+                    console.error('stateParams should be an object!');
+                    object[prop].stateParameters = toObject(object[prop].stateParameters);
+                }
+                if(!object[prop].stateParameters.variableCategoryName){
+                    object[prop].stateParameters.variableCategoryName = "Anything";
+                }
+            }
+        }
+        return object;
+    }
     function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName));}
     quantimodoService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
         array = addColors(array);
         array = addAppDisplayName(array);
+        array = addVariableCategoryStateParam(array);
         return array;
     };
     quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
@@ -5497,9 +5527,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 circleColor: "#fefdfc",
                 iconClass: "icon positive ion-ios-medkit-outline",
                 image: {
-                    url: "img/robots/quantimodo-robot-waving.svg",
-                    height: "120",
-                    width: "120"
+                    url: "img/robots/quantimodo-robot-waving.svg"
                 },
                 bodyText: "I need to eat electricity to live and I am very hungry.  Please help me by subscribing or I will die."
             },
@@ -5637,9 +5665,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 circleColor: "#fefdfc",
                 iconClass: "icon positive ion-ios-cloud-download-outline",
                 image: {
-                    url: "img/robots/quantimodo-robot-waving.svg",
-                    height: "120",
-                    width: "120"
+                    url: "img/robots/quantimodo-robot-waving.svg"
                 },
                 bodyText: "You're all set up!  Let's take a minute to record your first measurements and then " +
                 "you're done for the day! ",
