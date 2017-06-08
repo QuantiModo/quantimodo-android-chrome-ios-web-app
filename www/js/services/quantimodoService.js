@@ -31,6 +31,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(!value){console.error("no value for key " + key + " in array " + JSON.stringify(array));}
             if(value && value.variableCategoryName && quantimodoService.variableCategories[value.variableCategoryName]){
                 value.iconClass = 'icon positive ' + quantimodoService.variableCategories[value.variableCategoryName].ionIcon;
+                value.ionIcon = quantimodoService.variableCategories[value.variableCategoryName].ionIcon;
                 value.moreInfo = quantimodoService.variableCategories[value.variableCategoryName].moreInfo;
                 value.image = {
                     url: quantimodoService.variableCategories[value.variableCategoryName].imageUrl,
@@ -3858,6 +3859,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         variables = quantimodoService.removeArrayElementsWithDuplicateIds(variables);
         if(requestParams && requestParams.sort){variables = quantimodoService.sortByProperty(variables, requestParams.sort);}
+        //variables = addVariableCategoryInfo(variables);
         return variables;
     };
     quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred = function(name, params, refresh){
