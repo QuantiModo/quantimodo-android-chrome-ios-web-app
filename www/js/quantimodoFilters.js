@@ -351,6 +351,18 @@ angular.module('starter')
         return result.charAt(0).toUpperCase() + result.slice(1); // capitalize the first letter - as an example.
     };
 })
+.filter('ionIconDisplayName', function() {
+    return function(name) {
+        if(!name || typeof name !== "string"){return name;}
+        name = name.replace('ion-', '');
+        name = name.replace('android-', '');
+        name = name.replace('ios-', '');
+        name = name.split('-').join(' ');
+        var splitStr = name.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);}
+        return splitStr.join(' ');
+    };
+})
 .filter('prettyJSON', function () {
     function prettyPrintJson(json) {
         return JSON ? JSON.stringify(json, null, '  ') : 'your browser doesnt support JSON so cant pretty print';
