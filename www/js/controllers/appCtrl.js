@@ -1471,7 +1471,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 return {
                     value: variable.name.toLowerCase(),
                     name: variable.name,
-                    variable: variable
+                    variable: variable,
+                    ionIcon: variable.ionIcon
                 };
             });
         }
