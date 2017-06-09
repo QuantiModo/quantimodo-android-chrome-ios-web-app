@@ -6599,6 +6599,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if($rootScope.user){
             if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
             if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
+            //qmSetupInPopup();
+            //quantimodoService.humanConnect();
         }
     };
     quantimodoService.getPrivateConfigs = function(){
@@ -6612,6 +6614,31 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 });}
             }
         });
+    };
+    quantimodoService.humanConnect = function(){
+        var options = {
+            clientUserId: encodeURIComponent($rootScope.user.id),
+            clientId: 'e043bd14114cb0fb5f0b358f3a8910545ca9525e',
+            publicToken: ($rootScope.user.humanApiPulicToken) ? $rootScope.user.humanApiPulicToken : '',
+            finish: function(err, sessionTokenObject) {
+                /* Called after user finishes connecting their health data */
+                //POST sessionTokenObject as-is to your server for step 2.
+                quantimodoService.post('api/v1/connect/finish', [], sessionTokenObject).then(function (response) {
+                    console.log(response);
+                    $rootScope.user = response.data.user;
+                });
+                // Include code here to refresh the page.
+            },
+            close: function() {
+                /* (optional) Called when a user closes the popup
+                 without connecting any data sources */
+            },
+            error: function(err) {
+                /* (optional) Called if an error occurs when loading
+                 the popup. */
+            }
+        };
+        HumanConnect.open(options);
     };
     return quantimodoService;
 });
