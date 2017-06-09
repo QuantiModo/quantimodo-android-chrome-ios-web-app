@@ -6623,7 +6623,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             finish: function(err, sessionTokenObject) {
                 /* Called after user finishes connecting their health data */
                 //POST sessionTokenObject as-is to your server for step 2.
-                quantimodoService.post('api/v1/connect/finish', [], sessionTokenObject).then(function (response) {
+                quantimodoService.post('api/v1/human/connect/finish', [], sessionTokenObject).then(function (response) {
                     console.log(response);
                     $rootScope.user = response.data.user;
                 });
