@@ -190,7 +190,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         appSettings = response.appSettings;
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(!response.privateConfig && devCredentials.username && devCredentials.password){
-            throw "Could not get privateConfig from " + options.uri + ' Please contact ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at https://app.quantimo.do/api/v2/apps.";
+            console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at https://app.quantimo.do/api/v2/apps ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at https://app.quantimo.do/api/v2/apps and run gulp devSetup again.");
         }
         if(response.privateConfig){
             privateConfig = response.privateConfig;
