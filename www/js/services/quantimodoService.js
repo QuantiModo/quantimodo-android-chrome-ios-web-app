@@ -15,9 +15,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
         urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
         urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
-        if(window.developmentMode && window.private_keys && window.private_keys.devCredentials){
-            if(window.private_keys.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.private_keys.devCredentials.username));}
-            if(window.private_keys.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.private_keys.devCredentials.password));}
+        if(window.developmentMode && window.devCredentials){
+            if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
+            if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
         }
         if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
         //We can't append access token to Ionic requests for some reason
@@ -6605,15 +6605,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getPrivateConfigs = function(){
         $http.get('private_configs/default.private_config.json').success(function(response) {
-            if(typeof response === "string"){
-                console.error('private_configs/default.response.json not found');
-            } else {
-                window.private_keys = response;
-                if(window.developmentMode){$http.get('private_configs/dev-credentials.json').success(function(response) {
-                    window.private_keys.devCredentials = response;
-                });}
-            }
+            if(typeof response === "string"){console.error('private_configs/default.response.json not found');} else {window.private_keys = response;}
         });
+        quantimodoService.getDevCredentials();
+    };
+    quantimodoService.getDevCredentials = function(){
+        if(window.developmentMode){$http.get('private_configs/dev-credentials.json').success(function(response) {
+            if(typeof response !== "string"){window.devCredentials = response;}
+        });}
     };
     quantimodoService.humanConnect = function(){
         var options = {
