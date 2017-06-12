@@ -6,11 +6,8 @@
                     <div>
                         <div ng-include="'templates/fragments/circle-page.html'"></div>
                         <div id="loginButtons" ng-if="circlePage.title !== 'Logging in...'">
-
                                 <button id="signUpButton" ng-click="register()" class="button circle-page-button" >Sign Up</button>
-
                                 <button id="signInButton" ng-click="login()" class="button circle-page-button">Already Have Account</button>
-
                             <div ng-if="showGoogleLoginButton && !hideGoogleLoginButton">
                                 <button id="signInWithGoogle" ng-click="googleLogin()" class="button circle-page-button">Sign In With Google</button>
                             </div>

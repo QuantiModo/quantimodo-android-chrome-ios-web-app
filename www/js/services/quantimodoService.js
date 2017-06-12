@@ -87,6 +87,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return array;
     };
     quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
+        if(!successHandler){throw "Please provide successHandler function as fourth parameter in quantimodoService.get";}
         if(!options){ options = {}; }
         var cache = false;
         if(params && params.cache){
@@ -684,6 +685,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
             deferred.resolve();
             return deferred.promise;
+        } else if (window.developmentMode) {
+            quantimodoService.getDevCredentials().then(function(){
+                deferred.resolve();
+            });
         } else {
             console.warn('Could not get or refresh access token at ' + window.location.href);
             deferred.resolve();
@@ -6607,12 +6612,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $http.get('private_configs/default.private_config.json').success(function(response) {
             if(typeof response === "string"){console.error('private_configs/default.response.json not found');} else {window.private_keys = response;}
         });
-        quantimodoService.getDevCredentials();
     };
     quantimodoService.getDevCredentials = function(){
-        if(window.developmentMode){$http.get('private_configs/dev-credentials.json').success(function(response) {
+        return $http.get('private_configs/dev-credentials.json').success(function(response) {
             if(typeof response !== "string"){window.devCredentials = response;}
-        });}
+        });
     };
     quantimodoService.humanConnect = function(){
         var options = {
