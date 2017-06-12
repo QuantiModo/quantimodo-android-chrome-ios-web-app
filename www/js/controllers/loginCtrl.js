@@ -1,4 +1,4 @@
-angular.module('starter').controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, quantimodoService) {
+angular.module('starter').controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, quantimodoService, $mdDialog) {
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
     $scope.headline = config.appSettings.headline;
@@ -103,7 +103,12 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
         }
     };
-    $scope.login = function(register) {
+    $scope.login = function(register, event) {
+        if(window.developmentMode){
+            //showLoginModal(event);
+            quantimodoService.refreshUser();
+            return;
+        }
         if(window && window.plugins && window.plugins.googleplus){googleLogout();}
         if($rootScope.isChromeApp){
             quantimodoService.chromeAppLogin(register);
@@ -247,4 +252,21 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                 console.debug("facebook login error"+ JSON.stringify(error));
             });
     };
+
+
+        var showLoginModal = function (ev) {
+            $mdDialog.show({
+                controller: LoginModalController,
+                templateUrl: 'templates/modals/login-modal.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                fullscreen: $scope.customFullscreen
+            });
+        };
+        function LoginModalController($scope, $mdDialog) {
+            $scope.close = function () { $mdDialog.cancel(); };
+            $scope.hide = function () { $mdDialog.hide(); };
+            $scope.answer = function (answer) { $mdDialog.hide(answer); };
+        }
 });
