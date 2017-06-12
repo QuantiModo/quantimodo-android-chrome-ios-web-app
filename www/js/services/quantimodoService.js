@@ -681,14 +681,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             quantimodoService.refreshAccessToken(refreshToken, deferred);
         } else if(accessTokenFromLocalStorage){
             deferred.resolve(accessTokenFromLocalStorage);
-        } else if(quantimodoService.getClientId() === 'oAuthDisabled' || !window.private_keys) {
-            //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
-            deferred.resolve();
-            return deferred.promise;
         } else if (window.developmentMode) {
             quantimodoService.getDevCredentials().then(function(){
                 deferred.resolve();
             });
+        } else if(quantimodoService.getClientId() === 'oAuthDisabled' || !window.private_keys) {
+            //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+            deferred.resolve();
+            return deferred.promise;
         } else {
             console.warn('Could not get or refresh access token at ' + window.location.href);
             deferred.resolve();
