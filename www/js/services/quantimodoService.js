@@ -147,6 +147,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
     };
     quantimodoService.post = function(route, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
+        if(!body){throw "Please provide body parameter to quantimodoService.post";}
         if(!canWeMakeRequestYet('POST', route, options)){
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
@@ -6622,7 +6623,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var options = {
             clientUserId: encodeURIComponent($rootScope.user.id),
             clientId: 'e043bd14114cb0fb5f0b358f3a8910545ca9525e',
-            publicToken: ($rootScope.user.humanApiPulicToken) ? $rootScope.user.humanApiPulicToken : '',
+            publicToken: ($rootScope.user.humanApiPublicToken) ? $rootScope.user.humanApiPublicToken : '',
             finish: function(err, sessionTokenObject) {
                 /* Called after user finishes connecting their health data */
                 //POST sessionTokenObject as-is to your server for step 2.
@@ -6643,15 +6644,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         HumanConnect.open(options);
     };
-    quantimodoService.quantimodoConnectMobile = function(){
-        var options = {
+    quantimodoService.quantimodoConnectPopup = function(){
+        window.QuantiModoImport.options = {
             clientUserId: encodeURIComponent($rootScope.user.id),
-            clientId: 'e043bd14114cb0fb5f0b358f3a8910545ca9525e',
-            publicToken: ($rootScope.user.quantimodoPulicToken) ? $rootScope.user.quantimodoPulicToken : '',
+            clientId: config.appSettings.clientId,
+            publicToken: ($rootScope.user.quantimodoPublicToken) ? $rootScope.user.quantimodoPublicToken : '',
             finish: function(err, sessionTokenObject) {
                 /* Called after user finishes connecting their health data */
                 //POST sessionTokenObject as-is to your server for step 2.
-                quantimodoService.post('api/v1/quantimodo/connect/finish', [], sessionTokenObject).then(function (response) {
+                quantimodoService.post('api/v1/quantimodo/connect/finish', [], sessionTokenObject, function (response) {
                     console.log(response);
                     $rootScope.user = response.data.user;
                 });
@@ -6666,7 +6667,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                  the popup. */
             }
         };
-        qmSetupOnMobile(options);
+        window.QuantiModoImport.qmSetupInPopup();
     };
     return quantimodoService;
 });
