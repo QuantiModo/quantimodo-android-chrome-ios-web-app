@@ -6639,5 +6639,30 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         HumanConnect.open(options);
     };
+    quantimodoService.quantimodoConnectMobile = function(){
+        var options = {
+            clientUserId: encodeURIComponent($rootScope.user.id),
+            clientId: 'e043bd14114cb0fb5f0b358f3a8910545ca9525e',
+            publicToken: ($rootScope.user.quantimodoPulicToken) ? $rootScope.user.quantimodoPulicToken : '',
+            finish: function(err, sessionTokenObject) {
+                /* Called after user finishes connecting their health data */
+                //POST sessionTokenObject as-is to your server for step 2.
+                quantimodoService.post('api/v1/quantimodo/connect/finish', [], sessionTokenObject).then(function (response) {
+                    console.log(response);
+                    $rootScope.user = response.data.user;
+                });
+                // Include code here to refresh the page.
+            },
+            close: function() {
+                /* (optional) Called when a user closes the popup
+                 without connecting any data sources */
+            },
+            error: function(err) {
+                /* (optional) Called if an error occurs when loading
+                 the popup. */
+            }
+        };
+        qmSetupOnMobile(options);
+    };
     return quantimodoService;
 });
