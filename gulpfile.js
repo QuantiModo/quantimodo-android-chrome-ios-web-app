@@ -1351,8 +1351,8 @@ gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName', 'getAppConfig
         console.log('Could not find template at CONFIG_XML_TEMPLATE_PATH ' + process.env.CONFIG_XML_TEMPLATE_PATH);
         return;
     }
-    if (appSettings.additionalSettings.googleReversedClientId) {
-        xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.googleReversedClientId);
+    if (appSettings.additionalSettings.appIds.googleReversedClientId) {
+        xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.appIds.googleReversedClientId);
     }
     parseString(xml, function (err, parsedXmlFile) {
         if (err) {
@@ -1366,10 +1366,12 @@ gulp.task('generateConfigXmlFromTemplate', ['setLowerCaseAppName', 'getAppConfig
                 parsedXmlFile.widget.description[0] = appSettings.appDescription;
                 console.log('Setting config.xml description to ' + parsedXmlFile.widget.description[0]);
             } else {throw('APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION');}
-            if (appSettings.additionalSettings.googleReversedClientId) {
+            if (appSettings.additionalSettings.appIds.appIdentifier) {
                 parsedXmlFile.widget.$['id'] = appSettings.additionalSettings.appIds.appIdentifier;
                 console.log('Setting config.xml id to ' + parsedXmlFile.widget.$['id']);
-            } else {throw('APP_IDENTIFIER env not set! Falling back to default QuantiModo APP_IDENTIFIER');}
+            } else {
+                throw('appSettings.additionalSettings.appIds.appIdentifier not set: ' + JSON.stringify(appSettings));
+            }
             if (process.env.IONIC_APP_VERSION_NUMBER) {
                 parsedXmlFile.widget.$['version'] = process.env.IONIC_APP_VERSION_NUMBER;
                 console.log('Setting config.xml version to ' + parsedXmlFile.widget.$['version']);
