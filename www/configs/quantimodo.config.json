@@ -19,10 +19,10 @@
     "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
     "ionicAppId": "42fe48d4",
     "googleAnalyticsTrackingIds": {
-      "laravel": "UA-39222734-29",
-      "ionic": "UA-39222734-25",
-      "api": "UA-39222734-24",
-      "wp": "UA-39222734-2"
+      "adminPanel": "UA-39222734-29",
+      "endUserApps": "UA-39222734-25",
+      "backEndAPI": "UA-39222734-24",
+      "informationalHomePage": "UA-39222734-2"
     },
     "downloadLinks": {
       "chromeExtension": "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",

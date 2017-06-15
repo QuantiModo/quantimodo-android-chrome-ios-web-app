@@ -24,10 +24,10 @@
             "webApp": "https://medimodo.quantimo.do"
         },
         "googleAnalyticsTrackingIds": {
-            "laravel": "UA-98995949-4",
-            "ionic": "UA-98995949-3",
-            "api": "UA-98995949-2",
-            "wp": "UA-98995949-1"
+            "adminPanel": "UA-98995949-4",
+            "endUserApps": "UA-98995949-3",
+            "backEndAPI": "UA-98995949-2",
+            "informationalHomePage": "UA-98995949-1"
         },
         "socialLinks": {
             "facebook": "https://www.facebook.com/medimodoapp",
