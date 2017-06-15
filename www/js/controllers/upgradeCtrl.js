@@ -1,15 +1,10 @@
 angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService) {
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        if(!$rootScope.user){
-            console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-            quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.upgrade');
-            $state.go('app.login');
-            return;
-        }
+        if(quantimodoService.goToLoginIfNecessary()){ return; }
         if($rootScope.isChromeExtension){chrome.tabs.create({url: quantimodoService.getApiUrl() + '/upgrade'}); window.close(); return;}
         $scope.planFeaturesCard = quantimodoService.getPlanFeatureCards()[1];
         $rootScope.upgradeFooterText = null;
-        $rootScope.hideNavigationMenu = true;
+        //$rootScope.hideNavigationMenu = true;
         quantimodoService.setupUpgradePages();
         quantimodoService.hideLoader();
     });
@@ -20,7 +15,7 @@ angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $io
         if($rootScope.upgradePages.length === 1){ $scope.hideLearnMoreButton = true; }
         if(!$rootScope.upgradePages || $rootScope.upgradePages.length === 0){
             $rootScope.hideMenuButton = false;
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
         } else { $rootScope.hideMenuButton = true; }
     };
 });

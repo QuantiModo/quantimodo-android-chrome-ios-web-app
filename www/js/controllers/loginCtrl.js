@@ -1,4 +1,4 @@
-angular.module('starter').controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, quantimodoService) {
+angular.module('starter').controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, quantimodoService, $mdDialog) {
     $scope.state = { loading: false};
     $scope.controller_name = "LoginCtrl";
     $scope.headline = config.appSettings.headline;
@@ -89,19 +89,24 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         var register = true;
         $scope.login(register);
     };
+
     var browserLogin = function(register) {
         console.debug("Browser Login");
         if (window.private_keys && window.private_keys.username) {
-            quantimodoService.refreshUser().then(function () {$state.go(config.appSettings.defaultState);});
-        } else if (quantimodoService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
+            quantimodoService.refreshUser().then(function () {$state.go(config.appSettings.appDesign.defaultState);});
+        } else if (quantimodoService.weShouldUseOAuthLogin()) {
             // Using timeout to avoid "$apply already in progress" error caused by window.open
-            if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);
-            } else { quantimodoService.oAuthBrowserLogin(register); }
+            if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);} else { quantimodoService.oAuthBrowserLogin(register); }
         } else {
             quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
         }
     };
-    $scope.login = function(register) {
+    $scope.login = function(register, event) {
+        if(window.developmentMode){
+            //showLoginModal(event);
+            quantimodoService.refreshUser();
+            return;
+        }
         if(window && window.plugins && window.plugins.googleplus){googleLogout();}
         if($rootScope.isChromeApp){
             quantimodoService.chromeAppLogin(register);
@@ -245,4 +250,21 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                 console.debug("facebook login error"+ JSON.stringify(error));
             });
     };
+
+
+        var showLoginModal = function (ev) {
+            $mdDialog.show({
+                controller: LoginModalController,
+                templateUrl: 'templates/modals/login-modal.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                fullscreen: $scope.customFullscreen
+            });
+        };
+        function LoginModalController($scope, $mdDialog) {
+            $scope.close = function () { $mdDialog.cancel(); };
+            $scope.hide = function () { $mdDialog.hide(); };
+            $scope.answer = function (answer) { $mdDialog.hide(answer); };
+        }
 });

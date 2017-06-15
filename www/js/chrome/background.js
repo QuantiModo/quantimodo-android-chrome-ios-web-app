@@ -2,7 +2,7 @@
 ****	EVENT HANDLERS
 ***/
 var manifest = chrome.runtime.getManifest();
-var apiUrl = manifest.appSettings.downloadLinks.webApp;
+var apiUrl = manifest.appSettings.additionalSettings.downloadLinks.webApp;
 console.log("API URL is " + apiUrl);
 var requestIdentificationParameters = "appName=" + manifest.name + "&appVersion=" + manifest.version + "&client_id=chromeExtension and apiUrl is " + apiUrl;
 var v = null;

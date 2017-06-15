@@ -20,7 +20,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             refreshUserVariable($rootScope.variableObject.name);
         } else {
             console.error("Variable name not provided to variable settings controller!");
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
         }
     });

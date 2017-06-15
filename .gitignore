@@ -35,7 +35,7 @@ build.json
 dropbox
 !/www/private_configs/
 /www/private_configs/*.json
-!/www/private_configs/yourlowercaseappnamehere.private_config.json
+!/www/private_configs/your_quantimodo_client_id_here.private_config.json
 *.keystore
 ionic.config.json
 supply_json_key_for_google_play.json
@@ -62,5 +62,9 @@ www/manifest.json.enc
 www/configs/default.config.json
 www/configuration/
 www/private_configs/sample_private.private_config.json.enc
-www/private_configs/yourlowercaseappnamehere.private_config.json.enc
+www/private_configs/your_quantimodo_client_id_here.private_config.json.enc
 www/private_configs/default.private_config.json.enc
+www/private_configs/yourlowercaseappnamehere.private_config.json.enc
+www/configuration-index.html
+dev-credentials.json
+www/js/configuration-app.js

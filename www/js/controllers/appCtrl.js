@@ -2,52 +2,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 .controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                 $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, quantimodoService,
                                 ionicDatePicker, $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
-                                $locale, $mdDialog, $mdToast, wikipediaFactory) {
+                                $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
 
-    //console.debug('Starting AppCtrl');
     $scope.controller_name = "AppCtrl";
-    $rootScope.appSettings = config.appSettings;
-    if(!$rootScope.appSettings.menu){$rootScope.appSettings.menu = quantimodoService.getMenu(config.appSettings.menuType);}
-    if(!$rootScope.appSettings.ionNavBarClass){ $rootScope.appSettings.ionNavBarClass = "bar-positive"; }
-    $scope.showTrackingSubMenu = false;
+    quantimodoService.initializeApplication(appSettingsResponse);
     $rootScope.numberOfPendingNotifications = null;
-    $scope.showReminderSubMenu = false;
-    quantimodoService.removeAppStorageIdentifiers();
     $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
-    if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
-    if($rootScope.user && !$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
-    if(!$rootScope.user || quantimodoService.getAccessTokenFromUrlParameter()){
-        quantimodoService.showBlackRingLoader();
-        quantimodoService.refreshUser().then(function(){ quantimodoService.syncAllUserData(); }, function(error){ console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error)); });
-    }
-    quantimodoService.putCommonVariablesInLocalStorage();
-    quantimodoService.backgroundGeolocationInit();
-    quantimodoService.setupBugsnag();
-    quantimodoService.getUserAndSetupGoogleAnalytics();
-    if(!window.private_keys) { console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help'); }
-    if(quantimodoService.getUrlParameter('refreshUser')){
-        quantimodoService.clearLocalStorage();
-        window.localStorage.introSeen = true;
-        window.localStorage.onboarded = true;
-        $rootScope.user = null;
-        $rootScope.refreshUser = false;
-    }
-    if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
-    if($rootScope.user){
-        //quantimodoService.syncTrackingReminders();
-        //quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred();  // I think this slows loading
-        if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
-    }
-    if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
-        console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
-        $ionicPlatform.ready(function () {
-            console.debug("Setting on trigger and on click actions for notifications");
-            quantimodoService.setOnTriggerActionForLocalNotifications();
-            quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
-            quantimodoService.setOnUpdateActionForLocalNotifications();
-        });
-    }
     $scope.$on('$ionicView.enter', function (e) {
         console.debug('appCtrl enter in state ' + $state.current.name);
         //$scope.showHelpInfoPopupIfNecessary(e);
@@ -65,7 +26,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             e.targetScope.controller_name === "RemindersManageCtrl" ||
             e.targetScope.controller_name === "StudyCtrl" ||
             e.targetScope.controller_name === "PredictorsCtrl" ||
-            e.targetScope.controller_name === "historyAllMeasurementsCtrl"
+            e.targetScope.controller_name === "historyAllMeasurementsCtrl" ||
+            e.targetScope.controller_name === "ConfigurationCtrl"
         ) { $scope.showMoreMenuButton = true;
         } else { $scope.showMoreMenuButton = false; }
     });
@@ -81,7 +43,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.hideMenuButton = false;
         }
     });
-    $scope.floatingMaterialButton = quantimodoService.getFloatingMaterialButton();
+
     //  Calendar and  Date picker
     // will update from showCalendarPopup
     $scope.fromDate = new Date();
@@ -276,6 +238,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $state.go('app.charts', {variableObject: variableObject});
     };
     $scope.closeMenuIfNeeded = function (menuItem) {
+        menuItem.showSubMenu = !menuItem.showSubMenu;
         if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}
     };
     /*Wrapper Config*/
@@ -313,14 +276,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 return;
             }
             // We might need to move this back to app.js if it doesn't work
-            if(config.appSettings.ionicAppId){
+            if(config.appSettings.additionalSettings.ionicAppId){
                 $ionicCloudProvider.init({
                         "core": {
-                            "app_id": config.appSettings.ionicAppId
+                            "app_id": config.appSettings.additionalSettings.ionicAppId
                         }
                 });
             } else {
-                console.warn('Cannot initialize $ionicCloudProvider because appSettings.ionicAppId is not set');
+                console.warn('Cannot initialize $ionicCloudProvider because appSettings.additionalSettings.ionicAppId is not set');
                 return;
             }
             if($rootScope.user && $rootScope.user.getPreviewBuilds){
@@ -407,20 +370,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             userTagVariableObject: $rootScope.variableObject
         });
     };
-    $scope.togglePrimaryOutcomeSubMenu = function () {$scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;};
-    $scope.toggleEmotionsSubMenu = function () {$scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;};
-    $scope.toggleDietSubMenu = function () {$scope.showDietSubMenu = !$scope.showDietSubMenu;};
-    $scope.toggleTreatmentsSubMenu = function () {$scope.showTreatmentsSubMenu = !$scope.showTreatmentsSubMenu;};
-    $scope.toggleSymptomsSubMenu = function () {$scope.showSymptomsSubMenu = !$scope.showSymptomsSubMenu;};
-    $scope.togglePhysicalActivitySubMenu = function () {$scope.showPhysicalActivitySubMenu = !$scope.showPhysicalActivitySubMenu;};
-    $scope.toggleVitalSignsSubMenu = function () {$scope.showVitalSignsSubMenu = !$scope.showVitalSignsSubMenu;};
-    $scope.toggleTrackingSubMenu = function () {$scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;};
-    $scope.togglePredictorSearchSubMenu = function () {$scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;};
-    $scope.toggleChartSearchSubMenu = function () {$scope.showChartSearchSubMenu = !$scope.showChartSearchSubMenu;};
-    $scope.toggleOutcomePredictorSubMenu = function () {$scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;};
-    $scope.toggleHistorySubMenu = function () {$scope.showHistorySubMenu = !$scope.showHistorySubMenu;};
-    $scope.toggleReminderSubMenu = function () {$scope.showReminderSubMenu = !$scope.showReminderSubMenu;};
-    $scope.toggleVariablesSubMenu = function () {$scope.showVariablesSubMenu = !$scope.showVariablesSubMenu;};
+
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
         if(primaryOutcomeRatingFrequencyDescription){$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
         var intervals = {
@@ -651,7 +601,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var stateId = backView.stateName;
             if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
                 $ionicHistory.goBack(-2);
-                //$state.go(config.appSettings.defaultState, stateParams);
+                //$state.go(config.appSettings.appDesign.defaultState, stateParams);
                 return;
             }
             if(stateParams){
@@ -663,7 +613,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }
             $ionicHistory.goBack();
         } else {
-            $state.go(config.appSettings.defaultState, stateParams);
+            $state.go(config.appSettings.appDesign.defaultState, stateParams);
         }
     };
     $scope.setupVariableByVariableObject = function(variableObject) {
@@ -717,7 +667,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $rootScope.sendChromeEmailLink = function(){
         var subjectLine = "Install%20the%20" + config.appSettings.appDisplayName + "%20Chrome%20Browser%20Extension";
-        var linkToChromeExtension = config.appSettings.downloadLinks.chromeExtension;
+        var linkToChromeExtension = config.appSettings.additionalSettings.downloadLinks.chromeExtension;
         var emailBody = "Did%20you%20know%20that%20you%20can%20easily%20track%20everything%20on%20your%20laptop%20and%20desktop%20with%20our%20Google%20Chrome%20browser%20extension%3F%20%20Your%20data%20is%20synced%20between%20devices%20so%20you%27ll%20never%20have%20to%20track%20twice!%0A%0ADownload%20it%20here!%0A%0A" + encodeURIComponent(linkToChromeExtension)  + "%0A%0ALove%2C%20%0AYou";
         var fallbackUrl = null;
         var emailAddress = $rootScope.user.email;
@@ -1273,7 +1223,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         return subscriptionProvider;
     }
     function getProductId(baseProductId) {
-        if($rootScope.isIOS){ return config.appSettings.lowercaseAppName + '_' + baseProductId; }
+        if($rootScope.isIOS){ return config.appSettings.clientId + '_' + baseProductId; }
         return baseProductId;
     }
     function handleSubscribeResponse(baseProductId, data) {
@@ -1520,7 +1470,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 return {
                     value: variable.name.toLowerCase(),
                     name: variable.name,
-                    variable: variable
+                    variable: variable,
+                    ionIcon: variable.ionIcon
                 };
             });
         }

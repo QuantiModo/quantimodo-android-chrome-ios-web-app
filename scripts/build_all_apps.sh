@@ -117,27 +117,27 @@ gulp prepareRepositoryForAndroid
 #echo "ionic state reset"
 #ionic state reset
 
-echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
+echo "cordova plugin rm phonegap-facebook-plugin for $QUANTIMODO_CLIENT_ID Android app..."
 cordova plugin rm phonegap-facebook-plugin || true
-echo "cordova plugin rm cordova-plugin-facebook4 for $LOWERCASE_APP_NAME Android app..."
+echo "cordova plugin rm cordova-plugin-facebook4 for $QUANTIMODO_CLIENT_ID Android app..."
 cordova plugin rm cordova-plugin-facebook4 || true
-echo "rm -rf ../fbplugin for $LOWERCASE_APP_NAME Android app..."
+echo "rm -rf ../fbplugin for $QUANTIMODO_CLIENT_ID Android app..."
 rm -rf ../fbplugin
-#echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
+#echo "gulp addFacebookPlugin for $QUANTIMODO_CLIENT_ID Android app..."
 #gulp addFacebookPlugin
-echo "cordova plugin add cordova-plugin-facebook4 APP_ID=${FACEBOOK_APP_ID} APP_NAME=${FACEBOOK_APP_NAME} for $LOWERCASE_APP_NAME Android app..."
+echo "cordova plugin add cordova-plugin-facebook4 APP_ID=${FACEBOOK_APP_ID} APP_NAME=${FACEBOOK_APP_NAME} for $QUANTIMODO_CLIENT_ID Android app..."
 cordova plugin add cordova-plugin-facebook4@1.7.1 --save --variable APP_ID="${FACEBOOK_APP_ID}" --variable APP_NAME="${FACEBOOK_APP_NAME}"
 
-#echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
+#echo "gulp addFacebookPlugin for $QUANTIMODO_CLIENT_ID Android app..."
 #gulp addGooglePlusPlugin
 
-echo "cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+echo "cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $QUANTIMODO_CLIENT_ID Android app..."
 cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
 
-#echo "cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $LOWERCASE_APP_NAME Android app..."
+#echo "cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $QUANTIMODO_CLIENT_ID Android app..."
 #cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
 
-echo "cordova plugin add cordova-fabric-plugin -–variable FABRIC_API_KEY=${FABRIC_API_KEY} –-variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $LOWERCASE_APP_NAME Android app..."
+echo "cordova plugin add cordova-fabric-plugin -–variable FABRIC_API_KEY=${FABRIC_API_KEY} –-variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $QUANTIMODO_CLIENT_ID Android app..."
 cordova plugin add cordova-fabric-plugin -–variable FABRIC_API_KEY=${FABRIC_API_KEY} –-variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
 
 source ${IONIC_PATH}/scripts/build_scripts/push_plugin_install.sh
@@ -159,7 +159,7 @@ fi
 export APPLE_ID="1115037060"
 export APP_IDENTIFIER="com.quantimodo.quantimodo"
 export APP_DISPLAY_NAME="QuantiModo"
-export LOWERCASE_APP_NAME=quantimodo
+export QUANTIMODO_CLIENT_ID=quantimodo
 export APP_DESCRIPTION=Perfect your life
 echo "Cannot use exclamation point in app description"
 export IONIC_APP_ID="42fe48d4"
@@ -175,11 +175,11 @@ if [ -z ${BUILD_QUANTIMODO} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
         # We do this at this higher level so Jenkins can detect the exit code
-        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk ];
         then
-           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+           echo echo "${QUANTIMODO_CLIENT_ID} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk"
         else
-           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk does not exist. Build FAILED"
            exit 1
         fi
 fi
@@ -187,7 +187,7 @@ fi
 export APPLE_ID="1046797567"
 export APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 export APP_DISPLAY_NAME="MoodiModo"
-export LOWERCASE_APP_NAME=moodimodo
+export QUANTIMODO_CLIENT_ID=moodimodo
 export APP_DESCRIPTION=Track and find out what affects your mood
 export IONIC_APP_ID="470c1f1b"
 
@@ -201,11 +201,11 @@ if [ -z ${BUILD_MOODIMODO} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
         # We do this at this higher level so Jenkins can detect the exit code
-        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk ];
         then
-           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+           echo echo "${QUANTIMODO_CLIENT_ID} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk"
         else
-           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk does not exist. Build FAILED"
            exit 1
         fi
 fi
@@ -214,7 +214,7 @@ export APPLE_ID="102492.2.7"
 export APP_IDENTIFIER="com.quantimodo.mindfirst"
 export APP_DISPLAY_NAME=MindFirst
 echo "Replace doesn't work if there's a space"
-export LOWERCASE_APP_NAME=mindfirst
+export QUANTIMODO_CLIENT_ID=mindfirst
 export APP_DESCRIPTION=Empowering a New Approach to Mind Research
 export IONIC_APP_ID="6d8e312f"
 
@@ -229,11 +229,11 @@ if [ -z ${BUILD_MINDFIRST} ];
 
 
         # We do this at this higher level so Jenkins can detect the exit code
-        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk ];
         then
-           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+           echo echo "${QUANTIMODO_CLIENT_ID} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk"
         else
-           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk does not exist. Build FAILED"
            exit 1
         fi
 fi
@@ -241,7 +241,7 @@ fi
 export APPLE_ID="1115037652"
 export APP_IDENTIFIER="com.quantimodo.energymodo"
 export APP_DISPLAY_NAME="EnergyModo"
-export LOWERCASE_APP_NAME=energymodo
+export QUANTIMODO_CLIENT_ID=energymodo
 export APP_DESCRIPTION=Track and find out what affects your energy levels
 export IONIC_APP_ID="f837bb35"
 
@@ -255,11 +255,11 @@ if [ -z ${BUILD_ENERGYMODO} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
         # We do this at this higher level so Jenkins can detect the exit code
-        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk ];
         then
-           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+           echo echo "${QUANTIMODO_CLIENT_ID} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk"
         else
-           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk does not exist. Build FAILED"
            exit 1
         fi
 fi
@@ -267,7 +267,7 @@ fi
 export APPLE_ID="1115037661"
 export APP_IDENTIFIER="com.quantimodo.medimodo"
 export APP_DISPLAY_NAME="MediModo"
-export LOWERCASE_APP_NAME=medimodo
+export QUANTIMODO_CLIENT_ID=medimodo
 export APP_DESCRIPTION=Medication Track Learn Connect
 export IONIC_APP_ID="e85b92b4"
 
@@ -281,11 +281,11 @@ if [ -z ${BUILD_MEDIMODO} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
         # We do this at this higher level so Jenkins can detect the exit code
-        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk ];
         then
-           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+           echo echo "${QUANTIMODO_CLIENT_ID} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk"
         else
-           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk does not exist. Build FAILED"
            exit 1
         fi
 fi
@@ -293,7 +293,7 @@ fi
 export APPLE_ID="1115037661"
 export APP_IDENTIFIER="com.quantimodo.epharmix"
 export APP_DISPLAY_NAME="Epharmix"
-export LOWERCASE_APP_NAME=epharmix
+export QUANTIMODO_CLIENT_ID=epharmix
 export APP_DESCRIPTION=Improving Health Outcomes
 export IONIC_APP_ID=""
 
@@ -307,11 +307,11 @@ if [ -z ${BUILD_EPHARMIX} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
         # We do this at this higher level so Jenkins can detect the exit code
-        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk ];
         then
-           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+           echo echo "${QUANTIMODO_CLIENT_ID} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk"
         else
-           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${QUANTIMODO_CLIENT_ID}-android-armv7-release-signed.apk does not exist. Build FAILED"
            exit 1
         fi
 fi

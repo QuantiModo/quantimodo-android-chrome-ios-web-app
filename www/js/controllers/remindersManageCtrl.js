@@ -1,8 +1,8 @@
-angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout,
-												$ionicLoading, $filter, $ionicActionSheet,  quantimodoService) {
+angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  quantimodoService) {
 	$scope.controller_name = "RemindersManageCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
+    quantimodoService.goToLoginIfNecessary();
 	$scope.state = {
 		showButtons : false,
 		variableCategory : $stateParams.variableCategoryName,

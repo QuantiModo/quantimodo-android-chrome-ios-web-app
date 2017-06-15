@@ -1,5 +1,5 @@
-angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast, helpCards) {
+angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, quantimodoService, $ionicLoading, $mdToast) {
+    if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
 	$scope.controller_name = "RemindersInboxCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
@@ -31,11 +31,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("RemindersInboxCtrl beforeEnter ");
 		$scope.loading = true;
-		if(!quantimodoService.getUrlParameter('accessToken') && !$rootScope.user){
-			console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-			quantimodoService.setLocalStorageItem('afterLoginGoToState', 'app.onboarding');
-			$state.go('app.login');
-		}
+        if(quantimodoService.goToLoginIfNecessary()){ return; }
 		$rootScope.hideBackButton = true;
 		$rootScope.hideHomeButton = true;
         if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}
@@ -43,7 +39,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	});
 	$scope.$on('$ionicView.enter', function(e) {
         console.debug("RemindersInboxCtrl enter");
-        $scope.defaultHelpCards = quantimodoService.setupHelpCards(helpCards.data);
+        $scope.defaultHelpCards = quantimodoService.setupHelpCards();
         getTrackingReminderNotifications();
         getFavorites();
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};

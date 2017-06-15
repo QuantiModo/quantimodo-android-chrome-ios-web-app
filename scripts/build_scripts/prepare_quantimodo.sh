@@ -49,7 +49,7 @@ export KEY_PASSWORD=${KEY_PASSWORD}
 export APPLE_ID="1115037060"
 export APP_IDENTIFIER="com.quantimodo.quantimodo"
 export APP_DISPLAY_NAME="QuantiModo"
-export LOWERCASE_APP_NAME=quantimodo
+export QUANTIMODO_CLIENT_ID=quantimodo
 export APP_DESCRIPTION=Perfect your life
 echo "Cannot use exclamation point in app description"
 
