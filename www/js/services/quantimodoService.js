@@ -911,10 +911,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     var setupGoogleAnalytics = function(user){
         if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.googleAnalyticsTrackingIds){
             if(typeof Analytics !== "undefined") {
-                Analytics.configuration.accounts[0].tracker = config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic;
+                Analytics.configuration.accounts[0].tracker = config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps;
             }
         } else {
-            console.error("No config.appSettings.additionalSettings.googleAnalyticsTrackingIds.ionic!");
+            console.error("No config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps!");
         }
         Analytics.registerScriptTags();
         Analytics.registerTrackers();

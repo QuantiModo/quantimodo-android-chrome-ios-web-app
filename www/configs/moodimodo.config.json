@@ -24,10 +24,10 @@
             "webApp": "https://app.quantimo.do"
         },
         "googleAnalyticsTrackingIds": {
-            "laravel": "UA-39222734-29",
-            "ionic": "UA-39222734-25",
-            "api": "UA-39222734-24",
-            "wp": "UA-39222734-2"
+            "adminPanel": "UA-39222734-29",
+            "endUserApps": "UA-39222734-25",
+            "backEndAPI": "UA-39222734-24",
+            "informationalHomePage": "UA-39222734-2"
         },
         "socialLinks": {
             "facebook": "https://www.facebook.com/Quantimodology",
