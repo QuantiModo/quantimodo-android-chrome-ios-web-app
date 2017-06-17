@@ -72,7 +72,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         console.debug('afterLoginGoTo is ' + localStorage.getItem('afterLoginGoTo'));
         leaveIfLoggedIn();
         if(config.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
-        if(quantimodoService.getUrlParameter('loggingIn')){ loginTimeout(); }
+        if(quantimodoService.getUrlParameter('loggingIn') || quantimodoService.getAccessTokenFromUrl()){ loginTimeout(); }
     });
     $scope.$on('$ionicView.enter', function(){
         //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
