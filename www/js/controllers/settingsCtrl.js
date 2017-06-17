@@ -218,6 +218,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		window.location.replace(logoutUrl);
 	}
 	$scope.logout = function(ev) {
+		$rootScope.accessTokenFromUrl = null;
 		var completelyResetAppStateAndLogout = function(){
 			quantimodoService.completelyResetAppState();
 			logOutOfWebsite();
