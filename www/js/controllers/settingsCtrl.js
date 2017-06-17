@@ -219,12 +219,14 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	}
 	$scope.logout = function(ev) {
 		var completelyResetAppStateAndLogout = function(){
+			quantimodoService.showBlackRingLoader();
 			quantimodoService.completelyResetAppState();
 			logOutOfWebsite();
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			$state.go('app.intro');
 		};
 		var afterLogoutDoNotDeleteMeasurements = function(){
+            quantimodoService.showBlackRingLoader();
 			$rootScope.user = null;
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			quantimodoService.clearOAuthTokensFromLocalStorage();
