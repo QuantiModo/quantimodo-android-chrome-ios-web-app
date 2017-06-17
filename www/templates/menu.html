@@ -43,13 +43,13 @@
             <ion-list>
                 <div ng-repeat="menuItem in appSettings.appDesign.menu.active">
                     <ion-item ng-click="closeMenuIfNeeded(menuItem)" ng-href="{{menuItem.href}}">
-                        <i ng-if="menuItem.showSubMenu" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
-                        <i ng-if="!menuItem.showSubMenu" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
+                        <i ng-if="menuItem.showSubMenu && menuItem.subMenu" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
+                        <i ng-if="!menuItem.showSubMenu || !menuItem.subMenu" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
                     </ion-item>
                     <ion-item ng-if="false && appSettings.designMode">
                         <span ng-href="{{menuItem.href}}" ng-click="closeMenuIfNeeded(menuItem)">
-                            <i ng-if="menuItem.showSubMenu" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
-                            <i ng-if="!menuItem.showSubMenu" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
+                            <i ng-if="menuItem.showSubMenu && menuItem.subMenu" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
+                            <i ng-if="!menuItem.showSubMenu || !menuItem.subMenu" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
                         </span>
                         <span ng-if="appSettings.designMode">
                             &nbsp&nbsp<i ng-click="openEditAppSettingsModal('menu', menuItem)" ><i class="icon ion-edit"></i></i>
