@@ -19,11 +19,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
             if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
         }
-        if(quantimodoService.getUrlParameter('userId')){urlParams.push(encodeURIComponent('userId') + '=' + quantimodoService.getUrlParameter('userId'));}
-        //We can't append access token to Ionic requests for some reason
-        //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
-        if(quantimodoService.getUrlParameter('log')){urlParams.push(encodeURIComponent('log') + '=' + quantimodoService.getUrlParameter('log'));}
-        if(quantimodoService.getUrlParameter('pwd')){urlParams.push(encodeURIComponent('pwd') + '=' + quantimodoService.getUrlParameter('pwd'));}
+        var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
+        for(var i = 0; i < passableUrlParameters.length; i++){
+            if(quantimodoService.getUrlParameter(passableUrlParameters[i])){urlParams.push(encodeURIComponent(passableUrlParameters[i]) + '=' + quantimodoService.getUrlParameter(passableUrlParameters[i]));}
+        }
+        //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));  //We can't append access token to Ionic requests for some reason
         return urlParams;
     }
     function addVariableCategoryInfo(array){
