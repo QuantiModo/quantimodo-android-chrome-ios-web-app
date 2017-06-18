@@ -27,7 +27,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
         if($rootScope.appSettings.appDesign.intro.active[0].backgroundColor){ $scope.myIntro.backgroundColor = $rootScope.appSettings.appDesign.intro.active[0].backgroundColor; }
         if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
-        if(quantimodoService.getAccessTokenFromCurrentUrl()){
+        if(quantimodoService.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
             console.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' + config.appSettings.appDesign.defaultState);
             $state.go(config.appSettings.appDesign.defaultState);
         } else {
