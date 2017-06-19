@@ -70,8 +70,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 					if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
 					if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
 					if(index === 2){$state.go('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
-                    if(index === 3){$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 4){$state.go('app.measurementAddSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 3){$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 4){$state.go('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 5){$state.go('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
 					return true;
 				}
@@ -124,12 +124,12 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	};
 	$scope.addNewReminderButtonClick = function(){
 		if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
-			$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
+			$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
 		else {$state.go('app.reminderSearch');}
 	};
 	$scope.addNewMeasurementButtonClick = function(){
 		if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
-			$state.go('app.measurementAddSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
+			$state.go('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
 		else { $state.go('app.measurementAddSearch'); }
 	};
 	$scope.deleteReminder = function(reminder){

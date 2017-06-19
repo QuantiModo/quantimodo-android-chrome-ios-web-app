@@ -656,7 +656,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         });
     };
     $scope.goToReminderSearchCategory = function(variableCategoryName) {
-        $state.go('app.reminderSearchCategory',
+        $state.go('app.reminderSearch',
             {
                 variableCategoryName : variableCategoryName,
                 fromUrl: window.location.href,

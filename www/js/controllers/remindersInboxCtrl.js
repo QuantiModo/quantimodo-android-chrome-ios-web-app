@@ -65,8 +65,8 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				buttonClicked: function(index) {
 					console.debug('BUTTON CLICKED', index);
                     if(index === 0){$state.go('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
-                    if(index === 1){$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 2){$state.go('app.measurementAddSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 1){$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 2){$state.go('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 3){$state.go('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 4){$state.go('app.settings');}
                     if(index === 5){$state.go('app.help');}
