@@ -6575,6 +6575,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(window.config){return;}
         window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        window.config.appSettings.appDesign.menu = convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
         $rootScope.appSettings = window.config.appSettings;
         if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
@@ -6670,6 +6671,40 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         };
         window.QuantiModoIntegration.openConnectorsListPopup();
+    };
+    function getStringAfterLastSlash(string) {
+        var lastSlashIndex = string.lastIndexOf('/');
+        return string.substring(lastSlashIndex  + 1);
+    }
+    function convertHrefToUrlAndParams(menuItem) {
+        if(menuItem.href){
+            menuItem.href = menuItem.href.replace('-category', '');
+            menuItem.href = menuItem.href.replace('/Anything', '');
+            menuItem.url = menuItem.href.replace('#', '');
+            if($rootScope.variableCategories[getStringAfterLastSlash(menuItem.href)]){
+                menuItem.params = {
+                    variableCategoryName: getStringAfterLastSlash(menuItem.href)
+                };
+                menuItem.url = menuItem.href.replace('/' + getStringAfterLastSlash(menuItem.href), '');
+            }
+        }
+        delete menuItem.href;
+        return menuItem;
+    }
+    function convertHrefInSingleMenuType (menu){
+        for(var i =0; i < menu.length; i++){
+            menu[i] = convertHrefToUrlAndParams(menu[i]);
+            if(menu[i].subMenu){
+                for(var j =0; j < menu[i].subMenu.length; j++){
+                    menu[i].subMenu[j] = convertHrefToUrlAndParams(menu[i].subMenu[j]);
+                }
+            }
+        }
+    }
+    function convertHrefInAllMenus(menu) {
+        menu.active = convertHrefInSingleMenuType(menu.active);
+        menu.custom = convertHrefInSingleMenuType(menu.custom);
+        return menu;
     };
     return quantimodoService;
 });
