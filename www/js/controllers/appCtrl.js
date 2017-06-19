@@ -655,8 +655,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
         });
     };
-    $scope.goToReminderSearchCategory = function(variableCategoryName) {
-        $state.go('app.reminderSearchCategory',
+    $scope.goToReminderSearch = function(variableCategoryName) {
+        $state.go('app.reminderSearch',
             {
                 variableCategoryName : variableCategoryName,
                 fromUrl: window.location.href,

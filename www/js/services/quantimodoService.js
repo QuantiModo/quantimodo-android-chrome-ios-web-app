@@ -6575,6 +6575,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(window.config){return;}
         window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        window.config.appSettings.appDesign.menu = convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
         $rootScope.appSettings = window.config.appSettings;
         if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
@@ -6671,5 +6672,58 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         };
         window.QuantiModoIntegration.openConnectorsListPopup();
     };
+    function getStringAfterLastSlash(string) {
+        var lastSlashIndex = string.lastIndexOf('/');
+        return string.substring(lastSlashIndex  + 1);
+    }
+    function convertObjectToQueryString(obj){
+        if(!obj){return '';}
+        var str = [];
+        for(var p in obj){
+            if (obj.hasOwnProperty(p)) {
+                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            }
+        }
+        return '?' + str.join("&");
+    }
+    function convertUrlAndParamsToHref(menuItem) {
+        if(!menuItem.subMenu){menuItem.href = '#' + menuItem.url + convertObjectToQueryString(menuItem.params);}
+        return menuItem;
+    }
+    function convertStringToId(string) {
+        return string.replace('#/app/', '').replace('/', '_').replace('?', '_').replace('&', '_').replace('=', '_').toLowerCase();
+    }
+    function convertHrefToUrlAndParams(menuItem) {
+        if(menuItem.href && !menuItem.url){
+            menuItem.href = menuItem.href.replace('-category', '');
+            menuItem.href = menuItem.href.replace('/Anything', '');
+            menuItem.url = menuItem.href.replace('#', '');
+            if($rootScope.variableCategories[getStringAfterLastSlash(menuItem.url)]){
+                menuItem.params = {
+                    variableCategoryName: getStringAfterLastSlash(menuItem.url)
+                };
+                menuItem.url = menuItem.url.replace('/' + getStringAfterLastSlash(menuItem.url), '');
+            }
+        }
+        menuItem = convertUrlAndParamsToHref(menuItem);
+        if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
+        return menuItem;
+    }
+    function convertHrefInSingleMenuType (menu){
+        for(var i =0; i < menu.length; i++){
+            menu[i] = convertHrefToUrlAndParams(menu[i]);
+            if(menu[i].subMenu){
+                for(var j =0; j < menu[i].subMenu.length; j++){
+                    menu[i].subMenu[j] = convertHrefToUrlAndParams(menu[i].subMenu[j]);
+                }
+            }
+        }
+        return menu;
+    }
+    function convertHrefInAllMenus(menu) {
+        menu.active = convertHrefInSingleMenuType(menu.active);
+        menu.custom = convertHrefInSingleMenuType(menu.custom);
+        return menu;
+    }
     return quantimodoService;
 });
