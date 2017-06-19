@@ -67,6 +67,9 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 $scope.distributionChartConfig = quantimodoService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
             } else {
+                if(!$scope.lineChartConfig || $scope.state.history.length === maximumMeasurements){  // We want to use daily in this case so we can see a longer time range
+                    $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
+                }
                 //$scope.smoothedLineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
             }
             $scope.weekdayChartConfig = quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
@@ -78,7 +81,9 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         if ($scope.state.history.length > 0) {
             if($rootScope.variableObject.fillingValue === null || $rootScope.variableObject.fillingValue === -1){
                 $scope.distributionChartConfig = quantimodoService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
-                $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.history, $rootScope.variableObject);
+                if($scope.state.history.length < maximumMeasurements){  // We want to use daily in this case so we can see a longer time range
+                    $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.history, $rootScope.variableObject);
+                }
             }
             $scope.hourlyChartConfig = quantimodoService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
             quantimodoService.highchartsReflow();
