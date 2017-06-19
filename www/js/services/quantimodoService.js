@@ -6686,6 +6686,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return '?' + str.join("&");
     }
+    function convertUrlAndParamsToHref(menuItem) {
+        if(!menuItem.subMenu){menuItem.href = '#' + menuItem.url + convertObjectToQueryString(menuItem.params);}
+        return menuItem;
+    }
+    function convertStringToId(string) {
+        return string.replace('#/app/', '').replace('/', '_').replace('?', '_').replace('&', '_').replace('=', '_').toLowerCase();
+    }
     function convertHrefToUrlAndParams(menuItem) {
         if(menuItem.href && !menuItem.url){
             menuItem.href = menuItem.href.replace('-category', '');
@@ -6698,7 +6705,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 menuItem.url = menuItem.url.replace('/' + getStringAfterLastSlash(menuItem.url), '');
             }
         }
-        if(!menuItem.subMenu){menuItem.href = '#' + menuItem.url + convertObjectToQueryString(menuItem.params);}
+        menuItem = convertUrlAndParamsToHref(menuItem);
+        if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
         return menuItem;
     }
     function convertHrefInSingleMenuType (menu){

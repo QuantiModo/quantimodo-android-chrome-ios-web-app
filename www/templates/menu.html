@@ -42,11 +42,11 @@
         <ion-content>
             <ion-list>
                 <div ng-repeat="menuItem in appSettings.appDesign.menu.active">
-                    <ion-item ng-click="closeMenuIfNeeded(menuItem)" ng-href="{{menuItem.href}}">
+                    <ion-item ng-click="closeMenuIfNeeded(menuItem)" ng-href="{{menuItem.href}}" id="{{menuItem.id}}">
                         <i ng-if="menuItem.showSubMenu && menuItem.subMenu" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
                         <i ng-if="!menuItem.showSubMenu || !menuItem.subMenu" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
                     </ion-item>
-                    <ion-item ng-if="false && appSettings.designMode">
+                    <ion-item ng-if="false && appSettings.designMode" id="{{menuItem.id}}">
                         <span ng-href="{{menuItem.href}}" ng-click="closeMenuIfNeeded(menuItem)">
                             <i ng-if="menuItem.showSubMenu && menuItem.subMenu" class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
                             <i ng-if="!menuItem.showSubMenu || !menuItem.subMenu" class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
@@ -57,12 +57,12 @@
                             &nbsp&nbsp<i ng-click="deleteAppComponentElement('menu', menuItem)" class="icon ion-trash-a" ></i>
                         </span>
                     </ion-item>
-                    <ion-item ng-show="menuItem.showSubMenu" ng-class="{'sub-menu': true}" ng-repeat="subMenuItem in menuItem.subMenu" ng-href="{{subMenuItem.href}}">
+                    <ion-item ng-repeat="subMenuItem in menuItem.subMenu" id="{{subMenuItem.id}}" ng-href="{{subMenuItem.href}}" ng-show="menuItem.showSubMenu" ng-class="{'sub-menu': true}" >
                         <!--Don't use menu-close instead of menu-toggle because it clears the state history-->
                         <i class="{{subMenuItem.icon}}" menu-toggle>&nbsp; {{subMenuItem.title}}</i>
                     </ion-item>
                 </div>
-                <ion-item ng-show="appSettings.designMode" ng-href="#/app/configuration">
+                <ion-item ng-show="appSettings.designMode" ng-href="#/app/configuration" id="configurationMenuItem">
                     <i class="ion-edit" menu-toggle>&nbsp; App Designer</i>
                 </ion-item>
             </ion-list>
