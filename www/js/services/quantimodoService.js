@@ -6681,14 +6681,26 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             menuItem.href = menuItem.href.replace('-category', '');
             menuItem.href = menuItem.href.replace('/Anything', '');
             menuItem.url = menuItem.href.replace('#', '');
-            if($rootScope.variableCategories[getStringAfterLastSlash(menuItem.href)]){
+            if($rootScope.variableCategories[getStringAfterLastSlash(menuItem.url)]){
                 menuItem.params = {
-                    variableCategoryName: getStringAfterLastSlash(menuItem.href)
+                    variableCategoryName: getStringAfterLastSlash(menuItem.url)
                 };
-                menuItem.url = menuItem.href.replace('/' + getStringAfterLastSlash(menuItem.href), '');
+                menuItem.url = menuItem.url.replace('/' + getStringAfterLastSlash(menuItem.url), '');
             }
         }
-        delete menuItem.href;
+        function serialize(obj) {
+            if(!obj){return '';}
+            var str = [];
+            for(var p in obj){
+                if (obj.hasOwnProperty(p)) {
+                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                }
+            }
+            return '?' + str.join("&");
+        }
+        if(!menuItem.subMenu){
+            menuItem.href = '#' + menuItem.url + serialize(menuItem.params);
+        }
         return menuItem;
     }
     function convertHrefInSingleMenuType (menu){

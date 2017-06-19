@@ -363,28 +363,6 @@ angular.module('starter')
         return splitStr.join(' ');
     };
 })
-.filter('menuItemToHref', function() {
-    function serialize(obj) {
-        if(!obj){return '';}
-        var str = [];
-        for(var p in obj){
-            if (obj.hasOwnProperty(p)) {
-                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-            }
-        }
-        return '?' + str.join("&");
-    }
-    return function(menuItem) {
-        var href;
-        if(menuItem.href){
-            href = menuItem.href;
-        } else {
-            href = '#' + menuItem.url + serialize(menuItem.params);
-        }
-        href.replace('##', '#');
-        return href;
-    };
-})
 .filter('prettyJSON', function () {
     function prettyPrintJson(json) {
         return JSON ? JSON.stringify(json, null, '  ') : 'your browser doesnt support JSON so cant pretty print';
