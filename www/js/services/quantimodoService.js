@@ -6703,6 +6703,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 break;
             }
         }
+        if(!menuItem.stateName){
+            console.debug("no state name for ", menuItem);
+        }
         return menuItem;
     }
     function convertUrlVariableCategoryToParams(menuItem){
@@ -6734,6 +6737,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             menuItem.href = menuItem.href.replace('/Anything', '');
             menuItem.url = menuItem.href.replace('#', '');
             menuItem = convertUrlVariableCategoryToParams(menuItem);
+        }
+        if(!menuItem.url){
+            console.debug("no url", menuItem);
         }
         menuItem = convertUrlAndParamsToHref(menuItem);
         if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
