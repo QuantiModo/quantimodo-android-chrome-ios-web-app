@@ -1,5 +1,4 @@
-body
-{
+body{
     font-family: 'Helvetica', 'Arial', sans-serif;
 }
 
@@ -151,11 +150,6 @@ div.dateDiv > input {
 p.item-icon-left{
 	color : #11C1F3;
 }
-
-iframe {
-   width: 100% !important;
-   height: 800px !important;
- }
 
 .backdrop {
 	display:none;
@@ -669,14 +663,12 @@ img.intro-primary-outcome-variable-rating-buttons {
     padding: 6px 10px 5px 16px;
 }
 
-#skipButtonIntro:hover, #nextButtonIntro:hover, #goButtonIntro:hover
-{
+#skipButtonIntro:hover, #nextButtonIntro:hover, #goButtonIntro:hover{
     border: none;
     outline:none;
 }
 
-#skipButtonIntro, #nextButtonIntro, #goButtonIntro
-{
+#skipButtonIntro, #nextButtonIntro, #goButtonIntro{
     border: none;
     outline:none;
 }
@@ -709,37 +701,26 @@ img.intro-primary-outcome-variable-rating-buttons {
 }
 */
 
-
 /*popup override*/
-.popup-container
-{
+.popup-container {
 
 }
-
-.popup
-{
+.popup {
     padding: 12px;
     border-radius: 10px !important;
     border: 1px solid #ccc ;
 }
-
 .popup-container .popup {
     background-color: white;
 }
-
-.popup-head
-{
+.popup-head {
     border-bottom: 0;
 }
-
-.popup-title
-{
+.popup-title {
     color: #575757;
     font-size: 22px;
 }
-
-.popup-body
-{
+.popup-body {
     color: #797979;
     font-size: 16px;
     text-align: center;
@@ -748,9 +729,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     line-height: normal;
     overflow-x: hidden;
 }
-
-.popup-buttons .button
-{
+.popup-buttons .button {
     background-color: #5dc2f1;
     color: white;
     border: none;
@@ -762,20 +741,54 @@ img.intro-primary-outcome-variable-rating-buttons {
     margin: 5px 5px 0 5px;
     cursor: pointer;
 }
-
-.popup-buttons .button.activated
-{
+.popup-buttons .button.activated {
     background-color: #007aff;
 }
-
 .text-right {
     text-align: right;
 }
-
 .margin-bottom-0 {
     margin-bottom: 0;
 }
 
+// Vertical Alignment Start
+.outer {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+.inner {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+// Vertical Alignment End
+
+// Circle Page Start
+.circle-page-button {
+  background-color: rgba(0,0,0,0);
+  border:none;
+  outline:none;
+  color:white;
+  text-align:center;
+}
+
+.circle-page-button:hover {
+  color: white;
+  text-decoration: none;
+}
+// Circle Page End
+
+
+// Fix for transparent md-dialog background on iPhone5
+.platform-ios .opaque-on-ios{
+  opacity: 1;
+}
 
 /*
 Cool animations at http://ianlunn.github.io/Hover/

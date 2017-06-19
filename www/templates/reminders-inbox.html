@@ -3,65 +3,39 @@
     <ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : isWeb == true } ">
         <!--<ion-content scroll="true" overflow-scroll="true">-->
         <ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
-        <div id="aboveAverageWords" ng-if="words">
-            <word-cloud words="words.aboveAverageWords" width="width" height="height"
-                        padding="10" on-click="wordClicked">
-            </word-cloud>
-        </div>
-        <div id="belowAverageWords" ng-if="words">
-            <word-cloud words="words.belowAverageWords" width="width" height="height"
-                        padding="10" on-click="wordClicked">
-            </word-cloud>
-        </div>
-        <div ng-if="stateParams.showHelpCards === true && defaultHelpCards && defaultHelpCards[0]" >
-            <div ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
-        </div>
+        <div id="aboveAverageWords" ng-if="words"><word-cloud words="words.aboveAverageWords" width="width" height="height" padding="10" on-click="wordClicked"></word-cloud></div>
+        <div id="belowAverageWords" ng-if="words"><word-cloud words="words.belowAverageWords" width="width" height="height" padding="10" on-click="wordClicked"></word-cloud></div>
+        <div ng-if="stateParams.showHelpCards === true && defaultHelpCards && defaultHelpCards[0]" ><div ng-include="'templates/fragments/help-info-card-fragment.html'"></div></div>
         <div class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
             <div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
                  id="{{divider.name}}Reminders">
-                <div ng-hide="hideNavigationMenu" class="item item-divider" style="">
-                    {{divider.name}}
-                </div>
+                <div ng-hide="hideNavigationMenu" class="item item-divider" style="">{{divider.name}}</div>
                 <div on-hold="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
                      class="list card"
                      ng-show="!trackingReminderNotification.hide"
                      ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications"
                      ng-init="trackingReminderNotificationIndex = $index" >
                     <div class="item" style="padding-bottom:10px;">
-                        <div ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
-                             class="row">
+                        <div ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)" class="row">
                             <div class="col col-20" style="padding-top: 0px;">
                                 <i ng-if="!trackingReminderNotification.pngPath"  style="font-size: 40px;" class="icon positive {{trackingReminderNotification.ionIcon}}"></i>
                                 <img ng-if="trackingReminderNotification.pngPath" src="{{trackingReminderNotification.pngPath}}" style="max-width: 40px;">
                             </div>
-                            <div ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
-                                 class="col col-70">
-                                <h2 style="white-space: normal; line-height: normal; ">
-                                    {{trackingReminderNotification.title}}
-                                </h2>
-                                <p style="white-space: normal;">
-                                    {{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTimeCompact}}
-                                </p>
+                            <div ng-click="showActionSheetForNotification(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)" class="col col-70">
+                                <h2 style="white-space: normal; line-height: normal; ">{{trackingReminderNotification.title}}</h2>
+                                <p style="white-space: normal;">{{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTimeCompact}}</p>
                             </div>
-                            <div ng-click="showActionSheet(trackingReminderNotification, event)" class="col col-10">
-                                <i style="font-size: 20px;" class="icon positive ion-more"></i>
-                            </div>
+                            <div ng-click="showActionSheet(trackingReminderNotification, event)" class="col col-10"><i style="font-size: 20px;" class="icon positive ion-more"></i></div>
                         </div>
                         <div class="button-bar">
-                            <button class="button button-clear button-assertive"
-                                    style="text-overflow: clip; font-size: 12px;"
-                                    ng-click="skip(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
+                            <button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(trackingReminderNotification, $event)">
                                 <i class="ion-android-cancel"> &nbsp; Skip</i>
                             </button>
-                            <button class="button button-clear button-royal"
-                                    ng-if="trackingReminderNotification.unitAbbreviatedName != '/5'"
-                                    style="text-overflow: clip; font-size: 12px;"
+                            <button class="button button-clear button-royal" ng-if="trackingReminderNotification.unitAbbreviatedName != '/5'" style="text-overflow: clip; font-size: 12px;"
                                     ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
                                 <i class="ion-android-notifications-off"> &nbsp; Snooze</i>
                             </button>
-                            <button class="button button-clear button-royal"
-                                    ng-if="trackingReminderNotification.unitAbbreviatedName == '/5'"
-                                    style="text-overflow: clip; font-size: 12px;"
+                            <button class="button button-clear button-royal" ng-if="trackingReminderNotification.unitAbbreviatedName == '/5'" style="text-overflow: clip; font-size: 12px;"
                                     ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
                                 <i class="ion-edit"> &nbsp; Note</i>
                             </button>
@@ -71,15 +45,11 @@
                                 <i class="ion-settings"> &nbsp; Settings</i>
                             </button>
                         </div>
-                        <label ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null"
-                               class="item item-input">
-                            <input type="number" ng-model="trackingReminderNotification.total" id="emptyValueField"
-                                   ng-click="onTextClick($event)"
-                                   placeholder="Enter value"
+                        <label ng-if="trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue === null" class="item item-input">
+                            <input type="number" ng-model="trackingReminderNotification.total" id="emptyValueField" ng-click="onTextClick($event)" placeholder="Enter value"
                                    style="text-align: center; max-width: 125px; padding-right: 10px">
                             <span on-tap="trackByValueField(trackingReminderNotification, $event)" class="input-label">
-								{{trackingReminderNotification.unitAbbreviatedName}} &nbsp
-								<i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i>
+								{{trackingReminderNotification.unitAbbreviatedName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i>
 							</span>
                         </label>
                         <!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->

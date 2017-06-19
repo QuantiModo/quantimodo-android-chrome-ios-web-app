@@ -25,11 +25,16 @@ angular.module('starter',
         'ngMaterial',
         'ngMessages',
         'angular-cache',
-        'angular-d3-word-cloud'
+        'angular-d3-word-cloud',
+        'ngFileUpload'
+        //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, Analytics, $ionicLoading) {
-    $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, $http) {
+    window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
+    quantimodoService.getPrivateConfigs();
+    quantimodoService.showBlackRingLoader();
+    if(appsManager.getUrlParameter('logout')){localStorage.clear(); $rootScope.user = null;}
     quantimodoService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
@@ -178,16 +183,18 @@ angular.module('starter',
                 }
             }
         };
-        if(window.location.href.indexOf('ionic.quantimo') === -1 && window.location.href.indexOf('staging.quantimo') === -1 && window.location.href.indexOf('local.quantimo') === -1){
-            if(typeof analytics !== "undefined") {analytics.startTrackerWithId(config.appSettings.googleAnalyticsTrackingIds.ionic);}
-        }
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false); // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs
         }
         if (window.StatusBar) {StatusBar.styleDefault();} // org.apache.cordova.statusbar required
     });
-    $rootScope.goToState = function(state, params){
-        $state.go(state, params);
+    $rootScope.goToState = function(stateName, stateParameters){
+        if(stateName.indexOf('button') !== -1){
+            var buttonName = stateName;
+            stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
+            stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
+        }
+        $state.go(stateName, stateParameters);
     };
     $ionicPlatform.registerBackButtonAction(function (event) {
         if($rootScope.backButtonState){
@@ -197,10 +204,10 @@ angular.module('starter',
         }
         if($ionicHistory.currentStateName() === 'app.upgrade'){
             console.debug('registerBackButtonAction from upgrade: Going to default state...');
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return;
         }
-        if($ionicHistory.currentStateName() === config.appSettings.defaultState){
+        if($ionicHistory.currentStateName() === config.appSettings.appDesign.defaultState){
             ionic.Platform.exitApp();
             return;
         }
@@ -211,7 +218,7 @@ angular.module('starter',
         if(localStorage.user){
             $rootScope.hideNavigationMenu = false;
             console.debug('registerBackButtonAction: Going to default state...');
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             return;
         }
         console.debug('registerBackButtonAction: Closing the app');
@@ -219,28 +226,15 @@ angular.module('starter',
     }, 100);
 
     var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
-    function setIntoSeenAndOnboarded() {
-        var urlParameters = {};
-        var queryString = document.location.toString().split('?')[1];
-        var sURLVariables, parameterNameValueArray;
-        if (queryString) {sURLVariables = queryString.split('&');}
-        if (sURLVariables) {
-            for (var i = 0; i < sURLVariables.length; i++) {
-                parameterNameValueArray = sURLVariables[i].split('=');
-                if (parameterNameValueArray[1].indexOf('http') > -1) {urlParameters[parameterNameValueArray[0].toCamel()] = parameterNameValueArray[1];} else {urlParameters[parameterNameValueArray[0].toCamel()] = decodeURIComponent(parameterNameValueArray[1]);}
-            }
-        }
-        if (urlParameters.existingUser || urlParameters.introSeen || urlParameters.refreshUser) {
-            window.localStorage.introSeen = true;
-            window.localStorage.onboarded = true;
-        }
+    if (appsManager.getUrlParameter('existingUser') || appsManager.getUrlParameter('introSeen') || appsManager.getUrlParameter('refreshUser')) {
+        window.localStorage.introSeen = true;
+        window.localStorage.onboarded = true;
     }
-    setIntoSeenAndOnboarded();
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
-    if(appsManager.getUrlParameter('logout')){localStorage.clear();}
+    if(appsManager.getUrlParameter('debug')){window.debugMode = true;}
     if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
-    var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};
+    var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in quantimodoService.getUserAndSetupGoogleAnalytics
     if(ionic.Platform.isAndroid()){
         var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
         if(!clientId){
@@ -270,32 +264,20 @@ angular.module('starter',
         $ionicConfigProvider.views.swipeBackEnabled(false);  // Prevents back swipe white screen on iOS when caching is disabled https://github.com/driftyco/ionic/issues/3216
     }
     String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
-    var config_resolver = {};
-    if(!appsManager.getAppSettingsFromUrlParameter()){
-        if(!appsManager.doWeHaveLocalConfigFile() && window.location.href.indexOf('https://') !== -1 && window.location.href.indexOf('quantimo.do') !== -1){
-            var localStorageName = appsManager.getSubDomain() + 'AppSettings';
-            var locallyStoredAppSettings = localStorage.getItem(localStorageName);
-            if(locallyStoredAppSettings) {
-                window.config = {appSettings: JSON.parse(locallyStoredAppSettings)};
-            } else {
-                config_resolver = {
-                    appSettingsResponse: function ($http) {
-                        return $http.get(window.location.origin + '/api/v1/appSettings').then(function (response) {
-                            localStorage.setItem(localStorageName, JSON.stringify(response.data.data));
-                            window.config = {appSettings: response.data.data};
-                        }, function errorCallback(response) {
-                            return $http.get('configs/medimodo.config.json').success(function(appSettings) {
-                                window.config = {appSettings: appSettings};
-                            });
-                        });
-                    }
-                };
-            }
-        } else {
-            config_resolver = {loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}]};
-        }
-    }
+    Array.prototype.contains = function(obj) {
+        var i = this.length;
+        while (i--) {if (this[i] === obj) {return true;}}
+    };
 
+    var config_resolver = {
+        appSettingsResponse: function($http){
+            var settingsUrl = 'configs/default.config.json';
+            var clientId = appsManager.getClientIdFromQueryParameters(true);
+            if(!appsManager.shouldWeUseLocalConfig()){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;}
+            return $http({method: 'GET', url: settingsUrl});
+        }
+    };
+    //config_resolver.loadMyService = ['$ocLazyLoad', function($ocLazyLoad) {return $ocLazyLoad.load([appsManager.getAppConfig(), appsManager.getPrivateConfig()]);}];
     ionicTimePickerProvider.configTimePicker({format: 12, step: 1, closeLabel: 'Cancel'});
     var datePickerObj = {
         inputDate: new Date(),
@@ -338,19 +320,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.loginOld', {
-            url: "/login-old",
-            params: {
-                fromState : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/login-page-old.html",
-                    controller: 'LoginCtrl'
-              }
-            }
-        })
         .state('app.login', {
             url: "/login",
             params: {
@@ -361,32 +330,6 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/login-page.html",
                     controller: 'LoginCtrl'
-                }
-            }
-        })
-        .state('app.loginLocal', {
-            url: "/login-local",
-            params: {
-                fromState : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/login-local.html",
-                    controller: 'IntroCtrl'
-                }
-            }
-        })
-        .state('app.introOld', {
-            cache: true,
-            url: "/intro-old",
-            params: {
-                doNotRedirect: true
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/intro-tour-old.html",
-                    controller: 'IntroCtrl'
                 }
             }
         })
@@ -401,7 +344,8 @@ angular.module('starter',
                     templateUrl: "templates/intro-tour-new.html",
                     controller: 'IntroCtrl'
                 }
-            }
+            },
+            resolve : config_resolver
         })
         .state('app.track', {
             url: "/track",
@@ -438,56 +382,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.measurementAddSearchCategory', {
-            url: "/measurement-add-search-category/:variableCategoryName",
-            params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                nextState: 'app.measurementAdd',
-                excludeDuplicateBloodPressure: true,
-                variableSearchParameters: {
-                    limit: 100,
-                    includePublic: true,
-                    manualTracking: true
-                },
-                hideNavigationMenu: null,
-                doneState: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
-        .state('app.reminderSearchCategory', {
-            url: "/reminder-search-category/:variableCategoryName",
-            params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                reminderSearch: true,
-                nextState: 'app.reminderAdd',
-                excludeDuplicateBloodPressure: true,
-                variableSearchParameters: {
-                    limit: 100,
-                    includePublic: true,
-                    manualTracking: true
-                },
-                hideNavigationMenu: null,
-                skipReminderSettingsIfPossible: null,
-                doneState: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
         .state('app.reminderSearch', {
             url: "/reminder-search",
             params: {
@@ -505,32 +399,6 @@ angular.module('starter',
                 },
                 hideNavigationMenu: null,
                 skipReminderSettingsIfPossible: null,
-                doneState: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
-        .state('app.favoriteSearchCategory', {
-            url: "/favorite-search-category/:variableCategoryName",
-            params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                favoriteSearch: true,
-                nextState: 'app.favoriteAdd',
-                pageTitle: 'Add a favorite',
-                excludeDuplicateBloodPressure: true,
-                variableSearchParameters: {
-                    limit: 100,
-                    includePublic: true,
-                    manualTracking: true
-                },
-                hideNavigationMenu: null,
                 doneState: null
             },
             views: {
@@ -645,31 +513,6 @@ angular.module('starter',
         })
         .state('app.chartSearch', {
             url: "/chart-search",
-            cache: false,
-            params: {
-                variableCategoryName: null,
-                fromState: null,
-                fromUrl: null,
-                measurement: null,
-                nextState: 'app.charts',
-                doNotShowAddVariableButton: true,
-                excludeSingularBloodPressure: true,
-                variableSearchParameters: {
-                    limit: 100,
-                    includePublic: false
-                    //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
-                },
-                hideNavigationMenu: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
-        .state('app.chartSearchCategory', {
-            url: "/chart-search-category/:variableCategoryName",
             cache: false,
             params: {
                 variableCategoryName: null,
@@ -1177,7 +1020,7 @@ angular.module('starter',
             }
         })
         .state('app.historyAll', {
-            url: "/history-all/:variableCategoryName",
+            url: "/history-all",
             cache: true,
             params: {
                 variableCategoryName : null
@@ -1261,38 +1104,18 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.favoritesCategory', {
-            url: "/favorites-category/:variableCategoryName",
-            cache: false,
-            params: {
-                variableCategoryName: null
-            },
+        .state('app.configuration', {
+            cache: true,
+            url: "/configuration",
             views: {
                 'menuContent': {
-                    templateUrl: "templates/favorites.html",
-                    controller: 'FavoritesCtrl'
+                    templateUrl: "../../app-configuration/configuration.html",
+                    controller: 'ConfigurationCtrl'
                 }
             }
         })
         .state('app.remindersInboxToday', {
             url: "/reminders-inbox-today",
-            params: {
-                unit: null,
-                variableName : null,
-                dateTime : null,
-                value : null,
-                fromUrl : null,
-                today : true
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/reminders-inbox.html",
-                    controller: 'RemindersInboxCtrl'
-                }
-            }
-        })
-        .state('app.remindersInboxTodayCategory', {
-            url: "/reminders-inbox-today/:variableCategoryName",
             params: {
                 unit: null,
                 variableName : null,
@@ -1351,35 +1174,38 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.remindersInboxCategory', {
-            url: "/reminders-inbox/:variableCategoryName",
-            params: {
-                unit: null,
-                variableName : null,
-                dateTime : null,
-                value : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/reminders-inbox.html",
-                    controller: 'RemindersInboxCtrl'
-                }
-            }
-        })
         .state('app.remindersManage', {
             cache: false,
-            url: "/reminders-manage/:variableCategoryName",
+            url: "/reminders-manage",
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-manage.html",
                     controller: 'RemindersManageCtrl'
                 }
+            },
+            params: {
+                variableCategoryName : null
             }
         })
         .state('app.remindersList', {
             cache: false,
-            url: "/reminders-list/:variableCategoryName",
+            url: "/reminders-list",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-list.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            },
+            params: {
+                variableCategoryName : null
+            }
+        })
+        .state('app.variableList', {
+            cache: false,
+            url: "/variable-list",
+            params: {
+                variableCategoryName : null
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-list.html",

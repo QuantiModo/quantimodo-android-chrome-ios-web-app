@@ -57,6 +57,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
         $rootScope.hideNavigationMenu = false;
         console.debug('ReminderAddCtrl beforeEnter...');
+        quantimodoService.goToLoginIfNecessary();
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
         if($stateParams.reminder){ $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName; }
         $scope.stateParams = $stateParams;
@@ -281,6 +282,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
         $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
         var dateFormat = 'YYYY-MM-DD';
+        $scope.state.trackingReminder.stopTrackingDate = $scope.state.trackingReminder.startTrackingDate = null;
         if($scope.state.selectedStopTrackingDate){$scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);}
         if($scope.state.selectedStartTrackingDate){$scope.state.trackingReminder.startTrackingDate = moment($scope.state.selectedStartTrackingDate).format(dateFormat);}
         var remindersArray = [];
@@ -399,10 +401,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                     $rootScope.variableObject = variables[0];
                     console.debug('setupReminderEditingFromVariableId got this variable object ' + JSON.stringify($rootScope.variableObject));
                     setupByVariableObject($rootScope.variableObject);
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     $scope.loading = false;
                 }, function () {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     $scope.loading = false;
                     console.error('ERROR: failed to get variable with id ' + variableId);
                 });
@@ -417,10 +419,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 }
                 $stateParams.reminder = reminders[0];
                 setupEditReminder($stateParams.reminder);
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $scope.loading = false;
             }, function () {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $scope.loading = false;
                 console.error('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
             });

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if [[ -z "$LOWERCASE_APP_NAME" ]]; then
-    echo "Error: Missing LOWERCASE_APP_NAME env"
+if [[ -z "$QUANTIMODO_CLIENT_ID" ]]; then
+    echo "Error: Missing QUANTIMODO_CLIENT_ID env"
     exit 1
 fi
 

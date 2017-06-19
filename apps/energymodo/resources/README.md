@@ -8,7 +8,7 @@ Features:
 - Track your energy level in a fraction of a second
 - Add notes with your ratings
 - Create reminders to track treatments, symptoms, emotions, diet, physical activity and anything else
-- Import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more at https://app.quantimo.do/api/v2/account/connectors
+- Import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more
 - Analyze your data to identify which hidden factors are most likely to be influencing your energy and their optimal daily values at https://app.quantimo.do/api/v2/account/user-relationships
 - View mood trends helping to identify triggers for symptoms and identify the potential effects of treatments
 - Export and email your data to your healthcare provider at https://app.quantimo.do/api/v2/account/export-data

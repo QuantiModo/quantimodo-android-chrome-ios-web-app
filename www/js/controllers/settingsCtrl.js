@@ -12,15 +12,15 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$rootScope.hideNavigationMenu = false;
 		if(quantimodoService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
-			quantimodoService.showLoader();
+			quantimodoService.showBlackRingLoader();
 			quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: quantimodoService.getUrlParameter('userEmail')}, function(user){
 				$scope.user = user;
 				$scope.state.loading = false;
-				$ionicLoading.hide();
+				quantimodoService.hideLoader();
 			}, function(error){
 				console.error(error);
 				$scope.state.loading = false;
-				$ionicLoading.hide();
+				quantimodoService.hideLoader();
 			});
 			return;
 		}
@@ -90,12 +90,10 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
 	$scope.contactUs = function() {
-		$scope.hideLoader();
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
 		else {window.location = '#app/feedback';}
 	};
 	$scope.postIdea = function() {
-		$scope.hideLoader();
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
 		} else {window.open('http://help.quantimo.do/forums/211661-general', '_blank');}
 	};
@@ -216,19 +214,20 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		}
 	}
 	function logOutOfWebsite() {
-		if (!window.private_keys || quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
-			var url = quantimodoService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(quantimodoService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
-			window.location.replace(url);
-		}
+		var logoutUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(quantimodoService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
+		window.location.replace(logoutUrl);
 	}
 	$scope.logout = function(ev) {
+		$rootScope.accessTokenFromUrl = null;
 		var completelyResetAppStateAndLogout = function(){
+			quantimodoService.showBlackRingLoader();
 			quantimodoService.completelyResetAppState();
 			logOutOfWebsite();
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			$state.go('app.intro');
 		};
 		var afterLogoutDoNotDeleteMeasurements = function(){
+            quantimodoService.showBlackRingLoader();
 			$rootScope.user = null;
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			quantimodoService.clearOAuthTokensFromLocalStorage();
@@ -245,7 +244,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		console.debug('Logging out...');
-		$scope.hideLoader();
 		$rootScope.user = null;
 		showDataClearPopup(ev);
 	};

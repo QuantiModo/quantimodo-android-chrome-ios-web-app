@@ -25,8 +25,8 @@ script:
 - gulp -v
 - echo "ran through gulp"
 - gulp generateXmlConfigAndUpdateAppsJs
-- cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
-- cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
+- cp -R apps/${QUANTIMODO_CLIENT_ID}/* $PWD
+- cp apps/${QUANTIMODO_CLIENT_ID}/resources/icon_white.png $PWD/resources/icon.png
 - ionic resources
 - gulp updateConfigXmlUsingEnvs
 - gulp makeIosApp
@@ -35,12 +35,12 @@ script:
 env:
   global:
   - APP_DISPLAY_NAME="YourAppDisplayNameHere"
-  - LOWERCASE_APP_NAME="yourlowercaseappnamehere"
-  - APP_IDENTIFIER="com.quantimodo.yourlowercaseappnamehere"
+  - QUANTIMODO_CLIENT_ID="your_quantimodo_client_id_here"
+  - APP_IDENTIFIER="com.quantimodo.your_quantimodo_client_id_here"
   - APPLE_ID="1046797567"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
-  - PROFILE_NAME="match_AppStore_comquantimodoyourlowercaseappnamehere"
+  - PROFILE_NAME="match_AppStore_comquantimodoyour_quantimodo_client_id_here"
   - PROFILE_UUID="cd6448f6-e30d-4d74-8413-58f96a770671"
   - DELIVER_WHAT_TO_TEST="Test the Basics of the app and see if something breaks!"
   - DELIVER_USER="ios@quantimodo.com"
