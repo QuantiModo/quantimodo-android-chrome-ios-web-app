@@ -36,7 +36,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         window.localStorage.onboarded = true;
         $state.go(config.appSettings.appDesign.defaultState);
     };
-    $scope.goToReminderSearchCategoryFromOnboarding = function() {
+    $scope.goToReminderSearchFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
         $rootScope.hideMenuButton = true;
         if(!$rootScope.user){
@@ -45,7 +45,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
             $state.go('app.onboarding');
             return;
         }
-        $scope.goToReminderSearchCategory($scope.circlePage.variableCategoryName);
+        $scope.goToReminderSearch($scope.circlePage.variableCategoryName);
     };
     $scope.enableLocationTracking = function (event) {
         $scope.trackLocationChange(event, true);
