@@ -1,7 +1,5 @@
 ### www/configs/yourappnamehere.js
 
-`appStorageIdentifier` : a unique to your app string that will be prepended to any key stored in `localStorage`. (no spaces or any characters not allowed in keys)
-
 These are the five options (available on the Track page) that the users will rate. Each of the option has an `image` (that will replace the emoji) and `value` (the quantifiable value the image represents).
 
 **Note**: Make sure the values match with the values in the `primaryOutcomeVariableOptionLabels`.

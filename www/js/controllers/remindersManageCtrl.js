@@ -1,8 +1,8 @@
-angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout,
-												$ionicLoading, $filter, $ionicActionSheet,  quantimodoService) {
+angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  quantimodoService) {
 	$scope.controller_name = "RemindersManageCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
+    quantimodoService.goToLoginIfNecessary();
 	$scope.state = {
 		showButtons : false,
 		variableCategory : $stateParams.variableCategoryName,
@@ -28,7 +28,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		noRemindersIcon: "ion-android-notifications-none"
 	};
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter RemindersManageCtrl");
-		quantimodoService.showLoader();
+		if(quantimodoService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = quantimodoService.getUrlParameter('variableCategoryName');}
+		quantimodoService.showBlackRingLoader();
 		$rootScope.hideNavigationMenu = false;
 		$scope.stateParams = $stateParams;
 		var actionButtons = [
@@ -69,8 +70,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 					if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
 					if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
 					if(index === 2){$state.go('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
-                    if(index === 3){$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 4){$state.go('app.measurementAddSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 3){$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 4){$state.go('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 5){$state.go('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
 					return true;
 				}
@@ -84,8 +85,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
 	}
 	function addRemindersToScope(allTrackingReminderTypes) {
-		$scope.hideLoader();
 		$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
+		quantimodoService.hideLoader();
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
 			$scope.state.showNoRemindersCard = true;
 			return;
@@ -97,7 +98,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		showAppropriateHelpInfoCards();
 	}
 	$scope.refreshReminders = function () {
-		$scope.showLoader('Syncing...');
+		$scope.showSyncDisplayText('Syncing...');
 		quantimodoService.syncTrackingReminders(true).then(function(){getTrackingReminders();});
 	};
 	var getTrackingReminders = function(){
@@ -123,12 +124,12 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	};
 	$scope.addNewReminderButtonClick = function(){
 		if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
-			$state.go('app.reminderSearchCategory', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
+			$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
 		else {$state.go('app.reminderSearch');}
 	};
 	$scope.addNewMeasurementButtonClick = function(){
 		if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
-			$state.go('app.measurementAddSearchCategory', {variableCategoryName : $stateParams.variableCategoryName});}
+			$state.go('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
 		else { $state.go('app.measurementAddSearch'); }
 	};
 	$scope.deleteReminder = function(reminder){

@@ -72,9 +72,8 @@
                 <div id="studyCharts">
                     <div ng-repeat="chart in correlationObject.charts">
                         <h2>{{chart.chartTitle}}</h2>
-                        <highchart id="{{chart.chartId}}"
-                                   config="chart.chartConfig">
-                        </highchart>
+                        <highchart id="{{chart.chartId}}" config="chart.chartConfig"></highchart>
+                        <p ng-if="chart.explanation">{{chart.explanation}}</p>
                         <br>
                     </div>
                 </div>

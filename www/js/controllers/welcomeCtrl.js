@@ -38,7 +38,7 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     $scope.$on('$ionicView.beforeEnter', function(){
         if($rootScope.user){
             console.debug('Already have user so no need to welcome. Going to default state.');
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
         }
     });
     $scope.init();

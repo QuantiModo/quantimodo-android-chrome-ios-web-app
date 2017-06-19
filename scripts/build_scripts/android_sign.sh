@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
+cd ${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/android
 
 echo "zip -d ${UNSIGNED_GENERIC_APK_FILENAME} META-INF/\*"
 zip -d ${UNSIGNED_GENERIC_APK_FILENAME} META-INF/\*
@@ -13,22 +13,22 @@ ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_GENERIC_APK_FILENAME} ${SIGNED_G
 
 sudo rm ${UNSIGNED_GENERIC_APK_FILENAME}
 sudo chmod -R 777 ${DROPBOX_PATH}
-sudo mkdir ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME} 2>/dev/null
-sudo mkdir ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android 2>/dev/null
-echo -e "sudo cp ${SIGNED_GENERIC_APK_FILENAME} $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}${NC}"
-sudo cp ${SIGNED_GENERIC_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}"
+sudo mkdir ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID} 2>/dev/null
+sudo mkdir ${DROPBOX_PATH}/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android 2>/dev/null
+echo -e "sudo cp ${SIGNED_GENERIC_APK_FILENAME} $DROPBOX_PATH/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${SIGNED_GENERIC_APK_FILENAME}${NC}"
+sudo cp ${SIGNED_GENERIC_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${SIGNED_GENERIC_APK_FILENAME}"
 
-if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}" ];
+if [ -f "$DROPBOX_PATH/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${SIGNED_GENERIC_APK_FILENAME}" ];
 then
-   echo echo "${SIGNED_GENERIC_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}"
+   echo echo "${SIGNED_GENERIC_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${QUANTIMODO_CLIENT_ID}/android/${SIGNED_GENERIC_APK_FILENAME}"
 else
    echo "ERROR: File ${SIGNED_GENERIC_APK_FILENAME} does not exist. Build FAILED"
    exit 1
 fi
 
-if [ -f "$IONIC_PATH/build/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}" ];
+if [ -f "$IONIC_PATH/build/${QUANTIMODO_CLIENT_ID}/android/${SIGNED_GENERIC_APK_FILENAME}" ];
 then
-   echo echo "${SIGNED_GENERIC_APK_FILENAME} is ready in $IONIC_PATH/build/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}"
+   echo echo "${SIGNED_GENERIC_APK_FILENAME} is ready in $IONIC_PATH/build/${QUANTIMODO_CLIENT_ID}/android/${SIGNED_GENERIC_APK_FILENAME}"
 else
    echo "ERROR: File ${SIGNED_GENERIC_APK_FILENAME} does not exist in build folder. Build FAILED"
    exit 1

@@ -1,487 +1,62 @@
 {
     "appDescription": "yourAppDescriptionHere",
     "appDisplayName": "YourAppDisplayNameHere",
-    "appleId": null,
-    "backgroundColor": "#3467d6",
-    "cordovaLocalNotificationsEnabled": false,
-    "defaultState": "app.remindersInbox",
-    "downloadLinks": {
-        "chromeExtension": null,
-        "iosApp": null,
-        "androidApp": null,
-        "webApp": null
-    },
-    "facebookAppId": 225078261031461,
-    "features": [
-        " - Automatically backup and sync your data across devices",
-        " - Track diet, treatments, symptoms, and anything else",
-        " - Analyze your data to see the strongest predictors of your mood"
-    ],
-    "floatingMaterialButton": {
-        "button1": {
-            "icon": "ion-android-notifications-none",
-            "label": "Add a Reminder",
-            "stateAndParameters": "'app.reminderSearch'"
+    "appType": "your_quantimodo_client_id_here",
+    "clientId": "your_your_quantimodo_client_id_here_client_id_here",
+    "companyName": "YourAppDisplayNameHere",
+    "homepageUrl": "https://YourAppDisplayNameHere.com",
+    "iconUrl": "https://res.cloudinary.com/hxo7b0gvz/image/upload/h_512,w_512/ijHsrk0B1s_ako7ow",
+    "longDescription": "",
+    "textLogo": "https://app.quantimo.do/api/v2/img/logo.png",
+    "userId": 230,
+    "additionalSettings": {
+        "appIdentifier": "com.quantimodo.your_quantimodo_client_id_here",
+        "companyEmail": "info@YourAppDisplayNameHere.com",
+        "googleReversedClientId": "com.googleusercontent.apps.1052648855194-9cv6lr7d617fu6b95gutkc7gvdubb8gl",
+        "appleId": null,
+        "downloadLinks": {
+            "chromeExtension": null,
+            "iosApp": null,
+            "androidApp": null,
+            "webApp": null
         },
-        "button2": {
-            "icon": "ion-compose",
-            "label": "Record a Measurement",
-            "stateAndParameters": "'app.measurementAddSearch'"
+        "facebookAppId": 225078261031461,
+        "googleAnalyticsTrackingIds": {
+            "adminPanel": "UA-39222734-29",
+            "endUserApps": "UA-39222734-25",
+            "backEndAPI": "UA-39222734-24",
+            "informationalHomePage": "UA-39222734-2"
         },
-        "button3": {
-            "icon": "ion-ios-cloud-download-outline",
-            "label": "Import Data",
-            "stateAndParameters": "'app.import'"
-        },
-        "button4": {
-            "icon": "ion-ios-star",
-            "label": "Add a Favorite Variable",
-            "stateAndParameters": "'app.favoriteSearch'"
+        "ionicAppId": null,
+        "socialLinks": {
+            "facebook": "https://www.facebook.com/YourAppDisplayNameHere",
+            "twitter": "https://twitter.com/YourAppDisplayNameHere",
+            "google": "https://plus.google.com/communities/100581500031158281444",
+            "linkedIn": "https://www.linkedin.com/company/YourAppDisplayNameHere"
         }
     },
-    "googleAnalyticsTrackingIds": {
-        "laravel": "UA-39222734-29",
-        "ionic": "UA-39222734-25",
-        "api": "UA-39222734-24",
-        "wp": "UA-39222734-2"
-    },
-    "ionicAppId": null,
-    "introSlides": [
-        {
-            "newIntroStyle": true,
-            "title": "Hi! I'm __APP_DISPLAY_NAME__!",
-            "color": "green",
-            "image": {
-                "height": "120",
-                "width": "120",
-                "url": "img/robots/robot-waving.svg"
+    "appDesign": {
+        "intro": null,
+        "ionNavBarClass": "bar-positive",
+        "physicianAlias": "Physician",
+        "patientAlias": "Patient",
+        "upgradePleadingCard": {
+            "web": {
+                "image": "img/ivy-sad-bw-300-300.png",
+                "text": "Please subscribe to my daddy's app or I'll be cold and hungry..."
             },
-            "overlayIcon": true,
-            "bodyText": "I've been programmed to reduce human suffering with data."
+            "mobile": {
+                "image": "img/ivy-sad-bw.jpg",
+                "textHtml": "Please subscribe to my daddy's app or I'll be cold... <br> and hungry...</span>"
+            }
         },
-        {
-            "newIntroStyle": true,
-            "title": "Hidden Influences",
-            "color": "blue",
-            "image": {
-                "url": "img/intro/patient-frown-factors.png",
-                "height": "120",
-                "width": "120"
-            },
-            "bodyText": "Your symptoms can be worsened or improved by medical treatments, your sleep, exercise, the hundreds of chemicals you consume through your diet, and even the weather!"
+        "welcomeState": "app.welcome",
+        "backgroundColor": "#3467d6",
+        "cordovaLocalNotificationsEnabled": false,
+        "defaultState": "app.remindersInbox",
+        "menu": {
+            "type": "custom"
         },
-        {
-            "newIntroStyle": true,
-            "title": "Only Human",
-            "color": "yellow",
-            "image": {
-                "url": "img/brains/brain-pink.svg",
-                "height": "120",
-                "width": "120"
-            },
-            "bodyText": "Human brains can only hold 7 numbers in working-memory at a time.  So they're not able to determine which factors are most significant. "
-        },
-        {
-            "newIntroStyle": true,
-            "title": "Treatment Determination",
-            "color": "green",
-            "image": {
-                "url": "img/intro/doctor-frown-factors.png",
-                "height": "120",
-                "width": "120"
-            },
-            "bodyText": "Indeed, your doctor has access to less than 1% of the relevant information when they use intuition to determine the best ways to treat your symptoms!"
-        },
-        {
-            "newIntroStyle": true,
-            "title": "Machine Learning",
-            "color": "blue",
-            "image": {
-                "url": "img/robots/quantimodo-robot-brain.svg",
-                "height": "120",
-                "width": "120"
-            },
-            "bodyText": "My brain can hold trillions of numbers!  I can also analyze it to determine which hidden factors are most likely to improve or exacerbate your condition! "
-        },
-        {
-            "newIntroStyle": true,
-            "title": "Automated Tracking",
-            "color": "green",
-            "image": {
-                "url": "img/intro/download_2-96.png",
-                "height": "100",
-                "width": "100"
-            },
-            "bodyText": "Weight, blood pressure, heart rate, physical activity data can be collected automatically and imported from dozens of devices.  Weather and the amount of time spent at the gym, restaurants, work, or doctors offices can be collected via your phone's GPS."
-        },
-        {
-            "newIntroStyle": true,
-            "title": "Effortless Tracking",
-            "color": "yellow",
-            "image": {
-                "url": "img/intro/inbox.svg",
-                "height": "90",
-                "width": "90"
-            },
-            "bodyText": "By taking just a few minutes each day, you can easily record your symptoms, treatments, and diet in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
-        },
-        {
-            "newIntroStyle": true,
-            "title": "Data Security",
-            "color": "blue",
-            "image": {
-                "url": "img/intro/lock.svg",
-                "height": "90",
-                "width": "90"
-            },
-            "bodyText": "I use bank-level encryption to keep your data secure.  Human eyes will never see your data unless you intentionally share it. "
-        }
-    ],
-    "lowercaseAppName": "yourlowercaseappnamehere",
-    "menuType": null,
-    "menu": [
-        {
-            "title": "Reminder Inbox",
-            "href": "#/app/reminders-inbox",
-            "icon": "ion-archive"
-        },
-        {
-            "title": "Favorites",
-            "href": "#/app/favorites",
-            "icon": "ion-ios-star"
-        },
-        {
-            "title": "Overall Mood",
-            "click": "togglePrimaryOutcomeSubMenu",
-            "showSubMenuVariable": "showPrimaryOutcomeSubMenu",
-            "icon": "ion-happy-outline",
-            "subMenu": [
-                {
-                    "title": "Charts",
-                    "showSubMenuVariable": "showPrimaryOutcomeSubMenu",
-                    "href": "#/app/track",
-                    "icon": "ion-arrow-graph-up-right"
-                },
-                {
-                    "title": "History",
-                    "showSubMenuVariable": "showPrimaryOutcomeSubMenu",
-                    "href": "#/app/history",
-                    "icon": "ion-ios-list-outline"
-                },
-                {
-                    "title": "Positive Predictors",
-                    "showSubMenuVariable": "showPrimaryOutcomeSubMenu",
-                    "href": "#/app/predictors-positive",
-                    "icon": "ion-happy-outline"
-                },
-                {
-                    "title": "Negative Predictors",
-                    "showSubMenuVariable": "showPrimaryOutcomeSubMenu",
-                    "href": "#/app/predictors-negative",
-                    "icon": "ion-sad-outline"
-                }
-            ]
-        },
-        {
-            "title": "Manage Reminders",
-            "click": "toggleReminderSubMenu",
-            "showSubMenuVariable": "showReminderSubMenu",
-            "icon": "ion-android-notifications-none",
-            "subMenu": [
-                {
-                    "title": "All Reminders",
-                    "showSubMenuVariable": "showReminderSubMenu",
-                    "href": "#/app/reminders-manage/Anything",
-                    "icon": "ion-android-globe"
-                },
-                {
-                    "title": "Emotions",
-                    "showSubMenuVariable": "showReminderSubMenu",
-                    "href": "#/app/reminders-manage/Emotions",
-                    "icon": "ion-happy-outline"
-                },
-                {
-                    "title": "Foods",
-                    "showSubMenuVariable": "showReminderSubMenu",
-                    "href": "#/app/reminders-manage/Foods",
-                    "icon": "ion-ios-nutrition-outline"
-                },
-                {
-                    "title": "Physical Activity",
-                    "showSubMenuVariable": "showReminderSubMenu",
-                    "href": "#/app/reminders-manage/Physical Activity",
-                    "icon": "ion-ios-body-outline"
-                },
-                {
-                    "title": "Symptoms",
-                    "showSubMenuVariable": "showReminderSubMenu",
-                    "href": "#/app/reminders-manage/Symptoms",
-                    "icon": "ion-sad-outline"
-                },
-                {
-                    "title": "Treatments",
-                    "showSubMenuVariable": "showReminderSubMenu",
-                    "href": "#/app/reminders-manage/Treatments",
-                    "icon": "ion-ios-medkit-outline"
-                },
-                {
-                    "title": "Vital Signs",
-                    "showSubMenuVariable": "showReminderSubMenu",
-                    "href": "#/app/reminders-manage/Vital Signs",
-                    "icon": "ion-ios-pulse"
-                }
-            ]
-        },
-        {
-            "title": "Record Measurement",
-            "click": "toggleTrackingSubMenu",
-            "showSubMenuVariable": "showTrackingSubMenu",
-            "subMenu": [
-                {
-                    "title": "Track Anything",
-                    "showSubMenuVariable": "showTrackingSubMenu",
-                    "href": "#/app/measurement-add-search",
-                    "icon": "ion-android-globe"
-                },
-                {
-                    "title": "Record a Meal",
-                    "showSubMenuVariable": "showTrackingSubMenu",
-                    "href": "#/app/measurement-add-search-category/Foods",
-                    "icon": "ion-ios-nutrition-outline"
-                },
-                {
-                    "title": "Rate an Emotion",
-                    "showSubMenuVariable": "showTrackingSubMenu",
-                    "href": "#/app/measurement-add-search-category/Emotions",
-                    "icon": "ion-happy-outline"
-                },
-                {
-                    "title": "Rate a Symptom",
-                    "showSubMenuVariable": "showTrackingSubMenu",
-                    "href": "#/app/measurement-add-search-category/Symptoms",
-                    "icon": "ion-ios-pulse"
-                },
-                {
-                    "title": "Record a Treatment",
-                    "showSubMenuVariable": "showTrackingSubMenu",
-                    "href": "#/app/measurement-add-search-category/Treatments",
-                    "icon": "ion-ios-medkit-outline"
-                },
-                {
-                    "title": "Record Activity",
-                    "showSubMenuVariable": "showTrackingSubMenu",
-                    "href": "#/app/measurement-add-search-category/Physical Activity",
-                    "icon": "ion-ios-body-outline"
-                },
-                {
-                    "title": "Record Vital Sign",
-                    "showSubMenuVariable": "showTrackingSubMenu",
-                    "href": "#/app/measurement-add-search-category/Vital Signs",
-                    "icon": "ion-ios-pulse"
-                }
-            ],
-            "icon": "ion-compose"
-        },
-        {
-            "title": "History",
-            "click": "toggleHistorySubMenu",
-            "showSubMenuVariable": "showHistorySubMenu",
-            "subMenu": [
-                {
-                    "title": "All Measurements",
-                    "showSubMenuVariable": "showHistorySubMenu",
-                    "href": "#/app/history-all/Anything",
-                    "icon": "ion-android-globe"
-                },
-                {
-                    "title": "Emotions",
-                    "showSubMenuVariable": "showHistorySubMenu",
-                    "href": "#/app/history-all/Emotions",
-                    "icon": "ion-happy-outline"
-                },
-                {
-                    "title": "Foods",
-                    "showSubMenuVariable": "showHistorySubMenu",
-                    "href": "#/app/history-all/Foods",
-                    "icon": "ion-ios-nutrition-outline"
-                },
-                {
-                    "title": "Symptoms",
-                    "showSubMenuVariable": "showHistorySubMenu",
-                    "href": "#/app/history-all/Symptoms",
-                    "icon": "ion-sad-outline"
-                },
-                {
-                    "title": "Treatments",
-                    "showSubMenuVariable": "showHistorySubMenu",
-                    "href": "#/app/history-all/Treatments",
-                    "icon": "ion-ios-medkit-outline"
-                },
-                {
-                    "title": "Physical Activity",
-                    "showSubMenuVariable": "showHistorySubMenu",
-                    "href": "#/app/history-all/Physical Activity",
-                    "icon": "ion-ios-body-outline"
-                },
-                {
-                    "title": "Vital Signs",
-                    "showSubMenuVariable": "showHistorySubMenu",
-                    "href": "#/app/history-all/Vital Signs",
-                    "icon": "ion-ios-pulse"
-                },
-                {
-                    "title": "Locations",
-                    "showSubMenuVariable": "showHistorySubMenu",
-                    "href": "#/app/history-all/Location",
-                    "icon": "ion-ios-location-outline"
-                }
-            ],
-            "icon": "ion-ios-list-outline"
-        },
-        {
-            "title": "Import Data",
-            "href": "#/app/import",
-            "icon": "ion-ios-cloud-download-outline"
-        },
-        {
-            "title": "Charts",
-            "href": "#/app/chart-search",
-            "icon": "ion-arrow-graph-up-right"
-        },
-        {
-            "title": "Relationships",
-            "click": "togglePredictorSearchSubMenu",
-            "showSubMenuVariable": "showPredictorSearchSubMenu",
-            "subMenu": [
-                {
-                    "title": "Predictor Search",
-                    "showSubMenuVariable": "showPredictorSearchSubMenu",
-                    "href": "#/app/predictor-search",
-                    "icon": "ion-log-in"
-                },
-                {
-                    "title": "Outcome Search",
-                    "showSubMenuVariable": "showPredictorSearchSubMenu",
-                    "href": "#/app/outcome-search",
-                    "icon": "ion-log-out"
-                },
-                {
-                    "title": "Positive Mood",
-                    "showSubMenuVariable": "showPredictorSearchSubMenu",
-                    "href": "#/app/predictors-positive",
-                    "icon": "ion-happy-outline"
-                },
-                {
-                    "title": "Negative Mood",
-                    "showSubMenuVariable": "showPredictorSearchSubMenu",
-                    "href": "#/app/predictors-negative",
-                    "icon": "ion-sad-outline"
-                }
-            ],
-            "icon": "ion-ios-analytics"
-        },
-        {
-            "title": "Settings",
-            "href": "#/app/settings",
-            "icon": "ion-ios-gear-outline"
-        },
-        {
-            "title": "Help & Feedback",
-            "href": "#/app/feedback",
-            "icon": "ion-ios-help-outline"
-        }
-    ],
-    "onboardingPages": [
-        {
-            "id": "addEmotionRemindersCard",
-            "ngIfLogic": "stateParams.showHelpCards === true && !hideAddEmotionRemindersCard",
-            "title": "Varying Emotions?",
-            "color": "green",
-            "variableCategoryName": "Emotions",
-            "addButtonText": "Add Emotion",
-            "nextPageButtonText": "Maybe Later",
-            "bodyText": "Do you have any emotions that fluctuate regularly? <br> <br> If so, add them so I can try to determine which factors are influencing them."
-        },
-        {
-            "id": "addSymptomRemindersCard",
-            "title": "Recurring Symptoms?",
-            "color": "blue",
-            "variableCategoryName": "Symptoms",
-            "addButtonText": "Add Symptom",
-            "nextPageButtonText": "Maybe Later",
-            "bodyText": "Got any recurring symptoms that vary in their severity?"
-        },
-        {
-            "id": "addFoodRemindersCard",
-            "ngIfLogic": "stateParams.showHelpCards === true && !hideAddFoodRemindersCard",
-            "title": "Common Foods or Drinks?",
-            "color": "blue",
-            "variableCategoryName": "Foods",
-            "addButtonText": "Add Food or Drink",
-            "nextPageButtonText": "Maybe Later",
-            "bodyText": "Add any foods or drinks that you consume more than a few times a week"
-        },
-        {
-            "id": "addTreatmentRemindersCard",
-            "title": "Any Treatments?",
-            "color": "yellow",
-            "variableCategoryName": "Treatments",
-            "addButtonText": "Add Treatment",
-            "nextPageButtonText": "Maybe Later",
-            "bodyText": "Are you taking any medications, treatments, supplements, or other interventions like meditation or psychotherapy? "
-        },
-        {
-            "id": "locationTrackingPage",
-            "title": "Location Tracking",
-            "color": "green",
-            "variableCategoryName": "Location",
-            "premiumFeature": true,
-            "nextPageButtonText": "Maybe Later",
-            "bodyText": "Would you like to automatically log location to see how time spent at restaurants, the gym, work or doctors offices might be affecting you? "
-        },
-        {
-            "id": "weatherTrackingPage",
-            "title": "Weather Tracking",
-            "color": "green",
-            "variableCategoryName": "Environment",
-            "premiumFeature": true,
-            "nextPageButtonText": "Maybe Later",
-            "bodyText": "Would you like to automatically record the weather to see how temperature or sunlight exposure might be affecting you? "
-        },
-        {
-            "id": "importDataPage",
-            "title": "Import Your Data",
-            "color": "yellow",
-            "iconClass": "icon positive ion-ios-cloud-download-outline",
-            "image": {
-                "url": "img/intro/download_2-96.png",
-                "height": "96",
-                "width": "96"
-            },
-            "premiumFeature": true,
-            "bodyText": "Let's go to the Import Data page and see if you're using any of the dozens of apps and devices that I can automatically pull data from!",
-            "nextPageButtonText": "Maybe Later"
-        },
-        {
-            "id": "allDoneCard",
-            "ngIfLogic": "stateParams.showHelpCards === true && !hideImportDataCard",
-            "title": "Great job!",
-            "color": "green",
-            "iconClass": "icon positive ion-ios-cloud-download-outline",
-            "image": {
-                "url": "img/robots/quantimodo-robot-waving.svg",
-                "height": "120",
-                "width": "120"
-            },
-            "bodyText": "You're all set up!  Let's take a minute to record your first measurements and then you're done for the day! "
-        }
-    ],
-    "primaryOutcomeVariableName": "Overall Mood",
-    "socialLinks": {
-        "facebook": "https://www.facebook.com/Quantimodology",
-        "twitter": "https://twitter.com/quantimodo",
-        "google": "https://plus.google.com/communities/100581500031158281444",
-        "linkedIn": "https://www.linkedin.com/company/medimodo"
-    },
-    "wordAliases": {}
+        "wordAliases": {}
+    }
 }

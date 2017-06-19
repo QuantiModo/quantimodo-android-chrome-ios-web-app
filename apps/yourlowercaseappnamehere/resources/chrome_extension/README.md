@@ -5,13 +5,13 @@ YourAppDisplayNameHere-Chrome-Extension
 
 The world's first mood-tracking Chrome extension!
 
-Get it from the [Chrome Web Store](https://chrome.google.com/webstore/detail/yourlowercaseappnamehere/lncgjbhijecjdbdgeigfodmiimpmlelg?hl=en-US)!
+Get it from the [Chrome Web Store](https://chrome.google.com/webstore/detail/your_quantimodo_client_id_here/lncgjbhijecjdbdgeigfodmiimpmlelg?hl=en-US)!
 
 IMPORTANT: YOU MUST BE LOGGED INTO https://quantipress.quantimo.do/ FOR YOUR RATINGS TO BE RECORDED. THIS IS A BETA TESTING RELEASE. PLEASE EMAIL INFO@QUANTIMO.DO WITH QUESTIONS OR SUGGESTIONS AND I'LL RESPOND IMMEDIATELY. THANK YOU!
 
 The YourAppDisplayNameHere Chrome extension makes tracking one's mood effortless. Click the smiley face in the upper right hand corner and you just taken the first step towards true insights about what really causes your psychological state.
 
-[YourAppDisplayNameHere](https://play.google.com/store/apps/details?id=com.yourlowercaseappnamehere&hl=en) makes mood-tracking effortless.  Feel free to [fork it](https://github.com/mikepsinn/YourAppDisplayNameHere-Chrome) and modify to track whatever you want!
+[YourAppDisplayNameHere](https://play.google.com/store/apps/details?id=com.your_quantimodo_client_id_here&hl=en) makes mood-tracking effortless.  Feel free to [fork it](https://github.com/mikepsinn/YourAppDisplayNameHere-Chrome) and modify to track whatever you want!
 
 #### YourAppDisplayNameHere Features
 * Set the reminder frequency.

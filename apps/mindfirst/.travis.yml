@@ -25,8 +25,8 @@ script:
 - gulp -v
 - echo "ran through gulp"
 - gulp generateXmlConfigAndUpdateAppsJs
-- cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
-- cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
+- cp -R apps/${QUANTIMODO_CLIENT_ID}/* $PWD
+- cp apps/${QUANTIMODO_CLIENT_ID}/resources/icon_white.png $PWD/resources/icon.png
 - ionic resources
 - gulp updateConfigXmlUsingEnvs
 - gulp makeIosApp
@@ -35,7 +35,7 @@ script:
 env:
   global:
   - APP_DISPLAY_NAME="Mind First"
-  - LOWERCASE_APP_NAME=mindfirst
+  - QUANTIMODO_CLIENT_ID=mindfirst
   - APP_IDENTIFIER="com.quantimodo.mindfirst"
   - APPLE_ID="1024924226"
   - TEAM_ID="YD2FK7S2S5"
