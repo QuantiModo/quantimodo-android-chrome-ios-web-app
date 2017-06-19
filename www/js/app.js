@@ -1341,6 +1341,19 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.variableList', {
+            cache: false,
+            url: "/variable-list",
+            params: {
+                variableCategoryName : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-list.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            }
+        })
         .state('app.reminderAdd', {
             url: "/reminder-add/:variableName",
             cache: false,
