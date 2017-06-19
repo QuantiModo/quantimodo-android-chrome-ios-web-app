@@ -382,56 +382,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.measurementAddSearchCategory', {
-            url: "/measurement-add-search-category/:variableCategoryName",
-            params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                nextState: 'app.measurementAdd',
-                excludeDuplicateBloodPressure: true,
-                variableSearchParameters: {
-                    limit: 100,
-                    includePublic: true,
-                    manualTracking: true
-                },
-                hideNavigationMenu: null,
-                doneState: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
-        .state('app.reminderSearchCategory', {
-            url: "/reminder-search-category/:variableCategoryName",
-            params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                reminderSearch: true,
-                nextState: 'app.reminderAdd',
-                excludeDuplicateBloodPressure: true,
-                variableSearchParameters: {
-                    limit: 100,
-                    includePublic: true,
-                    manualTracking: true
-                },
-                hideNavigationMenu: null,
-                skipReminderSettingsIfPossible: null,
-                doneState: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
         .state('app.reminderSearch', {
             url: "/reminder-search",
             params: {
@@ -449,32 +399,6 @@ angular.module('starter',
                 },
                 hideNavigationMenu: null,
                 skipReminderSettingsIfPossible: null,
-                doneState: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
-        .state('app.favoriteSearchCategory', {
-            url: "/favorite-search-category/:variableCategoryName",
-            params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                favoriteSearch: true,
-                nextState: 'app.favoriteAdd',
-                pageTitle: 'Add a favorite',
-                excludeDuplicateBloodPressure: true,
-                variableSearchParameters: {
-                    limit: 100,
-                    includePublic: true,
-                    manualTracking: true
-                },
-                hideNavigationMenu: null,
                 doneState: null
             },
             views: {
@@ -589,31 +513,6 @@ angular.module('starter',
         })
         .state('app.chartSearch', {
             url: "/chart-search",
-            cache: false,
-            params: {
-                variableCategoryName: null,
-                fromState: null,
-                fromUrl: null,
-                measurement: null,
-                nextState: 'app.charts',
-                doNotShowAddVariableButton: true,
-                excludeSingularBloodPressure: true,
-                variableSearchParameters: {
-                    limit: 100,
-                    includePublic: false
-                    //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
-                },
-                hideNavigationMenu: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/variable-search.html",
-                    controller: 'VariableSearchCtrl'
-                }
-            }
-        })
-        .state('app.chartSearchCategory', {
-            url: "/chart-search-category/:variableCategoryName",
             cache: false,
             params: {
                 variableCategoryName: null,
@@ -1121,7 +1020,7 @@ angular.module('starter',
             }
         })
         .state('app.historyAll', {
-            url: "/history-all/:variableCategoryName",
+            url: "/history-all",
             cache: true,
             params: {
                 variableCategoryName : null
@@ -1215,38 +1114,8 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.favoritesCategory', {
-            url: "/favorites-category/:variableCategoryName",
-            cache: false,
-            params: {
-                variableCategoryName: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/favorites.html",
-                    controller: 'FavoritesCtrl'
-                }
-            }
-        })
         .state('app.remindersInboxToday', {
             url: "/reminders-inbox-today",
-            params: {
-                unit: null,
-                variableName : null,
-                dateTime : null,
-                value : null,
-                fromUrl : null,
-                today : true
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/reminders-inbox.html",
-                    controller: 'RemindersInboxCtrl'
-                }
-            }
-        })
-        .state('app.remindersInboxTodayCategory', {
-            url: "/reminders-inbox-today/:variableCategoryName",
             params: {
                 unit: null,
                 variableName : null,
@@ -1305,40 +1174,30 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.remindersInboxCategory', {
-            url: "/reminders-inbox/:variableCategoryName",
-            params: {
-                unit: null,
-                variableName : null,
-                dateTime : null,
-                value : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/reminders-inbox.html",
-                    controller: 'RemindersInboxCtrl'
-                }
-            }
-        })
         .state('app.remindersManage', {
             cache: false,
-            url: "/reminders-manage/:variableCategoryName",
+            url: "/reminders-manage",
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-manage.html",
                     controller: 'RemindersManageCtrl'
                 }
+            },
+            params: {
+                variableCategoryName : null
             }
         })
         .state('app.remindersList', {
             cache: false,
-            url: "/reminders-list/:variableCategoryName",
+            url: "/reminders-list",
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-list.html",
                     controller: 'RemindersManageCtrl'
                 }
+            },
+            params: {
+                variableCategoryName : null
             }
         })
         .state('app.variableList', {

@@ -225,37 +225,37 @@
         "showSubMenuVariable": "showVariablesSubMenu",
         "subMenu": [{
           "title": "Everything",
-          "href": "#/app/reminders-list/Anything",
+          "href": "#/app/reminders-list",
           "icon": "ion-android-globe",
           "$$hashKey": "object:139"
         }, {
           "title": "Treatments",
-          "href": "#/app/reminders-list/Treatments",
+          "href": "#/app/reminders-list?variableCategoryName=Treatments",
           "icon": "ion-ios-medkit-outline",
           "$$hashKey": "object:140"
         }, {
           "title": "Symptoms",
-          "href": "#/app/reminders-list/Symptoms",
+          "href": "#/app/reminders-list?variableCategoryName=Symptoms",
           "icon": "ion-sad-outline",
           "$$hashKey": "object:141"
         }, {
           "title": "Vital Signs",
-          "href": "#/app/reminders-list/Vital Signs",
+          "href": "#/app/reminders-list?variableCategoryName=Vital Signs",
           "icon": "ion-ios-pulse",
           "$$hashKey": "object:142"
         }, {
           "title": "Emotions",
-          "href": "#/app/reminders-list/Emotions",
+          "href": "#/app/reminders-list?variableCategoryName=Emotions",
           "icon": "ion-happy-outline",
           "$$hashKey": "object:143"
         }, {
           "title": "Foods",
-          "href": "#/app/reminders-list/Foods",
+          "href": "#/app/reminders-list?variableCategoryName=Foods",
           "icon": "ion-ios-nutrition-outline",
           "$$hashKey": "object:144"
         }, {
           "title": "Physical Activity",
-          "href": "#/app/reminders-list/Physical Activity",
+          "href": "#/app/reminders-list?variableCategoryName=Physical Activity",
           "icon": "ion-ios-body-outline",
           "$$hashKey": "object:145"
         }],
@@ -268,49 +268,49 @@
         "subMenu": [{
           "title": "All Measurements",
           "showSubMenuVariable": "showHistorySubMenu",
-          "href": "#/app/history-all/Anything",
+          "href": "#/app/history-all",
           "icon": "ion-android-globe",
           "$$hashKey": "object:171"
         }, {
           "title": "Emotions",
           "showSubMenuVariable": "showHistorySubMenu",
-          "href": "#/app/history-all/Emotions",
+          "href": "#/app/history-all?variableCategoryName=Emotions",
           "icon": "ion-happy-outline",
           "$$hashKey": "object:172"
         }, {
           "title": "Foods",
           "showSubMenuVariable": "showHistorySubMenu",
-          "href": "#/app/history-all/Foods",
+          "href": "#/app/history-all?variableCategoryName=Foods",
           "icon": "ion-ios-nutrition-outline",
           "$$hashKey": "object:173"
         }, {
           "title": "Symptoms",
           "showSubMenuVariable": "showHistorySubMenu",
-          "href": "#/app/history-all/Symptoms",
+          "href": "#/app/history-all?variableCategoryName=Symptoms",
           "icon": "ion-sad-outline",
           "$$hashKey": "object:174"
         }, {
           "title": "Treatments",
           "showSubMenuVariable": "showHistorySubMenu",
-          "href": "#/app/history-all/Treatments",
+          "href": "#/app/history-all?variableCategoryName=Treatments",
           "icon": "ion-ios-medkit-outline",
           "$$hashKey": "object:175"
         }, {
           "title": "Physical Activity",
           "showSubMenuVariable": "showHistorySubMenu",
-          "href": "#/app/history-all/Physical Activity",
+          "href": "#/app/history-all?variableCategoryName=Physical Activity",
           "icon": "ion-ios-body-outline",
           "$$hashKey": "object:176"
         }, {
           "title": "Vital Signs",
           "showSubMenuVariable": "showHistorySubMenu",
-          "href": "#/app/history-all/Vital Signs",
+          "href": "#/app/history-all?variableCategoryName=Vital Signs",
           "icon": "ion-ios-pulse",
           "$$hashKey": "object:177"
         }, {
           "title": "Locations",
           "showSubMenuVariable": "showHistorySubMenu",
-          "href": "#/app/history-all/Location",
+          "href": "#/app/history-all?variableCategoryName=Location",
           "icon": "ion-ios-location-outline",
           "$$hashKey": "object:178"
         }],
