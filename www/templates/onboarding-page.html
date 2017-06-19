@@ -1,146 +1,43 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Get Started">
-    <div
-         style="
-            background-color: {{onboardingPages[0].color.backgroundColor}};
-            text-align: center;
-            color: white;
-            padding: 40px;
-            height: 100%" >
-        <div style="
-             position: relative;
-             top: 50%;
-             transform: translateY(-50%);">
-            <div style="
-                box-shadow: 2px 2px 5px #434343;
-                margin: 0 auto;
-                border-radius: 50%;
-                width: 130px;
-                height: 130px;
-                background-color: {{onboardingPages[0].color.circleColor}};
-                ">
-                <img style="
-                        position: relative;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        width:{{onboardingPages[0].image.width}}px;
-                        height:{{onboardingPages[0].image.height}}px;"
-                     ng-src="{{onboardingPages[0].image.url}}">
-                <div ng-if="onboardingPages[0].overlayIcon" style="position: absolute; display: block; z-index: 9; width: 15%; top:72px; left: 50%; margin-left: -12.5px;" >
-                    <div style="position: absolute; display: block;">
-                        <img src="{{appSettings.iconUrl}}" style="width: 25px; height: 25px; ">
-                    </div>
-                </div>
-            </div>
-            <br>
-            <p style="font-size: 30px; line-height: 1;">
-                {{onboardingPages[0].title}}
-            </p>
-            <br>
-            <span ng-bind-html="onboardingPages[0].bodyText"
-                style="font-size: 16px; line-height: 1.5;">
-            </span>
-            <br>
-            <br>
-            <p style="cursor: pointer" ng-if="onboardingPages[0].moreInfo"
-               ng-click="showMaterialAlert(onboardingPages[0].title, onboardingPages[0].moreInfo, $event)">
-                MORE INFO
-            </p>
-            <br>
-            <button class="button"
-                    ng-if="onboardingPages[0].addButtonText"
-                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                    id="goToReminderSearchCategoryFromOnboarding"
-                    ng-click="goToReminderSearchCategoryFromOnboarding()">
-                <i class="ion-plus-round"> &nbsp; {{onboardingPages[0].addButtonText}} &nbsp;</i>
+    <div class="outer" style=" background-color: {{circlePage.color.backgroundColor}};">
+        <div class="middle">
+            <div class="inner" style="text-align: center; color: white;">
+            <div ng-include="'templates/fragments/circle-page.html'"></div><br><br>
+            <p style="cursor: pointer" ng-if="circlePage.moreInfo" ng-click="showMaterialAlert(circlePage.title, circlePage.moreInfo, $event)">MORE INFO</p><br>
+            <button id="goToReminderSearchFromOnboarding" class="button circle-page-button" ng-if="circlePage.addButtonText" ng-click="goToReminderSearchFromOnboarding()">
+                <i class="ion-plus-round"> &nbsp; {{circlePage.addButtonText}} &nbsp;</i>
             </button>
-            <button class="button"
-                    ng-show="onboardingPages[0].id === 'locationTrackingPage' && (user.stripeActive || appSettings.upgradeDisabled)"
-                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                    id="enableLocationTrackingButton"
+            <button id="enableLocationTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'locationTrackingPage' && (user.stripeActive || appSettings.upgradeDisabled)"
                     ng-click="enableLocationTracking($event)">
                 <i class="{{variableCategories.Location.ionIcon}}"> &nbsp; Yes &nbsp;</i>
             </button>
-            <button class="button"
-                    ng-show="onboardingPages[0].id === 'weatherTrackingPage' && (user.stripeActive || appSettings.upgradeDisabled)"
-                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                    id="enableWeatherTrackingButton"
+            <button id="enableWeatherTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'weatherTrackingPage' && (user.stripeActive || appSettings.upgradeDisabled)"
                     ng-click="connectWeatherOnboarding()">
                 <i class="ion-ios-partlysunny"> &nbsp; Yes &nbsp;</i>
             </button>
-            <button class="button"
-                    ng-show="onboardingPages[0].id === 'importDataPage' && (user.stripeActive || appSettings.upgradeDisabled)"
-                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                    id="importDataButton"
+            <button id="importDataButton" class="button circle-page-button" ng-show="circlePage.id === 'importDataPage' && (user.stripeActive || appSettings.upgradeDisabled)"
                     ng-click="onboardingGoToImportPage()">
                 <i class="ion-android-download"> &nbsp; Connect &nbsp;</i>
             </button>
-            <button class="button"
-                    ng-show="onboardingPages[0].premiumFeature && !user.stripeActive && !appSettings.upgradeDisabled"
-                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                    id="goToUpgradePageButton"
+            <button id="goToUpgradePageButton" class="button circle-page-button" ng-show="circlePage.premiumFeature && !user.stripeActive && !appSettings.upgradeDisabled"
                     ng-click="goToUpgradePage()">
                 <i class="ion-android-star"> &nbsp;Upgrade &nbsp;</i>
             </button>
-            <button class="button"
-                    ng-if="onboardingPages[0].nextPageButtonText"
-                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                    id="hideOnboardingPage"
-                    ng-click="hideOnboardingPage()">
-                <i class="ion-checkmark"> &nbsp; {{onboardingPages[0].nextPageButtonText}} &nbsp;</i>
+            <button id="hideOnboardingPage" class="button circle-page-button" ng-if="circlePage.nextPageButtonText" ng-click="hideOnboardingPage()">
+                <i class="ion-checkmark"> &nbsp; {{circlePage.nextPageButtonText}} &nbsp;</i>
             </button>
-            <button class="button"
-                    ng-if="onboardingPages[0].id === 'allDoneCard'"
-                    style="background-color: {{onboardingPages[0].color.backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                text-align: center"
-                    id="goToInboxButton"
-                    ng-click="doneOnboarding()">
+            <button id="goToInboxButton" class="button circle-page-button" ng-if="circlePage.id === 'allDoneCard'" ng-click="doneOnboarding()">
                 <i class="ion-ios-filing-outline"> &nbsp; GO TO INBOX &nbsp;</i>
             </button>
+            <div ng-if="appSettings.designMode" style="color: white; font-size: 30px;  cursor: pointer;">
+                <br>
+                &nbsp&nbsp<i ng-click="openEditAppSettingsModal('onboarding', circlePage)" ><i class="icon ion-edit"></i></i>
+                &nbsp&nbsp<i ng-click="addAppComponentElement('onboarding', circlePage)" class="icon ion-ios-copy-outline" ></i>
+                &nbsp&nbsp<i ng-click="deleteAppComponentElement('onboarding', circlePage)" class="icon ion-trash-a" ></i>
+            </div>
             <br>
-<!--            <div ng-if="onboardingPages[0].id.indexOf('login') === -1" >
-                <div class="button-bar">
-                    <button class="button"
-                            style="background-color: {{onboardingPages[0].backgroundColor}};
-                                border: none;
-                                outline: none;
-                                color: white;
-                                font-size: 12px;
-                                text-align: center"
-                            id="skipButtonWelcome"
-                            ng-click="skipOnboarding()">
-                        &nbsp; SKIP SETUP &nbsp;</i>
-                    </button>
-                </div>
-            </div>-->
+<!-- <div class="button-bar"> <button id="skipButtonWelcome" class="button circle-page-button" ng-click="skipOnboarding()"> &nbsp; SKIP SETUP &nbsp;</i></button> </div> </div>-->
+            </div>
         </div>
-
     </div>
-
 </ion-view>

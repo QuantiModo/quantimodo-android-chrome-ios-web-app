@@ -6,10 +6,10 @@ if [ -z "${APP_DISPLAY_NAME}" ]
       export APP_DISPLAY_NAME=MoodiModo
       echo -e "${RED}APP_DISPLAY_NAME env is not defined so assuming it to be ${APP_DISPLAY_NAME}${NC}"
 fi
-if [ -z "${LOWERCASE_APP_NAME}" ]
+if [ -z "${QUANTIMODO_CLIENT_ID}" ]
     then
-      export LOWERCASE_APP_NAME=moodimodo
-      echo -e "${RED}LOWERCASE_APP_NAME env is not defined so assuming it to be ${LOWERCASE_APP_NAME}${NC}"
+      export QUANTIMODO_CLIENT_ID=moodimodo
+      echo -e "${RED}QUANTIMODO_CLIENT_ID env is not defined so assuming it to be ${QUANTIMODO_CLIENT_ID}${NC}"
 fi
 ruby hooks/after_platform_add.bak/xcodeprojectfix.rb
 # Commented due to podfile.lock error

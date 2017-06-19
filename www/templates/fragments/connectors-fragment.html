@@ -6,59 +6,26 @@
                 <img ng-src="{{connector.image}}" alt="Connector Image" style="width:40px;height:40px;">
             </div>
             <div ng-click="showActionSheetForConnector(connector, $event)" class="col col-70">
-                <h2 style="white-space: normal;
-									line-height: normal; ">
-                    {{connector.displayName}}
-                </h2>
-                <p ng-if="connector.lastUpdate" style="white-space: normal;">
-                    Last updated {{ connector.lastUpdate * 1000 | date : "longDate"}}
-                </p>
-                <p ng-if="connector.totalMeasurementsInLastUpdate" style="white-space: normal;">
-                    {{ connector.totalMeasurementsInLastUpdate }} new measurements
-                </p>
-                <p ng-if="!connector.lastUpdate" style="white-space: normal;">
-                    {{connector.shortDescription}}
-                </p>
-                <p ng-if="connector.updateStatus === 'ERROR'" style="white-space: normal;">
-                    {{ connector.errorMessage }}
-                </p>
+                <h2 style="white-space: normal; line-height: normal; "> {{connector.displayName}} </h2>
+                <p ng-if="connector.lastUpdate" style="white-space: normal;"> Last updated {{ connector.lastUpdate * 1000 | date : "longDate"}} </p>
+                <p ng-if="connector.totalMeasurementsInLastUpdate" style="white-space: normal;"> {{ connector.totalMeasurementsInLastUpdate }} new measurements </p>
+                <p ng-if="!connector.lastUpdate" style="white-space: normal;"> {{connector.shortDescription}} </p>
+                <p ng-if="connector.updateStatus === 'ERROR'" style="white-space: normal;"> {{ connector.errorMessage }} </p>
             </div>
         </div>
         <div class="button-bar" ng-if="!connector.connected && !connector.loadingText">
-            <button ng-if="!connector.qmClient && !connector.connecting" class="button button-clear button-balanced"
-                    style="text-overflow: clip;"
-                    ng-click="connect(connector)">
-                <i class="ion-link"> &nbsp; Connect</i>
-            </button>
-            <button ng-if="connector.getItUrl && connector.affiliate" class="button button-clear button-calm"
-                    ng-click="getItHere(connector)"
-                    style="text-overflow: clip;">
-                <i class="ion-bag"> &nbsp; Get it here!</i>
-            </button>
+            <button ng-if="!connector.qmClient && !connector.connecting" class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="connect(connector)"> <i class="ion-link"> &nbsp; Connect</i> </button>
+            <button ng-if="connector.getItUrl && connector.affiliate" class="button button-clear button-calm" ng-click="getItHere(connector)" style="text-overflow: clip;"> <i class="ion-bag"> &nbsp; Get it here!</i> </button>
         </div>
         <div class="button-bar" ng-if="connector.connected && !connector.loadingText">
-            <button ng-if="connector.updateStatus === 'WAITING'" class="button button-clear button-royal"
-                    style="text-overflow: clip;"
-                    ng-click="">
-                <i class="ion-ios-cloud-download"> &nbsp; Updating</i>
-            </button>
-            <button ng-if="connector.updateStatus === 'ERROR'" class="button button-clear button-balanced"
-                    ng-click="editReminderSettingsByNotification(connector)"
-                    style="text-overflow: clip;">
+            <button ng-if="connector.updateStatus === 'WAITING'" class="button button-clear button-royal" style="text-overflow: clip;" ng-click=""> <i class="ion-ios-cloud-download"> &nbsp; Updating</i> </button>
+            <button ng-if="connector.updateStatus === 'ERROR'" class="button button-clear button-balanced" ng-click="connect(connector)" style="text-overflow: clip;">
                 <i class="ion-link"> &nbsp; Reconnect</i>
             </button>
-            <button ng-if="!connector.qmClient" class="button button-clear button-assertive"
-                    ng-click="disconnect(connector)"
-                    style="text-overflow: clip;">
-                <i class="ion-close-circled"> &nbsp; Disconnect </i>
-            </button>
+            <button ng-if="!connector.qmClient" class="button button-clear button-assertive" ng-click="disconnect(connector)" style="text-overflow: clip;"> <i class="ion-close-circled"> &nbsp; Disconnect </i> </button>
         </div>
         <div class="button-bar" ng-if="connector.loadingText">
-            <button class="button button-clear button-royal"
-                    style="text-overflow: clip;"
-                    ng-click="">
-                <i class="ion-ios-cloud-download"> &nbsp; {{connector.loadingText}}</i>
-            </button>
+            <button class="button button-clear button-royal" style="text-overflow: clip;" ng-click=""> <i class="ion-ios-cloud-download"> &nbsp; {{connector.loadingText}}</i> </button>
         </div>
     </div>
 </div>

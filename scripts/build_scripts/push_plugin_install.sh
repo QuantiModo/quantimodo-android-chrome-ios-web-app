@@ -26,7 +26,7 @@ bower install --save-dev ionic-platform-web-client
 cordova plugin remove phonegap-plugin-push
 ionic plugin remove phonegap-plugin-push
 
-cordova plugin add phonegap-plugin-push@1.9.1 --variable SENDER_ID="${GCM_SENDER_ID}"
+cordova plugin add phonegap-plugin-push@1.10.5 --variable SENDER_ID="${GCM_SENDER_ID}"
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
 
 # I think this is created a new app in https://apps.ionic.io/apps all the time

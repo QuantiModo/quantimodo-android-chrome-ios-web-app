@@ -1,37 +1,17 @@
-<md-dialog aria-label="{{ctrl.title}}" style="overflow: visible;">
+<md-dialog class="opaque-on-ios" aria-label="{{ctrl.title}}" style="overflow: visible;"><!--opacity: 1 here doesn't fix transparency on on iPhone5-->
   <form ng-cloak style="overflow: visible">
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <img src="img/robots/robot-head.svg" style="
-          width: 75px;
-          height: 75px;
-          position: absolute;
-          top: -110%;
-          left: 50%;
-          margin-left: -37.5px;">
-        <h2 style="color: rgba(255,255,255,0.75);
-                  text-align: center;
-                  height: inherit;
-                  width: inherit;
-                  line-height: 2.9;">{{ctrl.title}}</h2>
+        <img src="img/robots/robot-head.svg" style=" width: 75px; height: 75px; position: absolute; top: -110%; left: 50%; margin-left: -37.5px;">
+        <h2 style="color: rgba(255,255,255,0.75); text-align: center; height: inherit; width: inherit; line-height: 2.9;">{{ctrl.title}}</h2>
       </div>
     </md-toolbar>
-
     <md-dialog-content>
-      <div class="md-dialog-content">
-        <p style="text-align: center">
-          {{ctrl.textContent}}
-        </p>
-      </div>
+      <div class="md-dialog-content"> <p style="text-align: center"> {{ctrl.textContent}} </p> </div>
     </md-dialog-content>
-
     <md-dialog-actions layout="row">
-      <md-button  id="helpButton" ng-click="answer('help')">
-        More Help
-      </md-button>
-      <md-button  id="okButton" ng-click="answer('ok')">
-        OK
-      </md-button>
+      <md-button id="helpButton" ng-click="answer('help')"> More Help </md-button>
+      <md-button id="okButton" ng-click="answer('ok')"> OK </md-button>
     </md-dialog-actions>
   </form>
 </md-dialog>
