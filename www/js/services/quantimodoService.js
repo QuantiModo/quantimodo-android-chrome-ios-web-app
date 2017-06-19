@@ -6676,6 +6676,16 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var lastSlashIndex = string.lastIndexOf('/');
         return string.substring(lastSlashIndex  + 1);
     }
+    function convertObjectToQueryString(){
+        if(!obj){return '';}
+        var str = [];
+        for(var p in obj){
+            if (obj.hasOwnProperty(p)) {
+                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            }
+        }
+        return '?' + str.join("&");
+    }
     function convertHrefToUrlAndParams(menuItem) {
         if(menuItem.href){
             menuItem.href = menuItem.href.replace('-category', '');
@@ -6688,19 +6698,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 menuItem.url = menuItem.url.replace('/' + getStringAfterLastSlash(menuItem.url), '');
             }
         }
-        function serialize(obj) {
-            if(!obj){return '';}
-            var str = [];
-            for(var p in obj){
-                if (obj.hasOwnProperty(p)) {
-                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                }
-            }
-            return '?' + str.join("&");
-        }
-        if(!menuItem.subMenu){
-            menuItem.href = '#' + menuItem.url + serialize(menuItem.params);
-        }
+        if(!menuItem.subMenu){menuItem.href = '#' + menuItem.url + convertObjectToQueryString(menuItem.params);}
         return menuItem;
     }
     function convertHrefInSingleMenuType (menu){
