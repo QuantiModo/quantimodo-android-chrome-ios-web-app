@@ -6700,11 +6700,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 }
             }
         }
+        return menu;
     }
     function convertHrefInAllMenus(menu) {
         menu.active = convertHrefInSingleMenuType(menu.active);
         menu.custom = convertHrefInSingleMenuType(menu.custom);
         return menu;
-    };
+    }
     return quantimodoService;
 });
