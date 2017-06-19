@@ -30,6 +30,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	//createWordCloudFromNotes();
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("RemindersInboxCtrl beforeEnter ");
+        if(quantimodoService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = quantimodoService.getUrlParameter('variableCategoryName');}
 		$scope.loading = true;
         if(quantimodoService.goToLoginIfNecessary()){ return; }
 		$rootScope.hideBackButton = true;

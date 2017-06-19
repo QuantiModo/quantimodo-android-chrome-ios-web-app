@@ -375,8 +375,14 @@ angular.module('starter')
         return '?' + str.join("&");
     }
     return function(menuItem) {
-        if(menuItem.href){return menuItem.href;}
-        return '#' + menuItem.url + serialize(menuItem.params);
+        var href;
+        if(menuItem.href){
+            href = menuItem.href;
+        } else {
+            href = '#' + menuItem.url + serialize(menuItem.params);
+        }
+        href.replace('##', '#');
+        return href;
     };
 })
 .filter('prettyJSON', function () {
