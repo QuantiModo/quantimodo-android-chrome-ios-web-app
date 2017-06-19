@@ -63,7 +63,7 @@ gulp updateConfigXmlUsingEnvs
 #ionic add ionic-platform-web-client
 
 # We shouldn't need to do this because it should already be in package.json
-cordova plugin add phonegap-plugin-push@1.9.1 --variable SENDER_ID="${GCM_SENDER_ID}"
+cordova plugin add phonegap-plugin-push@1.10.5 --variable SENDER_ID="${GCM_SENDER_ID}"
 
 #ionic io init -email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
 ionic config set dev_push false
