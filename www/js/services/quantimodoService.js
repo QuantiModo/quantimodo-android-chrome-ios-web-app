@@ -6676,7 +6676,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var lastSlashIndex = string.lastIndexOf('/');
         return string.substring(lastSlashIndex  + 1);
     }
-    function convertObjectToQueryString(){
+    function convertObjectToQueryString(obj){
         if(!obj){return '';}
         var str = [];
         for(var p in obj){
@@ -6687,7 +6687,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return '?' + str.join("&");
     }
     function convertHrefToUrlAndParams(menuItem) {
-        if(menuItem.href){
+        if(menuItem.href && !menuItem.url){
             menuItem.href = menuItem.href.replace('-category', '');
             menuItem.href = menuItem.href.replace('/Anything', '');
             menuItem.url = menuItem.href.replace('#', '');
