@@ -6575,7 +6575,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(window.config){return;}
         window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-        window.config.appSettings.appDesign.menu = convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
+        window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
         $rootScope.appSettings = window.config.appSettings;
         if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
@@ -6693,23 +6693,55 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     function convertStringToId(string) {
         return string.replace('#/app/', '').replace('/', '_').replace('?', '_').replace('&', '_').replace('=', '_').toLowerCase();
     }
+    var allStates = $state.get();
+    function addStateName(menuItem){
+        if(menuItem.stateName){return menuItem;}
+        if(!menuItem.url){return menuItem;}
+        for(var i = 0; i < allStates.length; i++){
+            if('/app' + allStates[i].url === menuItem.url){
+                menuItem.stateName = allStates[i].name;
+                break;
+            }
+        }
+        return menuItem;
+    }
+    function convertUrlVariableCategoryToParams(menuItem){
+        if($rootScope.variableCategories[getStringAfterLastSlash(menuItem.url)]){
+            menuItem.params = {
+                variableCategoryName: getStringAfterLastSlash(menuItem.url)
+            };
+            menuItem.url = menuItem.url.replace('/' + getStringAfterLastSlash(menuItem.url), '');
+        }
+        return menuItem;
+    }
+    function getUrlFromStateName(stateName){
+        for(var i = 0; i < allStates.length; i++){
+            if(allStates[i].name === stateName){
+                return allStates[i].url;
+            }
+        }
+        console.error("Could not find state with name: " + stateName);
+    }
+    function addUrlFromStateName(menuItem){
+        if(!menuItem.stateName){return menuItem;}
+        menuItem.url = getUrlFromStateName(menuItem.stateName);
+        return menuItem;
+    }
     function convertHrefToUrlAndParams(menuItem) {
+        menuItem = addUrlFromStateName(menuItem);
         if(menuItem.href && !menuItem.url){
             menuItem.href = menuItem.href.replace('-category', '');
             menuItem.href = menuItem.href.replace('/Anything', '');
             menuItem.url = menuItem.href.replace('#', '');
-            if($rootScope.variableCategories[getStringAfterLastSlash(menuItem.url)]){
-                menuItem.params = {
-                    variableCategoryName: getStringAfterLastSlash(menuItem.url)
-                };
-                menuItem.url = menuItem.url.replace('/' + getStringAfterLastSlash(menuItem.url), '');
-            }
+            menuItem = convertUrlVariableCategoryToParams(menuItem);
         }
         menuItem = convertUrlAndParamsToHref(menuItem);
         if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
+        menuItem = addStateName(menuItem);
+        delete menuItem.url;
         return menuItem;
     }
-    function convertHrefInSingleMenuType (menu){
+    quantimodoService.convertHrefInSingleMenuType = function (menu){
         for(var i =0; i < menu.length; i++){
             menu[i] = convertHrefToUrlAndParams(menu[i]);
             if(menu[i].subMenu){
@@ -6719,11 +6751,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         }
         return menu;
-    }
-    function convertHrefInAllMenus(menu) {
-        menu.active = convertHrefInSingleMenuType(menu.active);
-        menu.custom = convertHrefInSingleMenuType(menu.custom);
+    };
+    quantimodoService.convertHrefInAllMenus = function(menu) {
+        menu.active = quantimodoService.convertHrefInSingleMenuType(menu.active);
+        menu.custom = quantimodoService.convertHrefInSingleMenuType(menu.custom);
         return menu;
-    }
+    };
     return quantimodoService;
 });
