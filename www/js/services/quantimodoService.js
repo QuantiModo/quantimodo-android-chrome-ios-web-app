@@ -56,8 +56,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return rv;
     }
-
-
     function addVariableCategoryStateParam(object){
         if(typeof object !== "object"){
             console.error("not an object", object);
@@ -78,12 +76,24 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return object;
     }
+    function removeDeprecatedProperties(object) {
+        if(typeof object !== "object"){
+            console.error("not an object", object);
+            return object;
+        }
+        var deprecatedProperties = ['newIntroType'];
+        for (var i = 0; i < deprecatedProperties.length; i++){
+            delete object[deprecatedProperties[i]];
+        }
+        return object;
+    }
     function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName));}
     quantimodoService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
         array = addColors(array);
         array = addAppDisplayName(array);
         array = addVariableCategoryStateParam(array);
+        array = removeDeprecatedProperties(array);
         return array;
     };
     quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
@@ -6759,6 +6769,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return menuItem;
     }
     quantimodoService.convertHrefInSingleMenuType = function (menu){
+        if(!menu){
+            console.debug("No menu given to convertHrefInSingleMenuType")
+            return;
+        }
         for(var i =0; i < menu.length; i++){
             menu[i] = convertHrefToUrlAndParams(menu[i]);
             if(menu[i].subMenu){
