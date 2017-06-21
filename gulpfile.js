@@ -188,6 +188,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
+        appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(!response.privateConfig && devCredentials.username && devCredentials.password){
             console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at https://app.quantimo.do/api/v2/apps ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at https://app.quantimo.do/api/v2/apps and run gulp devSetup again.");
