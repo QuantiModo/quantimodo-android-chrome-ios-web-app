@@ -1227,8 +1227,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return deferred.promise;
     };
     function getUnixTimestampInSeconds(dateTimeString) {
+        if(!dateTimeString){dateTimeString = new Date().getTime();}
         return Math.round(getUnixTimestampInMilliseconds(dateTimeString)/1000);
     }
+    quantimodoService.getUnixTimestampInSeconds = function(dateTimeString){
+        if(!dateTimeString){dateTimeString = new Date().getTime();}
+        return getUnixTimestampInSeconds(dateTimeString);
+    };
     function getUnixTimestampInMilliseconds(dateTimeString) {
         if(!dateTimeString){return new Date().getTime();}
         return new Date(dateTimeString).getTime();
@@ -4932,6 +4937,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var timeFormat = 'YYYY-MM-DD HH:mm:ss';
         var currentDateTimeInUtcString = currentMoment.utc().format(timeFormat);
         return currentDateTimeInUtcString;
+    };
+    quantimodoService.getCurrentDateString = function () {
+        var currentMoment = moment();
+        var timeFormat = 'YYYY-MM-DD';
+        var currentDateString = currentMoment.utc().format(timeFormat);
+        return currentDateString;
     };
     quantimodoService.getCurrentDateTimeInUtcStringPlusMin = function (minutes) {
         var currentMoment = moment().add(minutes, 'minutes');
