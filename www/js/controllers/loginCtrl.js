@@ -91,18 +91,6 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         var register = true;
         $scope.login(register);
     };
-
-    var browserLogin = function(register) {
-        console.debug("Browser Login");
-        if (window.private_keys && window.private_keys.username) {
-            quantimodoService.refreshUser().then(function () {$state.go(config.appSettings.appDesign.defaultState);});
-        } else if (quantimodoService.weShouldUseOAuthLogin()) {
-            // Using timeout to avoid "$apply already in progress" error caused by window.open
-            if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);} else { quantimodoService.oAuthBrowserLogin(register); }
-        } else {
-            quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
-        }
-    };
     $scope.login = function(register, event) {
         if(window.developmentMode){
             //showLoginModal(event);
@@ -122,7 +110,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             quantimodoService.showBlackRingLoader();
             $scope.circlePage.title = 'Logging in...';
             console.debug("$scope.login: Not windows, android or is so assuming browser.");
-            browserLogin(register);
+            quantimodoService.browserLogin(register);
         }
         if($rootScope.user){
             quantimodoService.createDefaultReminders();

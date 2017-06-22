@@ -6590,7 +6590,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         $ionicLoading.hide();
     };
     quantimodoService.weShouldUseOAuthLogin = function(){
-        return window.location.href.indexOf(quantimodoService.getApiUrl()) === -1;
+        return window.location.href.indexOf('.quantimo.do') === -1;
+    };
+    quantimodoService.browserLogin = function(register) {
+        console.debug("Browser Login");
+        if (quantimodoService.weShouldUseOAuthLogin()) {
+            quantimodoService.oAuthBrowserLogin(register);
+        } else {
+            quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
+        }
     };
     quantimodoService.initializeApplication = function(appSettingsResponse){
         if(window.config){return;}
