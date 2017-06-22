@@ -370,7 +370,12 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             quantimodoService.actionSheetButtons.analysisSettings,
             { text: '<i class="icon ion-android-done-all"></i>Record ' + trackingReminderNotification.lastValueInUserVariableDefaultUnit + ' for all '}
         ];
-		buttons[6] = { text: '<i class="icon ion-android-done-all"></i>Record ' + trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit + ' for all'};
+		if(!trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit && trackingReminderNotification.unitCategoryName !== "Rating"){
+            trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit = 0;
+		}
+		if(trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit !== null){
+            buttons[6] = { text: '<i class="icon ion-android-done-all"></i>Record ' + trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit + ' for all'};
+		}
 		if(trackingReminderNotification.inputType.toLowerCase() === 'yesorno'){
             trackingReminderNotification.lastValueInUserVariableDefaultUnit = 1;
 			buttons[5] = { text: '<i class="icon ion-android-done-all"></i>Record YES for all'};
