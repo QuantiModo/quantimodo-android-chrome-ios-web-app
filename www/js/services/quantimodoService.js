@@ -1686,7 +1686,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     // returns bool | string
     // if search param is found: returns its value
     // returns false if not found
-    quantimodoService.getUrlParameter = function (parameterName, url, shouldDecode) {
+    function getUrlParameter(parameterName, url, shouldDecode) {
         if(!url){url = window.location.href;}
         if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
         if(url.split('?').length > 1){
@@ -1704,6 +1704,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         }
         return null;
+    }
+    quantimodoService.getUrlParameter = function (parameterName, url, shouldDecode) {
+        return getUrlParameter(parameterName, url, shouldDecode);
     };
     function getAllQueryParamsFromUrlString(url){
         if(!url){url = window.location.href;}
@@ -6625,6 +6628,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setOnUpdateActionForLocalNotifications();
             });
         }
+        if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
     };
     quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         if(quantimodoService.getUrlParameter('refreshUser')){
