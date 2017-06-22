@@ -104,7 +104,7 @@ var appsManager = { // jshint ignore:line
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        if(getUrlParameter('apiUrl')){return getUrlParameter('apiUrl');}
+        if(getUrlParameter('apiUrl')){return "https://" + getUrlParameter('apiUrl');}
         if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
         if(window.location.origin.indexOf('staging.quantimo.do') !== -1){return "https://staging.quantimo.do";}
         if(window.location.origin.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
