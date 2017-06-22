@@ -956,6 +956,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             }
             quantimodoService.getLocalStorageItemAsStringWithCallback('user', function (userString) {
+                console.debug("getLocalStorageItemAsStringWithCallback userString: " + userString);
                 if(userString){
                     var user = JSON.parse(userString);
                     setupGoogleAnalytics(user);
