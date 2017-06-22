@@ -1649,6 +1649,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return window.private_keys.client_secrets.Web;
     };
     quantimodoService.getRedirectUri = function () {
+        if(config.appSettings.redirectUri){return config.appSettings.redirectUri;}
         return quantimodoService.getApiUrl() +  '/ionic/Modo/www/callback/';
     };
     quantimodoService.getProtocol = function () {
