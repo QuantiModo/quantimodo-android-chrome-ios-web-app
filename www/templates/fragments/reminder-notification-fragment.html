@@ -23,7 +23,7 @@
 				{{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}}
 			</p>
 		</div>
-		<div ng-click="showActionSheet(trackingReminderNotification, event)" class="col col-10">
+		<div ng-click="showActionSheetForNotification(trackingReminderNotification, event)" class="col col-10">
 			<i style="font-size: 20px;" class="icon positive ion-more"></i>
 		</div>
 	</div>
@@ -66,7 +66,7 @@
 		</span>
 	</label>
 	<!--TODO: Remove (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null) once all clients are updated and we can uncomment defaultValue inputType in Unit.php-->
-	<div class="row" ng-if="trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null)" >
+	<div class="row" ng-if="trackingReminderNotification.showZeroButton" >
 		<div class="button-bar">
 			<button ng-show="trackingReminderNotification.defaultValue"
 					class="button button-clear button-assertive"
