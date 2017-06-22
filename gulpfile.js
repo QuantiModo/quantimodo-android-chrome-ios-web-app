@@ -1837,7 +1837,7 @@ gulp.task('buildAndroidApp', function (callback) {
     runSequence(
         'prepareAndroidApp',
         'cordovaBuildAndroidRelease',
-        'cordovaBuildAndroidDebug',
+        //'cordovaBuildAndroidDebug',
         'copyAndroidBuild',
         callback);
 });
