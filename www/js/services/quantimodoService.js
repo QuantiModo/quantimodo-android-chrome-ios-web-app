@@ -6769,9 +6769,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             menuItem.url = menuItem.href.replace('#', '');
             menuItem = convertUrlVariableCategoryToParams(menuItem);
         }
-        if(!menuItem.url){
-            console.debug("no url", menuItem);
-        }
+        if(!menuItem.url && window.debugMode){console.debug("no url ", menuItem);}
         menuItem = convertUrlAndParamsToHref(menuItem);
         if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
         menuItem = addStateName(menuItem);
@@ -6780,7 +6778,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.convertHrefInSingleMenuType = function (menu){
         if(!menu){
-            console.debug("No menu given to convertHrefInSingleMenuType")
+            console.debug("No menu given to convertHrefInSingleMenuType");
             return;
         }
         for(var i =0; i < menu.length; i++){
