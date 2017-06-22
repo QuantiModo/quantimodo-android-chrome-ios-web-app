@@ -1661,10 +1661,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return 'https';
     };
     quantimodoService.getApiUrl = function () {
-        if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
         //if(config.appSettings.clientId !== "ionic"){return "https://" + config.appSettings.clientId + ".quantimo.do";}
         if(config.appSettings.apiUrl){return config.appSettings.apiUrl;}
-        return "https://app.quantimo.do";
+        return appsManager.getQuantiModoApiUrl();
     };
     quantimodoService.getQuantiModoUrl = function (path) {
         if(typeof path === "undefined") {path = "";}
