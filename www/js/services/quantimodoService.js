@@ -1662,8 +1662,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getApiUrl = function () {
         if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
-        if(!window.private_keys){console.error("Cannot find www/private_configs/" +  appsManager.defaultApp + ".private_config.json or it does not contain window.private_keys");}
-        if(config.appSettings.clientId !== "ionic"){return "https://" + config.appSettings.clientId + ".quantimo.do";}
+        //if(config.appSettings.clientId !== "ionic"){return "https://" + config.appSettings.clientId + ".quantimo.do";}
+        if(config.appSettings.apiUrl){return config.appSettings.apiUrl;}
         return "https://app.quantimo.do";
     };
     quantimodoService.getQuantiModoUrl = function (path) {
