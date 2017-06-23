@@ -6743,7 +6743,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         }
         if(!menuItem.stateName){
-            console.debug("no state name for ", menuItem);
+            console.debug("no state name for " + JSON.stringify(menuItem));
         }
         return menuItem;
     }
