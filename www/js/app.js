@@ -44,7 +44,7 @@ angular.module('starter',
                 quantimodoService.reportErrorDeferred(errorMsg);
             };
         }
-        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){quantimodoService.reportErrorDeferred('PushNotification is undefined');}}
+        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){quantimodoService.reportErrorDeferred('PushNotification is undefined on mobile!');}}
         if (typeof PushNotification !== "undefined") {
             var pushConfig = {
                 android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
