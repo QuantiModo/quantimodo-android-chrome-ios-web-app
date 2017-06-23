@@ -2245,6 +2245,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var params = {};
             params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
             params.sort = '-reminderTime';
+            params.limit = 20; // Limit to notifications to 20 to improve inbox performance
             quantimodoService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
                     quantimodoService.registerDeviceToken();  // Double check because it's not getting posted sometimes for some reason
