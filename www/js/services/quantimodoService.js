@@ -100,6 +100,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(!successHandler){throw "Please provide successHandler function as fourth parameter in quantimodoService.get";}
         if(!options){ options = {}; }
         var cache = false;
+        options.stackTrace = (params.stackTrace) ? params.stackTrace : 'No stacktrace provided with params';
+        delete params.stackTrace;
         if(params && params.cache){
             cache = params.cache;
             params.cache = null;
@@ -109,7 +111,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return;
         }
         if($state.current.name === 'app.intro' && !params.force){
-            console.warn('Not making request to ' + route + ' user because we are in the intro state');
+            console.warn('Not making request to ' + route + ' user because we are in the intro state. stackTrace: . stackTrace: ' + options.stackTrace);
             return;
         }
         delete params.force;
@@ -158,6 +160,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.post = function(route, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
         if(!body){throw "Please provide body parameter to quantimodoService.post";}
+        if(!options){ options = {}; }
+        options.stackTrace = (body.stackTrace) ? body.stackTrace : 'No stacktrace provided with params';
+        delete body.stackTrace;
         if(!canWeMakeRequestYet('POST', route, options)){
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
@@ -261,8 +266,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
             var name = 'Just made a ' + type + ' request to ' + route;
-            var message = name + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds';
-            var metaData = {type: type, route: route, groupingHash: name, state: $state.current};
+            var message = name + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds. stackTrace: ' + options.stackTrace;
+            var metaData = {type: type, route: route, groupingHash: name, state: $state.current, stackTrace: options.stackTrace};
             if(options){metaData.options = options;}
             console.error(message);
             if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
@@ -425,8 +430,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.deleteElementOfLocalStorageItemById('commonVariables', variableId);
         quantimodoService.post('api/v1/userVariables/delete', ['variableId'], {variableId: variableId}, successHandler, errorHandler);
     };
-    quantimodoService.getConnectorsFromApi = function(successHandler, errorHandler){
-        quantimodoService.get('api/v1/connectors/list', [], {}, successHandler, errorHandler);
+    quantimodoService.getConnectorsFromApi = function(params, successHandler, errorHandler){
+        quantimodoService.get('api/v1/connectors/list', [], params, successHandler, errorHandler);
     };
     quantimodoService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
         quantimodoService.get('api/v1/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
@@ -1740,9 +1745,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return err.stack;
     }
     quantimodoService.refreshConnectors = function(){
-        if(window.debugMode){console.debug("Called refresh connectors: " + stackTrace());}
+        var stackTrace = stackTrace();
+        if(window.debugMode){console.debug("Called refresh connectors: " + stackTrace);}
         var deferred = $q.defer();
-        quantimodoService.getConnectorsFromApi(function(connectors){
+        quantimodoService.getConnectorsFromApi({stackTrace: stackTrace}, function(connectors){
             quantimodoService.setLocalStorageItem('connectors', JSON.stringify(connectors));
             connectors = quantimodoService.hideBrokenConnectors(connectors);
             deferred.resolve(connectors);
