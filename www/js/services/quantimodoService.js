@@ -1735,7 +1735,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
+    function stackTrace() {
+        var err = new Error();
+        return err.stack;
+    }
     quantimodoService.refreshConnectors = function(){
+        console.debug("Called refresh connectors: " + stackTrace());
         var deferred = $q.defer();
         quantimodoService.getConnectorsFromApi(function(connectors){
             quantimodoService.setLocalStorageItem('connectors', JSON.stringify(connectors));

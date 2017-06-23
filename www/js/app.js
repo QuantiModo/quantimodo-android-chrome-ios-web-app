@@ -30,7 +30,7 @@ angular.module('starter',
         //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, $http) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     quantimodoService.getPrivateConfigs();
     quantimodoService.showBlackRingLoader();
@@ -232,6 +232,7 @@ angular.module('starter',
     }
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
+    window.debugMode = false;
     if(appsManager.getUrlParameter('debug')){window.debugMode = true;}
     if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in quantimodoService.getUserAndSetupGoogleAnalytics
