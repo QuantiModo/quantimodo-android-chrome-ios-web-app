@@ -107,12 +107,13 @@
                             <div class="row">
                                 <div class="button-bar">
                                     <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 16px;"
+                                            on-hold="trackAllWithConfirmation(trackingReminderNotification, trackingReminderNotification.total, $event)"
                                             ng-click="trackByValueField(trackingReminderNotification, $event)">
                                         <i class="ion-android-done">&nbsp; Record {{trackingReminderNotification.total}}{{trackingReminderNotification.unitAbbreviatedName}} &nbsp</i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="row" >
+                            <div class="row">
                                 <div style="width: 100%" class="range range-positive">
                                     {{trackingReminderNotification.minimumAllowedValue}}
                                     <input ng-model="trackingReminderNotification.total" type="range" name="valueSlider"
