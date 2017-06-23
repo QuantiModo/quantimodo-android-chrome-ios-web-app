@@ -229,11 +229,20 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				hideInboxLoader();
 			});
 	};
-    function trackAll(trackingReminderNotification, modifiedReminderValue){
+	function trackAll(trackingReminderNotification, modifiedReminderValue) {
         quantimodoService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'variableName', trackingReminderNotification.variableName);
-		$scope.track(trackingReminderNotification, modifiedReminderValue, null, true);
+        $scope.track(trackingReminderNotification, modifiedReminderValue, null, true);
         getTrackingReminderNotifications();
     }
+    $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
+        var title = "Are you sure?";
+        var textContent = "Do you want to record " + (modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName).replace(' /', '/') + " for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
+        function yesCallback() {
+            trackAll(trackingReminderNotification, modifiedReminderValue);
+        }
+        function noCallback() {}
+        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+    };
 	$scope.skip = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){ return; }
 		$scope.lastAction = 'Skipped';
