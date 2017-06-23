@@ -12,7 +12,6 @@ ionic plugin add cordova-plugin-splashscreen
 ionic plugin add ionic-plugin-keyboard
 ionic plugin add https://github.com/apache/cordova-plugin-inappbrowser
 ionic plugin add cordova-plugin-statusbar
-ionic plugin add cordova-plugin-datepicker
 ionic plugin add cordova-plugin-file-opener2
 ionic plugin add cordova-plugin-ios-non-exempt-encryption
 ionic plugin add cordova-plugin-email-composer
