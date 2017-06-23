@@ -5366,51 +5366,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         chrome.tabs.create({ url: loginUrl });
         window.close();
     };
-    quantimodoService.oAuthBrowserLogin = function (register) {
-        var url = quantimodoService.generateV1OAuthUrl(register);
-        console.debug("Going to try logging in by opening new tab at url " + url);
-        quantimodoService.showBlackRingLoader();
-        var ref = window.open(url, '_blank');
-        if (!ref) {
-            alert("You must first unblock popups, and and refresh the page for this to work!");
-        } else {
-            console.debug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
-            var interval = setInterval(function () {ref.postMessage('isLoggedIn?', quantimodoService.getRedirectUri());}, 1000);
-            // handler when a message is received from a sibling tab
-            window.onMessageReceived = function (event) {
-                console.debug("message received from sibling tab", event.url);
-                if(interval !== false){
-                    // Don't ask login question anymore
-                    clearInterval(interval);
-                    interval = false;
-                    // the url that quantimodoService redirected us to
-                    var iframe_url = event.data;
-                    // validate if the url is same as we wanted it to be
-                    if (quantimodoService.startsWith(iframe_url, quantimodoService.getRedirectUri())) {
-                        // if there is no error
-                        if (!quantimodoService.getUrlParameter('error', iframe_url)) {
-                            var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
-                            // get access token from authorization code
-                            quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
-                            // close the sibling tab
-                            ref.close();
-                        } else {
-                            // TODO : display_error
-                            alert('Could not login.  Please contact mike@quantimo.do');
-                            quantimodoService.reportErrorDeferred("Error occurred validating redirect " + iframe_url +
-                                ". Closing the sibling tab." + quantimodoService.getUrlParameter('error', iframe_url));
-                            console.error("Error occurred validating redirect url. Closing the sibling tab.",
-                                quantimodoService.getUrlParameter('error', iframe_url));
-                            // close the sibling tab
-                            ref.close();
-                        }
-                    }
-                }
-            };
-            // listen to broadcast messages from other tabs within browser
-            window.addEventListener("message", window.onMessageReceived, false);
-        }
-    };
     quantimodoService.forecastioWeather = function(coordinates) {
         if(!$rootScope.user){
             console.debug("No recording weather because we're not logged in");
@@ -6598,14 +6553,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.weShouldUseOAuthLogin = function(){
         return window.location.href.indexOf('.quantimo.do') === -1;
     };
-    quantimodoService.browserLogin = function(register) {
-        console.debug("Browser Login");
-        if (quantimodoService.weShouldUseOAuthLogin()) {
-            quantimodoService.oAuthBrowserLogin(register);
-        } else {
-            quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
-        }
-    };
+
     quantimodoService.initializeApplication = function(appSettingsResponse){
         if(window.config){return;}
         window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
