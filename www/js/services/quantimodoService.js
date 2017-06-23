@@ -1058,14 +1058,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (register === true) {loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");}
         console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
         var apiUrlMatchesHostName = quantimodoService.getApiUrl().indexOf(window.location.hostname);
-        if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
-            quantimodoService.showBlackRingLoader();
-            loginUrl += "?redirect_uri=" + encodeURIComponent(window.location.href + '?loggingIn=true');
-            // Have to come back to login page and wait for user request to complete
-            window.location.replace(loginUrl);
-        } else {
-            alert("API url doesn't match auth base url.  Please make use the same domain in config file");
+        if(apiUrlMatchesHostName === -1 || !$rootScope.isChromeExtension) {
+            console.warn("sendToNonOAuthBrowserLoginUrl: API url doesn't match auth base url");
         }
+        quantimodoService.showBlackRingLoader();
+        loginUrl += "?redirect_uri=" + encodeURIComponent(window.location.href + '?loggingIn=true');
+        // Have to come back to login page and wait for user request to complete
+        window.location.replace(loginUrl);
     };
     quantimodoService.refreshUserEmailPreferencesDeferred = function(params){
         var deferred = $q.defer();
