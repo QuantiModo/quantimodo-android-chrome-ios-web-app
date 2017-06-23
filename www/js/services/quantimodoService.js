@@ -449,12 +449,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var params = {noRedirect: true, code: code};
         quantimodoService.get('api/v1/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
-    quantimodoService.getUserFromApi = function(successHandler, errorHandler){
+    quantimodoService.getUserFromApi = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
         var options = {};
         options.minimumSecondsBetweenRequests = 3;
         options.doNotSendToLogin = true;
-        quantimodoService.get('api/user/me', [], {}, successHandler, errorHandler, options);
+        quantimodoService.get('api/user/me', [], params, successHandler, errorHandler, options);
     };
     quantimodoService.getUserEmailPreferences = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
@@ -1050,13 +1050,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred();
     };
     quantimodoService.refreshUser = function(){
+        var stackTrace = stackTrace();
         var deferred = $q.defer();
         if(quantimodoService.getUrlParameter('logout')){
             console.debug('Not refreshing user because we have a logout parameter');
             deferred.reject('Not refreshing user because we have a logout parameter');
             return deferred.promise;
         }
-        quantimodoService.getUserFromApi(function(user){
+        quantimodoService.getUserFromApi({stackTrace: stackTrace}, function(user){
             quantimodoService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
         }, function(error){deferred.reject(error);});
@@ -5896,7 +5897,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
             if(!goToState){goToState = $state.current.name;}
-            console.debug('Setting afterLoginGoToState to ' + goToState);
+            console.debug('Setting afterLoginGoToState to ' + goToState + ' and going to login. Stack trace: ' + stackTrace());
             quantimodoService.setLocalStorageItem('afterLoginGoToState', goToState);
             $state.go('app.login');
             return true;
