@@ -6723,7 +6723,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return '?' + str.join("&");
     }
     function convertUrlAndParamsToHref(menuItem) {
-        if(!menuItem.subMenu){menuItem.href = '#/app' + menuItem.url + convertObjectToQueryString(menuItem.params);}
+        if(!menuItem.subMenu){
+            menuItem.href = '#/app' + menuItem.url + convertObjectToQueryString(menuItem.params);
+            menuItem.href = menuItem.href.replace('app/app', 'app');
+        }
         return menuItem;
     }
     function convertStringToId(string) {
