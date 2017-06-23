@@ -235,7 +235,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         getTrackingReminderNotifications();
     }
     $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
-        var title = "Are you sure?";
+        var title = "Record " + (modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName).replace(' /', '/') + " for all?";
         var textContent = "Do you want to record " + (modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName).replace(' /', '/') + " for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
         function yesCallback() {
             trackAll(trackingReminderNotification, modifiedReminderValue);
