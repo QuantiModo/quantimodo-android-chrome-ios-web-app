@@ -26,7 +26,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));  //We can't append access token to Ionic requests for some reason
         return urlParams;
     }
-    function stackTrace() {
+    function getStackTrace() {
         var err = new Error();
         return err.stack;
     }
@@ -1054,7 +1054,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred();
     };
     quantimodoService.refreshUser = function(){
-        var stackTrace = stackTrace();
+        var stackTrace = getStackTrace();
         var deferred = $q.defer();
         if(quantimodoService.getUrlParameter('logout')){
             console.debug('Not refreshing user because we have a logout parameter');
@@ -1746,7 +1746,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return deferred.promise;
     };
     quantimodoService.refreshConnectors = function(){
-        var stackTrace = stackTrace();
+        var stackTrace = getStackTrace();
         if(window.debugMode){console.debug("Called refresh connectors: " + stackTrace);}
         var deferred = $q.defer();
         quantimodoService.getConnectorsFromApi({stackTrace: stackTrace}, function(connectors){
@@ -5897,7 +5897,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
             if(!goToState){goToState = $state.current.name;}
-            console.debug('Setting afterLoginGoToState to ' + goToState + ' and going to login. Stack trace: ' + stackTrace());
+            console.debug('Setting afterLoginGoToState to ' + goToState + ' and going to login. Stack trace: ' + getStackTrace());
             quantimodoService.setLocalStorageItem('afterLoginGoToState', goToState);
             $state.go('app.login');
             return true;
