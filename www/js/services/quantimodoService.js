@@ -26,6 +26,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));  //We can't append access token to Ionic requests for some reason
         return urlParams;
     }
+    function stackTrace() {
+        var err = new Error();
+        return err.stack;
+    }
     function addVariableCategoryInfo(array){
         angular.forEach(array, function(value, key) {
             if(!value){console.error("no value for key " + key + " in array " + JSON.stringify(array));}
@@ -1741,10 +1745,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    function stackTrace() {
-        var err = new Error();
-        return err.stack;
-    }
     quantimodoService.refreshConnectors = function(){
         var stackTrace = stackTrace();
         if(window.debugMode){console.debug("Called refresh connectors: " + stackTrace);}
