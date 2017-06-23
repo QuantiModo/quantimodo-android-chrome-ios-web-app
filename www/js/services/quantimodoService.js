@@ -893,25 +893,29 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.registerDeviceToken = function(){
+    quantimodoService.reRegisterDeviceToken = function(){
+        quantimodoService.registerDeviceToken('deviceTokenOnServer');
+    };
+    quantimodoService.registerDeviceToken = function(localStorageName){
+        if(!localStorageName){localStorageName = 'deviceTokenToSync';}
         var deferred = $q.defer();
         if(!$rootScope.isMobile){
             deferred.reject('Not on mobile so not posting device token');
             return deferred.promise;
         }
-        var deviceTokenToSync = localStorage.getItem('deviceTokenToSync');
+        var deviceTokenToSync = localStorage.getItem(localStorageName);
         if(!deviceTokenToSync){
-            deferred.reject('No deviceTokenToSync in localStorage');
+            deferred.reject('No ' + localStorageName + ' in localStorage');
             return deferred.promise;
         }
-        localStorage.removeItem('deviceTokenToSync');
+        localStorage.removeItem(localStorageName);
         console.debug("Posting deviceToken to server: ", deviceTokenToSync);
         quantimodoService.postDeviceToken(deviceTokenToSync, function(response){
             localStorage.setItem('deviceTokenOnServer', deviceTokenToSync);
             console.debug(response);
             deferred.resolve();
         }, function(error){
-            localStorage.setItem('deviceTokenToSync', deviceTokenToSync);
+            localStorage.setItem(localStorageName, deviceTokenToSync);
             if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
             deferred.reject(error);
         });
@@ -6577,6 +6581,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setOnUpdateActionForLocalNotifications();
             });
         }
+        quantimodoService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
         if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
     };
     quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
