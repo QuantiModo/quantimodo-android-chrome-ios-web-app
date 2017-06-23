@@ -40,7 +40,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 			if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
-			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add variable"; }
+			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add a Variable"; }
             if(!$scope.stateParams.addMeasurementButtonText) { $scope.stateParams.addMeasurementButtonText = "Record Measurement"; }
 			actionButtons[2] = quantimodoService.actionSheetButtons.history;
             actionButtons[3] = quantimodoService.actionSheetButtons.addReminder;
