@@ -3,7 +3,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
         $rootScope.hideNavigationMenu = true;
-        if(quantimodoService.goToLoginIfNecessary()){ return; }
+        if(quantimodoService.sendToLoginIfNecessaryAndComeBack()){ return; }
         quantimodoService.setupOnboardingPages();
         quantimodoService.hideLoader();
         $rootScope.hideNavigationMenu = true;

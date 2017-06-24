@@ -9,7 +9,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         textColor : 'black',
         slideIndex : 0,
         startApp : function() { // Called to navigate to the main app
-            if(quantimodoService.goToLoginIfNecessary('app.onboarding')){ return; }
+            if(quantimodoService.sendToLogin()){ return; }
             $state.go('app.onboarding');
         },
         next : function(index) {
