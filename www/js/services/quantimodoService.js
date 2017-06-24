@@ -1059,15 +1059,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return true;
         }
     }
-    function sendToAfterLoginStateIfNecessary() {
-        var afterLoginGoToState = quantimodoService.getLocalStorageItemAsString('afterLoginGoToState');
-        logDebugMessage("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
-        if(afterLoginGoToState){
-            quantimodoService.deleteItemFromLocalStorage('afterLoginGoToState');
-            $state.go(afterLoginGoToState);
-            return true;
-        }
-    }
     function sendToDefaultStateIfNecessary() {
         if($state.current.name === 'app.login'){
             $state.go(config.appSettings.appDesign.defaultState);
@@ -1076,7 +1067,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     quantimodoService.afterLoginGoToUrlOrState = function () {
         if(sendToAfterLoginUrlIfNecessary()) {return true;}
-        if(sendToAfterLoginStateIfNecessary()) {return true;}
         if(sendToDefaultStateIfNecessary()) {return true;}
         return false;
     };
@@ -5928,23 +5918,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    function setAfterLoginGoToState(afterLoginGoToState){
-        logDebugMessage('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ');
-        quantimodoService.setLocalStorageItem('afterLoginGoToState', afterLoginGoToState);
-    }
     function setAfterLoginGoToUrl(afterLoginGoToUrl){
         if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
         logDebugMessage('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
         quantimodoService.setLocalStorageItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
-    quantimodoService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState){
+    quantimodoService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToUrl){
         quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
-            if(afterLoginGoToState){
-                setAfterLoginGoToState(afterLoginGoToState);
-            } else {
-                setAfterLoginGoToUrl();
-            }
+            setAfterLoginGoToUrl(afterLoginGoToUrl);
             sendToLogin();
             return true;
         }
@@ -6803,7 +6785,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             menuItem.url = menuItem.href.replace('#', '');
             menuItem = convertUrlVariableCategoryToParams(menuItem);
         }
-        if(!menuItem.url && window.debugMode){console.debug("no url ", menuItem);}
+        if(!menuItem.url && window.debugMode){console.debug("no url " + JSON.stringify(menuItem));}
         menuItem = convertUrlAndParamsToHref(menuItem);
         if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
         menuItem = addStateName(menuItem);
