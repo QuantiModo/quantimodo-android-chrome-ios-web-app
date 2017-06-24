@@ -32,7 +32,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		console.debug("RemindersInboxCtrl beforeEnter ");
         if(quantimodoService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = quantimodoService.getUrlParameter('variableCategoryName');}
 		$scope.loading = true;
-        if(quantimodoService.goToLoginIfNecessary()){ return; }
+        if(quantimodoService.sendToLoginIfNecessaryAndComeBack()){ return; }
 		$rootScope.hideBackButton = true;
 		$rootScope.hideHomeButton = true;
         if ($stateParams.hideNavigationMenu !== true){$rootScope.hideNavigationMenu = false;}

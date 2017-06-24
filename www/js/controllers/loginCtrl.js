@@ -301,21 +301,19 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                 console.debug("facebook login error"+ JSON.stringify(error));
             });
     };
-
-
-        var showLoginModal = function (ev) {
-            $mdDialog.show({
-                controller: LoginModalController,
-                templateUrl: 'templates/modals/login-modal.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose: true,
-                fullscreen: $scope.customFullscreen
-            });
-        };
-        function LoginModalController($scope, $mdDialog) {
-            $scope.close = function () { $mdDialog.cancel(); };
-            $scope.hide = function () { $mdDialog.hide(); };
-            $scope.answer = function (answer) { $mdDialog.hide(answer); };
-        }
+    var showLoginModal = function (ev) {
+        $mdDialog.show({
+            controller: LoginModalController,
+            templateUrl: 'templates/modals/login-modal.html',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: true,
+            fullscreen: $scope.customFullscreen
+        });
+    };
+    function LoginModalController($scope, $mdDialog) {
+        $scope.close = function () { $mdDialog.cancel(); };
+        $scope.hide = function () { $mdDialog.hide(); };
+        $scope.answer = function (answer) { $mdDialog.hide(answer); };
+    }
 });

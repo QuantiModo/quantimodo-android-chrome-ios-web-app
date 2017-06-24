@@ -25,10 +25,10 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			return;
 		}
 		if(!$rootScope.user){
-            quantimodoService.sendToLogin(true);
+            quantimodoService.sendToLoginIfNecessaryAndComeBack();
 		}
 	});
-    $scope.sendToLogin = function(){quantimodoService.sendToLogin();};
+    $scope.completelyResetAppStateAndSendToLogin = function(){quantimodoService.completelyResetAppStateAndSendToLogin();};
 	quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		if($rootScope.isIOS){

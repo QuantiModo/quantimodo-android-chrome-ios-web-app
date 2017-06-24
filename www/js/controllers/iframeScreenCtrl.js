@@ -58,7 +58,7 @@ angular.module('starter')
         quantimodoService.hideLoader();
     }, function(){
         console.debug("iframeScreen: No access token. Need to log in.");
-        quantimodoService.sendToLogin(true);
+        quantimodoService.sendToLoginIfNecessaryAndComeBack();
         quantimodoService.hideLoader();
     });
 });
