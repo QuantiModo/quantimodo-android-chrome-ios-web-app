@@ -152,7 +152,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         quantimodoService.generalApiErrorHandler(data, status, headers, request, options);
                         requestSpecificErrorHandler(data);
                     } else {
-                        quantimodoService.successHandler(data, route, status);
+                        if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
+                        if(data.message){ console.warn(data.message); }
                         successHandler(data);
                     }
                 })
@@ -191,11 +192,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
             });
         }, requestSpecificErrorHandler);
-    };
-    quantimodoService.successHandler = function(data, baseURL, status){
-        var maxLength = 140;
-        if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-        if(data.message){ console.warn(data.message); }
     };
     quantimodoService.generalApiErrorHandler = function(data, status, headers, request, options){
         console.error("error response from " + request.url);
@@ -353,8 +349,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
         quantimodoService.post('api/v1/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
     };
-    quantimodoService.postMeasurementsExport = function(type) {
-        quantimodoService.post('api/v2/measurements/request_' + type, [], [], quantimodoService.successHandler, quantimodoService.generalApiErrorHandler);
+    quantimodoService.postMeasurementsExport = function(type, successHandler, errorHandler) {
+        quantimodoService.post('api/v2/measurements/request_' + type, [], [], successHandler, errorHandler);
     };
     // post new Measurements for user
     quantimodoService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
