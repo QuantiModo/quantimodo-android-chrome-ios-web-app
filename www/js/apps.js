@@ -40,10 +40,23 @@ function getClientIdFromQueryParameters(fallbackToSubDomain) {
 }
 
 function getQuantiModoClientId() {
-    if(window.location.href.indexOf('http') === -1 || window.location.href.indexOf('quantimo.do') === -1){return "default";} // On mobile
-    if(getClientIdFromQueryParameters()){return getClientIdFromQueryParameters();}
-    if(appConfigFileNames[getSubDomain()]){return appConfigFileNames[getSubDomain()];}
-    return getSubDomain();
+    if(window.location.href.indexOf('http') === -1 || window.location.href.indexOf('quantimo.do') === -1){
+        console.debug("Using default.config.js because we're not on a website or a quantimo.do domain");
+        return "default"; // On mobile
+    }
+    var clientIdFromQueryParams = getClientIdFromQueryParameters();
+    if(clientIdFromQueryParams){
+        console.debug("Using clientIdFromQueryParams: " + clientIdFromQueryParams);
+        return clientIdFromQueryParams;
+    }
+    var subdomain = getSubDomain();
+    var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
+    if(clientIdFromAppConfigName){
+        console.debug("Using client id " + clientIdFromAppConfigName + " derived from appConfigFileNames using subdomain: " + subdomain);
+        return clientIdFromAppConfigName;
+    }
+    console.debug("Using subdomain as client id: " + subdomain);
+    return subdomain;
 }
 
 function getUrlParameter(parameterName, url, shouldDecode) {
