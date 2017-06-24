@@ -55,13 +55,7 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
     $scope.joinStudy = function () {
         $scope.hideJoinStudyButton = true;
         $scope.state.image.url = "img/robots/quantimodo-robot-happy.svg";
-        if(!$rootScope.user){
-            console.debug('Setting afterLoginGoTo to ' + window.location.href + '&alreadyJoined=true');
-            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href + '&alreadyJoined=true');
-            quantimodoService.hideLoader();
-            $state.go('app.login');
-            return;
-        }
+        if(quantimodoService.sendToLoginIfNecessaryAndComeBack(window.location.href + '&alreadyJoined=true')){return;}
         $scope.state.title = "Joining study...";
         $scope.state.bodyText = "Thank you for helping us accelerate scientific discovery!";
         quantimodoService.joinStudyDeferred($scope.requestParams).then(function () {

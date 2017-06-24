@@ -30,7 +30,7 @@ angular.module('starter',
         //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService, $http) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     quantimodoService.getPrivateConfigs();
     quantimodoService.showBlackRingLoader();
@@ -44,7 +44,7 @@ angular.module('starter',
                 quantimodoService.reportErrorDeferred(errorMsg);
             };
         }
-        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){quantimodoService.reportErrorDeferred('PushNotification is undefined');}}
+        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){quantimodoService.reportErrorDeferred('PushNotification is undefined on mobile!');}}
         if (typeof PushNotification !== "undefined") {
             var pushConfig = {
                 android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
@@ -232,6 +232,7 @@ angular.module('starter',
     }
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
+    window.debugMode = false;
     if(appsManager.getUrlParameter('debug')){window.debugMode = true;}
     if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in quantimodoService.getUserAndSetupGoogleAnalytics
@@ -272,7 +273,7 @@ angular.module('starter',
     var config_resolver = {
         appSettingsResponse: function($http){
             var settingsUrl = 'configs/default.config.json';
-            var clientId = appsManager.getClientIdFromQueryParameters(true);
+            var clientId = appsManager.getQuantiModoClientId();
             if(!appsManager.shouldWeUseLocalConfig()){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;}
             return $http({method: 'GET', url: settingsUrl});
         }
