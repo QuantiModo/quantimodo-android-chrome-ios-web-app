@@ -195,6 +195,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
             fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
         }
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
+        console.debug("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
         fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         if(response.allConfigs){
             for (var i = 0; i < response.allConfigs.length; i++) {
