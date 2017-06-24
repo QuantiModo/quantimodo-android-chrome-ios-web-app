@@ -50,9 +50,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             { id : 12, name : 'Weekly'},
             { id : 13, name : 'Every 2 weeks'},
             { id : 14, name : 'Every 4 weeks'}
-            //{ id : 15, name : 'Minutely'}
         ]
     };
+    if($rootScope.user && $rootScope.user.administrator){$scope.variables.frequencyVariables.push({ id : 15, name : 'Minutely'});}
+    if(!$rootScope.user){quantimodoService.refreshUser();}
     $scope.$on('$ionicView.beforeEnter', function(){
         $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
         $rootScope.hideNavigationMenu = false;
