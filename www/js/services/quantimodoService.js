@@ -1633,10 +1633,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     function envIsDevelopment() {return getEnv() === 'development';}
     quantimodoService.getEnv = function(){return getEnv();};
-    function getSubDomain(){return window.location.host.split('.')[0].toLowerCase();}
     quantimodoService.getClientId = function(){
-        if(typeof config !== "undefined" && config.appSettings.clientId){return config.appSettings.clientId;}
-        if(!window.private_keys){return getSubDomain();}
+        if(typeof config !== "undefined" && config.appSettings.clientId){
+            logDebugMessage("config.appSettings.clientId is " + config.appSettings.clientId);
+            return config.appSettings.clientId;
+        } else {
+            logDebugMessage("config.appSettings.clientId is not present");
+        }
+        if(!window.private_keys){return appsManager.getQuantiModoClientId();}
         if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
         if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS;}
         if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android;}

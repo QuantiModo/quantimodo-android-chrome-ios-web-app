@@ -24,12 +24,13 @@ function getClientIdFromQueryParameters() {
     if(!clientId){clientId = getUrlParameter('appName');}
     if(!clientId){clientId = getUrlParameter('lowerCaseAppName');}
     if(!clientId){clientId = getUrlParameter('quantimodoClientId');}
+    if(clientId){localStorage.setItem('clientId', clientId);}
     return clientId;
 }
 
 function getQuantiModoClientId() {
-    if(window.location.href.indexOf('http') === -1 || window.location.href.indexOf('quantimo.do') === -1){
-        console.debug("Using default.config.js because we're not on a website or a quantimo.do domain");
+    if(onMobile()){
+        console.debug("Using default.config.js because we're on mobile");
         return "default"; // On mobile
     }
     var clientId = getClientIdFromQueryParameters();
@@ -41,6 +42,10 @@ function getQuantiModoClientId() {
     if(clientId){
         console.debug("Using clientId From localStorage: " + clientId);
         return clientId;
+    }
+    if(window.location.href.indexOf('quantimo.do') === -1){
+        console.debug("Using default.config.js because we're not on a quantimo.do domain");
+        return "default"; // On mobile
     }
     var subdomain = getSubDomain();
     var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
@@ -70,6 +75,10 @@ function getUrlParameter(parameterName, url, shouldDecode) {
         }
     }
     return null;
+}
+
+function onMobile() {
+    return window.location.href.indexOf('https://') === -1;
 }
 
 var appsManager = { // jshint ignore:line
@@ -103,8 +112,7 @@ var appsManager = { // jshint ignore:line
         return "https://app.quantimo.do";
     },
     shouldWeUseLocalConfig: function () {
-        var onMobile = window.location.href.indexOf('https://') === -1;
-        if(onMobile){return true;}
+        if(onMobile()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         if(designMode){return false;}
         if(getClientIdFromQueryParameters() === 'app'){return true;}
