@@ -28,7 +28,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     function getStackTrace() {
         var err = new Error();
-        return err.stack;
+        var stackTrace = err.stack;
+        stackTrace = stackTrace.substring(stackTrace.indexOf('getStackTrace')).replace('getStackTrace', '');
+        stackTrace = stackTrace.substring(stackTrace.indexOf('logDebugMessage')).replace('logDebugMessage', '');
+        return stackTrace;
     }
     function addVariableCategoryInfo(array){
         angular.forEach(array, function(value, key) {
@@ -92,6 +95,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return object;
     }
     function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName));}
+    function addStackTraceToMessage(message, stackTrace) {
+        if(!stackTrace){stackTrace = getStackTrace();}
+        return message + ".  StackTrace: " + stackTrace;
+    }
+    function logDebugMessage(message, stackTrace) {
+        if(window.debugMode){
+            message = addStackTraceToMessage(message, stackTrace);
+            alert(message);
+            //quantimodoService.reportErrorDeferred(message);
+        }
+        console.debug(message);
+    }
     quantimodoService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
         array = addColors(array);
@@ -115,7 +130,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return;
         }
         if($state.current.name === 'app.intro' && !params.force){
-            console.warn('Not making request to ' + route + ' user because we are in the intro state. stackTrace: . stackTrace: ' + options.stackTrace);
+            logDebugMessage('Not making request to ' + route + ' user because we are in the intro state', options.stackTrace);
             return;
         }
         delete params.force;
@@ -139,10 +154,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             var request = {method: 'GET', url: (quantimodoService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
-            console.debug('GET ' + request.url);
+            logDebugMessage('GET ' + request.url, options.stackTrace);
             $http(request)
                 .success(function (data, status, headers) {
-                    console.debug("Got " + route + " " + status + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...');
+                    logDebugMessage("Got " + route + " " + status + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...', options.stackTrace);
                     if(!data) {
                         if (typeof Bugsnag !== "undefined") {
                             var groupingHash = 'No data returned from this request';
@@ -153,7 +168,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                         requestSpecificErrorHandler(data);
                     } else {
                         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-                        if(data.message){ console.warn(data.message); }
+                        if(data.message){ logDebugMessage(data.message, options.stackTrace); }
                         successHandler(data);
                     }
                 })
@@ -173,7 +188,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             return;
         }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-        console.debug('quantimodoService.post: About to try to post request to ' + route + ' with body: ' + JSON.stringify(body).substring(0, 140));
+        logDebugMessage('quantimodoService.post: About to try to post request to ' + route + ' with body: ' + JSON.stringify(body).substring(0, 140), options.stackTrace);
         quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
                 var item = body[i];
@@ -186,7 +201,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
             var url = quantimodoService.getQuantiModoUrl(route) + '?' + addGlobalUrlParams([]).join('&');
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
-            if(accessToken) {request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};}
+            if(accessToken) {
+                logDebugMessage('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
+                request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};
+            } else {
+                logDebugMessage('No access token for POST ' + route + ". User is " + JSON.stringify($rootScope.user), options.stackTrace);
+            }
             $http(request).success(successHandler).error(function(data, status, headers){
                 generalApiErrorHandler(data, status, headers, request, options);
                 if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
@@ -196,18 +216,18 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     function generalApiErrorHandler(data, status, headers, request, options){
         console.error("error response from " + request.url);
         if(status === 302){
-            console.warn('Got 302 response from ' + JSON.stringify(request));
+            logDebugMessage('Got 302 response from ' + JSON.stringify(request), options.stackTrace);
             return;
         }
         if(status === 401){
             if(options && options.doNotSendToLogin){
                 return;
             } else {
-                console.warn('quantimodoService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request));
-                quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-                console.debug("set afterLoginGoTo to " + window.location.href);
+                logDebugMessage('quantimodoService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
+                logDebugMessage('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
+                setAfterLoginGoToUrl();
                 if (window.private_keys && quantimodoService.getClientId() !== 'oAuthDisabled') {
-                    quantimodoService.sendToLogin();
+                    quantimodoService.completelyResetAppStateAndSendToLogin();
                 } else {
                     var register = true;
                     quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
@@ -974,6 +994,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
     };
     quantimodoService.setUserInLocalStorageBugsnagIntercomPush = function(user){
+        var message = 'setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user);
+        console.debug(message);
+        if(window.debugMode){
+            alert(message);
+            quantimodoService.reportErrorDeferred(message);
+        }
         $rootScope.user = user;
         if(quantimodoService.getUrlParameter('doNotRemember')){return;}
         quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
@@ -1024,25 +1050,34 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
         if(!quantimodoService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.appDesign.defaultState);}
     };
-    quantimodoService.afterLoginGoToUrlOrState = function () {
-        var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
-        //console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
-        if(afterLoginGoTo) {
-            quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
-            window.location.replace(afterLoginGoTo);
+    function sendToAfterLoginUrlIfNecessary() {
+        var afterLoginGoToUrl = quantimodoService.getLocalStorageItemAsString('afterLoginGoToUrl');
+        if(afterLoginGoToUrl) {
+            logDebugMessage("afterLoginGoToUrl from localstorage is  " + afterLoginGoToUrl);
+            quantimodoService.deleteItemFromLocalStorage('afterLoginGoToUrl');
+            window.location.replace(afterLoginGoToUrl);
             return true;
         }
+    }
+    function sendToAfterLoginStateIfNecessary() {
         var afterLoginGoToState = quantimodoService.getLocalStorageItemAsString('afterLoginGoToState');
-        //console.debug("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
+        logDebugMessage("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
         if(afterLoginGoToState){
             quantimodoService.deleteItemFromLocalStorage('afterLoginGoToState');
             $state.go(afterLoginGoToState);
             return true;
         }
+    }
+    function sendToDefaultStateIfNecessary() {
         if($state.current.name === 'app.login'){
             $state.go(config.appSettings.appDesign.defaultState);
             return true;
         }
+    }
+    quantimodoService.afterLoginGoToUrlOrState = function () {
+        if(sendToAfterLoginUrlIfNecessary()) {return true;}
+        if(sendToAfterLoginStateIfNecessary()) {return true;}
+        if(sendToDefaultStateIfNecessary()) {return true;}
         return false;
     };
     quantimodoService.syncAllUserData = function(){
@@ -1616,10 +1651,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     function envIsDevelopment() {return getEnv() === 'development';}
     quantimodoService.getEnv = function(){return getEnv();};
-    function getSubDomain(){return window.location.host.split('.')[0].toLowerCase();}
     quantimodoService.getClientId = function(){
-        if(typeof config !== "undefined" && config.appSettings.clientId){return config.appSettings.clientId;}
-        if(!window.private_keys){return getSubDomain();}
+        if(typeof config !== "undefined" && config.appSettings.clientId){
+            logDebugMessage("config.appSettings.clientId is " + config.appSettings.clientId);
+            return config.appSettings.clientId;
+        } else {
+            logDebugMessage("config.appSettings.clientId is not present");
+        }
+        if(!window.private_keys){return appsManager.getQuantiModoClientId();}
         if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
         if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS;}
         if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android;}
@@ -1745,7 +1784,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var stackTrace = getStackTrace();
         if(window.debugMode){console.debug("Called refresh connectors: " + stackTrace);}
         var deferred = $q.defer();
-        quantimodoService.getConnectorsFromApi({stackTrace: stackTrace}, function(connectors){
+        quantimodoService.getConnectorsFromApi({stackTrace: getStackTrace()}, function(connectors){
             quantimodoService.setLocalStorageItem('connectors', JSON.stringify(connectors));
             connectors = quantimodoService.hideBrokenConnectors(connectors);
             deferred.resolve(connectors);
@@ -5889,13 +5928,24 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-    quantimodoService.goToLoginIfNecessary = function(goToState){
+    function setAfterLoginGoToState(afterLoginGoToState){
+        logDebugMessage('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ');
+        quantimodoService.setLocalStorageItem('afterLoginGoToState', afterLoginGoToState);
+    }
+    function setAfterLoginGoToUrl(afterLoginGoToUrl){
+        if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
+        logDebugMessage('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
+        quantimodoService.setLocalStorageItem('afterLoginGoToUrl', afterLoginGoToUrl);
+    }
+    quantimodoService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState){
         quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
-            if(!goToState){goToState = $state.current.name;}
-            console.debug('Setting afterLoginGoToState to ' + goToState + ' and going to login. Stack trace: ' + getStackTrace());
-            quantimodoService.setLocalStorageItem('afterLoginGoToState', goToState);
-            $state.go('app.login');
+            if(afterLoginGoToState){
+                setAfterLoginGoToState(afterLoginGoToState);
+            } else {
+                setAfterLoginGoToUrl();
+            }
+            sendToLogin();
             return true;
         }
         return false;
@@ -6355,13 +6405,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         function noCallback() {}
         quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
-    quantimodoService.sendToLogin = function(comeBackAfterLogin){
-        if(comeBackAfterLogin){
-            quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
-            console.debug("set afterLoginGoTo to " + window.location.href);
-        }
+    quantimodoService.completelyResetAppStateAndSendToLogin = function(comeBackAfterLogin){
+        if(comeBackAfterLogin){setAfterLoginGoToUrl();}
         quantimodoService.completelyResetAppState();
+        sendToLogin();
+    };
+    quantimodoService.logDebugMessage = function(message, stackTrace) {
+        if(window.debugMode){
+            message = addStackTraceToMessage(message, stackTrace);
+            alert(message);
+            quantimodoService.reportErrorDeferred(message);
+        }
+        console.debug(message);
+    };
+    function sendToLogin() {
+        logDebugMessage("Sending to app.login");
         $state.go("app.login");
+    }
+    quantimodoService.sendToLogin = function() {
+        sendToLogin();
     };
     quantimodoService.highchartsReflow = function() {
         // Fixes chart width
@@ -6570,6 +6632,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.initializeApplication = function(appSettingsResponse){
         if(window.config){return;}
         window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
+        if(window.config.appSettings.debugMode){window.debugMode = true;}
+        console.debug("appSettings.clientId is " + window.config.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
         $rootScope.appSettings = window.config.appSettings;
@@ -6590,7 +6654,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 quantimodoService.setOnUpdateActionForLocalNotifications();
             });
         }
-        quantimodoService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
         if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
     };
     quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
@@ -6604,6 +6667,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
         quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
+            quantimodoService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
             if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
             if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
             //qmSetupInPopup();

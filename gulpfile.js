@@ -105,7 +105,7 @@ function setLowerCaseAppName(callback) {
                     process.env.QUANTIMODO_CLIENT_ID = branch;
                 } else {
                     process.env.DEBUG_MODE = true;
-                    console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to default QuantiModo configuration variables');
+                    console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to default debug mode with quantimodo client id');
                     process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
                 }
             }
@@ -185,6 +185,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
         appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
+        appSettings.debugMode = process.env.DEBUG_MODE;
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(!response.privateConfig && devCredentials.username && devCredentials.password){
             console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at https://app.quantimo.do/api/v2/apps ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at https://app.quantimo.do/api/v2/apps and run gulp devSetup again.");
@@ -194,6 +195,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
             fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
         }
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
+        console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
         fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         if(response.allConfigs){
             for (var i = 0; i < response.allConfigs.length; i++) {
