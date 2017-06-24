@@ -25,10 +25,10 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			return;
 		}
 		if(!$rootScope.user){
-            quantimodoService.sendToLogin(true);
+            quantimodoService.sendToLoginIfNecessaryAndComeBack();
 		}
 	});
-    $scope.sendToLogin = function(){quantimodoService.sendToLogin();};
+    $scope.completelyResetAppStateAndSendToLogin = function(){quantimodoService.completelyResetAppStateAndSendToLogin();};
 	quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		if($rootScope.isIOS){
@@ -58,8 +58,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
 	function addAppInformationToTemplate(template){
-		if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer');}
-		if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync');}
+		if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer') + '\r\n' + '\r\n';}
+		if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync') + '\r\n' + '\r\n';}
 		template = template + "QuantiModo Client ID: " + quantimodoService.getClientId() + '\r\n';
 		template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
 		template = template + "App Name: " + config.appSettings.appDisplayName + '\r\n';
@@ -68,6 +68,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		return template;
 	}
 	$scope.sendBugReport = function() {
+		quantimodoService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server
 		var subjectLine = encodeURIComponent( config.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
 		var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
 			"Additional Information: " + '\r\n';

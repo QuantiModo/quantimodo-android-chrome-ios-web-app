@@ -91,14 +91,55 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         var register = true;
         $scope.login(register);
     };
-
+    var oAuthBrowserLogin = function (register) {
+        var url = quantimodoService.generateV1OAuthUrl(register);
+        console.debug("Going to try logging in by opening new tab at url " + url);
+        quantimodoService.showBlackRingLoader();
+        var ref = window.open(url, '_blank');
+        if (!ref) {
+            alert("You must first unblock popups, and and refresh the page for this to work!");
+        } else {
+            console.debug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
+            var interval = setInterval(function () {ref.postMessage('isLoggedIn?', quantimodoService.getRedirectUri());}, 1000);
+            // handler when a message is received from a sibling tab
+            window.onMessageReceived = function (event) {
+                console.debug("message received from sibling tab", event.url);
+                if(interval !== false){
+                    // Don't ask login question anymore
+                    clearInterval(interval);
+                    interval = false;
+                    // the url that quantimodoService redirected us to
+                    var iframe_url = event.data;
+                    // validate if the url is same as we wanted it to be
+                    if (quantimodoService.startsWith(iframe_url, quantimodoService.getRedirectUri())) {
+                        // if there is no error
+                        if (!quantimodoService.getUrlParameter('error', iframe_url)) {
+                            var authorizationCode = quantimodoService.getAuthorizationCodeFromUrl(event);
+                            // get access token from authorization code
+                            quantimodoService.fetchAccessTokenAndUserDetails(authorizationCode);
+                            // close the sibling tab
+                            ref.close();
+                        } else {
+                            // TODO : display_error
+                            alert('Could not login.  Please contact mike@quantimo.do');
+                            quantimodoService.reportErrorDeferred("Error occurred validating redirect " + iframe_url +
+                                ". Closing the sibling tab." + quantimodoService.getUrlParameter('error', iframe_url));
+                            console.error("Error occurred validating redirect url. Closing the sibling tab.",
+                                quantimodoService.getUrlParameter('error', iframe_url));
+                            // close the sibling tab
+                            ref.close();
+                        }
+                    }
+                }
+            };
+            // listen to broadcast messages from other tabs within browser
+            window.addEventListener("message", window.onMessageReceived, false);
+        }
+    };
     var browserLogin = function(register) {
         console.debug("Browser Login");
-        if (window.private_keys && window.private_keys.username) {
-            quantimodoService.refreshUser().then(function () {$state.go(config.appSettings.appDesign.defaultState);});
-        } else if (quantimodoService.weShouldUseOAuthLogin()) {
-            // Using timeout to avoid "$apply already in progress" error caused by window.open
-            if($scope.$root.$$phase) { $timeout(function() { quantimodoService.oAuthBrowserLogin(register); },0,false);} else { quantimodoService.oAuthBrowserLogin(register); }
+        if (quantimodoService.weShouldUseOAuthLogin()) {
+            if($scope.$root.$$phase) {$timeout(function() {oAuthBrowserLogin(register);},0,false);} else {oAuthBrowserLogin(register);} // Avoid Error: [$rootScope:inprog]
         } else {
             quantimodoService.sendToNonOAuthBrowserLoginUrl(register);
         }
@@ -178,6 +219,17 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             quantimodoService.nonNativeMobileLogin(register);
         });
     };
+    function reportLoginError(message) {
+        quantimodoService.reportErrorDeferred(message);
+        if(window.debugMode){alert(message);}
+    }
+    function loginLog(message) {
+        console.debug(message);
+        if(window.debugMode){
+            alert(message);
+            quantimodoService.reportErrorDeferred(message);
+        }
+    }
     $scope.googleLogin = function(register) {
         var debugMode = false;
         $scope.hideGoogleLoginButton = true;
@@ -194,24 +246,21 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             }, function (userData) {
                 $timeout.cancel(timeout);
                 timeout = loginTimeout();
-                console.debug('window.plugins.googleplus.login response:' + JSON.stringify(userData));
+                loginLog('window.plugins.googleplus.login response:' + JSON.stringify(userData));
                 quantimodoService.getTokensAndUserViaNativeGoogleLogin(userData).then(function (response) {
                     $timeout.cancel(timeout);
                     quantimodoService.hideLoader();
-                    if(debugMode){alert('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));}
-                    console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));
+                    loginLog('googleLogin: Response from QM server via getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));
                     quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                 }, function (errorMessage) {
                     quantimodoService.hideLoader();
-                    if(debugMode){alert("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));}
-                    quantimodoService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                    reportLoginError("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                     var register = true;
                     quantimodoService.nonNativeMobileLogin(register);
                 });
             }, function (errorMessage) {
                 quantimodoService.hideLoader();
-                if(debugMode){alert("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));}
-                quantimodoService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                reportLoginError("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                 register = true;
                 quantimodoService.nonNativeMobileLogin(register);
             });
@@ -252,21 +301,19 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                 console.debug("facebook login error"+ JSON.stringify(error));
             });
     };
-
-
-        var showLoginModal = function (ev) {
-            $mdDialog.show({
-                controller: LoginModalController,
-                templateUrl: 'templates/modals/login-modal.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose: true,
-                fullscreen: $scope.customFullscreen
-            });
-        };
-        function LoginModalController($scope, $mdDialog) {
-            $scope.close = function () { $mdDialog.cancel(); };
-            $scope.hide = function () { $mdDialog.hide(); };
-            $scope.answer = function (answer) { $mdDialog.hide(answer); };
-        }
+    var showLoginModal = function (ev) {
+        $mdDialog.show({
+            controller: LoginModalController,
+            templateUrl: 'templates/modals/login-modal.html',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: true,
+            fullscreen: $scope.customFullscreen
+        });
+    };
+    function LoginModalController($scope, $mdDialog) {
+        $scope.close = function () { $mdDialog.cancel(); };
+        $scope.hide = function () { $mdDialog.hide(); };
+        $scope.answer = function (answer) { $mdDialog.hide(answer); };
+    }
 });

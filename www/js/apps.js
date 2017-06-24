@@ -19,31 +19,42 @@ function getSubDomain(){
     return parts[0].toLowerCase();
 }
 
-function getClientIdFromQueryParameters(fallbackToSubDomain) {
-    var clientId;
-    var queryString = document.location.toString().split('?')[1];
-    if(queryString) {
-        var queryParameterStrings = queryString.split('&');
-        if (queryParameterStrings) {
-            for (var i = 0; i < queryParameterStrings.length; i++) {
-                var queryKeyValuePair = queryParameterStrings[i].split('=');
-                if (['app', 'appname', 'lowercaseappname', 'clientid'].contains(queryKeyValuePair[0].toLowerCase().replace('_', ''))) {
-                    clientId = queryKeyValuePair[1].split('#')[0].toLowerCase();
-                    localStorage.setItem('clientId', clientId);
-                }
-            }
-        }
-    }
-    if(!clientId){clientId = localStorage.getItem('clientId');}
-    if(!clientId && fallbackToSubDomain){clientId = getSubDomain();}
+function getClientIdFromQueryParameters() {
+    var clientId = getUrlParameter('clientId');
+    if(!clientId){clientId = getUrlParameter('appName');}
+    if(!clientId){clientId = getUrlParameter('lowerCaseAppName');}
+    if(!clientId){clientId = getUrlParameter('quantimodoClientId');}
+    if(clientId){localStorage.setItem('clientId', clientId);}
     return clientId;
 }
 
 function getQuantiModoClientId() {
-    if(window.location.href.indexOf('http') === -1 || window.location.href.indexOf('quantimo.do') === -1){return "default";} // On mobile
-    if(getClientIdFromQueryParameters()){return getClientIdFromQueryParameters();}
-    if(appConfigFileNames[getSubDomain()]){return appConfigFileNames[getSubDomain()];}
-    return getSubDomain();
+    if(onMobile()){
+        console.debug("Using default.config.js because we're on mobile");
+        return "default"; // On mobile
+    }
+    var clientId = getClientIdFromQueryParameters();
+    if(clientId){
+        console.debug("Using clientIdFromQueryParams: " + clientId);
+        return clientId;
+    }
+    if(!clientId){clientId = localStorage.getItem('clientId');}
+    if(clientId){
+        console.debug("Using clientId From localStorage: " + clientId);
+        return clientId;
+    }
+    if(window.location.href.indexOf('quantimo.do') === -1){
+        console.debug("Using default.config.js because we're not on a quantimo.do domain");
+        return "default"; // On mobile
+    }
+    var subdomain = getSubDomain();
+    var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
+    if(clientIdFromAppConfigName){
+        console.debug("Using client id " + clientIdFromAppConfigName + " derived from appConfigFileNames using subdomain: " + subdomain);
+        return clientIdFromAppConfigName;
+    }
+    console.debug("Using subdomain as client id: " + subdomain);
+    return subdomain;
 }
 
 function getUrlParameter(parameterName, url, shouldDecode) {
@@ -66,6 +77,10 @@ function getUrlParameter(parameterName, url, shouldDecode) {
     return null;
 }
 
+function onMobile() {
+    return window.location.href.indexOf('https://') === -1;
+}
+
 var appsManager = { // jshint ignore:line
 	defaultApp : "default",
 	getAppConfig : function(){
@@ -83,41 +98,23 @@ var appsManager = { // jshint ignore:line
 			return './private_configs/'+ appsManager.defaultApp + '.config.js';
 		}
 	},
-	doWeHaveLocalConfigFile: function () {
-        if(appConfigFileNames[getQuantiModoClientId()]){return true;}
-    },
-	getSubDomain: function(){
-		return getSubDomain();
-	},
     getUrlParameter: function (parameterName, url, shouldDecode) {
         return getUrlParameter(parameterName, url, shouldDecode);
-    },
-    getAppSettingsFromUrlParameter: function(){
-        var appSettings = getUrlParameter('appSettings');
-        if(appSettings) {
-            appSettings = JSON.parse(decodeURIComponent(appSettings));
-            window.config.appSettings = appSettings;
-            return appSettings;
-        }
     },
     getQuantiModoClientId: function () {
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        var apiUrl = localStorage.getItem('apiUrl');
-        if(!apiUrl){apiUrl = getUrlParameter('apiUrl');}
-        if(apiUrl){return apiUrl;}
+        if(getUrlParameter('apiUrl')){return "https://" + getUrlParameter('apiUrl');}
+        if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
+        if(window.location.origin.indexOf('staging.quantimo.do') !== -1){return "https://staging.quantimo.do";}
         if(window.location.origin.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
         return "https://app.quantimo.do";
     },
-    getClientIdFromQueryParameters: function (fallbackToSubDomain) {
-        return  getClientIdFromQueryParameters(fallbackToSubDomain);
-    },
     shouldWeUseLocalConfig: function () {
-        var onMobile = window.location.href.indexOf('https://') === -1;
-        if(onMobile){return true;}
+        if(onMobile()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         if(designMode){return false;}
-        if(getClientIdFromQueryParameters(true) === 'app'){return true;}
+        if(getClientIdFromQueryParameters() === 'app'){return true;}
     }
 };
