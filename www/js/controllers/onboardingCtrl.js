@@ -3,7 +3,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
         $rootScope.hideNavigationMenu = true;
-        if(quantimodoService.sendToLoginIfNecessaryAndComeBack()){ return; }
+        if(quantimodoService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
         quantimodoService.setupOnboardingPages();
         quantimodoService.hideLoader();
         $rootScope.hideNavigationMenu = true;
@@ -14,7 +14,6 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         quantimodoService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
     var removeImportPage = function () {
-        quantimodoService.setLocalStorageItem('afterLoginGoTo', window.location.href);
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
         if(!$rootScope.appSettings.designMode){quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));}
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
