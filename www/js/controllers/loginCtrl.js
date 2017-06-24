@@ -219,6 +219,17 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             quantimodoService.nonNativeMobileLogin(register);
         });
     };
+    function reportLoginError(message) {
+        quantimodoService.reportErrorDeferred(message);
+        if(window.debugMode){alert(message);}
+    }
+    function loginLog(message) {
+        console.debug(message);
+        if(window.debugMode){
+            alert(message);
+            quantimodoService.reportErrorDeferred(message);
+        }
+    }
     $scope.googleLogin = function(register) {
         var debugMode = false;
         $scope.hideGoogleLoginButton = true;
@@ -235,24 +246,21 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             }, function (userData) {
                 $timeout.cancel(timeout);
                 timeout = loginTimeout();
-                console.debug('window.plugins.googleplus.login response:' + JSON.stringify(userData));
+                loginLog('window.plugins.googleplus.login response:' + JSON.stringify(userData));
                 quantimodoService.getTokensAndUserViaNativeGoogleLogin(userData).then(function (response) {
                     $timeout.cancel(timeout);
                     quantimodoService.hideLoader();
-                    if(debugMode){alert('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));}
-                    console.debug('$scope.nativeSocialLogin: Response from quantimodoService.getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));
+                    loginLog('googleLogin: Response from QM server via getTokensAndUserViaNativeSocialLogin:' + JSON.stringify(response));
                     quantimodoService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                 }, function (errorMessage) {
                     quantimodoService.hideLoader();
-                    if(debugMode){alert("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));}
-                    quantimodoService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                    reportLoginError("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                     var register = true;
                     quantimodoService.nonNativeMobileLogin(register);
                 });
             }, function (errorMessage) {
                 quantimodoService.hideLoader();
-                if(debugMode){alert("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));}
-                quantimodoService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                reportLoginError("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                 register = true;
                 quantimodoService.nonNativeMobileLogin(register);
             });

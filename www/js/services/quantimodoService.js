@@ -974,6 +974,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
     };
     quantimodoService.setUserInLocalStorageBugsnagIntercomPush = function(user){
+        var message = 'setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user);
+        console.debug(message);
+        if(window.debugMode){
+            alert(message);
+            quantimodoService.reportErrorDeferred(message);
+        }
         $rootScope.user = user;
         if(quantimodoService.getUrlParameter('doNotRemember')){return;}
         quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
@@ -1026,14 +1032,25 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.afterLoginGoToUrlOrState = function () {
         var afterLoginGoTo = quantimodoService.getLocalStorageItemAsString('afterLoginGoTo');
-        //console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
+        var message;
         if(afterLoginGoTo) {
+            message = "afterLoginGoTo from localstorage is  " + afterLoginGoTo;
+            console.debug(message);
+            if(window.debugMode){
+                alert(message);
+                quantimodoService.reportErrorDeferred(message);
+            }
             quantimodoService.deleteItemFromLocalStorage('afterLoginGoTo');
             window.location.replace(afterLoginGoTo);
             return true;
         }
         var afterLoginGoToState = quantimodoService.getLocalStorageItemAsString('afterLoginGoToState');
-        //console.debug("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
+        message = "afterLoginGoToState from localstorage is  " + afterLoginGoToState;
+        console.debug(message);
+        if(window.debugMode){
+            alert(message);
+            quantimodoService.reportErrorDeferred(message);
+        }
         if(afterLoginGoToState){
             quantimodoService.deleteItemFromLocalStorage('afterLoginGoToState');
             $state.go(afterLoginGoToState);
@@ -6570,6 +6587,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.initializeApplication = function(appSettingsResponse){
         if(window.config){return;}
         window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
+        if(window.config.appSettings.debugMode){window.debugMode = true;}
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
         $rootScope.appSettings = window.config.appSettings;
