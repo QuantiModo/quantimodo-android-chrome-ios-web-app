@@ -1541,6 +1541,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', [], function (callback) {
         'copyIconsToChromeExtension',
         'createChromeExtensionManifest',
         'zipChromeExtension',
+        'unzipChromeExtension',
         callback);
 });
 gulp.task('buildChromeExtension', [], function (callback) {
