@@ -224,6 +224,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 return;
             } else {
                 logDebugMessage('quantimodoService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
+                logDebugMessage('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
                 setAfterLoginGoToUrl();
                 if (window.private_keys && quantimodoService.getClientId() !== 'oAuthDisabled') {
                     quantimodoService.completelyResetAppStateAndSendToLogin();
