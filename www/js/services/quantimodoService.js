@@ -994,12 +994,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
     };
     quantimodoService.setUserInLocalStorageBugsnagIntercomPush = function(user){
-        var message = 'setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user);
-        console.debug(message);
-        if(window.debugMode){
-            alert(message);
-            quantimodoService.reportErrorDeferred(message);
-        }
+        logDebugMessage('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user));
         $rootScope.user = user;
         if(quantimodoService.getUrlParameter('doNotRemember')){return;}
         quantimodoService.setLocalStorageItem('user', JSON.stringify(user));
