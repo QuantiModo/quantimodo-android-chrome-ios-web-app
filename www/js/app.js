@@ -1202,7 +1202,7 @@ angular.module('starter',
             }
         })
         .state('app.variableList', {
-            cache: false,
+            cache: true,
             url: "/variable-list",
             params: {
                 variableCategoryName : null
