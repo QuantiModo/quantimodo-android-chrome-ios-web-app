@@ -91,7 +91,7 @@ if (!process.env.IONIC_IOS_APP_VERSION_NUMBER) {
     process.env.IONIC_APP_VERSION_NUMBER = majorMinorVersionNumbers + patchVersionNumber;
     console.log('Falling back to IONIC_IOS_APP_VERSION_NUMBER ' + process.env.IONIC_IOS_APP_VERSION_NUMBER);
 }
-process.env.DEBUG_MODE = (process.env.DEBUG_MODE) ? process.env.DEBUG_MODE : true;
+process.env.DEBUG_MODE = (process.env.DEBUG_MODE) ? process.env.DEBUG_MODE : false;
 if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId;}
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
