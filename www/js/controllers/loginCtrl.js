@@ -69,7 +69,6 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }, 40000);
     };
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        console.debug('afterLoginGoTo is ' + localStorage.getItem('afterLoginGoTo'));
         leaveIfLoggedIn();
         if(config.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
         if(quantimodoService.getUrlParameter('loggingIn') || quantimodoService.getAccessTokenFromUrl()){ loginTimeout(); }
