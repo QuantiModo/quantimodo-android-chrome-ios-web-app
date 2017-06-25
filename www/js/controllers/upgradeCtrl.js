@@ -4,7 +4,7 @@ angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $io
         if($rootScope.isChromeExtension){chrome.tabs.create({url: quantimodoService.getApiUrl() + '/upgrade'}); window.close(); return;}
         $scope.planFeaturesCard = quantimodoService.getPlanFeatureCards()[1];
         $rootScope.upgradeFooterText = null;
-        //$rootScope.hideNavigationMenu = true;
+        $rootScope.hideNavigationMenu = false;
         quantimodoService.setupUpgradePages();
         quantimodoService.hideLoader();
     });
