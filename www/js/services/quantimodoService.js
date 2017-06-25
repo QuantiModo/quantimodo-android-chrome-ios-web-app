@@ -6623,11 +6623,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.weShouldUseOAuthLogin = function(){
         return window.location.href.indexOf('.quantimo.do') === -1;
     };
-
+    function isTruthy(value){return value && value !== "false"; }
     quantimodoService.initializeApplication = function(appSettingsResponse){
         if(window.config){return;}
         window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
-        if(window.config.appSettings.debugMode){window.debugMode = true;}
+        if(isTruthy(window.config.appSettings.debugMode)){window.debugMode = true;}
         console.debug("appSettings.clientId is " + window.config.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
