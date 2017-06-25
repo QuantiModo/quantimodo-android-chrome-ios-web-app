@@ -194,7 +194,7 @@ angular.module('starter',
             stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
             stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
         }
-        $state.go(stateName, stateParameters);
+        $state.go(stateName, stateParameters, {reload: stateName === $state.current.name});
     };
     $ionicPlatform.registerBackButtonAction(function (event) {
         if($rootScope.backButtonState){
