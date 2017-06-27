@@ -34,6 +34,7 @@ var argv = require('yargs').argv;
 var exec = require('child_process').exec;
 var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
+var s3 = require('gulp-s3-upload')(config);
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
@@ -131,7 +132,6 @@ function uploadToS3(filePath) {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     };
-    var s3 = require('gulp-s3-upload')(config);
     return gulp.src([
         //pathToBuiltChromeExtensionZip,
         pathToReleaseArmv7Apk
@@ -316,6 +316,7 @@ function setVersionNumberInConfigXml(configFilePath, callback) {
     });
 }
 // Setup platforms to build that are supported on current hardware
+// See https://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/
 //var winPlatforms = ["android", "windows"], //Android is having problems so I'm only building windows for now
 var winPlatforms = ['windows'],
     linuxPlatforms = ['android'],
@@ -350,17 +351,17 @@ gulp.task('default', ['build']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
 // the hardware Gulp is running on which are then placed in platformsToBuild
 gulp.task('build', ['scripts', 'sass'], function () {
-return cordovaBuild.buildProject(platformsToBuild, buildArgs)
-    .then(function () {
-        // ** NOTE: Package not required in recent versions of Cordova
-        return cordovaBuild.packageProject(platformsToBuild)
-            .then(function () {
-                return es.concat(
-                    gulp.src(buildPaths.apk).pipe(gulp.dest(buildPaths.binApk)),
-                    gulp.src(buildPaths.ipa).pipe(gulp.dest(buildPaths.binIpa)),
-                    gulp.src(buildPaths.appx).pipe(gulp.dest(buildPaths.binAppx)));
-            });
-    });
+    return cordovaBuild.buildProject(platformsToBuild, buildArgs)
+        .then(function () {
+            // ** NOTE: Package not required in recent versions of Cordova
+            return cordovaBuild.packageProject(platformsToBuild)
+                .then(function () {
+                    return es.concat(
+                        gulp.src(buildPaths.apk).pipe(gulp.dest(buildPaths.binApk)),
+                        gulp.src(buildPaths.ipa).pipe(gulp.dest(buildPaths.binIpa)),
+                        gulp.src(buildPaths.appx).pipe(gulp.dest(buildPaths.binAppx)));
+                });
+        });
 });
 // Build Android, copy the results back to bin folder
 gulp.task('build-android', ['scripts', 'sass'], function () {
