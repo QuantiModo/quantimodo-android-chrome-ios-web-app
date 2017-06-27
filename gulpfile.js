@@ -46,6 +46,11 @@ var appConfigDirectoryPath = './www/configs/';
 var defaultPrivateConfigPath = privateConfigDirectoryPath + 'default.private_config.json';
 var devCredentialsPath = privateConfigDirectoryPath + 'dev-credentials.json';
 var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
+var pathToOutputApks = 'platforms/android/build/outputs/apk';
+var pathToReleaseArmv7Apk = pathToOutputApks + '/android-armv7-release.apk';
+var pathToReleasex86Apk = pathToOutputApks + '/android-x86-release.apk';
+var chromeExtensionZipFilename = process.env.QUANTIMODO_CLIENT_ID + '-Chrome-Extension.zip';
+var pathToBuiltChromeExtensionZip = 'build/' + chromeExtensionZipFilename;
 try{
     devCredentials = JSON.parse(fs.readFileSync(devCredentialsPath));
     console.log("Using dev credentials from " + devCredentialsPath + ". This file is ignored in .gitignore and should never be committed to any repository.");
@@ -401,6 +406,29 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
     return deferred.promise;
 });
 var getAppIds = function () {return appIds;};
+function uploadToS3(filePath) {
+    var config = {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    };
+    var s3 = require('gulp-s3-upload')(config);
+    return gulp.src([
+        //pathToBuiltChromeExtensionZip,
+        pathToReleaseArmv7Apk
+    ]).pipe(s3({
+        Bucket: 'quantimodo',
+        ACL: 'public-read',
+        keyTransform: function(relative_filename) {
+            return 'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+        }
+    }, {
+        maxRetries: 5,
+        logger: console
+    }));
+}
+gulp.task("upload-chrome-extension-to-s3", function() {return uploadToS3(pathToBuiltChromeExtensionZip);});
+gulp.task("upload-x86-release-apk-to-s3", function() {return uploadToS3(pathToReleasex86Apk);});
+gulp.task("upload-armv7-release-apk-to-s3", function() {return uploadToS3(pathToReleaseArmv7Apk);});
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
     var deferred = q.defer();
     var appIds = getAppIds();
@@ -1299,12 +1327,11 @@ gulp.task('copyAndroidResources', [], function () {
 });
 gulp.task('copyAndroidBuild', [], function () {
     if (!process.env.QUANTIMODO_CLIENT_ID) {throw 'process.env.QUANTIMODO_CLIENT_ID not set!';}
-    var pathToApks = 'platforms/android/build/outputs/apk/*.apk';
     var dropboxPath = 'dropbox/' + process.env.QUANTIMODO_CLIENT_ID;
     var buildFolderPath = 'build/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
-    console.log('Copying from ' + pathToApks + ' to ' + dropboxPath + ' and ' + buildFolderPath);
-    var copyApksToDropbox = gulp.src([pathToApks]).pipe(gulp.dest(dropboxPath));
-    var copyApksToBuildFolder = gulp.src([pathToApks]).pipe(gulp.dest(buildFolderPath));
+    console.log('Copying from ' + pathToOutputApks + ' to ' + dropboxPath + ' and ' + buildFolderPath);
+    var copyApksToDropbox = gulp.src([pathToOutputApks + '/*.apk']).pipe(gulp.dest(dropboxPath));
+    var copyApksToBuildFolder = gulp.src([pathToOutputApks + '/*.apk']).pipe(gulp.dest(buildFolderPath));
     return es.concat(copyApksToDropbox, copyApksToBuildFolder);
 });
 gulp.task('copyIonicCloudLibrary', [], function () {
@@ -1483,11 +1510,15 @@ gulp.task('removeAndroidManifestFromChromeExtension', [], function () {
         {read: false})
         .pipe(clean());
 });
-gulp.task('zipChromeExtension', [], function () {
+function zipAFolder(folderPath, zipFileName, destinationFolder) {
     console.log('If this fails, make sure there are no symlinks.');
-    return gulp.src([chromeExtensionBuildPath + '/**/*'])
-        .pipe(zip(process.env.QUANTIMODO_CLIENT_ID + '-Chrome-Extension.zip'))
-        .pipe(gulp.dest('build'));
+    return gulp.src([folderPath + '/**/*'])
+        .pipe(zip(zipFileName))
+        .pipe(gulp.dest(destinationFolder));
+}
+
+gulp.task('zipChromeExtension', [], function () {
+    return zipAFolder(chromeExtensionBuildPath + '/**/*', chromeExtensionZipFilename, 'build');
 });
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
@@ -1557,6 +1588,7 @@ gulp.task('buildChromeExtension', [], function (callback) {
         'removeFacebookFromChromeExtension',
         'removeAndroidManifestFromChromeExtension',
         'zipChromeExtension',
+        'upload-to-s3',
         'unzipChromeExtension',
         callback);
 });
