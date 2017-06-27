@@ -34,7 +34,7 @@ var argv = require('yargs').argv;
 var exec = require('child_process').exec;
 var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
-var s3 = require('gulp-s3-upload')(config);
+var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
@@ -128,10 +128,6 @@ function readDevCredentials(){
 }
 readDevCredentials();
 function uploadToS3(filePath) {
-    var config = {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-    };
     return gulp.src([
         //pathToBuiltChromeExtensionZip,
         pathToReleaseArmv7Apk

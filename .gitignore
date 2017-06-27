@@ -68,3 +68,4 @@ www/private_configs/yourlowercaseappnamehere.private_config.json.enc
 www/configuration-index.html
 dev-credentials.json
 www/js/configuration-app.js
+npm-debug.log
