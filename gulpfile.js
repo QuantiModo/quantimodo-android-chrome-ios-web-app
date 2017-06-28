@@ -35,6 +35,28 @@ var exec = require('child_process').exec;
 var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
+function setClientId(callback) {
+    if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId;}
+    if (!process.env.QUANTIMODO_CLIENT_ID) {
+        git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
+            console.log('current git branch: ' + branch);
+            if (!process.env.QUANTIMODO_CLIENT_ID) {
+                if (appIds[branch]) {
+                    console.info('Setting process.env.QUANTIMODO_CLIENT_ID using branch name ' + branch);
+                    process.env.QUANTIMODO_CLIENT_ID = branch;
+                } else {
+                    process.env.DEBUG_MODE = true;
+                    console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to default debug mode with quantimodo client id');
+                    process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
+                }
+            }
+            if (callback) {callback();}
+        });
+    } else {
+        if (callback) {callback();}
+    }
+}
+setClientId();
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
@@ -51,7 +73,7 @@ var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
 var pathToOutputApks = 'platforms/android/build/outputs/apk';
 var pathToReleaseArmv7Apk = pathToOutputApks + '/android-armv7-release.apk';
 var pathToReleasex86Apk = pathToOutputApks + '/android-x86-release.apk';
-var chromeExtensionZipFilename = process.env.QUANTIMODO_CLIENT_ID + '-Chrome-Extension.zip';
+var chromeExtensionZipFilename = 'chrome-extension.zip';
 var pathToBuiltChromeExtensionZip = 'build/' + chromeExtensionZipFilename;
 var chromeExtensionManifestTemplate = {
     'manifest_version': 2,
@@ -81,28 +103,6 @@ var paths = {
     sass: ['./www/scss/**/*.scss']
 };
 var ionicIosAppVersionNumber, debugMode;
-function setClientId(callback) {
-    if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId;}
-    if (!process.env.QUANTIMODO_CLIENT_ID) {
-        git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
-            console.log('current git branch: ' + branch);
-            if (!process.env.QUANTIMODO_CLIENT_ID) {
-                if (appIds[branch]) {
-                    console.info('Setting process.env.QUANTIMODO_CLIENT_ID using branch name ' + branch);
-                    process.env.QUANTIMODO_CLIENT_ID = branch;
-                } else {
-                    process.env.DEBUG_MODE = true;
-                    console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to default debug mode with quantimodo client id');
-                    process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
-                }
-            }
-            if (callback) {callback();}
-        });
-    } else {
-        if (callback) {callback();}
-    }
-}
-setClientId();
 function setVersionNumbers(){
     var date = new Date();
     var longDate = date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
@@ -128,10 +128,15 @@ function readDevCredentials(){
 }
 readDevCredentials();
 function uploadToS3(filePath) {
-    return gulp.src([
-        //pathToBuiltChromeExtensionZip,
-        pathToReleaseArmv7Apk
-    ]).pipe(s3({
+    if(!process.env.AWS_ACCESS_KEY_ID){
+        console.error("Cannot upload to S3. Please set environmental variable AWS_ACCESS_KEY_ID");
+        return;
+    }
+    if(!process.env.AWS_SECRET_ACCESS_KEY){
+        console.error("Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY");
+        return;
+    }
+    return gulp.src([filePath]).pipe(s3({
         Bucket: 'quantimodo',
         ACL: 'public-read',
         keyTransform: function(relative_filename) {
@@ -267,6 +272,7 @@ function resizeIcon(callback, resolution) {
     console.log('Executing command: ' + command);
     return execute(command, function (error) {
         if (error) {
+            console.error("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
             console.error('ERROR: ' + JSON.stringify(error));
         }
         callback();
@@ -347,6 +353,7 @@ gulp.task('default', ['build']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
 // the hardware Gulp is running on which are then placed in platformsToBuild
 gulp.task('build', ['scripts', 'sass'], function () {
+    console.log("Be sure to setup your system following the instructions at http://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/#tacoteambuild");
     return cordovaBuild.buildProject(platformsToBuild, buildArgs)
         .then(function () {
             // ** NOTE: Package not required in recent versions of Cordova
@@ -1601,7 +1608,7 @@ gulp.task('buildChromeExtension', [], function (callback) {
         'removeFacebookFromChromeExtension',
         'removeAndroidManifestFromChromeExtension',
         'zipChromeExtension',
-        'upload-to-s3',
+        'upload-chrome-extension-to-s3',
         'unzipChromeExtension',
         callback);
 });
@@ -1876,6 +1883,8 @@ gulp.task('buildAndroidApp', function (callback) {
         'cordovaBuildAndroidRelease',
         //'cordovaBuildAndroidDebug',
         'copyAndroidBuild',
+        "upload-armv7-release-apk-to-s3",
+        "upload-x86-release-apk-to-s3",
         callback);
 });
 gulp.task('prepareMindFirstAndroid', function (callback) {
