@@ -192,6 +192,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	var afterTrackingActions = function () {
 		$rootScope.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
+		if(!$scope.state.numberOfDisplayedNotifications){$scope.refreshTrackingReminderNotifications();}
 		closeWindowIfNecessary();
 		getFallbackInboxContent();
 	};
@@ -408,9 +409,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				return true;
 			},
 			destructiveButtonClicked: function() {
+                trackingReminderNotification.hide = true;
 				console.debug("Skipping all notifications for trackingReminder", $scope.state.trackingReminderNotification);
 				var params = {trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId};
-				$scope.showSyncDisplayText('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
+				//$scope.showSyncDisplayText('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
 				quantimodoService.skipAllTrackingReminderNotificationsDeferred(params)
 					.then(function(){
 						$scope.hideSyncDisplayText();
