@@ -1033,6 +1033,17 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.historyAllCategory', {
+            url: "/history-all-category/:variableCategoryName",
+            cache: true,
+            params: {},
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
+                }
+            }
+        })
         .state('app.historyAllVariable', {
             url: "/history-all-variable/:variableName",
             cache: true,
@@ -1188,6 +1199,17 @@ angular.module('starter',
                 variableCategoryName : null
             }
         })
+        .state('app.remindersManageCategory', {
+            cache: false,
+            url: "/reminders-manage-category/:variableCategoryName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-manage.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            },
+            params: {}
+        })
         .state('app.remindersList', {
             cache: false,
             url: "/reminders-list",
@@ -1201,12 +1223,34 @@ angular.module('starter',
                 variableCategoryName : null
             }
         })
+        .state('app.remindersListCategory', {
+            cache: false,
+            url: "/reminders-list-category/:variableCategoryName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-list.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            },
+            params: {}
+        })
         .state('app.variableList', {
             cache: true,
             url: "/variable-list",
             params: {
                 variableCategoryName : null
             },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-list.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            }
+        })
+        .state('app.variableListCategory', {
+            cache: true,
+            url: "/variable-list-category/:variableCategoryName",
+            params: {},
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-list.html",
