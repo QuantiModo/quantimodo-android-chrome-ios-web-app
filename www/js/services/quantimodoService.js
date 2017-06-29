@@ -129,7 +129,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(requestSpecificErrorHandler){requestSpecificErrorHandler();}
             return;
         }
-        if($state.current.name === 'app.intro' && !params.force){
+        if($state.current.name === 'app.intro' && !params.force && !quantimodoService.getAccessTokenFromCurrentUrl()){
             logDebugMessage('Not making request to ' + route + ' user because we are in the intro state', options.stackTrace);
             return;
         }
