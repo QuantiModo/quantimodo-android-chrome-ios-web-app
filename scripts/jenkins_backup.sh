@@ -9,7 +9,7 @@ function usage(){
 export JENKINS_HOME=/var/lib/jenkins
 
 export QM_DOCKER_PATH=/vagrant
-echo "QM_DOCKER_PATH is $QM_DOCKER_PATH"
+echo "QM_DOCKER_PATH is $QM_DOCKER_PATH and current script is ${0}"
 
 export DEST_FILE=${QM_DOCKER_PATH}/configs/jenkins/jenkins-backup.tar.gz
 export JENKINS_BACKUP_FOLDER=/vagrant/backups/jenkins-backup

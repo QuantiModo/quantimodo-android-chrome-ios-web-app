@@ -111,7 +111,8 @@ var appsManager = { // jshint ignore:line
         if(window.location.origin.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
         return "https://app.quantimo.do";
     },
-    shouldWeUseLocalConfig: function () {
+    shouldWeUseLocalConfig: function (clientId) {
+	    if(clientId === "default"){return true;}
         if(onMobile()){return true;}
         var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         if(designMode){return false;}
