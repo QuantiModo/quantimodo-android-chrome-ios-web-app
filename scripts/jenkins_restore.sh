@@ -2,7 +2,7 @@
 export JENKINS_HOME=/var/lib/jenkins/
 
 export QM_DOCKER_PATH=/vagrant
-echo "QM_DOCKER_PATH is $QM_DOCKER_PATH"
+echo "QM_DOCKER_PATH is $QM_DOCKER_PATH and current script is ${0}"
 
 #export SYNCTHING_FOLDER=${QM_DOCKER_PATH}/syncthing
 
