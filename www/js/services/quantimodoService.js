@@ -6612,8 +6612,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return planFeatureCards;
     };
+    quantimodoService.showBasicLoader = function(){
+        console.debug("Showing basic loader because we called $ionicLoading.show");
+        $ionicLoading.show({duration: 10000});
+    };
     quantimodoService.showBlackRingLoader = function(){
         console.debug("Showing loader because we called $ionicLoading.show");
+        console.debug("Showing basic loader because we called $ionicLoading.show");
         $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     };
     quantimodoService.hideLoader = function(){
