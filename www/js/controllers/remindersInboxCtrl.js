@@ -376,21 +376,11 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             { text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
             quantimodoService.actionSheetButtons.charts,
             quantimodoService.actionSheetButtons.history,
-            quantimodoService.actionSheetButtons.analysisSettings,
-            { text: '<i class="icon ion-android-done-all"></i>Record ' + trackingReminderNotification.lastValueInUserVariableDefaultUnit + ' for All '}
+            quantimodoService.actionSheetButtons.analysisSettings
         ];
-		if(!trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit && trackingReminderNotification.unitCategoryName !== "Rating"){
-            trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit = 0;
-		}
-		if(trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit !== null){
-            buttons[6] = { text: '<i class="icon ion-android-done-all"></i>Record ' + trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit + ' for All'};
-		}
-		if(trackingReminderNotification.inputType.toLowerCase() === 'yesorno'){
-            trackingReminderNotification.lastValueInUserVariableDefaultUnit = 1;
-			buttons[5] = { text: '<i class="icon ion-android-done-all"></i>Record YES for all'};
-            trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit = 0;
-            buttons[6] = { text: '<i class="icon ion-android-done-all"></i>Record NO for all'};
-		}
+		for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
+		    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
+        }
 		var hideSheetForNotification = $ionicActionSheet.show({
 			buttons: buttons,
 			destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
@@ -403,8 +393,11 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				if(index === 2){$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 3){$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 4){$state.go('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
-                if(index === 5){trackAll(trackingReminderNotification, trackingReminderNotification.lastValueInUserVariableDefaultUnit);}
-                if(index === 6){trackAll(trackingReminderNotification, trackingReminderNotification.secondToLastValueInUserVariableDefaultUnit);}
+                var buttonIndex = 5;
+                for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
+                    if(index === buttonIndex){trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[i].modifiedValue);}
+                    buttonIndex++
+                }
 				return true;
 			},
 			destructiveButtonClicked: function() {
