@@ -5,13 +5,13 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 fi
 
-# Install the necessary packages to prepare the environment
+echo "Install the necessary packages to prepare the environment"
 sudo apt-get update
 sudo apt-get install -y autoconf bison build-essential libffi-dev libssl-dev
 sudo apt-get install -y libyaml-dev libreadline6 libreadline6-dev zlib1g zlib1g-dev curl git vim
 
-# Install Jenkins
-## Before install is necessary to add Jenkins to trusted keys and source list
+echo "Install Jenkins"
+echo "Before install is necessary to add Jenkins to trusted keys and source list"
 wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
 sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
 sudo apt-get update
