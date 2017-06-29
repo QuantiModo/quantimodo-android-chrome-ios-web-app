@@ -6612,8 +6612,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return planFeatureCards;
     };
+    quantimodoService.showBasicLoader = function(){
+        console.debug("Showing basic loader because we called $ionicLoading.show");
+        $ionicLoading.show({duration: 10000});
+    };
     quantimodoService.showBlackRingLoader = function(){
-        console.debug("Showing loader because we called $ionicLoading.show");
+        console.debug("Showing basic loader because we called $ionicLoading.show");
         $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     };
     quantimodoService.hideLoader = function(){
@@ -6746,6 +6750,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     function convertUrlAndParamsToHref(menuItem) {
         if(!menuItem.subMenu){
             menuItem.href = '#/app' + menuItem.url + convertObjectToQueryString(menuItem.params);
+            if(menuItem.params && menuItem.params.variableCategoryName){
+                menuItem.href = menuItem.href.split("?")[0];
+                menuItem.href += '-category/' + menuItem.params.variableCategoryName;
+            }
             menuItem.href = menuItem.href.replace('app/app', 'app');
         }
         return menuItem;
@@ -6777,6 +6785,19 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return menuItem;
     }
+    function getQueryStringFromUrl(url) {
+        if(!url){url = window.location.href;}
+        return url.split("?")[0];
+    }
+    function getQueryParamsFromUrl(url){
+        if(!url){url = window.location.href;}
+        var queryString = getQueryStringFromUrl(url);
+        for(var i = 0, urlParamsObject = {}; i < queryString.length; i++){
+            queryString[i] = queryString[i].split('=');
+            urlParamsObject[queryString[i][0]] = decodeURIComponent(queryString[i][1]);
+        }
+        return urlParamsObject;
+    }
     function getUrlFromStateName(stateName){
         for(var i = 0; i < allStates.length; i++){
             if(allStates[i].name === stateName){
@@ -6792,9 +6813,12 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     function convertHrefToUrlAndParams(menuItem) {
         menuItem = addUrlFromStateName(menuItem);
+        if(menuItem.href && menuItem.href.indexOf('?') !== -1){
+            menuItem.params = getAllQueryParamsFromUrlString(menuItem.href);
+        }
         if(menuItem.href && !menuItem.url){
-            menuItem.href = menuItem.href.replace('-category', '');
-            menuItem.href = menuItem.href.replace('/Anything', '');
+            //menuItem.href = menuItem.href.replace('-category', '');
+            //menuItem.href = menuItem.href.replace('/Anything', '');
             menuItem.url = menuItem.href.replace('#', '');
             menuItem = convertUrlVariableCategoryToParams(menuItem);
         }
