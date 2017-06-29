@@ -471,6 +471,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         }
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
         console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
+        console.log("You can change your app settings at https://app.quantimo.do/api/v2/apps/" + appSettings.clientId + '/edit');
         fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         if(response.allConfigs){
             for (var i = 0; i < response.allConfigs.length; i++) {
