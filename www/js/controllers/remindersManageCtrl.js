@@ -29,7 +29,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	};
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter RemindersManageCtrl");
 		if(quantimodoService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = quantimodoService.getUrlParameter('variableCategoryName');}
-		quantimodoService.showBlackRingLoader();
+		quantimodoService.showBasicLoader();
 		$rootScope.hideNavigationMenu = false;
 		$scope.stateParams = $stateParams;
 		var actionButtons = [
