@@ -401,16 +401,17 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				return true;
 			},
 			destructiveButtonClicked: function() {
+				trackingReminderNotification.hide = true;
 				console.debug("Skipping all notifications for trackingReminder", $scope.state.trackingReminderNotification);
 				var params = {trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId};
-				$scope.showSyncDisplayText('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
+				//$scope.showSyncDisplayText('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
 				quantimodoService.skipAllTrackingReminderNotificationsDeferred(params)
 					.then(function(){
-						$scope.hideSyncDisplayText();
+						//$scope.hideSyncDisplayText();
 						hideInboxLoader();
 						$scope.refreshTrackingReminderNotifications();
 					}, function(error){
-                        $scope.hideSyncDisplayText();
+                        //$scope.hideSyncDisplayText();
 						hideInboxLoader();
 						if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 						console.error(error);
