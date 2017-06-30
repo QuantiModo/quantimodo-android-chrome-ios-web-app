@@ -5408,8 +5408,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.chromeExtensionLogin = function(register) {
         var loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/login");
         if (register === true) {loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");}
+        loginUrl += "?afterLoginGoTo=" + window.location.href;
         console.debug("Using Chrome extension, so we use sessions instead of OAuth flow. ");
-        chrome.tabs.create({ url: loginUrl });
+        //chrome.tabs.create({ url: loginUrl });
+        window.location.replace(loginUrl);
         window.close();
     };
     quantimodoService.forecastioWeather = function(coordinates) {
