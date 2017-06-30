@@ -70,10 +70,20 @@ var appConfigDirectoryPath = './www/configs/';
 var defaultPrivateConfigPath = privateConfigDirectoryPath + 'default.private_config.json';
 var devCredentialsPath = privateConfigDirectoryPath + 'dev-credentials.json';
 var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
+
 var pathToOutputApks = 'platforms/android/build/outputs/apk';
-var pathToReleaseArmv7Apk = pathToOutputApks + '/android-armv7-release.apk';
-var pathToReleasex86Apk = pathToOutputApks + '/android-x86-release.apk';
-var chromeExtensionZipFilename = 'chrome-extension.zip';
+var androidArm7ReleaseApkName = 'android-armv7-release';
+var pathToReleaseArmv7Apk = pathToOutputApks + '/' + androidArm7ReleaseApkName + '/.apk';
+var androidX86ReleaseApkName = 'android-x86-release';
+var pathToReleasex86Apk = pathToOutputApks + '/' + androidX86ReleaseApkName + '.apk';
+
+var androidArm7DebugApkName = 'android-armv7-debug';
+var pathToDebugArmv7Apk = pathToOutputApks + '/' + androidArm7DebugApkName + '/.apk';
+var androidX86DebugApkName = 'android-x86-debug';
+var pathToDebugx86Apk = pathToOutputApks + '/' + androidX86DebugApkName + '.apk';
+
+var chromExtensionFilename = 'chrome-extension';
+var chromeExtensionZipFilename = chromExtensionFilename + '.zip';
 var pathToBuiltChromeExtensionZip = 'build/' + chromeExtensionZipFilename;
 var chromeExtensionManifestTemplate = {
     'manifest_version': 2,
@@ -126,7 +136,9 @@ function readDevCredentials(){
         devCredentials = {};
     }
 }
+var s3BaseUrl = 'http://quantimodo.s3.amazonaws.com/';
 readDevCredentials();
+String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 function uploadToS3(filePath) {
     if(!process.env.AWS_ACCESS_KEY_ID){
         console.error("Cannot upload to S3. Please set environmental variable AWS_ACCESS_KEY_ID");
@@ -140,7 +152,9 @@ function uploadToS3(filePath) {
         Bucket: 'quantimodo',
         ACL: 'public-read',
         keyTransform: function(relative_filename) {
-            return 'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+            var s3RelativePath = 'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+            appSettings.appStatus.buildStatus[relative_filename.toCamel()] = s3BaseUrl + s3RelativePath;
+            return s3RelativePath;
         }
     }, {
         maxRetries: 5,
@@ -415,6 +429,8 @@ gulp.task('scripts', function () {
     }
 });
 gulp.task('createChromeExtensionManifest', function () {
+    appSettings.appStatus.buildStatus.chromeExtension = "BUILDING";
+    postAppSettings();
     var chromeExtensionManifest = chromeExtensionManifestTemplate;
     chromeExtensionManifest.name = appSettings.appDisplayName;
     chromeExtensionManifest.description = appSettings.appDescription;
@@ -444,12 +460,14 @@ gulp.task('validateCredentials', function () {
         if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
     });
 });
-gulp.task('getAppConfigs', ['validateCredentials'], function () {
+
+function getApiRequestOptions() {
+    var domain = "local.quantimo.do";
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
     if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
     if(!process.env.QUANTIMODO_CLIENT_SECRET){console.error( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
     var options = {
-        uri: 'https://app.quantimo.do/api/v1/appSettings',
+        uri: 'https://' + domain + '/api/v1/appSettings',
         qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
         headers: {'User-Agent': 'Request-Promise'},
         json: true // Automatically parses the JSON string in the response
@@ -457,6 +475,54 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
     if(devCredentials.username){options.log = devCredentials.username;}
     if(devCredentials.password){options.pwd = devCredentials.password;}
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
+    return options;
+}
+gulp.task('getAppConfigs', ['validateCredentials'], function () {
+    var options = getApiRequestOptions();
+    return rp(options).then(function (response) {
+        appSettings = response.appSettings;
+        appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
+        appSettings.debugMode = process.env.DEBUG_MODE;
+        //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
+        if(!response.privateConfig && devCredentials.username && devCredentials.password){
+            console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at https://app.quantimo.do/api/v2/apps ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at https://app.quantimo.do/api/v2/apps and run gulp devSetup again.");
+        }
+        if(response.privateConfig){
+            privateConfig = response.privateConfig;
+            fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+        }
+        fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
+        console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
+        console.log("You can change your app settings at https://app.quantimo.do/api/v2/apps/" + appSettings.clientId + '/edit');
+        fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
+        if(response.allConfigs){
+            for (var i = 0; i < response.allConfigs.length; i++) {
+                fs.writeFileSync(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
+            }
+        }
+    }).catch(function (err) {
+        throw err;
+    });
+});
+function getPostAppSettingsRequestOptions() {
+    var options = getApiRequestOptions();
+    options.method = "POST";
+    options.body = {appSettings: appSettings};
+    return options;
+}
+function postAppSettings() {
+    var options = getPostAppSettingsRequestOptions();
+    return rp(options).then(function (response) {
+        console.log("set-android-status-building: " + JSON.stringify(response));
+    }).catch(function (err) {
+        throw err;
+    }); 
+}
+gulp.task('post-app-settings', ['validateCredentials'], function () {
+    return postAppSettings();
+});
+gulp.task('getAppConfigs', ['validateCredentials'], function () {
+    var options = getApiRequestOptions();
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
         appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
@@ -1610,6 +1676,7 @@ gulp.task('buildChromeExtension', [], function (callback) {
         'removeAndroidManifestFromChromeExtension',
         'zipChromeExtension',
         'upload-chrome-extension-to-s3',
+        'post-app-settings',
         'unzipChromeExtension',
         callback);
 });
@@ -1780,6 +1847,9 @@ gulp.task('ionicPlatformRemoveAndroid', function (callback) {
     });
 });
 gulp.task('cordovaBuildAndroidDebug', function (callback) {
+    appSettings.appStatus.buildStatus[androidArm7DebugApkName.toCamel()] = "BUILDING";
+    appSettings.appStatus.buildStatus[androidX86DebugApkName.toCamel()] = "BUILDING";
+    postAppSettings();
     return execute('cordova build --debug android', function (error) {
         if (error !== null) {
             console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
@@ -1790,6 +1860,9 @@ gulp.task('cordovaBuildAndroidDebug', function (callback) {
     });
 });
 gulp.task('cordovaBuildAndroidRelease', function (callback) {
+    appSettings.appStatus.buildStatus[androidArm7ReleaseApkName.toCamel()] = "BUILDING";
+    appSettings.appStatus.buildStatus[androidX86ReleaseApkName.toCamel()] = "BUILDING";
+    postAppSettings();
     return execute('cordova build --release android', function (error) {
         if (error !== null) {
             console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
@@ -1886,6 +1959,7 @@ gulp.task('buildAndroidApp', function (callback) {
         'copyAndroidBuild',
         "upload-armv7-release-apk-to-s3",
         "upload-x86-release-apk-to-s3",
+        "post-app-settings",
         callback);
 });
 gulp.task('prepareMindFirstAndroid', function (callback) {
