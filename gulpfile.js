@@ -163,6 +163,7 @@ function uploadToS3(filePath) {
         console.error("Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY");
         return;
     }
+    console.log("Uploading " + filePath);
     return gulp.src([filePath]).pipe(s3({
         Bucket: 'quantimodo',
         ACL: 'public-read',
