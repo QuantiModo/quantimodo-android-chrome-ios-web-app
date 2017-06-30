@@ -561,6 +561,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         appSettings = response.appSettings;
         appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
         appSettings.debugMode = process.env.DEBUG_MODE;
+        if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(!response.privateConfig && devCredentials.username && devCredentials.password){
             console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '  + appHostName +  '/api/v2/apps ' + appSettings.additionalSettings.companyEmail +
