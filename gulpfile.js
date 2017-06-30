@@ -36,7 +36,7 @@ var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 function setClientId(callback) {
-    if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId;}
+    if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId.replace('apps/', '');}
     if (!process.env.QUANTIMODO_CLIENT_ID) {
         git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
             console.log('current git branch: ' + branch);
