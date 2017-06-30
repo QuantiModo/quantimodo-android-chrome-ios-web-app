@@ -443,7 +443,7 @@ gulp.task('createChromeExtensionManifest', function () {
     fs.writeFileSync(chromeExtensionBuildPath + '/manifest.json', JSON.stringify(chromeExtensionManifest));
 });
 gulp.task('setClientId', function (callback) {setClientId(callback);});
-gulp.task('validateCredentials', function () {
+gulp.task('validateCredentials', ['setClientId'], function () {
     if(!devCredentials.username || !devCredentials.password){
         console.error("No developer credentials");
         return;
@@ -541,7 +541,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
         console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
         console.log("You can change your app settings at "  + appHostName +  "/api/v2/apps/" + appSettings.clientId + '/edit');
-        fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
+        //fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         if(response.allConfigs){
             for (var i = 0; i < response.allConfigs.length; i++) {
                 fs.writeFileSync(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
