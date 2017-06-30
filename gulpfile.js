@@ -220,14 +220,16 @@ function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
     });
 }
 gulp.task('downloadIcon', [], function(){
-    console.log("Downloading icon " + appSettings.additionalSettings.appImages.appIcon);
-    return download(appSettings.additionalSettings.appImages.appIcon)
+    var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
+    console.log("Downloading icon " + iconUrl);
+    return download(iconUrl)
         .pipe(rename('icon.png'))
         .pipe(gulp.dest("./resources"));
 });
 gulp.task('downloadSplashScreen', [], function(){
-    console.log("Downloading splashScreen " + appSettings.additionalSettings.appImages.splashScreen);
-    return download(appSettings.additionalSettings.appImages.splashScreen)
+    var splashScreen = (appSettings.additionalSettings.appImages.splashScreen) ? appSettings.additionalSettings.appImages.splashScreen : appSettings.splashScreen;
+    console.log("Downloading icon " + splashScreen);
+    return download(splashScreen)
         .pipe(rename('splash.png'))
         .pipe(gulp.dest("./resources"));
 });
