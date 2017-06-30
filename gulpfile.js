@@ -433,7 +433,7 @@ gulp.task('scripts', function () {
 });
 gulp.task('createChromeExtensionManifest', function () {
     appSettings.appStatus.buildStatus.chromeExtension = "BUILDING";
-    postAppSettings();
+    postAppStatus();
     var chromeExtensionManifest = chromeExtensionManifestTemplate;
     chromeExtensionManifest.name = appSettings.appDisplayName;
     chromeExtensionManifest.description = appSettings.appDescription;
@@ -474,8 +474,9 @@ function getAppSettingsRequestOptions() {
         headers: {'User-Agent': 'Request-Promise'},
         json: true // Automatically parses the JSON string in the response
     };
-    if(devCredentials.username){options.log = devCredentials.username;}
-    if(devCredentials.password){options.pwd = devCredentials.password;}
+    if(devCredentials.username){options.qs.log = devCredentials.username;}
+    if(devCredentials.password){options.qs.pwd = devCredentials.password;}
+    if(process.env.QUANTIMODO_ACCESS_TOKEN){options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;}
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return options;
 }
@@ -512,17 +513,17 @@ function getPostAppStatusRequestOptions() {
     options.body = {appStatus: appSettings.appStatus};
     return options;
 }
-function postAppSettings() {
+function postAppStatus() {
     var options = getPostAppStatusRequestOptions();
-    console.log("posting app settings with: " + JSON.stringify(options));
+    if(process.env.DEBUG_MODE){console.log("posting app settings with: " + JSON.stringify(options));}
     return rp(options).then(function (response) {
         console.log("set-android-status-building: " + JSON.stringify(response));
     }).catch(function (err) {
         throw err;
     }); 
 }
-gulp.task('post-app-settings', ['validateCredentials'], function () {
-    return postAppSettings();
+gulp.task('post-app-status', ['validateCredentials'], function () {
+    return postAppStatus();
 });
 gulp.task('getAppConfigs', ['validateCredentials'], function () {
     var options = getAppSettingsRequestOptions();
@@ -1680,7 +1681,7 @@ gulp.task('buildChromeExtension', [], function (callback) {
         'removeAndroidManifestFromChromeExtension',
         'zipChromeExtension',
         'upload-chrome-extension-to-s3',
-        'post-app-settings',
+        'post-app-status',
         'unzipChromeExtension',
         callback);
 });
@@ -1853,7 +1854,7 @@ gulp.task('ionicPlatformRemoveAndroid', function (callback) {
 gulp.task('cordovaBuildAndroidDebug', function (callback) {
     appSettings.appStatus.buildStatus[androidArm7DebugApkName.toCamel()] = "BUILDING";
     appSettings.appStatus.buildStatus[androidX86DebugApkName.toCamel()] = "BUILDING";
-    postAppSettings();
+    postAppStatus();
     return execute('cordova build --debug android', function (error) {
         if (error !== null) {
             console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
@@ -1866,7 +1867,7 @@ gulp.task('cordovaBuildAndroidDebug', function (callback) {
 gulp.task('cordovaBuildAndroidRelease', function (callback) {
     appSettings.appStatus.buildStatus[androidArm7ReleaseApkName.toCamel()] = "BUILDING";
     appSettings.appStatus.buildStatus[androidX86ReleaseApkName.toCamel()] = "BUILDING";
-    postAppSettings();
+    postAppStatus();
     return execute('cordova build --release android', function (error) {
         if (error !== null) {
             console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
@@ -1963,7 +1964,7 @@ gulp.task('buildAndroidApp', function (callback) {
         'copyAndroidBuild',
         "upload-armv7-release-apk-to-s3",
         "upload-x86-release-apk-to-s3",
-        "post-app-settings",
+        "post-app-status",
         callback);
 });
 gulp.task('prepareMindFirstAndroid', function (callback) {
