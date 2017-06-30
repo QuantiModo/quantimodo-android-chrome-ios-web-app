@@ -64,6 +64,7 @@ deployment:
     branch: /apps\/.*/
     commands:
       - ./scripts/circleci_install_dependencies.sh
+      - gulp prepareRepositoryForAndroid
       - gulp buildAndroidApp
       - gulp buildChromeExtension
   feature:

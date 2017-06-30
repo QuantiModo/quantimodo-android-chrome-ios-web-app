@@ -36,7 +36,7 @@ var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 function setClientId(callback) {
-    if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId;}
+    if(argv.clientId){process.env.QUANTIMODO_CLIENT_ID = argv.clientId.replace('apps/', '');}
     if (!process.env.QUANTIMODO_CLIENT_ID) {
         git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
             console.log('current git branch: ' + branch);
@@ -476,7 +476,11 @@ function getAppSettingsRequestOptions() {
     };
     if(devCredentials.username){options.qs.log = devCredentials.username;}
     if(devCredentials.password){options.qs.pwd = devCredentials.password;}
-    if(process.env.QUANTIMODO_ACCESS_TOKEN){options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;}
+    if(process.env.QUANTIMODO_ACCESS_TOKEN){
+        options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
+    } else {
+        console.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + appHostName + "/api/v2/account");
+    }
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return options;
 }
@@ -1832,6 +1836,7 @@ gulp.task('xcodeProjectFix', function (callback) {
     });
 });
 gulp.task('ionicPlatformAddAndroid', function (callback) {
+    console.log('ionic platform add android@6.1.0');
     return execute('ionic platform add android@6.1.0', function (error) {
         if (error !== null) {
             console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
@@ -1927,8 +1932,6 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
         'cleanPlugins',
-        //'ionicPlatformRemoveAndroid',
-        //'ionicStateReset',  // Need this to install plugins from package.json
         'ionicPlatformAddAndroid',
         'decryptBuildJson',
         'decryptAndroidKeystore',
@@ -1937,7 +1940,6 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         //'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
         //'addGooglePlusPlugin',
         //'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
-        //'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
         'ionicInfo',
         callback);
