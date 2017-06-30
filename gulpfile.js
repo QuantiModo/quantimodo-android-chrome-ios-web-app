@@ -1836,6 +1836,7 @@ gulp.task('xcodeProjectFix', function (callback) {
     });
 });
 gulp.task('ionicPlatformAddAndroid', function (callback) {
+    console.log('ionic platform add android@6.1.0');
     return execute('ionic platform add android@6.1.0', function (error) {
         if (error !== null) {
             console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
@@ -1931,8 +1932,6 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
         'cleanPlugins',
-        //'ionicPlatformRemoveAndroid',
-        //'ionicStateReset',  // Need this to install plugins from package.json
         'ionicPlatformAddAndroid',
         'decryptBuildJson',
         'decryptAndroidKeystore',
@@ -1941,7 +1940,6 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         //'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
         //'addGooglePlusPlugin',
         //'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
-        //'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
         'ionicInfo',
         callback);
