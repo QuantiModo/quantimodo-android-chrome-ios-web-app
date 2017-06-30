@@ -219,11 +219,13 @@ function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
     });
 }
 gulp.task('downloadIcon', [], function(){
+    console.log("Downloading icon " + appSettings.additionalSettings.appImages.appIcon);
     return download(appSettings.additionalSettings.appImages.appIcon)
         .pipe(rename('icon.png'))
         .pipe(gulp.dest("./resources"));
 });
 gulp.task('downloadSplashScreen', [], function(){
+    console.log("Downloading splashScreen " + appSettings.additionalSettings.appImages.splashScreen);
     return download(appSettings.additionalSettings.appImages.splashScreen)
         .pipe(rename('splash.png'))
         .pipe(gulp.dest("./resources"));
