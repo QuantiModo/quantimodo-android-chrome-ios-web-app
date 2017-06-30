@@ -464,7 +464,7 @@ gulp.task('validateCredentials', ['setClientId'], function () {
     });
 });
 
-function getApiRequestOptions() {
+function getAppSettingsRequestOptions() {
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
     if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
     if(!process.env.QUANTIMODO_CLIENT_SECRET){console.error( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
@@ -480,7 +480,7 @@ function getApiRequestOptions() {
     return options;
 }
 gulp.task('getAppConfigs', ['validateCredentials'], function () {
-    var options = getApiRequestOptions();
+    var options = getAppSettingsRequestOptions();
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
         appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
@@ -506,14 +506,15 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         throw err;
     });
 });
-function getPostAppSettingsRequestOptions() {
-    var options = getApiRequestOptions();
+function getPostAppStatusRequestOptions() {
+    var options = getAppSettingsRequestOptions();
     options.method = "POST";
-    options.body = {appSettings: appSettings};
+    options.body = {appStatus: appSettings.appStatus};
     return options;
 }
 function postAppSettings() {
-    var options = getPostAppSettingsRequestOptions();
+    var options = getPostAppStatusRequestOptions();
+    console.log("posting app settings with: " + JSON.stringify(options));
     return rp(options).then(function (response) {
         console.log("set-android-status-building: " + JSON.stringify(response));
     }).catch(function (err) {
@@ -524,7 +525,7 @@ gulp.task('post-app-settings', ['validateCredentials'], function () {
     return postAppSettings();
 });
 gulp.task('getAppConfigs', ['validateCredentials'], function () {
-    var options = getApiRequestOptions();
+    var options = getAppSettingsRequestOptions();
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
         appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
