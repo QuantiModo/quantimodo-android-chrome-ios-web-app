@@ -25,6 +25,7 @@ var xml2js = require('xml2js');
 var parseString = require('xml2js').parseString;
 var clean = require('gulp-rimraf');
 var replace = require('gulp-string-replace');
+var download = require('gulp-download-stream');
 var git = require('gulp-git'),
     jeditor = require('gulp-json-editor'),
     source = require('vinyl-source-stream'),
@@ -47,7 +48,7 @@ function setClientId(callback) {
     }
     if(process.env.QUANTIMODO_CLIENT_ID){
         process.env.QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID.replace('apps/', '');
-        console.log('Stripped apps/ and now client id is' + process.env.QUANTIMODO_CLIENT_ID);
+        console.log('Stripped apps/ and now client id is ' + process.env.QUANTIMODO_CLIENT_ID);
     }
     if (!process.env.QUANTIMODO_CLIENT_ID) {
         git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
@@ -57,8 +58,7 @@ function setClientId(callback) {
                     console.info('Setting process.env.QUANTIMODO_CLIENT_ID using branch name ' + branch);
                     process.env.QUANTIMODO_CLIENT_ID = branch;
                 } else {
-                    process.env.DEBUG_MODE = true;
-                    console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to default debug mode with quantimodo client id');
+                    console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to quantimodo client id');
                     process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
                 }
             }
@@ -218,6 +218,17 @@ function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
         //outputSHA1ForAndroidKeystore(decryptedFilePath);
     });
 }
+gulp.task('downloadIcon', [], function(){
+    return download(appSettings.additionalSettings.appImages.appIcon)
+        .pipe(rename('icon.png'))
+        .pipe(gulp.dest("./resources"));
+});
+gulp.task('downloadSplashScreen', [], function(){
+    return download(appSettings.additionalSettings.appImages.splashScreen)
+        .pipe(rename('splash.png'))
+        .pipe(gulp.dest("./resources"));
+});
+
 function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
     console.log('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
     if (!process.env.ENCRYPTION_SECRET) {
@@ -533,7 +544,7 @@ function postAppStatus() {
     var options = getPostAppStatusRequestOptions();
     if(process.env.DEBUG_MODE){console.log("posting app settings with: " + JSON.stringify(options));}
     return rp(options).then(function (response) {
-        console.log("set-android-status-building: " + JSON.stringify(response));
+        console.log("postAppStatus: " + JSON.stringify(response));
     }).catch(function (err) {
         throw err;
     }); 
@@ -1657,6 +1668,8 @@ gulp.task('configureApp', [], function (callback) {
         'getCommonVariables',
         'copyAppResources',
         'getAppConfigs',
+        'downloadIcon',
+        'downloadSplashScreen',
         'verifyExistenceOfDefaultConfig',
         // templates because of the git changes and weird stuff replacement does to config-template.xml
         //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
