@@ -41,6 +41,7 @@
     "navigator" : false,
     "UserVoice" : false,
     "backgroundGeoLocation" : false,
-    "inAppPurchase" : false
+    "inAppPurchase" : false,
+    "HumanConnect": false
   }
 }

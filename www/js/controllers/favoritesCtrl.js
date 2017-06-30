@@ -17,14 +17,13 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
-        $scope.hideLoader();
         $rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
-            $rootScope.variableCategoryName = $stateParams.variableCategoryName;
+            $scope.variableCategoryName = $stateParams.variableCategoryName;
             $scope.state.addButtonText = "Add favorite " + $stateParams.variableCategoryName.toLowerCase();
             $scope.state.title = 'Favorite ' + $stateParams.variableCategoryName;
             $scope.state.moreHelpText = null;
-        } else {$rootScope.variableCategoryName = null;}
+        } else {$scope.variableCategoryName = null;}
         if($stateParams.variableCategoryName === 'Treatments') {
             $scope.state.addButtonText = "Add an as-needed medication";
             $scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
@@ -48,9 +47,9 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
     $scope.favoriteAddButtonClick = function () {$state.go('app.favoriteSearch');};
     $scope.refreshFavorites = function () {
         console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-        $scope.showLoader('Syncing...');
+        $scope.showSyncDisplayText('Syncing...');
         quantimodoService.syncTrackingReminders(true).then(function () {
-            $scope.hideLoader();
+            $scope.hideSyncDisplayText();
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');

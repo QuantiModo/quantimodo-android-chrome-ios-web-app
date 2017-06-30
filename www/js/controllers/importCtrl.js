@@ -3,29 +3,25 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("ImportCtrl beforeEnter");
+        if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-		if(!$rootScope.user){
-			console.debug('Setting afterLoginGoToState to ' + $state.current.name);
-			quantimodoService.setLocalStorageItem('afterLoginGoToState', $state.current.name);
-			$state.go('app.login');
-			return;
-		}
+        if(quantimodoService.sendToLoginIfNecessaryAndComeBack()){ return; }
 		if($rootScope.user.stripeActive || config.appSettings.upgradeDisabled){
 			loadNativeConnectorPage();
 			return;
 		}
 		// Check if user upgrade via web since last user refresh
-		$ionicLoading.show();
+		quantimodoService.showBlackRingLoader();
 		quantimodoService.refreshUser().then(function (user) {
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			if(user.stripeActive || config.appSettings.upgradeDisabled){
 				loadNativeConnectorPage();
 				return;
 			}
-			$state.go('app.upgrade', {litePlanState: config.appSettings.defaultState});
+			$state.go('app.upgrade', {litePlanState: config.appSettings.appDesign.defaultState});
 		}, function (error) {
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			$state.go('app.login');
 		});
 	});
@@ -35,9 +31,9 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	};
 	var goToWebImportDataPage = function() {
 		console.debug('importCtrl.init: Going to quantimodoService.getAccessTokenFromAnySource');
-		$state.go(config.appSettings.defaultState);
+		$state.go(config.appSettings.appDesign.defaultState);
 		quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
 				console.debug("Browser Detected");
 
@@ -52,7 +48,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				}
 				$rootScope.hideNavigationMenu = false;
 				//noinspection JSCheckFunctionSignatures
-				$state.go(config.appSettings.defaultState);
+				$state.go(config.appSettings.appDesign.defaultState);
 			} else {
 				var targetUrl = quantimodoService.getQuantiModoUrl("api/v1/connect/mobile", true);
 				if(accessToken){
@@ -62,19 +58,19 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				ref.addEventListener('exit', function(){
 					$rootScope.hideNavigationMenu = false;
 					//noinspection JSCheckFunctionSignatures
-					$state.go(config.appSettings.defaultState);
+					$state.go(config.appSettings.appDesign.defaultState);
 				});
 			}
 		}, function(){
-			$ionicLoading.hide();
+			quantimodoService.hideLoader();
 			console.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
-            quantimodoService.sendToLogin(true);
+            quantimodoService.sendToLoginIfNecessaryAndComeBack();
 		});
 	};
 	var loadNativeConnectorPage = function(){
 		$scope.showImportHelpCard = (window.localStorage.hideImportHelpCard !== "true");
 		console.debug('importCtrl: $rootScope.isMobile so using native connector page');
-		$ionicLoading.show();
+		quantimodoService.showBlackRingLoader();
 		quantimodoService.getConnectorsDeferred()
 			.then(function(connectors){
 				$rootScope.connectors = connectors;

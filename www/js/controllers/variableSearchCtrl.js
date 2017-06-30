@@ -16,19 +16,20 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug($state.current.name + " beforeEnter...");
         $scope.stateParams = $stateParams;
-        if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
+        //if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
+        $rootScope.hideNavigationMenu = false;
         if($stateParams.helpText){$scope.state.helpText = $stateParams.helpText;}
         if($stateParams.title){$scope.state.title = $stateParams.title;}
         if($stateParams.variableSearchPlaceholderText){$scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;}
-        if ($rootScope.variableCategoryName === 'Anything') {$rootScope.variableCategoryName = null;}
+        if ($scope.variableCategoryName === 'Anything') {$scope.variableCategoryName = null;}
         if(!$stateParams.variableSearchParameters){$stateParams.variableSearchParameters = {};}
-        if(!$stateParams.variableSearchParameters.variableCategoryName){$stateParams.variableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;}
+        if(!$stateParams.variableSearchParameters.variableCategoryName){$stateParams.variableSearchParameters.variableCategoryName = $scope.variableCategoryName;}
         if(!$stateParams.commonVariableSearchParameters){$stateParams.commonVariableSearchParameters = $stateParams.variableSearchParameters;}
-        if(!$stateParams.commonVariableSearchParameters.variableCategoryName){$stateParams.commonVariableSearchParameters.variableCategoryName = $rootScope.variableCategoryName;}
-        if($stateParams.variableCategoryName){$rootScope.variableCategoryName = $stateParams.variableCategoryName;}
-        if ($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything') {
-            $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1).toLowerCase()) + " here...";
-            $scope.state.title = "Select " + $filter('wordAliases')(pluralize($rootScope.variableCategoryName, 1));
+        if(!$stateParams.commonVariableSearchParameters.variableCategoryName){$stateParams.commonVariableSearchParameters.variableCategoryName = $scope.variableCategoryName;}
+        if($stateParams.variableCategoryName){$scope.variableCategoryName = $stateParams.variableCategoryName;}
+        if ($scope.variableCategoryName && $scope.variableCategoryName !== 'Anything') {
+            $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.variableCategoryName, 1).toLowerCase()) + " here...";
+            $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.variableCategoryName, 1));
             $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
         }
         setHelpText();
@@ -36,7 +37,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
         console.debug($state.current.name + " enter...");
-        $scope.hideLoader();
         if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
         if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
@@ -46,6 +46,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         populateUserVariables();
         populateCommonVariables();
         setHelpText();
+        quantimodoService.hideLoader();
     });
     $scope.selectVariable = function(variableObject) {
         console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject).substring(0, 140) + '...');
@@ -71,11 +72,11 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             } else {
                 userTagData = {userTagVariableId: variableObject.id, userTaggedVariableId: $stateParams.userTaggedVariableObject.id, conversionFactor: 1};
-                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+                quantimodoService.showBlackRingLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
-                    } else {$state.go(config.appSettings.defaultState);}
+                    } else {$state.go(config.appSettings.appDesign.defaultState);}
                 });
             }
         } else if($stateParams.userTagVariableObject) {
@@ -88,11 +89,11 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             } else {
                 userTagData = {userTagVariableId: $stateParams.userTagVariableObject.id, userTaggedVariableId: variableObject.id, conversionFactor: 1};
-                $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
+                quantimodoService.showBlackRingLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function () {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});
-                    } else {$state.go(config.appSettings.defaultState);}
+                    } else {$state.go(config.appSettings.appDesign.defaultState);}
                 });
             }
         } else {
@@ -185,6 +186,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     // Put user variables at top of list
+                    userVariables = quantimodoService.sortByProperty(userVariables, '-latestMeasurementTime');
                     $scope.state.variableSearchResults = quantimodoService.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;
@@ -202,7 +204,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.addNewVariable = function(){
         var variableObject = {};
         variableObject.name = $scope.state.variableSearchQuery.name;
-        if($rootScope.variableCategoryName && $rootScope.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $rootScope.variableCategoryName;}
+        if($scope.variableCategoryName && $scope.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $scope.variableCategoryName;}
         console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
         if ($stateParams.nextState) {
             $scope.stateParams.variableObject = variableObject;

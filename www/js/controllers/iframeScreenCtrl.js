@@ -1,6 +1,6 @@
 angular.module('starter')
 .controller('IframeScreenCtrl', function ($stateParams, $scope, $ionicLoading, $sce, $state, $rootScope, quantimodoService) {
-    $scope.showLoader();
+    $scope.showSyncDisplayText();
     console.debug('IframeScreenCtrl works!');
     $rootScope.showFilterBarSearchIcon = false;
     var embedPlugin;
@@ -55,10 +55,10 @@ angular.module('starter')
         $scope.iframeUrl = $sce.trustAsResourceUrl(
             iFrameUrl
         );
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
     }, function(){
         console.debug("iframeScreen: No access token. Need to log in.");
-        quantimodoService.sendToLogin(true);
-        $ionicLoading.hide();
+        quantimodoService.sendToLoginIfNecessaryAndComeBack();
+        quantimodoService.hideLoader();
     });
 });

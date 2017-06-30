@@ -32,7 +32,8 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             { id : 5, name : 'Vital Signs' },
             { id : 6, name : 'Physical Activity' },
             { id : 7, name : 'Sleep' },
-            { id : 8, name : 'Miscellaneous' }
+            { id : 8, name : 'Miscellaneous' },
+            { id : 9, name : 'Environment' }
         ],
         frequencyVariables : [
             { id : 2, name : 'Daily'},  // Default Daily has to be first because As-Needed will be above the fold on Android
@@ -49,12 +50,15 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             { id : 12, name : 'Weekly'},
             { id : 13, name : 'Every 2 weeks'},
             { id : 14, name : 'Every 4 weeks'}
-            //{ id : 15, name : 'Minutely'}
         ]
     };
+    if($rootScope.user && $rootScope.user.administrator){$scope.variables.frequencyVariables.push({ id : 15, name : 'Minutely'});}
+    if(!$rootScope.user){quantimodoService.refreshUser();}
     $scope.$on('$ionicView.beforeEnter', function(){
+        $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
         $rootScope.hideNavigationMenu = false;
         console.debug('ReminderAddCtrl beforeEnter...');
+        quantimodoService.sendToLoginIfNecessaryAndComeBack();
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
         if($stateParams.reminder){ $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName; }
         $scope.stateParams = $stateParams;
@@ -279,6 +283,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
         $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
         var dateFormat = 'YYYY-MM-DD';
+        $scope.state.trackingReminder.stopTrackingDate = $scope.state.trackingReminder.startTrackingDate = null;
         if($scope.state.selectedStopTrackingDate){$scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);}
         if($scope.state.selectedStartTrackingDate){$scope.state.trackingReminder.startTrackingDate = moment($scope.state.selectedStartTrackingDate).format(dateFormat);}
         var remindersArray = [];
@@ -361,9 +366,13 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         showMoreUnitsIfNecessary();
     };
     var showMoreUnitsIfNecessary = function () {
-        if($scope.state.trackingReminder.unitAbbreviatedName &&
-            !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName]){
-            $scope.state.showMoreUnits = true;
+        if($scope.state.trackingReminder.unitAbbreviatedName && !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.trackingReminder.unitAbbreviatedName]){
+            if($rootScope.manualTrackingUnitObjects[$scope.state.trackingReminder.unitAbbreviatedName]){
+                $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
+            } else {
+                $scope.state.showMoreUnits = true;
+                $scope.state.moreUnits = $rootScope.unitObjects;
+            }
         }
     };
     var setupVariableCategory = function(variableCategoryName){
@@ -384,6 +393,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if(variableCategoryName === 'Treatments'){$scope.state.showInstructionsField = true;}
         $scope.state.trackingReminder = quantimodoService.addImagePaths($scope.state.trackingReminder);
         showMoreUnitsIfNecessary();
+        setHideDefaultValueField();
     };
     function setupReminderEditingFromVariableId(variableId) {
         if(variableId){
@@ -392,10 +402,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                     $rootScope.variableObject = variables[0];
                     console.debug('setupReminderEditingFromVariableId got this variable object ' + JSON.stringify($rootScope.variableObject));
                     setupByVariableObject($rootScope.variableObject);
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     $scope.loading = false;
                 }, function () {
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                     $scope.loading = false;
                     console.error('ERROR: failed to get variable with id ' + variableId);
                 });
@@ -410,10 +420,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 }
                 $stateParams.reminder = reminders[0];
                 setupEditReminder($stateParams.reminder);
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $scope.loading = false;
             }, function () {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $scope.loading = false;
                 console.error('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
             });
@@ -433,7 +443,9 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         quantimodoService.deleteTrackingReminderDeferred($scope.state.trackingReminder).then(function(){}, function(error){console.error(error);});
     };
     function setHideDefaultValueField(){
-        if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 || $scope.state.trackingReminder.unitAbbreviatedName === '/5' ||
+        if(!$scope.state.trackingReminder.variableName){return;}
+        if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 ||
+            $scope.state.trackingReminder.unitAbbreviatedName === '/5' ||
             $scope.state.trackingReminder.unitAbbreviatedName === '/10' || $scope.state.trackingReminder.unitAbbreviatedName === 'yes/no'){
             $scope.state.hideDefaultValueField = true;
         } else {$scope.state.hideDefaultValueField = false;}

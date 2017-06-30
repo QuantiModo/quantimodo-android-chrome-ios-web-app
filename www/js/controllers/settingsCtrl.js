@@ -12,23 +12,23 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$rootScope.hideNavigationMenu = false;
 		if(quantimodoService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
-			$ionicLoading.show();
+			quantimodoService.showBlackRingLoader();
 			quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: quantimodoService.getUrlParameter('userEmail')}, function(user){
 				$scope.user = user;
 				$scope.state.loading = false;
-				$ionicLoading.hide();
+				quantimodoService.hideLoader();
 			}, function(error){
 				console.error(error);
 				$scope.state.loading = false;
-				$ionicLoading.hide();
+				quantimodoService.hideLoader();
 			});
 			return;
 		}
 		if(!$rootScope.user){
-            quantimodoService.sendToLogin(true);
+            quantimodoService.sendToLoginIfNecessaryAndComeBack();
 		}
 	});
-    $scope.sendToLogin = function(){quantimodoService.sendToLogin();};
+    $scope.completelyResetAppStateAndSendToLogin = function(){quantimodoService.completelyResetAppStateAndSendToLogin();};
 	quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		if($rootScope.isIOS){
@@ -50,21 +50,25 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	};
 	$scope.sendSharingInvitation = function() {
 		var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
-		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
+		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20" +
+			encodeURIComponent(quantimodoService.getApiUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 		var fallbackUrl = quantimodoService.getQuantiModoUrl("api/v2/account/applications", true);
 		var emailAddress = null;
 		if($rootScope.isMobile){quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 		} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
 	function addAppInformationToTemplate(template){
-		if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer');}
-		if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync');}
+		if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer') + '\r\n' + '\r\n';}
+		if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync') + '\r\n' + '\r\n';}
 		template = template + "QuantiModo Client ID: " + quantimodoService.getClientId() + '\r\n';
 		template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
 		template = template + "App Name: " + config.appSettings.appDisplayName + '\r\n';
+        template = template + "User ID: " + $rootScope.user.id + '\r\n';
+        template = template + "User Email: " + $rootScope.user.email + '\r\n';
 		return template;
 	}
 	$scope.sendBugReport = function() {
+		quantimodoService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server
 		var subjectLine = encodeURIComponent( config.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
 		var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
 			"Additional Information: " + '\r\n';
@@ -87,12 +91,10 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
 	$scope.contactUs = function() {
-		$scope.hideLoader();
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
 		else {window.location = '#app/feedback';}
 	};
 	$scope.postIdea = function() {
-		$scope.hideLoader();
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';
 		} else {window.open('http://help.quantimo.do/forums/211661-general', '_blank');}
 	};
@@ -213,18 +215,20 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		}
 	}
 	function logOutOfWebsite() {
-		if (quantimodoService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
-			window.open(quantimodoService.getQuantiModoUrl("api/v2/auth/logout"),'_blank');
-		}
+		var logoutUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(quantimodoService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
+		window.location.replace(logoutUrl);
 	}
 	$scope.logout = function(ev) {
+		$rootScope.accessTokenFromUrl = null;
 		var completelyResetAppStateAndLogout = function(){
+			quantimodoService.showBlackRingLoader();
 			quantimodoService.completelyResetAppState();
 			logOutOfWebsite();
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			$state.go('app.intro');
 		};
 		var afterLogoutDoNotDeleteMeasurements = function(){
+            quantimodoService.showBlackRingLoader();
 			$rootScope.user = null;
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			quantimodoService.clearOAuthTokensFromLocalStorage();
@@ -241,7 +245,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		console.debug('Logging out...');
-		$scope.hideLoader();
 		$rootScope.user = null;
 		showDataClearPopup(ev);
 	};

@@ -1,21 +1,21 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
     <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } ">
         <br>
-        <md-card ng-if="isWeb" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
+        <md-card ng-if="isWeb && appSettings.appDesign.upgradePleadingCard" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
             <md-card-title>
                 <md-card-title-media>
-                    <div class="md-media-md card-media"><img ng-src="img/ivy-sad-bw-300-300.png" class="md-card-image" alt="Ivy"></div>
+                    <div class="md-media-md card-media"><img ng-src="{{appSettings.appDesign.upgradePleadingCard.web.image}}" class="md-card-image" alt="Ivy"></div>
                 </md-card-title-media>
                 <md-card-title-text>
-                    <span style="text-align: center; padding-left: 15px" class="md-headline">Please subscribe to my daddy's app or I'll be cold and hungry...</span>
+                    <span style="text-align: center; padding-left: 15px" class="md-headline">{{appSettings.appDesign.upgradePleadingCard.web.text}}</span>
                 </md-card-title-text>
             </md-card-title>
         </md-card>
         <md-card ng-if="!isWeb">
-            <img ng-src="img/ivy-sad-bw.jpg" class="md-card-image" alt="Ivy">
+            <img ng-src="{{appSettings.appDesign.upgradePleadingCard.mobile.image}}" class="md-card-image" alt="Ivy">
             <md-card-title>
                 <md-card-title-text>
-                    <span style="text-align: center;" class="md-headline">Please subscribe to my daddy's app or I'll be cold... <br> and hungry...</span>
+                    <span style="text-align: center;" class="md-headline" ng-bind-html="appSettings.appDesign.upgradePleadingCard.mobile.textHtml"></span>
                 </md-card-title-text>
             </md-card-title>
         </md-card>

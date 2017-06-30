@@ -12,6 +12,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		title: "History",
 		loadingText: "Fetching measurements..."
 	};
+	function hideLoader() {
+        $scope.$broadcast('scroll.refreshComplete');
+        $scope.state.loading = false;
+        quantimodoService.hideLoader();
+    }
     $scope.$on('$ionicView.beforeEnter', function(e) {
         $rootScope.hideHistoryPageInstructionsCard = quantimodoService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
     });
@@ -55,23 +60,17 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 				}, function (error) {console.error(error);});
 			}
 		}
-        //$ionicLoading.show();  //Let's not lock the user during history loading.  We have a card to tell them that it's loading
+        //quantimodoService.showBlackRingLoader();  //Let's not lock the user during history loading.  We have a card to tell them that it's loading
 		quantimodoService.getMeasurementsDeferred(params, refresh).then(function(history){
 			if(!history ||!history.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
 			if (concat) {$scope.state.history = $scope.state.history.concat(history);} else {$scope.state.history = history;}
-			$scope.hideLoader();
 			if(history.length < $scope.state.limit){$scope.state.noHistory = history.length === 0;}
-			//Stop the ion-refresher from spinning
-			$scope.$broadcast('scroll.refreshComplete');
-			$scope.state.loading = false;
+            hideLoader();
 		}, function(error){
 			$scope.state.noHistory = true;
 			Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 			console.error('error getting measurements' + JSON.stringify(error));
-			//Stop the ion-refresher from spinning
-			$scope.$broadcast('scroll.refreshComplete');
-			$scope.state.loading = false;
-			$scope.hideLoader();
+            hideLoader();
 		});
 	};
 	function setupVariableCategoryActionSheet() {

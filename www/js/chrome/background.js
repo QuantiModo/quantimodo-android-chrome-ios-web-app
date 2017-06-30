@@ -2,9 +2,9 @@
 ****	EVENT HANDLERS
 ***/
 var manifest = chrome.runtime.getManifest();
-console.log(manifest.name);
-console.log(manifest.version);
-var requestIdentificationParameters = "appName=" + manifest.name + "&appVersion=" + manifest.version + "&client_id=chromeExtension";
+var apiUrl = manifest.appSettings.additionalSettings.downloadLinks.webApp;
+console.log("API URL is " + apiUrl);
+var requestIdentificationParameters = "appName=" + manifest.name + "&appVersion=" + manifest.version + "&client_id=chromeExtension and apiUrl is " + apiUrl;
 var v = null;
 var vid = null;
 var introWindowParams = {
@@ -163,7 +163,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 ***/
 function pushMeasurements(measurements, onDoneListener) {
 	var xhr = new XMLHttpRequest();
-	var url = "https://app.quantimo.do/api/v1/measurements?" + requestIdentificationParameters;
+	var url = apiUrl + "/api/v1/measurements?" + requestIdentificationParameters;
 	if(localStorage.accessToken){url = url + '?access_token=' + localStorage.accessToken;}
 	xhr.open("POST", url, true);
 	xhr.onreadystatechange = function() {
@@ -194,7 +194,7 @@ function showSignInNotification() {
 }
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
-    var url = "https://app.quantimo.do:443/api/v1/trackingReminderNotifications/past?" + requestIdentificationParameters;
+    var url = apiUrl + ":443/api/v1/trackingReminderNotifications/past?" + requestIdentificationParameters;
     if (localStorage.accessToken) {
         url = url + '?access_token=' + localStorage.accessToken;
     } else {

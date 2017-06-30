@@ -1,7 +1,7 @@
 # Customize the test machine
 machine:
   node:
-    version: 4.1.0
+    version: 6.10.3
   ruby:
     version: 2.1.2
   php:
@@ -9,7 +9,8 @@ machine:
   java:
     version: oraclejdk8
   environment:
-    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+    _JAVA_OPTIONS: "-Xms512m -Xmx1024m" # Appears to solve "Your build has exceeded the memory limit of 4G on 1 container"
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'  # Did not solve "Your build has exceeded the memory limit of 4G on 1 container"
 
 checkout:
   post:
@@ -60,23 +61,26 @@ deployment:
     commands:
       - git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
   build:
-    branch: /build\/.*/
+    branch: /apps\/.*/
     commands:
       - ./scripts/circleci_install_dependencies.sh
-      - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - gulp buildAndroidApp
+      - gulp buildChromeExtension
   feature:
     branch: /feature\/.*/
     commands:
       - chmod +x do-exclusively
-      - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
-      - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
+      - ./do-exclusively git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
+      - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
+      #- ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
+      #- curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
       - php ghostinspector_parser.php
   pull:
     branch: /pull\/.*/
     commands:
       - chmod +x do-exclusively
       - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
-      - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
+      - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
       - php ghostinspector_parser.php
   staging:
     branch: develop
@@ -85,7 +89,8 @@ deployment:
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - chmod +x do-exclusively
       - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
-      - gulp ionicUploadStagingForAllApps
+      - bash buddybuild_postbuild.sh
+      #- gulp ionicUploadStagingForAllApps
       #- aws s3 cp $CIRCLE_ARTIFACTS/* s3://quantimodo-docs/ Doesn't work for some reason
   production:
     branch: master

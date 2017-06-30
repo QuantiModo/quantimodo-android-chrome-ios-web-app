@@ -20,7 +20,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             refreshUserVariable($rootScope.variableObject.name);
         } else {
             console.error("Variable name not provided to variable settings controller!");
-            $state.go(config.appSettings.defaultState);
+            $state.go(config.appSettings.appDesign.defaultState);
             //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
         }
     });
@@ -94,10 +94,10 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 });
             } else {
                 userTagData = {userTagVariableId: self.selectedItem.variable.id, userTaggedVariableId: $rootScope.variableObject.id, conversionFactor: 1};
-                $ionicLoading.show();
+                quantimodoService.showBlackRingLoader();
                 quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
                     $rootScope.variableObject = response.data.userTaggedVariable;
-                    $ionicLoading.hide();
+                    quantimodoService.hideLoader();
                 });
             }
             $mdDialog.hide();
@@ -171,12 +171,12 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 joinedVariableId: self.selectedItem.variable.id,
                 conversionFactor: 1
             };
-            $ionicLoading.show();
+            quantimodoService.showBlackRingLoader();
             quantimodoService.postVariableJoinDeferred(variableData).then(function (response) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 $rootScope.variableObject = response.data.parentVariable;
             }, function (error) {
-                $ionicLoading.hide();
+                quantimodoService.hideLoader();
                 console.error(error);
             });
             $mdDialog.hide();

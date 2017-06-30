@@ -21,7 +21,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         if(quantimodoService.getUrlParameter('variableName')){$stateParams.variableName = quantimodoService.getUrlParameter('variableName', window.location.href, true);}
         $rootScope.hideNavigationMenu = false;
         $scope.stopGettingMeasurements = false;
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
         console.debug("variablePageCtrl: enter");
         if($stateParams.variableObject){
             $rootScope.variableObject = $stateParams.variableObject;
@@ -37,7 +37,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             $scope.goBack();
             return;
         }
-        $ionicLoading.hide();
+        quantimodoService.hideLoader();
         if($rootScope.variableObject.name){
             $rootScope.variableName = $rootScope.variableObject.name;
             var params = {sort: "-startTimeEpoch", variableName: $rootScope.variableObject.name, limit: maximumMeasurements, offset: 0};
@@ -67,6 +67,9 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 $scope.distributionChartConfig = quantimodoService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
             } else {
+                if(!$scope.lineChartConfig || $scope.state.history.length === maximumMeasurements){  // We want to use daily in this case so we can see a longer time range
+                    $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
+                }
                 //$scope.smoothedLineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
             }
             $scope.weekdayChartConfig = quantimodoService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
@@ -78,7 +81,9 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         if ($scope.state.history.length > 0) {
             if($rootScope.variableObject.fillingValue === null || $rootScope.variableObject.fillingValue === -1){
                 $scope.distributionChartConfig = quantimodoService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
-                $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.history, $rootScope.variableObject);
+                if($scope.state.history.length < maximumMeasurements){  // We want to use daily in this case so we can see a longer time range
+                    $scope.lineChartConfig = quantimodoService.processDataAndConfigureLineChart($scope.state.history, $rootScope.variableObject);
+                }
             }
             $scope.hourlyChartConfig = quantimodoService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
             quantimodoService.highchartsReflow();
@@ -101,14 +106,12 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 getHistoryForVariable(params);
             } else {
                 $scope.state.loadingHistory = false;
-                $scope.hideLoader();
                 if ($scope.state.history.length > 0) {updateCharts();}
             }
         }, function(error){
             if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
             console.error($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
             $scope.state.loadingHistory = false;
-            $scope.hideLoader();
         }, function(history) {
             $scope.state.history = $scope.state.history.concat(history);
         });
@@ -134,7 +137,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         }, function(error){
             if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
             console.error($state.current.name + ' error getting dailyHistory measurements: ' + JSON.stringify(error));
-            $scope.hideLoader();
             $scope.state.loadingDailyHistory = false;
         }, function(history) {
             $scope.state.loadingDailyHistory = false;
