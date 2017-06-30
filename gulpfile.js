@@ -476,7 +476,11 @@ function getAppSettingsRequestOptions() {
     };
     if(devCredentials.username){options.qs.log = devCredentials.username;}
     if(devCredentials.password){options.qs.pwd = devCredentials.password;}
-    if(process.env.QUANTIMODO_ACCESS_TOKEN){options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;}
+    if(process.env.QUANTIMODO_ACCESS_TOKEN){
+        options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
+    } else {
+        throw "Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + appHostName + "/api/v2/account";
+    }
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return options;
 }
