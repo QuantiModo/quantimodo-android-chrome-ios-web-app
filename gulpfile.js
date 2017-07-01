@@ -154,7 +154,15 @@ function readDevCredentials(){
 }
 var s3BaseUrl = 'http://quantimodo.s3.amazonaws.com/';
 readDevCredentials();
-String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+function convertToCamelCase(string) {
+    string = string.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
+    string = string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
+    return string;
+}
+function getBuildStatusPropertyName(filename) {
+    var buildStatusPropertyName = convertToCamelCase(filename).replace('.zip', '').replace('.apk', '');
+    return buildStatusPropertyName;
+}
 function uploadToS3(filePath) {
     if(!process.env.AWS_ACCESS_KEY_ID){
         console.error("Cannot upload to S3. Please set environmental variable AWS_ACCESS_KEY_ID");
@@ -170,7 +178,7 @@ function uploadToS3(filePath) {
         ACL: 'public-read',
         keyTransform: function(relative_filename) {
             var s3RelativePath = 'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
-            appSettings.appStatus.buildStatus[relative_filename.toCamel()] = s3BaseUrl + s3RelativePath;
+            appSettings.appStatus.buildStatus[getBuildStatusPropertyName(relative_filename)] = s3BaseUrl + s3RelativePath;
             return s3RelativePath;
         }
     }, {
@@ -540,14 +548,15 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         throw err;
     });
 });
-function getPostAppStatusRequestOptions() {
+function getPostRequestOptions() {
     var options = getAppSettingsRequestOptions();
     options.method = "POST";
-    options.body = {appStatus: appSettings.appStatus};
+    options.body = {clientId: process.env.QUANTIMODO_CLIENT_ID};
     return options;
 }
 function postAppStatus() {
-    var options = getPostAppStatusRequestOptions();
+    var options = getPostRequestOptions();
+    options.body.appStatus = appSettings.appStatus;
     if(process.env.DEBUG_MODE){console.log("posting app settings with: " + JSON.stringify(options));}
     return rp(options).then(function (response) {
         console.log("postAppStatus: " + JSON.stringify(response));
@@ -556,17 +565,17 @@ function postAppStatus() {
     });
 }
 function postNotifyCollaborators(appType) {
-    var options = getPostAppStatusRequestOptions();
+    var options = getPostRequestOptions();
     options.uri = appHostName + '/api/v2/email';
-    options.body = {emailType: appType + '-build-notification', clientId: process.env.QUANTIMODO_CLIENT_ID};
+    options.body.emailType = appType + '-build-notification';
     if(process.env.DEBUG_MODE){console.log("postNotifyCollaborators with: " + JSON.stringify(options));}
     return rp(options).then(function (response) {
-        console.log("postAppStatus: " + JSON.stringify(response));
+        console.log("postNotifyCollaborators: " + JSON.stringify(response));
     }).catch(function (err) {
         throw err;
     });
 }
-gulp.task('validate-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
+gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
     runSequence(
         'verifyExistenceOfAndroidX86ReleaseBuild',
         'verifyExistenceOfAndroidArmV7ReleaseBuild',
@@ -618,10 +627,10 @@ gulp.task('verifyExistenceOfDefaultConfig', function () {
     return verifyExistenceOfFile(defaultAppConfigPath);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
-    return verifyExistenceOfFile(x86);
+    return verifyExistenceOfFile(pathToReleasex86Apk);
 });
 gulp.task('verifyExistenceOfAndroidArmV7ReleaseBuild', function () {
-    return verifyExistenceOfFile(androidArm7ReleaseApkName);
+    return verifyExistenceOfFile(pathToReleaseArmv7Apk);
 });
 gulp.task('verifyExistenceOfChromeExtension', function () {
     return verifyExistenceOfFile(pathToBuiltChromeExtensionZip);
@@ -1923,8 +1932,8 @@ gulp.task('ionicPlatformRemoveAndroid', function (callback) {
     });
 });
 gulp.task('cordovaBuildAndroidDebug', function (callback) {
-    appSettings.appStatus.buildStatus[androidArm7DebugApkName.toCamel()] = "BUILDING";
-    appSettings.appStatus.buildStatus[androidX86DebugApkName.toCamel()] = "BUILDING";
+    appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidArm7DebugApkName)] = "BUILDING";
+    appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidX86DebugApkName)] = "BUILDING";
     postAppStatus();
     return execute('cordova build --debug android', function (error) {
         if (error !== null) {
@@ -1936,8 +1945,8 @@ gulp.task('cordovaBuildAndroidDebug', function (callback) {
     });
 });
 gulp.task('cordovaBuildAndroidRelease', function (callback) {
-    appSettings.appStatus.buildStatus[androidArm7ReleaseApkName.toCamel()] = "BUILDING";
-    appSettings.appStatus.buildStatus[androidX86ReleaseApkName.toCamel()] = "BUILDING";
+    appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
+    appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidX86ReleaseApkName)] = "BUILDING";
     postAppStatus();
     return execute('cordova build --release android', function (error) {
         if (error !== null) {
