@@ -228,7 +228,7 @@ gulp.task('downloadIcon', [], function(){
 });
 gulp.task('downloadSplashScreen', [], function(){
     var splashScreen = (appSettings.additionalSettings.appImages.splashScreen) ? appSettings.additionalSettings.appImages.splashScreen : appSettings.splashScreen;
-    console.log("Downloading icon " + splashScreen);
+    console.log("Downloading splash screen " + splashScreen);
     return download(splashScreen)
         .pipe(rename('splash.png'))
         .pipe(gulp.dest("./resources"));

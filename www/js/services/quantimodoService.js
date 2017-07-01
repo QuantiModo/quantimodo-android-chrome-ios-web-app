@@ -6761,11 +6761,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return string.replace('#/app/', '').replace('/', '_').replace('?', '_').replace('&', '_').replace('=', '_').toLowerCase();
     }
     var allStates = $state.get();
+    function stripQueryString(pathWithQuery) {
+        return pathWithQuery.split("?")[0];
+    }
+    function convertUrlToLowerCaseStateName(menuItem){
+        return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
+    }
     function addStateName(menuItem){
         if(menuItem.stateName){return menuItem;}
         if(!menuItem.url){return menuItem;}
         for(var i = 0; i < allStates.length; i++){
             if('/app' + allStates[i].url === menuItem.url){
+                menuItem.stateName = allStates[i].name;
+                break;
+            }
+            var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
+            if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
                 menuItem.stateName = allStates[i].name;
                 break;
             }
