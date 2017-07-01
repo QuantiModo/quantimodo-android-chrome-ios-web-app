@@ -69,7 +69,7 @@ function setClientId(callback) {
         if (callback) {callback();}
     }
 }
-setClientId();
+//setClientId();  // Don't want to do this here because it's logs interrupt dev credential entry
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
@@ -553,8 +553,30 @@ function postAppStatus() {
         console.log("postAppStatus: " + JSON.stringify(response));
     }).catch(function (err) {
         throw err;
-    }); 
+    });
 }
+function postNotifyCollaborators(appType) {
+    var options = getPostAppStatusRequestOptions();
+    options.uri = appHostName + '/api/v2/email';
+    options.body = {emailType: appType + '-build-notification', clientId: process.env.QUANTIMODO_CLIENT_ID};
+    if(process.env.DEBUG_MODE){console.log("postNotifyCollaborators with: " + JSON.stringify(options));}
+    return rp(options).then(function (response) {
+        console.log("postAppStatus: " + JSON.stringify(response));
+    }).catch(function (err) {
+        throw err;
+    });
+}
+gulp.task('validate-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
+    runSequence(
+        'verifyExistenceOfAndroidX86ReleaseBuild',
+        'verifyExistenceOfAndroidArmV7ReleaseBuild',
+        'verifyExistenceOfChromeExtension',
+        'post-notify-collaborators-android',
+        callback);
+});
+gulp.task('post-notify-collaborators-android', ['getAppConfigs'], function () {
+    return postNotifyCollaborators('android');
+});
 gulp.task('post-app-status', ['validateCredentials'], function () {
     return postAppStatus();
 });
@@ -587,10 +609,22 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         throw err;
     });
 });
-gulp.task('verifyExistenceOfDefaultConfig', function () {
-    fs.stat(defaultAppConfigPath, function (err, stat) {
-        if (!err) {console.log(defaultAppConfigPath + ' exists');} else {throw 'Could not create ' + defaultAppConfigPath + ': '+ err;}
+function verifyExistenceOfFile(filePath) {
+    return fs.stat(filePath, function (err, stat) {
+        if (!err) {console.log(filePath + ' exists');} else {throw 'Could not create ' + filePath + ': '+ err;}
     });
+}
+gulp.task('verifyExistenceOfDefaultConfig', function () {
+    return verifyExistenceOfFile(defaultAppConfigPath);
+});
+gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
+    return verifyExistenceOfFile(x86);
+});
+gulp.task('verifyExistenceOfAndroidArmV7ReleaseBuild', function () {
+    return verifyExistenceOfFile(androidArm7ReleaseApkName);
+});
+gulp.task('verifyExistenceOfChromeExtension', function () {
+    return verifyExistenceOfFile(pathToBuiltChromeExtensionZip);
 });
 gulp.task('getCommonVariables', function () {
     console.log('gulp getCommonVariables...');
