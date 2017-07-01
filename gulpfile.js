@@ -558,7 +558,7 @@ function getPostRequestOptions() {
 function postAppStatus() {
     var options = getPostRequestOptions();
     options.body.appStatus = appSettings.appStatus;
-    if(debugMode){console.log("posting app settings with: " + JSON.stringify(options));}
+    if(debugMode){console.log("postAppStatus with: " + JSON.stringify(options));}
     return rp(options).then(function (response) {
         console.log("postAppStatus: " + JSON.stringify(response));
     }).catch(function (err) {
