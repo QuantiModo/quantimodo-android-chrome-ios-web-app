@@ -88,12 +88,12 @@ var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
 
 var pathToOutputApks = 'platforms/android/build/outputs/apk';
 var androidArm7ReleaseApkName = 'android-armv7-release';
-var pathToReleaseArmv7Apk = pathToOutputApks + '/' + androidArm7ReleaseApkName + '/.apk';
+var pathToReleaseArmv7Apk = pathToOutputApks + '/' + androidArm7ReleaseApkName + '.apk';
 var androidX86ReleaseApkName = 'android-x86-release';
 var pathToReleasex86Apk = pathToOutputApks + '/' + androidX86ReleaseApkName + '.apk';
 
 var androidArm7DebugApkName = 'android-armv7-debug';
-var pathToDebugArmv7Apk = pathToOutputApks + '/' + androidArm7DebugApkName + '/.apk';
+var pathToDebugArmv7Apk = pathToOutputApks + '/' + androidArm7DebugApkName + '.apk';
 var androidX86DebugApkName = 'android-x86-debug';
 var pathToDebugx86Apk = pathToOutputApks + '/' + androidX86DebugApkName + '.apk';
 
@@ -1994,9 +1994,9 @@ gulp.task('buildAndroidApp', function (callback) {
         'prepareAndroidApp',
         'cordovaBuildAndroidRelease',
         //'cordovaBuildAndroidDebug',
-        'copyAndroidBuild',
-        "upload-armv7-release-apk-to-s3",
+        //'copyAndroidBuild',
         "upload-x86-release-apk-to-s3",
+        "upload-armv7-release-apk-to-s3",
         "post-app-status",
         callback);
 });
