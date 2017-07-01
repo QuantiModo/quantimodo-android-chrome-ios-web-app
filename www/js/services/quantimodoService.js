@@ -6638,6 +6638,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.debug("appSettings.clientId is " + window.config.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
+        //window.config.appSettings.appDesign.floatingActionButton = quantimodoService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
         if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
@@ -6751,11 +6752,22 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return '?' + str.join("&");
     }
     function convertUrlAndParamsToHref(menuItem) {
+        var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
         if(!menuItem.subMenu){
-            menuItem.href = '#/app' + menuItem.url + convertObjectToQueryString(menuItem.params);
+            menuItem.href = '#/app' + menuItem.url;
+            if(params && params.variableCategoryName){
+                menuItem.href += "-category/" + params.variableCategoryName;
+                delete(params.variableCategoryName);
+            }
+            menuItem.href += convertObjectToQueryString(params);
             menuItem.href = menuItem.href.replace('app/app', 'app');
         }
+        console.debug("convertUrlAndParamsToHref ", menuItem);
         return menuItem;
+    }
+    function convertStateNameAndParamsToHref(menuItem) {
+        menuItem.url = getUrlFromStateName(menuItem.stateName);
+        return convertUrlAndParamsToHref(menuItem);
     }
     function convertStringToId(string) {
         return string.replace('#/app/', '').replace('/', '_').replace('?', '_').replace('&', '_').replace('=', '_').toLowerCase();
@@ -6842,6 +6854,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         menu.active = quantimodoService.convertHrefInSingleMenuType(menu.active);
         menu.custom = quantimodoService.convertHrefInSingleMenuType(menu.custom);
         return menu;
+    };
+    quantimodoService.convertHrefInFab = function(floatingActionButton) {
+        console.debug("convertHrefInFab");
+        for(var i = 1; i < 5; i++){
+            floatingActionButton.active["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.active["button" + i]);
+            floatingActionButton.custom["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.custom["button" + i]);
+        }
+        return floatingActionButton;
     };
     return quantimodoService;
 });
