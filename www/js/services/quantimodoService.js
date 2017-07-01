@@ -2794,10 +2794,27 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {numericValue: 5, img: quantimodoService.ratingImages.numeric[4]}
         ];
     };
+    function parseJsonIfPossible(str) {
+        var object = false;
+        try {
+            object = JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return object;
+    }
     quantimodoService.addInfoAndImagesToMeasurements = function (measurements){
         var ratingInfo = quantimodoService.getRatingInfo();
         var index;
         for (index = 0; index < measurements.length; ++index) {
+            var parsedNote =  parseJsonIfPossible(measurements[index].note);
+            if(parsedNote){
+                if(parsedNote.url && parsedNote.message){
+                    measurements[index].note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
+                } else {
+                    Bugsnag.notify("Unrecognized note format", "Could not properly format JSON note", {note: measurements[index].note});
+                }
+            }
             if(!measurements[index].variableName){measurements[index].variableName = measurements[index].variable;}
             if(measurements[index].variableName === quantimodoService.getPrimaryOutcomeVariable().name){
                 measurements[index].valence = quantimodoService.getPrimaryOutcomeVariable().valence;
