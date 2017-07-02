@@ -37,7 +37,7 @@ var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 function isTruthy(value) {return (value && value !== "false");}
-var debugMode = isTruthy(process.env.DEBUG_MODE);
+var buildDebug = isTruthy(process.env.BUILD_DEBUG);
 console.log("If you see me, it's getting the most recent commit");
 function setClientId(callback) {
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH;}
@@ -191,7 +191,7 @@ function uploadToS3(filePath) {
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
 function execute(command, callback) {
-    if (debugMode) {console.log('executing ' + command);}
+    if (buildDebug) {console.log('executing ' + command);}
     var my_child_process = exec(command, function (error, stdout, stderr) {
         if (error !== null) {console.error('ERROR: exec ' + error);}
         callback(error, stdout);
@@ -229,21 +229,6 @@ function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
         //outputSHA1ForAndroidKeystore(decryptedFilePath);
     });
 }
-gulp.task('downloadIcon', [], function(){
-    var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
-    console.log("Downloading icon " + iconUrl);
-    return download(iconUrl)
-        .pipe(rename('icon.png'))
-        .pipe(gulp.dest("./resources"));
-});
-gulp.task('downloadSplashScreen', [], function(){
-    var splashScreen = (appSettings.additionalSettings.appImages.splashScreen) ? appSettings.additionalSettings.appImages.splashScreen : appSettings.splashScreen;
-    console.log("Downloading splash screen " + splashScreen);
-    return download(splashScreen)
-        .pipe(rename('splash.png'))
-        .pipe(gulp.dest("./resources"));
-});
-
 function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
     console.log('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
     if (!process.env.ENCRYPTION_SECRET) {
@@ -370,6 +355,58 @@ function setVersionNumberInConfigXml(configFilePath, callback) {
                 }
             });
         }
+    });
+}
+function getPostRequestOptions() {
+    var options = getAppSettingsRequestOptions();
+    options.method = "POST";
+    options.body = {clientId: process.env.QUANTIMODO_CLIENT_ID};
+    return options;
+}
+function postAppStatus() {
+    var options = getPostRequestOptions();
+    options.body.appStatus = appSettings.appStatus;
+    if(buildDebug){console.log("postAppStatus with: " + JSON.stringify(options));}
+    return rp(options).then(function (response) {
+        console.log("postAppStatus: " + JSON.stringify(response));
+    }).catch(function (err) {
+        throw err;
+    });
+}
+function postNotifyCollaborators(appType) {
+    var options = getPostRequestOptions();
+    options.uri = appHostName + '/api/v2/email';
+    options.body.emailType = appType + '-build-notification';
+    if(buildDebug){console.log("postNotifyCollaborators with: " + JSON.stringify(options));}
+    return rp(options).then(function (response) {
+        console.log("postNotifyCollaborators: " + JSON.stringify(response));
+    }).catch(function (err) {
+        throw err;
+    });
+}
+function getAppSettingsRequestOptions() {
+    if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
+    if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
+    if(!process.env.QUANTIMODO_CLIENT_SECRET){console.error( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
+    var options = {
+        uri: appHostName + '/api/v1/appSettings',
+        qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
+        headers: {'User-Agent': 'Request-Promise'},
+        json: true // Automatically parses the JSON string in the response
+    };
+    if(devCredentials.username){options.qs.log = devCredentials.username;}
+    if(devCredentials.password){options.qs.pwd = devCredentials.password;}
+    if(process.env.QUANTIMODO_ACCESS_TOKEN){
+        options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
+    } else {
+        console.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + appHostName + "/api/v2/account");
+    }
+    console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
+    return options;
+}
+function verifyExistenceOfFile(filePath) {
+    return fs.stat(filePath, function (err, stat) {
+        if (!err) {console.log(filePath + ' exists');} else {throw 'Could not create ' + filePath + ': '+ err;}
     });
 }
 // Setup platforms to build that are supported on current hardware
@@ -501,34 +538,28 @@ gulp.task('validateCredentials', ['setClientId'], function () {
         if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
     });
 });
-
-function getAppSettingsRequestOptions() {
-    if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET){console.error( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
-    var options = {
-        uri: appHostName + '/api/v1/appSettings',
-        qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
-        headers: {'User-Agent': 'Request-Promise'},
-        json: true // Automatically parses the JSON string in the response
-    };
-    if(devCredentials.username){options.qs.log = devCredentials.username;}
-    if(devCredentials.password){options.qs.pwd = devCredentials.password;}
-    if(process.env.QUANTIMODO_ACCESS_TOKEN){
-        options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
-    } else {
-        console.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + appHostName + "/api/v2/account");
-    }
-    console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
-    return options;
-}
+gulp.task('downloadIcon', [], function(){
+    var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
+    console.log("Downloading icon " + iconUrl);
+    return download(iconUrl)
+        .pipe(rename('icon.png'))
+        .pipe(gulp.dest("./resources"));
+});
+gulp.task('downloadSplashScreen', [], function(){
+    var splashScreen = (appSettings.additionalSettings.appImages.splashScreen) ? appSettings.additionalSettings.appImages.splashScreen : appSettings.splashScreen;
+    console.log("Downloading splash screen " + splashScreen);
+    return download(splashScreen)
+        .pipe(rename('splash.png'))
+        .pipe(gulp.dest("./resources"));
+});
 gulp.task('getAppConfigs', ['validateCredentials'], function () {
     var options = getAppSettingsRequestOptions();
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
         appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
-        appSettings.debugMode = debugMode;
+        appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
+        if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
         if(!response.privateConfig && devCredentials.username && devCredentials.password){
             console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '  + appHostName +  '/api/v2/apps ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at "  + appHostName +  "/api/v2/apps and run gulp devSetup again.");
         }
@@ -537,7 +568,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
             fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
         }
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
-        if(debugMode){console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));}
+        if(buildDebug){console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));}
         console.log("You can change your app settings at " + appHostName +  "/api/v2/apps/" + appSettings.clientId + '/edit');
         fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         if(response.allConfigs){
@@ -549,33 +580,6 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         throw err;
     });
 });
-function getPostRequestOptions() {
-    var options = getAppSettingsRequestOptions();
-    options.method = "POST";
-    options.body = {clientId: process.env.QUANTIMODO_CLIENT_ID};
-    return options;
-}
-function postAppStatus() {
-    var options = getPostRequestOptions();
-    options.body.appStatus = appSettings.appStatus;
-    if(debugMode){console.log("postAppStatus with: " + JSON.stringify(options));}
-    return rp(options).then(function (response) {
-        console.log("postAppStatus: " + JSON.stringify(response));
-    }).catch(function (err) {
-        throw err;
-    });
-}
-function postNotifyCollaborators(appType) {
-    var options = getPostRequestOptions();
-    options.uri = appHostName + '/api/v2/email';
-    options.body.emailType = appType + '-build-notification';
-    if(debugMode){console.log("postNotifyCollaborators with: " + JSON.stringify(options));}
-    return rp(options).then(function (response) {
-        console.log("postNotifyCollaborators: " + JSON.stringify(response));
-    }).catch(function (err) {
-        throw err;
-    });
-}
 gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
     runSequence(
         'verifyExistenceOfAndroidX86ReleaseBuild',
@@ -590,40 +594,6 @@ gulp.task('post-notify-collaborators-android', ['getAppConfigs'], function () {
 gulp.task('post-app-status', ['validateCredentials'], function () {
     return postAppStatus();
 });
-gulp.task('getAppConfigs', ['validateCredentials'], function () {
-    var options = getAppSettingsRequestOptions();
-    return rp(options).then(function (response) {
-        appSettings = response.appSettings;
-        appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
-        appSettings.debugMode = debugMode;
-        if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
-        //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
-        if(!response.privateConfig && devCredentials.username && devCredentials.password){
-            console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '  + appHostName +  '/api/v2/apps ' + appSettings.additionalSettings.companyEmail +
-                " and ask them to make you a collaborator at " + appHostName +  "/api/v2/apps and run gulp devSetup again.");
-        }
-        if(response.privateConfig){
-            privateConfig = response.privateConfig;
-            fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
-        }
-        fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
-        if(debugMode){console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));}
-        console.log("You can change your app settings at "  + appHostName +  "/api/v2/apps/" + appSettings.clientId + '/edit');
-        //fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
-        if(response.allConfigs){
-            for (var i = 0; i < response.allConfigs.length; i++) {
-                fs.writeFileSync(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
-            }
-        }
-    }).catch(function (err) {
-        throw err;
-    });
-});
-function verifyExistenceOfFile(filePath) {
-    return fs.stat(filePath, function (err, stat) {
-        if (!err) {console.log(filePath + ' exists');} else {throw 'Could not create ' + filePath + ': '+ err;}
-    });
-}
 gulp.task('verifyExistenceOfDefaultConfig', function () {
     return verifyExistenceOfFile(defaultAppConfigPath);
 });
