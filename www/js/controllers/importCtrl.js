@@ -85,7 +85,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 
     $scope.showActionSheetForConnector = function(connector) {
         var buttons = [
-            quantimodoService.actionSheetButtons.history
+            quantimodoService.getHistoryActionSheetButton(connector.displayName)
         ];
         var hideSheetForNotification = $ionicActionSheet.show({
             buttons: buttons,
