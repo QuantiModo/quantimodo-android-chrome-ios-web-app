@@ -30,24 +30,25 @@
          <div class="card"  ng-show="state.loading">
              <div class="item" > <div class="row"> <ion-spinner></ion-spinner> <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp {{state.loadingText}}</p> </div> </div>
          </div>
-      <ion-list id="historyList">
-          <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true"
-               ng-hide="historyItem.hide"
-               data-measurementid="{{historyItem.id}}"
-               class="item item-avatar"
-               id="historyItem"
-               on-hold="showActionSheetForMeasurement(historyItem, $index)"
-               ng-click="editMeasurement(historyItem)">
-              <i id="historyItemIcon" class="icon positive {{historyItem.icon}} icon-positive" ng-if="!historyItem.pngPath" style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;"> </i>
-              <img ng-if="historyItem.pngPath" src="{{historyItem.pngPath}}" style="border-radius: 0">
-              <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal; line-height: normal;"> {{historyItem.valueUnitVariableName}} </h2>
-              <p id="historyItemBody" >
-                  <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
-                  {{historyItem.startTimeEpoch | dayOfWeekAndDate}}<br>
-                <span ng-bind-html="historyItem.note"></span>
-              </p>
-          </div>
-      </ion-list>
+        <ion-list id="historyList">
+            <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true"
+                ng-hide="historyItem.hide"
+                data-measurementid="{{historyItem.id}}"
+                class="item item-avatar"
+                id="historyItem"
+                on-hold="showActionSheetForMeasurement(historyItem, $index)"
+                ng-click="editMeasurement(historyItem)">
+                <i id="historyItemIcon" class="icon positive {{historyItem.icon}} icon-positive" ng-if="!historyItem.pngPath" style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;"> </i>
+                <img ng-if="historyItem.pngPath" src="{{historyItem.pngPath}}" style="border-radius: 0">
+                <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal; line-height: normal;"> {{historyItem.valueUnitVariableName}} </h2>
+                <p id="historyItemBody" >
+                    <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
+                    {{historyItem.startTimeEpoch | dayOfWeekAndDate}}<br>
+                    <span ng-if="historyItem.noteHtml" ng-bind-html="historyItem.noteHtml"></span>
+                    <span ng-if="!historyItem.noteHtml">{{historyItem.note}}</span>
+                </p>
+            </div>
+        </ion-list>
       <div class="button-bar" ng-show="state.showLoadMoreButton">
         <a class="button button-clear button-positive" ng-click="getNext()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
       </div>

@@ -1024,7 +1024,9 @@ angular.module('starter',
             url: "/history-all",
             cache: true,
             params: {
-                variableCategoryName : null
+                variableCategoryName: null,
+                connectorName: null,
+                sourceName: null
             },
             views: {
                 'menuContent': {
