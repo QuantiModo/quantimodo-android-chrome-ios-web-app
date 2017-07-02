@@ -607,7 +607,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
             fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
         }
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
-        console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
+        if(debugMode){console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));}
         console.log("You can change your app settings at "  + appHostName +  "/api/v2/apps/" + appSettings.clientId + '/edit');
         //fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         if(response.allConfigs){
