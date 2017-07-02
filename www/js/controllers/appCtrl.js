@@ -10,7 +10,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
-        console.debug('appCtrl enter in state ' + $state.current.name);
+        console.debug('appCtrl enter in state ' + $state.current.name + " and url is " + window.location.href);
         //$scope.showHelpInfoPopupIfNecessary(e);
         if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
             $scope.showCalendarButton = true;
