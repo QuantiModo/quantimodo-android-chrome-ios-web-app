@@ -666,6 +666,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             errorHandler);
     };
     quantimodoService.getAccessTokenFromCurrentUrl = function(){
+        console.debug("getAccessTokenFromCurrentUrl " + window.location.href);
         return (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
     };
     quantimodoService.getAccessTokenFromUrl = function(){
@@ -1705,7 +1706,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getApiUrl = function () {
         //if(config.appSettings.clientId !== "ionic"){return "https://" + config.appSettings.clientId + ".quantimo.do";}
-        if(config.appSettings.apiUrl){return config.appSettings.apiUrl;}
+        if(config.appSettings.apiUrl){
+            if(config.appSettings.apiUrl.indexOf('https://') === -1){config.appSettings.apiUrl = "https://" + config.appSettings.apiUrl;}
+            return config.appSettings.apiUrl;
+        }
         return appsManager.getQuantiModoApiUrl();
     };
     quantimodoService.getQuantiModoUrl = function (path) {
@@ -5425,8 +5429,8 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.chromeExtensionLogin = function(register) {
         var loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/login");
         if (register === true) {loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");}
-        loginUrl += "?afterLoginGoTo=" + window.location.href;
-        console.debug("Using Chrome extension, so we use sessions instead of OAuth flow. ");
+        loginUrl += "?afterLoginGoTo=" + encodeURIComponent(window.location.href);
+        console.debug("chromeExtensionLogin window.location.replace with " + loginUrl);
         //chrome.tabs.create({ url: loginUrl });
         window.location.replace(loginUrl);
         window.close();
@@ -6779,7 +6783,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             menuItem.href += convertObjectToQueryString(params);
             menuItem.href = menuItem.href.replace('app/app', 'app');
         }
-        console.debug("convertUrlAndParamsToHref ", menuItem);
+        if(window.debugMode){ console.debug("convertUrlAndParamsToHref ", menuItem); }
         return menuItem;
     }
     function convertStateNameAndParamsToHref(menuItem) {
