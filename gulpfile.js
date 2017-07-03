@@ -319,7 +319,7 @@ function resizeIcon(callback, resolution) {
     });
 }
 function fastlaneSupply(track, callback) {
-    var pathToApks = 'dropbox/' + process.env.QUANTIMODO_CLIENT_ID;
+    var pathToApks = 'build/' + process.env.QUANTIMODO_CLIENT_ID;
     executeCommand('supply' +
         ' --apk_paths ' + pathToApks + '/android-armv7-release.apk,' + pathToApks + '/android-x86-release.apk' +
         ' --track ' + track +
@@ -1486,12 +1486,9 @@ gulp.task('copyAndroidResources', [], function () {
 });
 gulp.task('copyAndroidBuild', [], function () {
     if (!process.env.QUANTIMODO_CLIENT_ID) {throw 'process.env.QUANTIMODO_CLIENT_ID not set!';}
-    var dropboxPath = 'dropbox/' + process.env.QUANTIMODO_CLIENT_ID;
     var buildFolderPath = 'build/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
-    console.log('Copying from ' + pathToOutputApks + ' to ' + dropboxPath + ' and ' + buildFolderPath);
-    var copyApksToDropbox = gulp.src([pathToOutputApks + '/*.apk']).pipe(gulp.dest(dropboxPath));
-    var copyApksToBuildFolder = gulp.src([pathToOutputApks + '/*.apk']).pipe(gulp.dest(buildFolderPath));
-    return es.concat(copyApksToDropbox, copyApksToBuildFolder);
+    console.log('Copying from ' + pathToOutputApks + ' to ' + buildFolderPath);
+    return gulp.src([pathToOutputApks + '/*.apk']).pipe(gulp.dest(buildFolderPath));
 });
 gulp.task('copyIonicCloudLibrary', [], function () {
     return gulp.src(['node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js']).pipe(gulp.dest('www/lib'));
