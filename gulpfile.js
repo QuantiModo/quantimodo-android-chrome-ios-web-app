@@ -513,9 +513,12 @@ gulp.task('createChromeExtensionManifest', function () {
     chromeExtensionManifest.name = appSettings.appDisplayName;
     chromeExtensionManifest.description = appSettings.appDescription;
     chromeExtensionManifest.version = process.env.IONIC_APP_VERSION_NUMBER;
-    chromeExtensionManifest.permissions.push("https://" + appSettings.clientId + '.quantimo.do/*');
+    chromeExtensionManifest.permissions.push("https://*.quantimo.do/*");
     chromeExtensionManifest.appSettings = appSettings;
-    fs.writeFileSync(chromeExtensionBuildPath + '/manifest.json', JSON.stringify(chromeExtensionManifest));
+    chromeExtensionManifest = JSON.stringify(chromeExtensionManifest, null, 2);
+    var chromeManifestPath = chromeExtensionBuildPath + '/manifest.json';
+    console.log("Creating chrome manifest at " + chromeManifestPath);
+    fs.writeFileSync(chromeManifestPath, chromeExtensionManifest);
 });
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateCredentials', ['setClientId'], function () {
@@ -591,7 +594,7 @@ gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], fun
 gulp.task('post-notify-collaborators-android', ['getAppConfigs'], function () {
     return postNotifyCollaborators('android');
 });
-gulp.task('post-app-status', ['validateCredentials'], function () {
+gulp.task('post-app-status', [], function () {
     return postAppStatus();
 });
 gulp.task('verifyExistenceOfDefaultConfig', function () {
