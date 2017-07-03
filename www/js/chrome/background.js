@@ -143,7 +143,7 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
     var url = apiUrl + ":443/api/v1/trackingReminderNotifications/past?" + requestIdentificationParameters;
     if (localStorage.accessToken) {
-        url = url + '?access_token=' + localStorage.accessToken;
+        url = url + '&access_token=' + localStorage.accessToken;
     } else {
         showSignInNotification();
         return;
