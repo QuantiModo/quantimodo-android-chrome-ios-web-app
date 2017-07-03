@@ -53,6 +53,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if($stateParams.variableObject){params.variableName = $stateParams.variableObject.name;}
 		if($stateParams.variableName){params.variableName = $stateParams.variableName;}
+        if($stateParams.connectorName){params.connectorName = $stateParams.connectorName;}
 		if(params.variableName){
 			if(!$rootScope.variableObject){
 				quantimodoService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {

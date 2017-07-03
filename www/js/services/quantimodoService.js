@@ -6217,6 +6217,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         settings: { text: '<i class="icon ' + quantimodoService.ionIcons.settings + '"></i>Settings'},
         help: { text: '<i class="icon ' + quantimodoService.ionIcons.help + '"></i>Help'}
     };
+    quantimodoService.getHistoryActionSheetButton = function(variableName){
+        if(!variableName){variableName = '';}
+        return { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + variableName + ' History'};
+    };
     quantimodoService.addImagePaths = function(object){
         if(object.variableCategoryName){
             var pathPrefix = 'img/variable_categories/' + object.variableCategoryName.toLowerCase().replace(' ', '-');
