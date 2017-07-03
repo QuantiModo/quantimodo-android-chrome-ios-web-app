@@ -376,7 +376,7 @@ function postAppStatus() {
 function postNotifyCollaborators(appType) {
     var options = getPostRequestOptions();
     options.uri = appHostName + '/api/v2/email';
-    options.body.emailType = appType + '-build-notification';
+    options.body.emailType = appType + '-build-ready';
     if(buildDebug){console.log("postNotifyCollaborators with: " + JSON.stringify(options));}
     return rp(options).then(function (response) {
         console.log("postNotifyCollaborators: " + JSON.stringify(response));
@@ -532,6 +532,9 @@ gulp.task('validateCredentials', ['setClientId'], function () {
         headers: {'User-Agent': 'Request-Promise'},
         json: true // Automatically parses the JSON string in the response
     };
+    if(process.env.QUANTIMODO_ACCESS_TOKEN){
+        options.headers.Authorization = "Bearer " + process.env.QUANTIMODO_ACCESS_TOKEN;
+    }
     fs.writeFileSync(devCredentialsPath, JSON.stringify(devCredentials));
     console.log('gulp validateCredentials from ' + JSON.stringify(options));
     return rp(options).then(function (response) {
