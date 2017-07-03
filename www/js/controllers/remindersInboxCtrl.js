@@ -150,14 +150,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	$scope.trackByValueField = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){return;}
         if(!quantimodoService.valueIsValid(trackingReminderNotification, trackingReminderNotification.modifiedValue)){return false;}
-		//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
-		trackingReminderNotification.hide = true;
-		$rootScope.numberOfPendingNotifications--;
-		afterTrackingActions();
-		console.debug('modifiedReminderValue is ' + trackingReminderNotification.total);
 		trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
 		setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
-		if(!$rootScope.showUndoButton){ $scope.showUndoToast($scope.lastAction); }
+        notificationAction(trackingReminderNotification);
 		quantimodoService.trackTrackingReminderNotificationDeferred(trackingReminderNotification)
 			.then(function(){
 				if($rootScope.localNotificationsEnabled){quantimodoService.decrementNotificationBadges();}
@@ -193,12 +188,6 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			window.close();
 		}
 	};
-	var afterTrackingActions = function () {
-		$rootScope.numberOfPendingNotifications--;
-		$scope.state.numberOfDisplayedNotifications--;
-		closeWindowIfNecessary();
-		getFallbackInboxContent();
-	};
 	var enlargeChromePopupIfNecessary = function () {
 		if($rootScope.alreadyEnlargedWindow){return;}
 		var largeInboxWindowParams = {top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
@@ -213,7 +202,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	var notificationAction = function(trackingReminderNotification){
 		trackingReminderNotification.hide = true;
-		afterTrackingActions();
+        $rootScope.numberOfPendingNotifications--;
+        $scope.state.numberOfDisplayedNotifications--;
+        closeWindowIfNecessary();
+        getFallbackInboxContent();
 		$scope.showUndoToast($scope.lastAction);
 		trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
 		return trackingReminderNotification;
