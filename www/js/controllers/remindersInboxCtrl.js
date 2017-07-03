@@ -153,14 +153,8 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		trackingReminderNotification.modifiedValue = trackingReminderNotification.total;
 		setLastAction(trackingReminderNotification.modifiedValue, trackingReminderNotification.unitAbbreviatedName);
         notificationAction(trackingReminderNotification);
-		quantimodoService.trackTrackingReminderNotificationDeferred(trackingReminderNotification)
-			.then(function(){
-				if($rootScope.localNotificationsEnabled){quantimodoService.decrementNotificationBadges();}
-                refreshIfRunningOutOfNotifications();
-			}, function(error){
-				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-				hideInboxLoader();
-			});
+		quantimodoService.trackTrackingReminderNotificationDeferred(trackingReminderNotification);
+        refreshIfRunningOutOfNotifications();
 	};
 	function getWeekdayCharts() {
         if(!$scope.weekdayChartConfig){
@@ -216,14 +210,8 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
 		var body = notificationAction(trackingReminderNotification);
 		body.modifiedValue = modifiedReminderValue;
-		quantimodoService.trackTrackingReminderNotificationDeferred(body, trackAll)
-			.then(function(){
-				if($rootScope.localNotificationsEnabled){ quantimodoService.decrementNotificationBadges(); }
-				refreshIfRunningOutOfNotifications();
-			}, function(error){
-				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-				hideInboxLoader();
-			});
+		quantimodoService.trackTrackingReminderNotificationDeferred(body, trackAll);
+        refreshIfRunningOutOfNotifications();
 	};
 	function trackAll(trackingReminderNotification, modifiedReminderValue) {
         quantimodoService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'variableName', trackingReminderNotification.variableName);
@@ -244,27 +232,15 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		if(isGhostClick($event)){ return; }
 		$scope.lastAction = 'Skipped';
 		var params = notificationAction(trackingReminderNotification);
-		quantimodoService.skipTrackingReminderNotificationDeferred(params)
-			.then(function(){
-				if($rootScope.localNotificationsEnabled){quantimodoService.decrementNotificationBadges();}
-                refreshIfRunningOutOfNotifications();
-			}, function(error){
-				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-				hideInboxLoader();
-			});
+		quantimodoService.skipTrackingReminderNotificationDeferred(params);
+        refreshIfRunningOutOfNotifications();
 	};
 	$scope.snooze = function(trackingReminderNotification, $event){
 		if(isGhostClick($event)){return;}
 		$scope.lastAction = 'Snoozed';
 		var params = notificationAction(trackingReminderNotification);
-		quantimodoService.snoozeTrackingReminderNotificationDeferred(params)
-			.then(function(){
-				if($rootScope.localNotificationsEnabled){quantimodoService.decrementNotificationBadges();}
-                refreshIfRunningOutOfNotifications();
-			}, function(error){
-				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-				hideInboxLoader();
-			});
+		quantimodoService.snoozeTrackingReminderNotificationDeferred(params);
+        refreshIfRunningOutOfNotifications();
 	};
 	function wordClicked(word){
 		alert(word.text + " appears " + word.count + " times and the average " + quantimodoService.getPrimaryOutcomeVariable().name +
