@@ -380,6 +380,7 @@ function postNotifyCollaborators(appType) {
     if(buildDebug){console.log("postNotifyCollaborators with: " + JSON.stringify(options));}
     return rp(options).then(function (response) {
         console.log("postNotifyCollaborators: " + JSON.stringify(response));
+        if(!isTruthy(response.success)){throw response.error;}
     }).catch(function (err) {
         throw err;
     });
