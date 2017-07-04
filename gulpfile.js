@@ -1521,6 +1521,14 @@ gulp.task('copyIconsToWwwImg', [], function () {
     return gulp.src(['apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png'])
         .pipe(gulp.dest('www/img/icons'));
 });
+gulp.task('copyAndroidLicenses', [], function () {
+    if(!process.env.ANDROID_HOME){
+        console.error("Please pass ANDROID_HOME environmental variable to gulp task");
+        return;
+    }
+    return gulp.src(['android-licenses/*'])
+        .pipe(gulp.dest(process.env.ANDROID_HOME + '/licenses'));
+});
 gulp.task('copyAndroidResources', [], function () {
     return gulp.src(['resources/android/**/*'])
         .pipe(gulp.dest('platforms/android'));
@@ -2047,6 +2055,7 @@ gulp.task('prepareAndroidApp', function (callback) {
 });
 gulp.task('buildAndroidApp', function (callback) {
     runSequence(
+        'copyAndroidLicenses',
         'prepareAndroidApp',
         'cordovaBuildAndroidRelease',
         //'cordovaBuildAndroidDebug',
