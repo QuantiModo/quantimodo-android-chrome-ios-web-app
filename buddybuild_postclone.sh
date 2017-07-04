@@ -25,7 +25,7 @@ if [ -z ${BUDDYBUILD_SCHEME} ];
         echo password | sudo -S apt-get install imagemagick
 
         echo "Running npm install -g gulp bower ionic cordova"
-        npm install -g gulp bower ionic@2.2.3 cordova@7.0.0
+        npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
 
     else
         echo "BUILDING IOS APP because BUDDYBUILD_SCHEME env is ${BUDDYBUILD_SCHEME}"

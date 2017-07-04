@@ -24,11 +24,8 @@ echo "PATH=\$PATH:~/android-sdk-linux/tools:~/android-sdk-linux/platform-tools" 
 
 sudo npm install -g  node-gyp
 sudo npm install -g  node-sass
-sudo npm install -g  gulp
-sudo npm install -g  cordova
-sudo npm install -g  bower
 sudo npm install -g  typings
-sudo npm install -g  ionic@2.0.0-beta.37
+npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
 
 
 sudo chown -R vagrant /usr/lib/node_modules
