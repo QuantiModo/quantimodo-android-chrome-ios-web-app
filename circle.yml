@@ -61,10 +61,12 @@ deployment:
     commands:
       - git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
   build:
-    branch: /build\/.*/
+    branch: /apps\/.*/
     commands:
       - ./scripts/circleci_install_dependencies.sh
-      - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - gulp prepareRepositoryForAndroid
+      - gulp buildAndroidApp
+      - gulp buildChromeExtension
   feature:
     branch: /feature\/.*/
     commands:
@@ -84,9 +86,6 @@ deployment:
   staging:
     branch: develop
     commands:
-      - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
-      - npm install
-      - ionic info
       - ./scripts/circleci_install_dependencies.sh
       - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - chmod +x do-exclusively

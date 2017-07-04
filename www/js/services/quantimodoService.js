@@ -666,6 +666,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             errorHandler);
     };
     quantimodoService.getAccessTokenFromCurrentUrl = function(){
+        console.debug("getAccessTokenFromCurrentUrl " + window.location.href);
         return (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
     };
     quantimodoService.getAccessTokenFromUrl = function(){
@@ -1705,7 +1706,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getApiUrl = function () {
         //if(config.appSettings.clientId !== "ionic"){return "https://" + config.appSettings.clientId + ".quantimo.do";}
-        if(config.appSettings.apiUrl){return config.appSettings.apiUrl;}
+        if(config.appSettings.apiUrl){
+            if(config.appSettings.apiUrl.indexOf('https://') === -1){config.appSettings.apiUrl = "https://" + config.appSettings.apiUrl;}
+            return config.appSettings.apiUrl;
+        }
         return appsManager.getQuantiModoApiUrl();
     };
     quantimodoService.getQuantiModoUrl = function (path) {
@@ -2794,10 +2798,27 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             {numericValue: 5, img: quantimodoService.ratingImages.numeric[4]}
         ];
     };
+    function parseJsonIfPossible(str) {
+        var object = false;
+        try {
+            object = JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return object;
+    }
     quantimodoService.addInfoAndImagesToMeasurements = function (measurements){
         var ratingInfo = quantimodoService.getRatingInfo();
         var index;
         for (index = 0; index < measurements.length; ++index) {
+            var parsedNote =  parseJsonIfPossible(measurements[index].note);
+            if(parsedNote){
+                if(parsedNote.url && parsedNote.message){
+                    measurements[index].note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
+                } else {
+                    Bugsnag.notify("Unrecognized note format", "Could not properly format JSON note", {note: measurements[index].note});
+                }
+            }
             if(!measurements[index].variableName){measurements[index].variableName = measurements[index].variable;}
             if(measurements[index].variableName === quantimodoService.getPrimaryOutcomeVariable().name){
                 measurements[index].valence = quantimodoService.getPrimaryOutcomeVariable().valence;
@@ -5408,8 +5429,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.chromeExtensionLogin = function(register) {
         var loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/login");
         if (register === true) {loginUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/register");}
-        console.debug("Using Chrome extension, so we use sessions instead of OAuth flow. ");
-        chrome.tabs.create({ url: loginUrl });
+        loginUrl += "?afterLoginGoTo=" + encodeURIComponent(window.location.href);
+        console.debug("chromeExtensionLogin window.location.replace with " + loginUrl);
+        //chrome.tabs.create({ url: loginUrl });
+        window.location.replace(loginUrl);
         window.close();
     };
     quantimodoService.forecastioWeather = function(coordinates) {
@@ -6194,6 +6217,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         settings: { text: '<i class="icon ' + quantimodoService.ionIcons.settings + '"></i>Settings'},
         help: { text: '<i class="icon ' + quantimodoService.ionIcons.help + '"></i>Help'}
     };
+    quantimodoService.getHistoryActionSheetButton = function(variableName){
+        if(!variableName){variableName = '';}
+        return { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + variableName + ' History'};
+    };
     quantimodoService.addImagePaths = function(object){
         if(object.variableCategoryName){
             var pathPrefix = 'img/variable_categories/' + object.variableCategoryName.toLowerCase().replace(' ', '-');
@@ -6636,6 +6663,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.debug("appSettings.clientId is " + window.config.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
+        //window.config.appSettings.appDesign.floatingActionButton = quantimodoService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
         if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
@@ -6749,21 +6777,43 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return '?' + str.join("&");
     }
     function convertUrlAndParamsToHref(menuItem) {
+        var params = (menuItem.params) ? menuItem.params : menuItem.stateParameters;
         if(!menuItem.subMenu){
-            menuItem.href = '#/app' + menuItem.url + convertObjectToQueryString(menuItem.params);
+            menuItem.href = '#/app' + menuItem.url;
+            if(params && params.variableCategoryName){
+                menuItem.href += "-category/" + params.variableCategoryName;
+                delete(params.variableCategoryName);
+            }
+            menuItem.href += convertObjectToQueryString(params);
             menuItem.href = menuItem.href.replace('app/app', 'app');
         }
+        if(window.debugMode){ console.debug("convertUrlAndParamsToHref ", menuItem); }
         return menuItem;
+    }
+    function convertStateNameAndParamsToHref(menuItem) {
+        menuItem.url = getUrlFromStateName(menuItem.stateName);
+        return convertUrlAndParamsToHref(menuItem);
     }
     function convertStringToId(string) {
         return string.replace('#/app/', '').replace('/', '_').replace('?', '_').replace('&', '_').replace('=', '_').toLowerCase();
     }
     var allStates = $state.get();
+    function stripQueryString(pathWithQuery) {
+        return pathWithQuery.split("?")[0];
+    }
+    function convertUrlToLowerCaseStateName(menuItem){
+        return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
+    }
     function addStateName(menuItem){
         if(menuItem.stateName){return menuItem;}
         if(!menuItem.url){return menuItem;}
         for(var i = 0; i < allStates.length; i++){
             if('/app' + allStates[i].url === menuItem.url){
+                menuItem.stateName = allStates[i].name;
+                break;
+            }
+            var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
+            if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
                 menuItem.stateName = allStates[i].name;
                 break;
             }
@@ -6829,6 +6879,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         menu.active = quantimodoService.convertHrefInSingleMenuType(menu.active);
         menu.custom = quantimodoService.convertHrefInSingleMenuType(menu.custom);
         return menu;
+    };
+    quantimodoService.convertHrefInFab = function(floatingActionButton) {
+        console.debug("convertHrefInFab");
+        for(var i = 1; i < 5; i++){
+            floatingActionButton.active["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.active["button" + i]);
+            floatingActionButton.custom["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.custom["button" + i]);
+        }
+        return floatingActionButton;
     };
     return quantimodoService;
 });
