@@ -405,6 +405,12 @@ function getAppSettingsRequestOptions() {
     console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return options;
 }
+function getAppEditUrl() {
+    return getAppsListUrl() + '/' + appSettings.clientId + '/edit';
+}
+function getAppsListUrl() {
+    return appHostName + '/api/v2/apps';
+}
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
         if (!err) {console.log(filePath + ' exists');} else {throw 'Could not create ' + filePath + ': '+ err;}
@@ -560,6 +566,10 @@ gulp.task('downloadSplashScreen', [], function(){
         .pipe(gulp.dest("./resources"));
 });
 gulp.task('getAppConfigs', ['validateCredentials'], function () {
+    if(appSettings){
+        console.log("Already have appSettings for " + appSettings.clientId);
+        return;
+    }
     var options = getAppSettingsRequestOptions();
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
@@ -568,7 +578,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
         if(!response.privateConfig && devCredentials.username && devCredentials.password){
-            console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '  + appHostName +  '/api/v2/apps ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at "  + appHostName +  "/api/v2/apps and run gulp devSetup again.");
+            console.error("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '  + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
         }
         if(response.privateConfig){
             privateConfig = response.privateConfig;
@@ -576,7 +586,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         }
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
         if(buildDebug){console.log("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));}
-        console.log("You can change your app settings at " + appHostName +  "/api/v2/apps/" + appSettings.clientId + '/edit');
+        console.log("You can change your app settings at " + getAppEditUrl());
         fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         if(response.allConfigs){
             for (var i = 0; i < response.allConfigs.length; i++) {
@@ -587,6 +597,29 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
         throw err;
     });
 });
+function getFileNameFromUrl(url) {
+    return url.split('/').pop();
+}
+function downloadEncryptedFile(url, outputFileName) {
+    var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
+    var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url)
+    console.log("Downloading " + downloadUrl + ' to ' + decryptedFilename);
+    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN)
+        .pipe(fs.createWriteStream(outputFileName));
+}
+gulp.task('getAndroidKeystore', ['getAppConfigs'], function () {
+    if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
+        throw "Please upload your Android release keystore at " + getAppEditUrl();
+    }
+    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "release.keystore");
+});
+gulp.task('getAndroidManifest', ['getAppConfigs'], function () {
+    if(!appSettings.additionalSettings.buildSettings.androidMaifestJsonFile){
+        console.error("Please add your Android manifest.json at " + getAppEditUrl() + " to enable Google Play Store subscriptions");
+    }
+    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidMaifestJsonFile, "www/manifest.json");
+});
+
 gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
     runSequence(
         'verifyExistenceOfAndroidX86ReleaseBuild',
@@ -698,7 +731,7 @@ gulp.task('devSetup', [], function (callback) {
 gulp.task('getClientIdFromUserInput', function () {
     var deferred = q.defer();
     inquirer.prompt([{
-        type: 'input', name: 'clientId', message: 'Please enter the client id obtained at '  + appHostName +  '/api/v2/apps'
+        type: 'input', name: 'clientId', message: 'Please enter the client id obtained at '  + getAppsListUrl()
     }], function (answers) {
         process.env.QUANTIMODO_CLIENT_ID = answers.clientId.trim();
         deferred.resolve();
