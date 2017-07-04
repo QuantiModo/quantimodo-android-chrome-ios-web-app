@@ -607,11 +607,17 @@ function downloadEncryptedFile(url, outputFileName) {
     return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN)
         .pipe(fs.createWriteStream(outputFileName));
 }
-gulp.task('getAndroidKeystore', ['getAppConfigs'], function () {
+gulp.task('getAndroidReleaseKeystore', ['getAppConfigs'], function () {
     if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
         throw "Please upload your Android release keystore at " + getAppEditUrl();
     }
     return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "release.keystore");
+});
+gulp.task('getAndroidDebugKeystore', ['getAppConfigs'], function () {
+    if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
+        throw "Please upload your Android release keystore at " + getAppEditUrl();
+    }
+    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "debug.keystore");
 });
 gulp.task('getAndroidManifest', ['getAppConfigs'], function () {
     if(!appSettings.additionalSettings.buildSettings.androidMaifestJsonFile){
