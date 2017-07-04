@@ -207,7 +207,6 @@ function executeCommand(command, callback) {
     });
 }
 function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
-    console.log('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
     if (!process.env.ENCRYPTION_SECRET) {
         console.error('ERROR: Please set ENCRYPTION_SECRET environmental variable!');
         if (callback) {callback();}
@@ -221,8 +220,9 @@ function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
             if (!err) {
                 console.log(decryptedFilePath + ' exists');
             } else {
-                console.log('Could not decrypt' + fileToDecryptPath);
-                console.log(err);
+                console.error('Could not decrypt' + fileToDecryptPath);
+                console.error('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
+                console.error(err);
             }
         });
         if (callback) {callback();}
@@ -230,7 +230,6 @@ function decryptFile(fileToDecryptPath, decryptedFilePath, callback) {
     });
 }
 function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
-    console.log('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
     if (!process.env.ENCRYPTION_SECRET) {
         console.error('ERROR: Please set ENCRYPTION_SECRET environmental variable!');
         return;
@@ -240,11 +239,10 @@ function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
     execute(cmd, function (error) {
         if (error !== null) {
             console.error('ERROR: ENCRYPTING: ' + error);
+            console.error('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
         } else {
             console.log('Encrypted ' + encryptedFilePath);
-            if (callback) {
-                callback();
-            }
+            if (callback) {callback();}
         }
     });
 }
