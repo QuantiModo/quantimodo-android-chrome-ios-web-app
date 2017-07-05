@@ -1,74 +1,37 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Upgrade">
-    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } ">
-        <br>
+    <ion-content style="background-color: {{upgradePages[0].backgroundColor}};" ng-class="{ isBrowserView : isWeb == true } "><br>
         <md-card ng-if="isWeb && appSettings.appDesign.upgradePleadingCard" md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
             <md-card-title>
-                <md-card-title-media>
-                    <div class="md-media-md card-media"><img ng-src="{{appSettings.appDesign.upgradePleadingCard.web.image}}" class="md-card-image" alt="Ivy"></div>
-                </md-card-title-media>
-                <md-card-title-text>
-                    <span style="text-align: center; padding-left: 15px" class="md-headline">{{appSettings.appDesign.upgradePleadingCard.web.text}}</span>
-                </md-card-title-text>
+                <md-card-title-media> <div class="md-media-md card-media"><img ng-src="{{appSettings.appDesign.upgradePleadingCard.web.image}}" class="md-card-image" alt="Upgrade Image"></div> </md-card-title-media>
+                <md-card-title-text> <span style="text-align: center; padding-left: 15px" class="md-headline">{{appSettings.appDesign.upgradePleadingCard.web.text}}</span> </md-card-title-text>
             </md-card-title>
         </md-card>
-        <md-card ng-if="!isWeb">
+        <md-card ng-if="!isWeb && appSettings.appDesign.upgradePleadingCard">
             <img ng-src="{{appSettings.appDesign.upgradePleadingCard.mobile.image}}" class="md-card-image" alt="Ivy">
             <md-card-title>
-                <md-card-title-text>
-                    <span style="text-align: center;" class="md-headline" ng-bind-html="appSettings.appDesign.upgradePleadingCard.mobile.textHtml"></span>
-                </md-card-title-text>
+                <md-card-title-text> <span style="text-align: center;" class="md-headline" ng-bind-html="appSettings.appDesign.upgradePleadingCard.mobile.textHtml"></span> </md-card-title-text>
             </md-card-title>
         </md-card>
         <div class="card" style="text-align: center;" >
             <div class="list">
-                <div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}">
-                    <br>
-                    <p style="font-size: 25px; color: black; margin-bottom: 10px;">
-                        {{appSettings.appDisplayName}} Plus
-                    </p>
-                    <p style="font-size: 18px; color: black; margin-top: 10px;">
-                        {{planFeaturesCard.subtitle}}
-                    </p>
-                    <br>
+                <div class="item item-divider" style="background-color: {{planFeaturesCard.headerColor}}"><br>
+                    <p style="font-size: 25px; color: black; margin-bottom: 10px;"> {{appSettings.appDisplayName}} Plus </p>
+                    <p style="font-size: 18px; color: black; margin-top: 10px;"> {{planFeaturesCard.subtitle}} </p><br>
                 </div>
                 <a ng-repeat="feature in planFeaturesCard.featuresAvatarList" class="item item-avatar" ng-click="showMaterialAlert(feature.title, feature.moreInfo, $event)">
                     <img ng-if="feature.image" ng-src="{{feature.image}}">
-                    <h2 style="line-height: normal">{{feature.title}} &nbsp;
-                        <i style="color: darkgrey; text-align: right"
-                           ng-if="feature.moreInfo"
-                           class="icon ion-help-circled">
-                        </i>
-                    </h2>
+                    <h2 style="line-height: normal">{{feature.title}} &nbsp; <i style="color: darkgrey; text-align: right" ng-if="feature.moreInfo" class="icon ion-help-circled"> </i> </h2>
                     <p>{{feature.subtitle}}</p>
                 </a>
-                <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item">
-                    <p >{{feature.title}}</p>
-                </a>
+                <a ng-repeat="feature in planFeaturesCard.featuresBasicList" class="item"> <p >{{feature.title}}</p> </a>
             </div>
-            <div ng-bind-html="planFeaturesCard.priceHtml"></div>
-            <br>
-            <br>
-            <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)">
-                {{planFeaturesCard.buttonText}}
-            </button>
-            <br>
-            <br>
-            <br>
-            <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u>
-            <br>
-            <br>
-            <div ng-if="isAndroid">
-                <u style="color: blue; cursor: pointer; font-size: 16px;"
-                   ng-click="sendEmailAfterVerification('couponInstructions')">
-                    I have a coupon</u>
-            </div>
-            <br>
-            <br>
+            <div ng-bind-html="planFeaturesCard.priceHtml"></div><br><br>
+            <button class="{{planFeaturesCard.buttonClass}}" ng-click="upgrade($event)"> {{planFeaturesCard.buttonText}} </button><br><br><br>
+            <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="useLitePlan()">Use Lite Plan instead</u><br><br>
+            <div ng-if="isAndroid"> <u style="color: blue; cursor: pointer; font-size: 16px;" ng-click="sendEmailAfterVerification('couponInstructions')"> I have a coupon</u> </div><br><br>
         </div>
         <div class="card" style="text-align: center" ng-if="isIOS">
-            <div class="item item-divider">
-                {{appSettings.appDisplayName}} Premium Monthly
-            </div>
+            <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Monthly </div>
             <div class="item item-text-wrap">
                 By signing up, you get all of the features above for $6.99 USD per month.
                 Payment will be charged to iTunes Account after the 1 week trial period following the confirmation of purchase.
@@ -78,9 +41,7 @@
             </div>
         </div>
         <div class="card" style="text-align: center" ng-if="isIOS">
-            <div class="item item-divider">
-                {{appSettings.appDisplayName}} Premium Yearly
-            </div>
+            <div class="item item-divider"> {{appSettings.appDisplayName}} Premium Yearly </div>
             <div class="item item-text-wrap">
                 By signing up, you get all of the features above for $59.99 USD per year.
                 Payment will be charged to iTunes Account after the 1 month trial period following the confirmation of purchase.
@@ -90,29 +51,17 @@
             </div>
         </div>
         <div ng-repeat="signUpQuestion in signUpQuestions" class="card" style="text-align: center">
-            <div class="item item-divider">
-                {{signUpQuestion.question}}
-            </div>
-            <div class="item item-text-wrap">
-                {{signUpQuestion.answer}}
-            </div>
+            <div class="item item-divider"> {{signUpQuestion.question}} </div>
+            <div class="item item-text-wrap"> {{signUpQuestion.answer}} </div>
         </div>
         <div class="card" style="text-align: center">
-            <div class="item item-divider">
-                Your Privacy
-            </div>
+            <div class="item item-divider"> Your Privacy </div>
             <div class="item item-text-wrap">
                 Your privacy is very important to us. You can delete your data at any time, all of it, or just some
-                of it.  See our <span style="color: blue; cursor: pointer; font-size: 16px;"
-                                      ng-click="openUrl('https://quantimo.do/privacy-policy/')">
-                privacy policy</span>
-                and <span style="color: blue; cursor: pointer; font-size: 16px;"
-                          ng-click="openUrl('https://quantimo.do/organization/end-user-terms-of-service')">
-                terms of use</span>
+                of it.  See our <span style="color: blue; cursor: pointer; font-size: 16px;" ng-click="openUrl('https://quantimo.do/privacy-policy/')">privacy policy</span>
+                and <span style="color: blue; cursor: pointer; font-size: 16px;" ng-click="openUrl('https://quantimo.do/organization/end-user-terms-of-service')">terms of use</span>
                 for more information.
             </div>
-        </div>
-        <br>
-        <br>
+        </div><br><br>
     </ion-content>
 </ion-view>
