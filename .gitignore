@@ -84,3 +84,5 @@ changeList.json
 *.suo
 *.jsproj.user
 www/configs/
+Ionic\.jsproj
+Ionic\.sln
