@@ -1,4 +1,4 @@
-angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService) {
+angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService, $ionicActionSheet) {
 	$scope.controller_name = "ImportCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) {
@@ -82,4 +82,21 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				$scope.refreshConnectors();
 			});
 	};
+
+    $scope.showActionSheetForConnector = function(connector) {
+        var buttons = [
+            quantimodoService.getHistoryActionSheetButton(connector.displayName)
+        ];
+        var hideSheetForNotification = $ionicActionSheet.show({
+            buttons: buttons,
+            //destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
+            cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+            cancel: function() {console.debug('CANCELLED');},
+            buttonClicked: function(index) {
+                if(index === 0){$state.go('app.historyAll', {connectorName: connector.name});}
+                return true;
+            },
+            destructiveButtonClicked: function() {}
+        });
+    };
 });

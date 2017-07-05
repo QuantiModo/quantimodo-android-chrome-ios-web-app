@@ -10,6 +10,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, quant
             hideStudyButton: true,
             loading: true
         };
+        quantimodoService.hideLoader(); // Hide before robot is called in afterEnter
     });
     $scope.$on("$ionicView.enter", function() {
         console.debug("enter state " + $state.current.name);

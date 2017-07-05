@@ -10,7 +10,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
-        console.debug('appCtrl enter in state ' + $state.current.name);
+        console.debug('appCtrl enter in state ' + $state.current.name + " and url is " + window.location.href);
         //$scope.showHelpInfoPopupIfNecessary(e);
         if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
             $scope.showCalendarButton = true;
@@ -749,6 +749,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         //connector.loadingText = 'Connecting...'; // TODO: Show Connecting... text again once we figure out how to update after connection is completed
         connector.loadingText = null;
         connector.connecting = true;
+        connector.updateStatus = "CONNECTING"; // Need to make error message hidden
         var connectWithToken = function(response) {
             console.debug("Response Object -> " + JSON.stringify(response));
             var body = {
