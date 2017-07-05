@@ -1,5 +1,6 @@
 angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService) {
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+        $rootScope.showFilterBarSearchIcon = false;
         if(quantimodoService.sendToLoginIfNecessaryAndComeBack()){ return; }
         if($rootScope.isChromeExtension){chrome.tabs.create({url: quantimodoService.getApiUrl() + '/upgrade'}); window.close(); return;}
         $scope.planFeaturesCard = quantimodoService.getPlanFeatureCards()[1];
