@@ -274,7 +274,9 @@ angular.module('starter',
         appSettingsResponse: function($http){
             var settingsUrl = 'configs/default.config.json';
             var clientId = appsManager.getQuantiModoClientId();
-            if(!appsManager.shouldWeUseLocalConfig(clientId)){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;}
+            if(!appsManager.shouldWeUseLocalConfig(clientId)){
+                settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
+            }
             return $http({method: 'GET', url: settingsUrl});
         }
     };
