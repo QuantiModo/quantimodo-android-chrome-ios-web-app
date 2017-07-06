@@ -105,11 +105,14 @@ var appsManager = { // jshint ignore:line
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        if(getUrlParameter('apiUrl')){return "https://" + getUrlParameter('apiUrl');}
-        if(localStorage.getItem('apiUrl')){return localStorage.getItem('apiUrl');}
-        if(window.location.origin.indexOf('staging.quantimo.do') !== -1){return "https://staging.quantimo.do";}
-        if(window.location.origin.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
-        return "https://app.quantimo.do";
+        var apiUrl = getUrlParameter('apiUrl');
+        if(!apiUrl){apiUrl = localStorage.getItem('apiUrl');}
+        if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
+        if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
+        if(!apiUrl){apiUrl = "https://app.quantimo.do";}
+        apiUrl = "https://" + apiUrl;
+        apiUrl = apiUrl.replace("https://https", "https");
+        return apiUrl;
     },
     shouldWeUseLocalConfig: function (clientId) {
 	    if(clientId === "default"){return true;}
