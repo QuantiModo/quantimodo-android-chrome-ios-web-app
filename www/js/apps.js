@@ -107,7 +107,7 @@ var appsManager = { // jshint ignore:line
     getQuantiModoApiUrl: function () {
         if(getUrlParameter('apiUrl')){apiUrl = "https://" + getUrlParameter('apiUrl');}
         if(localStorage.getItem('apiUrl')){apiUrl = localStorage.getItem('apiUrl');}
-        if(apiUrl){return apiURL.replace("https://https", "https")};
+        if(apiUrl){return apiUrl.replace("https://https", "https");}
         if(window.location.origin.indexOf('staging.quantimo.do') !== -1){return "https://staging.quantimo.do";}
         if(window.location.origin.indexOf('local.quantimo.do') !== -1){return "https://local.quantimo.do";}
         return "https://app.quantimo.do";
