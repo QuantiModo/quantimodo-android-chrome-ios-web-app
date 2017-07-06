@@ -274,7 +274,7 @@ angular.module('starter',
         appSettingsResponse: function($http){
             var settingsUrl = 'configs/default.config.json';
             var clientId = appsManager.getQuantiModoClientId();
-            if(!appsManager.shouldWeUseLocalConfig()){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;}
+            if(!appsManager.shouldWeUseLocalConfig(clientId)){settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;}
             return $http({method: 'GET', url: settingsUrl});
         }
     };
@@ -1024,8 +1024,21 @@ angular.module('starter',
             url: "/history-all",
             cache: true,
             params: {
-                variableCategoryName : null
+                variableCategoryName: null,
+                connectorName: null,
+                sourceName: null
             },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
+                }
+            }
+        })
+        .state('app.historyAllCategory', {
+            url: "/history-all-category/:variableCategoryName",
+            cache: true,
+            params: {},
             views: {
                 'menuContent': {
                     templateUrl: "templates/history-all.html",
@@ -1188,6 +1201,17 @@ angular.module('starter',
                 variableCategoryName : null
             }
         })
+        .state('app.remindersManageCategory', {
+            cache: false,
+            url: "/reminders-manage-category/:variableCategoryName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-manage.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            },
+            params: {}
+        })
         .state('app.remindersList', {
             cache: false,
             url: "/reminders-list",
@@ -1201,12 +1225,34 @@ angular.module('starter',
                 variableCategoryName : null
             }
         })
+        .state('app.remindersListCategory', {
+            cache: false,
+            url: "/reminders-list-category/:variableCategoryName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-list.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            },
+            params: {}
+        })
         .state('app.variableList', {
             cache: true,
             url: "/variable-list",
             params: {
                 variableCategoryName : null
             },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-list.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            }
+        })
+        .state('app.variableListCategory', {
+            cache: true,
+            url: "/variable-list-category/:variableCategoryName",
+            params: {},
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-list.html",

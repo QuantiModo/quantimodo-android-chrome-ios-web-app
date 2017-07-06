@@ -75,7 +75,8 @@ echo "Generating image resources for $QUANTIMODO_CLIENT_ID..."
 
 ionic config build
 
-npm install -g cordova@7.0.0 ionic@1.7.16 ios-sim ios-deploy
+npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
+npm install -g ios-sim ios-deploy
 ionic platform rm ios
 ionic platform add ios@4.1.0
 

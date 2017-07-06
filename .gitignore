@@ -56,7 +56,8 @@ www/css/app.css
 www/css/app.min.css
 www/data/commonVariables.json
 www/img/CS6.zip
-www/img/icons/
+www/img/icons/*
+!www/img/icons/.gitkeep
 www/js/configuration-app.js
 www/lib/
 www/manifest.json
@@ -82,3 +83,6 @@ plugins/remote_ios.json
 changeList.json
 *.suo
 *.jsproj.user
+www/configs/
+Ionic\.jsproj
+Ionic\.sln

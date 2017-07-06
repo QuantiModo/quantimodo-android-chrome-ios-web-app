@@ -2,65 +2,18 @@
 ****	EVENT HANDLERS
 ***/
 var manifest = chrome.runtime.getManifest();
-var apiUrl = manifest.appSettings.additionalSettings.downloadLinks.webApp;
+var apiUrl = "https://app.quantimo.do";
 console.log("API URL is " + apiUrl);
-var requestIdentificationParameters = "appName=" + manifest.name + "&appVersion=" + manifest.version + "&client_id=chromeExtension and apiUrl is " + apiUrl;
+var requestIdentificationParameters = "appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version) + "&client_id=" + manifest.appSettings.clientId;
 var v = null;
 var vid = null;
-var introWindowParams = {
-    url: "/www/index.html#/app/intro",
-    type: 'panel',
-    top: 0.2 * screen.height,
-    left: 0.4 * screen.width,
-    width: 450,
-    height: 750
-};
-var facesRatingPopupWindowParams = {
-    url: "www/templates/chrome/faces_popup.html",
-    type: 'panel',
-    top: screen.height - 150,
-    left: screen.width - 380,
-    width: 390,
-    height: 110
-};
-var loginPopupWindowParams = {
-    url: "/www/index.html#/app/login",
-    type: 'panel',
-    top: 0.2 * screen.height,
-    left: 0.4 * screen.width,
-    width: 450,
-    height: 750
-};
-var reminderInboxPopupWindowParams = {
-    url: "/www/index.html",
-    type: 'panel',
-    top: screen.height - 800,
-    left: screen.width - 455,
-    width: 450,
-    height: 750
-};
-var compactInboxPopupWindowParams = {
-    url: "/www/index.html#/app/reminders-inbox-compact",
-    type: 'panel',
-    top: screen.height - 360 - 30,
-    left: screen.width - 350,
-    width: 350,
-    height: 360
-};
-var inboxNotificationParams = {
-    type: "basic",
-    title: "How are you?",
-    message: "Click to open reminder inbox",
-    iconUrl: "www/img/icons/icon_700.png",
-    priority: 2
-};
-var signInNotificationParams = {
-    type: "basic",
-    title: "How are you?",
-    message: "Click to sign in and record a measurement",
-    iconUrl: "www/img/icons/icon_700.png",
-    priority: 2
-};
+var introWindowParams = { url: "/www/index.html#/app/intro", type: 'panel', top: 0.2 * screen.height, left: 0.4 * screen.width, width: 450, height: 750};
+var facesRatingPopupWindowParams = { url: "www/templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
+var loginPopupWindowParams = { url: "/www/index.html#/app/login", type: 'panel', top: 0.2 * screen.height, left: 0.4 * screen.width, width: 450, height: 750};
+var reminderInboxPopupWindowParams = { url: "/www/index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
+var compactInboxPopupWindowParams = { url: "/www/index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
+var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "www/img/icons/icon_700.png", priority: 2};
+var signInNotificationParams = { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "www/img/icons/icon_700.png", priority: 2};
 if (!localStorage.introSeen) {
     window.localStorage.setItem('introSeen', true);
     var focusWindow = true;
@@ -80,7 +33,6 @@ chrome.runtime.onInstalled.addListener(function() {
 		console.debug("Alarm set, every " + notificationInterval + " minutes");
 	}
 });
-
 /*
 **	Called when an alarm goes off (we only have one)
 */
@@ -99,9 +51,7 @@ function openOrFocusPopupWindow(windowParams, focusWindow) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
                 // Commenting existing window focus so we don't irritate users
-				if(focusWindow){
-                    chrome.windows.update(vid, {focused: true});
-				}
+				if(focusWindow){ chrome.windows.update(vid, {focused: true}); }
                 return;
             }
             chrome.windows.create(
@@ -149,7 +99,6 @@ chrome.notifications.onClicked.addListener(function(notificationId) {
     var focusWindow = true;
 	openPopup(notificationId, focusWindow);
 });
-
 /*
 **	Handles extension-specific requests that come in, such as a
 ** 	request to upload a new measurement
@@ -176,7 +125,6 @@ function pushMeasurements(measurements, onDoneListener) {
     };
 	xhr.send(JSON.stringify(measurements));
 }
-
 function objectLength(obj) {
     var result = 0;
     for(var prop in obj) {
@@ -187,7 +135,6 @@ function objectLength(obj) {
     }
     return result;
 }
-
 function showSignInNotification() {
     var notificationId = 'signin';
     chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
@@ -196,7 +143,7 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
     var url = apiUrl + ":443/api/v1/trackingReminderNotifications/past?" + requestIdentificationParameters;
     if (localStorage.accessToken) {
-        url = url + '?access_token=' + localStorage.accessToken;
+        url = url + '&access_token=' + localStorage.accessToken;
     } else {
         showSignInNotification();
         return;
@@ -215,7 +162,6 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                 //chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
                 chrome.notifications.create(notificationId, inboxNotificationParams, function (id) {});
                 openPopup(notificationId);
-
             } else {
                 openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
                 chrome.browserAction.setBadgeText({text: ""});
@@ -225,7 +171,6 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     xhr.send();
     return notificationParams;
 }
-
 function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
 	console.debug('showNotificationOrPopupForAlarm alarm: ', alarm);
     var userString = localStorage.user;
@@ -254,7 +199,6 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
         checkForNotificationsAndShowPopupIfSo(inboxNotificationParams, alarm);
 	}
 }
-
 function IsJsonString(str) {
     try {
         JSON.parse(str);

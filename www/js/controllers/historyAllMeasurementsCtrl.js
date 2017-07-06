@@ -12,6 +12,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		title: "History",
 		loadingText: "Fetching measurements..."
 	};
+	function hideLoader() {
+        $scope.$broadcast('scroll.refreshComplete');
+        $scope.state.loading = false;
+        quantimodoService.hideLoader();
+    }
     $scope.$on('$ionicView.beforeEnter', function(e) {
         $rootScope.hideHistoryPageInstructionsCard = quantimodoService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
     });
@@ -48,6 +53,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		if($stateParams.variableCategoryName){params.variableCategoryName = $stateParams.variableCategoryName;}
 		if($stateParams.variableObject){params.variableName = $stateParams.variableObject.name;}
 		if($stateParams.variableName){params.variableName = $stateParams.variableName;}
+        if($stateParams.connectorName){params.connectorName = $stateParams.connectorName;}
 		if(params.variableName){
 			if(!$rootScope.variableObject){
 				quantimodoService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {
@@ -60,16 +66,12 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			if(!history ||!history.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
 			if (concat) {$scope.state.history = $scope.state.history.concat(history);} else {$scope.state.history = history;}
 			if(history.length < $scope.state.limit){$scope.state.noHistory = history.length === 0;}
-			//Stop the ion-refresher from spinning
-			$scope.$broadcast('scroll.refreshComplete');
-			$scope.state.loading = false;
+            hideLoader();
 		}, function(error){
 			$scope.state.noHistory = true;
 			Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 			console.error('error getting measurements' + JSON.stringify(error));
-			//Stop the ion-refresher from spinning
-			$scope.$broadcast('scroll.refreshComplete');
-			$scope.state.loading = false;
+            hideLoader();
 		});
 	};
 	function setupVariableCategoryActionSheet() {
