@@ -91,6 +91,7 @@ deployment:
       - chmod +x do-exclusively
       - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
       - bash buddybuild_postbuild.sh
+      - gulp mergeToMaster
       #- gulp ionicUploadStagingForAllApps
       #- aws s3 cp $CIRCLE_ARTIFACTS/* s3://quantimodo-docs/ Doesn't work for some reason
   production:

@@ -356,7 +356,7 @@ function setVersionNumberInConfigXml(configFilePath, callback) {
     });
 }
 function getPostRequestOptions() {
-    var options = getAppSettingsRequestOptions();
+    var options = getRequestOptions('/api/v1/appSettings');
     options.method = "POST";
     options.body = {clientId: process.env.QUANTIMODO_CLIENT_ID};
     return options;
@@ -383,12 +383,12 @@ function postNotifyCollaborators(appType) {
         throw err;
     });
 }
-function getAppSettingsRequestOptions() {
+function getRequestOptions(path) {
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
     if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
     if(!process.env.QUANTIMODO_CLIENT_SECRET){console.error( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
     var options = {
-        uri: appHostName + '/api/v1/appSettings',
+        uri: appHostName + path,
         qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
         headers: {'User-Agent': 'Request-Promise'},
         json: true // Automatically parses the JSON string in the response
@@ -400,7 +400,7 @@ function getAppSettingsRequestOptions() {
     } else {
         console.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + appHostName + "/api/v2/account");
     }
-    console.log('gulp getAppConfigs from ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
+    console.log('Making request to ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return options;
 }
 function getAppEditUrl() {
@@ -563,12 +563,21 @@ gulp.task('downloadSplashScreen', [], function(){
         .pipe(rename('splash.png'))
         .pipe(gulp.dest("./resources"));
 });
+gulp.task('mergeToMaster', [], function(){
+    var options = getRequestOptions('/api/ionic/master/merge');
+    return rp(options).then(function (response) {
+        console.log("mergeToMaster response: " + JSON.stringify(response));
+        if(!isTruthy(response.success)){throw response.error;}
+    }).catch(function (err) {
+        throw err;
+    });
+});
 gulp.task('getAppConfigs', ['validateCredentials'], function () {
     if(appSettings){
         console.log("Already have appSettings for " + appSettings.clientId);
         return;
     }
-    var options = getAppSettingsRequestOptions();
+    var options = getRequestOptions('/api/v1/appSettings');
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
         appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
