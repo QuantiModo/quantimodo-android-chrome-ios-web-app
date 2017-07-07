@@ -6783,7 +6783,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return convertUrlAndParamsToHref(menuItem);
     }
     function convertStringToId(string) {
-        return string.replace('#/app/', '').replace('/', '-').replace('?', '-').replace('&', '-').replace('=', '-').toLowerCase();
+        return string.replace('#/app/', '').replace('/', '-').replace('&', '-').replace('=', '-').toLowerCase();
     }
     var allStates = $state.get();
     function stripQueryString(pathWithQuery) {
