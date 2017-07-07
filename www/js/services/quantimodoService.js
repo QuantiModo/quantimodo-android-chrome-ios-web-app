@@ -5186,7 +5186,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             chrome.storage.local.get(key,function(val){
                 return val[key];
             });
-        } else {return localStorage.getItem(key);}
+        } else {
+            var item = localStorage.getItem(key);
+            if(item === "null" || item === "undefined"){
+                localStorage.removeItem(key);
+                return null;
+            }
+            return item;
+        }
     };
     quantimodoService.getElementsFromLocalStorageItemWithFilters = function (localStorageItemName, filterPropertyName, filterPropertyValue,
                                                                              lessThanPropertyName, lessThanPropertyValue,
