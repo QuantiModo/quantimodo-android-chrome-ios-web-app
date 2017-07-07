@@ -21,6 +21,27 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
         console.debug('skipInterval: Going to login state...');
         quantimodoService.sendToLogin();
     };
+    $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
+        if(primaryOutcomeRatingFrequencyDescription){$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
+        var intervals = {
+            "minutely" : 60,
+            "every five minutes" : 5 * 60,
+            "never" : 0,
+            "hourly": 60 * 60,
+            "hour": 60 * 60,
+            "every three hours" : 3 * 60 * 60,
+            "twice a day" : 12 * 60 * 60,
+            "daily" : 24 * 60 * 60,
+            "day" : 24 * 60 * 60
+        };
+        var reminderToSchedule = {
+            reminderFrequency: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
+            variableId: quantimodoService.getPrimaryOutcomeVariable().id,
+            defaultValue: 3
+        };
+        quantimodoService.addToTrackingReminderSyncQueue(reminderToSchedule);
+        $scope.showIntervalCard = false;
+    }
     $scope.storeRatingLocally = function(ratingValue){
         $scope.reportedVariableValue = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] ? quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] : false;
         var primaryOutcomeMeasurement = quantimodoService.createPrimaryOutcomeMeasurement(ratingValue);

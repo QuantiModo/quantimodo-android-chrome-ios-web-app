@@ -41,13 +41,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			}
 		}
 	});
-	$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {scope: $scope}).then(function(popover) {$scope.ratingPopover = popover;});
-	$scope.saveRatingInterval = function(interval){
-		$scope.saveInterval(interval);
-		quantimodoService.setLocalStorageItem('primaryOutcomeRatingFrequencyDescription', interval);
-		$scope.primaryOutcomeRatingFrequencyDescription = interval;
-		$scope.ratingPopover.hide();
-	};
 	$scope.sendSharingInvitation = function() {
 		var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20" +
@@ -290,4 +283,51 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		if(type === 'pdf'){verifyEmailAddressAndExecuteCallback(exportPdf);}
 		if(type === 'xls'){verifyEmailAddressAndExecuteCallback(exportXls);}
 	};
+
+    var webDowngrade = function() {
+        quantimodoService.showBlackRingLoader();
+        quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
+            quantimodoService.hideLoader();
+            console.debug(JSON.stringify(response));
+            quantimodoService.showMaterialAlert('Downgraded', 'Successfully downgraded to QuantiModo Lite');
+        }, function (error) {
+            quantimodoService.hideLoader();
+            quantimodoService.showMaterialAlert('Error', 'An error occurred while downgrading. Please email mike@quantimo.do');
+            console.debug(JSON.stringify(error));
+        });
+    };
+    var androidDowngrade = function () {
+        var confirmPopup = $ionicPopup.confirm({
+            title: 'Google Play',
+            template: "You subscribed through Google Play so I have to send you to a page that tells you how to " +
+            "unsubscribe from Play subscriptions"
+        });
+        confirmPopup.then(function(res) {
+            if(res) {
+                quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
+                    console.debug(JSON.stringify(response));
+                }, function (error) { console.error(JSON.stringify(error)); });
+                window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
+            } else { console.log('You are not sure'); }
+        });
+    };
+    var appleDowngrade = function () {
+        var confirmPopup = $ionicPopup.confirm({title: 'App Store',
+            template: "You subscribed through the App Store so I have to send you to a page that tells you how to unsubscribe from App Store subscriptions"});
+        confirmPopup.then(function(res) {
+            if(res) {
+                $rootScope.user.stripeActive = false;
+                quantimodoService.postDowngradeSubscriptionDeferred().then(function (response) {
+                    console.debug(JSON.stringify(response));
+                }, function (error) { console.error(JSON.stringify(error)); });
+                window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
+            } else { console.log('You are not sure'); }
+        });
+    };
+    var googleDowngradeDebug = false;
+    $scope.downgrade = function () {
+        if ($rootScope.user.subscriptionProvider === 'google' || googleDowngradeDebug) { androidDowngrade();
+        } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
+        } else { webDowngrade(); }
+    };
 });
