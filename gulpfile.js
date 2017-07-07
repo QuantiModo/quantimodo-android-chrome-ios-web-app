@@ -368,6 +368,7 @@ function postAppStatus() {
     return rp(options).then(function (response) {
         console.log("postAppStatus: " + JSON.stringify(response));
     }).catch(function (err) {
+        outputApiErrorResponse(err);
         throw err;
     });
 }
@@ -380,6 +381,7 @@ function postNotifyCollaborators(appType) {
         console.log("postNotifyCollaborators: " + JSON.stringify(response));
         if(!isTruthy(response.success)){throw response.error;}
     }).catch(function (err) {
+        outputApiErrorResponse(err);
         throw err;
     });
 }
@@ -393,8 +395,8 @@ function getRequestOptions(path) {
         headers: {'User-Agent': 'Request-Promise'},
         json: true // Automatically parses the JSON string in the response
     };
-    if(devCredentials.username){options.qs.log = devCredentials.username;}
-    if(devCredentials.password){options.qs.pwd = devCredentials.password;}
+    //if(devCredentials.username){options.qs.log = devCredentials.username;}
+    //if(devCredentials.password){options.qs.pwd = devCredentials.password;}
     if(process.env.QUANTIMODO_ACCESS_TOKEN){
         options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
     } else {
@@ -527,25 +529,13 @@ gulp.task('createChromeExtensionManifest', function () {
 });
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateCredentials', ['setClientId'], function () {
-    if(!devCredentials.username || !devCredentials.password){
-        console.error("No developer credentials");
-        return;
-    }
-    var options = {
-        uri: appHostName + '/api/v1/user',
-        qs: {log: devCredentials.username, pwd: devCredentials.password, clientId: process.env.QUANTIMODO_CLIENT_ID},
-        headers: {'User-Agent': 'Request-Promise'},
-        json: true // Automatically parses the JSON string in the response
-    };
-    if(process.env.QUANTIMODO_ACCESS_TOKEN){
-        options.headers.Authorization = "Bearer " + process.env.QUANTIMODO_ACCESS_TOKEN;
-    }
-    fs.writeFileSync(devCredentialsPath, JSON.stringify(devCredentials));
+    var options = getRequestOptions('/api/v1/user');
+    fs.writeFileSync(devCredentialsPath, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
     console.log('gulp validateCredentials from ' + JSON.stringify(options));
     return rp(options).then(function (response) {
         if(!response.accessToken){throw "Could not get user from " + options.uri + ' Please double check your credentials or contact mike@quantimo.do for help.';}
     }).catch(function (err) {
-        console.error(err.message);
+        outputApiErrorResponse(err);
         if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
     });
 });
@@ -563,16 +553,27 @@ gulp.task('downloadSplashScreen', [], function(){
         .pipe(rename('splash.png'))
         .pipe(gulp.dest("./resources"));
 });
+function prettyPrintJsonObject(object){
+    return JSON.stringify(object, null, 2);
+}
+function outputApiErrorResponse(err) {
+    err.message = err.message.replace(err.statusCode + ' - ', '');
+    console.error(err.message);
+    var errorMessageObject = JSON.parse(err.message);
+    console.error(prettyPrintJsonObject(errorMessageObject)); // Pretty print
+}
 gulp.task('mergeToMaster', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
+    if(process.env.CIRCLECI){options.server = "circleci";}
+    if(process.env.BUDDYBUILD_APP_ID){options.server = "buddybuild";}
     return rp(options).then(function (response) {
         console.log("mergeToMaster response: " + JSON.stringify(response));
         if(!isTruthy(response.success)){throw response.error;}
     }).catch(function (err) {
-        throw err;
+        outputApiErrorResponse(err);
     });
 });
-gulp.task('getAppConfigs', ['validateCredentials'], function () {
+gulp.task('getAppConfigs', [], function () {
     if(appSettings){
         console.log("Already have appSettings for " + appSettings.clientId);
         return;
@@ -601,6 +602,7 @@ gulp.task('getAppConfigs', ['validateCredentials'], function () {
             }
         }
     }).catch(function (err) {
+        outputApiErrorResponse(err);
         throw err;
     });
 });
