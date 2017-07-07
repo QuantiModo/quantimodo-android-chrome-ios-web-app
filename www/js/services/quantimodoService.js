@@ -6792,6 +6792,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return pathWithQuery.split("?")[0];
     }
     function convertUrlToLowerCaseStateName(menuItem){
+        if(!menuItem.url){
+            console.debug("no url to convert")
+            return menuItem;
+        }
         return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
     }
     function convertQueryStringToParams(menuItem){
@@ -6810,50 +6814,59 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.debug(menuItem);
         return menuItem;
     }
-    function addStateName(menuItem){
-        if(menuItem.stateName){return menuItem;}
-        if(!menuItem.url){return menuItem;}
-        for(var i = 0; i < allStates.length; i++){
-            if('/app' + allStates[i].url === menuItem.url){
-                menuItem.stateName = allStates[i].name;
-                break;
-            }
-            var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
-            if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
-                menuItem.stateName = allStates[i].name;
-                break;
-            }
-        }
-        if(!menuItem.stateName){ console.debug("no state name for " + JSON.stringify(menuItem)); }
-        return menuItem;
-    }
     function getUrlFromStateName(stateName){
         for(var i = 0; i < allStates.length; i++){
             if(allStates[i].name === stateName){ return allStates[i].url; }
         }
         console.error("Could not find state with name: " + stateName);
     }
-    function addUrlFromStateNameOrHref(menuItem){
-        if(!menuItem.stateName){return menuItem;}
-        menuItem.url = getUrlFromStateName(menuItem.stateName);
-        if(menuItem.href && !menuItem.url){ menuItem.url = menuItem.url.replace('#', ''); }
-        if(!menuItem.url && window.debugMode){console.debug("no url " + JSON.stringify(menuItem));}
-        return menuItem;
-    }
-    function addMenuId(menuItem) {
-        if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
-        return menuItem;
-    }
-    function processMenuItem(menuItem) {
-        //menuItem = addUrlFromStateNameOrHref(menuItem);
-        //menuItem = convertUrlAndParamsToHref(menuItem);
-        menuItem = convertQueryStringToParams(menuItem);
-        menuItem = addMenuId(menuItem);
-        menuItem = addStateName(menuItem);
-        delete menuItem.url;
-        return menuItem;
-    }
     quantimodoService.convertHrefInSingleMenuType = function (menu){
+        function processMenuItem(menuItem) {
+            function addMenuId(menuItem) {
+                if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
+                return menuItem;
+            }
+            function addUrlToMenuItem(menuItem){
+                if(menuItem.url){return menuItem;}
+                if(menuItem.stateName){
+                    menuItem.url = getUrlFromStateName(menuItem.stateName);
+                    if(menuItem.url){return menuItem;}
+                }
+                if(menuItem.href){
+                    for(var i = 0; i < allStates.length; i++){
+                        if(menuItem.href.indexOf(allStates[i].url) !== -1){
+                            menuItem.url = allStates[i].url;
+                        }
+                    }
+                }
+                return menuItem;
+            }
+            function addStateNameToMenuItem(menuItem){
+                if(menuItem.stateName){return menuItem;}
+                if(menuItem.url){
+                    for(var i = 0; i < allStates.length; i++){
+                        if('/app' + allStates[i].url === menuItem.url){
+                            menuItem.stateName = allStates[i].name;
+                            break;
+                        }
+                        var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
+                        if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
+                            menuItem.stateName = allStates[i].name;
+                            break;
+                        }
+                    }
+                }
+                if(!menuItem.stateName){ console.debug("no state name for " + JSON.stringify(menuItem)); }
+                return menuItem;
+            }
+            menuItem = addUrlToMenuItem(menuItem);
+            menuItem = addStateNameToMenuItem(menuItem);
+            menuItem = convertQueryStringToParams(menuItem);
+            menuItem = convertUrlAndParamsToHref(menuItem);
+            menuItem = addMenuId(menuItem);
+            delete menuItem.url;
+            return menuItem;
+        }
         if(!menu){
             console.debug("No menu given to convertHrefInSingleMenuType");
             return;
