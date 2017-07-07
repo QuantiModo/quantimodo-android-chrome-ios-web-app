@@ -28,6 +28,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             quantimodoService.sendToLoginIfNecessaryAndComeBack();
 		}
 	});
+    $scope.$on('$ionicView.afterEnter', function(e) {quantimodoService.hideLoader();});
     $scope.completelyResetAppStateAndSendToLogin = function(){quantimodoService.completelyResetAppStateAndSendToLogin();};
 	quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
