@@ -13,6 +13,8 @@ print_sha1(){
 if [ -z ${CIRCLE_BRANCH} ];
     then
         echo "Not in CircleCI"
+        echo "Calling gulp mergeToMaster because I guess build succeeded so we can trigger a build for all clients"
+        gulp mergeToMaster
     else
         echo "Set BUDDYBUILD_WORKSPACE to $PWD"
         BUDDYBUILD_WORKSPACE=$PWD
