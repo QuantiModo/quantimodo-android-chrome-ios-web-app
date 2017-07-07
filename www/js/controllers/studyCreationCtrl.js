@@ -1,4 +1,4 @@
-angular.module('starter').controller('StudyCreationCtrl', function($scope, $state, quantimodoService, clipboard) {
+angular.module('starter').controller('StudyCreationCtrl', function($scope, $state, quantimodoService, clipboard, $mdDialog) {
     $scope.state = {
         title: 'Create a Study',
         color: quantimodoService.colors.blue,
