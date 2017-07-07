@@ -4,8 +4,6 @@ machine:
     version: 6.10.3
   ruby:
     version: 2.1.2
-  php:
-    version: 5.6.2
   java:
     version: oraclejdk8
   environment:
@@ -17,6 +15,7 @@ checkout:
     - git submodule sync --recursive
     - git submodule update --recursive --init # use submodules
     - chmod -R +x scripts
+    - cp -r android-licenses/. $ANDROID_HOME/licenses
 
 # Customize dependencies
 dependencies:
@@ -27,6 +26,7 @@ dependencies:
     - git fetch --all --unshallow || true
     - chmod +x -R hooks/*
     - chmod 777 -R $PWD
+    - sudo apt-get update; sudo apt-get install tree imagemagick
     - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
@@ -37,7 +37,7 @@ dependencies:
     - echo "This line is to prevent automatic dependency installation."
 
   cache_directories:
-    #- "node_modules"   # Probably don't want to cache node_modules so we catch problematic dependency changes
+    - "node_modules"   # Probably don't want to cache node_modules so we catch problematic dependency changes
 
 test:
   override:
@@ -63,7 +63,8 @@ deployment:
   build:
     branch: /apps\/.*/
     commands:
-      - ./scripts/circleci_install_dependencies.sh
+      #- ./scripts/circleci_install_dependencies.sh
+      - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
       - gulp prepareRepositoryForAndroid
       - gulp buildAndroidApp
       - gulp buildChromeExtension
@@ -84,7 +85,9 @@ deployment:
   staging:
     branch: develop
     commands:
-      - ./scripts/circleci_install_dependencies.sh
+      #- ./scripts/circleci_install_dependencies.sh #
+      - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
+      - gulp prepareRepositoryForAndroid
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
       - bash buddybuild_postbuild.sh
@@ -94,6 +97,11 @@ deployment:
   production:
     branch: master
     commands:
-      - ./scripts/circleci_install_dependencies.sh
-      - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
-      - gulp ionicUploadProductionForAllApps
+      #- ./scripts/circleci_install_dependencies.sh
+      #- ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
+      - gulp prepareRepositoryForAndroid
+      - gulp buildQuantiModoAndroid
+      - gulp buildQuantiModoChromeExtension
+      - bash buddybuild_postbuild.sh
+      #- gulp ionicUploadProductionForAllApps
