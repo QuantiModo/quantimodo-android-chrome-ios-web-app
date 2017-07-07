@@ -2824,17 +2824,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 measurements[index].valence = quantimodoService.getPrimaryOutcomeVariable().valence;
             }
             if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
-            if (measurements[index].unitAbbreviatedName.charAt(0) === '/') {
-                // don't add space between value and unit
-                measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
-            }
-            else {
-                // add space between value and unit
-                measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
-            }
-            if (measurements[index].unitAbbreviatedName === '%') {
-                measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
-            }
+            measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
+            measurements[index].valueUnitVariableName = quantimodoService.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
+            if (measurements[index].unitAbbreviatedName === '%') { measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1); }
             if (measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]) {
                 measurements[index].image = measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
             }
@@ -6391,6 +6383,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
         return inputType;
+    };
+    quantimodoService.formatValueUnitDisplayText = function(valueUnitText, abbreviatedUnitName){
+        valueUnitText = valueUnitText.replace(' /', '/');
+        valueUnitText = valueUnitText.replace('1 yes/no', 'YES');
+        valueUnitText = valueUnitText.replace('0 yes/no', 'NO');
+        if(abbreviatedUnitName){
+            valueUnitText = valueUnitText.replace('(' + abbreviatedUnitName + ')', '');
+        }
+        return valueUnitText;
     };
     quantimodoService.removeArrayElementsWithDuplicateIds = function(array) {
         var a = array.concat();
