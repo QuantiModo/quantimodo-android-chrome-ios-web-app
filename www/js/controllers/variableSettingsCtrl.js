@@ -223,4 +223,124 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
         }
     };
+    var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
+        var self = this;
+        // list of `state` value/display objects
+        self.items        = loadAll();
+        self.querySearch   = querySearch;
+        self.selectedItemChange = selectedItemChange;
+        self.searchTextChange   = searchTextChange;
+        self.title = dataToPass.title;
+        self.helpText = dataToPass.helpText;
+        self.placeholder = dataToPass.placeholder;
+        self.cancel = function($event) { $mdDialog.cancel(); };
+        self.finish = function($event, variableName) { $mdDialog.hide($scope.variable); };
+        function querySearch (query) {
+            self.notFoundText = "No articles matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
+            var deferred = $q.defer();
+            if(!query || !query.length){ query = dataToPass.variableName; }
+            wikipediaFactory.searchArticles({
+                term: query, // Searchterm
+                //lang: '<LANGUAGE>', // (optional) default: 'en'
+                //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
+                pithumbsize: '200', // (optional) default: 400
+                //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
+                exlimit: 'max', // (optional) 'max': extracts for all articles, otherwise only for the first
+                //exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
+            }).then(function (repsonse) {
+                if(repsonse.data.query) {
+                    deferred.resolve(loadAll(repsonse.data.query.pages));
+                    $scope.causeWikiEntry = repsonse.data.query.pages[0].extract;
+                    //$rootScope.correlationObject.studyBackground = $rootScope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
+                    if(repsonse.data.query.pages[0].thumbnail){$scope.causeWikiImage = repsonse.data.query.pages[0].thumbnail.source;}
+                } else {
+                    var error = 'Wiki not found for ' + query;
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
+                    console.error(error);
+                }
+            }).catch(function (error) {console.error(error);});
+            return deferred.promise;
+        }
+        function searchTextChange(text) { console.debug('Text changed to ' + text); }
+        function selectedItemChange(item) {
+            $rootScope.variableObject.wikipediaPage = item.page;
+            $rootScope.variableObject.wikipediaExtract = item.page.extract;
+            self.selectedItem = item;
+            self.buttonText = dataToPass.buttonText;
+        }
+        /**
+         * Build `variables` list of key/value pairs
+         */
+        function loadAll(pages) {
+            if(!pages){ return []; }
+            return pages.map( function (page) {
+                return {
+                    value: page.title,
+                    display: page.title,
+                    page: page,
+                };
+            });
+        }
+    };
+    $scope.searchWikipediaArticle = function (ev) {
+        $mdDialog.show({
+            controller: SelectWikpdediaArticleController,
+            controllerAs: 'ctrl',
+            templateUrl: 'templates/fragments/variable-search-dialog-fragment.html',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: false,
+            fullscreen: false,
+            locals: {
+                dataToPass: {
+                    title: "Select Wikipedia Article",
+                    helpText: "Change the search query until you see a relevant article in the search results.  This article will be included in studies involving this variable.",
+                    placeholder: "Search for a Wikipedia article...",
+                    buttonText: "Select Article",
+                    variableName: $rootScope.variableObject.name
+                }
+            },
+        }).then(function(page) {
+            $rootScope.variableObject.wikipediaPage = page;
+        }, function() {
+            console.debug('User cancelled selection');
+        });
+    };
+
+    $scope.resetVariableToDefaultSettings = function(variableObject) {
+        // Populate fields with original settings for variable
+        quantimodoService.showBlackRingLoader();
+        quantimodoService.resetUserVariableDeferred(variableObject.id).then(function(userVariable) {
+            $rootScope.variableObject = userVariable;
+            //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
+        });
+    };
+
+    $scope.saveVariableSettings = function(variableObject){
+        quantimodoService.showBlackRingLoader();
+        var body = {
+            variableId: variableObject.id,
+            durationOfAction: variableObject.durationOfActionInHours*60*60,
+            fillingValue: variableObject.fillingValue,
+            //joinWith
+            maximumAllowedValue: variableObject.maximumAllowedValue,
+            minimumAllowedValue: variableObject.minimumAllowedValue,
+            onsetDelay: variableObject.onsetDelayInHours*60*60,
+            combinationOperation: variableObject.combinationOperation,
+            shareUserMeasurements: variableObject.shareUserMeasurements,
+            defaultUnitId: variableObject.userVariableDefaultUnitId,
+            userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName,
+            //userVariableAlias: $scope.state.userVariableAlias
+            experimentStartTimeString: (variableObject.experimentStartTimeString) ? variableObject.experimentStartTimeString.toString() : null,
+            experimentEndTimeString: (variableObject.experimentEndTimeString) ? variableObject.experimentEndTimeString.toString() : null,
+        };
+        quantimodoService.postUserVariableDeferred(body).then(function(userVariable) {
+            quantimodoService.hideLoader();
+            $scope.showInfoToast('Saved ' + variableObject.name + ' settings');
+            $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
+        }, function(error) {
+            quantimodoService.hideLoader();
+            console.error(error);
+        });
+    };
 });

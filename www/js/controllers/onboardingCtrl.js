@@ -51,7 +51,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $scope.hideOnboardingPage();
     };
     $scope.connectWeatherOnboarding = function (event) {
-        $scope.connectWeather();
+        quantimodoService.connectWithParams({}, 'worldweatheronline');
         $scope.hideOnboardingPage();
     };
     $scope.doneOnboarding = function () {
@@ -70,5 +70,15 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         } else {
             $rootScope.hideMenuButton = true;
         }
+    };
+    $scope.goToReminderSearch = function(variableCategoryName) {
+        $state.go('app.reminderSearch',
+            {
+                variableCategoryName : variableCategoryName,
+                fromUrl: window.location.href,
+                hideNavigationMenu: $rootScope.hideNavigationMenu,
+                skipReminderSettingsIfPossible: true,
+                doneState: $state.current.name
+            });
     };
 });

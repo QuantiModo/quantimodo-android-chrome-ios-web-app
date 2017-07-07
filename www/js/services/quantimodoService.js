@@ -365,7 +365,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.getMeasurementsDailyFromApi(params, function(dailyHistory){deferred.resolve(dailyHistory);}, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-
     quantimodoService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
         quantimodoService.post('api/v1/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
     };
@@ -377,7 +376,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.post('api/v1/measurements',
             //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
             [], measurementSet, successHandler, errorHandler);
-
     };
     quantimodoService.logoutOfApi = function(successHandler, errorHandler){
         //TODO: Fix this
@@ -755,7 +753,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             console.debug("quantimodoService.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
             deferred.reject(response);
         });
-
     };
     quantimodoService.saveAccessTokenInLocalStorage = function (accessResponse) {
         var accessToken = accessResponse.accessToken || accessResponse.access_token;
@@ -947,7 +944,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-
     var setupGoogleAnalytics = function(user){
         if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.googleAnalyticsTrackingIds){
             if(typeof Analytics !== "undefined") {
@@ -1021,7 +1017,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 }
             }]);
         }
-
 /*            Don't need Intercom
         window.intercomSettings = {
             app_id: "uwtx2m33",
@@ -1033,7 +1028,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             platform: $rootScope.currentPlatform
         };
         */
-
         if(localStorage.getItem('deviceTokenOnServer')){console.debug("This token is already on the server: " + localStorage.getItem('deviceTokenOnServer'));}
         quantimodoService.registerDeviceToken();
         if($rootScope.sendReminderNotificationEmails){
@@ -1347,7 +1341,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return defer.promise;
     };
-
     // date setter from - to
     quantimodoService.setDates = function(to, from){
         var oldFromDate = quantimodoService.getLocalStorageItemAsString('fromDate');
@@ -1613,7 +1606,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         defaultValue : '',
         measurementSynonymSingularLowercase : "measurement",
         ionIcon: "ion-speedometer"};
-
     quantimodoService.getVariableCategories = function(){
         var deferred = $q.defer();
         $http.get('data/variableCategories.json').success(function(variableCategories) {
@@ -2042,7 +2034,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 deferred.reject(error);
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
             });
-
         });
         return deferred.promise;
     };
@@ -2574,7 +2565,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-
     // ChartService
     var useLocalImages = function (correlationObjects) {
         for(var i = 0; i < correlationObjects.length; i++){
@@ -2824,17 +2814,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 measurements[index].valence = quantimodoService.getPrimaryOutcomeVariable().valence;
             }
             if (measurements[index].unitAbbreviatedName === '/5') {measurements[index].roundedValue = Math.round(measurements[index].value);}
-            if (measurements[index].unitAbbreviatedName.charAt(0) === '/') {
-                // don't add space between value and unit
-                measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
-            }
-            else {
-                // add space between value and unit
-                measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
-            }
-            if (measurements[index].unitAbbreviatedName === '%') {
-                measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
-            }
+            measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].unitAbbreviatedName + ' ' + measurements[index].variableName;
+            measurements[index].valueUnitVariableName = quantimodoService.formatValueUnitDisplayText(measurements[index].valueUnitVariableName, measurements[index].unitAbbreviatedName);
+            if (measurements[index].unitAbbreviatedName === '%') { measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1); }
             if (measurements[index].roundedValue && measurements[index].valence === 'positive' && ratingInfo[measurements[index].roundedValue]) {
                 measurements[index].image = measurements[index].image = ratingInfo[measurements[index].roundedValue].positiveImage;
             }
@@ -2996,7 +2978,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             xAxisLabels.push(dataAndLabels2[i].label);
             data.push(dataAndLabels2[i].value);
         }
-
         if(shouldWeUsePrimaryOutcomeLabels(variableObject)) {
             xAxisLabels = quantimodoService.getPrimaryOutcomeVariableOptionLabels();
             xAxisTitle = '';
@@ -3039,7 +3020,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 legend : {
                     enabled : false
                 },
-
                 plotOptions : {
                     column : {
                         pointPadding : 0.2,
@@ -3914,7 +3894,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return setChartExportingOptions(chartConfig);
     };
-
     // VARIABLE SERVICE
     // get user variables (without public)
     quantimodoService.searchUserVariablesDeferred = function(variableSearchQuery, params){
@@ -4112,7 +4091,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         });
         return deferred.promise;
     };
-
     // NOTIFICATION SERVICE
     function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
         return {
@@ -4326,7 +4304,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         }
         cordova.plugins.notification.local.on("trigger", function (currentNotification) {
-
             /*                   I don't think this is necessary because we're going to check the API anyway
              if(currentNotification.badge < 1){
              $ionicPlatform.ready(function () {
@@ -4882,7 +4859,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 deferred.resolve();
             });
         }
-
         if($rootScope.isChromeExtension){
             chrome.alarms.getAll(function(existingLocalAlarms) {
                 console.debug('Existing Chrome alarms before scheduling: ', existingLocalAlarms);
@@ -4930,7 +4906,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return deferred.promise;
     };
-
     // cancel all existing notifications
     quantimodoService.cancelAllNotifications = function(){
         var deferred = $q.defer();
@@ -4955,7 +4930,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         }
         return deferred.promise;
     };
-
     // TIME SERVICE
     quantimodoService.getSecondsSinceMidnightLocalFromLocalString = function (localTimeString) {
         var timeFormat = "HH:mm:ss";
@@ -5186,7 +5160,14 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             chrome.storage.local.get(key,function(val){
                 return val[key];
             });
-        } else {return localStorage.getItem(key);}
+        } else {
+            var item = localStorage.getItem(key);
+            if(item === "null" || item === "undefined"){
+                localStorage.removeItem(key);
+                return null;
+            }
+            return item;
+        }
     };
     quantimodoService.getElementsFromLocalStorageItemWithFilters = function (localStorageItemName, filterPropertyName, filterPropertyValue,
                                                                              lessThanPropertyName, lessThanPropertyValue,
@@ -5886,7 +5867,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             upgradeSubscriptionProducts[baseProductId].category, config.appSettings.appDisplayName,
             upgradeSubscriptionProducts[baseProductId].variant, upgradeSubscriptionProducts[baseProductId].price,
             1, coupon, upgradeSubscriptionProducts[baseProductId].position);
-
         // id	text	Yes*	The transaction ID (e.g. T1234). *Required if the action type is purchase or refund.
         // affiliation	text	No	The store or affiliation from which this transaction occurred (e.g. Google Store).
         // revenue	currency	No	Specifies the total revenue or grand total associated with the transaction (e.g. 11.99). This value may include shipping, tax costs, or other adjustments to total revenue that you want to include as part of your revenue calculations. Note: if revenue is not set, its value will be automatically calculated using the product quantity and price fields of all products in the same hit.
@@ -6385,6 +6365,15 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
         return inputType;
     };
+    quantimodoService.formatValueUnitDisplayText = function(valueUnitText, abbreviatedUnitName){
+        valueUnitText = valueUnitText.replace(' /', '/');
+        valueUnitText = valueUnitText.replace('1 yes/no', 'YES');
+        valueUnitText = valueUnitText.replace('0 yes/no', 'NO');
+        if(abbreviatedUnitName){
+            valueUnitText = valueUnitText.replace('(' + abbreviatedUnitName + ')', '');
+        }
+        return valueUnitText;
+    };
     quantimodoService.removeArrayElementsWithDuplicateIds = function(array) {
         var a = array.concat();
         for(var i = 0; i < a.length; i++) {
@@ -6795,81 +6784,99 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return convertUrlAndParamsToHref(menuItem);
     }
     function convertStringToId(string) {
-        return string.replace('#/app/', '').replace('/', '_').replace('?', '_').replace('&', '_').replace('=', '_').toLowerCase();
+        return string.replace('#/app/', '').replace('/', '-').replace('?', '').replace('&', '-').replace('=', '-').toLowerCase();
     }
     var allStates = $state.get();
     function stripQueryString(pathWithQuery) {
+        if(!pathWithQuery){ return pathWithQuery; }
+        if(pathWithQuery.indexOf('?') === -1){ return pathWithQuery; }
         return pathWithQuery.split("?")[0];
     }
     function convertUrlToLowerCaseStateName(menuItem){
+        if(!menuItem.url){
+            console.debug("no url to convert")
+            return menuItem;
+        }
         return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
     }
-    function addStateName(menuItem){
-        if(menuItem.stateName){return menuItem;}
-        if(!menuItem.url){return menuItem;}
-        for(var i = 0; i < allStates.length; i++){
-            if('/app' + allStates[i].url === menuItem.url){
-                menuItem.stateName = allStates[i].name;
-                break;
-            }
-            var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
-            if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
-                menuItem.stateName = allStates[i].name;
-                break;
-            }
+    function convertQueryStringToParams(menuItem){
+        if(menuItem.href && !menuItem.params){
+            menuItem.params = getAllQueryParamsFromUrlString(menuItem.href);
         }
-        if(!menuItem.stateName){
-            console.debug("no state name for " + JSON.stringify(menuItem));
+        menuItem.href = stripQueryString(menuItem.href);
+        if(menuItem.href && menuItem.href.indexOf('-category') !== -1 && !menuItem.params.variableCategoryName){
+            menuItem.params.variableCategoryName = getStringAfterLastSlash(menuItem.href).replace('?', '');
         }
-        return menuItem;
-    }
-    function convertUrlVariableCategoryToParams(menuItem){
-        if($rootScope.variableCategories[getStringAfterLastSlash(menuItem.url)]){
-            menuItem.params = {
-                variableCategoryName: getStringAfterLastSlash(menuItem.url)
-            };
-            menuItem.url = menuItem.url.replace('/' + getStringAfterLastSlash(menuItem.url), '');
+        if(menuItem.params && menuItem.params.variableCategoryName){
+            if(menuItem.href.indexOf('-category') === -1){menuItem.href += '-category';}
+            if(menuItem.stateName.indexOf('Category') === -1){menuItem.stateName += 'Category';}
+            if(menuItem.href.indexOf(menuItem.params.variableCategoryName) === -1){menuItem.href += '/' + menuItem.params.variableCategoryName;}
         }
+        console.debug(menuItem);
         return menuItem;
     }
     function getUrlFromStateName(stateName){
         for(var i = 0; i < allStates.length; i++){
-            if(allStates[i].name === stateName){
-                return allStates[i].url;
-            }
+            if(allStates[i].name === stateName){ return allStates[i].url; }
         }
         console.error("Could not find state with name: " + stateName);
     }
-    function addUrlFromStateName(menuItem){
-        if(!menuItem.stateName){return menuItem;}
-        menuItem.url = getUrlFromStateName(menuItem.stateName);
-        return menuItem;
-    }
-    function convertHrefToUrlAndParams(menuItem) {
-        menuItem = addUrlFromStateName(menuItem);
-        if(menuItem.href && !menuItem.url){
-            menuItem.href = menuItem.href.replace('-category', '');
-            menuItem.href = menuItem.href.replace('/Anything', '');
-            menuItem.url = menuItem.href.replace('#', '');
-            menuItem = convertUrlVariableCategoryToParams(menuItem);
-        }
-        if(!menuItem.url && window.debugMode){console.debug("no url " + JSON.stringify(menuItem));}
-        menuItem = convertUrlAndParamsToHref(menuItem);
-        if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
-        menuItem = addStateName(menuItem);
-        delete menuItem.url;
-        return menuItem;
-    }
     quantimodoService.convertHrefInSingleMenuType = function (menu){
+        function processMenuItem(menuItem) {
+            function addMenuId(menuItem) {
+                if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
+                return menuItem;
+            }
+            function addUrlToMenuItem(menuItem){
+                if(menuItem.url){return menuItem;}
+                if(menuItem.stateName){
+                    menuItem.url = getUrlFromStateName(menuItem.stateName);
+                    if(menuItem.url){return menuItem;}
+                }
+                if(menuItem.href){
+                    for(var i = 0; i < allStates.length; i++){
+                        if(menuItem.href.indexOf(allStates[i].url) !== -1){
+                            menuItem.url = allStates[i].url;
+                        }
+                    }
+                }
+                return menuItem;
+            }
+            function addStateNameToMenuItem(menuItem){
+                if(menuItem.stateName){return menuItem;}
+                if(menuItem.url){
+                    for(var i = 0; i < allStates.length; i++){
+                        if(allStates[i].url === menuItem.url){
+                            menuItem.stateName = allStates[i].name;
+                            break;
+                        }
+                        var convertedLowerCaseStateName = convertUrlToLowerCaseStateName(menuItem);
+                        if(allStates[i].name.toLowerCase() === convertedLowerCaseStateName){
+                            menuItem.stateName = allStates[i].name;
+                            break;
+                        }
+                    }
+                }
+                if(!menuItem.stateName){ console.debug("no state name for " + JSON.stringify(menuItem)); }
+                return menuItem;
+            }
+            menuItem = addUrlToMenuItem(menuItem);
+            menuItem = addStateNameToMenuItem(menuItem);
+            menuItem = convertQueryStringToParams(menuItem);
+            menuItem = convertUrlAndParamsToHref(menuItem);
+            menuItem = addMenuId(menuItem);
+            delete menuItem.url;
+            return menuItem;
+        }
         if(!menu){
             console.debug("No menu given to convertHrefInSingleMenuType");
             return;
         }
         for(var i =0; i < menu.length; i++){
-            menu[i] = convertHrefToUrlAndParams(menu[i]);
+            menu[i] = processMenuItem(menu[i]);
             if(menu[i].subMenu){
                 for(var j =0; j < menu[i].subMenu.length; j++){
-                    menu[i].subMenu[j] = convertHrefToUrlAndParams(menu[i].subMenu[j]);
+                    menu[i].subMenu[j] = processMenuItem(menu[i].subMenu[j]);
                 }
             }
         }
