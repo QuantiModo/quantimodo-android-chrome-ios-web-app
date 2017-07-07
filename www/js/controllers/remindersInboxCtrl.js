@@ -136,15 +136,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			return false;
 		}
 	};
-	function formatTrackingActionText(actionText){
-        actionText = actionText.replace(' /', '/');
-        actionText = actionText.replace('1 yes/no', 'YES');
-        actionText = actionText.replace('0 yes/no', 'NO');
-        return actionText;
-	}
 	var setLastAction = function(modifiedValue, unitAbbreviatedName){
 		var lastAction = 'Recorded ' + modifiedValue + ' ' + unitAbbreviatedName;
-		$scope.lastAction = formatTrackingActionText(lastAction);
+		$scope.lastAction = quantimodoService.formatValueUnitDisplayText(lastAction);
 	};
 	function refreshIfRunningOutOfNotifications() {if($scope.state.numberOfDisplayedNotifications < 2){$scope.refreshTrackingReminderNotifications();}}
 	$scope.trackByValueField = function(trackingReminderNotification, $event){
@@ -219,8 +213,8 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         getTrackingReminderNotifications();
     }
     $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
-        var title = "Record " + formatTrackingActionText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
-        var textContent = "Do you want to record " + formatTrackingActionText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
+        var title = "Record " + quantimodoService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
+        var textContent = "Do you want to record " + quantimodoService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
 			" for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
         function yesCallback() {
             trackAll(trackingReminderNotification, modifiedReminderValue);
