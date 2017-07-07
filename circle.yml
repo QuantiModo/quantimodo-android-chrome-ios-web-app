@@ -87,7 +87,7 @@ deployment:
   staging:
     branch: develop
     commands:
-      #- ./scripts/circleci_install_dependencies.sh
+      #- ./scripts/circleci_install_dependencies.sh #
       - gulp prepareRepositoryForAndroid
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
