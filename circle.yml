@@ -4,8 +4,6 @@ machine:
     version: 6.10.3
   ruby:
     version: 2.1.2
-  php:
-    version: 5.6.2
   java:
     version: oraclejdk8
   environment:
