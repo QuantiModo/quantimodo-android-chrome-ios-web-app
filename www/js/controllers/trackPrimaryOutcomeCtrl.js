@@ -5,6 +5,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
     $scope.showRatingFaces = true;
     $scope.averagePrimaryOutcomeVariableImage = false;
     $scope.averagePrimaryOutcomeVariableValue = false;
+    $scope.primaryOutcomeVariable = quantimodoService.getPrimaryOutcomeVariable();
     var syncDisplayText = 'Syncing ' + quantimodoService.getPrimaryOutcomeVariable().name + ' measurements...';
     $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
         console.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..');
@@ -21,6 +22,9 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
             updateCharts();
             quantimodoService.hideLoader();
         });
+    });
+    $scope.$on('$ionicView.afterEnter', function(e) {
+        quantimodoService.hideLoader();
     });
     $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
         $scope.timeRemaining = true;
