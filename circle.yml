@@ -27,7 +27,6 @@ dependencies:
     - chmod +x -R hooks/*
     - chmod 777 -R $PWD
     - sudo apt-get update; sudo apt-get install tree imagemagick
-    - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
     - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
@@ -65,6 +64,7 @@ deployment:
     branch: /apps\/.*/
     commands:
       #- ./scripts/circleci_install_dependencies.sh
+      - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
       - gulp prepareRepositoryForAndroid
       - gulp buildAndroidApp
       - gulp buildChromeExtension
@@ -86,6 +86,7 @@ deployment:
     branch: develop
     commands:
       #- ./scripts/circleci_install_dependencies.sh #
+      - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
       - gulp prepareRepositoryForAndroid
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
@@ -98,6 +99,7 @@ deployment:
     commands:
       #- ./scripts/circleci_install_dependencies.sh
       #- ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
+      - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
       - gulp prepareRepositoryForAndroid
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
