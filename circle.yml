@@ -35,7 +35,9 @@ dependencies:
     - echo "This line is to prevent automatic dependency installation."
 
   cache_directories:
-    - "node_modules"   # Probably don't want to cache node_modules so we catch problematic dependency changes
+    - /home/ubuntu/nvm/versions/node/6.10.3/bin
+    - /home/ubuntu/nvm/versions/node/6.10.3/lib/node_modules
+    - app/node_modules   # Probably don't want to cache node_modules so we catch problematic dependency changes
 
 test:
   override:
@@ -63,6 +65,7 @@ deployment:
     commands:
       #- ./scripts/circleci_install_dependencies.sh
       - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
+      - npm install
       - gulp prepareRepositoryForAndroid
       - gulp buildAndroidApp
       - gulp buildChromeExtension
@@ -85,6 +88,7 @@ deployment:
     commands:
       #- ./scripts/circleci_install_dependencies.sh #
       - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
+      - npm install
       - gulp prepareRepositoryForAndroid
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
@@ -98,6 +102,7 @@ deployment:
       #- ./scripts/circleci_install_dependencies.sh
       #- ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
+      - npm install 
       - gulp prepareRepositoryForAndroid
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
