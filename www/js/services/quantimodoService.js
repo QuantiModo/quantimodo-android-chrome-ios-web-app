@@ -6845,7 +6845,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 if(menuItem.stateName){return menuItem;}
                 if(menuItem.url){
                     for(var i = 0; i < allStates.length; i++){
-                        if('/app' + allStates[i].url === menuItem.url){
+                        if(allStates[i].url === menuItem.url){
                             menuItem.stateName = allStates[i].name;
                             break;
                         }
