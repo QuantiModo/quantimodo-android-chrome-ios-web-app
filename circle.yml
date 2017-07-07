@@ -11,7 +11,10 @@ checkout:
     - git submodule sync --recursive
     - git submodule update --recursive --init # use submodules
     - chmod -R +x scripts
+    - chmod +x -R hooks/*
     - cp -r android-licenses/. $ANDROID_HOME/licenses
+    - git fetch --all --unshallow || true
+    - chmod 777 -R $PWD
 
 # Customize dependencies
 dependencies:
@@ -19,13 +22,8 @@ dependencies:
     #- wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
     #- tar -xzf sc-latest-linux.tar.gz
   pre:
-    - git fetch --all --unshallow || true
-    - chmod +x -R hooks/*
-    - chmod 777 -R $PWD
     - sudo apt-get update; sudo apt-get install tree imagemagick
-    - mkdir /home/ubuntu/nvm/versions/node/6.10.3/bin  # must exist prior to override to cache
-    - mkdir /home/ubuntu/nvm/versions/node/6.10.3/lib/node_modules # must exist prior to override to cache
-    - mkdir /home/ubuntu/quantimodo-android-chrome-ios-web-app/node_modules # must exist prior to override to cache
+    - mkdir node_modules # must exist prior to override to cache
     - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
