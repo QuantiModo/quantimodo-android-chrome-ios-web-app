@@ -39,7 +39,7 @@
                 on-hold="showActionSheetForMeasurement(historyItem, $index)"
                 ng-click="editMeasurement(historyItem)">
                 <i id="historyItemIcon" class="icon positive {{historyItem.icon}} icon-positive" ng-if="!historyItem.pngPath" style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;"> </i>
-                <img ng-if="historyItem.pngPath" src="{{historyItem.pngPath}}" style="border-radius: 0">
+                <img ng-if="historyItem.pngPath" ng-src="{{historyItem.pngPath}}" style="border-radius: 0">
                 <h2 id="historyItemTitle" style="font-weight:bold; white-space:normal; line-height: normal;"> {{historyItem.valueUnitVariableName}} </h2>
                 <p id="historyItemBody" >
                     <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
