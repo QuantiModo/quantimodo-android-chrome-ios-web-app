@@ -22,7 +22,6 @@ dependencies:
     #- wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
     #- tar -xzf sc-latest-linux.tar.gz
   pre:
-    - sudo apt-get update; sudo apt-get install tree imagemagick
     - mkdir node_modules || true # must exist prior to override to cache
     - mkdir platforms || true # must exist prior to override to cache
     - mkdir plugins || true # must exist prior to override to cache
@@ -31,13 +30,14 @@ dependencies:
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
   override:
-    - sudo apt-add-repository -y ppa:duggan/bats
-    - sudo apt-get update; sudo apt-get install -y bats
-    - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
-    - echo "This line is to prevent automatic dependency installation."
-    - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
-    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; else echo "On feature branch so no npm install needed"; fi
-    - gulp prepareRepositoryForAndroidWithoutCleaning
+    - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then sudo apt-add-repository -y ppa:duggan/bats; fi  # Avoid conflicting simultaneous GI testing
+    - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then ssudo apt-get update; sudo apt-get install -y bats; fi # Avoid conflicting simultaneous GI testing
+    - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq; fi  # Avoid conflicting simultaneous GI testing
+
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo apt-get update; sudo apt-get install tree imagemagick; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
 
   cache_directories:
     - node_modules   # Probably don't want to cache node_modules so we catch problematic dependency changes
