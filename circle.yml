@@ -72,7 +72,6 @@ deployment:
     branch: /apps\/.*/
     commands:
       #- ./scripts/circleci_install_dependencies.sh
-      # Seeing if we really need gulp prepareRepositoryForAndroid - gulp prepareRepositoryForAndroid
       - gulp buildAndroidApp
       - gulp buildChromeExtension
   feature:
@@ -93,7 +92,6 @@ deployment:
     branch: develop
     commands:
       #- ./scripts/circleci_install_dependencies.sh #
-      - gulp prepareRepositoryForAndroid
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
       - bash buddybuild_postbuild.sh
@@ -105,7 +103,7 @@ deployment:
     commands:
       #- ./scripts/circleci_install_dependencies.sh
       #- ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
-      - gulp prepareRepositoryForAndroid
+      - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
       - bash buddybuild_postbuild.sh
