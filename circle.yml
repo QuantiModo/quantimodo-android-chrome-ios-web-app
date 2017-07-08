@@ -31,7 +31,7 @@ dependencies:
 
   override:
     - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then sudo apt-add-repository -y ppa:duggan/bats; fi  # Avoid conflicting simultaneous GI testing
-    - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then ssudo apt-get update; sudo apt-get install -y bats; fi # Avoid conflicting simultaneous GI testing
+    - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then sudo apt-get update; sudo apt-get install -y bats; fi # Avoid conflicting simultaneous GI testing
     - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq; fi  # Avoid conflicting simultaneous GI testing
 
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo apt-get update; sudo apt-get install tree imagemagick; fi
