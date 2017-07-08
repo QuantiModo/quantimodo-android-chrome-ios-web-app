@@ -14,6 +14,9 @@ chmod -R a+x ./hooks
 chmod -R a+x ./package-hooks
 chmod -R a+x ./scripts
 
+echo "Running npm install -g gulp bower ionic cordova"
+npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
+
 echo "QUANTIMODO_CLIENT_ID is ${QUANTIMODO_CLIENT_ID}"
 
 if [ -z ${BUDDYBUILD_SCHEME} ];

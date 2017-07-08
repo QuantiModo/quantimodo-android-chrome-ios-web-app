@@ -562,12 +562,12 @@ function outputApiErrorResponse(err) {
     var errorMessageObject = JSON.parse(err.message);
     console.error(prettyPrintJsonObject(errorMessageObject)); // Pretty print
 }
-gulp.task('mergeToMaster', [], function(){
+gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
     if(process.env.CIRCLECI){options.server = "circleci";}
     if(process.env.BUDDYBUILD_APP_ID){options.server = "buddybuild";}
     return rp(options).then(function (response) {
-        console.log("mergeToMaster response: " + JSON.stringify(response));
+        console.log("mergeToMasterAndTriggerRebuildsForAllApps response: " + JSON.stringify(response));
         if(!isTruthy(response.success)){throw response.error;}
     }).catch(function (err) {
         outputApiErrorResponse(err);

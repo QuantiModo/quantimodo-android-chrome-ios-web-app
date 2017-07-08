@@ -95,7 +95,7 @@ deployment:
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
       - bash buddybuild_postbuild.sh
-      - gulp mergeToMaster
+      - gulp mergeToMasterAndTriggerRebuildsForAllApps
       #- gulp ionicUploadStagingForAllApps
       #- aws s3 cp $CIRCLE_ARTIFACTS/* s3://quantimodo-docs/ Doesn't work for some reason
   production:
