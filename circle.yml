@@ -36,7 +36,7 @@ dependencies:
     - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
     - echo "This line is to prevent automatic dependency installation."
     - npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
-    - npm install
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install fi
     - gulp prepareRepositoryForAndroidWithoutCleaning
 
   cache_directories:
