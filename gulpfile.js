@@ -562,12 +562,12 @@ function outputApiErrorResponse(err) {
     var errorMessageObject = JSON.parse(err.message);
     console.error(prettyPrintJsonObject(errorMessageObject)); // Pretty print
 }
-gulp.task('mergeToMaster', [], function(){
+gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
     if(process.env.CIRCLECI){options.server = "circleci";}
     if(process.env.BUDDYBUILD_APP_ID){options.server = "buddybuild";}
     return rp(options).then(function (response) {
-        console.log("mergeToMaster response: " + JSON.stringify(response));
+        console.log("mergeToMasterAndTriggerRebuildsForAllApps response: " + JSON.stringify(response));
         if(!isTruthy(response.success)){throw response.error;}
     }).catch(function (err) {
         outputApiErrorResponse(err);
@@ -2039,7 +2039,22 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         'cleanPlatforms',
         'cleanPlugins',
         'ionicPlatformAddAndroid',
-        'decryptBuildJson',
+        'decryptAndroidKeystore',
+        'decryptAndroidDebugKeystore',
+        //'androidDebugKeystoreInfo',
+        //'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
+        //'addGooglePlusPlugin',
+        //'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
+        'ionicAddCrosswalk',
+        'ionicInfo',
+        callback);
+});
+gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
+    runSequence(
+        'setAppEnvs',
+        'setAndroidEnvs',
+        'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
+        'ionicPlatformAddAndroid',
         'decryptAndroidKeystore',
         'decryptAndroidDebugKeystore',
         //'androidDebugKeystoreInfo',
