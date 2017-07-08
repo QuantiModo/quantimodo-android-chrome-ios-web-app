@@ -44,6 +44,8 @@ dependencies:
     - platforms
     - plugins
     - www/lib
+    - /opt/circleci/nodejs/v4.2.6/bin
+    - /opt/circleci/nodejs/v4.2.6/lib/node_modules
 
 test:
   override:
