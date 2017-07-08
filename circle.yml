@@ -37,8 +37,8 @@ dependencies:
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo apt-get update; sudo apt-get install tree imagemagick; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
-    #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
-    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
+    #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
 
   cache_directories:
     - node_modules   # Probably don't want to cache node_modules so we catch problematic dependency changes
