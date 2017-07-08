@@ -37,7 +37,8 @@ dependencies:
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo apt-get update; sudo apt-get install tree imagemagick; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
-    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
+    #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
 
   cache_directories:
     - node_modules   # Probably don't want to cache node_modules so we catch problematic dependency changes
@@ -71,9 +72,9 @@ deployment:
   build:
     branch: /apps\/.*/
     commands:
-      #- ./scripts/circleci_install_dependencies.sh
       - gulp buildAndroidApp
       - gulp buildChromeExtension
+      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
   feature:
     branch: /feature\/.*/
     commands:
@@ -91,20 +92,14 @@ deployment:
   staging:
     branch: develop
     commands:
-      #- ./scripts/circleci_install_dependencies.sh #
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
-      - bash buddybuild_postbuild.sh
+      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
-      #- gulp ionicUploadStagingForAllApps
-      #- aws s3 cp $CIRCLE_ARTIFACTS/* s3://quantimodo-docs/ Doesn't work for some reason
   production:
     branch: master
     commands:
-      #- ./scripts/circleci_install_dependencies.sh
-      #- ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
       - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
       - gulp buildQuantiModoAndroid
       - gulp buildQuantiModoChromeExtension
-      - bash buddybuild_postbuild.sh
-      #- gulp ionicUploadProductionForAllApps
+      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
