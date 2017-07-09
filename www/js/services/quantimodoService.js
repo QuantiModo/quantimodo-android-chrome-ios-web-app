@@ -1769,7 +1769,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.getLocalStorageItemAsStringWithCallback('connectors', function(connectors){
             if(connectors){
                 connectors = JSON.parse(connectors);
-                connectors = quantimodoService.hideBrokenConnectors(connectors);
+                connectors = hideBrokenConnectors(connectors);
                 deferred.resolve(connectors);
             } else {quantimodoService.refreshConnectors().then(function(){deferred.resolve(connectors);});}
         });
@@ -1781,7 +1781,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var deferred = $q.defer();
         quantimodoService.getConnectorsFromApi({stackTrace: getStackTrace()}, function(response){
             quantimodoService.setLocalStorageItem('connectors', JSON.stringify(response.connectors));
-            var connectors = quantimodoService.hideBrokenConnectors(response.connectors);
+            var connectors = hideBrokenConnectors(response.connectors);
             deferred.resolve(connectors);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -1813,7 +1813,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(){quantimodoService.refreshConnectors();}, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    quantimodoService.hideBrokenConnectors = function(connectors){
+    function hideBrokenConnectors(connectors){
         for(var i = 0; i < connectors.length; i++){
             //if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {connectors[i].hide = true;}
         }
