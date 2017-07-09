@@ -1811,7 +1811,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.hideBrokenConnectors = function(connectors){
         for(var i = 0; i < connectors.length; i++){
-            if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {connectors[i].hide = true;}
+            //if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {connectors[i].hide = true;}
         }
         return connectors;
     };
