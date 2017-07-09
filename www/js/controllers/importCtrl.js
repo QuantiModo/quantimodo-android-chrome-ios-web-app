@@ -1,4 +1,5 @@
-angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService, $ionicActionSheet, Upload, $timeout) {
+angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService,
+                                                            $ionicActionSheet, Upload, $timeout, $ionicPopup) {
 	$scope.controller_name = "ImportCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) {
@@ -7,7 +8,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if(quantimodoService.sendToLoginIfNecessaryAndComeBack()){ return; }
-		if($rootScope.user.stripeActive || config.appSettings.upgradeDisabled){
+		if($rootScope.user.stripeActive || config.appSettings.additionalSettings.upgradeDisabled){
 			loadNativeConnectorPage();
 			return;
 		}
@@ -15,7 +16,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		quantimodoService.showBlackRingLoader();
 		quantimodoService.refreshUser().then(function (user) {
 			quantimodoService.hideLoader();
-			if(user.stripeActive || config.appSettings.upgradeDisabled){
+			if(user.stripeActive || config.appSettings.additionalSettings.upgradeDisabled){
 				loadNativeConnectorPage();
 				return;
 			}
@@ -36,24 +37,16 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 			quantimodoService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
 				console.debug("Browser Detected");
-
 				var url = quantimodoService.getQuantiModoUrl("api/v2/account/connectors", true);
-				if(accessToken){
-					url += "access_token=" + accessToken;
-				}
+				if(accessToken){ url += "access_token=" + accessToken; }
 				var newTab = window.open(url,'_blank');
-
-				if(!newTab){
-					alert("Please unblock popups and refresh to access the Import Data page.");
-				}
+				if(!newTab){ alert("Please unblock popups and refresh to access the Import Data page."); }
 				$rootScope.hideNavigationMenu = false;
 				//noinspection JSCheckFunctionSignatures
 				$state.go(config.appSettings.appDesign.defaultState);
 			} else {
 				var targetUrl = quantimodoService.getQuantiModoUrl("api/v1/connect/mobile", true);
-				if(accessToken){
-					targetUrl += "access_token=" + accessToken;
-				}
+				if(accessToken){ targetUrl += "access_token=" + accessToken; }
 				var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
 				ref.addEventListener('exit', function(){
 					$rootScope.hideNavigationMenu = false;
@@ -82,7 +75,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				$scope.refreshConnectors();
 			});
 	};
-
     $scope.showActionSheetForConnector = function(connector) {
         var buttons = [
             quantimodoService.getHistoryActionSheetButton(connector.displayName)
@@ -347,7 +339,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                     }
                 ]
             });
-
             myPopup.then(function(res) {
                 var params = { username: $scope.data.username, password: $scope.data.password };
                 connectWithParams(params, connector.name);
@@ -477,7 +468,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         var ref = window.open(url,'', "width=600,height=800");
         console.debug('Opened ' + url);
     };
-
     function connectWithParams(params, lowercaseConnectorName) {
         quantimodoService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
             .then(function(result){

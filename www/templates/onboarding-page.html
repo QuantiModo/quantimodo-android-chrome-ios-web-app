@@ -7,19 +7,19 @@
             <button id="goToReminderSearchFromOnboarding" class="button circle-page-button" ng-if="circlePage.addButtonText" ng-click="goToReminderSearchFromOnboarding()">
                 <i class="ion-plus-round"> &nbsp; {{circlePage.addButtonText}} &nbsp;</i>
             </button>
-            <button id="enableLocationTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'locationTrackingPage' && (user.stripeActive || appSettings.upgradeDisabled)"
+            <button id="enableLocationTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'locationTrackingPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
                     ng-click="enableLocationTracking($event)">
                 <i class="{{variableCategories.Location.ionIcon}}"> &nbsp; Yes &nbsp;</i>
             </button>
-            <button id="enableWeatherTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'weatherTrackingPage' && (user.stripeActive || appSettings.upgradeDisabled)"
+            <button id="enableWeatherTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'weatherTrackingPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
                     ng-click="connectWeatherOnboarding()">
                 <i class="ion-ios-partlysunny"> &nbsp; Yes &nbsp;</i>
             </button>
-            <button id="importDataButton" class="button circle-page-button" ng-show="circlePage.id === 'importDataPage' && (user.stripeActive || appSettings.upgradeDisabled)"
+            <button id="importDataButton" class="button circle-page-button" ng-show="circlePage.id === 'importDataPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
                     ng-click="onboardingGoToImportPage()">
                 <i class="ion-android-download"> &nbsp; Connect &nbsp;</i>
             </button>
-            <button id="goToUpgradePageButton" class="button circle-page-button" ng-show="circlePage.premiumFeature && !user.stripeActive && !appSettings.upgradeDisabled"
+            <button id="goToUpgradePageButton" class="button circle-page-button" ng-show="circlePage.premiumFeature && !user.stripeActive && !appSettings.additionalSettings.upgradeDisabled"
                     ng-click="goToUpgradePage()">
                 <i class="ion-android-star"> &nbsp;Upgrade &nbsp;</i>
             </button>
