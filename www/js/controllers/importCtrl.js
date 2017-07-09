@@ -1,14 +1,21 @@
-angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService,
+angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService, $cordovaOauth,
                                                             $ionicActionSheet, Upload, $timeout, $ionicPopup) {
 	$scope.controller_name = "ImportCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
+	function weCanEnterPage() {
+        var doNotRequireUpgradeToEnterPage = true;
+        return $rootScope.user.stripeActive || config.appSettings.upgradeDisabled || doNotRequireUpgradeToEnterPage;
+    }
+    function userCanConnect() {
+	    return $rootScope.user.stripeActive || config.appSettings.upgradeDisabled;
+	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("ImportCtrl beforeEnter");
         if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if(quantimodoService.sendToLoginIfNecessaryAndComeBack()){ return; }
-		if($rootScope.user.stripeActive || config.appSettings.additionalSettings.upgradeDisabled){
+		if(weCanEnterPage()){
 			loadNativeConnectorPage();
 			return;
 		}
@@ -16,7 +23,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		quantimodoService.showBlackRingLoader();
 		quantimodoService.refreshUser().then(function (user) {
 			quantimodoService.hideLoader();
-			if(user.stripeActive || config.appSettings.additionalSettings.upgradeDisabled){
+			if(weCanEnterPage()){
 				loadNativeConnectorPage();
 				return;
 			}
@@ -91,7 +98,11 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             destructiveButtonClicked: function() {}
         });
     };
-    $scope.uploadSpreadsheet = function(file, errFiles, connector) {
+    $scope.uploadSpreadSheet = function(file, errFiles, connector) {
+        if(!userCanConnect()){
+            $state.go('app.upgrade');
+            return;
+        }
         if(!file){
             console.debug('No file provided to uploadAppFile');
             return;
@@ -116,7 +127,11 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             });
         }
     };
-    $scope.connectConnector = function(connector){
+    var connectConnector = function(connector){
+        if(!userCanConnect()){
+            $state.go('app.upgrade');
+            return;
+        }
         var scopes;
         var myPopup;
         var options;
@@ -437,12 +452,21 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             });
         }
     };
-    $scope.disconnectConnector = function (connector){
+    var disconnectConnector = function (connector){
         connector.loadingText = 'Disconnected';
         quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){ $scope.refreshConnectors();
         }, function() { console.error("error disconnecting " + connector.name); });
     };
-    $scope.getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
+    var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
+    $scope.connectorAction = function(connector, button){
+        if(button.text.toLowerCase().indexOf('disconnect') !== -1){
+            disconnectConnector(connector);
+        } else if(button.text.toLowerCase().indexOf('connect') !== -1){
+            connectConnector(connector);
+        } else if(button.text.toLowerCase().indexOf('get it') !== -1){
+            getItHere(connector);
+        }
+    };
     $scope.refreshConnectors = function(){
         quantimodoService.refreshConnectors()
             .then(function(connectors){
