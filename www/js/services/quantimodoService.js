@@ -6800,6 +6800,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
     }
     function convertQueryStringToParams(menuItem){
+        if(!menuItem.href){
+            console.debug("No menuItem.href for " + JSON.stringify(menuItem));
+            return menuItem;
+        }
         if(menuItem.href && !menuItem.params){
             menuItem.params = getAllQueryParamsFromUrlString(menuItem.href);
         }
@@ -6812,7 +6816,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             if(menuItem.stateName.indexOf('Category') === -1){menuItem.stateName += 'Category';}
             if(menuItem.href.indexOf(menuItem.params.variableCategoryName) === -1){menuItem.href += '/' + menuItem.params.variableCategoryName;}
         }
-        console.debug(menuItem);
         return menuItem;
     }
     function getUrlFromStateName(stateName){
