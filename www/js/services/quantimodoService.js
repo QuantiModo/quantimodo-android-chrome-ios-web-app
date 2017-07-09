@@ -13,7 +13,11 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     // GET method with the added token
     function addGlobalUrlParams(urlParams) {
         urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-        urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
+        if(config.appSettings.versionNumber){
+            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
+        } else {
+            Bugsnag.notify("Version number not specified!", "Version number not specified on config.appSettings", {appSettings: config.appSettings}, 'error');
+        }
         urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(quantimodoService.getClientId()));
         if(window.developmentMode && window.devCredentials){
             if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
@@ -449,7 +453,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.post('api/v1/userVariables/delete', ['variableId'], {variableId: variableId}, successHandler, errorHandler);
     };
     quantimodoService.getConnectorsFromApi = function(params, successHandler, errorHandler){
-        quantimodoService.get('api/v1/connectors/list', [], params, successHandler, errorHandler);
+        quantimodoService.get('api/v3/connectors/list', [], params, successHandler, errorHandler);
     };
     quantimodoService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
         quantimodoService.get('api/v1/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
@@ -1765,7 +1769,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.getLocalStorageItemAsStringWithCallback('connectors', function(connectors){
             if(connectors){
                 connectors = JSON.parse(connectors);
-                connectors = quantimodoService.hideBrokenConnectors(connectors);
+                connectors = hideBrokenConnectors(connectors);
                 deferred.resolve(connectors);
             } else {quantimodoService.refreshConnectors().then(function(){deferred.resolve(connectors);});}
         });
@@ -1775,9 +1779,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var stackTrace = getStackTrace();
         if(window.debugMode){console.debug("Called refresh connectors: " + stackTrace);}
         var deferred = $q.defer();
-        quantimodoService.getConnectorsFromApi({stackTrace: getStackTrace()}, function(connectors){
-            quantimodoService.setLocalStorageItem('connectors', JSON.stringify(connectors));
-            connectors = quantimodoService.hideBrokenConnectors(connectors);
+        quantimodoService.getConnectorsFromApi({stackTrace: getStackTrace()}, function(response){
+            quantimodoService.setLocalStorageItem('connectors', JSON.stringify(response.connectors));
+            var connectors = hideBrokenConnectors(response.connectors);
             deferred.resolve(connectors);
         }, function(error){deferred.reject(error);});
         return deferred.promise;
@@ -1809,7 +1813,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.connectWithAuthCodeToApi(code, lowercaseConnectorName, function(){quantimodoService.refreshConnectors();}, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    quantimodoService.hideBrokenConnectors = function(connectors){
+    function hideBrokenConnectors(connectors){
         for(var i = 0; i < connectors.length; i++){
             //if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {connectors[i].hide = true;}
         }
@@ -6794,7 +6798,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     }
     function convertUrlToLowerCaseStateName(menuItem){
         if(!menuItem.url){
-            console.debug("no url to convert")
+            console.debug("no url to convert in " + JSON.stringify(menuItem));
             return menuItem;
         }
         return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
