@@ -91,29 +91,31 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             destructiveButtonClicked: function() {}
         });
     };
-    $scope.uploadSpreadSheet = function(file, errFiles, connector) {
-            if(!file){
-                console.debug('No file provided to uploadAppFile');
-                return;
-            }
-            $scope.f = file;
-            $scope.errFile = errFiles && errFiles[0];
-            if (file) {
-                quantimodoService.showBasicLoader();
-                var body = {file: file, "connectorName": connector.name};
-                file.upload = Upload.upload({url: quantimodoService.getApiUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId, data: body});
-                file.upload.then(function (response) {
-                    console.debug("File upload response: ", response);
-                    $timeout(function () {file.result = response.data;});
-                    quantimodoService.hideLoader();
-                }, function (response) {
-                    quantimodoService.hideLoader();
-                    if (response.status > 0){$scope.errorMsg = response.status + ': ' + response.data;}
-                }, function (evt) {
-                    file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-                });
-            }
-        };
+    $scope.uploadSpreadsheet = function(file, errFiles, connector) {
+        if(!file){
+            console.debug('No file provided to uploadAppFile');
+            return;
+        }
+        $scope.f = file;
+        $scope.errFile = errFiles && errFiles[0];
+        if (file) {
+            quantimodoService.showBasicLoader();
+            var body = {file: file, "connectorName": connector.name};
+            file.upload = Upload.upload({url: quantimodoService.getApiUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId, data: body});
+            file.upload.then(function (response) {
+                connector.uploadButtonText = "Import Scheduled";
+                connector.message = "You should start seeing your data within the next hour or so";
+                console.debug("File upload response: ", response);
+                $timeout(function () {file.result = response.data;});
+                quantimodoService.hideLoader();
+            }, function (response) {
+                quantimodoService.hideLoader();
+                if (response.status > 0){$scope.errorMsg = response.status + ': ' + response.data;}
+            }, function (evt) {
+                file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+            });
+        }
+    };
     $scope.connectConnector = function(connector){
         var scopes;
         var myPopup;
