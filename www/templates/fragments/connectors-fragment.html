@@ -14,9 +14,11 @@
             </div>
         </div>
         <div class="button-bar" ng-if="connector.spreadsheetUpload">
-            <button class="button button-clear button-balanced" style="text-overflow: clip;" ngf-select="uploadSpreadsheet($file, $invalidFiles, connector)"> <i class="ion-upload"> &nbsp; Upload Spreadsheet</i> </button>
+            <button ng-repeat="button in connector.buttons" class="button button-clear button-balanced"
+                    style="text-overflow: clip;" ngf-select="uploadSpreadsheet($file, $invalidFiles, connector, button)">
+                <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i> </button>
         </div>
-        <div class="button-bar" ng-if="connector.buttons">
+        <div class="button-bar" ng-if="!connector.spreadsheetUpload">
             <button ng-repeat="button in connector.buttons" class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="connectorAction(connector, button)">
                 <i class="{{button.ionIcon}}"> &nbsp; {{button.text}}</i>
             </button>
