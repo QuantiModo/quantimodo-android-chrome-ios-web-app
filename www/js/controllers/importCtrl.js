@@ -98,7 +98,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             destructiveButtonClicked: function() {}
         });
     };
-    $scope.uploadSpreadSheet = function(file, errFiles, connector) {
+    $scope.uploadSpreadsheet = function(file, errFiles, connector, button) {
         if(!userCanConnect()){
             $state.go('app.upgrade');
             return;
@@ -110,11 +110,12 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         $scope.f = file;
         $scope.errFile = errFiles && errFiles[0];
         if (file) {
+            button.text = "Uploading...";
             quantimodoService.showBasicLoader();
             var body = {file: file, "connectorName": connector.name};
             file.upload = Upload.upload({url: quantimodoService.getApiUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId, data: body});
             file.upload.then(function (response) {
-                connector.uploadButtonText = "Import Scheduled";
+                button.text = "Import Scheduled";
                 connector.message = "You should start seeing your data within the next hour or so";
                 console.debug("File upload response: ", response);
                 $timeout(function () {file.result = response.data;});
