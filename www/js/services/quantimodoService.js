@@ -669,7 +669,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     };
     quantimodoService.getAccessTokenFromCurrentUrl = function(){
         console.debug("getAccessTokenFromCurrentUrl " + window.location.href);
-        return (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
+        var accessToken = (quantimodoService.getUrlParameter('accessToken')) ? quantimodoService.getUrlParameter('accessToken') : quantimodoService.getUrlParameter('quantimodoAccessToken');
+        if(accessToken && !$rootScope.user){quantimodoService.refreshUser();}
+        return accessToken;
     };
     quantimodoService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
