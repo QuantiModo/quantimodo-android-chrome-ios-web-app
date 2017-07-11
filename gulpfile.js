@@ -124,23 +124,31 @@ var chromeExtensionManifestTemplate = {
 };
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
 var pathToUnzippedChromeExtension = buildPath + '/unzipped-chrome-extension';
+var platformCurrentlyBuildingFor;
 var paths = {
     sass: ['./www/scss/**/*.scss']
 };
-function setVersionNumbers(){
+function getPatchVersionNumber() {
     var date = new Date();
-    var longDate = date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
     var monthNumber = (date.getMonth() + 1).toString();
     var dayOfMonth = ('0' + date.getDate()).slice(-2);
-    var majorMinorVersionNumbers = '2.6.';
-    var patchVersionNumber = monthNumber + dayOfMonth;
-    if (!process.env.IONIC_IOS_APP_VERSION_NUMBER) {
-        process.env.IONIC_IOS_APP_VERSION_NUMBER = majorMinorVersionNumbers + patchVersionNumber + '.0';
-        process.env.IONIC_APP_VERSION_NUMBER = majorMinorVersionNumbers + patchVersionNumber;
-        console.log('Falling back to IONIC_IOS_APP_VERSION_NUMBER ' + process.env.IONIC_IOS_APP_VERSION_NUMBER);
-    }
+    return monthNumber + dayOfMonth;
 }
-setVersionNumbers();
+var date = new Date();
+function appendLeadingZero(integer) {
+    return ('0' + integer).slice(-2);
+}
+function getLongDateFormat(){
+    return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());
+}
+var majorMinorVersionNumbers = '2.7.';
+var versionNumbers = {
+    iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.0',
+    //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
+    androidVersionCode: getLongDateFormat() + appendLeadingZero(date.getHours()),
+    ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
+};
+console.log(JSON.stringify(versionNumbers));
 function readDevCredentials(){
     try{
         devCredentials = JSON.parse(fs.readFileSync(devCredentialsPath));
@@ -348,12 +356,16 @@ function setVersionNumberInConfigXml(configFilePath, callback) {
         if (err || !parsedXmlFile) {
             console.log('failed to read xml file or it is empty', err);
         } else {
-            parsedXmlFile.widget.$['version'] = process.env.IONIC_APP_VERSION_NUMBER;
-            parsedXmlFile.widget.$['ios-CFBundleVersion'] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
-            parsedXmlFile.widget.$['ios-CFBundleVersion'] = getIsoString();
+            parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
             writeToXmlFile(configFilePath, parsedXmlFile, callback);
         }
     });
+}
+function setVersionNumbersInWidget(parsedXmlFile) {
+    parsedXmlFile.widget.$['version'] = versionNumbers.ionicApp;
+    parsedXmlFile.widget.$['ios-CFBundleVersion'] = versionNumbers.iosCFBundleVersion;
+    parsedXmlFile.widget.$['android-versionCode'] = versionNumbers.androidVersionCode;
+    return parsedXmlFile;
 }
 function getPostRequestOptions() {
     var options = getRequestOptions('/api/v1/appSettings');
@@ -560,7 +572,7 @@ gulp.task('createChromeExtensionManifest', function () {
     var chromeExtensionManifest = chromeExtensionManifestTemplate;
     chromeExtensionManifest.name = appSettings.appDisplayName;
     chromeExtensionManifest.description = appSettings.appDescription;
-    chromeExtensionManifest.version = process.env.IONIC_APP_VERSION_NUMBER;
+    chromeExtensionManifest.version = versionNumbers.ionicApp;
     chromeExtensionManifest.permissions.push("https://*.quantimo.do/*");
     chromeExtensionManifest.appSettings = appSettings;
     chromeExtensionManifest = JSON.stringify(chromeExtensionManifest, null, 2);
@@ -613,7 +625,7 @@ gulp.task('getAppConfigs', [], function () {
     var options = getRequestOptions('/api/v1/appSettings');
     return rp(options).then(function (response) {
         appSettings = response.appSettings;
-        appSettings.versionNumber = process.env.IONIC_APP_VERSION_NUMBER;
+        appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
@@ -1133,13 +1145,7 @@ gulp.task('ionicUploadStagingForAllApps', function (callback) {
 });
 gulp.task('ionicUploadAllApps', function (callback) {
     runSequence(
-        'setEnergyModoEnvs',
-        'configureApp',
-        'ionicUploadProduction',
         'setMediModoEnvs',
-        'configureApp',
-        'ionicUploadProduction',
-        'setMindFirstEnvs',
         'configureApp',
         'ionicUploadProduction',
         'setMoodiModoEnvs',
@@ -1448,16 +1454,14 @@ gulp.task('removeCordovaJsFromIndexHtml', function () {
     return replaceTextInFiles(['www/index.html'], uncommentedCordovaScript, commentedCordovaScript);
 });
 gulp.task('setVersionNumberInFiles', function () {
-    if (!process.env.IONIC_IOS_APP_VERSION_NUMBER) {throw 'Please set process.env.IONIC_IOS_APP_VERSION_NUMBER';}
-    if (!process.env.IONIC_APP_VERSION_NUMBER) {throw 'Please set process.env.IONIC_APP_VERSION_NUMBER';}
     var filesToUpdate = [
         defaultAppConfigPath,
         '.travis.yml',
         'resources/chrome_app/manifest.json'
     ];
     return gulp.src(filesToUpdate, {base: '.'}) // Every file allown.
-        .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_IOS_APP_VERSION_NUMBER))
-        .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_APP_VERSION_NUMBER))
+        .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.iosCFBundleVersion))
+        .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', versionNumbers.ionicApp))
         .pipe(gulp.dest('./'));
 });
 gulp.task('ic_notification', function () {
@@ -1479,24 +1483,13 @@ gulp.task('setEnvsFromBranchName', [], function (callback) {
         'getAppConfigs',
         callback);
 });
-gulp.task('setEnergyModoEnvs', [], function (callback) {
-    process.env.QUANTIMODO_CLIENT_ID = 'energymodo';
-    runSequence(
-        'getAppConfigs',
-        callback);
-});
 gulp.task('setMediModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'medimodo';
     runSequence(
         'getAppConfigs',
         callback);
 });
-gulp.task('setMindFirstEnvs', [], function (callback) {
-    process.env.QUANTIMODO_CLIENT_ID = 'mindfirst';
-    runSequence(
-        'getAppConfigs',
-        callback);
-});
+
 gulp.task('setMoodiModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'moodimodo';
     runSequence(
@@ -1513,20 +1506,6 @@ gulp.task('setQuantiModoEnvs', [], function (callback) {
     runSequence(
         'getAppConfigs',
         callback);
-});
-gulp.task('setMindFirstEnvs', [], function (callback) {
-    process.env.QUANTIMODO_CLIENT_ID = 'mindfirst';
-    runSequence(
-        'getAppConfigs',
-        callback);
-});
-gulp.task('setAndroidEnvs', [], function (callback) {
-    process.env.CONFIG_XML_TEMPLATE_PATH = './config-template.xml';
-    callback();
-});
-gulp.task('setIosEnvs', [], function (callback) {
-    process.env.CONFIG_XML_TEMPLATE_PATH = './config-template-ios.xml';
-    callback();
 });
 gulp.task('cleanResources', [], function () {
     return gulp.src('resources/*', {read: false}).pipe(clean());
@@ -1615,16 +1594,14 @@ gulp.task('ionicResourcesIos', [], function (callback) {
         }
     });
 });
+function addAppSettingsToParsedConfigXml(parsedXmlFile) {
+    parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
+    parsedXmlFile.widget.description[0] = appSettings.appDescription;
+    parsedXmlFile.widget.$['id'] = appSettings.additionalSettings.appIds.appIdentifier;
+    return parsedXmlFile;
+}
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
-    if (!process.env.CONFIG_XML_TEMPLATE_PATH) {
-        process.env.CONFIG_XML_TEMPLATE_PATH = './config-template.xml';
-        console.warn('CONFIG_XML_TEMPLATE_PATH not set!  Falling back to ' + process.env.CONFIG_XML_TEMPLATE_PATH);
-    } else {console.log('generateConfigXmlFromTemplate using ' + process.env.CONFIG_XML_TEMPLATE_PATH);}
-    var xml = fs.readFileSync(process.env.CONFIG_XML_TEMPLATE_PATH, 'utf8');
-    if (!xml) {
-        console.log('Could not find template at CONFIG_XML_TEMPLATE_PATH ' + process.env.CONFIG_XML_TEMPLATE_PATH);
-        return;
-    }
+    var xml = fs.readFileSync('config-template-' + platformCurrentlyBuildingFor + '.xml', 'utf8');
     if (appSettings.additionalSettings.appIds.googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.appIds.googleReversedClientId);
     }
@@ -1632,48 +1609,9 @@ gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], fun
         if (err) {
             throw new Error('ERROR: failed to read xml file', err);
         } else {
-            if (appSettings.appDisplayName) {
-                parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
-                console.log('Setting config.xml name to ' + parsedXmlFile.widget.name[0]);
-            } else {throw('APP_DISPLAY_NAME env not set! Falling back to default QuantiModo APP_DISPLAY_NAME');}
-            if (appSettings.appDescription) {
-                parsedXmlFile.widget.description[0] = appSettings.appDescription;
-                console.log('Setting config.xml description to ' + parsedXmlFile.widget.description[0]);
-            } else {throw('APP_DESCRIPTION env not set! Falling back to default QuantiModo APP_DESCRIPTION');}
-            if (appSettings.additionalSettings.appIds.appIdentifier) {
-                parsedXmlFile.widget.$['id'] = appSettings.additionalSettings.appIds.appIdentifier;
-                console.log('Setting config.xml id to ' + parsedXmlFile.widget.$['id']);
-            } else {
-                throw('appSettings.additionalSettings.appIds.appIdentifier not set: ' + JSON.stringify(appSettings));
-            }
-            if (process.env.IONIC_APP_VERSION_NUMBER) {
-                parsedXmlFile.widget.$['version'] = process.env.IONIC_APP_VERSION_NUMBER;
-                console.log('Setting config.xml version to ' + parsedXmlFile.widget.$['version']);
-            }
-            if (process.env.IONIC_IOS_APP_VERSION_NUMBER) {
-                parsedXmlFile.widget.$['ios-CFBundleVersion'] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
-                parsedXmlFile.widget.$['ios-CFBundleVersion'] = getIsoString();
-                console.log('Setting config.xml ios-CFBundleVersion to ' + parsedXmlFile.widget.$['ios-CFBundleVersion']);
-            }
+            parsedXmlFile = addAppSettingsToParsedConfigXml(parsedXmlFile);
+            parsedXmlFile = setVersionNumbersInWidget(parsedXmlFile);
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
-        }
-    });
-});
-gulp.task('bumpIosVersion', function (callback) {
-    var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
-    parseString(xml, function (err, parsedXmlFile) {
-        if (err) {
-            console.log('failed to read xml file', err);
-        } else {
-            var numberToBumpArr = parsedXmlFile.widget.$['ios-CFBundleVersion'].split('.');
-            var numberToBump = numberToBumpArr[numberToBumpArr.length - 1];
-            numberToBumpArr[numberToBumpArr.length - 1] = (parseInt(numberToBump) + 1).toString();
-            // Lets just use the timestamp to simplify matters
-            numberToBumpArr[numberToBumpArr.length - 1] = Math.floor(Date.now() / 1000);
-            parsedXmlFile.widget.$['ios-CFBundleVersion'] = numberToBumpArr.join('.');
-            parsedXmlFile.widget.$['ios-CFBundleVersion'] = getIsoString();
-            writeToXmlFile('./config.xml', parsedXmlFile);
-            writeToXmlFile('./config-template-ios.xml', parsedXmlFile, callback);
         }
     });
 });
@@ -1689,12 +1627,10 @@ gulp.task('prepareIosAppIfEnvIsSet', function (callback) {
         callback);
 });
 gulp.task('prepareIosApp', function (callback) {
+    platformCurrentlyBuildingFor = 'ios';
     runSequence(
-        'setIosEnvs',
-        //'gitPull',  Not sure why we needed this
         'cleanPlugins',
         'configureApp',
-        'bumpIosVersion',
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
         'removeTransparentPng',
@@ -1828,14 +1764,6 @@ gulp.task('buildMoodiModo', function (callback) {
         'prepareIosApp',
         callback);
 });
-gulp.task('buildMindFirst', function (callback) {
-    runSequence(
-        'setMindFirstEnvs',
-        'buildChromeExtension',
-        'buildAndroidApp',
-        'prepareIosApp',
-        callback);
-});
 gulp.task('buildMediModo', function (callback) {
     runSequence(
         'setMediModoEnvs',
@@ -1859,21 +1787,10 @@ gulp.task('buildMediModoAndroid', function (callback) {
         'buildAndroidApp',
         callback);
 });
-gulp.task('buildEnergyModoAndroid', function (callback) {
-    runSequence(
-        'setEnergyModoEnvs',
-        'prepareRepositoryForAndroid',
-        'buildAndroidApp',
-        callback);
-});
 gulp.task('buildAllChromeExtensions', function (callback) {
     runSequence(
         'cleanBuildFolder',
-        'setEnergyModoEnvs',
-        'buildChromeExtension',
         'setMediModoEnvs',
-        'buildChromeExtension',
-        'setMindFirstEnvs',
         'buildChromeExtension',
         'setMoodiModoEnvs',
         'buildChromeExtension',
@@ -1886,13 +1803,7 @@ gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
         'cleanBuildFolder',
         'prepareRepositoryForAndroid',
         'prepareRepoForChromeExtension',
-        'setEnergyModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
-        'buildAndroidApp',
         'setMediModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
-        'buildAndroidApp',
-        'setMindFirstEnvs',
         'buildChromeExtensionWithoutCleaning',
         'buildAndroidApp',
         'setMoodiModoEnvs',
@@ -1991,12 +1902,7 @@ gulp.task('prepareQuantiModoIos', function (callback) {
         'prepareIosApp',
         callback);
 });
-gulp.task('prepareMindFirstIos', function (callback) {
-    runSequence(
-        'setMindFirstEnvs',
-        'prepareIosApp',
-        callback);
-});
+
 gulp.task('generateAndroidResources', [], function (callback) {
     return execute('ionic resources android', function (error) {
         if (error !== null) {
@@ -2029,9 +1935,9 @@ gulp.task('resizeIcons', function (callback) {
         callback);
 });
 gulp.task('prepareRepositoryForAndroid', function (callback) {
+    platformCurrentlyBuildingFor = 'android';
     runSequence(
         'setAppEnvs',
-        'setAndroidEnvs',
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
@@ -2048,9 +1954,9 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         callback);
 });
 gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
+    platformCurrentlyBuildingFor = 'android';
     runSequence(
         'setAppEnvs',
-        'setAndroidEnvs',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'ionicPlatformAddAndroid',
         'decryptAndroidKeystore',
@@ -2064,9 +1970,9 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         callback);
 });
 gulp.task('prepareAndroidApp', function (callback) {
+    platformCurrentlyBuildingFor = 'android';
     runSequence(
         'configureApp',
-        'setAndroidEnvs',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
@@ -2088,12 +1994,6 @@ gulp.task('buildAndroidApp', function (callback) {
         "upload-armv7-release-apk-to-s3",
         "fastlaneSupplyBeta",
         "post-app-status",
-        callback);
-});
-gulp.task('prepareMindFirstAndroid', function (callback) {
-    runSequence(
-        'setMindFirstEnvs',
-        'prepareAndroidApp',
         callback);
 });
 gulp.task('prepareQuantiModoAndroid', function (callback) {
