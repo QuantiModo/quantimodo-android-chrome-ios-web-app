@@ -1,5 +1,7 @@
 # Customize the test machine
 machine:
+  ruby:
+    version: 2.4.1
   java:
     version: oraclejdk8
   environment:
