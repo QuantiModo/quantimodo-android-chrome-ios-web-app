@@ -317,9 +317,9 @@ function resizeIcon(callback, resolution) {
     });
 }
 function fastlaneSupply(track, callback) {
-    var pathToApks = 'build/' + process.env.QUANTIMODO_CLIENT_ID;
+    var pathToApks = buildPath + '/' + process.env.QUANTIMODO_CLIENT_ID;
     executeCommand('fastlane supply' +
-        ' --apk_paths ' + pathToApks + '/android-armv7-release.apk,' + pathToApks + '/android-x86-release.apk' +
+        ' --apk_paths ' + pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk +
         ' --track ' + track +
         ' --json_key supply_json_key_for_google_play.json',
         callback);
