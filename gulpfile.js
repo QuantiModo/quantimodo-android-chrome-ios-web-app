@@ -100,9 +100,10 @@ var pathToDebugArmv7Apk = pathToOutputApks + '/' + androidArm7DebugApkName + '.a
 var androidX86DebugApkName = 'android-x86-debug';
 var pathToDebugx86Apk = pathToOutputApks + '/' + androidX86DebugApkName + '.apk';
 
+var buildPath = 'build';
 var chromExtensionFilename = 'chrome-extension';
 var chromeExtensionZipFilename = chromExtensionFilename + '.zip';
-var pathToBuiltChromeExtensionZip = 'build/' + chromeExtensionZipFilename;
+var pathToBuiltChromeExtensionZip = buildPath + '/' + chromeExtensionZipFilename;
 var chromeExtensionManifestTemplate = {
     'manifest_version': 2,
     'options_page': 'www/chrome_extension/options/options.html',
@@ -126,7 +127,8 @@ var chromeExtensionManifestTemplate = {
         'persistent': false
     }
 };
-var chromeExtensionBuildPath = 'build/chrome_extension';
+var chromeExtensionBuildPath = buildPath + '/chrome_extension';
+var pathToUnzippedChromeExtension = buildPath + '/unzipped-chrome-extension';
 var paths = {
     sass: ['./www/scss/**/*.scss']
 };
@@ -152,6 +154,14 @@ function readDevCredentials(){
     } catch (error){
         console.log('No existing dev credentials found');
         devCredentials = {};
+    }
+}
+function validateJsonFile(filePath) {
+    try{
+        devCredentials = JSON.parse(fs.readFileSync(filePath));
+        console.log(filePath + " is valid json");
+    } catch (error){
+        throw(filePath + " is NOT valid json!");
     }
 }
 var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
@@ -649,6 +659,9 @@ gulp.task('post-notify-collaborators-android', ['getAppConfigs'], function () {
 gulp.task('post-app-status', [], function () {
     return postAppStatus();
 });
+gulp.task('validateChromeManifest', function () {
+    return validateJsonFile(pathToUnzippedChromeExtension + '/manifest.json');
+});
 gulp.task('verifyExistenceOfDefaultConfig', function () {
     return verifyExistenceOfFile(defaultAppConfigPath);
 });
@@ -680,10 +693,9 @@ gulp.task('getSHA1FromAPK', function () {
 });
 gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
-    var minimatch = require('minimatch');
-    gulp.src('./build/' + process.env.QUANTIMODO_CLIENT_ID + '-Chrome-Extension.zip')
+    gulp.src(pathToBuiltChromeExtensionZip)
         .pipe(unzip())
-        .pipe(gulp.dest('./build/' + process.env.QUANTIMODO_CLIENT_ID + '-Chrome-Extension'));
+        .pipe(gulp.dest(pathToUnzippedChromeExtension));
 });
 gulp.task('sass', function (done) {
     gulp.src('./www/scss/app.scss')
@@ -1520,7 +1532,7 @@ gulp.task('cleanChromeBuildFolder', [], function () {
     return gulp.src(chromeExtensionBuildPath + '/*', {read: false}).pipe(clean());
 });
 gulp.task('cleanBuildFolder', [], function () {
-    return gulp.src('build/*', {read: false}).pipe(clean());
+    return gulp.src(buildPath + '/*', {read: false}).pipe(clean());
 });
 gulp.task('copyAppResources', ['cleanResources'], function () {
     console.log('If this doesn\'t work, make sure there are no symlinks in the apps folder!');
@@ -1546,7 +1558,7 @@ gulp.task('copyAndroidResources', [], function () {
 });
 gulp.task('copyAndroidBuild', [], function () {
     if (!process.env.QUANTIMODO_CLIENT_ID) {throw 'process.env.QUANTIMODO_CLIENT_ID not set!';}
-    var buildFolderPath = 'build/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
+    var buildFolderPath = buildPath + '/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
     console.log('Copying from ' + pathToOutputApks + ' to ' + buildFolderPath);
     return gulp.src([pathToOutputApks + '/*.apk']).pipe(gulp.dest(buildFolderPath));
 });
@@ -1777,6 +1789,7 @@ gulp.task('buildChromeExtensionWithoutCleaning', [], function (callback) {
         'createChromeExtensionManifest',
         'zipChromeExtension',
         'unzipChromeExtension',
+        'validateChromeManifest',
         callback);
 });
 gulp.task('buildChromeExtension', [], function (callback) {
