@@ -24,6 +24,7 @@ dependencies:
     #- wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
     #- tar -xzf sc-latest-linux.tar.gz
   pre:
+    - ruby -v
     - mkdir node_modules || true # must exist prior to override to cache
     - mkdir platforms || true # must exist prior to override to cache
     - mkdir plugins || true # must exist prior to override to cache
