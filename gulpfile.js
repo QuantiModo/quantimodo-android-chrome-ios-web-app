@@ -713,6 +713,18 @@ gulp.task('getSHA1FromAPK', function () {
         if (error !== null) {console.error('ERROR: ' + error);} else {console.log('DECRYPTED to ' + pathToReleaseArmv7Apk);}
     });
 });
+function outputVersionCodeForApk(pathToApk) {
+    var cmd = 'aapt dump badging ' + pathToApk;
+    return execute(cmd, function (error) {
+        if (error !== null) {console.error('ERROR: ' + error);}
+    });
+}
+gulp.task('outputX86ApkVersionCode', function () {
+    return outputVersionCodeForApk(pathToReleasex86Apk);
+});
+gulp.task('outputArmv7ApkVersionCode', function () {
+    return outputVersionCodeForApk(pathToReleaseArmv7Apk);
+});
 gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
     return unzipFile(pathToBuiltChromeExtensionZip, pathToUnzippedChromeExtension);
@@ -1988,6 +2000,8 @@ gulp.task('buildAndroidApp', function (callback) {
         'copyAndroidLicenses',
         'prepareAndroidApp',
         'cordovaBuildAndroidRelease',
+        'outputArmv7ApkVersionCode',
+        'outputX86ApkVersionCode',
         //'cordovaBuildAndroidDebug',
         //'copyAndroidBuild',
         "upload-x86-release-apk-to-s3",
