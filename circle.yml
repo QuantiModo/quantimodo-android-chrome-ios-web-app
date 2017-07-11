@@ -100,7 +100,6 @@ deployment:
       - gulp buildChromeExtension
       - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
-      - gulp fastlaneSupplyBeta
   production:
     branch: master
     commands:

@@ -2088,6 +2088,7 @@ gulp.task('buildAndroidApp', function (callback) {
         //'copyAndroidBuild',
         "upload-x86-release-apk-to-s3",
         "upload-armv7-release-apk-to-s3",
+        "fastlaneSupplyBeta",
         "post-app-status",
         callback);
 });
