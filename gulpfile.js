@@ -736,7 +736,7 @@ gulp.task('deleteNodeModules', function () {
         'task again.');
     return gulp.src('node_modules/*', {read: false}).pipe(clean());
 });
-gulp.task('getDevusernameFromUserInput', [], function () {
+gulp.task('getDevUsernameFromUserInput', [], function () {
     var deferred = q.defer();
     if(devCredentials.username){
         console.log("Using username " + devCredentials.username + " from " + devCredentialsPath);
@@ -768,7 +768,7 @@ gulp.task('getDevPasswordFromUserInput', [], function () {
 });
 gulp.task('devSetup', [], function (callback) {
     runSequence(
-        'getDevusernameFromUserInput',
+        'getDevUsernameFromUserInput',
         'getDevPasswordFromUserInput',
         'getClientIdFromUserInput',
         'configureApp',
