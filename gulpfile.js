@@ -440,9 +440,9 @@ function writeToXmlFile(outputFilePath, parsedXmlFile, callback) {
         }
     });
 }
-function replaceTextInFiles(filesArray, search, replace){
+function replaceTextInFiles(filesArray, textToReplace, replacementText){
     return gulp.src(filesArray, {base: '.'}) // Every file allown.
-        .pipe(replace(search, replace))
+        .pipe(replace(textToReplace, replacementText))
         .pipe(gulp.dest('./'));
 }
 function prettyPrintJsonObject(object){
