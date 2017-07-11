@@ -63,7 +63,7 @@ angular.module('starter')
             }
             localDateAndTime = moment.utc(epochTime).local().format(" dddd, MMMM Do");
             return localDateAndTime;
-        } 
+        }
         return "";
     };
 })
@@ -330,6 +330,12 @@ angular.module('starter')
         var aliasName = config.appSettings.appDesign.wordAliases[originalName];
         if(typeof(aliasName) !== "undefined"){return aliasName;}
         return originalName;
+    };
+})
+.filter('useHttps', function(){
+    return function(originalName){
+        if(!originalName){return originalName;}
+        return originalName.replace("http://", "https://");
     };
 })
 .filter('truncateText', function(){
