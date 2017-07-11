@@ -154,7 +154,7 @@ function readDevCredentials(){
         devCredentials = {};
     }
 }
-var s3BaseUrl = 'http://quantimodo.s3.amazonaws.com/';
+var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
 readDevCredentials();
 function convertToCamelCase(string) {
     string = string.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
