@@ -1045,10 +1045,10 @@ gulp.task('ionicServe', function (callback) {
 gulp.task('ionicStateReset', function (callback) {
     executeCommand('ionic state reset', callback);
 });
-gulp.task('fastlaneSupplyBeta', function (callback) {
+gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     fastlaneSupply('beta', callback);
 });
-gulp.task('fastlaneSupplyProduction', function (callback) {
+gulp.task('fastlaneSupplyProduction', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
     fastlaneSupply('production', callback);
 });
 gulp.task('ionicResources', function (callback) {
