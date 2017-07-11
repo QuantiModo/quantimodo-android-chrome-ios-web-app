@@ -79,27 +79,22 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
-
 var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
-
 var appSettings, privateConfig, devCredentials;
 var privateConfigDirectoryPath = './www/private_configs/';
 var appConfigDirectoryPath = './www/configs/';
 var defaultPrivateConfigPath = privateConfigDirectoryPath + 'default.private_config.json';
 var devCredentialsPath = privateConfigDirectoryPath + 'dev-credentials.json';
 var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
-
 var pathToOutputApks = 'platforms/android/build/outputs/apk';
 var androidArm7ReleaseApkName = 'android-armv7-release';
 var pathToReleaseArmv7Apk = pathToOutputApks + '/' + androidArm7ReleaseApkName + '.apk';
 var androidX86ReleaseApkName = 'android-x86-release';
 var pathToReleasex86Apk = pathToOutputApks + '/' + androidX86ReleaseApkName + '.apk';
-
 var androidArm7DebugApkName = 'android-armv7-debug';
 var pathToDebugArmv7Apk = pathToOutputApks + '/' + androidArm7DebugApkName + '.apk';
 var androidX86DebugApkName = 'android-x86-debug';
 var pathToDebugx86Apk = pathToOutputApks + '/' + androidX86DebugApkName + '.apk';
-
 var buildPath = 'build';
 var chromExtensionFilename = 'chrome-extension';
 var chromeExtensionZipFilename = chromExtensionFilename + '.zip';
@@ -132,7 +127,6 @@ var pathToUnzippedChromeExtension = buildPath + '/unzipped-chrome-extension';
 var paths = {
     sass: ['./www/scss/**/*.scss']
 };
-
 function setVersionNumbers(){
     var date = new Date();
     var longDate = date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate().toString();
@@ -334,6 +328,7 @@ function fastlaneSupply(track, callback) {
         ' --skip_upload_metadata ' +
         ' --skip_upload_images ' +
         ' --skip_upload_screenshots ' +
+        ' --verbose ' +
         ' --package_name ' + appSettings.additionalSettings.appIds.appIdentifier +
         ' --json_key supply_json_key_for_google_play.json',
         callback);
@@ -356,16 +351,7 @@ function setVersionNumberInConfigXml(configFilePath, callback) {
             parsedXmlFile.widget.$['version'] = process.env.IONIC_APP_VERSION_NUMBER;
             parsedXmlFile.widget.$['ios-CFBundleVersion'] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
             parsedXmlFile.widget.$['ios-CFBundleVersion'] = getIsoString();
-            var builder = new xml2js.Builder();
-            var updatedXml = builder.buildObject(parsedXmlFile);
-            fs.writeFile(configFilePath, updatedXml, 'utf8', function (error) {
-                if (error) {
-                    console.error('ERROR: error writing to xml file', error);
-                } else {
-                    console.log('successfully updated the version number xml file');
-                    callback();
-                }
-            });
+            writeToXmlFile(configFilePath, parsedXmlFile, callback);
         }
     });
 }
@@ -429,6 +415,47 @@ function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
         if (!err) {console.log(filePath + ' exists');} else {throw 'Could not create ' + filePath + ': '+ err;}
     });
+}
+function writeToXmlFile(outputFilePath, parsedXmlFile, callback) {
+    var builder = new xml2js.Builder();
+    var updatedXml = builder.buildObject(parsedXmlFile);
+    fs.writeFile(outputFilePath, updatedXml, 'utf8', function (error) {
+        if (error) {
+            console.error('ERROR: error writing to xml file', error);
+        } else {
+            console.log('Successfully wrote the xml file: ' + updatedXml);
+            if(callback){callback();}
+        }
+    });
+}
+function replaceTextInFiles(filesArray, search, replace){
+    return gulp.src(filesArray, {base: '.'}) // Every file allown.
+        .pipe(replace(search, replace))
+        .pipe(gulp.dest('./'));
+}
+function prettyPrintJsonObject(object){
+    return JSON.stringify(object, null, 2);
+}
+function outputApiErrorResponse(err) {
+    err.message = err.message.replace(err.statusCode + ' - ', '');
+    console.error(err.message);
+    var errorMessageObject = JSON.parse(err.message);
+    console.error(prettyPrintJsonObject(errorMessageObject)); // Pretty print
+}
+function getFileNameFromUrl(url) {
+    return url.split('/').pop();
+}
+function downloadEncryptedFile(url, outputFileName) {
+    var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
+    var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url)
+    console.log("Downloading " + downloadUrl + ' to ' + decryptedFilename);
+    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN)
+        .pipe(fs.createWriteStream(outputFileName));
+}
+function unzipFile(pathToZipFile, pathToOutputFolder) {
+    return gulp.src(pathToZipFile)
+        .pipe(unzip())
+        .pipe(gulp.dest(pathToOutputFolder));
 }
 // Setup platforms to build that are supported on current hardware
 // See https://taco.visualstudio.com/en-us/docs/tutorial-gulp-readme/
@@ -567,15 +594,6 @@ gulp.task('downloadSplashScreen', [], function(){
         .pipe(rename('splash.png'))
         .pipe(gulp.dest("./resources"));
 });
-function prettyPrintJsonObject(object){
-    return JSON.stringify(object, null, 2);
-}
-function outputApiErrorResponse(err) {
-    err.message = err.message.replace(err.statusCode + ' - ', '');
-    console.error(err.message);
-    var errorMessageObject = JSON.parse(err.message);
-    console.error(prettyPrintJsonObject(errorMessageObject)); // Pretty print
-}
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
     if(process.env.CIRCLECI){options.server = "circleci";}
@@ -620,16 +638,6 @@ gulp.task('getAppConfigs', [], function () {
         throw err;
     });
 });
-function getFileNameFromUrl(url) {
-    return url.split('/').pop();
-}
-function downloadEncryptedFile(url, outputFileName) {
-    var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
-    var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url)
-    console.log("Downloading " + downloadUrl + ' to ' + decryptedFilename);
-    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN)
-        .pipe(fs.createWriteStream(outputFileName));
-}
 gulp.task('getAndroidReleaseKeystore', ['getAppConfigs'], function () {
     if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
         throw "Please upload your Android release keystore at " + getAppEditUrl();
@@ -648,7 +656,6 @@ gulp.task('getAndroidManifest', ['getAppConfigs'], function () {
     }
     return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidMaifestJsonFile, "www/manifest.json");
 });
-
 gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
     runSequence(
         'verifyExistenceOfAndroidX86ReleaseBuild',
@@ -695,12 +702,6 @@ gulp.task('getSHA1FromAPK', function () {
     });
 });
 gulp.task('default', ['sass']);
-
-function unzipFile(pathToZipFile, pathToOutputFolder) {
-    return gulp.src(pathToZipFile)
-        .pipe(unzip())
-        .pipe(gulp.dest(pathToOutputFolder));
-}
 gulp.task('unzipChromeExtension', function () {
     return unzipFile(pathToBuiltChromeExtensionZip, pathToUnzippedChromeExtension);
 });
@@ -1438,16 +1439,20 @@ gulp.task('setVersionNumberInIosConfigXml', [], function (callback) {
     var configFilePath = './config-template-ios.xml';
     setVersionNumberInConfigXml(configFilePath, callback);
 });
+var uncommentedCordovaScript = '<script src="cordova.js"></script>';
+var commentedCordovaScript = '<!-- cordova.js placeholder -->';
+gulp.task('uncommentCordovaJsInIndexHtml', function () {
+    return replaceTextInFiles(['www/index.html'], commentedCordovaScript, uncommentedCordovaScript);
+});
+gulp.task('removeCordovaJsFromIndexHtml', function () {
+    return replaceTextInFiles(['www/index.html'], uncommentedCordovaScript, commentedCordovaScript);
+});
 gulp.task('setVersionNumberInFiles', function () {
     if (!process.env.IONIC_IOS_APP_VERSION_NUMBER) {throw 'Please set process.env.IONIC_IOS_APP_VERSION_NUMBER';}
     if (!process.env.IONIC_APP_VERSION_NUMBER) {throw 'Please set process.env.IONIC_APP_VERSION_NUMBER';}
     var filesToUpdate = [
         defaultAppConfigPath,
-        //'gulp.js',
         '.travis.yml',
-        //'config.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
-        //'config-template.xml',  // This should be done with setVersionNumberInConfigXml to avoid plugin version replacements
-        //'config-template-ios.xml',  // This should be done with setVersionNumberInIosConfigXml to avoid plugin version replacements
         'resources/chrome_app/manifest.json'
     ];
     return gulp.src(filesToUpdate, {base: '.'}) // Every file allown.
@@ -1650,16 +1655,7 @@ gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], fun
                 parsedXmlFile.widget.$['ios-CFBundleVersion'] = getIsoString();
                 console.log('Setting config.xml ios-CFBundleVersion to ' + parsedXmlFile.widget.$['ios-CFBundleVersion']);
             }
-            var builder = new xml2js.Builder();
-            var updatedXmlFile = builder.buildObject(parsedXmlFile);
-            fs.writeFile('./config.xml', updatedXmlFile, 'utf8', function (error) {
-                if (error) {
-                    console.error('ERROR: Error updating version number in config.xml', error);
-                } else {
-                    console.log('Successfully updated config.xml file');
-                    callback();
-                }
-            });
+            writeToXmlFile('./config.xml', parsedXmlFile, callback);
         }
     });
 });
@@ -1676,23 +1672,8 @@ gulp.task('bumpIosVersion', function (callback) {
             numberToBumpArr[numberToBumpArr.length - 1] = Math.floor(Date.now() / 1000);
             parsedXmlFile.widget.$['ios-CFBundleVersion'] = numberToBumpArr.join('.');
             parsedXmlFile.widget.$['ios-CFBundleVersion'] = getIsoString();
-            var builder = new xml2js.Builder();
-            var updatedXml = builder.buildObject(parsedXmlFile);
-            fs.writeFile('./config.xml', updatedXml, 'utf8', function (error) {
-                if (error) {
-                    console.error('ERROR: error writing to xml file', error);
-                } else {
-                    console.log('successfully updated the version number xml file');
-                }
-            });
-            fs.writeFile('./config-template-ios.xml', updatedXml, 'utf8', function (err) {
-                if (err) {
-                    console.log('error writing to config-template-ios.xml file', err);
-                } else {
-                    console.log('successfully updated the version number config-template-ios.xml file');
-                    callback();
-                }
-            });
+            writeToXmlFile('./config.xml', parsedXmlFile);
+            writeToXmlFile('./config-template-ios.xml', parsedXmlFile, callback);
         }
     });
 });
@@ -1714,6 +1695,7 @@ gulp.task('prepareIosApp', function (callback) {
         'cleanPlugins',
         'configureApp',
         'bumpIosVersion',
+        'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
         'removeTransparentPng',
         'removeTransparentPsd',
@@ -1771,14 +1753,15 @@ gulp.task('configureApp', [], function (callback) {
         'downloadIcon',
         'downloadSplashScreen',
         'verifyExistenceOfDefaultConfig',
-        // templates because of the git changes and weird stuff replacement does to config-template.xml
-        //'copyIonicCloudLibrary', I think we just keep it in custom-lib now
-        //'resizeIcons',  I don't want to run this here because I think it breaks BuddyBuild and Bitrise iOS builds
         'copyIconsToWwwImg',
-        //'generateConfigXmlFromTemplate',  Can't do this here because it will overwrite iOS config on BuildBuddy
         'setVersionNumberInFiles',
-        //'prepareIosAppIfEnvIsSet',  Can't run this here because prepareIosApp calls configureApp
-        //'deleteUnusedFiles',  //This doesn't seem to make the app any smaller
+        callback);
+});
+gulp.task('configureWebApp', [], function (callback) {
+    console.log('gulp configureApp');
+    runSequence(
+        'configureApp',
+        'removeCordovaJsFromIndexHtml',
         callback);
 });
 gulp.task('configureDefaultApp', [], function (callback) {
@@ -1790,7 +1773,7 @@ gulp.task('configureDefaultApp', [], function (callback) {
 });
 gulp.task('buildChromeExtensionWithoutCleaning', [], function (callback) {
     runSequence(
-        'configureApp',
+        'configureWebApp',
         'resizeIcons',
         'copyIconsToChromeExtension',
         'createChromeExtensionManifest',
@@ -2049,6 +2032,7 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
     runSequence(
         'setAppEnvs',
         'setAndroidEnvs',
+        'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
         'cleanPlugins',
