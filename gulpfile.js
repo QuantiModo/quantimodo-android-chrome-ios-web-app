@@ -331,6 +331,9 @@ function fastlaneSupply(track, callback) {
     executeCommand('fastlane supply' +
         ' --apk_paths ' + pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk +
         ' --track ' + track +
+        ' --skip_upload_metadata ' +
+        ' --skip_upload_images ' +
+        ' --skip_upload_screenshots ' +
         ' --package_name ' + appSettings.additionalSettings.appIds.appIdentifier +
         ' --json_key supply_json_key_for_google_play.json',
         callback);
@@ -687,19 +690,22 @@ gulp.task('getCommonVariables', function () {
 gulp.task('getSHA1FromAPK', function () {
     console.log('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
     var cmd = 'keytool -list -printcert -jarfile ' + pathToReleaseArmv7Apk + ' | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64';
-    execute(cmd, function (error) {
+    return execute(cmd, function (error) {
         if (error !== null) {console.error('ERROR: ' + error);} else {console.log('DECRYPTED to ' + pathToReleaseArmv7Apk);}
     });
 });
 gulp.task('default', ['sass']);
 
-gulp.task('unzipChromeExtension', function () {
-    gulp.src(pathToBuiltChromeExtensionZip)
+function unzipFile(pathToZipFile, pathToOutputFolder) {
+    return gulp.src(pathToZipFile)
         .pipe(unzip())
-        .pipe(gulp.dest(pathToUnzippedChromeExtension));
+        .pipe(gulp.dest(pathToOutputFolder));
+}
+gulp.task('unzipChromeExtension', function () {
+    return unzipFile(pathToBuiltChromeExtensionZip, pathToUnzippedChromeExtension);
 });
 gulp.task('sass', function (done) {
-    gulp.src('./www/scss/app.scss')
+    gulp.src('./www/scss/app.scss')  // Can't use "return" because gulp doesn't know whether to respect that or the "done" callback
         .pipe(sass({errLogToConsole: true}))
         .pipe(gulp.dest('./www/css/'))
         .pipe(minifyCss({keepSpecialComments: 0}))
