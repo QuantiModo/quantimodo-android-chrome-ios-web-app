@@ -158,9 +158,10 @@ function readDevCredentials(){
 }
 function validateJsonFile(filePath) {
     try{
-        devCredentials = JSON.parse(fs.readFileSync(filePath));
+        var parsedOutput = JSON.parse(fs.readFileSync(filePath));
         console.log(filePath + " is valid json");
     } catch (error){
+        console.error(error);
         throw(filePath + " is NOT valid json!");
     }
 }
@@ -327,7 +328,6 @@ function resizeIcon(callback, resolution) {
     });
 }
 function fastlaneSupply(track, callback) {
-    var pathToApks = buildPath + '/' + process.env.QUANTIMODO_CLIENT_ID;
     executeCommand('fastlane supply' +
         ' --apk_paths ' + pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk +
         ' --track ' + track +
@@ -684,14 +684,14 @@ gulp.task('getCommonVariables', function () {
         .pipe(gulp.dest('./www/data/'));
 });
 gulp.task('getSHA1FromAPK', function () {
-    var pathToAPK = 'android-armv7-release.apk';
     console.log('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
-    var cmd = 'keytool -list -printcert -jarfile ' + pathToAPK + ' | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64';
+    var cmd = 'keytool -list -printcert -jarfile ' + pathToReleaseArmv7Apk + ' | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64';
     execute(cmd, function (error) {
-        if (error !== null) {console.error('ERROR: ' + error);} else {console.log('DECRYPTED to ' + pathToAPK);}
+        if (error !== null) {console.error('ERROR: ' + error);} else {console.log('DECRYPTED to ' + pathToReleaseArmv7Apk);}
     });
 });
 gulp.task('default', ['sass']);
+
 gulp.task('unzipChromeExtension', function () {
     gulp.src(pathToBuiltChromeExtensionZip)
         .pipe(unzip())
@@ -1730,7 +1730,7 @@ gulp.task('removeAndroidManifestFromChromeExtension', [], function () {
         .pipe(clean());
 });
 gulp.task('zipChromeExtension', [], function () {
-    return zipAFolder(chromeExtensionBuildPath + '/**/*', chromeExtensionZipFilename, 'build');
+    return zipAFolder(chromeExtensionBuildPath, chromeExtensionZipFilename, buildPath);
 });
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
@@ -1787,25 +1787,19 @@ gulp.task('buildChromeExtensionWithoutCleaning', [], function (callback) {
         'resizeIcons',
         'copyIconsToChromeExtension',
         'createChromeExtensionManifest',
+        'removeFacebookFromChromeExtension',
+        'removeAndroidManifestFromChromeExtension',
         'zipChromeExtension',
         'unzipChromeExtension',
         'validateChromeManifest',
+        'upload-chrome-extension-to-s3',
+        'post-app-status',
         callback);
 });
 gulp.task('buildChromeExtension', [], function (callback) {
     runSequence(
-        'cleanChromeBuildFolder',
-        'configureApp',
-        'resizeIcons',
-        'copyIconsToWwwImg',
-        'copyWwwFolderToChromeExtension',  //Can't use symlinks
-        'createChromeExtensionManifest',
-        'removeFacebookFromChromeExtension',
-        'removeAndroidManifestFromChromeExtension',
-        'zipChromeExtension',
-        'upload-chrome-extension-to-s3',
-        'post-app-status',
-        'unzipChromeExtension',
+        'prepareRepoForChromeExtension',
+        'buildChromeExtensionWithoutCleaning',
         callback);
 });
 gulp.task('prepareRepoForChromeExtension', [], function (callback) {
