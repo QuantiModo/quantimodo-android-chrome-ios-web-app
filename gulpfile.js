@@ -318,7 +318,7 @@ function resizeIcon(callback, resolution) {
 }
 function fastlaneSupply(track, callback) {
     var pathToApks = 'build/' + process.env.QUANTIMODO_CLIENT_ID;
-    executeCommand('supply' +
+    executeCommand('fastlane supply' +
         ' --apk_paths ' + pathToApks + '/android-armv7-release.apk,' + pathToApks + '/android-x86-release.apk' +
         ' --track ' + track +
         ' --json_key supply_json_key_for_google_play.json',
