@@ -17,14 +17,17 @@
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar" />
   </feature>
-  <icon src="resources/icon.png"/>
+  <access origin="https://widget.intercom.io/*"/>
   <platform name="android">
+    <icon src="resources/icon.png"/>
     <hook type="after_prepare" src="package-hooks/android_custom_resources.js" />
     <allow-intent href="market:*" />
   </platform>
   <platform name="ios">
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
+    <preference name="KeychainAccessibility" value="WhenUnlocked"/>
+    <icon src="resources/ios/icon/icon-small@3x.png"/>
     <icon src="resources/ios/icon/icon.png" width="57" height="57"/>
     <icon src="resources/ios/icon/icon@2x.png" width="114" height="114"/>
     <icon src="resources/ios/icon/icon-40.png" width="40" height="40"/>
@@ -74,7 +77,6 @@
   <plugin name="cordova-plugin-geolocation" version="2.3.0"/>
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1"/>
   <plugin name="cordova-plugin-inapppurchase" spec="~1.1.0" />
-  <plugin name="cordova-plugin-mauron85-background-geolocation" spec="2.2.5"/>
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
   <plugin name="cordova-plugin-statusbar" version="2.2.0"/>
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2"/>
@@ -82,8 +84,15 @@
   <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
     <variable name="REVERSED_CLIENT_ID" value="REVERSED_CLIENT_ID_PLACEHOLDER" />
   </plugin>
+  <plugin name="cordova-plugin-mauron85-background-geolocation" spec="2.2.5">
+    <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app allows optional background location tracking to see how time spent at restaurants, the gym, work or doctors offices might be affecting you." />
+  </plugin>
   <plugin name="phonegap-plugin-push" version="1.10.5">
     <variable name="SENDER_ID" value="1052648855194"/>
+  </plugin>
+  <plugin name="cordova-plugin-facebook4" version="1.7.4">
+    <variable name="APP_ID" value="225078261031461"/>
+    <variable name="APP_NAME" value="QuantiModo"/>
   </plugin>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" id="YourWindowsAppIdentifierHere" />
