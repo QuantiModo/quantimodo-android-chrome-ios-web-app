@@ -6655,7 +6655,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(isTruthy(window.config.appSettings.debugMode)){window.debugMode = true;}
         console.debug("appSettings.clientId is " + window.config.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-        window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);
+        //window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
         //window.config.appSettings.appDesign.floatingActionButton = quantimodoService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
         if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
