@@ -38,6 +38,7 @@ dependencies:
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo gem install fastlane; fi
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
 
   cache_directories:
@@ -96,6 +97,7 @@ deployment:
       - gulp buildChromeExtension
       - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
+      - gulp fastlaneSupplyBeta
   production:
     branch: master
     commands:
@@ -103,3 +105,4 @@ deployment:
       - gulp buildAndroidApp
       - gulp buildChromeExtension
       - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
+      - gulp fastlaneSupplyProduction
