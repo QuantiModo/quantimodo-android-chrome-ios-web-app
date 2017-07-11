@@ -331,6 +331,7 @@ function fastlaneSupply(track, callback) {
     executeCommand('fastlane supply' +
         ' --apk_paths ' + pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk +
         ' --track ' + track +
+        ' --package_name ' + appSettings.additionalSettings.appIds.appIdentifier +
         ' --json_key supply_json_key_for_google_play.json',
         callback);
 }
