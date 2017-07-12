@@ -746,6 +746,11 @@ gulp.task('outputArmv7ApkVersionCode', function () {
         return outputVersionCodeForApk(pathToReleaseArmv7Apk);
     }
 });
+gulp.task('outputCombinedApkVersionCode', function () {
+    if(!appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+        return outputVersionCodeForApk(pathToReleaseArmv7Apk);
+    }
+});
 gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
     return unzipFile(pathToBuiltChromeExtensionZip, pathToUnzippedChromeExtension);
@@ -2034,6 +2039,7 @@ gulp.task('buildAndroidApp', function (callback) {
         'cordovaBuildAndroidRelease',
         'outputArmv7ApkVersionCode',
         'outputX86ApkVersionCode',
+        'outputCombinedApkVersionCode',
         //'cordovaBuildAndroidDebug',
         //'copyAndroidBuild',
         "upload-x86-release-apk-to-s3",
