@@ -87,6 +87,7 @@ var defaultPrivateConfigPath = privateConfigDirectoryPath + 'default.private_con
 var devCredentialsPath = privateConfigDirectoryPath + 'dev-credentials.json';
 var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
 var pathToOutputApks = 'platforms/android/build/outputs/apk';
+var pathToCombinedReleaseApk = pathToOutputApks + 'android-release.apk';
 var androidArm7ReleaseApkName = 'android-armv7-release';
 var pathToReleaseArmv7Apk = pathToOutputApks + '/' + androidArm7ReleaseApkName + '.apk';
 var androidX86ReleaseApkName = 'android-x86-release';
@@ -331,8 +332,14 @@ function resizeIcon(callback, resolution) {
     });
 }
 function fastlaneSupply(track, callback) {
+    var apk_paths;
+    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk) {
+        apk_paths = pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk;
+    } else {
+        apk_paths = pathToCombinedReleaseApk;
+    }
     executeCommand('fastlane supply' +
-        ' --apk_paths ' + pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk +
+        ' --apk_paths ' + apk_paths +
         ' --track ' + track +
         ' --skip_upload_metadata ' +
         ' --skip_upload_images ' +
@@ -452,8 +459,12 @@ function prettyPrintJsonObject(object){
 function outputApiErrorResponse(err) {
     err.message = err.message.replace(err.statusCode + ' - ', '');
     console.error(err.message);
-    var errorMessageObject = JSON.parse(err.message);
-    console.error(prettyPrintJsonObject(errorMessageObject)); // Pretty print
+    try {
+        var errorMessageObject = JSON.parse(err.message);
+        console.error(prettyPrintJsonObject(errorMessageObject)); // Pretty print
+    } catch (err) {
+        console.error(err);
+    }
 }
 function getFileNameFromUrl(url) {
     return url.split('/').pop();
@@ -690,10 +701,14 @@ gulp.task('verifyExistenceOfDefaultConfig', function () {
     return verifyExistenceOfFile(defaultAppConfigPath);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
-    return verifyExistenceOfFile(pathToReleasex86Apk);
+    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+        return verifyExistenceOfFile(pathToReleasex86Apk);
+    }
 });
 gulp.task('verifyExistenceOfAndroidArmV7ReleaseBuild', function () {
-    return verifyExistenceOfFile(pathToReleaseArmv7Apk);
+    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+        return verifyExistenceOfFile(pathToReleaseArmv7Apk);
+    }
 });
 gulp.task('verifyExistenceOfChromeExtension', function () {
     return verifyExistenceOfFile(pathToBuiltChromeExtensionZip);
@@ -722,10 +737,14 @@ function outputVersionCodeForApk(pathToApk) {
     });
 }
 gulp.task('outputX86ApkVersionCode', function () {
-    return outputVersionCodeForApk(pathToReleasex86Apk);
+    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+        return outputVersionCodeForApk(pathToReleasex86Apk);
+    }
 });
 gulp.task('outputArmv7ApkVersionCode', function () {
-    return outputVersionCodeForApk(pathToReleaseArmv7Apk);
+    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+        return outputVersionCodeForApk(pathToReleaseArmv7Apk);
+    }
 });
 gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
@@ -874,8 +893,21 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
     return deferred.promise;
 });
 gulp.task("upload-chrome-extension-to-s3", function() {return uploadToS3(pathToBuiltChromeExtensionZip);});
-gulp.task("upload-x86-release-apk-to-s3", function() {return uploadToS3(pathToReleasex86Apk);});
-gulp.task("upload-armv7-release-apk-to-s3", function() {return uploadToS3(pathToReleaseArmv7Apk);});
+gulp.task("upload-x86-release-apk-to-s3", function() {
+    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+        return uploadToS3(pathToReleasex86Apk);
+    }
+});
+gulp.task("upload-armv7-release-apk-to-s3", function() {
+    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+        return uploadToS3(pathToReleaseArmv7Apk);
+    }
+});
+gulp.task("upload-combined-release-apk-to-s3", function() {
+    if(!appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+        return uploadToS3(pathToCombinedReleaseApk);
+    }
+});
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
     var deferred = q.defer();
     var source = fs.createReadStream('./chromeApps/zips/' + process.env.QUANTIMODO_CLIENT_ID + '.zip');
@@ -1604,9 +1636,14 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$['id'] = appSettings.additionalSettings.appIds.appIdentifier;
+    parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk",
+        value: (appSettings.additionalSettings.buildSettings.xwalkMultipleApk) ? true : false}});
     return parsedXmlFile;
 }
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
+    generateConfigXmlFromTemplate(callback);
+});
+function generateConfigXmlFromTemplate(callback) {
     //var configXmlPath = 'config-template-' + platformCurrentlyBuildingFor + '.xml';
     var configXmlPath = 'config-template-shared.xml';
     var xml = fs.readFileSync(configXmlPath, 'utf8');
@@ -1622,7 +1659,7 @@ gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], fun
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
         }
     });
-});
+}
 gulp.task('prepareIosAppIfEnvIsSet', function (callback) {
     if (!process.env.PREPARE_IOS_APP) {
         console.log('process.env.PREPARE_IOS_APP not true, so not preparing iOS app');
@@ -1910,7 +1947,6 @@ gulp.task('prepareQuantiModoIos', function (callback) {
         'prepareIosApp',
         callback);
 });
-
 gulp.task('generateAndroidResources', [], function (callback) {
     return execute('ionic resources android', function (error) {
         if (error !== null) {
@@ -2002,6 +2038,7 @@ gulp.task('buildAndroidApp', function (callback) {
         //'copyAndroidBuild',
         "upload-x86-release-apk-to-s3",
         "upload-armv7-release-apk-to-s3",
+        "upload-combined-release-apk-to-s3",
         "fastlaneSupplyBeta",
         "post-app-status",
         callback);
