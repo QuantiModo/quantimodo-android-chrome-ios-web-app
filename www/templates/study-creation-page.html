@@ -31,7 +31,7 @@
             </div>
             <div class="row">
                 <div  class="col col-40">
-                    <div ng-click="selectPredictorVariable($event)"
+                    <div id="select-predictor-button" ng-click="selectPredictorVariable($event)"
                             style="
                         box-shadow: 2px 2px 5px #434343;
                         margin: 0 auto;
@@ -56,7 +56,7 @@
                 </div>
                 <div  class="col col-20"></div>
                 <div  class="col col-40">
-                    <div ng-click="selectOutcomeVariable($event)"
+                    <div id="select-outcome-button" ng-click="selectOutcomeVariable($event)"
                          style="
                         box-shadow: 2px 2px 5px #434343;
                         margin: 0 auto;
@@ -81,13 +81,9 @@
                 </div>
             </div>
             <div class="row">
-                <div  class="col col-40">
-                    <div ng-if="predictorVariable">{{predictorVariable.name}}</div>
-                </div>
+                <div class="col col-40"> <div ng-if="predictorVariable">{{predictorVariable.name}}</div> </div>
                 <div  class="col col-20"></div>
-                <div  class="col col-40">
-                    <div ng-if="outcomeVariable">{{outcomeVariable.name}}</div>
-                </div>
+                <div class="col col-40"> <div ng-if="outcomeVariable">{{outcomeVariable.name}}</div> </div>
             </div>
             <br>
             <button class="button"
