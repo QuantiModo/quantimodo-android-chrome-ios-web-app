@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
         <ion-slide ng-repeat="circlePage in appSettings.appDesign.intro.active" ng-show="myIntro.ready" style="background-color: {{circlePage.color.backgroundColor}};">
-            <div> <div ng-include="'templates/fragments/circle-page.html'"></div> </div>
+            <div ng-cloak ng-include="'templates/fragments/circle-page.html'"></div>
             <a id="goButtonIntro" class="button circle-page-button" ng-show="myIntro.slideIndex == appSettings.appDesign.intro.active.length-1" ng-click="myIntro.startApp()">
                 GET STARTED
             </a>
