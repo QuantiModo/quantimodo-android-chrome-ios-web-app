@@ -109,7 +109,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             alert(message);
             //quantimodoService.reportErrorDeferred(message);
         }
-        console.debug(message);
+        console.debug(message + " in state " + $state.current.name);
     }
     quantimodoService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
@@ -684,18 +684,36 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
     function weHaveUserOrAccessToken(){return $rootScope.user || quantimodoService.getAccessTokenFromUrl();};
     quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
-        if($rootScope.user && $rootScope.user.accessToken === quantimodoService.getAccessTokenFromUrl()){return;}
+        logDebugMessage("Called refreshUserUsingAccessTokenInUrlIfNecessary");
+        if($rootScope.user && $rootScope.user.accessToken === quantimodoService.getAccessTokenFromUrl()){
+            logDebugMessage("$rootScope.user token matches the one in url");
+            return;
+        }
         if(quantimodoService.getAccessTokenFromUrl()){
+            logDebugMessage("Got access token from url");
             var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
-            if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){quantimodoService.clearLocalStorage();}
+            if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){
+                quantimodoService.clearLocalStorage();
+                logDebugMessage("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
+            }
             var user = JSON.parse(localStorage.getItem('user'));
-            if(!user && $rootScope.user){user = $rootScope.user;}
+            if(!user && $rootScope.user){
+                user = $rootScope.user;
+                logDebugMessage("No user from local storage but we do have a $rootScope user");
+            }
             if(user && $rootScope.accessTokenFromUrl !== user.accessToken){
                 $rootScope.user = null;
                 quantimodoService.clearLocalStorage();
+                logDebugMessage("Cleared local storage because user.accessToken does not match $rootScope.accessTokenFromUrl");
             }
-            if(!quantimodoService.getUrlParameter('doNotRemember')){localStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);}
-            if(!$rootScope.user){quantimodoService.refreshUser();}
+            if(!quantimodoService.getUrlParameter('doNotRemember')){
+                logDebugMessage("Setting access token in local storage because doNotRemember is not set");
+                localStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);
+            }
+            if(!$rootScope.user){
+                logDebugMessage("No $rootScope.user so going to refreshUser");
+                quantimodoService.refreshUser();
+            }
         }
     };
     quantimodoService.getAccessTokenFromAnySource = function () {
@@ -6678,6 +6696,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
     };
     quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
+        logDebugMessage("getUserFromLocalStorageOrRefreshIfNecessary");
         if(quantimodoService.getUrlParameter('refreshUser')){
             quantimodoService.clearLocalStorage();
             quantimodoService.setLocalStorageItem('onboarded', true);
@@ -6685,7 +6704,10 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             $rootScope.user = null;
             $rootScope.refreshUser = false;
         }
-        if(!$rootScope.user){ $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user')); }
+        if(!$rootScope.user){
+            $rootScope.user = JSON.parse(quantimodoService.getLocalStorageItemAsString('user'));
+            if($rootScope.user){logDebugMessage("Got user from local storage");}
+        }
         quantimodoService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
             quantimodoService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
