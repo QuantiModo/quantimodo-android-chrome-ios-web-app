@@ -193,7 +193,8 @@ function uploadToS3(filePath) {
         ACL: 'public-read',
         keyTransform: function(relative_filename) {
             var s3RelativePath = 'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
-            appSettings.appStatus.buildStatus[getBuildStatusPropertyName(relative_filename)] = s3BaseUrl + s3RelativePath;
+            appSettings.appStatus.betaDownloadLinks[getBuildStatusPropertyName(relative_filename)] = s3BaseUrl + s3RelativePath;
+            appSettings.appStatus.buildStatus = "READY";
             return s3RelativePath;
         }
     }, {
