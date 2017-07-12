@@ -118,26 +118,26 @@
             </div>
             <div class="row">
                 <div class="col col-50">
-                    <button id="cancelButton" class="button button-outline button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                    <md-button id="cancelButton" class="button button-outline button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</md-button>
                 </div>
                 <div class="col col-50">
-                    <button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="done()">
+                    <md-button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="done()">
                         Record
                         <span ng-if="state.measurement.unitAbbreviatedName !== 'yes/no' && state.measurement.value">{{state.measurement.value}}</span>
                         <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && state.measurement.value">Yes</span>
                         <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && !state.measurement.value">No</span>
-                    </button>
+                    </md-button>
                 </div>
             </div>
             <div ng-hide="state.hideRemindMeButton" class="row">
-                <button id="reminderButton" ng-click="goToAddReminder()" class="button button-outline icon-left ion-android-notifications button-positive button-block">
+                <md-button id="reminderButton" ng-click="goToAddReminder()" class="button button-outline icon-left ion-android-notifications button-positive button-block">
                     Remind me to track
-                </button>
+                </md-button>
             </div>
             <div ng-show="state.measurement.id" class="row">
-                <button id="deleteButton" ng-click="deleteMeasurementFromMeasurementAddCtrl()" class="button button-outline icon-left ion-trash-a button-assertive button-block">
+                <md-button id="deleteButton" ng-click="deleteMeasurementFromMeasurementAddCtrl()" class="button button-outline icon-left ion-trash-a button-assertive button-block">
                     Delete Measurement
-                </button>
+                </md-button>
             </div>
         </div>
     </ion-content>
