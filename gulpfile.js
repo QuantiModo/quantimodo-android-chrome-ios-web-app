@@ -1924,7 +1924,7 @@ gulp.task('cordovaBuildAndroidDebug', function (callback) {
     appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidArm7DebugApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidX86DebugApkName)] = "BUILDING";
     postAppStatus();
-    return execute('cordova build --debug android', function (error) {
+    return execute(getCordovaBuildCommand('debug', 'android'), function (error) {
         if (error !== null) {
             console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
@@ -1933,11 +1933,16 @@ gulp.task('cordovaBuildAndroidDebug', function (callback) {
         }
     });
 });
+function getCordovaBuildCommand(releaseStage, platform) {
+    var command = 'cordova build --' + releaseStage + ' ' + platform;
+    if(buildDebug){command += " --verbose";}
+    return command;
+}
 gulp.task('cordovaBuildAndroidRelease', function (callback) {
     appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidX86ReleaseApkName)] = "BUILDING";
     postAppStatus();
-    return execute('cordova build --release android', function (error) {
+    return execute(getCordovaBuildCommand('release', 'android'), function (error) {
         if (error !== null) {
             console.error('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
