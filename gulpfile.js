@@ -730,7 +730,7 @@ gulp.task('getSHA1FromAPK', function () {
     });
 });
 function outputVersionCodeForApk(pathToApk) {
-    var cmd = 'aapt dump badging ' + pathToApk;
+    var cmd = '$ANDROID_HOME/build-tools/24.0.2/aapt dump badging ' + pathToApk;
     // aapt dump badging MyAwesomeApplication.apk |grep version
     return execute(cmd, function (error) {
         if (error !== null) {console.error('ERROR: ' + error);}
