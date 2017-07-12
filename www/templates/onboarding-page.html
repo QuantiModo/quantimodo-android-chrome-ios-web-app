@@ -4,31 +4,31 @@
             <div class="inner" style="text-align: center; color: white;">
             <div ng-include="'templates/fragments/circle-page.html'"></div><br><br>
             <p style="cursor: pointer" ng-if="circlePage.moreInfo" ng-click="showMaterialAlert(circlePage.title, circlePage.moreInfo, $event)">MORE INFO</p><br>
-            <button id="goToReminderSearchFromOnboarding" class="button circle-page-button" ng-if="circlePage.addButtonText" ng-click="goToReminderSearchFromOnboarding()">
+            <md-button id="goToReminderSearchFromOnboarding" class="button circle-page-button" ng-if="circlePage.addButtonText" ng-click="goToReminderSearchFromOnboarding()">
                 <i class="ion-plus-round"> &nbsp; {{circlePage.addButtonText}} &nbsp;</i>
-            </button>
-            <button id="enableLocationTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'locationTrackingPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
+            </md-button>
+            <md-button id="enableLocationTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'locationTrackingPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
                     ng-click="enableLocationTracking($event)">
                 <i class="{{variableCategories.Location.ionIcon}}"> &nbsp; Yes &nbsp;</i>
-            </button>
-            <button id="enableWeatherTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'weatherTrackingPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
+            </md-button>
+            <md-button id="enableWeatherTrackingButton" class="button circle-page-button" ng-show="circlePage.id === 'weatherTrackingPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
                     ng-click="connectWeatherOnboarding()">
                 <i class="ion-ios-partlysunny"> &nbsp; Yes &nbsp;</i>
-            </button>
-            <button id="importDataButton" class="button circle-page-button" ng-show="circlePage.id === 'importDataPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
+            </md-button>
+            <md-button id="importDataButton" class="button circle-page-button" ng-show="circlePage.id === 'importDataPage' && (user.stripeActive || appSettings.additionalSettings.upgradeDisabled)"
                     ng-click="onboardingGoToImportPage()">
                 <i class="ion-android-download"> &nbsp; Connect &nbsp;</i>
-            </button>
-            <button id="goToUpgradePageButton" class="button circle-page-button" ng-show="circlePage.premiumFeature && !user.stripeActive && !appSettings.additionalSettings.upgradeDisabled"
+            </md-button>
+            <md-button id="goToUpgradePageButton" class="button circle-page-button" ng-show="circlePage.premiumFeature && !user.stripeActive && !appSettings.additionalSettings.upgradeDisabled"
                     ng-click="goToUpgradePage()">
                 <i class="ion-android-star"> &nbsp;Upgrade &nbsp;</i>
-            </button>
-            <button id="hideOnboardingPage" class="button circle-page-button" ng-if="circlePage.nextPageButtonText" ng-click="hideOnboardingPage()">
+            </md-button>
+            <md-button id="hideOnboardingPage" class="button circle-page-button" ng-if="circlePage.nextPageButtonText" ng-click="hideOnboardingPage()">
                 <i class="ion-checkmark"> &nbsp; {{circlePage.nextPageButtonText}} &nbsp;</i>
-            </button>
-            <button id="goToInboxButton" class="button circle-page-button" ng-if="circlePage.id === 'allDoneCard'" ng-click="doneOnboarding()">
+            </md-button>
+            <md-button id="goToInboxButton" class="button circle-page-button" ng-if="circlePage.id === 'allDoneCard'" ng-click="doneOnboarding()">
                 <i class="ion-ios-filing-outline"> &nbsp; GO TO INBOX &nbsp;</i>
-            </button>
+            </md-button>
             <div ng-if="appSettings.designMode" style="color: white; font-size: 30px;  cursor: pointer;">
                 <br>
                 &nbsp&nbsp<i ng-click="openEditAppSettingsModal('onboarding', circlePage)" ><i class="icon ion-edit"></i></i>
@@ -36,7 +36,7 @@
                 &nbsp&nbsp<i ng-click="deleteAppComponentElement('onboarding', circlePage)" class="icon ion-trash-a" ></i>
             </div>
             <br>
-<!-- <div class="button-bar"> <button id="skipButtonWelcome" class="button circle-page-button" ng-click="skipOnboarding()"> &nbsp; SKIP SETUP &nbsp;</i></button> </div> </div>-->
+<!-- <div class="button-bar"> <md-button id="skipButtonWelcome" class="button circle-page-button" ng-click="skipOnboarding()"> &nbsp; SKIP SETUP &nbsp;</i></md-button> </div> </div>-->
             </div>
         </div>
     </div>
