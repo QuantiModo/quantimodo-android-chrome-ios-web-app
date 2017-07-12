@@ -97,6 +97,7 @@ var pathToDebugArmv7Apk = pathToOutputApks + '/' + androidArm7DebugApkName + '.a
 var androidX86DebugApkName = 'android-x86-debug';
 var pathToDebugx86Apk = pathToOutputApks + '/' + androidX86DebugApkName + '.apk';
 var buildPath = 'build';
+var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
 var chromExtensionFilename = 'chrome-extension';
 var chromeExtensionZipFilename = chromExtensionFilename + '.zip';
 var pathToBuiltChromeExtensionZip = buildPath + '/' + chromeExtensionZipFilename;
@@ -333,6 +334,7 @@ function resizeIcon(callback, resolution) {
 }
 function fastlaneSupply(track, callback) {
     var apk_paths;
+    console.log("If you have problems uploading to Play, promote any alpha releases to beta, disable the alpha channel, and set xwalkMultipleApk to false");
     if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk) {
         apk_paths = pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk;
     } else {
@@ -730,7 +732,7 @@ gulp.task('getSHA1FromAPK', function () {
     });
 });
 function outputVersionCodeForApk(pathToApk) {
-    var cmd = '$ANDROID_HOME/build-tools/24.0.2/aapt dump badging ' + pathToApk;
+    var cmd = '$ANDROID_HOME/build-tools/24.0.2/aapt dump badging ' + circleCIPathToRepo + '/' + pathToApk;
     // aapt dump badging MyAwesomeApplication.apk |grep version
     return execute(cmd, function (error) {
         if (error !== null) {console.error('ERROR: ' + error);}
