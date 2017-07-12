@@ -1451,14 +1451,6 @@ gulp.task('makeIosAppSimplified', function (callback) {
         'addDeploymentTarget',
         callback);
 });
-gulp.task('setVersionNumberInConfigXml', [], function (callback) {
-    var configFilePath = './config-template.xml';
-    setVersionNumberInConfigXml(configFilePath, callback);
-});
-gulp.task('setVersionNumberInIosConfigXml', [], function (callback) {
-    var configFilePath = './config-template-ios.xml';
-    setVersionNumberInConfigXml(configFilePath, callback);
-});
 var uncommentedCordovaScript = '<script src="cordova.js"></script>';
 var commentedCordovaScript = '<!-- cordova.js placeholder -->';
 gulp.task('uncommentCordovaJsInIndexHtml', function () {
@@ -1615,7 +1607,9 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     return parsedXmlFile;
 }
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
-    var xml = fs.readFileSync('config-template-' + platformCurrentlyBuildingFor + '.xml', 'utf8');
+    //var configXmlPath = 'config-template-' + platformCurrentlyBuildingFor + '.xml';
+    var configXmlPath = 'config-template-shared.xml';
+    var xml = fs.readFileSync(configXmlPath, 'utf8');
     if (appSettings.additionalSettings.appIds.googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.appIds.googleReversedClientId);
     }
