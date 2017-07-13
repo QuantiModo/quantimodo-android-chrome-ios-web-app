@@ -194,6 +194,7 @@ function uploadToS3(filePath) {
         ACL: 'public-read',
         keyTransform: function(relative_filename) {
             var s3RelativePath = 'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+            /** @namespace appSettings.appStatus.betaDownloadLinks */
             appSettings.appStatus.betaDownloadLinks[getBuildStatusPropertyName(relative_filename)] = s3BaseUrl + s3RelativePath;
             appSettings.appStatus.buildStatus = "READY";
             return s3RelativePath;
@@ -341,11 +342,15 @@ function fastlaneSupply(track, callback) {
     if(onWindows(callback)){return;}
     var apk_paths;
     infoLog("If you have problems uploading to Play, promote any alpha releases to beta, disable the alpha channel, and set xwalkMultipleApk to false");
+    /** @namespace appSettings.additionalSettings */
+    /** @namespace appSettings.additionalSettings.buildSettings.xwalkMultipleApk */
     if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk) {
         apk_paths = pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk;
     } else {
         apk_paths = pathToCombinedReleaseApk;
     }
+    /** @namespace appSettings.additionalSettings.appIds.appIdentifier */
+    /** @namespace appSettings.additionalSettings.appIds */
     executeCommand('fastlane supply' +
         ' --apk_paths ' + apk_paths +
         ' --track ' + track +
@@ -358,7 +363,7 @@ function fastlaneSupply(track, callback) {
         callback);
 }
 function setVersionNumbersInWidget(parsedXmlFile) {
-    parsedXmlFile.widget.$['version'] = versionNumbers.ionicApp;
+    parsedXmlFile.widget.$.version = versionNumbers.ionicApp;
     parsedXmlFile.widget.$['ios-CFBundleVersion'] = versionNumbers.iosCFBundleVersion;
     parsedXmlFile.widget.$['android-versionCode'] = versionNumbers.androidVersionCode;
     return parsedXmlFile;
@@ -387,7 +392,7 @@ function obfuscateStringify(message, object) {
     var objectString = '';
     if(object){
         object = obfuscateSecrets(object);
-        objectString = ':  ' + JSON.stringify(object);
+        objectString = ':  ' + prettyJSONStringify(object);
     }
     message += objectString;
     if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
@@ -494,7 +499,7 @@ function getFileNameFromUrl(url) {
 }
 function downloadEncryptedFile(url, outputFileName) {
     var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
-    var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url)
+    var downloadUrl = appHostName + '/api/v2/download?client_id=' + process.env.QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
     infoLog("Downloading " + downloadUrl + ' to ' + decryptedFilename);
     return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN)
         .pipe(fs.createWriteStream(outputFileName));
@@ -622,6 +627,8 @@ gulp.task('validateCredentials', ['setClientId'], function () {
     return makeApiRequest(options);
 });
 gulp.task('downloadIcon', [], function(){
+    /** @namespace appSettings.additionalSettings.appImages.appIcon */
+    /** @namespace appSettings.additionalSettings.appImages */
     var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
     infoLog("Downloading icon " + iconUrl);
     return download(iconUrl)
@@ -629,6 +636,7 @@ gulp.task('downloadIcon', [], function(){
         .pipe(gulp.dest("./resources"));
 });
 gulp.task('downloadSplashScreen', [], function(){
+    /** @namespace appSettings.additionalSettings.appImages.splashScreen */
     var splashScreen = (appSettings.additionalSettings.appImages.splashScreen) ? appSettings.additionalSettings.appImages.splashScreen : appSettings.splashScreen;
     infoLog("Downloading splash screen " + splashScreen);
     return download(splashScreen)
@@ -656,6 +664,7 @@ gulp.task('getAppConfigs', [], function () {
         if(!response.privateConfig && devCredentials.username && devCredentials.password){
             errorLog("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '  + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
         }
+        /** @namespace response.privateConfig */
         if(response.privateConfig){
             privateConfig = response.privateConfig;
             fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
@@ -664,6 +673,7 @@ gulp.task('getAppConfigs', [], function () {
         debugLog("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
         infoLog("You can change your app settings at " + getAppEditUrl());
         fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
+        /** @namespace response.allConfigs */
         if(response.allConfigs){
             for (var i = 0; i < response.allConfigs.length; i++) {
                 fs.writeFileSync(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
@@ -673,6 +683,7 @@ gulp.task('getAppConfigs', [], function () {
     return makeApiRequest(options, sucessHandler);
 });
 gulp.task('getAndroidReleaseKeystore', ['getAppConfigs'], function () {
+    /** @namespace appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile */
     if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
         throw "Please upload your Android release keystore at " + getAppEditUrl();
     }
@@ -685,6 +696,7 @@ gulp.task('getAndroidDebugKeystore', ['getAppConfigs'], function () {
     return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "debug.keystore");
 });
 gulp.task('getAndroidManifest', ['getAppConfigs'], function () {
+    /** @namespace appSettings.additionalSettings.buildSettings.androidMaifestJsonFile */
     if(!appSettings.additionalSettings.buildSettings.androidMaifestJsonFile){
         errorLog("Please add your Android manifest.json at " + getAppEditUrl() + " to enable Google Play Store subscriptions");
     }
@@ -841,6 +853,7 @@ gulp.task('getUpdatedVersion', ['getClientIdFromUserInput'], function () {
         type: 'confirm', name: 'updatedVersion', 'default': false,
         message: 'Have you updated the app\'s version number in chromeApps/' + process.env.QUANTIMODO_CLIENT_ID + '/manifest.json ?'
     }], function (answers) {
+        /** @namespace answers.updatedVersion */
         if (answers.updatedVersion) {
             updatedVersion = answers.updatedVersion;
             deferred.resolve();
@@ -943,6 +956,7 @@ gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
         } else {
             infoLog('Upload Response Received');
             data = JSON.parse(data);
+            /** @namespace data.uploadState */
             if (data.uploadState === 'SUCCESS') {
                 infoLog('Uploaded successfully!');
                 deferred.resolve();
@@ -964,6 +978,7 @@ gulp.task('shouldPublish', ['uploadChromeApp'], function () {
         message: 'Should we publish this version?',
         default: true
     }], function (answers) {
+        /** @namespace answers.shouldPublish */
         if (answers.shouldPublish) {
             shouldPublish = answers.shouldPublish;
             deferred.resolve();
@@ -1133,7 +1148,7 @@ gulp.task('ionicPlatformAddIOS', function (callback) {
     executeCommand('ionic platform add ios', callback);
 });
 gulp.task('ionicServe', function (callback) {
-    infoLog("The app should open in a new browser tab in a few seconds. If it doesn't, run `ionic serve` from the command line in the root of the repository.")
+    infoLog("The app should open in a new browser tab in a few seconds. If it doesn't, run `ionic serve` from the command line in the root of the repository.");
     executeCommand('ionic serve', callback);
 });
 gulp.task('ionicStateReset', function (callback) {
@@ -1331,11 +1346,13 @@ gulp.task('fixResourcesPlist', function () {
     myPlist.LSApplicationQueriesSchemes = LSApplicationQueriesSchemes.concat(myPlist.LSApplicationQueriesSchemes);
     if (myPlist.NSAppTransportSecurity && myPlist.NSAppTransportSecurity.NSExceptionDomains) {
         var facebookDotCom = {};
+        /** @namespace myPlist.NSAppTransportSecurity.NSExceptionDomains */
         if (myPlist.NSAppTransportSecurity.NSExceptionDomains['facebook.com']) {
             facebookDotCom = myPlist.NSAppTransportSecurity.NSExceptionDomains['facebook.com'];
         }
         if (!facebookDotCom.NSIncludesSubdomains) {facebookDotCom.NSIncludesSubdomains = true;}
         if (!facebookDotCom.NSThirdPartyExceptionRequiresForwardSecrecy) {facebookDotCom.NSThirdPartyExceptionRequiresForwardSecrecy = false;}
+        /** @namespace myPlist.NSAppTransportSecurity */
         myPlist.NSAppTransportSecurity.NSExceptionDomains['facebook.com'] = facebookDotCom;
         infoLog('Updated facebook.com');
         var fbcdnDotNet = {};
@@ -1651,7 +1668,7 @@ gulp.task('ionicResourcesIos', [], function (callback) {
 function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.name[0] = appSettings.appDisplayName;
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
-    parsedXmlFile.widget.$['id'] = appSettings.additionalSettings.appIds.appIdentifier;
+    parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
     parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk",
         value: (appSettings.additionalSettings.buildSettings.xwalkMultipleApk) ? true : false}});
     return parsedXmlFile;
@@ -1663,6 +1680,7 @@ function generateConfigXmlFromTemplate(callback) {
     //var configXmlPath = 'config-template-' + platformCurrentlyBuildingFor + '.xml';
     var configXmlPath = 'config-template-shared.xml';
     var xml = fs.readFileSync(configXmlPath, 'utf8');
+    /** @namespace appSettings.additionalSettings.appIds.googleReversedClientId */
     if (appSettings.additionalSettings.appIds.googleReversedClientId) {
         xml = xml.replace('REVERSED_CLIENT_ID_PLACEHOLDER', appSettings.additionalSettings.appIds.googleReversedClientId);
     }
