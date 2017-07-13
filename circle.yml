@@ -1,5 +1,7 @@
 # Customize the test machine
 machine:
+  ruby:
+    version: 2.4.1
   java:
     version: oraclejdk8
   environment:
@@ -22,6 +24,7 @@ dependencies:
     #- wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
     #- tar -xzf sc-latest-linux.tar.gz
   pre:
+    - ruby -v
     - mkdir node_modules || true # must exist prior to override to cache
     - mkdir platforms || true # must exist prior to override to cache
     - mkdir plugins || true # must exist prior to override to cache
@@ -37,7 +40,9 @@ dependencies:
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo apt-get update; sudo apt-get install tree imagemagick; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
-    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
+    #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gem install fastlane; fi # Don't use sudo or it uses old ruby version
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
 
   cache_directories:
@@ -74,7 +79,6 @@ deployment:
     commands:
       - gulp buildAndroidApp
       - gulp buildChromeExtension
-      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
   feature:
     branch: /feature\/.*/
     commands:
@@ -94,7 +98,6 @@ deployment:
     commands:
       - gulp buildAndroidApp
       - gulp buildChromeExtension
-      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
@@ -102,4 +105,4 @@ deployment:
       - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
       - gulp buildAndroidApp
       - gulp buildChromeExtension
-      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
+      #- gulp fastlaneSupplyProduction

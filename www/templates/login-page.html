@@ -6,13 +6,13 @@
                     <div>
                         <div ng-include="'templates/fragments/circle-page.html'"></div>
                         <div id="loginButtons" ng-if="circlePage.title !== 'Logging in...'">
-                                <button id="signUpButton" ng-click="register()" class="button circle-page-button" >Sign Up</button>
-                                <button id="signInButton" ng-click="login()" class="button circle-page-button">Already Have Account</button>
+                                <md-button id="signUpButton" ng-click="register()" class="button circle-page-button" >Sign Up</md-button>
+                                <md-button id="signInButton" ng-click="login()" class="button circle-page-button">Already Have Account</md-button>
                             <div ng-if="showGoogleLoginButton && !hideGoogleLoginButton">
-                                <button id="signInWithGoogle" ng-click="googleLogin()" class="button circle-page-button">Sign In With Google</button>
+                                <md-button id="signInWithGoogle" ng-click="googleLogin()" class="button circle-page-button">Sign In With Google</md-button>
                             </div>
                             <div ng-if="showFacebookLoginButton">
-                                <button id="signInWithFacebook" ng-click="facebookLogin()" class="button circle-page-button clear">Sign In With Facebook</button>
+                                <md-button id="signInWithFacebook" ng-click="facebookLogin()" class="button circle-page-button clear">Sign In With Facebook</md-button>
                             </div>
                         </div>
                     </div>

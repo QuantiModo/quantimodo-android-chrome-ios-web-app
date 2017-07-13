@@ -86,3 +86,4 @@ changeList.json
 www/configs/
 Ionic\.jsproj
 Ionic\.sln
+composer.phar

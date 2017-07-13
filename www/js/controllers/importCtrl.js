@@ -113,7 +113,8 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             button.text = "Uploading...";
             quantimodoService.showBasicLoader();
             var body = {file: file, "connectorName": connector.name};
-            file.upload = Upload.upload({url: quantimodoService.getApiUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId, data: body});
+            file.upload = Upload.upload({url: quantimodoService.getApiUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId +
+                "&access_token=" + $rootScope.user.accessToken, data: body});
             file.upload.then(function (response) {
                 button.text = "Import Scheduled";
                 connector.message = "You should start seeing your data within the next hour or so";

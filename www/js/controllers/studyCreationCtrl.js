@@ -9,6 +9,10 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
         console.debug('Sorry, copy to clipboard is not supported');
         $scope.hideClipboardButton = true;
     }
+    $scope.$on('$ionicView.afterEnter', function(){
+        console.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
+        quantimodoService.hideLoader();
+    });
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
         $scope.copyLinkText = 'Copied!';
