@@ -322,12 +322,14 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function resizeIcon(callback, resolution) {
-    var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' www/img/icons/icon_' + resolution + '.png';
+    var outputIconPath = 'www/img/icons/icon_' + resolution + '.png';
+    var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' ' + outputIconPath;
     return execute(command, function (error) {
         if (error) {
             errorLog("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
             errorLog('ERROR: ' + JSON.stringify(error));
         }
+        uploadToS3(outputIconPath);
         callback();
     });
 }
