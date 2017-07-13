@@ -373,6 +373,7 @@ function getPostRequestOptions() {
 }
 function obfuscateSecrets(object){
     if(typeof object !== 'object'){return object;}
+    object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
     for (var propertyName in object) {
         if (object.hasOwnProperty(propertyName)) {
             if(propertyName.toLowerCase().indexOf('secret') !== -1 || propertyName.toLowerCase().indexOf('password') !== -1){
