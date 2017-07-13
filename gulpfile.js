@@ -408,11 +408,16 @@ function errorLog(message, object) {
 function postAppStatus() {
     var options = getPostRequestOptions();
     options.body.appStatus = appSettings.appStatus;
-    debugLog("postAppStatus with: ", options);
+    return makeApiRequest(options);
+}
+function makeApiRequest(options, successHandler) {
+    infoLog(options.uri, options);
     return rp(options).then(function (response) {
-        infoLog("postAppStatus: ", response);
+        infoLog(options.uri + "response", response);
+        if(!isTruthy(response.success)){throw response.error;}
+        if(successHandler){successHandler(response);}
     }).catch(function (err) {
-        outputApiErrorResponse(err);
+        outputApiErrorResponse(err, options);
         throw err;
     });
 }
@@ -420,14 +425,7 @@ function postNotifyCollaborators(appType) {
     var options = getPostRequestOptions();
     options.uri = appHostName + '/api/v2/email';
     options.body.emailType = appType + '-build-ready';
-    debugLog("postNotifyCollaborators with: " + JSON.stringify(options));
-    return rp(options).then(function (response) {
-        infoLog("postNotifyCollaborators: " + JSON.stringify(response));
-        if(!isTruthy(response.success)){throw response.error;}
-    }).catch(function (err) {
-        outputApiErrorResponse(err);
-        throw err;
-    });
+    return makeApiRequest(options);
 }
 function getRequestOptions(path) {
     if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
@@ -480,9 +478,10 @@ function replaceTextInFiles(filesArray, textToReplace, replacementText){
 function prettyPrintJsonObject(object){
     return JSON.stringify(object, null, 2);
 }
-function outputApiErrorResponse(err) {
+function outputApiErrorResponse(err, options) {
+    if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
     err.message = err.message.replace(err.statusCode + ' - ', '');
-    errorLog(err.message);
+    errorLog(options.uri + " error response", err.message);
     try {
         var errorMessageObject = JSON.parse(err.message);
         errorLog(prettyPrintJsonObject(errorMessageObject)); // Pretty print
@@ -620,13 +619,7 @@ gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
     fs.writeFileSync(devCredentialsPath, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
-    infoLog('gulp validateCredentials from ' + JSON.stringify(options));
-    return rp(options).then(function (response) {
-        if(!response.accessToken){throw "Could not get user from " + options.uri + ' Please double check your credentials or contact mike@quantimo.do for help.';}
-    }).catch(function (err) {
-        outputApiErrorResponse(err);
-        if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
-    });
+    return makeApiRequest(options);
 });
 gulp.task('downloadIcon', [], function(){
     var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
@@ -646,12 +639,7 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
     if(process.env.CIRCLECI){options.server = "circleci";}
     if(process.env.BUDDYBUILD_APP_ID){options.server = "buddybuild";}
-    return rp(options).then(function (response) {
-        infoLog("mergeToMasterAndTriggerRebuildsForAllApps response: " + JSON.stringify(response));
-        if(!isTruthy(response.success)){throw response.error;}
-    }).catch(function (err) {
-        outputApiErrorResponse(err);
-    });
+    return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', [], function () {
     if(appSettings){
@@ -659,7 +647,7 @@ gulp.task('getAppConfigs', [], function () {
         return;
     }
     var options = getRequestOptions('/api/v1/appSettings');
-    return rp(options).then(function (response) {
+    function sucessHandler(response) {
         appSettings = response.appSettings;
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
@@ -681,10 +669,8 @@ gulp.task('getAppConfigs', [], function () {
                 fs.writeFileSync(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
             }
         }
-    }).catch(function (err) {
-        outputApiErrorResponse(err);
-        throw err;
-    });
+    }
+    return makeApiRequest(options, sucessHandler);
 });
 gulp.task('getAndroidReleaseKeystore', ['getAppConfigs'], function () {
     if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
