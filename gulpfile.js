@@ -330,7 +330,15 @@ function resizeIcon(callback, resolution) {
         callback();
     });
 }
+function onWindows(callback) {
+    if(process.env.OS && process.env.OS.toLowerCase().indexOf('windows') !== -1){
+        infoLog("Cannot do this on windows");
+        if(callback){callback();}
+        return true;
+    }
+}
 function fastlaneSupply(track, callback) {
+    if(onWindows(callback)){return;}
     var apk_paths;
     infoLog("If you have problems uploading to Play, promote any alpha releases to beta, disable the alpha channel, and set xwalkMultipleApk to false");
     if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk) {
@@ -745,6 +753,7 @@ gulp.task('getSHA1FromAPK', function () {
     });
 });
 function outputVersionCodeForApk(pathToApk) {
+    if(onWindows()){return;}
     var cmd = '$ANDROID_HOME/build-tools/24.0.2/aapt dump badging ' + circleCIPathToRepo + '/' + pathToApk;
     // aapt dump badging MyAwesomeApplication.apk |grep version
     return execute(cmd, function (error) {
