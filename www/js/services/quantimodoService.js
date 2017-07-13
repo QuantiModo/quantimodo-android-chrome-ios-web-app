@@ -120,6 +120,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return array;
     };
     quantimodoService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
+        if(!params){params = {};}
         if(!successHandler){throw "Please provide successHandler function as fourth parameter in quantimodoService.get";}
         if(!options){ options = {}; }
         var cache = false;
