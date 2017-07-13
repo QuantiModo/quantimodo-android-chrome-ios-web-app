@@ -38,6 +38,9 @@ var templateCache = require('gulp-angular-templatecache');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 function isTruthy(value) {return (value && value !== "false");}
 var buildDebug = isTruthy(process.env.BUILD_DEBUG);
+var currentServerConext = "local";
+if(process.env.CIRCLE_BRANCH){currentServerConext = "circleci";}
+if(process.env.BUDDYBUILD_BRANCH){currentServerConext = "buddybuild";}
 function setClientId(callback) {
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH;}
     if(process.env.CIRCLE_BRANCH && process.env.CIRCLE_BRANCH.indexOf('apps') !== -1){
@@ -430,7 +433,7 @@ function getRequestOptions(path) {
     var options = {
         uri: appHostName + path,
         qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
-        headers: {'User-Agent': 'Request-Promise'},
+        headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
         json: true // Automatically parses the JSON string in the response
     };
     //if(devCredentials.username){options.qs.log = devCredentials.username;}
@@ -625,8 +628,7 @@ gulp.task('downloadSplashScreen', [], function(){
 });
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
-    if(process.env.CIRCLECI){options.server = "circleci";}
-    if(process.env.BUDDYBUILD_APP_ID){options.server = "buddybuild";}
+    options.qs.server = options.qs.currentServerConext = currentServerConext;
     return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', [], function () {
