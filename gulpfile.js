@@ -408,8 +408,7 @@ function postAppStatus() {
 function makeApiRequest(options, successHandler) {
     infoLog(options.uri, options);
     return rp(options).then(function (response) {
-        infoLog(options.uri + "response", response);
-        if(!isTruthy(response.success)){throw response.error;}
+        infoLog(options.uri + " response", response);
         if(successHandler){successHandler(response);}
     }).catch(function (err) {
         outputApiErrorResponse(err, options);
