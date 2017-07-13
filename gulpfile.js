@@ -278,9 +278,7 @@ function removeCustomPropertiesFromAppSettings(appSettings) {
     return appSettings;
 }
 function outputSHA1ForAndroidKeystore(decryptedFilePath) {
-    if (decryptedFilePath.indexOf('keystore') === -1) {
-        return;
-    }
+    if (decryptedFilePath.indexOf('keystore') === -1) {return;}
     var cmd = 'keytool -exportcert -list -v -alias androiddebugkey -keypass android -keystore ' + decryptedFilePath;
     execute(cmd, function (error) {
         if (error !== null) {
@@ -321,8 +319,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function resizeIcon(callback, resolution) {
-    var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution +
-        ' www/img/icons/icon_' + resolution + '.png';
+    var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' www/img/icons/icon_' + resolution + '.png';
     return execute(command, function (error) {
         if (error) {
             errorLog("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
@@ -368,7 +365,6 @@ function setVersionNumbersInWidget(parsedXmlFile) {
     parsedXmlFile.widget.$['android-versionCode'] = versionNumbers.androidVersionCode;
     return parsedXmlFile;
 }
-
 function getPostRequestOptions() {
     var options = getRequestOptions('/api/v1/appSettings');
     options.method = "POST";
@@ -401,15 +397,9 @@ function obfuscateStringify(message, object) {
     if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
     return message;
 }
-function debugLog(message, object) {
-    if(buildDebug){infoLog(message, object);}
-}
-function infoLog(message, object) {
-    console.log(obfuscateStringify(message, object));
-}
-function errorLog(message, object) {
-    console.error(obfuscateStringify(message, object));
-}
+function debugLog(message, object) {if(buildDebug){infoLog(message, object);}}
+function infoLog(message, object) {console.log(obfuscateStringify(message, object));}
+function errorLog(message, object) {console.error(obfuscateStringify(message, object));}
 function postAppStatus() {
     var options = getPostRequestOptions();
     options.body.appStatus = appSettings.appStatus;
@@ -452,8 +442,7 @@ function getRequestOptions(path) {
     infoLog('Making request to ' + options.uri + ' with clientId: ' + process.env.QUANTIMODO_CLIENT_ID);
     return options;
 }
-function getAppEditUrl() {
-    return getAppsListUrl() + '/' + appSettings.clientId + '/edit';
+function getAppEditUrl() {return getAppsListUrl() + '/' + appSettings.clientId + '/edit';
 }
 function getAppsListUrl() {
     return appHostName + '/api/v2/apps';
@@ -476,12 +465,9 @@ function writeToXmlFile(outputFilePath, parsedXmlFile, callback) {
     });
 }
 function replaceTextInFiles(filesArray, textToReplace, replacementText){
-    return gulp.src(filesArray, {base: '.'}) // Every file allown.
+    return gulp.src(filesArray, {base: '.'})
         .pipe(replace(textToReplace, replacementText))
         .pipe(gulp.dest('./'));
-}
-function prettyPrintJsonObject(object){
-    return JSON.stringify(object, null, 2);
 }
 function outputApiErrorResponse(err, options) {
     if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
@@ -1553,7 +1539,6 @@ gulp.task('setMediModoEnvs', [], function (callback) {
         'getAppConfigs',
         callback);
 });
-
 gulp.task('setMoodiModoEnvs', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'moodimodo';
     runSequence(
