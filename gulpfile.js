@@ -381,6 +381,7 @@ function obfuscateSecrets(object){
             }
         }
     }
+    return object;
 }
 function obfuscateStringify(message, object) {
     var objectString = '';
