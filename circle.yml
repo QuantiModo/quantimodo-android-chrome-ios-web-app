@@ -79,7 +79,6 @@ deployment:
     commands:
       - gulp buildAndroidApp
       - gulp buildChromeExtension
-      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
   feature:
     branch: /feature\/.*/
     commands:
@@ -99,7 +98,6 @@ deployment:
     commands:
       - gulp buildAndroidApp
       - gulp buildChromeExtension
-      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
@@ -107,5 +105,4 @@ deployment:
       - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
       - gulp buildAndroidApp
       - gulp buildChromeExtension
-      - bash buddybuild_postbuild.sh # Need this to ensure that build is marked failure if apk not present
       #- gulp fastlaneSupplyProduction
