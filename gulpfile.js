@@ -376,7 +376,8 @@ function obfuscateSecrets(object){
     object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
     for (var propertyName in object) {
         if (object.hasOwnProperty(propertyName)) {
-            if(propertyName.toLowerCase().indexOf('secret') !== -1 || propertyName.toLowerCase().indexOf('password') !== -1){
+            var lowerCaseProperty = propertyName.toLowerCase();
+            if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
                 object[propertyName] = "HIDDEN";
             } else {
                 object[propertyName] = obfuscateSecrets(object[propertyName]);
