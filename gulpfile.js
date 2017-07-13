@@ -485,14 +485,7 @@ function prettyPrintJsonObject(object){
 }
 function outputApiErrorResponse(err, options) {
     if(err.response.statusCode === 401){throw "Credentials invalid.  Please correct them in " + devCredentialsPath + " and try again.";}
-    err.message = err.message.replace(err.statusCode + ' - ', '');
-    errorLog(options.uri + " error response", err.message);
-    try {
-        var errorMessageObject = JSON.parse(err.message);
-        errorLog(prettyPrintJsonObject(errorMessageObject)); // Pretty print
-    } catch (err) {
-        errorLog(err);
-    }
+    errorLog(options.uri + " error response", err.response.body);
 }
 function getFileNameFromUrl(url) {
     return url.split('/').pop();
