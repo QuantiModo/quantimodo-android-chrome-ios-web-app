@@ -2062,6 +2062,7 @@ gulp.task('prepareAndroidApp', function (callback) {
     runSequence(
         'configureApp',
         //'copyAppResources',
+        'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
