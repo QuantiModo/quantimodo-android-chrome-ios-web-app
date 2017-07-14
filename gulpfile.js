@@ -1717,7 +1717,7 @@ gulp.task('prepareIosApp', function (callback) {
     runSequence(
         'cleanPlugins',
         'configureApp',
-        'copyAppResources',
+        //'copyAppResources',
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
         'removeTransparentPng',
@@ -1789,7 +1789,7 @@ gulp.task('configureWebApp', [], function (callback) {
 gulp.task('configureDefaultApp', [], function (callback) {
     process.env.QUANTIMODO_CLIENT_ID = 'your_quantimodo_client_id_here';
     runSequence(
-        'copyAppResources',
+        //'copyAppResources',
         'getAppConfigs',
         callback);
 });
@@ -2061,7 +2061,7 @@ gulp.task('prepareAndroidApp', function (callback) {
     platformCurrentlyBuildingFor = 'android';
     runSequence(
         'configureApp',
-        'copyAppResources',
+        //'copyAppResources',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
