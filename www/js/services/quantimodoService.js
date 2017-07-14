@@ -6945,7 +6945,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         quantimodoService.setupBugsnag();
         quantimodoService.getUserAndSetupGoogleAnalytics();
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
-        quantimodoService.initializeLocalNotifications();
+        initializeLocalNotifications();
         if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
     };
     return quantimodoService;
