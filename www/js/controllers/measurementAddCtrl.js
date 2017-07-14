@@ -45,7 +45,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         } else if ($stateParams.measurement){
             setupTrackingByMeasurement($stateParams.measurement);
         } else if (quantimodoService.getUrlParameter('measurementObject', window.location.href, true)) {
-            setupTrackingByMeasurement(JSON.parse(quantimodoService.getUrlParameter('measurementObject', window.location.href, true))); 
+            setupTrackingByMeasurement(JSON.parse(quantimodoService.getUrlParameter('measurementObject', window.location.href, true)));
         } else if ($stateParams.variableObject) {
             setupFromVariableObject($stateParams.variableObject);
         } else if (quantimodoService.getUrlParameter('trackingReminderObject', window.location.href, true)) {
@@ -157,7 +157,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         quantimodoService.postMeasurementDeferred(measurementInfo);
         var toastMessage = 'Recorded ' + $scope.state.measurement.value  + ' ' + $scope.state.measurement.unitAbbreviatedName;
         toastMessage = toastMessage.replace(' /', '/');
-        $scope.showInfoToast(toastMessage);
+        quantimodoService.showInfoToast(toastMessage);
         $scope.goBack();
     };
     $scope.variableCategorySelectorChange = function(variableCategoryName) {
