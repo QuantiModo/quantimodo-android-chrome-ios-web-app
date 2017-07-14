@@ -224,7 +224,7 @@ function uploadToS3(filePath) {
         Bucket: 'quantimodo',
         ACL: 'public-read',
         keyTransform: function(relative_filename) {
-            return getS3RelativePath(relative_filename);
+            return getS3RelativePath(filePath);
         }
     }, {
         maxRetries: 5,
