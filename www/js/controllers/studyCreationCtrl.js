@@ -1,7 +1,7 @@
-angular.module('starter').controller('StudyCreationCtrl', function($scope, $state, quantimodoService, clipboard, $mdDialog) {
+angular.module('starter').controller('StudyCreationCtrl', function($scope, $state, qmService, clipboard, $mdDialog) {
     $scope.state = {
         title: 'Create a Study',
-        color: quantimodoService.colors.blue,
+        color: qmService.colors.blue,
         image: { url: "img/robots/quantimodo-robot-waving.svg", height: "85", width: "85" },
         bodyText: "One moment please..."
     };
@@ -11,14 +11,14 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
     }
     $scope.$on('$ionicView.afterEnter', function(){
         console.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
-        quantimodoService.hideLoader();
+        qmService.hideLoader();
     });
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
     $scope.copyStudyUrlToClipboard = function (causeVariableName, effectVariableName) {
         $scope.copyLinkText = 'Copied!';
-        clipboard.copyText(quantimodoService.getStudyLinkByVariableNames(causeVariableName, effectVariableName));
+        clipboard.copyText(qmService.getStudyLinkByVariableNames(causeVariableName, effectVariableName));
     };
-    var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
+    var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log, dataToPass) {
         var self = this;
         // list of `state` value/display objects
         self.items        = loadAll();
@@ -47,15 +47,15 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
                 deferred.resolve(self.items);
                 return deferred.promise;
             }
-            if(quantimodoService.arrayHasItemWithNameProperty(self.items)){
-                self.items = quantimodoService.removeItemsWithDifferentName(self.items, query);
+            if(qmService.arrayHasItemWithNameProperty(self.items)){
+                self.items = qmService.removeItemsWithDifferentName(self.items, query);
                 var minimumNumberOfResultsRequiredToAvoidAPIRequest = 2;
-                if(quantimodoService.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
+                if(qmService.arrayHasItemWithNameProperty(self.items) && self.items.length > minimumNumberOfResultsRequiredToAvoidAPIRequest){
                     deferred.resolve(self.items);
                     return deferred.promise;
                 }
             }
-            quantimodoService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
+            qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
                 .then(function(results){
                     console.debug("Got " + results.length + " results matching " + query);
                     deferred.resolve(loadAll(results));
@@ -68,7 +68,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             self.selectedItem = item;
             self.buttonText = dataToPass.buttonText;
             $scope.variable = item.variable;
-            quantimodoService.addVariableToLocalStorage(item.variable);
+            qmService.addVariableToLocalStorage(item.variable);
             console.debug('Item changed to ' + item.variable.name);
         }
 
@@ -76,7 +76,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
          * Build `variables` list of key/value pairs
          */
         function loadAll(variables) {
-            if(!variables){variables = quantimodoService.getVariablesFromLocalStorage(dataToPass.requestParams);}
+            if(!variables){variables = qmService.getVariablesFromLocalStorage(dataToPass.requestParams);}
             if(!variables || !variables[0]){ return []; }
             return variables.map( function (variable) {
                 return {
@@ -99,8 +99,8 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             fullscreen: false,
             locals: {
                 dataToPass: {
-                    title: quantimodoService.explanations.outcomeSearch.title,
-                    helpText: quantimodoService.explanations.outcomeSearch.textContent,
+                    title: qmService.explanations.outcomeSearch.title,
+                    helpText: qmService.explanations.outcomeSearch.textContent,
                     placeholder: "Search for an outcome...",
                     buttonText: "Select Variable",
                     requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsEffect"}
@@ -122,8 +122,8 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             fullscreen: false,
             locals: {
                 dataToPass: {
-                    title: quantimodoService.explanations.predictorSearch.title,
-                    helpText: quantimodoService.explanations.predictorSearch.textContent,
+                    title: qmService.explanations.predictorSearch.title,
+                    helpText: qmService.explanations.predictorSearch.textContent,
                     placeholder: "Search for a predictor...",
                     buttonText: "Select Variable",
                     requestParams: {includePublic: true, sort:"-numberOfAggregateCorrelationsAsCause"}

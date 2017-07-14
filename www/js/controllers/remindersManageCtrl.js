@@ -1,8 +1,8 @@
-angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  quantimodoService) {
+angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  qmService) {
 	$scope.controller_name = "RemindersManageCtrl";
 	console.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
-    quantimodoService.sendToLoginIfNecessaryAndComeBack();
+    qmService.sendToLoginIfNecessaryAndComeBack();
 	$scope.state = {
 		showButtons : false,
 		variableCategory : $stateParams.variableCategoryName,
@@ -28,8 +28,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		noRemindersIcon: "ion-android-notifications-none"
 	};
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter RemindersManageCtrl");
-		if(quantimodoService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = quantimodoService.getUrlParameter('variableCategoryName');}
-		quantimodoService.showBasicLoader();
+		if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
+		qmService.showBasicLoader();
 		$rootScope.hideNavigationMenu = false;
 		$scope.stateParams = $stateParams;
 		var actionButtons = [
@@ -42,22 +42,22 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
 			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add a Variable"; }
             if(!$scope.stateParams.addMeasurementButtonText) { $scope.stateParams.addMeasurementButtonText = "Record Measurement"; }
-			actionButtons[2] = quantimodoService.actionSheetButtons.history;
-            actionButtons[3] = quantimodoService.actionSheetButtons.addReminder;
+			actionButtons[2] = qmService.actionSheetButtons.history;
+            actionButtons[3] = qmService.actionSheetButtons.addReminder;
 		} else {
 			$scope.state.noRemindersTitle = "Add " + $stateParams.variableCategoryName;
 			$scope.state.noRemindersText = "You haven't saved any " + $stateParams.variableCategoryName.toLowerCase() + " favorites or reminders here, yet.";
-			$scope.state.noRemindersIcon = quantimodoService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
+			$scope.state.noRemindersIcon = qmService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
 			if(!$scope.stateParams.title){ $scope.stateParams.title = $stateParams.variableCategoryName; }
 			if(!$scope.stateParams.addButtonText) {
 				$scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
 			}
 			$scope.stateParams.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
-            actionButtons[2] = { text: '<i class="icon ' + quantimodoService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
-            actionButtons[3] = { text: '<i class="icon ' + quantimodoService.ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
+            actionButtons[2] = { text: '<i class="icon ' + qmService.ionIcons.history + '"></i>' + $stateParams.variableCategoryName + ' History'};
+            actionButtons[3] = { text: '<i class="icon ' + qmService.ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
 		}
-        actionButtons[4] = quantimodoService.actionSheetButtons.recordMeasurement;
-        actionButtons[5] = quantimodoService.actionSheetButtons.charts;
+        actionButtons[4] = qmService.actionSheetButtons.recordMeasurement;
+        actionButtons[5] = qmService.actionSheetButtons.charts;
 		$scope.state.showButtons = true;
 		getTrackingReminders();
 		$rootScope.showActionSheetMenu = function() {
@@ -86,7 +86,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	}
 	function addRemindersToScope(allTrackingReminderTypes) {
 		$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
-		quantimodoService.hideLoader();
+		qmService.hideLoader();
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
 			$scope.state.showNoRemindersCard = true;
 			return;
@@ -99,10 +99,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	}
 	$scope.refreshReminders = function () {
 		$scope.showSyncDisplayText('Syncing...');
-		quantimodoService.syncTrackingReminders(true).then(function(){getTrackingReminders();});
+		qmService.syncTrackingReminders(true).then(function(){getTrackingReminders();});
 	};
 	var getTrackingReminders = function(){
-		quantimodoService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {addRemindersToScope(allTrackingReminderTypes);});
+		qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {addRemindersToScope(allTrackingReminderTypes);});
 	};
 	$scope.showMoreNotificationInfoPopup = function(){
 		var moreNotificationInfoPopup = $ionicPopup.show({
@@ -134,21 +134,21 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	};
 	$scope.deleteReminder = function(reminder){
 		reminder.hide = true;
-		quantimodoService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId).then(function(){getTrackingReminders();});
-		quantimodoService.deleteTrackingReminderDeferred(reminder).then(function(){console.debug("Reminder deleted");}, function(error){
+		qmService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId).then(function(){getTrackingReminders();});
+		qmService.deleteTrackingReminderDeferred(reminder).then(function(){console.debug("Reminder deleted");}, function(error){
 			if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 			console.error('Failed to Delete Reminder!');
 		});
 	};
 	$scope.showActionSheet = function(trackingReminder) {
-		var variableObject = quantimodoService.convertTrackingReminderToVariableObject(trackingReminder);
+		var variableObject = qmService.convertTrackingReminderToVariableObject(trackingReminder);
 		var hideSheet = $ionicActionSheet.show({
 			buttons: [
 				{ text: '<i class="icon ion-android-notifications-none"></i>Edit'},
-				quantimodoService.actionSheetButtons.recordMeasurement,
-				quantimodoService.actionSheetButtons.charts,
-				quantimodoService.actionSheetButtons.history,
-				quantimodoService.actionSheetButtons.analysisSettings
+				qmService.actionSheetButtons.recordMeasurement,
+				qmService.actionSheetButtons.charts,
+				qmService.actionSheetButtons.history,
+				qmService.actionSheetButtons.analysisSettings
 			],
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',

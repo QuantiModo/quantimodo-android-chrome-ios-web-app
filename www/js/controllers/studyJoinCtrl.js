@@ -1,4 +1,4 @@
-angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, quantimodoService, $rootScope, $stateParams) {
+angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, qmService, $rootScope, $stateParams) {
     $scope.controller_name = "StudyJoinCtrl";
     if(window.debugMode){console.debug($scope.controller_name + ' first starting in state: ' + $state.current.name);}
     var green = { backgroundColor: "#0f9d58", circleColor: "#03c466" };
@@ -36,7 +36,7 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
     });
     $scope.$on('$ionicView.enter', function(e) {
         if(window.debugMode){console.debug($scope.controller_name + ' $ionicView.enter in state: ' + $state.current.name);}
-        quantimodoService.hideLoader();
+        qmService.hideLoader();
         if(getParameterByName('alreadyJoined')){ $scope.joinStudy(); }
     });
     $scope.$on('$ionicView.afterEnter', function(){ });
@@ -55,19 +55,19 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
     $scope.joinStudy = function () {
         $scope.hideJoinStudyButton = true;
         $scope.state.image.url = "img/robots/quantimodo-robot-happy.svg";
-        if(quantimodoService.sendToLoginIfNecessaryAndComeBack(null, window.location.href + '&alreadyJoined=true')){return;}
+        if(qmService.sendToLoginIfNecessaryAndComeBack(null, window.location.href + '&alreadyJoined=true')){return;}
         $scope.state.title = "Joining study...";
         $scope.state.bodyText = "Thank you for helping us accelerate scientific discovery!";
-        quantimodoService.joinStudyDeferred($scope.requestParams).then(function () {
-            quantimodoService.hideLoader();
+        qmService.joinStudyDeferred($scope.requestParams).then(function () {
+            qmService.hideLoader();
             $scope.state.title = "Thank you!";
             $scope.state.bodyText = "Let's record your first measurements!";
             $scope.showGetStartedButton = true;
         }, function (error) {
-            quantimodoService.hideLoader();
-            quantimodoService.reportErrorDeferred(error);
-            quantimodoService.showMaterialAlert("Could not join study!", "Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
+            qmService.hideLoader();
+            qmService.reportErrorDeferred(error);
+            qmService.showMaterialAlert("Could not join study!", "Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
         });
     };
-    $scope.showMoreInfo = function () { quantimodoService.showMaterialAlert($scope.state.title, $scope.state.moreInfo); };
+    $scope.showMoreInfo = function () { qmService.showMaterialAlert($scope.state.title, $scope.state.moreInfo); };
 });

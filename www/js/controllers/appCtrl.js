@@ -1,13 +1,13 @@
 angular.module('starter')// Parent Controller - This controller runs before every one else
 .controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
-                                $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, quantimodoService,
+                                $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService,
                                 ionicDatePicker, $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
                                 $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
 
     $scope.controller_name = "AppCtrl";
-    quantimodoService.initializeApplication(appSettingsResponse);
+    qmService.initializeApplication(appSettingsResponse);
     $rootScope.numberOfPendingNotifications = null;
-    $scope.primaryOutcomeVariableDetails = quantimodoService.getPrimaryOutcomeVariable();
+    $scope.primaryOutcomeVariableDetails = qmService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
         console.debug('appCtrl enter in state ' + $state.current.name + " and url is " + window.location.href);
@@ -95,27 +95,27 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             showShareVariableConfirmation(variableObject, sharingUrl, ev);
             return;
         }
-        quantimodoService.openSharingUrl(sharingUrl);
+        qmService.openSharingUrl(sharingUrl);
     };
     $scope.shareStudy = function(correlationObject, sharingUrl, ev){
         if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
             showShareStudyConfirmation(correlationObject, sharingUrl, ev);
             return;
         }
-        quantimodoService.openSharingUrl(sharingUrl);
+        qmService.openSharingUrl(sharingUrl);
     };
-    $scope.openSharingUrl = function(sharingUrl){ quantimodoService.openSharingUrl(sharingUrl); };
+    $scope.openSharingUrl = function(sharingUrl){ qmService.openSharingUrl(sharingUrl); };
     $scope.openStudyLinkFacebook = function (predictorVariableName, outcomeVariableName) {
-        quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkFacebook);
+        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkFacebook);
     };
     $scope.openStudyLinkTwitter = function (predictorVariableName, outcomeVariableName) {
-        quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkTwitter);
+        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkTwitter);
     };
     $scope.openStudyLinkGoogle = function (predictorVariableName, outcomeVariableName) {
-        quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkGoogle);
+        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkGoogle);
     };
     $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName) {
-        quantimodoService.openSharingUrl(quantimodoService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
+        qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
     };
     var showShareStudyConfirmation = function(correlationObject, sharingUrl, ev) {
         var title = 'Share Study';
@@ -123,19 +123,19 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? You can make them private again at any time on this study page.';
         function yesCallback() {
                 correlationObject.shareUserMeasurements = true;
-                quantimodoService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
+                qmService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
                 var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
-                quantimodoService.showBlackRingLoader();
-                quantimodoService.postStudyDeferred(body).then(function () {
-                    quantimodoService.hideLoader();
-                    if(sharingUrl){quantimodoService.openSharingUrl(sharingUrl);}
+                qmService.showBlackRingLoader();
+                qmService.postStudyDeferred(body).then(function () {
+                    qmService.hideLoader();
+                    if(sharingUrl){qmService.openSharingUrl(sharingUrl);}
                 }, function (error) {
-                    quantimodoService.hideLoader();
+                    qmService.hideLoader();
                     console.error(error);
                 });
         }
         function noCallback() {correlationObject.shareUserMeasurements = false;}
-        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
     var showUnshareStudyConfirmation = function(correlationObject, ev) {
         var title = 'Share Study';
@@ -145,10 +145,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function yesCallback() {
             correlationObject.shareUserMeasurements = false;
             var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
-            quantimodoService.postStudyDeferred(body);
+            qmService.postStudyDeferred(body);
         }
         function noCallback() {correlationObject.shareUserMeasurements = true;}
-        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
     $scope.toggleStudyShare = function (correlationObject, ev) {
         if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
@@ -160,17 +160,17 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function yesCallback() {
             variableObject.shareUserMeasurements = true;
             var body = {variableId: variableObject.id, shareUserMeasurements: true};
-            quantimodoService.showBlackRingLoader();
-            quantimodoService.postUserVariableDeferred(body).then(function () {
-                quantimodoService.hideLoader();
-                quantimodoService.openSharingUrl(sharingUrl);
+            qmService.showBlackRingLoader();
+            qmService.postUserVariableDeferred(body).then(function () {
+                qmService.hideLoader();
+                qmService.openSharingUrl(sharingUrl);
             }, function (error) {
-                quantimodoService.hideLoader();
+                qmService.hideLoader();
                 console.error(error);
             });
         }
         function noCallback() {variableObject.shareUserMeasurements = false;}
-        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
     var showUnshareVariableConfirmation = function(variableObject, ev) {
         var title = 'Share Variable';
@@ -180,10 +180,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function yesCallback() {
             variableObject.shareUserMeasurements = false;
             var body = {variableId: variableObject.id, shareUserMeasurements: false};
-            quantimodoService.postUserVariableDeferred(body).then(function () {}, function (error) {console.error(error);});
+            qmService.postUserVariableDeferred(body).then(function () {}, function (error) {console.error(error);});
         }
         function noCallback() {variableObject.shareUserMeasurements = true;}
-        quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
     $scope.toggleVariableShare = function (variableObject, ev) {
         if(variableObject.shareUserMeasurements){showShareVariableConfirmation(variableObject, ev);} else {showUnshareVariableConfirmation(variableObject, ev);}
@@ -191,7 +191,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $rootScope.setLocalStorageFlagTrue = function (flagName) {
         console.debug('Set ' + flagName + ' to true');
         $rootScope[flagName] = true;
-        quantimodoService.setLocalStorageItem(flagName, true);
+        qmService.setLocalStorageItem(flagName, true);
     };
     // open datepicker for "from" date
     $scope.openFromDatePicker = function () {ionicDatePicker.openDatePicker($scope.fromDatePickerObj);};
@@ -213,23 +213,23 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.updateDatesLocalStorage = function () {
         var to = moment($scope.toDate).unix() * 1000;
         var from = moment($scope.fromDate).unix() * 1000;
-        console.debug("$scope.updateDatesLocalStorage is calling quantimodoService.setDates");
-        quantimodoService.setDates(to, from);
+        console.debug("$scope.updateDatesLocalStorage is calling qmService.setDates");
+        qmService.setDates(to, from);
     };
     // show main calendar popup (from and to)
     $scope.showCalendarPopup = function ($event) {
         $scope.popover.show($event);
-        quantimodoService.getToDate(function (endDate) {
+        qmService.getToDate(function (endDate) {
             $scope.toDate = new Date(endDate);
             $scope.fromDatePickerObj.to = $scope.toDate;
-            quantimodoService.getFromDate(function (fromDate) {
+            qmService.getFromDate(function (fromDate) {
                 $scope.fromDate = new Date(fromDate);
                 $scope.toDatePickerObj.from = $scope.fromDate;
             });
         });
     };
     $scope.showHelpInfoPopup = function (explanationId, ev) {
-        quantimodoService.showMaterialAlert(quantimodoService.explanations[explanationId].title, quantimodoService.explanations[explanationId].textContent);
+        qmService.showMaterialAlert(qmService.explanations[explanationId].title, qmService.explanations[explanationId].textContent);
     };
     $scope.tagAnotherVariable = function () {
         $state.go('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: $rootScope.variableObject});
@@ -242,9 +242,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}
     };
     /*Wrapper Config*/
-    $scope.positiveRatingOptions = quantimodoService.getPositiveRatingOptions();
-    $scope.negativeRatingOptions = quantimodoService.getNegativeRatingOptions();
-    $scope.numericRatingOptions = quantimodoService.getNumericRatingOptions();
+    $scope.positiveRatingOptions = qmService.getPositiveRatingOptions();
+    $scope.negativeRatingOptions = qmService.getNegativeRatingOptions();
+    $scope.numericRatingOptions = qmService.getNumericRatingOptions();
     $scope.welcomeText = config.appSettings.welcomeText;
     /*Wrapper Config End*/
 
@@ -379,17 +379,17 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 0;
                 correlationObject.vote = 0;
-                quantimodoService.postVoteDeferred(correlationObject).then(function () {console.debug('Down voted!');}, function () {console.error('Down vote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {console.debug('Down voted!');}, function () {console.error('Down vote failed!');});
             };
             noCallback = function() {};
-            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         } else {
             title = 'Delete Downvote';
             textContent = 'You previously voted that it is IMPOSSIBLE that ' + correlationObject.causeVariableName +
                 ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '. Do you want to delete this down vote?';
             yesCallback = function() {deleteVote(correlationObject, $index);};
             noCallback = function () {};
-            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         }
     };
     $scope.upVote = function(correlationObject, $index, ev){
@@ -401,22 +401,22 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 1;
                 correlationObject.vote = 1;
-                quantimodoService.postVoteDeferred(correlationObject).then(function () {console.debug('upVote');}, function () {console.error('upVote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {console.debug('upVote');}, function () {console.error('upVote failed!');});
             };
             noCallback = function () {};
-            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         } else {
             title = 'Delete Upvote';
             textContent = 'You previously voted that it is POSSIBLE that '+ correlationObject.causeVariableName +
                 ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effectVariableName+ '. Do you want to delete this up vote?';
             yesCallback = function() {deleteVote(correlationObject, $index);};
             noCallback = function () {};
-            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         }
     };
     function deleteVote(correlationObject, $index) {
         correlationObject.userVote = null;
-        quantimodoService.deleteVoteDeferred(correlationObject, function(response){
+        qmService.deleteVoteDeferred(correlationObject, function(response){
             console.debug("deleteVote response", response);
         }, function(response){
             console.error("deleteVote response", response);
@@ -441,14 +441,14 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $rootScope.isSyncing = false;
         $rootScope.syncDisplayText = '';
         $scope.loading = false;
-        quantimodoService.hideLoader();
+        qmService.hideLoader();
     };
     $scope.onTextClick = function ($event) {
         console.debug("Auto selecting text so the user doesn't have to press backspace...");
         $event.target.select();
     };
     $scope.favoriteValidationFailure = function (message) {
-        quantimodoService.showMaterialAlert('Whoops!', message);
+        qmService.showMaterialAlert('Whoops!', message);
         console.error(message);
         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
     };
@@ -458,9 +458,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             return;
         }
         trackingReminder.displayTotal = "Recorded " + (trackingReminder.total + " " + trackingReminder.unitAbbreviatedName).replace(' /', '/');
-        quantimodoService.postMeasurementByReminder(trackingReminder, trackingReminder.total)
+        qmService.postMeasurementByReminder(trackingReminder, trackingReminder.total)
             .then(function () {
-                console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
             }, function(error) {
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                 console.error(error);
@@ -481,9 +481,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 return;
             }
             if(trackingReminder.tally) {
-                quantimodoService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
+                qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
                     .then(function () {
-                        console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                        console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                     }, function(error) {
                         if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
                         console.error(error);
@@ -499,9 +499,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         var actionMenuButtons = [
             { text: '<i class="icon ion-gear-a"></i>Edit' },
             { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
-            quantimodoService.actionSheetButtons.charts,
-            quantimodoService.actionSheetButtons.history,
-            quantimodoService.actionSheetButtons.analysisSettings
+            qmService.actionSheetButtons.charts,
+            qmService.actionSheetButtons.history,
+            qmService.actionSheetButtons.analysisSettings
         ];
         /** @namespace config.appSettings.favoritesController */
         if(config.appSettings.favoritesController && config.appSettings.favoritesController.actionMenuButtons){
@@ -524,7 +524,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             },
             destructiveButtonClicked: function() {
                 favorite.hide = true;
-                quantimodoService.deleteTrackingReminderDeferred(favorite);
+                qmService.deleteTrackingReminderDeferred(favorite);
             }
         });
         $timeout(function() {hideSheet();}, 20000);
@@ -535,16 +535,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             return;
         }
         $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
-        quantimodoService.postBloodPressureMeasurements($rootScope.bloodPressure)
+        qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
             .then(function () {
-                console.debug("Successfully quantimodoService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
             }, function(error) {
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                 console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
             });
     };
     $scope.showExplanationsPopup = function(settingName, ev) {
-        quantimodoService.showMaterialAlert(quantimodoService.explanations[settingName].title, quantimodoService.explanations[settingName].explanation, ev);
+        qmService.showMaterialAlert(qmService.explanations[settingName].title, qmService.explanations[settingName].explanation, ev);
     };
     $scope.goBack = function (stateParams) {
         if($ionicHistory.viewHistory().backView){
@@ -573,23 +573,23 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
-            quantimodoService.reportErrorDeferred('No variable name provided to $scope.getUserVariableByName');
+            qmService.reportErrorDeferred('No variable name provided to $scope.getUserVariableByName');
             return;
         }
         if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){ $rootScope.variableObject = null; }
-        if(!hideLoader){ quantimodoService.showBlackRingLoader(); }
+        if(!hideLoader){ qmService.showBlackRingLoader(); }
         var params = {includeTags : true};
-        quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
+        qmService.getUserVariableByNameFromLocalStorageOrApiDeferred(variableName, params, refresh).then(function(variableObject){
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
-            quantimodoService.hideLoader();
+            qmService.hideLoader();
             $rootScope.variableObject = variableObject;
-            //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
+            //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
             $scope.setupVariableByVariableObject(variableObject);
         }, function (error) {
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
-            quantimodoService.hideLoader();
+            qmService.hideLoader();
             console.error(error);
         });
     };
@@ -601,18 +601,18 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.trackLocationChange = function(event, trackLocation) {
         if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}
         console.debug('trackLocation', $rootScope.user.trackLocation);
-        quantimodoService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
+        qmService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
         if($rootScope.user && $rootScope.user.trackLocation){
-            console.debug('Going to execute quantimodoService.backgroundGeolocationInit if $ionicPlatform.ready');
-            quantimodoService.backgroundGeolocationInit();
+            console.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
+            qmService.backgroundGeolocationInit();
         }
         if($rootScope.user.trackLocation){
-            $scope.showInfoToast('Location tracking enabled');
-            quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
+            qmService.showInfoToast('Location tracking enabled');
+            qmService.updateLocationVariablesAndPostMeasurementIfChanged();
         }
         if(!$rootScope.user.trackLocation) {
-            $scope.showInfoToast('Location tracking disabled');
-            quantimodoService.backgroundGeolocationStop();
+            qmService.showInfoToast('Location tracking disabled');
+            qmService.backgroundGeolocationStop();
             console.debug("Do not track location");
         }
     };
@@ -621,17 +621,15 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $scope.closeMenu();
     });
     $scope.showMaterialAlert = function(title, textContent, ev) {
-        quantimodoService.showMaterialAlert(title, textContent, ev);
+        qmService.showMaterialAlert(title, textContent, ev);
     };
-    var toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
-    var getToastPosition = function() {return Object.keys(toastPosition).filter(function(pos) { return toastPosition[pos]; }).join(' ');};
-    $scope.showInfoToast = function(text) {$mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));};
+
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
     $scope.copyChartsUrlToClipboard = function () {
         $scope.copyLinkText = 'Copied!';
         /** @namespace $rootScope.variableObject.chartsUrl */
         clipboard.copyText($rootScope.variableObject.chartsLinkStatic);
-        $scope.showInfoToast('Copied link!');
+        qmService.showInfoToast('Copied link!');
     };
     var verifyEmailAddressAndExecuteCallback = function (callback) {
         if($rootScope.user.email || $rootScope.user.userEmail){
@@ -641,16 +639,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $scope.updateEmailAndExecuteCallback(callback);
     };
     var sendCouponEmail = function () {
-        quantimodoService.sendEmailViaAPIDeferred('couponInstructions');
-        quantimodoService.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.', event);
+        qmService.sendEmailViaAPIDeferred('couponInstructions');
+        qmService.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.', event);
     };
     var sendFitbitEmail = function () {
-        quantimodoService.sendEmailViaAPIDeferred('fitbit');
-        quantimodoService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
+        qmService.sendEmailViaAPIDeferred('fitbit');
+        qmService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
     };
     var sendChromeEmail = function () {
-        quantimodoService.sendEmailViaAPIDeferred('chrome');
-        quantimodoService.showMaterialAlert('Get the Chrome Extension', 'Please check your email at ' +  $rootScope.user.email + ' for your link.', event);
+        qmService.sendEmailViaAPIDeferred('chrome');
+        qmService.showMaterialAlert('Get the Chrome Extension', 'Please check your email at ' +  $rootScope.user.email + ' for your link.', event);
     };
     $scope.sendEmailAfterVerification = function(emailType) {
         if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }
@@ -683,12 +681,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             ]
         });
         myPopup.then(function(res) {
-            quantimodoService.updateUserSettingsDeferred({email: $scope.data.email});
+            qmService.updateUserSettingsDeferred({email: $scope.data.email});
             $rootScope.user.email = $scope.data.email;
             if(callback){ callback(); }
         });
     };
-    $scope.goToStudyPage = function(correlationObject) {quantimodoService.goToStudyPageViaCorrelationObject(correlationObject);};
+    $scope.goToStudyPage = function(correlationObject) {qmService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
         if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
             $rootScope.correlationObject = null;
