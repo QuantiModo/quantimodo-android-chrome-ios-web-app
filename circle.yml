@@ -77,8 +77,8 @@ deployment:
   build:
     branch: /apps\/.*/
     commands:
+      - gulp buildChromeExtension # Build Chrome first in case Android upload fails
       - gulp buildAndroidApp
-      - gulp buildChromeExtension
   feature:
     branch: /feature\/.*/
     commands:
@@ -96,13 +96,13 @@ deployment:
   staging:
     branch: develop
     commands:
+      - gulp buildChromeExtension # Build Chrome first in case Android upload fails
       - gulp buildAndroidApp
-      - gulp buildChromeExtension
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
     commands:
+      - gulp buildChromeExtension
       - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
       - gulp buildAndroidApp
-      - gulp buildChromeExtension
       #- gulp fastlaneSupplyProduction

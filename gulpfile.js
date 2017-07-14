@@ -36,12 +36,12 @@ var exec = require('child_process').exec;
 var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
-console.log("process.platform is " + process.platform);
+console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
 var buildDebug = isTruthy(process.env.BUILD_DEBUG);
-var currentServerConext = "local";
-if(process.env.CIRCLE_BRANCH){currentServerConext = "circleci";}
-if(process.env.BUDDYBUILD_BRANCH){currentServerConext = "buddybuild";}
+var currentServerContext = "local";
+if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
+if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
 function setClientId(callback) {
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH;}
     if(process.env.CIRCLE_BRANCH && process.env.CIRCLE_BRANCH.indexOf('apps') !== -1){
@@ -367,7 +367,7 @@ function resizeIcon(callback, resolution) {
     });
 }
 function onWindows(callback) {
-    if(process.env.OS && process.env.OS.toLowerCase().indexOf('windows') !== -1){
+    if(process.env.OS && process.env.OS.toLowerCase().indexOf('win') !== -1){
         infoLog("Cannot do this on windows");
         if(callback){callback();}
         return true;
@@ -663,7 +663,7 @@ gulp.task('downloadSplashScreen', [], function(){
 });
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
-    options.qs.server = options.qs.currentServerConext = currentServerConext;
+    options.qs.server = options.qs.currentServerConext = currentServerContext;
     return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', [], function () {
@@ -2042,25 +2042,19 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
     platformCurrentlyBuildingFor = 'android';
     runSequence(
         'setAppEnvs',
-        'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'cleanPlatforms',
         'cleanPlugins',
-        'ionicPlatformAddAndroid',
-        'decryptAndroidKeystore',
-        'decryptAndroidDebugKeystore',
-        //'androidDebugKeystoreInfo',
-        //'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
-        //'addGooglePlusPlugin',
-        //'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
-        'ionicAddCrosswalk',
-        'ionicInfo',
+        'prepareRepositoryForAndroidWithoutCleaning',
         callback);
 });
 gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
+    if(!process.env.ANDROID_HOME){throw "ANDROID_HOME env is not set!"}
+    console.log("ANDROID_HOME is " + process.env.ANDROID_HOME);
     platformCurrentlyBuildingFor = 'android';
     runSequence(
         'setAppEnvs',
+        'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'ionicPlatformAddAndroid',
         'decryptAndroidKeystore',
