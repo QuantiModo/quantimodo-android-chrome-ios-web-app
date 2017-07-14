@@ -1966,17 +1966,22 @@ gulp.task('ionicPlatformRemoveAndroid', function (callback) {
     });
 });
 gulp.task('cordovaBuildAndroidDebug', function (callback) {
-    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
-    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
-    postAppStatus();
-    return execute(getCordovaBuildCommand('debug', 'android'), function (error) {
-        if (error !== null) {
-            errorLog('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            infoLog('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    if(buildDebug){
+        appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
+        appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
+        postAppStatus();
+        return execute(getCordovaBuildCommand('debug', 'android'), function (error) {
+            if (error !== null) {
+                errorLog('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
+            } else {
+                infoLog('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
+                callback();
+            }
+        });
+    } else {
+        console.log("Not building debug version because process.env.BUILD_DEBUG is not true");
+        callback();
+    }
 });
 function getCordovaBuildCommand(releaseStage, platform) {
     var command = 'cordova build --' + releaseStage + ' ' + platform;
@@ -2091,7 +2096,7 @@ gulp.task('buildAndroidApp', function (callback) {
         'outputArmv7ApkVersionCode',
         'outputX86ApkVersionCode',
         'outputCombinedApkVersionCode',
-        //'cordovaBuildAndroidDebug',
+        'cordovaBuildAndroidDebug',
         //'copyAndroidBuild',
         "upload-x86-release-apk-to-s3",
         "upload-armv7-release-apk-to-s3",
