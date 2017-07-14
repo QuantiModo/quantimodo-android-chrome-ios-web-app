@@ -81,6 +81,7 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
+var pathToIcons = "www/img/icons";
 var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
 var appSettings, privateConfig, devCredentials;
 var privateConfigDirectoryPath = './www/private_configs/';
@@ -107,9 +108,9 @@ var chromeExtensionManifestTemplate = {
     'manifest_version': 2,
     'options_page': 'www/chrome_extension/options/options.html',
     'icons': {
-        '16': 'www/img/icons/icon_16.png',
-        '48': 'www/img/icons/icon_48.png',
-        '128': 'www/img/icons/icon_128.png'
+        '16': pathToIcons + '/icon_16.png',
+        '48': pathToIcons + '/icon_48.png',
+        '128': pathToIcons + '/icon_128.png'
     },
     'permissions': [
         'alarms',
@@ -118,7 +119,7 @@ var chromeExtensionManifestTemplate = {
         'tabs'
     ],
     'browser_action': {
-        'default_icon': 'www/img/icons/icon_700.png',
+        'default_icon': pathToIcons + '/icon_700.png',
         'default_popup': 'www/templates/chrome/iframe.html'
     },
     'background': {
@@ -322,7 +323,7 @@ function zipAFolder(folderPath, zipFileName, destinationFolder) {
         .pipe(gulp.dest(destinationFolder));
 }
 function resizeIcon(callback, resolution) {
-    var outputIconPath = 'www/img/icons/icon_' + resolution + '.png';
+    var outputIconPath = pathToIcons + '/icon_' + resolution + '.png';
     var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' ' + outputIconPath;
     return execute(command, function (error) {
         if (error) {
@@ -1587,7 +1588,7 @@ gulp.task('copyAppResources', ['cleanResources'], function () {
 });
 gulp.task('copyIconsToWwwImg', [], function () {
     return gulp.src(['apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png'])
-        .pipe(gulp.dest('www/img/icons'));
+        .pipe(gulp.dest(pathToIcons));
 });
 gulp.task('copyAndroidLicenses', [], function () {
     if(!process.env.ANDROID_HOME){
@@ -1615,8 +1616,8 @@ gulp.task('copyWwwFolderToChromeExtension', [], function () {
         .pipe(gulp.dest(chromeExtensionBuildPath + '/www'));
 });
 gulp.task('copyIconsToChromeExtension', [], function () {
-    return gulp.src(['apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png'])
-        .pipe(gulp.dest(chromeExtensionBuildPath + '/www/img/icons'));
+    return gulp.src([pathToIcons + "/*"])
+        .pipe(gulp.dest(chromeExtensionBuildPath + '/' + pathToIcons));
 });
 gulp.task('removeTransparentPng', [], function () {
     return gulp.src('resources/icon.png', {read: false}).pipe(clean());
