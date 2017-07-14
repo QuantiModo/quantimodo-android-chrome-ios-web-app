@@ -8,9 +8,11 @@ console.log("API URL is " + apiUrl);
 var requestIdentificationParameters;
 var v = null;
 var vid = null;
-var introWindowParams = { url: "/www/index.html#/app/intro", type: 'panel', top: 0.2 * screen.height, left: 0.4 * screen.width, width: 450, height: 750};
+function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
+function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
+var introWindowParams = { url: "/www/index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var facesRatingPopupWindowParams = { url: "www/templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
-var loginPopupWindowParams = { url: "/www/index.html#/app/login", type: 'panel', top: 0.2 * screen.height, left: 0.4 * screen.width, width: 450, height: 750};
+var loginPopupWindowParams = { url: "/www/index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var reminderInboxPopupWindowParams = { url: "/www/index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
 var compactInboxPopupWindowParams = { url: "/www/index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
 var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "www/img/icons/icon_700.png", priority: 2};
