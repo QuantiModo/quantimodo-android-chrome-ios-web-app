@@ -36,6 +36,7 @@ var exec = require('child_process').exec;
 var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
+console.log("process.platform is " + process.platform);
 function isTruthy(value) {return (value && value !== "false");}
 var buildDebug = isTruthy(process.env.BUILD_DEBUG);
 var currentServerConext = "local";
@@ -101,9 +102,6 @@ var androidX86DebugApkName = 'android-x86-debug';
 var pathToDebugx86Apk = pathToOutputApks + '/' + androidX86DebugApkName + '.apk';
 var buildPath = 'build';
 var circleCIPathToRepo = '~/quantimodo-android-chrome-ios-web-app';
-var chromExtensionFilename = 'chrome-extension';
-var chromeExtensionZipFilename = chromExtensionFilename + '.zip';
-var pathToBuiltChromeExtensionZip = buildPath + '/' + chromeExtensionZipFilename;
 var chromeExtensionManifestTemplate = {
     'manifest_version': 2,
     'options_page': 'www/chrome_extension/options/options.html',
@@ -128,11 +126,13 @@ var chromeExtensionManifestTemplate = {
     }
 };
 var chromeExtensionBuildPath = buildPath + '/chrome_extension';
-var pathToUnzippedChromeExtension = buildPath + '/unzipped-chrome-extension';
 var platformCurrentlyBuildingFor;
 var paths = {
     sass: ['./www/scss/**/*.scss']
 };
+function getChromeExtensionZipFilename() {return process.env.QUANTIMODO_CLIENT_ID + '-chrome-extension.zip';}
+function getPathToChromeExtensionZip() {return buildPath + '/' + getChromeExtensionZipFilename();}
+function getPathToUnzippedChromeExtension() {return buildPath + '/' + process.env.QUANTIMODO_CLIENT_ID + '-chrome-extension';}
 function getPatchVersionNumber() {
     var date = new Date();
     var monthNumber = (date.getMonth() + 1).toString();
@@ -174,14 +174,50 @@ function validateJsonFile(filePath) {
 }
 var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
 readDevCredentials();
+var camelCase = (function () {
+    var DEFAULT_REGEX = /[-_]+(.)?/g;
+
+    function toUpper(match, group1) {
+        return group1 ? group1.toUpperCase() : '';
+    }
+    return function (str, delimiters) {
+        return str.replace(delimiters ? new RegExp('[' + delimiters + ']+(.)?', 'g') : DEFAULT_REGEX, toUpper);
+    };
+})();
 function convertToCamelCase(string) {
     string = string.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
     string = string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
     return string;
 }
-function getBuildStatusPropertyName(filename) {
-    var buildStatusPropertyName = convertToCamelCase(filename).replace('.zip', '').replace('.apk', '');
-    return buildStatusPropertyName;
+function getSubStringAfterLastSlash(myString) {
+    var parts = myString.split('/');
+    return parts[parts.length - 1];
+}
+function convertFilePathToPropertyName(filePath) {
+    var propertyName = getSubStringAfterLastSlash(filePath);
+    propertyName = propertyName.replace(process.env.QUANTIMODO_CLIENT_ID, '');
+    propertyName = propertyName.replace('.zip', '').replace('.apk', '');
+    propertyName = propertyName.replace('.', '_');
+    propertyName = camelCase(propertyName);
+    //propertyName = convertToCamelCase(propertyName);
+    return propertyName;
+}
+function getS3RelativePath(relative_filename) {
+    return  'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
+}
+function getS3Url(relative_filename) {
+    return s3BaseUrl + getS3RelativePath(relative_filename);
+}
+function uploadBuildToS3(filePath) {
+    /** @namespace appSettings.appStatus.betaDownloadLinks */
+    appSettings.appStatus.betaDownloadLinks[convertFilePathToPropertyName(filePath)] = getS3Url(filePath);
+    /** @namespace appSettings.appStatus.buildStatus */
+    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(filePath)] = "READY";
+    return uploadToS3(filePath);
+}
+function uploadAppImagesToS3(filePath) {
+    //appSettings.additionalSettings.appImages[convertFilePathToPropertyName(filePath)] = getS3Url(filePath); We can just generate this from client id in PHP contructor
+    return uploadToS3(filePath);
 }
 function uploadToS3(filePath) {
     if(!process.env.AWS_ACCESS_KEY_ID){
@@ -197,11 +233,7 @@ function uploadToS3(filePath) {
         Bucket: 'quantimodo',
         ACL: 'public-read',
         keyTransform: function(relative_filename) {
-            var s3RelativePath = 'app_uploads/' + process.env.QUANTIMODO_CLIENT_ID + '/' + relative_filename;
-            /** @namespace appSettings.appStatus.betaDownloadLinks */
-            appSettings.appStatus.betaDownloadLinks[getBuildStatusPropertyName(relative_filename)] = s3BaseUrl + s3RelativePath;
-            appSettings.appStatus.buildStatus = "READY";
-            return s3RelativePath;
+            return getS3RelativePath(relative_filename);
         }
     }, {
         maxRetries: 5,
@@ -330,7 +362,7 @@ function resizeIcon(callback, resolution) {
             errorLog("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
             errorLog('ERROR: ' + JSON.stringify(error));
         }
-        uploadToS3(outputIconPath);
+        uploadAppImagesToS3(outputIconPath);
         callback();
     });
 }
@@ -702,7 +734,7 @@ gulp.task('post-app-status', [], function () {
     return postAppStatus();
 });
 gulp.task('validateChromeManifest', function () {
-    return validateJsonFile(pathToUnzippedChromeExtension + '/manifest.json');
+    return validateJsonFile(getPathToUnzippedChromeExtension() + '/manifest.json');
 });
 gulp.task('verifyExistenceOfDefaultConfig', function () {
     return verifyExistenceOfFile(defaultAppConfigPath);
@@ -718,7 +750,7 @@ gulp.task('verifyExistenceOfAndroidArmV7ReleaseBuild', function () {
     }
 });
 gulp.task('verifyExistenceOfChromeExtension', function () {
-    return verifyExistenceOfFile(pathToBuiltChromeExtensionZip);
+    return verifyExistenceOfFile(getPathToChromeExtensionZip());
 });
 gulp.task('getCommonVariables', function () {
     infoLog('gulp getCommonVariables...');
@@ -761,7 +793,7 @@ gulp.task('outputCombinedApkVersionCode', function () {
 });
 gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
-    return unzipFile(pathToBuiltChromeExtensionZip, pathToUnzippedChromeExtension);
+    return unzipFile(getPathToChromeExtensionZip(), getPathToUnzippedChromeExtension());
 });
 gulp.task('sass', function (done) {
     gulp.src('./www/scss/app.scss')  // Can't use "return" because gulp doesn't know whether to respect that or the "done" callback
@@ -906,20 +938,20 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
     });
     return deferred.promise;
 });
-gulp.task("upload-chrome-extension-to-s3", function() {return uploadToS3(pathToBuiltChromeExtensionZip);});
+gulp.task("upload-chrome-extension-to-s3", function() {return uploadBuildToS3(getPathToChromeExtensionZip());});
 gulp.task("upload-x86-release-apk-to-s3", function() {
     if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
-        return uploadToS3(pathToReleasex86Apk);
+        return uploadBuildToS3(pathToReleasex86Apk);
     }
 });
 gulp.task("upload-armv7-release-apk-to-s3", function() {
     if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
-        return uploadToS3(pathToReleaseArmv7Apk);
+        return uploadBuildToS3(pathToReleaseArmv7Apk);
     }
 });
 gulp.task("upload-combined-release-apk-to-s3", function() {
     if(!appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
-        return uploadToS3(pathToCombinedReleaseApk);
+        return uploadBuildToS3(pathToCombinedReleaseApk);
     }
 });
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
@@ -1694,6 +1726,7 @@ gulp.task('prepareIosApp', function (callback) {
     runSequence(
         'cleanPlugins',
         'configureApp',
+        'copyAppResources',
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate', // Needs to happen before resource generation so icon paths are not overwritten
         'removeTransparentPng',
@@ -1718,7 +1751,7 @@ gulp.task('removeAndroidManifestFromChromeExtension', [], function () {
         .pipe(clean());
 });
 gulp.task('zipChromeExtension', [], function () {
-    return zipAFolder(chromeExtensionBuildPath, chromeExtensionZipFilename, buildPath);
+    return zipAFolder(chromeExtensionBuildPath, getChromeExtensionZipFilename(), buildPath);
 });
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
@@ -1747,7 +1780,6 @@ gulp.task('configureApp', [], function (callback) {
         'setClientId',
         'sass',
         'getCommonVariables',
-        'copyAppResources',
         'getAppConfigs',
         'downloadIcon',
         'downloadSplashScreen',
@@ -1934,8 +1966,8 @@ gulp.task('ionicPlatformRemoveAndroid', function (callback) {
     });
 });
 gulp.task('cordovaBuildAndroidDebug', function (callback) {
-    appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidArm7DebugApkName)] = "BUILDING";
-    appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidX86DebugApkName)] = "BUILDING";
+    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
+    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
     postAppStatus();
     return execute(getCordovaBuildCommand('debug', 'android'), function (error) {
         if (error !== null) {
@@ -1952,8 +1984,8 @@ function getCordovaBuildCommand(releaseStage, platform) {
     return command;
 }
 gulp.task('cordovaBuildAndroidRelease', function (callback) {
-    appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
-    appSettings.appStatus.buildStatus[getBuildStatusPropertyName(androidX86ReleaseApkName)] = "BUILDING";
+    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
+    appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86ReleaseApkName)] = "BUILDING";
     postAppStatus();
     return execute(getCordovaBuildCommand('release', 'android'), function (error) {
         if (error !== null) {
@@ -2040,6 +2072,7 @@ gulp.task('prepareAndroidApp', function (callback) {
     platformCurrentlyBuildingFor = 'android';
     runSequence(
         'configureApp',
+        'copyAppResources',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
