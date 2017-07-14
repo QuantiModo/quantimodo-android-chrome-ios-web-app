@@ -1945,8 +1945,7 @@ gulp.task('xcodeProjectFix', function (callback) {
     });
 });
 gulp.task('ionicPlatformAddAndroid', function (callback) {
-    infoLog('ionic platform add android@6.1.0');
-    return execute('ionic platform add android@6.1.0', function (error) {
+    return execute('ionic platform add android@6.2.2', function (error) {
         if (error !== null) {
             errorLog('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
         } else {
