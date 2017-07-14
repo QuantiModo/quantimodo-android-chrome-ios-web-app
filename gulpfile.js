@@ -873,8 +873,7 @@ gulp.task('getUpdatedVersion', ['getClientIdFromUserInput'], function () {
     return deferred.promise;
 });
 gulp.task('copyWwwFolderToChromeApp', ['getUpdatedVersion'], function () {
-    return gulp.src(['www/**/*'])
-        .pipe(gulp.dest('chromeApps/' + process.env.QUANTIMODO_CLIENT_ID + '/www'));
+    return copyFiles('www/**/*', 'chromeApps/' + process.env.QUANTIMODO_CLIENT_ID + '/www');
 });
 gulp.task('zipChromeApp', ['copyWwwFolderToChromeApp'], function () {
     return gulp.src(['chromeApps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*'])
@@ -1610,37 +1609,36 @@ gulp.task('copyAppResources', ['cleanResources'], function () {
     }).pipe(gulp.dest('.'));
 });
 gulp.task('copyIconsToWwwImg', [], function () {
-    return gulp.src(['apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png'])
-        .pipe(gulp.dest(pathToIcons));
+    return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
 });
 gulp.task('copyAndroidLicenses', [], function () {
     if(!process.env.ANDROID_HOME){
         errorLog("Please pass ANDROID_HOME environmental variable to gulp task");
         return;
     }
-    return gulp.src(['android-licenses/*'])
-        .pipe(gulp.dest(process.env.ANDROID_HOME + '/licenses'));
+    return copyFiles('android-licenses/*', process.env.ANDROID_HOME + '/licenses');
 });
 gulp.task('copyAndroidResources', [], function () {
-    return gulp.src(['resources/android/**/*'])
-        .pipe(gulp.dest('platforms/android'));
+    return copyFiles('resources/android/**/*', 'platforms/android');
 });
 gulp.task('copyAndroidBuild', [], function () {
     if (!process.env.QUANTIMODO_CLIENT_ID) {throw 'process.env.QUANTIMODO_CLIENT_ID not set!';}
     var buildFolderPath = buildPath + '/apks/' + process.env.QUANTIMODO_CLIENT_ID; // Non-symlinked apk build folder accessible by Jenkins within Vagrant box
-    infoLog('Copying from ' + pathToOutputApks + ' to ' + buildFolderPath);
-    return gulp.src([pathToOutputApks + '/*.apk']).pipe(gulp.dest(buildFolderPath));
+    return copyFiles(pathToOutputApks + '/*.apk', buildFolderPath);
 });
+function copyFiles(sourceFiles, destinationPath) {
+    console.log("Copying www/**/* to " + chromeExtensionBuildPath + '/www');
+    return gulp.src([sourceFiles])
+        .pipe(gulp.dest(destinationPath));
+}
 gulp.task('copyIonicCloudLibrary', [], function () {
-    return gulp.src(['node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js']).pipe(gulp.dest('www/lib'));
+    return copyFiles('node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js', 'www/lib');
 });
 gulp.task('copyWwwFolderToChromeExtension', [], function () {
-    return gulp.src(['www/**/*'])
-        .pipe(gulp.dest(chromeExtensionBuildPath + '/www'));
+    return copyFiles('www/**/*', chromeExtensionBuildPath + '/www');
 });
 gulp.task('copyIconsToChromeExtension', [], function () {
-    return gulp.src([pathToIcons + "/*"])
-        .pipe(gulp.dest(chromeExtensionBuildPath + '/' + pathToIcons));
+    return copyFiles(pathToIcons + "/*", chromeExtensionBuildPath + '/' + pathToIcons);
 });
 gulp.task('removeTransparentPng', [], function () {
     return gulp.src('resources/icon.png', {read: false}).pipe(clean());
