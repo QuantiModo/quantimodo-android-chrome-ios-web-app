@@ -51,7 +51,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $scope.hideOnboardingPage();
     };
     $scope.connectWeatherOnboarding = function (event) {
-        qmService.connectWithParams({}, 'worldweatheronline');
+        qmService.connectConnectorWithParamsDeferred({}, 'worldweatheronline');
         $scope.hideOnboardingPage();
     };
     $scope.doneOnboarding = function () {
