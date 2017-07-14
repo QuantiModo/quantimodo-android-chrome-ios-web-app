@@ -20,7 +20,7 @@ if (!localStorage.introSeen) {
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
 }
-function loadAppSettings() {
+function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', 'www/configs/default.config.json', true);
