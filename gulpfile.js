@@ -174,17 +174,10 @@ function validateJsonFile(filePath) {
 }
 var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
 readDevCredentials();
-var camelCase = (function () {
-    var DEFAULT_REGEX = /[-_]+(.)?/g;
-
-    function toUpper(match, group1) {
-        return group1 ? group1.toUpperCase() : '';
-    }
-    return function (str, delimiters) {
-        return str.replace(delimiters ? new RegExp('[' + delimiters + ']+(.)?', 'g') : DEFAULT_REGEX, toUpper);
-    };
-})();
 function convertToCamelCase(string) {
+    string = string.replace('.', '-');
+    string = string.replace('_', '-');
+    if(string.charAt(0) === "-"){string = string.substr(1);}
     string = string.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
     string = string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
     return string;
@@ -197,9 +190,6 @@ function convertFilePathToPropertyName(filePath) {
     var propertyName = getSubStringAfterLastSlash(filePath);
     propertyName = propertyName.replace(process.env.QUANTIMODO_CLIENT_ID, '');
     propertyName = propertyName.replace('.zip', '').replace('.apk', '');
-    propertyName = propertyName.replace('.', '-');
-    propertyName = propertyName.replace('_', '-');
-    //propertyName = camelCase(propertyName);
     propertyName = convertToCamelCase(propertyName);
     return propertyName;
 }
