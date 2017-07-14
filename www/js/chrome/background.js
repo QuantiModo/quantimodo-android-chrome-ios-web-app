@@ -2,9 +2,10 @@
 ****	EVENT HANDLERS
 ***/
 var manifest = chrome.runtime.getManifest();
+var appSettings;
 var apiUrl = "https://app.quantimo.do";
 console.log("API URL is " + apiUrl);
-var requestIdentificationParameters = "appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version) + "&client_id=" + manifest.appSettings.clientId;
+var requestIdentificationParameters;
 var v = null;
 var vid = null;
 var introWindowParams = { url: "/www/index.html#/app/intro", type: 'panel', top: 0.2 * screen.height, left: 0.4 * screen.width, width: 450, height: 750};
@@ -19,6 +20,21 @@ if (!localStorage.introSeen) {
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
 }
+function loadAppSettings() {
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', 'www/configs/default.config.json', true);
+    xobj.onreadystatechange = function () {
+        if (xobj.readyState == 4) {
+            var json = xobj.responseText;
+            console.log("AppSettings:" + json);
+            appSettings = JSON.parse(json);
+            requestIdentificationParameters = "appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version) + "&client_id=" + appSettings.clientId;
+        }
+    };
+    xobj.send(null);
+}
+loadAppSettings();
 /*
 **	Called when the extension is installed
 */

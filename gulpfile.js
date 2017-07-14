@@ -632,7 +632,7 @@ gulp.task('createChromeExtensionManifest', function () {
     chromeExtensionManifest.description = appSettings.appDescription;
     chromeExtensionManifest.version = versionNumbers.ionicApp;
     chromeExtensionManifest.permissions.push("https://*.quantimo.do/*");
-    chromeExtensionManifest.appSettings = appSettings;
+    //chromeExtensionManifest.appSettings = appSettings;
     chromeExtensionManifest = JSON.stringify(chromeExtensionManifest, null, 2);
     var chromeManifestPath = chromeExtensionBuildPath + '/manifest.json';
     infoLog("Creating chrome manifest at " + chromeManifestPath);
