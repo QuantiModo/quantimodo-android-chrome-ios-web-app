@@ -118,7 +118,7 @@ function pushMeasurements(measurements, onDoneListener) {
 	xhr.onreadystatechange = function() {
         // If the request is completed
         if (xhr.readyState === 4) {
-            console.debug("quantimodoService responds:");
+            console.debug("qmService responds:");
             console.debug(xhr.responseText);
             if(onDoneListener !== null) {onDoneListener(xhr.responseText);}
         }

@@ -1,4 +1,4 @@
-angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, quantimodoService, $cordovaOauth,
+angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, qmService, $cordovaOauth,
                                                             $ionicActionSheet, Upload, $timeout, $ionicPopup) {
 	$scope.controller_name = "ImportCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
@@ -14,22 +14,22 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
 		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-        if(quantimodoService.sendToLoginIfNecessaryAndComeBack()){ return; }
+        if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
 		if(weCanEnterPage()){
 			loadNativeConnectorPage();
 			return;
 		}
 		// Check if user upgrade via web since last user refresh
-		quantimodoService.showBlackRingLoader();
-		quantimodoService.refreshUser().then(function (user) {
-			quantimodoService.hideLoader();
+		qmService.showBlackRingLoader();
+		qmService.refreshUser().then(function (user) {
+			qmService.hideLoader();
 			if(weCanEnterPage()){
 				loadNativeConnectorPage();
 				return;
 			}
 			$state.go('app.upgrade', {litePlanState: config.appSettings.appDesign.defaultState});
 		}, function (error) {
-			quantimodoService.hideLoader();
+			qmService.hideLoader();
 			$state.go('app.login');
 		});
 	});
@@ -38,13 +38,13 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		window.localStorage.hideImportHelpCard = true;
 	};
 	var goToWebImportDataPage = function() {
-		console.debug('importCtrl.init: Going to quantimodoService.getAccessTokenFromAnySource');
+		console.debug('importCtrl.init: Going to qmService.getAccessTokenFromAnySource');
 		$state.go(config.appSettings.appDesign.defaultState);
-		quantimodoService.getAccessTokenFromAnySource().then(function(accessToken){
-			quantimodoService.hideLoader();
+		qmService.getAccessTokenFromAnySource().then(function(accessToken){
+			qmService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
 				console.debug("Browser Detected");
-				var url = quantimodoService.getQuantiModoUrl("api/v2/account/connectors", true);
+				var url = qmService.getQuantiModoUrl("api/v2/account/connectors", true);
 				if(accessToken){ url += "access_token=" + accessToken; }
 				var newTab = window.open(url,'_blank');
 				if(!newTab){ alert("Please unblock popups and refresh to access the Import Data page."); }
@@ -52,7 +52,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				//noinspection JSCheckFunctionSignatures
 				$state.go(config.appSettings.appDesign.defaultState);
 			} else {
-				var targetUrl = quantimodoService.getQuantiModoUrl("api/v1/connect/mobile", true);
+				var targetUrl = qmService.getQuantiModoUrl("api/v1/connect/mobile", true);
 				if(accessToken){ targetUrl += "access_token=" + accessToken; }
 				var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
 				ref.addEventListener('exit', function(){
@@ -62,16 +62,16 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				});
 			}
 		}, function(){
-			quantimodoService.hideLoader();
+			qmService.hideLoader();
 			console.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
-            quantimodoService.sendToLoginIfNecessaryAndComeBack();
+            qmService.sendToLoginIfNecessaryAndComeBack();
 		});
 	};
 	var loadNativeConnectorPage = function(){
 		$scope.showImportHelpCard = (window.localStorage.hideImportHelpCard !== "true");
 		console.debug('importCtrl: $rootScope.isMobile so using native connector page');
-		quantimodoService.showBlackRingLoader();
-		quantimodoService.getConnectorsDeferred()
+		qmService.showBlackRingLoader();
+		qmService.getConnectorsDeferred()
 			.then(function(connectors){
                 $scope.connectors = connectors;
 				if(connectors) {
@@ -84,7 +84,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	};
     $scope.showActionSheetForConnector = function(connector) {
         var buttons = [
-            quantimodoService.getHistoryActionSheetButton(connector.displayName)
+            qmService.getHistoryActionSheetButton(connector.displayName)
         ];
         var hideSheetForNotification = $ionicActionSheet.show({
             buttons: buttons,
@@ -111,18 +111,18 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         $scope.errFile = errFiles && errFiles[0];
         if (file) {
             button.text = "Uploading...";
-            quantimodoService.showBasicLoader();
+            qmService.showBasicLoader();
             var body = {file: file, "connectorName": connector.name};
-            file.upload = Upload.upload({url: quantimodoService.getApiUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId +
+            file.upload = Upload.upload({url: qmService.getApiUrl() + '/api/v2/spreadsheetUpload?clientId=' + $rootScope.appSettings.clientId +
                 "&access_token=" + $rootScope.user.accessToken, data: body});
             file.upload.then(function (response) {
                 button.text = "Import Scheduled";
                 connector.message = "You should start seeing your data within the next hour or so";
                 console.debug("File upload response: ", response);
                 $timeout(function () {file.result = response.data;});
-                quantimodoService.hideLoader();
+                qmService.hideLoader();
             }, function (response) {
-                quantimodoService.hideLoader();
+                qmService.hideLoader();
                 if (response.status > 0){$scope.errorMsg = response.status + ': ' + response.data;}
             }, function (evt) {
                 file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
@@ -147,7 +147,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 connectorCredentials: {token: response},
                 connector: connector
             };
-            quantimodoService.connectConnectorWithTokenDeferred(body).then(function(result){
+            qmService.connectConnectorWithTokenDeferred(body).then(function(result){
                 console.debug(JSON.stringify(result));
                 $scope.refreshConnectors();
             }, function (error) {
@@ -157,7 +157,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         };
         var connectWithAuthCode = function(authorizationCode, connector){
             console.debug(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-            quantimodoService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
+            qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
                 $scope.refreshConnectors();
             }, function() {
                 console.error("error on connectWithAuthCode for " + connector.name);
@@ -197,7 +197,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 'social',
                 'weight'
             ];
-            options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+            options = {redirect_uri: qmService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
@@ -207,7 +207,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 return;
             }
             scopes = [];
-            options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+            options = {redirect_uri: qmService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
@@ -217,7 +217,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 return;
             }
             scopes = ['time_data', 'category_data', 'productivity_data'];
-            options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+            options = {redirect_uri: qmService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
@@ -227,7 +227,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 return;
             }
             scopes = [];
-            options = {redirect_uri: quantimodoService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+            options = {redirect_uri: qmService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
             $cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
                 .then(function(authorizationCode) {connectWithAuthCode(authorizationCode, connector);}, function(error) {connectorErrorHandler(error);});
         }
@@ -251,7 +251,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                     console.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
                     connectWithAuthCode(response.serverAuthCode, connector);
                 }, function (errorMessage) {
-                    quantimodoService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to quantimodoService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                    qmService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                 });
             }
         }
@@ -456,7 +456,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
     };
     var disconnectConnector = function (connector){
         connector.loadingText = 'Disconnected';
-        quantimodoService.disconnectConnectorDeferred(connector.name).then(function (){ $scope.refreshConnectors();
+        qmService.disconnectConnectorDeferred(connector.name).then(function (){ $scope.refreshConnectors();
         }, function() { console.error("error disconnecting " + connector.name); });
     };
     var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
@@ -470,7 +470,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         }
     };
     $scope.refreshConnectors = function(){
-        quantimodoService.refreshConnectors()
+        qmService.refreshConnectors()
             .then(function(connectors){
                 $scope.connectors = connectors;
                 //Stop the ion-refresher from spinning
@@ -497,7 +497,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         console.debug('Opened ' + url);
     };
     function connectWithParams(params, lowercaseConnectorName) {
-        quantimodoService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
+        qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
             .then(function(result){
                 console.debug(JSON.stringify(result));
                 $scope.refreshConnectors();

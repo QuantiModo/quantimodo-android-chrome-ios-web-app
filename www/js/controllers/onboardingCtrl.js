@@ -1,21 +1,21 @@
-angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, quantimodoService) {
+angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
         $rootScope.hideNavigationMenu = true;
-        if(quantimodoService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
-        quantimodoService.setupOnboardingPages();
-        quantimodoService.hideLoader();
+        if(qmService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
+        qmService.setupOnboardingPages();
+        qmService.hideLoader();
         $rootScope.hideNavigationMenu = true;
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){
         console.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
-        quantimodoService.getConnectorsDeferred(); // Make sure they're ready in advance
+        qmService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
     var removeImportPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
-        if(!$rootScope.appSettings.designMode){quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));}
+        if(!$rootScope.appSettings.designMode){qmService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));}
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     };
     $scope.onboardingGoToImportPage = function () {
@@ -40,7 +40,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $rootScope.hideMenuButton = true;
         if(!$rootScope.user){
             $rootScope.appSettings.appDesign.onboarding.active = null;
-            quantimodoService.deleteItemFromLocalStorage('onboardingPages');
+            qmService.deleteItemFromLocalStorage('onboardingPages');
             $state.go('app.onboarding');
             return;
         }
@@ -51,18 +51,18 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $scope.hideOnboardingPage();
     };
     $scope.connectWeatherOnboarding = function (event) {
-        quantimodoService.connectWithParams({}, 'worldweatheronline');
+        qmService.connectWithParams({}, 'worldweatheronline');
         $scope.hideOnboardingPage();
     };
     $scope.doneOnboarding = function () {
         $state.go('app.remindersInbox');
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
-        quantimodoService.deleteItemFromLocalStorage('onboardingPages');
+        qmService.deleteItemFromLocalStorage('onboardingPages');
     };
     $scope.hideOnboardingPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id !== $rootScope.appSettings.appDesign.onboarding.active[0].id;});
-        quantimodoService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
+        qmService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             $rootScope.hideMenuButton = false;

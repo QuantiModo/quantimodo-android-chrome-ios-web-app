@@ -30,21 +30,21 @@ angular.module('starter',
         //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, quantimodoService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
-    quantimodoService.getPrivateConfigs();
-    quantimodoService.showBlackRingLoader();
+    qmService.getPrivateConfigs();
+    qmService.showBlackRingLoader();
     if(appsManager.getUrlParameter('logout')){localStorage.clear(); $rootScope.user = null;}
-    quantimodoService.setPlatformVariables();
+    qmService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-                quantimodoService.reportErrorDeferred(errorMsg);
+                qmService.reportErrorDeferred(errorMsg);
             };
         }
-        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){quantimodoService.reportErrorDeferred('PushNotification is undefined on mobile!');}}
+        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){qmService.reportErrorDeferred('PushNotification is undefined on mobile!');}}
         if (typeof PushNotification !== "undefined") {
             var pushConfig = {
                 android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
@@ -56,7 +56,7 @@ angular.module('starter',
             var push = PushNotification.init(pushConfig);
              push.on('registration', function(registerResponse) {
                  console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
-                 if(!registerResponse.registrationId){quantimodoService.bugsnagNotify('No registerResponse.registrationId from push registration');}
+                 if(!registerResponse.registrationId){qmService.bugsnagNotify('No registerResponse.registrationId from push registration');}
                  console.debug("Got device token for push notifications: " + registerResponse.registrationId);
                  var deviceTokenOnServer = localStorage.getItem('deviceTokenOnServer');
                  if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
@@ -68,8 +68,8 @@ angular.module('starter',
 
              push.on('notification', function(data) {
                  console.debug('Received push notification: ' + JSON.stringify(data));
-                 quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
-                 quantimodoService.refreshTrackingReminderNotifications().then(function(){
+                 qmService.updateLocationVariablesAndPostMeasurementIfChanged();
+                 qmService.refreshTrackingReminderNotifications().then(function(){
                      console.debug('push.on.notification: successfully refreshed notifications');
                  }, function (error) {
                      console.error('push.on.notification: ' + error);
@@ -86,7 +86,7 @@ angular.module('starter',
                  }
                  push.finish(function () {console.debug("processing of push data is finished: " + JSON.stringify(data));});
              });
-             push.on('error', function(e) {quantimodoService.reportException(e, e.message, pushConfig);});
+             push.on('error', function(e) {qmService.reportException(e, e.message, pushConfig);});
              var finishPush = function (data) {
                  $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');  // Refresh Reminders Inbox
                  if(!finishPushes){
@@ -102,61 +102,61 @@ angular.module('starter',
              window.trackOneRatingAction = function (data){
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackTwoRatingAction = function (data){
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackThreeRatingAction = function (data){
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackFourRatingAction = function (data){
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackFiveRatingAction = function (data){
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackDefaultValueAction = function (data){
                  console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.snoozeAction = function (data){
                  console.debug("snoozeAction push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
-                 quantimodoService.snoozeTrackingReminderNotificationDeferred(body);
+                 qmService.snoozeTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackLastValueAction = function (data){
                  console.debug("trackLastValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.lastValue};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackSecondToLastValueAction = function (data){
                  console.debug("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.secondToLastValue};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackThirdToLastValueAction = function (data){
                  console.debug("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.thirdToLastValue};
-                 quantimodoService.trackTrackingReminderNotificationDeferred(body);
+                 qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
          }
@@ -166,7 +166,7 @@ angular.module('starter',
             if(reportedVariable === "repeat_rating"){
                 val = localStorage['lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage['lastReportedPrimaryOutcomeVariableValue']) : false;
             } else {
-                val = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
+                val = qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
             }
             if(val){
                 localStorage['lastReportedPrimaryOutcomeVariableValue'] = val;
@@ -235,7 +235,7 @@ angular.module('starter',
     window.debugMode = !!(appsManager.getUrlParameter('debug'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
     if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
-    var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in quantimodoService.getUserAndSetupGoogleAnalytics
+    var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
     if(ionic.Platform.isAndroid()){
         var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
         if(!clientId){

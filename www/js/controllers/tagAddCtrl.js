@@ -1,12 +1,12 @@
 angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, $ionicLoading, quantimodoService) {
+                                               $ionicActionSheet, $ionicHistory, $ionicLoading, qmService) {
     $scope.controller_name = "TagAddCtrl";
     $scope.state = { };
     $scope.cancel = function(){
         $ionicHistory.goBack();
     };
     var goBack = function () {
-        quantimodoService.hideLoader();
+        qmService.hideLoader();
         if($stateParams.fromState && $stateParams.fromStateParams){
             $state.go($stateParams.fromState, {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});
         } else {
@@ -19,7 +19,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             userTagVariableId: $scope.stateParams.userTagVariableObject.id,
             userTaggedVariableId: $scope.stateParams.userTaggedVariableObject.id
         };
-        quantimodoService.showBlackRingLoader();
+        qmService.showBlackRingLoader();
 
         if($rootScope.variableObject.userTagVariables){
             $rootScope.variableObject.userTagVariables =
@@ -35,10 +35,10 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
                 });
         }
 
-        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+        qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
             $rootScope.variableObject);
 
-        quantimodoService.deleteUserTagDeferred(userTagData).then(function (response) {
+        qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
             console.error(error);
@@ -82,12 +82,12 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
             $rootScope.variableObject.userTagVariables.push($scope.stateParams.userTagVariableObject);
         }
 
-        quantimodoService.showBlackRingLoader();
+        qmService.showBlackRingLoader();
 
-        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+        qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
             $rootScope.variableObject);
 
-        quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
+        qmService.postUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
             console.error(error);
@@ -104,18 +104,18 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         $scope.state.title = 'Record a Tag';
         $scope.stateParams = $stateParams;
         if(!$scope.stateParams.userTagVariableObject){
-            quantimodoService.showBlackRingLoader();
-            quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety').then(function (variable) {
+            qmService.showBlackRingLoader();
+            qmService.getUserVariableByNameFromLocalStorageOrApiDeferred('Anxiety').then(function (variable) {
                 $scope.stateParams.userTagVariableObject = variable;
-                quantimodoService.hideLoader();
+                qmService.hideLoader();
             });
         }
 
         if(!$scope.stateParams.userTaggedVariableObject){
-            quantimodoService.showBlackRingLoader();
-            quantimodoService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
+            qmService.showBlackRingLoader();
+            qmService.getUserVariableByNameFromLocalStorageOrApiDeferred('Overall Mood').then(function (variable) {
                 $scope.stateParams.userTaggedVariableObject = variable;
-                quantimodoService.hideLoader();
+                qmService.hideLoader();
             });
         }
         console.debug($state.current.name + ": beforeEnter");
