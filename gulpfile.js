@@ -197,9 +197,10 @@ function convertFilePathToPropertyName(filePath) {
     var propertyName = getSubStringAfterLastSlash(filePath);
     propertyName = propertyName.replace(process.env.QUANTIMODO_CLIENT_ID, '');
     propertyName = propertyName.replace('.zip', '').replace('.apk', '');
-    propertyName = propertyName.replace('.', '_');
-    propertyName = camelCase(propertyName);
-    //propertyName = convertToCamelCase(propertyName);
+    propertyName = propertyName.replace('.', '-');
+    propertyName = propertyName.replace('_', '-');
+    //propertyName = camelCase(propertyName);
+    propertyName = convertToCamelCase(propertyName);
     return propertyName;
 }
 function getS3RelativePath(relative_filename) {
