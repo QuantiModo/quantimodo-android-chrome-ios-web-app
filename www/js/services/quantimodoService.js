@@ -1,4 +1,4 @@
-angular.module('starter').factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog,
+angular.module('starter').factory('quantimodoService', function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast,
                                            $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory, $ionicActionSheet) {
     var quantimodoService = {};
     quantimodoService.ionIcons = {
@@ -3982,7 +3982,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
                 variables = variables.concat(commonVariables);
             } else {
                 quantimodoService.reportErrorDeferred("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
-                quantimodoService.putCommonVariablesInLocalStorage();
+                putCommonVariablesInLocalStorage();
             }
         }
         variables = quantimodoService.removeArrayElementsWithDuplicateIds(variables);
@@ -4095,13 +4095,13 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         var deferred = $q.defer();
         var commonVariables = quantimodoService.getElementsFromLocalStorageItemWithRequestParams('commonVariables', params);
         if(!commonVariables || !commonVariables.length){
-            quantimodoService.putCommonVariablesInLocalStorage().then(function (commonVariables) {deferred.resolve(commonVariables);});
+            putCommonVariablesInLocalStorage().then(function (commonVariables) {deferred.resolve(commonVariables);});
         } else {
             deferred.resolve(commonVariables);
         }
         return deferred.promise;
     };
-    quantimodoService.putCommonVariablesInLocalStorage = function(){
+    function putCommonVariablesInLocalStorage(){
         var deferred = $q.defer();
         $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
             if(commonVariables.constructor !== Array){
@@ -4113,7 +4113,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             }
         });
         return deferred.promise;
-    };
+    }
     // NOTIFICATION SERVICE
     function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
         return {
@@ -5296,7 +5296,7 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
     quantimodoService.clearLocalStorage = function(){
         console.debug('Clearing local storage!');
         if ($rootScope.isChromeApp) {chrome.storage.local.clear();} else {localStorage.clear();}
-        quantimodoService.putCommonVariablesInLocalStorage();
+        putCommonVariablesInLocalStorage();
     };
     var convertToObjectIfJsonString = function(stringOrObject) {
         try {stringOrObject = JSON.parse(stringOrObject);} catch (e) {return stringOrObject;}
@@ -6668,48 +6668,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         return window.location.href.indexOf('.quantimo.do') === -1;
     };
     function isTruthy(value){return value && value !== "false"; }
-    quantimodoService.initializeApplication = function(appSettingsResponse){
-        if(window.config){return;}
-        window.config = {appSettings: (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data};
-        if(isTruthy(window.config.appSettings.debugMode)){window.debugMode = true;}
-        console.debug("appSettings.clientId is " + window.config.appSettings.clientId);
-        window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
-        //window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
-        //window.config.appSettings.appDesign.floatingActionButton = quantimodoService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
-        $rootScope.appSettings = window.config.appSettings;
-        if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
-        if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
-        quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary();
-        quantimodoService.putCommonVariablesInLocalStorage();
-        quantimodoService.backgroundGeolocationInit();
-        quantimodoService.setupBugsnag();
-        quantimodoService.getUserAndSetupGoogleAnalytics();
-        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
-        if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
-            console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
-            $ionicPlatform.ready(function () {
-                console.debug("Setting on trigger and on click actions for notifications");
-                quantimodoService.setOnTriggerActionForLocalNotifications();
-                quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
-                quantimodoService.setOnUpdateActionForLocalNotifications();
-            });
-        }
-        if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
-        //noinspection JSAnnotator
-        document.head || (document.head = document.getElementsByTagName('head')[0]);
-        function changeFavicon(src) {
-            var link = document.createElement('link'),
-                oldLink = document.getElementById('dynamic-favicon');
-            link.id = 'dynamic-favicon';
-            link.rel = 'shortcut icon';
-            link.href = src;
-            if (oldLink) {
-                document.head.removeChild(oldLink);
-            }
-            document.head.appendChild(link);
-        }
-        changeFavicon('img/icons/icon_16.png')
-    };
     quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         logDebugMessage("getUserFromLocalStorageOrRefreshIfNecessary");
         if(quantimodoService.getUrlParameter('refreshUser')){
@@ -6824,9 +6782,6 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         menuItem.url = getUrlFromStateName(menuItem.stateName);
         return convertUrlAndParamsToHref(menuItem);
     }
-    function convertStringToId(string) {
-        return string.replace('#/app/', '').replace('/', '-').replace('?', '').replace('&', '-').replace('=', '-').toLowerCase();
-    }
     var allStates = $state.get();
     function stripQueryString(pathWithQuery) {
         if(!pathWithQuery){ return pathWithQuery; }
@@ -6866,6 +6821,9 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
         console.error("Could not find state with name: " + stateName);
     }
     quantimodoService.convertHrefInSingleMenuType = function (menu){
+        function convertStringToId(string) {
+            return string.replace('#/app/', '').replace('/', '-').replace('?', '').replace('&', '-').replace('=', '-').toLowerCase();
+        }
         function processMenuItem(menuItem) {
             function addMenuId(menuItem) {
                 if(menuItem.href){menuItem.id = convertStringToId(menuItem.href);} else {menuItem.id = convertStringToId(menuItem.title);}
@@ -6938,6 +6896,57 @@ angular.module('starter').factory('quantimodoService', function($http, $q, $root
             floatingActionButton.custom["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.custom["button" + i]);
         }
         return floatingActionButton;
+    };
+    var toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
+    var getToastPosition = function() {return Object.keys(toastPosition).filter(function(pos) { return toastPosition[pos]; }).join(' ');};
+    quantimodoService.showInfoToast = function(text) {$mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));};
+    quantimodoService.configureAppSettings = function(appSettings){
+        function changeFavicon(){
+            if(!$rootScope.appSettings.additionalSettings.appImages.favicon){return;}
+            //noinspection JSAnnotator
+            document.head || (document.head = document.getElementsByTagName('head')[0]);
+            var link = document.createElement('link'), oldLink = document.getElementById('dynamic-favicon');
+            link.id = 'dynamic-favicon';
+            link.rel = 'shortcut icon';
+            link.href = src;
+            if (oldLink) {document.head.removeChild(oldLink);}
+            document.head.appendChild(link);
+        }
+        if(!window.config){window.config = {};}
+        window.config.appSettings = appSettings;
+        console.debug("appSettings.clientId is " + window.config.appSettings.clientId);
+        window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        //window.config.appSettings.appDesign.menu = quantimodoService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
+        //window.config.appSettings.appDesign.floatingActionButton = quantimodoService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
+        $rootScope.appSettings = window.config.appSettings;
+        if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
+        if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
+        changeFavicon();
+    };
+    quantimodoService.initializeApplication = function(appSettingsResponse){
+        function initializeLocalNotifications(){
+            if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
+                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
+                $ionicPlatform.ready(function () {
+                    console.debug("Setting on trigger and on click actions for notifications");
+                    quantimodoService.setOnTriggerActionForLocalNotifications();
+                    quantimodoService.setOnClickActionForLocalNotifications(quantimodoService);
+                    quantimodoService.setOnUpdateActionForLocalNotifications();
+                });
+            }
+        }
+        if(window.config){return;}
+        var appSettings = (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data;
+        if(isTruthy(appSettings.debugMode)){window.debugMode = true;}
+        quantimodoService.configureAppSettings(appSettings);
+        quantimodoService.getUserFromLocalStorageOrRefreshIfNecessary();
+        putCommonVariablesInLocalStorage();
+        quantimodoService.backgroundGeolocationInit();
+        quantimodoService.setupBugsnag();
+        quantimodoService.getUserAndSetupGoogleAnalytics();
+        if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
+        quantimodoService.initializeLocalNotifications();
+        if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
     };
     return quantimodoService;
 });

@@ -607,11 +607,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             quantimodoService.backgroundGeolocationInit();
         }
         if($rootScope.user.trackLocation){
-            $scope.showInfoToast('Location tracking enabled');
+            quantimodoService.showInfoToast('Location tracking enabled');
             quantimodoService.updateLocationVariablesAndPostMeasurementIfChanged();
         }
         if(!$rootScope.user.trackLocation) {
-            $scope.showInfoToast('Location tracking disabled');
+            quantimodoService.showInfoToast('Location tracking disabled');
             quantimodoService.backgroundGeolocationStop();
             console.debug("Do not track location");
         }
@@ -623,15 +623,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showMaterialAlert = function(title, textContent, ev) {
         quantimodoService.showMaterialAlert(title, textContent, ev);
     };
-    var toastPosition = angular.extend({},{ bottom: true, top: false, left: true, right: false });
-    var getToastPosition = function() {return Object.keys(toastPosition).filter(function(pos) { return toastPosition[pos]; }).join(' ');};
-    $scope.showInfoToast = function(text) {$mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(3000));};
+
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
     $scope.copyChartsUrlToClipboard = function () {
         $scope.copyLinkText = 'Copied!';
         /** @namespace $rootScope.variableObject.chartsUrl */
         clipboard.copyText($rootScope.variableObject.chartsLinkStatic);
-        $scope.showInfoToast('Copied link!');
+        quantimodoService.showInfoToast('Copied link!');
     };
     var verifyEmailAddressAndExecuteCallback = function (callback) {
         if($rootScope.user.email || $rootScope.user.userEmail){

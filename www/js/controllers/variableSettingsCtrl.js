@@ -336,7 +336,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         };
         quantimodoService.postUserVariableDeferred(body).then(function(userVariable) {
             quantimodoService.hideLoader();
-            $scope.showInfoToast('Saved ' + variableObject.name + ' settings');
+            quantimodoService.showInfoToast('Saved ' + variableObject.name + ' settings');
             $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
         }, function(error) {
             quantimodoService.hideLoader();
