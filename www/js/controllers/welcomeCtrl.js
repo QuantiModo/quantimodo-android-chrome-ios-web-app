@@ -1,9 +1,9 @@
-angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $rootScope, quantimodoService, $stateParams) {
+angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $rootScope, qmService, $stateParams) {
     $scope.controller_name = "WelcomeCtrl";
     $rootScope.hideNavigationMenu = true;
     $scope.reportedVariableValue = false;
     $rootScope.showFilterBarSearchIcon = false;
-    quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
+    qmService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
         function(primaryOutcomeRatingFrequencyDescription) {
             if (primaryOutcomeRatingFrequencyDescription) {$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
             if (!primaryOutcomeRatingFrequencyDescription && $rootScope.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'day';}
@@ -14,12 +14,12 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     $rootScope.sendDailyEmailReminder = true;
     $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
         $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
-        quantimodoService.sendToLogin();
+        qmService.sendToLogin();
     };
     $scope.skipInterval = function(){
         $scope.showIntervalCard = false;
         console.debug('skipInterval: Going to login state...');
-        quantimodoService.sendToLogin();
+        qmService.sendToLogin();
     };
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
         if(primaryOutcomeRatingFrequencyDescription){$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
@@ -36,16 +36,16 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
         };
         var reminderToSchedule = {
             reminderFrequency: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
-            variableId: quantimodoService.getPrimaryOutcomeVariable().id,
+            variableId: qmService.getPrimaryOutcomeVariable().id,
             defaultValue: 3
         };
-        quantimodoService.addToTrackingReminderSyncQueue(reminderToSchedule);
+        qmService.addToTrackingReminderSyncQueue(reminderToSchedule);
         $scope.showIntervalCard = false;
     }
     $scope.storeRatingLocally = function(ratingValue){
-        $scope.reportedVariableValue = quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] ? quantimodoService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] : false;
-        var primaryOutcomeMeasurement = quantimodoService.createPrimaryOutcomeMeasurement(ratingValue);
-        quantimodoService.addToMeasurementsQueue(primaryOutcomeMeasurement);
+        $scope.reportedVariableValue = qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] ? qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[ratingValue] : false;
+        var primaryOutcomeMeasurement = qmService.createPrimaryOutcomeMeasurement(ratingValue);
+        qmService.addToMeasurementsQueue(primaryOutcomeMeasurement);
         $scope.hidePrimaryOutcomeVariableCard = true;
         $scope.showIntervalCard = true;
     };

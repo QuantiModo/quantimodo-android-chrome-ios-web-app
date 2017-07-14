@@ -47,10 +47,10 @@ angular.module('starter') // Controls the settings page
 			var service = new google.maps.places.PlacesService(map);
 			service.nearbySearch(request, callback);
 
-			quantimodoService.hideLoader();
+			qmService.hideLoader();
 
 		}, function(error) {
-			quantimodoService.hideLoader();
+			qmService.hideLoader();
 			console.error(error);
 		});
 

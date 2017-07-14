@@ -1,5 +1,5 @@
 angular.module('starter').controller('VariableSettingsCtrl', function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading,
-                 $stateParams, $ionicHistory, $ionicActionSheet, quantimodoService) {
+                 $stateParams, $ionicHistory, $ionicActionSheet, qmService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
@@ -28,16 +28,16 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}
     }
     function refreshUserVariable(variableName) {
-        quantimodoService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){$rootScope.variableObject = userVariable;});
+        qmService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){$rootScope.variableObject = userVariable;});
     }
     $rootScope.showActionSheetMenu = function() {
         console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
-                quantimodoService.actionSheetButtons.recordMeasurement,
-                quantimodoService.actionSheetButtons.addReminder,
-                quantimodoService.actionSheetButtons.charts,
-                quantimodoService.actionSheetButtons.history,
+                qmService.actionSheetButtons.recordMeasurement,
+                qmService.actionSheetButtons.addReminder,
+                qmService.actionSheetButtons.charts,
+                qmService.actionSheetButtons.history,
                 { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
                 { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
 
@@ -54,7 +54,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
                 return true;
             },
-            destructiveButtonClicked: function() {quantimodoService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject); return true;}
+            destructiveButtonClicked: function() {qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject); return true;}
         });
         console.debug('Setting hideSheet timeout');
         $timeout(function() { hideSheet(); }, 20000);
@@ -69,7 +69,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             clickOutsideToClose:true
         });
     };
-    var TagVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log) {
+    var TagVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log) {
         var self = this;
         self.variables        = loadAll();
         self.querySearch   = querySearch;
@@ -94,10 +94,10 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 });
             } else {
                 userTagData = {userTagVariableId: self.selectedItem.variable.id, userTaggedVariableId: $rootScope.variableObject.id, conversionFactor: 1};
-                quantimodoService.showBlackRingLoader();
-                quantimodoService.postUserTagDeferred(userTagData).then(function (response) {
+                qmService.showBlackRingLoader();
+                qmService.postUserTagDeferred(userTagData).then(function (response) {
                     $rootScope.variableObject = response.data.userTaggedVariable;
-                    quantimodoService.hideLoader();
+                    qmService.hideLoader();
                 });
             }
             $mdDialog.hide();
@@ -107,21 +107,21 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             var deferred = $q.defer();
             var requestParams = {defaultUnitCategoryName:  $rootScope.variableObject.defaultUnitCategoryName};
             if($rootScope.variableObject.defaultUnitCategoryName !== "Rating"){requestParams.defaultUnitCategoryName = "(ne)Rating";}
-            quantimodoService.searchUserVariablesDeferred(query, requestParams).then(function(results){ deferred.resolve(loadAll(results)); });
+            qmService.searchUserVariablesDeferred(query, requestParams).then(function(results){ deferred.resolve(loadAll(results)); });
             return deferred.promise;
         }
         function searchTextChange(text) { $log.info('Text changed to ' + text); }
         function selectedItemChange(item) {
             self.selectedItem = item;
             self.buttonText = "Tag Variable";
-            quantimodoService.addVariableToLocalStorage(item.variable);
+            qmService.addVariableToLocalStorage(item.variable);
             $log.info('Item changed to ' + JSON.stringify(item));
         }
         /**
          * Build `variables` list of key/value pairs
          */
         function loadAll(variables) {
-            if(!variables){ variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
+            if(!variables){ variables = JSON.parse(qmService.getLocalStorageItemAsString('userVariables')); }
             if(variables && $rootScope.variableObject.defaultUnitAbbreviatedName === '/5'){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {
@@ -151,7 +151,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             clickOutsideToClose:true
         });
     };
-    var JoinVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log) {
+    var JoinVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log) {
         var self = this;
         self.variables        = loadAll();
         self.querySearch   = querySearch;
@@ -171,12 +171,12 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 joinedVariableId: self.selectedItem.variable.id,
                 conversionFactor: 1
             };
-            quantimodoService.showBlackRingLoader();
-            quantimodoService.postVariableJoinDeferred(variableData).then(function (response) {
-                quantimodoService.hideLoader();
+            qmService.showBlackRingLoader();
+            qmService.postVariableJoinDeferred(variableData).then(function (response) {
+                qmService.hideLoader();
                 $rootScope.variableObject = response.data.parentVariable;
             }, function (error) {
-                quantimodoService.hideLoader();
+                qmService.hideLoader();
                 console.error(error);
             });
             $mdDialog.hide();
@@ -184,7 +184,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         function querySearch (query) {
             self.notFoundText = "No variables matching " + query + " were found.";
             var deferred = $q.defer();
-            quantimodoService.searchUserVariablesDeferred(query, {tagVariableId: $rootScope.variableObject.defaultUnitId})
+            qmService.searchUserVariablesDeferred(query, {tagVariableId: $rootScope.variableObject.defaultUnitId})
                 .then(function(results){ deferred.resolve(loadAll(results)); });
             return deferred.promise;
         }
@@ -192,14 +192,14 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         function selectedItemChange(item) {
             self.selectedItem = item;
             self.buttonText = "Join Variable";
-            quantimodoService.addVariableToLocalStorage(item.variable);
+            qmService.addVariableToLocalStorage(item.variable);
             $log.info('Item changed to ' + JSON.stringify(item));
         }
         /**
          * Build `variables` list of key/value pairs
          */
         function loadAll(variables) {
-            if(!variables){variables = JSON.parse(quantimodoService.getLocalStorageItemAsString('userVariables')); }
+            if(!variables){variables = JSON.parse(qmService.getLocalStorageItemAsString('userVariables')); }
             if(variables){ variables = variables.filter(filterByProperty('defaultUnitId', $rootScope.variableObject.defaultUnitId)); }
             if(variables){ variables = variables.filter(excludeParentVariable()); }
             return variables.map( function (variable) {
@@ -223,7 +223,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
         }
     };
-    var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log, dataToPass) {
+    var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log, dataToPass) {
         var self = this;
         // list of `state` value/display objects
         self.items        = loadAll();
@@ -309,15 +309,15 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
 
     $scope.resetVariableToDefaultSettings = function(variableObject) {
         // Populate fields with original settings for variable
-        quantimodoService.showBlackRingLoader();
-        quantimodoService.resetUserVariableDeferred(variableObject.id).then(function(userVariable) {
+        qmService.showBlackRingLoader();
+        qmService.resetUserVariableDeferred(variableObject.id).then(function(userVariable) {
             $rootScope.variableObject = userVariable;
-            //quantimodoService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
+            //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
         });
     };
 
     $scope.saveVariableSettings = function(variableObject){
-        quantimodoService.showBlackRingLoader();
+        qmService.showBlackRingLoader();
         var body = {
             variableId: variableObject.id,
             durationOfAction: variableObject.durationOfActionInHours*60*60,
@@ -334,12 +334,12 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             experimentStartTimeString: (variableObject.experimentStartTimeString) ? variableObject.experimentStartTimeString.toString() : null,
             experimentEndTimeString: (variableObject.experimentEndTimeString) ? variableObject.experimentEndTimeString.toString() : null,
         };
-        quantimodoService.postUserVariableDeferred(body).then(function(userVariable) {
-            quantimodoService.hideLoader();
-            quantimodoService.showInfoToast('Saved ' + variableObject.name + ' settings');
+        qmService.postUserVariableDeferred(body).then(function(userVariable) {
+            qmService.hideLoader();
+            qmService.showInfoToast('Saved ' + variableObject.name + ' settings');
             $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
         }, function(error) {
-            quantimodoService.hideLoader();
+            qmService.hideLoader();
             console.error(error);
         });
     };

@@ -1,4 +1,4 @@
-angular.module('starter').controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $timeout, $ionicLoading) {
+angular.module('starter').controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, qmService, $timeout, $ionicLoading) {
     $scope.controller_name = "VariableSearchCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = {
@@ -46,18 +46,18 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         populateUserVariables();
         populateCommonVariables();
         setHelpText();
-        quantimodoService.hideLoader();
+        qmService.hideLoader();
     });
     $scope.selectVariable = function(variableObject) {
         console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject).substring(0, 140) + '...');
-        if(variableObject.lastValue !== null){quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);}
-        quantimodoService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variableObject);
+        if(variableObject.lastValue !== null){qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);}
+        qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variableObject);
         var userTagData;
         if($state.current.name === 'app.favoriteSearch') {
-            quantimodoService.addToFavoritesUsingVariableObject(variableObject);
+            qmService.addToFavoritesUsingVariableObject(variableObject);
         } else if (window.location.href.indexOf('reminder-search') !== -1) {
             var options = {skipReminderSettingsIfPossible: $stateParams.skipReminderSettingsIfPossible, doneState: $stateParams.doneState};
-            quantimodoService.addToRemindersUsingVariableObject(variableObject, options);
+            qmService.addToRemindersUsingVariableObject(variableObject, options);
         } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
             $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
         } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
@@ -72,9 +72,9 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             } else {
                 userTagData = {userTagVariableId: variableObject.id, userTaggedVariableId: $stateParams.userTaggedVariableObject.id, conversionFactor: 1};
-                quantimodoService.showBlackRingLoader();
-                quantimodoService.postUserTagDeferred(userTagData).then(function () {
-                    quantimodoService.hideLoader();
+                qmService.showBlackRingLoader();
+                qmService.postUserTagDeferred(userTagData).then(function () {
+                    qmService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
                     } else {$state.go(config.appSettings.appDesign.defaultState);}
                 });
@@ -89,9 +89,9 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             } else {
                 userTagData = {userTagVariableId: $stateParams.userTagVariableObject.id, userTaggedVariableId: variableObject.id, conversionFactor: 1};
-                quantimodoService.showBlackRingLoader();
-                quantimodoService.postUserTagDeferred(userTagData).then(function () {
-                    quantimodoService.hideLoader();
+                qmService.showBlackRingLoader();
+                qmService.postUserTagDeferred(userTagData).then(function () {
+                    qmService.hideLoader();
                     if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});
                     } else {$state.go(config.appSettings.appDesign.defaultState);}
                 });
@@ -150,7 +150,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         console.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
-            quantimodoService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
+            qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
                 .then(function(variables){
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
@@ -168,10 +168,10 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        quantimodoService.getCommonVariablesDeferred($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
+        qmService.getCommonVariablesDeferred($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
-                    $scope.state.variableSearchResults = quantimodoService.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));
+                    $scope.state.variableSearchResults = qmService.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));
                     //checkThatVariableNamesExist();
                     $scope.state.searching = false;
                 }
@@ -182,12 +182,12 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        quantimodoService.getUserVariablesFromLocalStorageOrApiDeferred($stateParams.variableSearchParameters).then(function (userVariables) {
+        qmService.getUserVariablesFromLocalStorageOrApiDeferred($stateParams.variableSearchParameters).then(function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     // Put user variables at top of list
-                    userVariables = quantimodoService.sortByProperty(userVariables, '-latestMeasurementTime');
-                    $scope.state.variableSearchResults = quantimodoService.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
+                    userVariables = qmService.sortByProperty(userVariables, '-latestMeasurementTime');
+                    $scope.state.variableSearchResults = qmService.removeArrayElementsWithDuplicateIds(userVariables.concat($scope.state.variableSearchResults));
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;
                     //checkThatVariableNamesExist();
