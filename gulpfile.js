@@ -1638,7 +1638,7 @@ gulp.task('cleanPlatforms', [], function () {
     return cleanFolder('platforms');
 });
 function cleanFolder(folderPath) {
-    infoLog("Cleaning " + folderPath);
+    infoLog("Cleaning " + folderPath + " folder...");
     return gulp.src(folderPath + '/*', {read: false}).pipe(clean());
 }
 gulp.task('cleanChromeBuildFolder', [], function () {
