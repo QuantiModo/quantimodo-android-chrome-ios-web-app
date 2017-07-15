@@ -258,15 +258,7 @@ function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
     }
     var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToEncryptPath + '" -e -a -out "' + encryptedFilePath + '"';
     logDebug('executing ' + cmd);
-    execute(cmd, function (error) {
-        if (error !== null) {
-            logError('ERROR: ENCRYPTING: ' + error);
-            logError('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
-        } else {
-            logInfo('Encrypted ' + encryptedFilePath);
-            if (callback) {callback();}
-        }
-    });
+    execute(cmd, callback);
 }
 function removeCustomPropertiesFromAppSettings(appSettings) {
     for (var propertyName in appSettings.appDesign) {
@@ -307,15 +299,7 @@ function ionicUpload(callback) {
             ' --note "' + commitMessage + '" --deploy ' + process.env.RELEASE_STAGE;
         logInfo('ionic upload --note "' + commitMessage + '" --deploy ' + process.env.RELEASE_STAGE);
         logDebug('\n' + uploadCommand);
-        execute(uploadCommand, function (error, uploadOutput) {
-            uploadOutput = uploadOutput.trim();
-            if (error) {
-                logError('ERROR: Failed to ionicUpload: ' + uploadOutput + error);
-            }
-            if (callback) {
-                callback();
-            }
-        });
+        execute(uploadCommand, callback);
     });
 }
 function zipAFolder(folderPath, zipFileName, destinationFolder) {
@@ -689,7 +673,7 @@ gulp.task('validateCredentials', ['setClientId'], function () {
     fs.writeFileSync(devCredentialsPath, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
     return makeApiRequest(options);
 });
-gulp.task('downloadIcon', [], function(){
+gulp.task('downloadIcon', ['getAppConfigs'], function(){
     /** @namespace appSettings.additionalSettings.appImages.appIcon */
     /** @namespace appSettings.additionalSettings.appImages */
     var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
@@ -1704,29 +1688,14 @@ gulp.task('removeTransparentPng', [], function () {
 gulp.task('removeTransparentPsd', [], function () {
     return gulp.src('resources/icon.psd', {read: false}).pipe(clean());
 });
-gulp.task('useWhiteIcon', [], function () {
-    return gulp.src('./resources/icon_white.png')
-        .pipe(rename('icon.png'))
-        .pipe(gulp.dest('resources'));
+gulp.task('useWhiteIcon', ['downloadIcon'], function (callback) {
+    return execute('convert -flatten resources/icon.png resources/icon.png', callback);
 });
 gulp.task('bowerInstall', [], function (callback) {
-    return execute('bower install', function (error) {
-        if (error !== null) {
-            logError('ERROR:' + error);
-        } else {
-            callback();
-        }
-    });
+    return execute('bower install', callback);
 });
 gulp.task('ionicResourcesIos', [], function (callback) {
-    return execute('ionic resources ios', function (error) {
-        if (error !== null) {
-            logError('ERROR:GENERATING iOS RESOURCES for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            logInfo('\n***iOS RESOURCES GENERATED for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    return execute('ionic resources ios', callback);
 });
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
     generateConfigXmlFromTemplate(callback);
@@ -1944,59 +1913,24 @@ gulp.task('buildAndReleaseIosApp', function (callback) {
 });
 gulp.task('fastlaneBetaIos', function (callback) {
     var command = 'fastlane beta';
-    return execute(command, function (error) {
-        if (error !== null) {
-            logError('ERROR: for ' + command + 'for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            logInfo('\n***' + command + ' for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    return execute(command, callback);
 });
 gulp.task('xcodeProjectFix', function (callback) {
     var command = 'ruby hooks/after_platform_add.bak/xcodeprojectfix.rb';
-    return execute(command, function (error) {
-        if (error !== null) {
-            logError('ERROR: for ' + command + 'for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            logInfo('\n***' + command + ' for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    return execute(command, callback);
 });
 gulp.task('ionicPlatformAddAndroid', function (callback) {
-    return execute('ionic platform add android@6.2.2', function (error) {
-        if (error !== null) {
-            logError('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            logInfo('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    return execute('ionic platform add android@6.2.2', callback);
 });
 gulp.task('ionicPlatformRemoveAndroid', function (callback) {
-    return execute('ionic platform remove android', function (error) {
-        if (error !== null) {
-            logError('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            logInfo('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    return execute('ionic platform remove android', callback);
 });
 gulp.task('cordovaBuildAndroidDebug', function (callback) {
     if(buildDebug){
         appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
         appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
         postAppStatus();
-        return execute(getCordovaBuildCommand('debug', 'android'), function (error) {
-            if (error !== null) {
-                logError('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-            } else {
-                logInfo('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
-                callback();
-            }
-        });
+        return execute(getCordovaBuildCommand('debug', 'android'), callback);
     } else {
         console.log("Not building debug version because process.env.BUILD_DEBUG is not true");
         callback();
@@ -2006,14 +1940,7 @@ gulp.task('cordovaBuildAndroidRelease', function (callback) {
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86ReleaseApkName)] = "BUILDING";
     postAppStatus();
-    return execute(getCordovaBuildCommand('release', 'android'), function (error) {
-        if (error !== null) {
-            logError('ERROR: for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            logInfo('\n***Android for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    return execute(getCordovaBuildCommand('release', 'android'), callback);
 });
 gulp.task('prepareQuantiModoIos', function (callback) {
     runSequence(
@@ -2022,24 +1949,10 @@ gulp.task('prepareQuantiModoIos', function (callback) {
         callback);
 });
 gulp.task('generateAndroidResources', [], function (callback) {
-    return execute('ionic resources android', function (error) {
-        if (error !== null) {
-            logError('ERROR: GENERATING Android RESOURCES for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            logInfo('\n***Android RESOURCES GENERATED for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    return execute('ionic resources android', callback);
 });
 gulp.task('ionicRunAndroid', [], function (callback) {
-    return execute('ionic run android', function (error) {
-        if (error !== null) {
-            logError('ERROR: GENERATING Android RESOURCES for ' + process.env.QUANTIMODO_CLIENT_ID + ': ' + error);
-        } else {
-            logInfo('\n***Android RESOURCES GENERATED for ' + process.env.QUANTIMODO_CLIENT_ID);
-            callback();
-        }
-    });
+    return execute('ionic run android', callback);
 });
 gulp.task('resizeIcon700', [], function (callback) { return resizeIcon(callback, 700); });
 gulp.task('resizeIcon16', [], function (callback) { return resizeIcon(callback, 16); });
