@@ -40,6 +40,7 @@ console.log("process.platform is " + process.platform + " and process.env.OS is 
 function isTruthy(value) {return (value && value !== "false");}
 var buildDebug = isTruthy(process.env.BUILD_DEBUG);
 var currentServerContext = "local";
+infoLog("Environmental Variables:", process.env);
 if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
 if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
 function setClientId(callback) {
