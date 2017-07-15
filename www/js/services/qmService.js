@@ -103,14 +103,27 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!stackTrace){stackTrace = getStackTrace();}
         return message + ".  StackTrace: " + stackTrace;
     }
+    function addStateNameToMessage(message) {
+        return message + " in state " + $state.current.name;
+    }
     function logDebug(message, stackTrace) {
+        message = addStateNameToMessage(message);
         if(window.debugMode){
             if(!stackTrace){stackTrace = getStackTrace();}
             message = addStackTraceToMessage(message, stackTrace);
-            alert(message);
-            //qmService.reportErrorDeferred(message);
         }
-        console.debug(message + " in state " + $state.current.name);
+        console.debug(message);
+    }
+    function logError(message, stackTrace) {
+        var name = message;
+        message = addStateNameToMessage(message);
+        if(!stackTrace){stackTrace = getStackTrace();}
+        if(window.debugMode){
+            message = addStackTraceToMessage(message, stackTrace);
+            alert(message);
+        }
+        Bugsnag.notify(name, message, {groupingHash: name, stackTrace: stackTrace}, "error");
+        console.error(message);
     }
     qmService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
@@ -853,7 +866,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return url;
     };
     qmService.getAuthorizationCodeFromUrl = function(event) {
-        console.debug('extracting authorization code from event: ' + JSON.stringify(event));
+        logDebug('extracting authorization code from event: ' + JSON.stringify(event));
         var authorizationUrl = event.url;
         if(!authorizationUrl) {authorizationUrl = event.data;}
         var authorizationCode = qmService.getUrlParameter('code', authorizationUrl);
@@ -6453,14 +6466,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(comeBackAfterLogin){setAfterLoginGoToUrl();}
         qmService.completelyResetAppState();
         sendToLogin();
-    };
-    qmService.logDebugMessage = function(message, stackTrace) {
-        if(window.debugMode){
-            message = addStackTraceToMessage(message, stackTrace);
-            alert(message);
-            qmService.reportErrorDeferred(message);
-        }
-        logDebug(message);
     };
     function sendToLogin() {
         logDebug("Sending to app.login");
