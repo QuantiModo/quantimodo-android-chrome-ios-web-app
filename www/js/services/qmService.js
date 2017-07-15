@@ -34,7 +34,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var err = new Error();
         var stackTrace = err.stack;
         stackTrace = stackTrace.substring(stackTrace.indexOf('getStackTrace')).replace('getStackTrace', '');
-        stackTrace = stackTrace.substring(stackTrace.indexOf('logDebugMessage')).replace('logDebugMessage', '');
+        stackTrace = stackTrace.substring(stackTrace.indexOf('logDebug')).replace('logDebug', '');
         return stackTrace;
     }
     function addVariableCategoryInfo(array){
@@ -103,13 +103,27 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!stackTrace){stackTrace = getStackTrace();}
         return message + ".  StackTrace: " + stackTrace;
     }
-    function logDebugMessage(message, stackTrace) {
+    function addStateNameToMessage(message) {
+        return message + " in state " + $state.current.name;
+    }
+    function logDebug(message, stackTrace) {
+        message = addStateNameToMessage(message);
+        if(window.debugMode){
+            if(!stackTrace){stackTrace = getStackTrace();}
+            message = addStackTraceToMessage(message, stackTrace);
+        }
+        console.debug(message);
+    }
+    function logError(message, stackTrace) {
+        var name = message;
+        message = addStateNameToMessage(message);
+        if(!stackTrace){stackTrace = getStackTrace();}
         if(window.debugMode){
             message = addStackTraceToMessage(message, stackTrace);
             alert(message);
-            //qmService.reportErrorDeferred(message);
         }
-        console.debug(message + " in state " + $state.current.name);
+        Bugsnag.notify(name, message, {groupingHash: name, stackTrace: stackTrace}, "error");
+        console.error(message);
     }
     qmService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
@@ -135,7 +149,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return;
         }
         if($state.current.name === 'app.intro' && !params.force && !qmService.getAccessTokenFromCurrentUrl()){
-            logDebugMessage('Not making request to ' + route + ' user because we are in the intro state', options.stackTrace);
+            logDebug('Not making request to ' + route + ' user because we are in the intro state', options.stackTrace);
             return;
         }
         delete params.force;
@@ -159,10 +173,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var request = {method: 'GET', url: (qmService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
-            logDebugMessage('GET ' + request.url, options.stackTrace);
+            logDebug('GET ' + request.url, options.stackTrace);
             $http(request)
                 .success(function (data, status, headers) {
-                    logDebugMessage("Got " + route + " " + status + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...', options.stackTrace);
+                    logDebug("Got " + route + " " + status + " response: " + ': ' +  JSON.stringify(data).substring(0, 140) + '...', options.stackTrace);
                     if(!data) {
                         if (typeof Bugsnag !== "undefined") {
                             var groupingHash = 'No data returned from this request';
@@ -173,7 +187,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         requestSpecificErrorHandler(data);
                     } else {
                         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-                        if(data.message){ logDebugMessage(data.message, options.stackTrace); }
+                        if(data.message){ logDebug(data.message, options.stackTrace); }
                         successHandler(data);
                     }
                 })
@@ -193,7 +207,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return;
         }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-        logDebugMessage('qmService.post: About to try to post request to ' + route + ' with body: ' + JSON.stringify(body).substring(0, 140), options.stackTrace);
+        logDebug('qmService.post: About to try to post request to ' + route + ' with body: ' + JSON.stringify(body).substring(0, 140), options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
                 var item = body[i];
@@ -207,10 +221,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var url = qmService.getQuantiModoUrl(route) + '?' + addGlobalUrlParams([]).join('&');
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {
-                logDebugMessage('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
+                logDebug('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
                 request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};
             } else {
-                logDebugMessage('No access token for POST ' + route + ". User is " + JSON.stringify($rootScope.user), options.stackTrace);
+                logDebug('No access token for POST ' + route + ". User is " + JSON.stringify($rootScope.user), options.stackTrace);
             }
             $http(request).success(successHandler).error(function(data, status, headers){
                 generalApiErrorHandler(data, status, headers, request, options);
@@ -221,15 +235,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function generalApiErrorHandler(data, status, headers, request, options){
         console.error("error response from " + request.url);
         if(status === 302){
-            logDebugMessage('Got 302 response from ' + JSON.stringify(request), options.stackTrace);
+            logDebug('Got 302 response from ' + JSON.stringify(request), options.stackTrace);
             return;
         }
         if(status === 401){
             if(options && options.doNotSendToLogin){
                 return;
             } else {
-                logDebugMessage('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
-                logDebugMessage('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
+                logDebug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
+                logDebug('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
                 setAfterLoginGoToUrl();
                 if (window.private_keys && qmService.getClientId() !== 'oAuthDisabled') {
                     qmService.completelyResetAppStateAndSendToLogin();
@@ -349,14 +363,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.getMeasurementsFromApi(params, function(response){
             var measurementArray = response;
             if(!measurementArray[0]){
-                console.debug('Could not get measurement with id: ' + measurementId);
+                logDebug('Could not get measurement with id: ' + measurementId);
                 deferred.reject();
             }
             var measurementObject = measurementArray[0];
             deferred.resolve(measurementObject);
         }, function(error){
             if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
-            console.debug(error);
+            logDebug(error);
             deferred.reject();
         });
         return deferred.promise;
@@ -384,7 +398,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.logoutOfApi = function(successHandler, errorHandler){
         //TODO: Fix this
-        console.debug('Logging out of api does not work yet.  Fix it!');
+        logDebug('Logging out of api does not work yet.  Fix it!');
         qmService.get('api/v2/auth/logout', [], {}, successHandler, errorHandler);
     };
     qmService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
@@ -669,7 +683,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             errorHandler);
     };
     qmService.getAccessTokenFromCurrentUrl = function(){
-        console.debug("getAccessTokenFromCurrentUrl " + window.location.href);
+        logDebug("getAccessTokenFromCurrentUrl " + window.location.href);
         return (qmService.getUrlParameter('accessToken')) ? qmService.getUrlParameter('accessToken') : qmService.getUrlParameter('quantimodoAccessToken');
     };
     qmService.getAccessTokenFromUrl = function(){
@@ -685,34 +699,34 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
     function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();};
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
-        logDebugMessage("Called refreshUserUsingAccessTokenInUrlIfNecessary");
+        logDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
         if($rootScope.user && $rootScope.user.accessToken === qmService.getAccessTokenFromUrl()){
-            logDebugMessage("$rootScope.user token matches the one in url");
+            logDebug("$rootScope.user token matches the one in url");
             return;
         }
         if(qmService.getAccessTokenFromUrl()){
-            logDebugMessage("Got access token from url");
+            logDebug("Got access token from url");
             var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
             if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){
                 qmService.clearLocalStorage();
-                logDebugMessage("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
+                logDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
             }
             var user = JSON.parse(localStorage.getItem('user'));
             if(!user && $rootScope.user){
                 user = $rootScope.user;
-                logDebugMessage("No user from local storage but we do have a $rootScope user");
+                logDebug("No user from local storage but we do have a $rootScope user");
             }
             if(user && $rootScope.accessTokenFromUrl !== user.accessToken){
                 $rootScope.user = null;
                 qmService.clearLocalStorage();
-                logDebugMessage("Cleared local storage because user.accessToken does not match $rootScope.accessTokenFromUrl");
+                logDebug("Cleared local storage because user.accessToken does not match $rootScope.accessTokenFromUrl");
             }
             if(!qmService.getUrlParameter('doNotRemember')){
-                logDebugMessage("Setting access token in local storage because doNotRemember is not set");
+                logDebug("Setting access token in local storage because doNotRemember is not set");
                 localStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);
             }
             if(!$rootScope.user){
-                logDebugMessage("No $rootScope.user so going to refreshUser");
+                logDebug("No $rootScope.user so going to refreshUser");
                 qmService.refreshUser();
             }
         }
@@ -726,16 +740,16 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
         var expiresAtMilliseconds = localStorage.getItem("expiresAtMilliseconds");
         var refreshToken = localStorage.getItem("refreshToken");
-        //console.debug('qmService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken}));
+        //logDebug('qmService.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken}));
         if(refreshToken && !expiresAtMilliseconds){
             var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
             if(!isTestUser()){Bugsnag.notify(errorMessage, qmService.getLocalStorageItemAsString('user'), {groupingHash: errorMessage}, "error");}
         }
         if (accessTokenFromLocalStorage && getUnixTimestampInMilliseconds() < expiresAtMilliseconds) {
-            //console.debug('qmService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
+            //logDebug('qmService.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
             deferred.resolve(accessTokenFromLocalStorage);
         } else if (refreshToken && expiresAtMilliseconds && qmService.getClientId() !== 'oAuthDisabled' && window.private_keys) {
-            console.debug(getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
+            logDebug(getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
             qmService.refreshAccessToken(refreshToken, deferred);
         } else if(accessTokenFromLocalStorage){
             deferred.resolve(accessTokenFromLocalStorage);
@@ -744,7 +758,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 deferred.resolve();
             });
         } else if(qmService.getClientId() === 'oAuthDisabled' || !window.private_keys) {
-            //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+            //logDebug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
             deferred.resolve();
             return deferred.promise;
         } else {
@@ -754,7 +768,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.refreshAccessToken = function(refreshToken, deferred) {
-        console.debug('Refresh token will be used to fetch access token from ' +
+        logDebug('Refresh token will be used to fetch access token from ' +
             qmService.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + qmService.getClientId());
         var url = qmService.getQuantiModoUrl("api/oauth2/token");
         $http.post(url, {
@@ -765,15 +779,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }).success(function (data) {
             // update local storage
             if (data.error) {
-                console.debug('Token refresh failed: ' + data.error);
+                logDebug('Token refresh failed: ' + data.error);
                 deferred.reject('Token refresh failed: ' + data.error);
             } else {
                 var accessTokenRefreshed = qmService.saveAccessTokenInLocalStorage(data);
-                console.debug('qmService.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
+                logDebug('qmService.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
                 deferred.resolve(accessTokenRefreshed);
             }
         }).error(function (response) {
-            console.debug("qmService.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
+            logDebug("qmService.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
             deferred.reject(response);
         });
     };
@@ -803,7 +817,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             // calculate expires at
             var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
             expiresAtMilliseconds = getUnixTimestampInMilliseconds() + expiresInSeconds * 1000;
-            console.debug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
+            logDebug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
         }
         if(expiresAtMilliseconds){
             localStorage.expiresAtMilliseconds = expiresAtMilliseconds - bufferInMilliseconds;
@@ -836,7 +850,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         url += "&state=testabcd";
         if(register === true){url += "&register=true";}
         //url += "&redirect_uri=" + qmService.getRedirectUri();
-        console.debug("generateV1OAuthUrl: " + url);
+        logDebug("generateV1OAuthUrl: " + url);
         return url;
     };
     qmService.generateV2OAuthUrl= function(JWTToken) {
@@ -848,11 +862,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         url += "&state=testabcd";
         if(JWTToken){url += "&token=" + JWTToken;}
         //url += "&redirect_uri=" + qmService.getRedirectUri();
-        console.debug("generateV2OAuthUrl: " + url);
+        logDebug("generateV2OAuthUrl: " + url);
         return url;
     };
     qmService.getAuthorizationCodeFromUrl = function(event) {
-        console.debug('extracting authorization code from event: ' + JSON.stringify(event));
+        logDebug('extracting authorization code from event: ' + JSON.stringify(event));
         var authorizationUrl = event.url;
         if(!authorizationUrl) {authorizationUrl = event.data;}
         var authorizationCode = qmService.getUrlParameter('code', authorizationUrl);
@@ -860,7 +874,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return authorizationCode;
     };
     qmService.getAccessTokenFromAuthorizationCode = function (authorizationCode) {
-        console.debug("Authorization code is " + authorizationCode);
+        logDebug("Authorization code is " + authorizationCode);
         var deferred = $q.defer();
         var url = qmService.getQuantiModoUrl("api/oauth2/token");
         var request = {
@@ -878,8 +892,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 redirect_uri: qmService.getRedirectUri()
             }
         };
-        console.debug('getAccessTokenFromAuthorizationCode: request is ', request);
-        console.debug(JSON.stringify(request));
+        logDebug('getAccessTokenFromAuthorizationCode: request is ', request);
+        logDebug(JSON.stringify(request));
         // post
         $http(request).success(function (response) {
             if(response.error){
@@ -887,13 +901,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
                 deferred.reject(response);
             } else {
-                console.debug('getAccessTokenFromAuthorizationCode: Successful response is ', response);
-                console.debug(JSON.stringify(response));
+                logDebug('getAccessTokenFromAuthorizationCode: Successful response is ', response);
+                logDebug(JSON.stringify(response));
                 deferred.resolve(response);
             }
         }).error(function (response) {
-            console.debug('getAccessTokenFromAuthorizationCode: Error response is ', response);
-            console.debug(JSON.stringify(response));
+            logDebug('getAccessTokenFromAuthorizationCode: Error response is ', response);
+            logDebug(JSON.stringify(response));
             deferred.reject(response);
         });
         return deferred.promise;
@@ -919,7 +933,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         url += "provider=" + encodeURIComponent(provider);
         url += "&accessToken=" + encodeURIComponent(accessToken);
         url += "&client_id=" + encodeURIComponent(qmService.getClientId());
-        console.debug('qmService.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
+        logDebug('qmService.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
         $http({
             method: 'GET',
             url: url,
@@ -928,7 +942,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if (response.data.success && response.data.data && response.data.data.token) {
                 // This didn't solve the token_invalid issue
                 // $timeout(function () {
-                //     console.debug('10 second delay to try to solve token_invalid issue');
+                //     logDebug('10 second delay to try to solve token_invalid issue');
                 //  deferred.resolve(response.data.data.token);
                 // }, 10000);
                 deferred.resolve(response.data.data);
@@ -955,10 +969,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return deferred.promise;
         }
         localStorage.removeItem(localStorageName);
-        console.debug("Posting deviceToken to server: ", deviceTokenToSync);
+        logDebug("Posting deviceToken to server: ", deviceTokenToSync);
         qmService.postDeviceToken(deviceTokenToSync, function(response){
             localStorage.setItem('deviceTokenOnServer', deviceTokenToSync);
-            console.debug(response);
+            logDebug(response);
             deferred.resolve();
         }, function(error){
             localStorage.setItem(localStorageName, deviceTokenToSync);
@@ -996,7 +1010,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         // e.g., ga('accountName.set', 'dimension2', 'Paid');
         //Analytics.set('dimension2', 'Paid', 'accountName');
         Analytics.pageView(); // send data to Google Analytics
-        //console.debug('Just set up Google Analytics');
+        //logDebug('Just set up Google Analytics');
     };
     qmService.getUserAndSetupGoogleAnalytics = function(){
         if(Analytics){
@@ -1005,7 +1019,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 return;
             }
             qmService.getLocalStorageItemAsStringWithCallback('user', function (userString) {
-                console.debug("getLocalStorageItemAsStringWithCallback userString: " + userString);
+                logDebug("getLocalStorageItemAsStringWithCallback userString: " + userString);
                 if(userString){
                     var user = JSON.parse(userString);
                     setupGoogleAnalytics(user);
@@ -1014,7 +1028,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     };
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
-        logDebugMessage('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user));
+        logDebug('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user));
         $rootScope.user = user;
         if(qmService.getUrlParameter('doNotRemember')){return;}
         qmService.setLocalStorageItem('user', JSON.stringify(user));
@@ -1051,7 +1065,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             platform: $rootScope.currentPlatform
         };
         */
-        if(localStorage.getItem('deviceTokenOnServer')){console.debug("This token is already on the server: " + localStorage.getItem('deviceTokenOnServer'));}
+        if(localStorage.getItem('deviceTokenOnServer')){logDebug("This token is already on the server: " + localStorage.getItem('deviceTokenOnServer'));}
         qmService.registerDeviceToken();
         if($rootScope.sendReminderNotificationEmails){
             qmService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
@@ -1066,7 +1080,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function sendToAfterLoginUrlIfNecessary() {
         var afterLoginGoToUrl = qmService.getLocalStorageItemAsString('afterLoginGoToUrl');
         if(afterLoginGoToUrl) {
-            logDebugMessage("afterLoginGoToUrl from localstorage is  " + afterLoginGoToUrl);
+            logDebug("afterLoginGoToUrl from localstorage is  " + afterLoginGoToUrl);
             qmService.deleteItemFromLocalStorage('afterLoginGoToUrl');
             window.location.replace(afterLoginGoToUrl);
             return true;
@@ -1074,7 +1088,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function sendToAfterLoginStateIfNecessary() {
         var afterLoginGoToState = qmService.getLocalStorageItemAsString('afterLoginGoToState');
-        logDebugMessage("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
+        logDebug("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
         if(afterLoginGoToState){
             qmService.deleteItemFromLocalStorage('afterLoginGoToState');
             $state.go(afterLoginGoToState);
@@ -1101,7 +1115,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var stackTrace = getStackTrace();
         var deferred = $q.defer();
         if(qmService.getUrlParameter('logout')){
-            console.debug('Not refreshing user because we have a logout parameter');
+            logDebug('Not refreshing user because we have a logout parameter');
             deferred.reject('Not refreshing user because we have a logout parameter');
             return deferred.promise;
         }
@@ -1114,7 +1128,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.sendToNonOAuthBrowserLoginUrl = function(register) {
         var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
         if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
-        console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
+        logDebug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
         var apiUrlMatchesHostName = qmService.getApiUrl().indexOf(window.location.hostname);
         if(apiUrlMatchesHostName === -1 || !$rootScope.isChromeExtension) {
             console.warn("sendToNonOAuthBrowserLoginUrl: API url doesn't match auth base url");
@@ -1148,7 +1162,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.postUserSettings(params, function(response){
             if(!params.userEmail) {
                 qmService.refreshUser().then(function(user){
-                    console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
+                    logDebug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
                 }, function(error){
                     console.error('qmService.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
                 });
@@ -1174,7 +1188,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getTruncatedVariableName = function(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}};
     qmService.variableObjectActionSheet = function() {
-        console.debug("variablePageCtrl.showActionSheetMenu:  $rootScope.variableObject: ", $rootScope.variableObject);
+        logDebug("variablePageCtrl.showActionSheetMenu:  $rootScope.variableObject: ", $rootScope.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
                 qmService.actionSheetButtons.recordMeasurement,
@@ -1184,9 +1198,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             ],
             destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {console.debug('CANCELLED');},
+            cancel: function() {logDebug('CANCELLED');},
             buttonClicked: function(index) {
-                console.debug('BUTTON CLICKED', index);
+                logDebug('BUTTON CLICKED', index);
                 if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
                 if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
                 if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
@@ -1348,7 +1362,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.syncPrimaryOutcomeVariableMeasurements = function(){
         var defer = $q.defer();
         if(!weHaveUserOrAccessToken()){
-            console.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
+            logDebug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
             defer.resolve();
             return defer.promise;
         }
@@ -1372,7 +1386,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.setLocalStorageItem('toDate',parseInt(to));
         // if date range changed, update charts
         if (parseInt(oldFromDate) !== parseInt(from) || parseInt(oldToDate) !== parseInt(to)) {
-            console.debug("setDates broadcasting to update charts");
+            logDebug("setDates broadcasting to update charts");
             $rootScope.$broadcast('updateCharts');
             $rootScope.$broadcast('updatePrimaryOutcomeHistory');
         }
@@ -1391,7 +1405,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 var date = new Date();
                 // Threshold 20 Days if not provided
                 date.setDate(date.getDate()-20);
-                console.debug("The date returned is ", date.toString());
+                logDebug("The date returned is ", date.toString());
                 callback(parseInt(date.getTime()));
             }
         });
@@ -1522,7 +1536,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         qmService.postMeasurementsToApi(measurementSet, function(response){
             if(response.success) {
-                console.debug("qmService.postMeasurementsToApi success: " + JSON.stringify(response));
+                logDebug("qmService.postMeasurementsToApi success: " + JSON.stringify(response));
                 if(response && response.data && response.data.userVariables){
                     qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
                 }
@@ -1537,9 +1551,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.deleteElementsOfLocalStorageItemByProperty('measurementsQueue', 'startTimeEpoch', measurement.startTimeEpoch);
         qmService.deleteV1Measurements(measurement, function(response){
             deferred.resolve(response);
-            console.debug("deleteMeasurementFromServer success " + JSON.stringify(response));
+            logDebug("deleteMeasurementFromServer success " + JSON.stringify(response));
         }, function(response){
-            console.debug("deleteMeasurementFromServer error " + JSON.stringify(response));
+            logDebug("deleteMeasurementFromServer error " + JSON.stringify(response));
             deferred.reject();
         });
         return deferred.promise;
@@ -1571,7 +1585,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if(response && response.data && response.data.userVariables){
                     qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
                 }
-                console.debug("qmService.postMeasurementsToApi success: " + JSON.stringify(response));
+                logDebug("qmService.postMeasurementsToApi success: " + JSON.stringify(response));
                 deferred.resolve(response);
             } else {deferred.reject(response);}
         });
@@ -1664,10 +1678,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.getEnv = function(){return getEnv();};
     qmService.getClientId = function(){
         if(typeof config !== "undefined" && config.appSettings.clientId){
-            logDebugMessage("config.appSettings.clientId is " + config.appSettings.clientId);
+            logDebug("config.appSettings.clientId is " + config.appSettings.clientId);
             return config.appSettings.clientId;
         } else {
-            logDebugMessage("config.appSettings.clientId is not present");
+            logDebug("config.appSettings.clientId is not present");
         }
         if(!window.private_keys){return appsManager.getQuantiModoClientId();}
         if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
@@ -1678,7 +1692,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return window.private_keys.client_ids.Web;
     };
     qmService.setPlatformVariables = function () {
-        //console.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
+        //logDebug("ionic.Platform.platform() is " + ionic.Platform.platform());
         $rootScope.isWeb = window.location.href.indexOf('https://') !== -1;
         $rootScope.isWebView = ionic.Platform.isWebView();
         $rootScope.isIPad = ionic.Platform.isIPad() && !$rootScope.isWeb;
@@ -1796,7 +1810,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.refreshConnectors = function(){
         var stackTrace = getStackTrace();
-        if(window.debugMode){console.debug("Called refresh connectors: " + stackTrace);}
+        if(window.debugMode){logDebug("Called refresh connectors: " + stackTrace);}
         var deferred = $q.defer();
         qmService.getConnectorsFromApi({stackTrace: getStackTrace()}, function(response){
             qmService.setLocalStorageItem('connectors', JSON.stringify(response.connectors));
@@ -1921,11 +1935,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             } else {
                 //ok, time to try google
                 qmService.getLocationInfoFromGoogleMaps($http).lookup(latitude, longitude).then(function (googleResponse) {
-                    //console.debug('back from google with ');
+                    //logDebug('back from google with ');
                     if (googleResponse.data && googleResponse.data.results && googleResponse.data.results.length >= 1) {
-                        //console.debug('did i come in here?');
+                        //logDebug('did i come in here?');
                         var bestMatch = googleResponse.data.results[0];
-                        //console.debug(JSON.stringify(bestMatch));
+                        //logDebug(JSON.stringify(bestMatch));
                         var geoLookupResult = {type: "geocode", address: bestMatch.formatted_address};
                         deferred.resolve(geoLookupResult);
                     }
@@ -2020,7 +2034,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             } else {
                 var map = 'https://maps.googleapis.com/maps/api/staticmap?center=' + coordinates.latitude + ',' + coordinates.longitude +
                     'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C' + coordinates.latitude + ',' + coordinates.longitude;
-                console.debug('Sorry, I\'ve got nothing. But here is a map!');
+                logDebug('Sorry, I\'ve got nothing. But here is a map!');
             }
             geoLookupResult.latitude = coordinates.latitude;
             geoLookupResult.longitude = coordinates.longitude;
@@ -2036,13 +2050,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var message;
         if(!$rootScope.user){
             message = 'Not logging location because we do not have a user';
-            console.debug(message);
+            logDebug(message);
             deferred.reject(message);
             return deferred.promise;
         }
         if(!$rootScope.user.trackLocation){
             message = 'Location tracking disabled for this user';
-            console.debug(message);
+            logDebug(message);
             deferred.reject(message);
             return deferred.promise;
         }
@@ -2052,7 +2066,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.forecastioWeather(position.coords);
                 lookupGoogleAndFoursquareLocationAndPostMeasurement(position.coords);
                 deferred.resolve();
-                //console.debug("My coordinates are: ", position.coords);
+                //logDebug("My coordinates are: ", position.coords);
             }, function(error) {
                 deferred.reject(error);
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
@@ -2066,9 +2080,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return;
         }
         window.localStorage.setItem('bgGPS', 1);
-        //console.debug('Starting qmService.backgroundGeolocationStart');
+        //logDebug('Starting qmService.backgroundGeolocationStart');
         var callbackFn = function(coordinates) {
-            console.debug("background location is " + JSON.stringify(coordinates));
+            logDebug("background location is " + JSON.stringify(coordinates));
             var isBackground = true;
             qmService.forecastioWeather(coordinates);
             lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground);
@@ -2098,13 +2112,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.backgroundGeolocationInit = function () {
         var deferred = $q.defer();
-        //console.debug('Starting qmService.backgroundGeolocationInit');
+        //logDebug('Starting qmService.backgroundGeolocationInit');
         if ($rootScope.user && $rootScope.user.trackLocation) {
             $ionicPlatform.ready(function() { qmService.backgroundGeolocationStart(); });
             deferred.resolve();
         } else {
             var error = 'qmService.backgroundGeolocationInit failed because $rootScope.user.trackLocation is not true';
-            //console.debug(error);
+            //logDebug(error);
             deferred.reject(error);
         }
         return deferred.promise;
@@ -2121,7 +2135,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.setLocalStorageItem('trackingReminderNotifications',
             JSON.stringify(trackingReminderNotifications)).then(function () {
             $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
-            //console.debug('Just put ' + trackingReminderNotifications.length + ' trackingReminderNotifications in local storage');
+            //logDebug('Just put ' + trackingReminderNotifications.length + ' trackingReminderNotifications in local storage');
         });
         $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
         return trackingReminderNotifications;
@@ -2212,7 +2226,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.trackTrackingReminderNotificationDeferred = function(trackingReminderNotification, trackAll){
         var deferred = $q.defer();
-        console.debug('qmService.trackTrackingReminderNotificationDeferred: Going to track ' + JSON.stringify(trackingReminderNotification));
+        logDebug('qmService.trackTrackingReminderNotificationDeferred: Going to track ' + JSON.stringify(trackingReminderNotification));
         if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
             var notificationFromLocalStorage = qmService.getElementOfLocalStorageItemById('trackingReminderNotifications', trackingReminderNotification.trackingReminderNotificationId);
             if(notificationFromLocalStorage){
@@ -2579,11 +2593,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         'trackingReminderSyncQueue', defaultReminders).then(function () {
                         qmService.syncTrackingReminders().then(function (trackingReminders){ deferred.resolve(trackingReminders);});
                     });
-                    console.debug('Creating default reminders ' + JSON.stringify(defaultReminders));
+                    logDebug('Creating default reminders ' + JSON.stringify(defaultReminders));
                 }
             } else {
                 deferred.reject('Default reminders already created');
-                console.debug('Default reminders already created');
+                logDebug('Default reminders already created');
             }
         });
         return deferred.promise;
@@ -2930,7 +2944,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 averageValueByHourArray[k] = sumByHour[k] / (hourlyMeasurementArrays[k].length);
             } else {
                 averageValueByHourArray[k] = null;
-                //console.debug("No data for hour " + k);
+                //logDebug("No data for hour " + k);
             }
         }
         return averageValueByHourArray;
@@ -2947,7 +2961,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 averageValueByWeekdayArray[k] = sumByWeekday[k] / (weekdayMeasurementArrays[k].length);
             } else {
                 averageValueByWeekdayArray[k] = null;
-                //console.debug("No data for day " + k);
+                //logDebug("No data for day " + k);
             }
         }
         return averageValueByWeekdayArray;
@@ -2964,7 +2978,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 averageValueByMonthlyArray[k] = sumByMonthly[k] / (monthlyMeasurementArrays[k].length);
             } else {
                 averageValueByMonthlyArray[k] = null;
-                //console.debug("No data for day " + k);
+                //logDebug("No data for day " + k);
             }
         }
         return averageValueByMonthlyArray;
@@ -3101,11 +3115,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(hourlyMeasurementArray[i]) {count++;}
         }
         if(variableObject.name.toLowerCase().indexOf('daily') !== -1){
-            console.debug('Not showing hourly chart because variable name contains daily');
+            logDebug('Not showing hourly chart because variable name contains daily');
             return false;
         }
         if(count < 3){
-            console.debug('Not showing hourly chart because we have less than 3 hours with measurements');
+            logDebug('Not showing hourly chart because we have less than 3 hours with measurements');
             return false;
         }
         var averageValueByHourArray = this.calculateAverageValueByHour(hourlyMeasurementArray);
@@ -4025,7 +4039,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.deleteItemFromLocalStorage('lastStudy');
             $rootScope.variableObject = response.userVariable;
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
-            console.debug("qmService.postUserVariableDeferred: success: " + JSON.stringify(response.userVariable));
+            logDebug("qmService.postUserVariableDeferred: success: " + JSON.stringify(response.userVariable));
             deferred.resolve(response.userVariable);
         }, function(error){ deferred.reject(error); });
         return deferred.promise;
@@ -4073,7 +4087,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         userVariables = JSON.parse(qmService.getLocalStorageItemAsString('userVariables'));
         if(userVariables && userVariables.length){
-            console.debug("We already have userVariables that didn't match filters so no need to refresh them");
+            logDebug("We already have userVariables that didn't match filters so no need to refresh them");
             deferred.resolve([]);
             return deferred.promise;
         }
@@ -4136,14 +4150,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if (typeof cordova !== "undefined") {
                     if(typeof cordova.plugins !== "undefined" && typeof cordova.plugins.notification !== "undefined") {
                         cordova.plugins.notification.local.cancelAll(function () {
-                            console.debug('cancelAllNotifications: notifications have been cancelled');
+                            logDebug('cancelAllNotifications: notifications have been cancelled');
                             cordova.plugins.notification.local.getAll(function (notifications) {
-                                console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
+                                logDebug("cancelAllNotifications: All notifications after cancelling", notifications);
                             });
                         });
                     }
                 }
-                console.debug('cordova.plugins.notification is not defined');
+                logDebug('cordova.plugins.notification is not defined');
                 return false;
             }
             return true;
@@ -4156,9 +4170,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return deferred.promise;
         }
         cordova.plugins.notification.local.on("update", function(notification) {
-            console.debug("onUpdate: Just updated this notification: ", notification);
+            logDebug("onUpdate: Just updated this notification: ", notification);
             cordova.plugins.notification.local.getAll(function (notifications) {
-                console.debug("onUpdate: All notifications after update: ", notifications);
+                logDebug("onUpdate: All notifications after update: ", notifications);
             });
         });
         deferred.resolve();
@@ -4173,40 +4187,40 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var params = {};
         var locationTrackingNotificationId = 666;
         cordova.plugins.notification.local.on("click", function (notification) {
-            console.debug("onClick: notification: ", notification);
+            logDebug("onClick: notification: ", notification);
             var notificationData = null;
             if(notification && notification.data){
                 notificationData = JSON.parse(notification.data);
-                console.debug("onClick: notification.data : ", notificationData);
-            } else {console.debug("onClick: No notification.data provided");}
+                logDebug("onClick: notification.data : ", notificationData);
+            } else {logDebug("onClick: No notification.data provided");}
             if(notification.id !== locationTrackingNotificationId){
                 /** @namespace cordova.plugins.notification */
-                cordova.plugins.notification.local.clearAll(function () {console.debug("onClick: clearAll active notifications");}, this);
+                cordova.plugins.notification.local.clearAll(function () {logDebug("onClick: clearAll active notifications");}, this);
             }
             if(notificationData && notificationData.trackingReminderNotificationId){
-                console.debug("onClick: Notification was a reminder notification not reminder.  " +
+                logDebug("onClick: Notification was a reminder notification not reminder.  " +
                     "Skipping notification with id: " + notificationData.trackingReminderNotificationId);
                 params = {trackingReminderNotificationId: notificationData.trackingReminderNotificationId};
             } else if (notificationData && notificationData.id) {
-                console.debug("onClick: Notification was a reminder not a reminder notification.  " +
+                logDebug("onClick: Notification was a reminder not a reminder notification.  " +
                     "Skipping next notification for reminder id: " + notificationData.id);
                 params = {trackingReminderId: notificationData.id};
             } else {
-                console.debug("onClick: No notification data provided. Going to remindersInbox page.");
+                logDebug("onClick: No notification data provided. Going to remindersInbox page.");
                 $state.go('app.remindersInbox');
             }
             if(params.trackingReminderId || params.trackingReminderNotificationId ){
                 qmService.skipTrackingReminderNotification(params, function(response){
-                    console.debug(response);
+                    logDebug(response);
                 }, function(error){
                     console.error(JSON.stringify(error));
                     if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
                 });
-                console.debug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
+                logDebug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
                 //qmService.decrementNotificationBadges();
                 $state.go('app.measurementAdd', {reminderNotification: notificationData, fromState: 'app.remindersInbox'});
             } else {
-                console.debug("onClick: No params.trackingReminderId || params.trackingReminderNotificationId. " +
+                logDebug("onClick: No params.trackingReminderId || params.trackingReminderNotificationId. " +
                     "Should have already gone to remindersInbox page.");
             }
         });
@@ -4226,14 +4240,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $ionicPlatform.ready(function () {
             if(!$rootScope.numberOfPendingNotifications){$rootScope.numberOfPendingNotifications = 0;}
             cordova.plugins.notification.local.getAll(function (notifications) {
-                console.debug("onTrigger.updateBadgesAndTextOnAllNotifications: " + "All notifications ", notifications);
+                logDebug("onTrigger.updateBadgesAndTextOnAllNotifications: " + "All notifications ", notifications);
                 for (var i = 0; i < notifications.length; i++) {
                     if(notifications[i].badge === $rootScope.numberOfPendingNotifications){
                         console.warn("updateBadgesAndTextOnAllNotifications: Not updating notification because $rootScope.numberOfPendingNotifications" +
                             " === notifications[i].badge", notifications[i]);
                         continue;
                     }
-                    console.debug('onTrigger.updateBadgesAndTextOnAllNotifications' + ':Updating notification', notifications[i]);
+                    logDebug('onTrigger.updateBadgesAndTextOnAllNotifications' + ':Updating notification', notifications[i]);
                     var notificationSettings = {
                         id: notifications[i].id,
                         badge: $rootScope.numberOfPendingNotifications,
@@ -4272,9 +4286,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                     if (!$rootScope.numberOfPendingNotifications) {
                         if(!qmService.shouldWeUseIonicLocalNotifications()) {return;}
-                        console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications");
+                        logDebug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications");
                         cordova.plugins.notification.local.clearAll(function () {
-                            console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications");
+                            logDebug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications");
                         }, this);
                     } else {$rootScope.updateOrRecreateNotifications();}
                 }
@@ -4283,18 +4297,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
         }
         function clearOtherLocalNotifications(currentNotification) {
-            console.debug("onTrigger.clearOtherLocalNotifications: Clearing notifications except the one " +
+            logDebug("onTrigger.clearOtherLocalNotifications: Clearing notifications except the one " +
                 "that just triggered...");
             $ionicPlatform.ready(function () {
                 cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
-                    console.debug("onTrigger.clearOtherLocalNotifications: found triggered notifications " +
+                    logDebug("onTrigger.clearOtherLocalNotifications: found triggered notifications " +
                         "before removing current one: " + JSON.stringify(triggeredNotifications));
                     if (triggeredNotifications.length < 1) {
                         console.warn("onTrigger.clearOtherLocalNotifications: Triggered notifications is " +
                             "empty so maybe it's not working.");
                     } else {
                         triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
-                        console.debug("onTrigger.clearOtherLocalNotifications: found triggered notifications " +
+                        logDebug("onTrigger.clearOtherLocalNotifications: found triggered notifications " +
                             "after removing current one: " + JSON.stringify(triggeredNotifications));
                         cordova.plugins.notification.local.clear(triggeredNotifications);
                     }
@@ -4302,7 +4316,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
         }
         function clearNotificationIfOutsideAllowedTimes(notificationData, currentNotification) {
-            console.debug("onTrigger.clearNotificationIfOutsideAllowedTimes: Checking notification time limits",
+            logDebug("onTrigger.clearNotificationIfOutsideAllowedTimes: Checking notification time limits",
                 currentNotification);
             if (notificationData.reminderFrequency < 86400) {
                 var currentTimeInLocalString = qmService.getCurrentTimeInLocalString();
@@ -4311,7 +4325,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if (currentTimeInLocalString < reminderStartTimeInLocalString) {
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.clear(currentNotification.id, function (currentNotification) {
-                            console.debug("onTrigger: Cleared notification because current time " +
+                            logDebug("onTrigger: Cleared notification because current time " +
                                 currentTimeInLocalString + " is before reminder start time" + reminderStartTimeInLocalString, currentNotification);
                         });
                     });
@@ -4319,7 +4333,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if (currentTimeInLocalString > reminderEndTimeInLocalString) {
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.clear(currentNotification.id, function (currentNotification) {
-                            console.debug("onTrigger: Cleared notification because current time " +
+                            logDebug("onTrigger: Cleared notification because current time " +
                                 currentTimeInLocalString + " is before reminder start time" + reminderStartTimeInLocalString, currentNotification);
                         });
                     });
@@ -4339,15 +4353,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
              */
             try {
                 qmService.updateLocationVariablesAndPostMeasurementIfChanged();
-                console.debug("onTrigger: just triggered this notification: ",  currentNotification);
+                logDebug("onTrigger: just triggered this notification: ",  currentNotification);
                 var notificationData = null;
                 if(currentNotification && currentNotification.data){
                     notificationData = JSON.parse(currentNotification.data);
-                    console.debug("onTrigger: notification.data : ", notificationData);
+                    logDebug("onTrigger: notification.data : ", notificationData);
                     clearNotificationIfOutsideAllowedTimes(notificationData, currentNotification);
-                } else {console.debug("onTrigger: No notification.data provided");}
+                } else {logDebug("onTrigger: No notification.data provided");}
                 if(!notificationData){
-                    console.debug("onTrigger: This is a generic notification that sends to inbox, so we'll check the API for pending notifications.");
+                    logDebug("onTrigger: This is a generic notification that sends to inbox, so we'll check the API for pending notifications.");
                     getNotificationsFromApiAndClearOrUpdateLocalNotifications();
                 }
                 clearOtherLocalNotifications(currentNotification);
@@ -4370,7 +4384,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     };
     qmService.setNotificationBadge = function(numberOfPendingNotifications){
-        console.debug("setNotificationBadge: numberOfPendingNotifications is " + numberOfPendingNotifications);
+        logDebug("setNotificationBadge: numberOfPendingNotifications is " + numberOfPendingNotifications);
         $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
         if (window.chrome && window.chrome.browserAction) {
             chrome.browserAction.setBadgeText({text: "?"});
@@ -4385,7 +4399,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return deferred.promise;
         }
         if($rootScope.isAndroid){
-            console.debug("updateOrRecreateNotifications: Updating notifications for Android because Samsung limits number of notifications " +
+            logDebug("updateOrRecreateNotifications: Updating notifications for Android because Samsung limits number of notifications " +
                 "that can be scheduled in a day.");
             this.updateBadgesAndTextOnAllNotifications();
             deferred.resolve();
@@ -4395,7 +4409,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 'make duplicates and we cannot recreate here because we will lose the previously set interval');
             this.updateBadgesAndTextOnAllNotifications();
             deferred.resolve();
-            //console.debug("updateOrRecreateNotifications: iOS makes duplicates when updating for some reason so we just cancel all and schedule again");
+            //logDebug("updateOrRecreateNotifications: iOS makes duplicates when updating for some reason so we just cancel all and schedule again");
             //this.scheduleGenericNotification(notificationSettings);
         }
         return deferred.promise;
@@ -4417,11 +4431,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             var notificationSettings = {every: shortestInterval/60, at: at};
             if($rootScope.previousSingleNotificationSettings && notificationSettings === $rootScope.previousSingleNotificationSettings){
-                console.debug("scheduleSingleMostFrequentNotification: Notification settings haven't changed so" +
+                logDebug("scheduleSingleMostFrequentNotification: Notification settings haven't changed so" +
                     " no need to scheduleGenericNotification", notificationSettings);
                 return;
             }
-            console.debug("scheduleSingleMostFrequentNotification: Going to schedule generic notification", notificationSettings);
+            logDebug("scheduleSingleMostFrequentNotification: Going to schedule generic notification", notificationSettings);
             $rootScope.previousSingleNotificationSettings = notificationSettings;
             this.scheduleGenericNotification(notificationSettings);
         }
@@ -4449,12 +4463,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     for (var j = 0; j < trackingRemindersFromApi.length; j++) {
                         var alarmName = createChromeAlarmNameFromTrackingReminder(trackingRemindersFromApi[j]);
                         if (JSON.stringify(alarmName) === scheduledTrackingReminders[i].name) {
-                            console.debug('Server has a reminder matching alarm ' + JSON.stringify(scheduledTrackingReminders[i]));
+                            logDebug('Server has a reminder matching alarm ' + JSON.stringify(scheduledTrackingReminders[i]));
                             existingReminderFoundInApiResponse = true;
                         }
                     }
                     if(!existingReminderFoundInApiResponse) {
-                        console.debug('No api reminder found matching so cancelling this alarm ', JSON.stringify(scheduledTrackingReminders[i]));
+                        logDebug('No api reminder found matching so cancelling this alarm ', JSON.stringify(scheduledTrackingReminders[i]));
                         chrome.alarms.clear(scheduledTrackingReminders[i].name);
                     }
                 }
@@ -4463,7 +4477,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         function cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi) {
             if(!qmService.shouldWeUseIonicLocalNotifications()) {return;}
             cordova.plugins.notification.local.getAll(function (scheduledNotifications) {
-                console.debug("cancelIonicNotificationsForDeletedReminders: notification.local.getAll " +
+                logDebug("cancelIonicNotificationsForDeletedReminders: notification.local.getAll " +
                     "scheduledNotifications: ",
                     scheduledNotifications);
                 for (var i = 0; i < scheduledNotifications.length; i++) {
@@ -4471,14 +4485,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     for (var j = 0; j < trackingRemindersFromApi.length; j++) {
                         /** @namespace scheduledNotifications[i].id */
                         if (trackingRemindersFromApi[j].id === scheduledNotifications[i].id) {
-                            console.debug('Server returned a reminder matching' + trackingRemindersFromApi[j]);
+                            logDebug('Server returned a reminder matching' + trackingRemindersFromApi[j]);
                             existingReminderFoundInApiResponse = true;
                         }
                     }
                     if(!existingReminderFoundInApiResponse) {
-                        console.debug('Matching API reminder not found. Cancelling scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
+                        logDebug('Matching API reminder not found. Cancelling scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
                         cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
-                            console.debug("Canceled notification ", cancelledNotification);
+                            logDebug("Canceled notification ", cancelledNotification);
                         });
                     }
                 }
@@ -4489,7 +4503,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         $ionicPlatform.ready(function () {
             if (typeof cordova !== "undefined") {
-                console.debug('cancelIonicNotificationsForDeletedReminders');
+                logDebug('cancelIonicNotificationsForDeletedReminders');
                 cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi);
             }
             deferred.resolve();
@@ -4519,18 +4533,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
                 if (!present) {
-                    console.debug("createOrUpdateIonicNotificationForTrackingReminder: Creating notification " +
+                    logDebug("createOrUpdateIonicNotificationForTrackingReminder: Creating notification " +
                         "because not already set for " + JSON.stringify(notificationSettings));
                     cordova.plugins.notification.local.schedule(notificationSettings,
                         function () {
-                            console.debug('createOrUpdateIonicNotificationForTrackingReminder: notification ' + 'scheduled', notificationSettings);
+                            logDebug('createOrUpdateIonicNotificationForTrackingReminder: notification ' + 'scheduled', notificationSettings);
                         });
                 }
                 if (present) {
-                    console.debug('createOrUpdateIonicNotificationForTrackingReminder: Updating notification', notificationSettings);
+                    logDebug('createOrUpdateIonicNotificationForTrackingReminder: Updating notification', notificationSettings);
                     cordova.plugins.notification.local.update(notificationSettings,
                         function () {
-                            console.debug('createOrUpdateIonicNotificationForTrackingReminder: ' + 'notification updated', notificationSettings);
+                            logDebug('createOrUpdateIonicNotificationForTrackingReminder: ' + 'notification updated', notificationSettings);
                         });
                 }
                 deferred.resolve();
@@ -4556,7 +4570,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             var dayInMinutes = 24 * 60;
             notificationSettings.every = dayInMinutes;
-            console.debug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
+            logDebug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
             //notificationSettings.sound = "res://platform_default";
             //notificationSettings.smallIcon = 'ic_stat_icon_bw';
             var totalSeconds = 0;
@@ -4569,12 +4583,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 totalSeconds = totalSeconds + trackingReminder.reminderFrequency;
                 if(moment(at).format("HH:MM:SS") < $rootScope.user.latestReminderTime &&
                     moment(at).format("HH:MM:SS") > $rootScope.user.earliestReminderTime ){
-                    console.debug("Scheduling notification because it is within time limits: " +
+                    logDebug("Scheduling notification because it is within time limits: " +
                         $rootScope.user.earliestReminderTime + " to " + $rootScope.user.latestReminderTime,
                         notificationSettings);
                     createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
                 } else {
-                    console.debug("NOT scheduling notification because it is outside time limits: " +
+                    logDebug("NOT scheduling notification because it is outside time limits: " +
                         $rootScope.user.earliestReminderTime + " to " + $rootScope.user.latestReminderTime, notificationSettings);
                 }
             }
@@ -4609,7 +4623,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var totalSeconds = 0;
             var at;
             while (totalSeconds < 86400) {
-                console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
+                logDebug("iOS requires second, minute, hour, day, week, month, year so converting " +
                     intervalInMinutes + " minutes to string: " + everyString);
                 at = new Date(0); // The 0 there is the key, which sets the date to the epoch
                 at.setUTCSeconds(trackingReminder.nextReminderTimeEpochSeconds + totalSeconds);
@@ -4620,7 +4634,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     moment(at).format("HH:MM:SS") > $rootScope.user.earliestReminderTime ){
                     createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
                 } else {
-                    console.debug("Not scheduling notification because it's outside time limits", notificationSettings);
+                    logDebug("Not scheduling notification because it's outside time limits", notificationSettings);
                 }
             }
         }
@@ -4632,19 +4646,19 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             alarmName = JSON.stringify(alarmName);
             chrome.alarms.getAll(function(alarms) {
                 var hasAlarm = alarms.some(function(oneAlarm) {return oneAlarm.name === alarmName;});
-                if (hasAlarm) {console.debug('Already have an alarm for ' + alarmName);}
+                if (hasAlarm) {logDebug('Already have an alarm for ' + alarmName);}
                 if (!hasAlarm) {
                     chrome.alarms.create(alarmName, alarmInfo);
-                    console.debug('Created alarm for alarmName ' + alarmName, alarmInfo);
+                    logDebug('Created alarm for alarmName ' + alarmName, alarmInfo);
                 }
             });
         }
         if(trackingReminder.reminderFrequency > 0){
             $ionicPlatform.ready(function () {
-                //console.debug('Ionic is ready to schedule notifications');
+                //logDebug('Ionic is ready to schedule notifications');
                 if (typeof cordova !== "undefined") {
                     cordova.plugins.notification.local.getAll(function (notifications) {
-                        console.debug("scheduleNotificationByReminder: All notifications before scheduling", notifications);
+                        logDebug("scheduleNotificationByReminder: All notifications before scheduling", notifications);
                         for(var i = 0; i < notifications.length; i++){
                             if(notifications[i].every * 60 === trackingReminder.reminderFrequency &&
                                 notifications[i].id === trackingReminder.id){
@@ -4698,13 +4712,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             notificationSettings.every = everyString;
         }
         function scheduleGenericChromeExtensionNotification(intervalInMinutes) {
-            console.debug('scheduleGenericChromeExtensionNotification: Reminder notification interval is ' + intervalInMinutes + ' minutes');
+            logDebug('scheduleGenericChromeExtensionNotification: Reminder notification interval is ' + intervalInMinutes + ' minutes');
             var alarmInfo = {periodInMinutes: intervalInMinutes};
-            console.debug("scheduleGenericChromeExtensionNotification: clear genericTrackingReminderNotificationAlarm");
+            logDebug("scheduleGenericChromeExtensionNotification: clear genericTrackingReminderNotificationAlarm");
             chrome.alarms.clear("genericTrackingReminderNotificationAlarm");
-            console.debug("scheduleGenericChromeExtensionNotification: create genericTrackingReminderNotificationAlarm", alarmInfo);
+            logDebug("scheduleGenericChromeExtensionNotification: create genericTrackingReminderNotificationAlarm", alarmInfo);
             chrome.alarms.create("genericTrackingReminderNotificationAlarm", alarmInfo);
-            console.debug("Alarm set, every " + intervalInMinutes + " minutes");
+            logDebug("Alarm set, every " + intervalInMinutes + " minutes");
         }
         $ionicPlatform.ready(function () {
             if (typeof cordova !== "undefined") {
@@ -4713,7 +4727,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     return deferred.promise;
                 }
                 cordova.plugins.notification.local.getAll(function (notifications) {
-                    console.debug("scheduleGenericNotification: All notifications before scheduling", notifications);
+                    logDebug("scheduleGenericNotification: All notifications before scheduling", notifications);
                     if(notifications[0] && notifications[0].length === 1 &&
                         notifications[0].every === notificationSettings.every) {
                         console.warn("Not scheduling generic notification because we already have one with " +
@@ -4721,11 +4735,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         return;
                     }
                     cordova.plugins.notification.local.cancelAll(function () {
-                        console.debug('cancelAllNotifications: notifications have been cancelled');
+                        logDebug('cancelAllNotifications: notifications have been cancelled');
                         cordova.plugins.notification.local.getAll(function (notifications) {
-                            console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
+                            logDebug("cancelAllNotifications: All notifications after cancelling", notifications);
                             cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                                console.debug('scheduleGenericNotification: notification scheduled' + JSON.stringify(notificationSettings));
+                                logDebug('scheduleGenericNotification: notification scheduled' + JSON.stringify(notificationSettings));
                             });
                         });
                     });
@@ -4746,9 +4760,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         $ionicPlatform.ready(function () {
             if (typeof cordova !== "undefined") {
-                console.debug('cancelIonicNotificationById ' + notificationId);
+                logDebug('cancelIonicNotificationById ' + notificationId);
                 cordova.plugins.notification.local.cancel(notificationId, function (cancelledNotification) {
-                    console.debug("Canceled notification ", cancelledNotification);
+                    logDebug("Canceled notification ", cancelledNotification);
                 });
             }
             deferred.resolve();
@@ -4762,24 +4776,24 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return deferred.promise;
         }
         if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
-            console.debug('Not scheduling notifications because we are not mobile or Chrome extension');
+            logDebug('Not scheduling notifications because we are not mobile or Chrome extension');
             deferred.resolve();
             return deferred.promise;
         }
         if($rootScope.isAndroid){
             this.cancelAllNotifications();
-            console.debug('Not scheduling local notifications because Android uses push notifications');
+            logDebug('Not scheduling local notifications because Android uses push notifications');
             deferred.resolve();
             return deferred.promise;
         }
         if(!trackingReminders || !trackingReminders[0]){
-            console.debug('Not scheduling notifications because we do not have any reminders');
+            logDebug('Not scheduling notifications because we do not have any reminders');
             deferred.resolve();
             return deferred.promise;
         }
         /** @namespace trackingReminders[0].localDailyReminderNotificationTimesForAllReminders */
         var localDailyReminderNotificationTimesFromApi = trackingReminders[0].localDailyReminderNotificationTimesForAllReminders;
-        console.debug('localDailyReminderNotificationTimesFromApi: ' + JSON.stringify(localDailyReminderNotificationTimesFromApi));
+        logDebug('localDailyReminderNotificationTimesFromApi: ' + JSON.stringify(localDailyReminderNotificationTimesFromApi));
         if(localDailyReminderNotificationTimesFromApi.length < 1){
             console.warn('Cannot schedule notifications because ' + 'trackingReminders[0].localDailyReminderNotificationTimes is empty.');
             deferred.resolve();
@@ -4798,7 +4812,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         text: "Time to track!",
                         sound: "file://sound/silent.ogg"
                     };
-                    console.debug("scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: All " +
+                    logDebug("scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: All " +
                         "existing notifications before scheduling", existingLocalNotifications);
                     for (var i = 0; i < existingLocalNotifications.length; i++) {
                         var existingReminderNotificationTimeFoundInApiResponse = false;
@@ -4807,19 +4821,19 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                                 existingLocalNotifications[i].id &&
                                 existingLocalNotifications[i].text === notificationSettings.text
                             ) {
-                                console.debug('Server has a reminder notification matching local notification ' +
+                                logDebug('Server has a reminder notification matching local notification ' +
                                     JSON.stringify(existingLocalNotifications[i]));
                                 existingReminderNotificationTimeFoundInApiResponse = true;
                             }
                         }
                         if(!existingReminderNotificationTimeFoundInApiResponse) {
-                            console.debug('No matching notification time found so cancelling this local notification ',
+                            logDebug('No matching notification time found so cancelling this local notification ',
                                 JSON.stringify(existingLocalNotifications[i]));
                             cordova.plugins.notification.local.cancel(existingLocalNotifications[i].id);
                         }
                     }
                     for (var k = 0; k < localDailyReminderNotificationTimesFromApi.length; k++) {
-                        console.debug('localDailyReminderNotificationTimesFromApi[k] is ', localDailyReminderNotificationTimesFromApi[k]);
+                        logDebug('localDailyReminderNotificationTimesFromApi[k] is ', localDailyReminderNotificationTimesFromApi[k]);
                         var existingLocalNotificationScheduled = false;
                         for (var l = 0; l < existingLocalNotifications.length; l++) {
                             if(!localDailyReminderNotificationTimesFromApi[k]){
@@ -4829,7 +4843,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                             if (parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", "")) ===
                                 existingLocalNotifications[l].id &&
                                 existingLocalNotifications[l].text === notificationSettings.text) {
-                                console.debug('Server has a reminder notification matching local notification ' + JSON.stringify(existingLocalNotifications[l]));
+                                logDebug('Server has a reminder notification matching local notification ' + JSON.stringify(existingLocalNotifications[l]));
                                 existingLocalNotificationScheduled = true;
                             }
                         }
@@ -4843,7 +4857,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                             at.setMinutes(splitUpLocalDailyReminderNotificationTimesFromApi[1]);
                             var now = new Date();
                             if(at < now){at = new Date(at.getTime() + 60 * 60 * 24 * 1000);}
-                            console.debug('No existing local notification so scheduling ', JSON.stringify(localDailyReminderNotificationTimesFromApi[k]));
+                            logDebug('No existing local notification so scheduling ', JSON.stringify(localDailyReminderNotificationTimesFromApi[k]));
                             notificationSettings.at = at;
                             notificationSettings.id = parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", ""));
                             if($rootScope.numberOfPendingNotifications > 0) {
@@ -4865,11 +4879,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                                 return;
                             }
                             try{
-                                console.debug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: ' +
+                                logDebug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: ' +
                                     'About to schedule this notification: ',
                                     JSON.stringify(notificationSettings));
                                 cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
-                                    console.debug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes:' +
+                                    logDebug('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes:' +
                                         ' notification scheduled: ' + JSON.stringify(notification));
                                 });
                             } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
@@ -4884,17 +4898,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if($rootScope.isChromeExtension){
             chrome.alarms.getAll(function(existingLocalAlarms) {
-                console.debug('Existing Chrome alarms before scheduling: ', existingLocalAlarms);
+                logDebug('Existing Chrome alarms before scheduling: ', existingLocalAlarms);
                 for (var i = 0; i < existingLocalAlarms.length; i++) {
                     var existingAlarmTimeFoundInApiResponse = false;
                     for (var j = 0; j < localDailyReminderNotificationTimesFromApi.length; j++) {
                         if (existingLocalAlarms[i].name === localDailyReminderNotificationTimesFromApi[j]) {
-                            console.debug('Server has a reminder notification time matching time ' + existingLocalAlarms[i].name);
+                            logDebug('Server has a reminder notification time matching time ' + existingLocalAlarms[i].name);
                             existingAlarmTimeFoundInApiResponse = true;
                         }
                     }
                     if(!existingAlarmTimeFoundInApiResponse) {
-                        console.debug('No api reminder found matching so cancelling this alarm ', JSON.stringify(existingLocalAlarms[i]));
+                        logDebug('No api reminder found matching so cancelling this alarm ', JSON.stringify(existingLocalAlarms[i]));
                         chrome.alarms.clear(existingLocalAlarms[i].name);
                     }
                 }
@@ -4902,7 +4916,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     var existingAlarmScheduled = false;
                     for (var l = 0; l < existingLocalAlarms.length; l++) {
                         if (existingLocalAlarms[l].name === localDailyReminderNotificationTimesFromApi[k]) {
-                            console.debug('Server has a reminder notification matching local notification ' +
+                            logDebug('Server has a reminder notification matching local notification ' +
                                 JSON.stringify(existingLocalAlarms[i]));
                             existingAlarmScheduled = true;
                         }
@@ -4920,7 +4934,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         at.setMinutes(splitUpLocalDailyReminderNotificationTimesFromApi[1]);
                         alarmInfo.when =  at.getTime();
                         alarmInfo.periodInMinutes = 24 * 60;
-                        console.debug('No existing local notification so scheduling ', alarmInfo);
+                        logDebug('No existing local notification so scheduling ', alarmInfo);
                         chrome.alarms.create(localDailyReminderNotificationTimesFromApi[k], alarmInfo);
                     }
                 }
@@ -4935,20 +4949,20 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(typeof cordova !== "undefined" && typeof cordova.plugins.notification !== "undefined"){
             $ionicPlatform.ready(function () {
                 cordova.plugins.notification.local.cancelAll(function () {
-                    console.debug('cancelAllNotifications: notifications have been cancelled');
+                    logDebug('cancelAllNotifications: notifications have been cancelled');
                     cordova.plugins.notification.local.getAll(function (notifications) {
-                        console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
+                        logDebug("cancelAllNotifications: All notifications after cancelling", notifications);
                     });
                     deferred.resolve();
                 });
             });
         } else if (typeof chrome !== "undefined" && typeof chrome.alarms !== "undefined"){
             chrome.alarms.clearAll(function (){
-                console.debug('Cleared all Chrome alarms!');
+                logDebug('Cleared all Chrome alarms!');
                 deferred.resolve();
             });
         } else {
-            console.debug('cancelAllNotifications: Chrome and cordova are not defined.');
+            logDebug('cancelAllNotifications: Chrome and cordova are not defined.');
             deferred.resolve();
         }
         return deferred.promise;
@@ -4979,7 +4993,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(utcTimeString){utcTimeStringFull = utcTimeString + " +0000";}
         var returnTimeFormat = "HH:mm:ss";
         var localTimeString = moment(utcTimeStringFull, timeFormat).format(returnTimeFormat);
-        //console.debug("localTimeString is " + localTimeString);
+        //logDebug("localTimeString is " + localTimeString);
         return localTimeString;
     };
     qmService.humanFormat = function(hhmmssFormatString){
@@ -4990,7 +5004,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.getUtcTimeStringFromLocalString = function (localTimeString) {
         var returnTimeFormat = "HH:mm:ss";
         var utcTimeString = moment(localTimeString, returnTimeFormat).utc().format(returnTimeFormat);
-        console.debug("utcTimeString is " + utcTimeString);
+        logDebug("utcTimeString is " + utcTimeString);
         return utcTimeString;
     };
     qmService.getLocalMidnightInUtcString = function () {
@@ -5204,7 +5218,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 itemAsString = localStorageItems[localStorageItemName];
             });
         } else {
-            //console.debug(localStorage.getItem(localStorageItemName));
+            //logDebug(localStorage.getItem(localStorageItemName));
             itemAsString = localStorage.getItem(localStorageItemName);
         }
         if(!itemAsString){return null;}
@@ -5294,7 +5308,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     };
     qmService.clearLocalStorage = function(){
-        console.debug('Clearing local storage!');
+        logDebug('Clearing local storage!');
         if ($rootScope.isChromeApp) {chrome.storage.local.clear();} else {localStorage.clear();}
         putCommonVariablesInLocalStorage();
     };
@@ -5373,14 +5387,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     console.error("Error generating access token");
                     qmService.setLocalStorageItem('user', null);
                 } else {
-                    console.debug("Access token received",response);
+                    logDebug("Access token received",response);
                     qmService.saveAccessTokenInLocalStorage(response);
-                    console.debug('get user details from server and going to defaultState...');
+                    logDebug('get user details from server and going to defaultState...');
                     qmService.showBlackRingLoader();
                     qmService.refreshUser().then(function(user){
                         qmService.hideLoader();
                         qmService.syncAllUserData();
-                        console.debug($state.current.name + ' qmService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user));
+                        logDebug($state.current.name + ' qmService.fetchAccessTokenAndUserDetails got this user ' + JSON.stringify(user));
                     }, function(error){
                         qmService.hideLoader();
                         qmService.reportErrorDeferred($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
@@ -5392,7 +5406,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
     };
     qmService.nonNativeMobileLogin = function(register) {
-        console.debug('qmService.nonNativeMobileLogin: open the auth window via inAppBrowser.');
+        logDebug('qmService.nonNativeMobileLogin: open the auth window via inAppBrowser.');
         // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
         //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
         // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
@@ -5400,18 +5414,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var ref = window.open(qmService.generateV1OAuthUrl(register),'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
         // Commented because I think it's causing "$apply already in progress" error
         // $timeout(function () {
-        //     console.debug('qmService.nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
+        //     logDebug('qmService.nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
         //     ref.close();
         // }, 60000);
-        console.debug('qmService.nonNativeMobileLogin: listen to its event when the page changes');
+        logDebug('qmService.nonNativeMobileLogin: listen to its event when the page changes');
         ref.addEventListener('loadstart', function(event) {
-            console.debug('qmService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + qmService.getRedirectUri());
-            if(qmService.startsWith(event.url, qmService.getRedirectUri())) {
-                console.debug('qmService.nonNativeMobileLogin: event.url starts with ' + qmService.getRedirectUri());
+            logDebug('qmService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + qmService.getRedirectUri());
+            if(qmService.getUrlParameter('code', event.url) && isQuantiMoDoDomain(event.url)) {
+                logDebug('qmService.nonNativeMobileLogin: event.url starts with ' + qmService.getRedirectUri());
                 if(!qmService.getUrlParameter('error', event.url)) {
                     var authorizationCode = qmService.getAuthorizationCodeFromUrl(event);
                     ref.close();
-                    console.debug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code.');
+                    logDebug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code.');
                     qmService.fetchAccessTokenAndUserDetails(authorizationCode);
                 } else {
                     var errorMessage = "qmService.nonNativeMobileLogin: error occurred:" + qmService.getUrlParameter('error', event.url);
@@ -5422,7 +5436,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
     };
     qmService.chromeAppLogin = function(register){
-        console.debug("login: Use Chrome app (content script, background page, etc.");
+        logDebug("login: Use Chrome app (content script, background page, etc.");
         var url = qmService.generateV1OAuthUrl(register);
         chrome.identity.launchWebAuthFlow({'url': url, 'interactive': true
         }, function() {
@@ -5438,7 +5452,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
             if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
             loginUrl += "?afterLoginGoTo=" + getAfterLoginRedirectUrl(); // We can't redirect back to Chrome extension page itself.  Results in white screen
-            console.debug("chromeExtensionLogin window.location.replace with " + loginUrl);
+            logDebug("chromeExtensionLogin window.location.replace with " + loginUrl);
             return loginUrl;
         }
         function createLoginTabAndClose() {
@@ -5450,7 +5464,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.forecastioWeather = function(coordinates) {
         if(!$rootScope.user){
-            console.debug("No recording weather because we're not logged in");
+            logDebug("No recording weather because we're not logged in");
             return;
         }
         var lastPostedWeatherAt = Number(qmService.getLocalStorageItemAsString('lastPostedWeatherAt'));
@@ -5458,13 +5472,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var localMidnightTimestamp = localMidnightMoment.unix();
         var yesterdayNoonTimestamp = localMidnightTimestamp - 86400/2;
         if(lastPostedWeatherAt && lastPostedWeatherAt > yesterdayNoonTimestamp){
-            console.debug("recently posted weather already");
+            logDebug("recently posted weather already");
             return;
         }
         var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
         var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
         url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
-        console.debug('Checking weather forecast at ' + url);
+        logDebug('Checking weather forecast at ' + url);
         var measurementSets = [];
         $http.jsonp(url).success(function(data) {
             console.log(data);
@@ -5544,13 +5558,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 }]}
             );
             qmService.postMeasurementsToApi(measurementSets, function (response) {
-                console.debug("posted weather measurements");
+                logDebug("posted weather measurements");
                 if(response && response.data && response.data.userVariables){
                     qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
                 }
                 if(!lastPostedWeatherAt){qmService.setLocalStorageItem('lastPostedWeatherAt', getUnixTimestampInSeconds());}
-            }, function (error) {console.debug("could not post weather measurements: " + error);});
-        }).error(function (data) {console.debug("Request failed");});
+            }, function (error) {logDebug("could not post weather measurements: " + error);});
+        }).error(function (data) {logDebug("Request failed");});
     };
     qmService.setupHelpCards = function () {
         var locallyStoredHelpCards = localStorage.getItem('defaultHelpCards');
@@ -5798,14 +5812,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if(!emailAddress){emailAddress = null;}
         document.addEventListener('deviceready', function () {
-            console.debug('deviceready');
+            logDebug('deviceready');
             cordova.plugins.email.isAvailable(
                 function (isAvailable) {
                     if(isAvailable){
                         if(window.plugins && window.plugins.emailComposer) {
-                            console.debug('Generating email with cordova-plugin-email-composer');
+                            logDebug('Generating email with cordova-plugin-email-composer');
                             window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-                                    console.debug("Response -> " + result);
+                                    logDebug("Response -> " + result);
                                 },
                                 subjectLine, // Subject
                                 emailBody,                      // Body
@@ -5959,12 +5973,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     function setAfterLoginGoToState(afterLoginGoToState){
-        logDebugMessage('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ');
+        logDebug('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ');
         qmService.setLocalStorageItem('afterLoginGoToState', afterLoginGoToState);
     }
     function setAfterLoginGoToUrl(afterLoginGoToUrl){
         if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
-        logDebugMessage('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
+        logDebug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
         qmService.setLocalStorageItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
     qmService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState, afterLoginGoToUrl){
@@ -6051,7 +6065,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         trackingReminder.reminderFrequency = 0;
         if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
             var message = 'Got deletion request before last reminder refresh completed';
-            console.debug(message);
+            logDebug(message);
             $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
             $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
         }
@@ -6435,10 +6449,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             qmService.hideLoader();
             $state.go(config.appSettings.appDesign.defaultState);
-            console.debug("All measurements for " + variableObject.name + " deleted!");
+            logDebug("All measurements for " + variableObject.name + " deleted!");
         }, function(error) {
             qmService.hideLoader();
-            console.debug('Error deleting measurements: '+ JSON.stringify(error));
+            logDebug('Error deleting measurements: '+ JSON.stringify(error));
         });
     };
     qmService.showDeleteAllMeasurementsForVariablePopup = function(variableObject, ev){
@@ -6453,16 +6467,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.completelyResetAppState();
         sendToLogin();
     };
-    qmService.logDebugMessage = function(message, stackTrace) {
-        if(window.debugMode){
-            message = addStackTraceToMessage(message, stackTrace);
-            alert(message);
-            qmService.reportErrorDeferred(message);
-        }
-        console.debug(message);
-    };
     function sendToLogin() {
-        logDebugMessage("Sending to app.login");
+        logDebug("Sending to app.login");
         $state.go("app.login");
     }
     qmService.sendToLogin = function() {
@@ -6474,15 +6480,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!$rootScope.reflowScheduled){
             $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
             var seconds = 0.1;
-            //console.debug('Setting highchartsReflow timeout for ' + seconds + ' seconds');
+            //logDebug('Setting highchartsReflow timeout for ' + seconds + ' seconds');
             $timeout(function() {
-                //console.debug('executing broadcast(highchartsng.reflow)');
+                //logDebug('executing broadcast(highchartsng.reflow)');
                 $rootScope.$broadcast('highchartsng.reflow');
                 $rootScope.reflowScheduled = false;
             }, seconds * 1000);
             //$scope.$broadcast('highchartsng.reflow'); This doesn't seem to do anything
         } else {
-            console.debug('broadcast(highchartsng.reflow) already scheduled');
+            logDebug('broadcast(highchartsng.reflow) already scheduled');
         }
     };
     // Doesn't work yet
@@ -6661,15 +6667,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return planFeatureCards;
     };
     qmService.showBasicLoader = function(){
-        console.debug(arguments.callee.caller.name + " called showBasicLoader in " + $state.current.name, getStackTrace());
+        logDebug(arguments.callee.caller.name + " called showBasicLoader in " + $state.current.name, getStackTrace());
         $ionicLoading.show({duration: 10000});
     };
     qmService.showBlackRingLoader = function(){
-        console.debug(arguments.callee.caller.name + " called showBlackRingLoader in " + $state.current.name, getStackTrace());
+        logDebug(arguments.callee.caller.name + " called showBlackRingLoader in " + $state.current.name, getStackTrace());
         $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     };
     qmService.hideLoader = function(delay){
-        console.debug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
+        logDebug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
         if(delay){
             $timeout(function() { $ionicLoading.hide(); }, delay * 1000);
         } else{
@@ -6681,7 +6687,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     function isTruthy(value){return value && value !== "false"; }
     qmService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
-        logDebugMessage("getUserFromLocalStorageOrRefreshIfNecessary");
+        logDebug("getUserFromLocalStorageOrRefreshIfNecessary");
         if(qmService.getUrlParameter('refreshUser')){
             qmService.clearLocalStorage();
             qmService.setLocalStorageItem('onboarded', true);
@@ -6691,7 +6697,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if(!$rootScope.user){
             $rootScope.user = JSON.parse(qmService.getLocalStorageItemAsString('user'));
-            if($rootScope.user){logDebugMessage("Got user from local storage");}
+            if($rootScope.user){logDebug("Got user from local storage");}
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
@@ -6787,7 +6793,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             menuItem.href += convertObjectToQueryString(params);
             menuItem.href = menuItem.href.replace('app/app', 'app');
         }
-        if(window.debugMode){ console.debug("convertUrlAndParamsToHref ", menuItem); }
+        if(window.debugMode){ logDebug("convertUrlAndParamsToHref ", menuItem); }
         return menuItem;
     }
     function convertStateNameAndParamsToHref(menuItem) {
@@ -6802,14 +6808,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function convertUrlToLowerCaseStateName(menuItem){
         if(!menuItem.url){
-            console.debug("no url to convert in " + JSON.stringify(menuItem));
+            logDebug("no url to convert in " + JSON.stringify(menuItem));
             return menuItem;
         }
         return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
     }
     function convertQueryStringToParams(menuItem){
         if(!menuItem.href){
-            console.debug("No menuItem.href for " + JSON.stringify(menuItem));
+            logDebug("No menuItem.href for " + JSON.stringify(menuItem));
             return menuItem;
         }
         if(menuItem.href && !menuItem.params){
@@ -6871,7 +6877,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         }
                     }
                 }
-                if(!menuItem.stateName){ console.debug("no state name for " + JSON.stringify(menuItem)); }
+                if(!menuItem.stateName){ logDebug("no state name for " + JSON.stringify(menuItem)); }
                 return menuItem;
             }
             menuItem = addUrlToMenuItem(menuItem);
@@ -6883,7 +6889,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return menuItem;
         }
         if(!menu){
-            console.debug("No menu given to convertHrefInSingleMenuType");
+            logDebug("No menu given to convertHrefInSingleMenuType");
             return;
         }
         for(var i =0; i < menu.length; i++){
@@ -6902,7 +6908,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return menu;
     };
     qmService.convertHrefInFab = function(floatingActionButton) {
-        console.debug("convertHrefInFab");
+        logDebug("convertHrefInFab");
         for(var i = 1; i < 5; i++){
             floatingActionButton.active["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.active["button" + i]);
             floatingActionButton.custom["button" + i] = convertStateNameAndParamsToHref(floatingActionButton.custom["button" + i]);
@@ -6926,21 +6932,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if(!window.config){window.config = {};}
         window.config.appSettings = appSettings;
-        console.debug("appSettings.clientId is " + window.config.appSettings.clientId);
+        logDebug("appSettings.clientId is " + window.config.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         //window.config.appSettings.appDesign.menu = qmService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
         //window.config.appSettings.appDesign.floatingActionButton = qmService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
-        if(window.debugMode){console.debug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
+        if(window.debugMode){logDebug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
         changeFavicon();
     };
     qmService.initializeApplication = function(appSettingsResponse){
         function initializeLocalNotifications(){
             if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
-                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
+                logDebug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function () {
-                    console.debug("Setting on trigger and on click actions for notifications");
+                    logDebug("Setting on trigger and on click actions for notifications");
                     qmService.setOnTriggerActionForLocalNotifications();
                     qmService.setOnClickActionForLocalNotifications(qmService);
                     qmService.setOnUpdateActionForLocalNotifications();
