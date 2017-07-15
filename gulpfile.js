@@ -85,8 +85,8 @@ var appIds = {
 var pathToIcons = "www/img/icons";
 var appHostName = (process.env.APP_HOST_NAME) ? process.env.APP_HOST_NAME : "https://app.quantimo.do";
 var appSettings, privateConfig, devCredentials;
-var privateConfigDirectoryPath = './www/private_configs/';
-var appConfigDirectoryPath = './www/configs/';
+var privateConfigDirectoryPath = 'www/private_configs/';
+var appConfigDirectoryPath = 'www/configs/';
 var defaultPrivateConfigPath = privateConfigDirectoryPath + 'default.private_config.json';
 var devCredentialsPath = privateConfigDirectoryPath + 'dev-credentials.json';
 var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
@@ -644,6 +644,9 @@ gulp.task('createChromeExtensionManifest', function () {
     postAppStatus();
     var chromeExtensionManifest = {
         'manifest_version': 2,
+        'name': appSettings.appDisplayName,
+        'description': appSettings.appDescription,
+        'version': versionNumbers.ionicApp,
         'options_page': 'www/chrome_extension/options/options.html',
         'icons': {
             '16': pathToIcons + '/icon_16.png',
@@ -657,7 +660,12 @@ gulp.task('createChromeExtensionManifest', function () {
             'tabs',
             'https://*.google.com/*',
             'https://*.facebook.com/*',
-            'https://*.quantimo.do/*'
+            'https://*.quantimo.do/*',
+            'https://*.uservoice.com/*',
+            'https://*.googleapis.com/*',
+            'https://*.intercom.com/*',
+            'https://*.intercom.io/*',
+            'https://*.googleapis.com/*'
         ],
         'browser_action': {
             'default_icon': pathToIcons + '/icon_700.png',
@@ -668,10 +676,6 @@ gulp.task('createChromeExtensionManifest', function () {
             'persistent': false
         }
     };
-    chromeExtensionManifest.name = appSettings.appDisplayName;
-    chromeExtensionManifest.description = appSettings.appDescription;
-    chromeExtensionManifest.version = versionNumbers.ionicApp;
-    chromeExtensionManifest.permissions.push("https://*.quantimo.do/*");
     //chromeExtensionManifest.appSettings = appSettings; // I think adding appSettings to the chrome manifest breaks installation
     chromeExtensionManifest = JSON.stringify(chromeExtensionManifest, null, 2);
     var chromeManifestPath = chromeExtensionBuildPath + '/manifest.json';
@@ -726,8 +730,18 @@ gulp.task('getAppConfigs', [], function () {
         if(response.privateConfig){
             privateConfig = response.privateConfig;
             fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+            try {
+                fs.writeFileSync(chromeExtensionBuildPath + '/' + defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+            } catch (err){
+                debugLog(err);
+            }
         }
         fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
+        try {
+            fs.writeFileSync(chromeExtensionBuildPath + '/' + defaultAppConfigPath, prettyJSONStringify(appSettings));
+        } catch (err){
+            debugLog(err);
+        }
         debugLog("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
         fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         /** @namespace response.allConfigs */
@@ -1676,6 +1690,9 @@ gulp.task('copyIonicCloudLibrary', [], function () {
 });
 gulp.task('copyWwwFolderToChromeExtension', [], function () {
     return copyFiles('www/**/*', chromeExtensionBuildPath + '/www');
+});
+gulp.task('copyWwwFolderToAndroidApp', [], function () {
+    return copyFiles('www/**/*', 'platforms/android/assets/www');
 });
 gulp.task('copyIconsToChromeExtension', [], function () {
     return copyFiles(pathToIcons + "/*", chromeExtensionBuildPath + '/' + pathToIcons);
