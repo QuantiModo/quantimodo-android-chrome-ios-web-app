@@ -1922,7 +1922,7 @@ gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
         'buildAndroidApp',
         'setMoodiModoEnvs',
         'buildChromeExtensionWithoutCleaning',
-        'buildAndroidApp',
+        //'buildAndroidApp',
         'setQuantiModoEnvs',
         'buildChromeExtensionWithoutCleaning',
         'buildAndroidApp',
