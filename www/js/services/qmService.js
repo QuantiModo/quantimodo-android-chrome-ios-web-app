@@ -104,6 +104,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return message + ".  StackTrace: " + stackTrace;
     }
     function addStateNameToMessage(message) {
+        if(!$state.current.name){return message;}
         return message + " in state " + $state.current.name;
     }
     function logDebug(message, stackTrace) {
@@ -5407,19 +5408,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.setLocalStorageItem('user', null);
             });
     };
-    function getDomain(url){
-        var parts = url.replace(/^(www\.)/,"").split('.');
-        while(parts.length > 2){ //is there a subdomain?
-            var subdomain = parts.shift(); //removing it from our array
-        }
-        var domain = parts.join('.'); //getting the remaining 2 elements
-        return domain.replace(/(^\.*)|(\.*$)/g, "");
+    function getRootDomain(url){
+        var parts = url.split('.');
+        var rootDomainWithPath = parts[1] + '.' + parts[2];
+        var rootDomainWithPathParts = rootDomainWithPath.split('/');
+        return rootDomainWithPathParts[0];
     }
-    function isQuantiMoDoDomain(url) {
-        var isHttps = url.indexOf("https://") === 0;
-        var matchesQuantiModo = getDomain(url) === 'quantimo.do';
+    function isQuantiMoDoDomain(urlToCheck) {
+        var isHttps = urlToCheck.indexOf("https://") === 0;
+        var matchesQuantiModo = getRootDomain(urlToCheck) === 'quantimo.do';
         var result = isHttps && matchesQuantiModo;
-        if(!result){logError("event.url is not a QuantiModo domain");}
+        if(!result){
+            logError("Domain " + getRootDomain(urlToCheck) + " from event.url " + urlToCheck + " is not a QuantiModo domain");
+        } else {
+            logDebug("Domain " + getRootDomain(urlToCheck) + " from event.url " + urlToCheck + " is a QuantiModo domain");
+        }
         return isHttps && matchesQuantiModo;
     }
     qmService.checkLoadStartEventUrlForErrors = function(ref, event){
