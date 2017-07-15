@@ -104,6 +104,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return message + ".  StackTrace: " + stackTrace;
     }
     function addStateNameToMessage(message) {
+        if(!$state.current.name){return message;}
         return message + " in state " + $state.current.name;
     }
     function logDebug(message, stackTrace) {
@@ -865,12 +866,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         logDebug("generateV2OAuthUrl: " + url);
         return url;
     };
-    qmService.getAuthorizationCodeFromUrl = function(event) {
+    qmService.getAuthorizationCodeFromEventUrl = function(event) {
         logDebug('extracting authorization code from event: ' + JSON.stringify(event));
         var authorizationUrl = event.url;
         if(!authorizationUrl) {authorizationUrl = event.data;}
+        if(!isQuantiMoDoDomain(authorizationUrl)){return;}
         var authorizationCode = qmService.getUrlParameter('code', authorizationUrl);
-        if(!authorizationCode) {authorizationCode = qmService.getUrlParameter('token', authorizationUrl);}
+        if(authorizationCode){logDebug('got authorization code from ' + authorizationUrl);}
+        //if(!authorizationCode) {authorizationCode = qmService.getUrlParameter('token', authorizationUrl);}
         return authorizationCode;
     };
     qmService.getAccessTokenFromAuthorizationCode = function (authorizationCode) {
@@ -5405,6 +5408,30 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.setLocalStorageItem('user', null);
             });
     };
+    function getRootDomain(url){
+        var parts = url.split('.');
+        var rootDomainWithPath = parts[1] + '.' + parts[2];
+        var rootDomainWithPathParts = rootDomainWithPath.split('/');
+        return rootDomainWithPathParts[0];
+    }
+    function isQuantiMoDoDomain(urlToCheck) {
+        var isHttps = urlToCheck.indexOf("https://") === 0;
+        var matchesQuantiModo = getRootDomain(urlToCheck) === 'quantimo.do';
+        var result = isHttps && matchesQuantiModo;
+        if(!result){
+            logError("Domain " + getRootDomain(urlToCheck) + " from event.url " + urlToCheck + " is not a QuantiModo domain");
+        } else {
+            logDebug("Domain " + getRootDomain(urlToCheck) + " from event.url " + urlToCheck + " is a QuantiModo domain");
+        }
+        return isHttps && matchesQuantiModo;
+    }
+    qmService.checkLoadStartEventUrlForErrors = function(ref, event){
+        if(qmService.getUrlParameter('error', event.url)) {
+            var errorMessage = "nonNativeMobileLogin: error occurred:" + qmService.getUrlParameter('error', event.url);
+            logError(errorMessage);
+            ref.close();
+        }
+    };
     qmService.nonNativeMobileLogin = function(register) {
         logDebug('qmService.nonNativeMobileLogin: open the auth window via inAppBrowser.');
         // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
@@ -5420,19 +5447,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         logDebug('qmService.nonNativeMobileLogin: listen to its event when the page changes');
         ref.addEventListener('loadstart', function(event) {
             logDebug('qmService.nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + qmService.getRedirectUri());
-            if(qmService.getUrlParameter('code', event.url) && isQuantiMoDoDomain(event.url)) {
-                logDebug('qmService.nonNativeMobileLogin: event.url starts with ' + qmService.getRedirectUri());
-                if(!qmService.getUrlParameter('error', event.url)) {
-                    var authorizationCode = qmService.getAuthorizationCodeFromUrl(event);
-                    ref.close();
-                    logDebug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code.');
-                    qmService.fetchAccessTokenAndUserDetails(authorizationCode);
-                } else {
-                    var errorMessage = "qmService.nonNativeMobileLogin: error occurred:" + qmService.getUrlParameter('error', event.url);
-                    qmService.reportErrorDeferred(errorMessage);
-                    ref.close();
-                }
+            if(qmService.getAuthorizationCodeFromEventUrl(event)) {
+                var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
+                ref.close();
+                logDebug('qmService.nonNativeMobileLogin: Going to get an access token using authorization code.');
+                qmService.fetchAccessTokenAndUserDetails(authorizationCode);
             }
+            qmService.checkLoadStartEventUrlForErrors(ref, event);
         });
     };
     qmService.chromeAppLogin = function(register){
@@ -5440,7 +5461,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var url = qmService.generateV1OAuthUrl(register);
         chrome.identity.launchWebAuthFlow({'url': url, 'interactive': true
         }, function() {
-            var authorizationCode = qmService.getAuthorizationCodeFromUrl(event);
+            var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
             qmService.getAccessTokenFromAuthorizationCode(authorizationCode);
         });
     };
