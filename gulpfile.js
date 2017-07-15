@@ -40,7 +40,7 @@ console.log("process.platform is " + process.platform + " and process.env.OS is 
 function isTruthy(value) {return (value && value !== "false");}
 var buildDebug = isTruthy(process.env.BUILD_DEBUG);
 var currentServerContext = "local";
-infoLog("Environmental Variables:", process.env);
+logInfo("Environmental Variables:", process.env);
 if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
 if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
 function setClientId(callback) {
@@ -257,7 +257,7 @@ function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
         return;
     }
     var cmd = 'openssl aes-256-cbc -k "' + process.env.ENCRYPTION_SECRET + '" -in "' + fileToEncryptPath + '" -e -a -out "' + encryptedFilePath + '"';
-    //infoLog('executing ' + cmd);
+    logDebug('executing ' + cmd);
     execute(cmd, function (error) {
         if (error !== null) {
             logError('ERROR: ENCRYPTING: ' + error);
@@ -306,7 +306,7 @@ function ionicUpload(callback) {
         var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
             ' --note "' + commitMessage + '" --deploy ' + process.env.RELEASE_STAGE;
         logInfo('ionic upload --note "' + commitMessage + '" --deploy ' + process.env.RELEASE_STAGE);
-        //infoLog('\n' + uploadCommand);
+        logDebug('\n' + uploadCommand);
         execute(uploadCommand, function (error, uploadOutput) {
             uploadOutput = uploadOutput.trim();
             if (error) {
@@ -1343,7 +1343,7 @@ gulp.task('addFacebookPlugin', ['getAppConfigs'], function () {
                 'GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git'
             ].join(' && ');
             /*			//Try this if you get the muliple dex file error still
-             infoLog("FACEBOOK REPO NOT FOUND, CLONING https://github.com/Telerik-Verified-Plugins/Facebook.git NOW");
+             logInfo("FACEBOOK REPO NOT FOUND, CLONING https://github.com/Telerik-Verified-Plugins/Facebook.git NOW");
              var commands = [
              "cd ../",
              "mkdir fbplugin",
