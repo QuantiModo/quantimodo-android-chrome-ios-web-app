@@ -84,7 +84,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             console.debug('ReminderInbox: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
         }
-        qmService.hideLoader();
+        qmService.hideLoader(0.5);
     });
     $scope.register = function() {
         var register = true;

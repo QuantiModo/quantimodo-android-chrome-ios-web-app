@@ -6659,9 +6659,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         console.debug(arguments.callee.caller.name + " called showBlackRingLoader in " + $state.current.name, getStackTrace());
         $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     };
-    qmService.hideLoader = function(){
+    qmService.hideLoader = function(delay){
         console.debug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
-        $ionicLoading.hide();
+        if(delay){
+            $timeout(function() { $ionicLoading.hide(); }, delay * 1000);
+        } else{
+            $ionicLoading.hide();
+        }
     };
     qmService.weShouldUseOAuthLogin = function(){
         return window.location.href.indexOf('.quantimo.do') === -1;
