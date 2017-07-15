@@ -5431,13 +5431,22 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
     };
     qmService.chromeExtensionLogin = function(register) {
-        var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
-        if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
-        loginUrl += "?afterLoginGoTo=" + encodeURIComponent(window.location.href);
-        console.debug("chromeExtensionLogin window.location.replace with " + loginUrl);
-        //chrome.tabs.create({ url: loginUrl });
-        window.location.replace(loginUrl);
-        window.close();
+        function getAfterLoginRedirectUrl() {
+            return encodeURIComponent("https://" + config.appSettings.clientId + ".quantimo.do");
+        }
+        function getLoginUrl() {
+            var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
+            if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
+            loginUrl += "?afterLoginGoTo=" + getAfterLoginRedirectUrl(); // We can't redirect back to Chrome extension page itself.  Results in white screen
+            console.debug("chromeExtensionLogin window.location.replace with " + loginUrl);
+            return loginUrl;
+        }
+        function createLoginTabAndClose() {
+            chrome.tabs.create({ url: getLoginUrl() });
+            window.close();
+        }
+        createLoginTabAndClose(); // Try this if window.location.replace has problems
+        // window.location.replace(getLoginUrl());  Doesn't work!
     };
     qmService.forecastioWeather = function(coordinates) {
         if(!$rootScope.user){
