@@ -6348,10 +6348,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             locals: {dataToPass: {title: title, textContent: textContent}}
         }).then(function(answer) {
             if(answer === "help"){$state.go('app.help');}
-            if(answer === 'yes'){yesCallbackFunction();}
-            if(answer === 'no' && noCallbackFunction){noCallbackFunction();}
+            if(answer === 'yes'){yesCallbackFunction(ev);}
+            if(answer === 'no' && noCallbackFunction){noCallbackFunction(ev);}
         }, function() {
-            if(noCallbackFunction){noCallbackFunction();}
+            if(noCallbackFunction){noCallbackFunction(ev);}
         });
     };
     qmService.validationFailure = function (message, object) {
