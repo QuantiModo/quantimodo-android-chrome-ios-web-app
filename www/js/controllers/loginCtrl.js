@@ -84,7 +84,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             console.debug('ReminderInbox: Hiding splash screen because app is ready');
             navigator.splashscreen.hide();
         }
-        qmService.hideLoader();
+        qmService.hideLoader(0.5);
     });
     $scope.register = function() {
         var register = true;
@@ -100,35 +100,17 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         } else {
             console.debug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
             var interval = setInterval(function () {ref.postMessage('isLoggedIn?', qmService.getRedirectUri());}, 1000);
-            // handler when a message is received from a sibling tab
-            window.onMessageReceived = function (event) {
+            window.onMessageReceived = function (event) {  // handler when a message is received from a sibling tab
                 console.debug("message received from sibling tab", event.url);
                 if(interval !== false){
-                    // Don't ask login question anymore
-                    clearInterval(interval);
+                    clearInterval(interval);  // Don't ask login question anymore
                     interval = false;
-                    // the url that qmService redirected us to
-                    var iframe_url = event.data;
-                    // validate if the url is same as we wanted it to be
-                    if (qmService.startsWith(iframe_url, qmService.getRedirectUri())) {
-                        // if there is no error
-                        if (!qmService.getUrlParameter('error', iframe_url)) {
-                            var authorizationCode = qmService.getAuthorizationCodeFromUrl(event);
-                            // get access token from authorization code
-                            qmService.fetchAccessTokenAndUserDetails(authorizationCode);
-                            // close the sibling tab
-                            ref.close();
-                        } else {
-                            // TODO : display_error
-                            alert('Could not login.  Please contact mike@quantimo.do');
-                            qmService.reportErrorDeferred("Error occurred validating redirect " + iframe_url +
-                                ". Closing the sibling tab." + qmService.getUrlParameter('error', iframe_url));
-                            console.error("Error occurred validating redirect url. Closing the sibling tab.",
-                                qmService.getUrlParameter('error', iframe_url));
-                            // close the sibling tab
-                            ref.close();
-                        }
+                    if (qmService.getAuthorizationCodeFromEventUrl(event)) {
+                        var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
+                        qmService.fetchAccessTokenAndUserDetails(authorizationCode);  // get access token from authorization code
+                        ref.close();  // close the sibling tab
                     }
+                    qmService.checkLoadStartEventUrlForErrors(ref, event);
                 }
             };
             // listen to broadcast messages from other tabs within browser
@@ -187,21 +169,14 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                 ref.addEventListener('loadstart', function(event) {
                     console.debug('nativeSocialLogin: loadstart event is ' + JSON.stringify(event));
                     console.debug('nativeSocialLogin: check if changed url is the same as redirection url.');
-                    if(qmService.startsWith(event.url, qmService.getRedirectUri())) {
-                        if(!qmService.getUrlParameter('error', event.url)) {
-                            var authorizationCode = qmService.getAuthorizationCodeFromUrl(event);
-                            console.debug('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
-                            ref.close();
-                            var withJWT = true;
-                            // get access token from authorization code
-                            qmService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
-                        } else {
-                            var errorMessage = "nativeSocialLogin: error occurred: " + qmService.getUrlParameter('error', event.url);
-                            qmService.reportErrorDeferred(errorMessage);
-                            // close inAppBrowser
-                            ref.close();
-                        }
+                    if(qmService.getAuthorizationCodeFromEventUrl(event)) {
+                        var authorizationCode = qmService.getAuthorizationCodeFromEventUrl(event);
+                        console.debug('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
+                        ref.close();
+                        var withJWT = true;
+                        qmService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);  // get access token from authorization code
                     }
+                    qmService.checkLoadStartEventUrlForErrors(ref, event);
                 });
             }, function(error){
                 qmService.reportErrorDeferred("qmService.getTokensAndUserViaNativeSocialLogin error occurred Couldn't generate JWT! Error response: " + JSON.stringify(error));

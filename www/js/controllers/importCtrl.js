@@ -75,7 +75,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 			.then(function(connectors){
                 $scope.connectors = connectors;
 				if(connectors) {
-					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 					$ionicLoading.hide().then(function(){console.debug("The loading indicator is now hidden");});
 				}
@@ -143,10 +142,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         connector.updateStatus = "CONNECTING"; // Need to make error message hidden
         var connectWithToken = function(response) {
             console.debug("Response Object -> " + JSON.stringify(response));
-            var body = {
-                connectorCredentials: {token: response},
-                connector: connector
-            };
+            var body = { connectorCredentials: {token: response}, connector: connector };
             qmService.connectConnectorWithTokenDeferred(body).then(function(result){
                 console.debug(JSON.stringify(result));
                 $scope.refreshConnectors();
@@ -475,15 +471,11 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 $scope.connectors = connectors;
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
-                $ionicLoading.hide().then(function(){
-                    console.debug("The loading indicator is now hidden");
-                });
+                qmService.hideLoader();
             }, function(response){
                 console.error(response);
                 $scope.$broadcast('scroll.refreshComplete');
-                $ionicLoading.hide().then(function(){
-                    console.debug("The loading indicator is now hidden");
-                });
+                qmService.hideLoader();
             });
     };
     function connectorErrorHandler(error){

@@ -129,6 +129,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			console.debug('This event is probably a ghost click so not registering.', $event);
 			return true;
 		} else {
+		    if(!$event){
+		        qmService.logError("No event provided to isGhostClick!");
+		        return false;
+            }
 			console.debug('This Track event is not a ghost click so registering.', $event);
 			$scope.state.lastButtonPressTimeStamp = $event.timeStamp;
 			$scope.state.lastClientX = $event.clientX;
@@ -207,17 +211,17 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		qmService.trackTrackingReminderNotificationDeferred(body, trackAll);
         refreshIfRunningOutOfNotifications();
 	};
-	function trackAll(trackingReminderNotification, modifiedReminderValue) {
+	function trackAll(trackingReminderNotification, modifiedReminderValue, ev) {
         qmService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'variableName', trackingReminderNotification.variableName);
-        $scope.track(trackingReminderNotification, modifiedReminderValue, null, true);
+        $scope.track(trackingReminderNotification, modifiedReminderValue, ev, true);
         getTrackingReminderNotifications();
     }
     $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
         var title = "Record " + qmService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
         var textContent = "Do you want to record " + qmService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
 			" for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
-        function yesCallback() {
-            trackAll(trackingReminderNotification, modifiedReminderValue);
+        function yesCallback(ev) {
+            trackAll(trackingReminderNotification, modifiedReminderValue, ev);
         }
         function noCallback() {}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);

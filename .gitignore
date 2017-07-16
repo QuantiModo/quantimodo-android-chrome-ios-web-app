@@ -87,3 +87,5 @@ www/configs/
 Ionic\.jsproj
 Ionic\.sln
 composer.phar
+packages/
+npm-debug.log*

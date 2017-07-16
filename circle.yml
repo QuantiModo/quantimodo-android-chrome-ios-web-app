@@ -41,7 +41,7 @@ dependencies:
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower; fi
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
-    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
+    #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi  # Done in gulpBuildAllAndroidApps
     - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gem install fastlane; fi # Don't use sudo or it uses old ruby version
     #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
 
@@ -77,8 +77,8 @@ deployment:
   build:
     branch: /apps\/.*/
     commands:
+      - gulp buildChromeExtension # Build Chrome first in case Android upload fails
       - gulp buildAndroidApp
-      - gulp buildChromeExtension
   feature:
     branch: /feature\/.*/
     commands:
@@ -96,13 +96,12 @@ deployment:
   staging:
     branch: develop
     commands:
-      - gulp buildAndroidApp
-      - gulp buildChromeExtension
+      - gulp buildAllChromeExtensionsAndAndroidApps # Build Chrome first in case Android upload fails
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
     commands:
+      - gulp buildChromeExtension
       - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
       - gulp buildAndroidApp
-      - gulp buildChromeExtension
       #- gulp fastlaneSupplyProduction
