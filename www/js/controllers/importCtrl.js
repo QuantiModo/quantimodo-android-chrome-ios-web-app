@@ -160,6 +160,25 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 $scope.refreshConnectors();
             });
         };
+        function connectGoogle(connector, scopes) {
+            document.addEventListener('deviceready', deviceReady, false);
+            function deviceReady() {
+                window.plugins.googleplus.login({
+                    'scopes': scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                    'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                    'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                }, function (response) {
+                    console.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
+                    connectWithAuthCode(response.serverAuthCode, connector);
+                }, function (errorMessage) {
+                    qmService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                });
+            }
+        }
+        if(connector.name === 'slack') {
+            webConnect(connector);
+            return;
+        }
         if(connector.name === 'github') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
                 webConnect(connector);
@@ -236,21 +255,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             $cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
                 .then(function(result) {connectWithToken(result);}, function(error) {connectorErrorHandler(error);});
         }
-        function connectGoogle(connector, scopes) {
-            document.addEventListener('deviceready', deviceReady, false);
-            function deviceReady() {
-                window.plugins.googleplus.login({
-                    'scopes': scopes, // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-                    'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
-                    'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-                }, function (response) {
-                    console.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
-                    connectWithAuthCode(response.serverAuthCode, connector);
-                }, function (errorMessage) {
-                    qmService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
-                });
-            }
-        }
         if(connector.name === 'googlefit') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
                 webConnect(connector);
@@ -316,7 +320,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                         type: 'button-positive',
                         onTap: function(e) {
                             if (!$scope.data.username) {
-                                //don't allow the user to close unless he enters wifi password
                                 e.preventDefault();
                             } else {return $scope.data.username;}
                         }
@@ -347,7 +350,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                         type: 'button-positive',
                         onTap: function(e) {
                             if (!$scope.data.username || !$scope.data.password) {
-                                //don't allow the user to close unless he enters wifi password
                                 e.preventDefault();
                             } else {return $scope.data;}
                         }
@@ -378,7 +380,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                         type: 'button-positive',
                         onTap: function(e) {
                             if (!$scope.data.password || !$scope.data.username) {
-                                //don't allow the user to close unless he enters wifi password
                                 e.preventDefault();
                             } else {return $scope.data;}
                         }
@@ -406,7 +407,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                         type: 'button-positive',
                         onTap: function(e) {
                             if (!$scope.data.email) {
-                                //don't allow the user to close unless he enters wifi password
                                 e.preventDefault();
                             } else {return $scope.data;}
                         }
@@ -437,7 +437,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                         type: 'button-positive',
                         onTap: function(e) {
                             if (!$scope.data.password || !$scope.data.username) {
-                                //don't allow the user to close unless he enters wifi password
                                 e.preventDefault();
                             } else {return $scope.data;}
                         }
@@ -494,7 +493,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 console.debug(JSON.stringify(result));
                 $scope.refreshConnectors();
             }, function (error) {
-                errorHandler(error);
+                connectorErrorHandler(error);
                 $scope.refreshConnectors();
             });
     }
