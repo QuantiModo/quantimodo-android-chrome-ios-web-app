@@ -673,22 +673,31 @@ gulp.task('validateCredentials', ['setClientId'], function () {
     fs.writeFileSync(devCredentialsPath, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
     return makeApiRequest(options);
 });
-gulp.task('downloadIcon', ['getAppConfigs'], function(){
+function downloadFile(url, filename, destinationFolder) {
+    logInfo("Downloading  " + url + " to " + destinationFolder + "/" + filename);
+    return download(url)
+        .pipe(rename(filename))
+        .pipe(gulp.dest(destinationFolder));
+}
+function downloadAndUnzipFile(url, destinationFolder) {
+    logInfo("Downloading  " + url + " and uzipping to " + destinationFolder);
+    return download(url)
+        .pipe(unzip())
+        .pipe(gulp.dest(destinationFolder));
+}
+gulp.task('downloadChromeExtension', [], function(){
+    return downloadAndUnzipFile(appSettings.appStatus.betaDownloadLinks.chromeExtension, getPathToUnzippedChromeExtension());
+});
+gulp.task('downloadIcon', [], function(){
     /** @namespace appSettings.additionalSettings.appImages.appIcon */
     /** @namespace appSettings.additionalSettings.appImages */
     var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
-    logInfo("Downloading icon " + iconUrl);
-    return download(iconUrl)
-        .pipe(rename('icon.png'))
-        .pipe(gulp.dest("./resources"));
+    return downloadFile(iconUrl, 'icon.png', "./resources");
 });
 gulp.task('downloadSplashScreen', [], function(){
     /** @namespace appSettings.additionalSettings.appImages.splashScreen */
     var splashScreen = (appSettings.additionalSettings.appImages.splashScreen) ? appSettings.additionalSettings.appImages.splashScreen : appSettings.splashScreen;
-    logInfo("Downloading splash screen " + splashScreen);
-    return download(splashScreen)
-        .pipe(rename('splash.png'))
-        .pipe(gulp.dest("./resources"));
+    return downloadFile(splashScreen, 'splash.png', "./resources");
 });
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
@@ -1880,6 +1889,17 @@ gulp.task('buildAllChromeExtensions', function (callback) {
         'buildChromeExtensionWithoutCleaning',
         'setQuantiModoEnvs',
         'buildChromeExtensionWithoutCleaning',
+        callback);
+});
+gulp.task('downloadAllChromeExtensions', function (callback) {
+    runSequence(
+        'cleanBuildFolder',
+        'setMediModoEnvs',
+        'downloadChromeExtension',
+        'setMoodiModoEnvs',
+        'downloadChromeExtension',
+        'setQuantiModoEnvs',
+        'downloadChromeExtension',
         callback);
 });
 gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
