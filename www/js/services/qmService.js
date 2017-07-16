@@ -5419,7 +5419,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var matchesQuantiModo = getRootDomain(urlToCheck) === 'quantimo.do';
         var result = isHttps && matchesQuantiModo;
         if(!result){
-            logError("Domain " + getRootDomain(urlToCheck) + " from event.url " + urlToCheck + " is not a QuantiModo domain");
+            logDebug("Domain " + getRootDomain(urlToCheck) + " from event.url " + urlToCheck + " is not a QuantiModo domain");
         } else {
             logDebug("Domain " + getRootDomain(urlToCheck) + " from event.url " + urlToCheck + " is a QuantiModo domain");
         }
@@ -5473,10 +5473,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
             if (register === true) {loginUrl = qmService.getQuantiModoUrl("api/v2/auth/register");}
             loginUrl += "?afterLoginGoTo=" + getAfterLoginRedirectUrl(); // We can't redirect back to Chrome extension page itself.  Results in white screen
-            logDebug("chromeExtensionLogin window.location.replace with " + loginUrl);
+            logDebug("chromeExtensionLogin loginUrl is " + loginUrl);
             return loginUrl;
         }
         function createLoginTabAndClose() {
+            logDebug("chrome.tabs.create " + getLoginUrl());
             chrome.tabs.create({ url: getLoginUrl() });
             window.close();
         }
