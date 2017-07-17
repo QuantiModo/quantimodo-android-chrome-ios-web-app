@@ -98,7 +98,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		showAppropriateHelpInfoCards();
 	}
 	$scope.refreshReminders = function () {
-		$scope.showSyncDisplayText('Syncing...');
+		qmService.showInfoToast('Syncing...');
 		qmService.syncTrackingReminders(true).then(function(){getTrackingReminders();});
 	};
 	var getTrackingReminders = function(){

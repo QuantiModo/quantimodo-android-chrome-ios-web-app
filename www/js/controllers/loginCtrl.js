@@ -249,7 +249,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }
     };
     $scope.facebookLogin = function(){
-        $scope.showSyncDisplayText('Logging you in...');
+        qmService.showInfoToast('Logging you in...');
         console.debug("$scope.facebookLogin about to try $cordovaFacebook.login");
         var seconds  = 30;
         $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
