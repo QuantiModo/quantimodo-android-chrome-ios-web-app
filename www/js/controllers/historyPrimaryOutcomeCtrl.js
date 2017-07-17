@@ -10,14 +10,12 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.refreshMeasurementHistory = function () {
 		$scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
-        $scope.showSyncDisplayText($scope.syncDisplayText);
+        qmService.showInfoToast($scope.syncDisplayText);
         qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-            $scope.hideSyncDisplayText();
             $scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
         });
-		$scope.hideSyncDisplayText();
 	};
 	$scope.$on('$ionicView.beforeEnter', function(){
 		$rootScope.hideNavigationMenu = false;

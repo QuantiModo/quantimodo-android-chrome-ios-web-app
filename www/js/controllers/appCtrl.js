@@ -298,13 +298,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 return;
             }
             message = 'Checking for ' + releaseTrack + ' updates...';
-            $scope.showSyncDisplayText(message);
+            qmService.showInfoToast(message);
             $ionicDeploy.check().then(function(snapshotAvailable) {
                 if (snapshotAvailable) {
                     message = 'Downloading ' + releaseTrack + ' update...';
                     console.debug(message);
                     if($rootScope.isAndroid){
-                        $scope.showSyncDisplayText(message);
+                        qmService.showInfoToast(message);
                     }
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                     // When snapshotAvailable is true, you can apply the snapshot
@@ -312,7 +312,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         message = 'Downloaded new version.  Extracting...';
                         console.debug(message);
                         if($rootScope.isAndroid){
-                            $scope.showSyncDisplayText(message);
+                            qmService.showInfoToast(message);
                         }
                         if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                         $ionicDeploy.extract().then(function() {
@@ -337,15 +337,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 } else {
                     message = 'No updates available';
                     if($rootScope.isAndroid){
-                        $scope.showSyncDisplayText(message);
+                        qmService.showInfoToast(message);
                     }
                     console.debug(message);
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                 }
             });
-            $timeout(function () {
-                $scope.hideSyncDisplayText();
-            }, 60 * 1000);
 
         });
 
@@ -427,21 +424,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(phase === '$apply' || phase === '$digest') {
             if(fn && (typeof(fn) === 'function')) {fn();}
         } else {this.$apply(fn);}
-    };
-    $scope.showSyncDisplayText = function (loadingText) {
-        $rootScope.isSyncing = true;
-        $rootScope.syncDisplayText = loadingText;
-        if(!loadingText){loadingText = '';}
-        $scope.loading = true;
-        var seconds = 30;
-        console.debug('Setting showLoader timeout for ' + seconds + ' seconds.  loadingText is ' + loadingText);
-        $timeout(function () {$scope.hideSyncDisplayText();}, seconds * 1000);
-    };
-    $scope.hideSyncDisplayText = function () {
-        $rootScope.isSyncing = false;
-        $rootScope.syncDisplayText = '';
-        $scope.loading = false;
-        qmService.hideLoader();
     };
     $scope.onTextClick = function ($event) {
         console.debug("Auto selecting text so the user doesn't have to press backspace...");

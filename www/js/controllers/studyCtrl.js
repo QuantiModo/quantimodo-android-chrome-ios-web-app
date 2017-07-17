@@ -197,7 +197,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
                 }
             }
         }).then(function(variable) {
-            $scope.showSyncDisplayText("Re-analyzing data using updated " + qmService.explanations[propertyToUpdate].title);
+            qmService.showInfoToast("Re-analyzing data using updated " + qmService.explanations[propertyToUpdate].title);
             var postData = {variableName: variable.name};
             postData[propertyToUpdate] = variable[propertyToUpdate];
             qmService.postUserVariableDeferred(postData).then(function (response) {
