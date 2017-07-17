@@ -115,6 +115,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         console.debug(message);
     }
+    qmService.logDebug = function(message, stackTrace) {
+        logDebug(message, stackTrace);
+    };
     function logError(message, stackTrace) {
         var name = message;
         message = addStateNameToMessage(message);
