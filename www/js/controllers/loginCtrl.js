@@ -68,10 +68,23 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             }
         }, 40000);
     };
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+    function tryToGetUser() {
+        qmService.refreshUser().then(function () {
+            leaveIfLoggedIn();
+        }, function (error) {
+            leaveIfLoggedIn();
+        });
+    }
+    $scope.$on('$ionicView.beforeEnter', function(e) {
+        console.debug("beforeEnter in state " + $state.current.name);
         leaveIfLoggedIn();
         if(config.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
-        if(qmService.getUrlParameter('loggingIn') || qmService.getAccessTokenFromUrl()){ loginTimeout(); }
+        if(qmService.getUrlParameter('loggingIn') || qmService.getAccessTokenFromUrl()){
+            loginTimeout();
+        } else {
+            console.debug("refreshUser in beforeEnter in state " + $state.current.name + " in case we're on a Chrome extension that we can't redirect to with a token");
+            tryToGetUser();
+        }
     });
     $scope.$on('$ionicView.enter', function(){
         //leaveIfLoggedIn();  // Can't call this again because it will send to default state even if the leaveIfLoggedIn in beforeEnter sent us to another state
