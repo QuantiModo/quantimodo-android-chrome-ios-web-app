@@ -128,7 +128,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             });
         }
     };
-    var connectConnector = function(connector){
+    var connectConnector = function(connector, button){
         if(!userCanConnect()){
             $state.go('app.upgrade');
             return;
@@ -139,6 +139,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         //connector.loadingText = 'Connecting...'; // TODO: Show Connecting... text again once we figure out how to update after connection is completed
         connector.loadingText = null;
         connector.connecting = true;
+        button.text = "Import Scheduled";
         connector.updateStatus = "CONNECTING"; // Need to make error message hidden
         var connectWithToken = function(response) {
             console.debug("Response Object -> " + JSON.stringify(response));
@@ -449,19 +450,19 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             });
         }
     };
-    var disconnectConnector = function (connector){
-        connector.loadingText = 'Disconnected';
+    var disconnectConnector = function (connector, button){
+        connector.loadingText = button.text = 'Disconnected';
         qmService.disconnectConnectorDeferred(connector.name).then(function (){ $scope.refreshConnectors();
         }, function() { console.error("error disconnecting " + connector.name); });
     };
     var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
     $scope.connectorAction = function(connector, button){
         if(button.text.toLowerCase().indexOf('disconnect') !== -1){
-            disconnectConnector(connector);
+            disconnectConnector(connector, button);
         } else if(button.text.toLowerCase().indexOf('connect') !== -1){
-            connectConnector(connector);
+            connectConnector(connector, button);
         } else if(button.text.toLowerCase().indexOf('get it') !== -1){
-            getItHere(connector);
+            getItHere(connector, button);
         }
     };
     $scope.refreshConnectors = function(){
