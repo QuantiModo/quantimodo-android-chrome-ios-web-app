@@ -47,9 +47,8 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
     $scope.favoriteAddButtonClick = function () {$state.go('app.favoriteSearch');};
     $scope.refreshFavorites = function () {
         console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-        $scope.showSyncDisplayText('Syncing...');
+        qmService.showInfoToast('Syncing...');
         qmService.syncTrackingReminders(true).then(function () {
-            $scope.hideSyncDisplayText();
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');

@@ -83,9 +83,8 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     };
     $scope.cancel = function(){ $scope.goBack(); };
     $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
-        $scope.showSyncDisplayText('Deleting measurement...');
+        qmService.showInfoToast('Deleting measurement...');
         qmService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
-            $scope.hideSyncDisplayText();
             $scope.goBack();
         });
     };

@@ -15,10 +15,9 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;
-        $scope.showSyncDisplayText(syncDisplayText);
+        qmService.showInfoToast(syncDisplayText);
         console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
         qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-            $scope.hideSyncDisplayText();
             updateCharts();
             qmService.hideLoader();
         });
@@ -34,9 +33,8 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         qmService.addToMeasurementsQueue(primaryOutcomeMeasurement);
         updateCharts();
         if(!$rootScope.isSyncing && $rootScope.user){
-            $scope.showSyncDisplayText(syncDisplayText);
+            qmService.showInfoToast(syncDisplayText);
             qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                $scope.hideSyncDisplayText();
                 updateCharts();
             });
         }

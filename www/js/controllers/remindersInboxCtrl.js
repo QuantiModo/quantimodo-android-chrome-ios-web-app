@@ -74,14 +74,12 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 					return true;
 				},
 				destructiveButtonClicked: function() {
-					$scope.showSyncDisplayText('Skipping all reminder notifications...');
+					qmService.showInfoToast('Skipping all reminder notifications...');
 					qmService.skipAllTrackingReminderNotificationsDeferred()
 						.then(function(){
-                            $scope.hideSyncDisplayText();
 							if($rootScope.localNotificationsEnabled){qmService.setNotificationBadge(0);}
 							$scope.refreshTrackingReminderNotifications();
 						}, function(error){
-                            $scope.hideSyncDisplayText();
 							if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 							console.error(error);
 							qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
@@ -375,14 +373,12 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				trackingReminderNotification.hide = true;
 				console.debug("Skipping all notifications for trackingReminder", $scope.state.trackingReminderNotification);
 				var params = {trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId};
-				//$scope.showSyncDisplayText('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
+				//qmService.showInfoToast('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
 				qmService.skipAllTrackingReminderNotificationsDeferred(params)
 					.then(function(){
-						//$scope.hideSyncDisplayText();
 						hideInboxLoader();
 						$scope.refreshTrackingReminderNotifications();
 					}, function(error){
-                        //$scope.hideSyncDisplayText();
 						hideInboxLoader();
 						if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
 						console.error(error);
