@@ -1857,7 +1857,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             //if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {connectors[i].hide = true;}
         }
         return connectors;
-    };
+    }
     // Name: The error message associated with the error. Usually this will
     // contain some information about this specific instance of the
     // error and is not used to group the errors (optional, default
