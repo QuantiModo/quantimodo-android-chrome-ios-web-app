@@ -35,6 +35,12 @@ var argv = require('yargs').argv;
 var exec = require('child_process').exec;
 var rp = require('request-promise');
 var templateCache = require('gulp-angular-templatecache');
+var uglify      = require('gulp-uglify');
+var rev = require('gulp-rev');
+var revReplace = require('gulp-rev-replace');
+var useref = require('gulp-useref');
+var filter = require('gulp-filter');
+var csso = require('gulp-csso');
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
@@ -109,7 +115,7 @@ var s3BaseUrl = 'https://quantimodo.s3.amazonaws.com/';
 var majorMinorVersionNumbers = '2.7.';
 var date = new Date();
 var paths = {
-    sass: ['./www/scss/**/*.scss']
+    sass: ['./src/scss/**/*.scss']
 };
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 function getChromeExtensionZipFilename() {return process.env.QUANTIMODO_CLIENT_ID + '-chrome-extension.zip';}
@@ -840,9 +846,9 @@ gulp.task('unzipChromeExtension', function () {
     return unzipFile(getPathToChromeExtensionZip(), getPathToUnzippedChromeExtension());
 });
 gulp.task('sass', function (done) {
-    gulp.src('./www/scss/app.scss')  // Can't use "return" because gulp doesn't know whether to respect that or the "done" callback
+    gulp.src('./src/scss/app.scss')  // Can't use "return" because gulp doesn't know whether to respect that or the "done" callback
         .pipe(sass({errLogToConsole: true}))
-        .pipe(gulp.dest('./www/css/'))
+        .pipe(gulp.dest('./src/css/'))
         .pipe(minifyCss({keepSpecialComments: 0}))
         .pipe(rename({extname: '.min.css'}))
         .pipe(gulp.dest('./www/css/'))
@@ -1173,28 +1179,24 @@ gulp.task('decryptAllPrivateConfigs', [], function () {
         }
     });
 });
-gulp.task('deleteUnusedFiles', function () { //This doesn't seem to make the app any smaller
-    var unusedFiles = [
-        'www/lib/angular-material/angular-material.js',
-        'www/lib/momentjs/min/tests.js',
-        'www/lib/moment/min/tests.js',
-        'www/lib/angular/angular.js',
-        'www/lib/Ionicons/cheatsheet.html',
-        'www/lib/ionic/js/ionic.bundle.js',
-        'www/lib/highstock-release/highstock.src.js',
-        'www/lib/angular-material/angular-material.css',
-        'www/lib/highcharts/highcharts.src.js',
-        'www/lib/angular-material/layouts/angular-material.layout-attributes.css',
-        'www/lib/angular-material/modules/layouts/angular-material.layouts.css',
-        'www/lib/angular-material/modules/closure/core/core.css',
-        'www/lib/angular-material/modules/js/core/core.css',
-        'www/lib/angular-material/layouts/angular-material.layouts.css',
-        'www/lib/ionic/js/ionic.js',
-        'www/lib/ionic/js/ionic-angular.js',
-        'www/lib/d3/d3.js',
-        'www/lib/angular-material/CHANGELOG.md'
-    ];
-    return gulp.src(unusedFiles, {read: false}).pipe(clean());
+gulp.task('index', function() {
+    var jsFilter = filter("**/*.js", { restore: true });
+    var cssFilter = filter("**/*.css", { restore: true });
+    var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
+
+    return gulp.src("src/index.html")
+        .pipe(useref())      // Concatenate with gulp-useref
+        .pipe(jsFilter)
+        .pipe(uglify())             // Minify any javascript sources
+        .pipe(jsFilter.restore)
+        .pipe(cssFilter)
+        .pipe(csso())               // Minify any CSS sources
+        .pipe(cssFilter.restore)
+        .pipe(indexHtmlFilter)
+        .pipe(rev())                // Rename the concatenated files (but not index.html)
+        .pipe(indexHtmlFilter.restore)
+        .pipe(revReplace())         // Substitute in new filenames
+        .pipe(gulp.dest('www'));
 });
 gulp.task('deleteFacebookPlugin', function (callback) {
     logInfo('If this doesn\'t work, just use gulp cleanPlugins');
@@ -1665,6 +1667,9 @@ gulp.task('copyAppResources', ['cleanResources'], function () {
         base: 'apps/' + process.env.QUANTIMODO_CLIENT_ID
     }).pipe(gulp.dest('.'));
 });
+gulp.task('copyIonIconsToWww', [], function () {
+    return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
+});
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
 });
@@ -1780,7 +1785,9 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
 gulp.task('configureApp', [], function (callback) {
     runSequence(
         'setClientId',
+        'copyIonIconsToWww',
         'sass',
+        'index',
         'getCommonVariables',
         'getAppConfigs',
         'downloadIcon',
