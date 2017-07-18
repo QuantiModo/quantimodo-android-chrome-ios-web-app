@@ -1902,6 +1902,16 @@ gulp.task('downloadAllChromeExtensions', function (callback) {
         'downloadChromeExtension',
         callback);
 });
+gulp.task('buildAllAndAndroidApps', function (callback) {
+    runSequence(
+        'cleanBuildFolder',
+        'prepareRepositoryForAndroid',
+        'setMediModoEnvs',
+        'buildAndroidApp',
+        'setQuantiModoEnvs',
+        'buildAndroidApp',
+        callback);
+});
 gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
     runSequence(
         'cleanBuildFolder',
