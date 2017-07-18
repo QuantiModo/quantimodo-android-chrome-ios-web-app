@@ -1668,7 +1668,7 @@ gulp.task('copyAppResources', ['cleanResources'], function () {
     }).pipe(gulp.dest('.'));
 });
 gulp.task('copyIonIconsToWww', [], function () {
-    return copyFiles('src/lib/Ionicons/*', 'www/lib/Ionicons');
+    return copyFiles('src/lib/Ionicons/**/*', 'www/lib/Ionicons');
 });
 gulp.task('copyIconsToWwwImg', [], function () {
     return copyFiles('apps/' + process.env.QUANTIMODO_CLIENT_ID + '/resources/icon*.png', pathToIcons);
