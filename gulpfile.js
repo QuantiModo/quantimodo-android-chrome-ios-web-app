@@ -1584,6 +1584,10 @@ gulp.task('uncommentCordovaJsInIndexHtml', function () {
     return replaceTextInFiles(['www/index.html'], commentedCordovaScript, uncommentedCordovaScript);
 });
 gulp.task('removeCordovaJsFromIndexHtml', function () {
+    if(process.env.BUILD_IOS || process.env.BUILD_ANDROID){
+        console.log("Not removing cordova.js because process.env.BUILD_IOS or process.env.BUILD_ANDROID is true");
+        return;
+    }
     return replaceTextInFiles(['www/index.html'], uncommentedCordovaScript, commentedCordovaScript);
 });
 gulp.task('setVersionNumberInFiles', function () {
@@ -1788,6 +1792,7 @@ gulp.task('configureApp', [], function (callback) {
         'copyIonIconsToWww',
         'sass',
         'index',
+        'removeCordovaJsFromIndexHtml',
         'getCommonVariables',
         'getAppConfigs',
         'downloadIcon',
@@ -1797,22 +1802,9 @@ gulp.task('configureApp', [], function (callback) {
         'setVersionNumberInFiles',
         callback);
 });
-gulp.task('configureWebApp', [], function (callback) {
-    runSequence(
-        'configureApp',
-        'removeCordovaJsFromIndexHtml',
-        callback);
-});
-gulp.task('configureDefaultApp', [], function (callback) {
-    process.env.QUANTIMODO_CLIENT_ID = 'your_quantimodo_client_id_here';
-    runSequence(
-        //'copyAppResources',
-        'getAppConfigs',
-        callback);
-});
 gulp.task('buildChromeExtensionWithoutCleaning', [], function (callback) {
     runSequence(
-        'configureWebApp',
+        'configureApp',
         'resizeIcons',
         'copyIconsToChromeExtension',
         'createChromeExtensionManifest',
