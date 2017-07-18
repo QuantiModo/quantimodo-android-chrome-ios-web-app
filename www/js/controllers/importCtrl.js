@@ -180,6 +180,10 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             webConnect(connector);
             return;
         }
+        if(connector.name === 'netatmo') {
+            webConnect(connector);
+            return;
+        }
         if(connector.name === 'github') {
             if($rootScope.isWeb || $rootScope.isChromeExtension){
                 webConnect(connector);
@@ -451,9 +455,12 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         }
     };
     var disconnectConnector = function (connector, button){
-        connector.loadingText = button.text = 'Disconnected';
-        qmService.disconnectConnectorDeferred(connector.name).then(function (){ $scope.refreshConnectors();
-        }, function() { console.error("error disconnecting " + connector.name); });
+        button.text = 'Disconnected';
+        qmService.disconnectConnectorDeferred(connector.name).then(function (){
+            $scope.refreshConnectors();
+        }, function(error) {
+            console.error("error disconnecting " + error);
+        });
     };
     var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
     $scope.connectorAction = function(connector, button){
