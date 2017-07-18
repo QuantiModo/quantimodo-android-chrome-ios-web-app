@@ -89,3 +89,5 @@ composer.phar
 packages/
 npm-debug.log*
 src/lib/
+www/scripts/
+www/index.html
