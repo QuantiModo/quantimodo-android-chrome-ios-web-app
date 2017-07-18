@@ -314,12 +314,14 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             remindersArray[2] = configureReminderTimeSettings(remindersArray[2], $scope.state.thirdReminderStartTimeEpochTime);
         }
         if($scope.state.trackingReminder.id){qmService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id);}
-        qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', remindersArray).then(function(){
-            var toastMessage = $scope.state.trackingReminder.variableName + ' reminder saved';
-            if($stateParams.favorite){toastMessage = $scope.state.trackingReminder.variableName + ' saved to favorites';}
-            qmService.showInfoToast(toastMessage);
-            qmService.syncTrackingReminders(true);
-            $scope.goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
+        qmService.showBasicLoader();
+        qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', remindersArray).then(function() {
+            qmService.postTrackingRemindersDeferred(remindersArray).then(function () {
+                var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
+                qmService.showInfoToast(toastMessage);
+                qmService.hideLoader();
+                $scope.goBack(); // We can't go back until we get new notifications
+            });
         });
     };
     var setupEditReminder = function(trackingReminder){
