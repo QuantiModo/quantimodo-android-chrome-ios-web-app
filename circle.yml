@@ -96,7 +96,8 @@ deployment:
   staging:
     branch: develop
     commands:
-      - gulp buildAllChromeExtensionsAndAndroidApps # Build Chrome first in case Android upload fails
+      - gulp buildAllChromeExtensions # Build Chrome first in case Android upload fails
+      - gulp buildAllAndroidApps
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
