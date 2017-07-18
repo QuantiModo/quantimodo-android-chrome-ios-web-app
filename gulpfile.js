@@ -180,6 +180,10 @@ function getS3Url(relative_filename) {
     return s3BaseUrl + getS3RelativePath(relative_filename);
 }
 function uploadBuildToS3(filePath) {
+    if(appSettings.apiUrl){
+        logInfo("Not uploading because appSettings.apiUrl is " + appSettings.apiUrl);
+        return;
+    }
     /** @namespace appSettings.appStatus.betaDownloadLinks */
     appSettings.appStatus.betaDownloadLinks[convertFilePathToPropertyName(filePath)] = getS3Url(filePath);
     /** @namespace appSettings.appStatus.buildStatus */
