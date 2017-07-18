@@ -1906,7 +1906,7 @@ gulp.task('downloadAllChromeExtensions', function (callback) {
         'downloadChromeExtension',
         callback);
 });
-gulp.task('buildAlldroidApps', function (callback) {
+gulp.task('buildAllAndroidApps', function (callback) {
     runSequence(
         'cleanBuildFolder',
         'prepareRepositoryForAndroid',
