@@ -2496,6 +2496,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var trackingReminderSyncQueue = qmService.getLocalStorageItemAsObject('trackingReminderSyncQueue');
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
             qmService.postTrackingRemindersDeferred(trackingReminderSyncQueue).then(function (response) {
+                qmService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));
+                putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);
                 deferred.resolve(response);
             }, function(error) { if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error); });
         } else {

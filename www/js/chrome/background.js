@@ -22,6 +22,11 @@ if (!localStorage.introSeen) {
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
 }
+function getRequestIdentificationParameters() {
+    var string =  "appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version);
+    if(appSettings){string +=  "&client_id=" + appSettings.clientId;}
+    return string;
+}
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
@@ -31,7 +36,6 @@ function loadAppSettings() {  // I think adding appSettings to the chrome manife
             var json = xobj.responseText;
             console.log("AppSettings:" + json);
             appSettings = JSON.parse(json);
-            requestIdentificationParameters = "appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version) + "&client_id=" + appSettings.clientId;
         }
     };
     xobj.send(null);
@@ -130,7 +134,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 ***/
 function pushMeasurements(measurements, onDoneListener) {
 	var xhr = new XMLHttpRequest();
-	var url = apiUrl + "/api/v1/measurements?" + requestIdentificationParameters;
+	var url = apiUrl + "/api/v1/measurements?" + getRequestIdentificationParameters();
 	if(localStorage.accessToken){url = url + '?access_token=' + localStorage.accessToken;}
 	xhr.open("POST", url, true);
 	xhr.onreadystatechange = function() {
@@ -159,7 +163,7 @@ function showSignInNotification() {
 }
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
-    var url = apiUrl + ":443/api/v1/trackingReminderNotifications/past?" + requestIdentificationParameters;
+    var url = apiUrl + ":443/api/v1/trackingReminderNotifications/past?" + getRequestIdentificationParameters();
     if (localStorage.accessToken) {
         url = url + '&access_token=' + localStorage.accessToken;
     } else {
