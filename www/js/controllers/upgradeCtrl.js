@@ -1,5 +1,5 @@
-angular.module('starter').controller('UpgradeCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $mdDialog,
-                                                             $rootScope, $stateParams, qmService) {
+angular.module('starter').controller('UpgradeCtrl', function ($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $mdDialog,
+                                                              $rootScope, $stateParams, qmService, $locale) {
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         $rootScope.showFilterBarSearchIcon = false;
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
