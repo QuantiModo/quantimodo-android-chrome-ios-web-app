@@ -28,7 +28,7 @@ dependencies:
     - mkdir node_modules || true # must exist prior to override to cache
     - mkdir platforms || true # must exist prior to override to cache
     - mkdir plugins || true # must exist prior to override to cache
-    - mkdir www/lib || true # must exist prior to override to cache
+    - mkdir src/lib || true # must exist prior to override to cache
     - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
@@ -49,7 +49,7 @@ dependencies:
     - node_modules   # Probably don't want to cache node_modules so we catch problematic dependency changes
     - platforms
     - plugins
-    - www/lib
+    - src/lib
     - /opt/circleci/nodejs/v4.2.6/bin
     - /opt/circleci/nodejs/v4.2.6/lib/node_modules
 
