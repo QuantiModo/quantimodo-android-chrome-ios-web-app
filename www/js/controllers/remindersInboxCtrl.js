@@ -214,7 +214,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         $scope.track(trackingReminderNotification, modifiedReminderValue, ev, true);
         getTrackingReminderNotifications();
     }
-    function preventDragAfterAlert() {
+    function preventDragAfterAlert(ev) {
         ev.preventDefault();
         ev.stopPropagation();
         ev.gesture.stopPropagation();
