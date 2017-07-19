@@ -1826,7 +1826,8 @@ gulp.task('buildChromeExtension', [], function (callback) {
 gulp.task('prepareRepoForChromeExtension', [], function (callback) {
     runSequence(
         'cleanChromeBuildFolder',
-        'copyWwwFolderToChromeExtension',  //Can't use symlinks
+        'configureApp', // Need to run sass and generate index.html
+        'copyWwwFolderToChromeExtension',  // Can't use symlinks on vagrant
         'removeFacebookFromChromeExtension',
         'removeAndroidManifestFromChromeExtension',
         callback);
