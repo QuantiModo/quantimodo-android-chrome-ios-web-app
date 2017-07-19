@@ -1179,11 +1179,10 @@ gulp.task('decryptAllPrivateConfigs', [], function () {
         }
     });
 });
-gulp.task('index', function() {
+gulp.task('index', ['cleanCombinedFiles'], function() {
     var jsFilter = filter("**/*.js", { restore: true });
     var cssFilter = filter("**/*.css", { restore: true });
     var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
-
     return gulp.src("src/index.html")
         .pipe(useref())      // Concatenate with gulp-useref
         .pipe(jsFilter)
@@ -1655,12 +1654,19 @@ gulp.task('cleanPlatformsAndroid', [], function () {
 gulp.task('cleanPlatforms', [], function () {
     return cleanFolder('platforms');
 });
+function cleanFiles(filesArray) {
+    logInfo("Cleaning " + JSON.stringify(filesArray));
+    return gulp.src(filesArray, {read: false}).pipe(clean());
+}
 function cleanFolder(folderPath) {
     logInfo("Cleaning " + folderPath + " folder...");
     return gulp.src(folderPath + '/*', {read: false}).pipe(clean());
 }
 gulp.task('cleanChromeBuildFolder', [], function () {
     return cleanFolder(chromeExtensionBuildPath);
+});
+gulp.task('cleanCombinedFiles', [], function () {
+    return cleanFiles(['www/css/combined*.css', 'www/scripts/combined*.js']);
 });
 gulp.task('cleanBuildFolder', [], function () {
     return cleanFolder(buildPath);
@@ -1752,11 +1758,6 @@ gulp.task('symlinkWwwFolderInChromeExtension', [], function () {
     return gulp.src(['www/**/*'])
         .pipe(gulp.dest(chromeExtensionBuildPath + '/www'));
 });
-gulp.task('removeFacebookFromChromeExtension', [], function () {
-    return gulp.src(chromeExtensionBuildPath + '/www/lib/phonegap-facebook-plugin/*',
-        {read: false})
-        .pipe(clean());
-});
 gulp.task('removeAndroidManifestFromChromeExtension', [], function () {
     return gulp.src(chromeExtensionBuildPath + '/www/manifest.json',
         {read: false})
@@ -1796,46 +1797,25 @@ gulp.task('configureApp', [], function (callback) {
         'getCommonVariables',
         'getAppConfigs',
         'downloadIcon',
+        'resizeIcons',
         'downloadSplashScreen',
         'verifyExistenceOfDefaultConfig',
         'copyIconsToWwwImg',
         'setVersionNumberInFiles',
         callback);
 });
-gulp.task('buildChromeExtensionWithoutCleaning', [], function (callback) {
+gulp.task('buildChromeExtension', [], function (callback) {
     runSequence(
-        'configureApp',
-        'resizeIcons',
-        'copyIconsToChromeExtension',
+        'cleanChromeBuildFolder',
+        'configureApp', // Need to run sass and generate index.html
+        'copyWwwFolderToChromeExtension',  // Can't use symlinks on vagrant
         'createChromeExtensionManifest',
-        'removeFacebookFromChromeExtension',
         'removeAndroidManifestFromChromeExtension',
         'zipChromeExtension',
         'unzipChromeExtension',
         'validateChromeManifest',
         'upload-chrome-extension-to-s3',
         'post-app-status',
-        callback);
-});
-gulp.task('buildChromeExtension', [], function (callback) {
-    runSequence(
-        'prepareRepoForChromeExtension',
-        'buildChromeExtensionWithoutCleaning',
-        callback);
-});
-gulp.task('prepareRepoForChromeExtension', [], function (callback) {
-    runSequence(
-        'cleanChromeBuildFolder',
-        'configureApp', // Need to run sass and generate index.html
-        'copyWwwFolderToChromeExtension',  // Can't use symlinks on vagrant
-        'removeFacebookFromChromeExtension',
-        'removeAndroidManifestFromChromeExtension',
-        callback);
-});
-gulp.task('prepareQuantiModoChromeExtension', function (callback) {
-    runSequence(
-        'setQuantiModoEnvs',
-        'buildChromeExtension',
         callback);
 });
 gulp.task('prepareMoodiModoIos', function (callback) {
@@ -1885,14 +1865,12 @@ gulp.task('buildMediModoAndroid', function (callback) {
 });
 gulp.task('buildAllChromeExtensions', function (callback) {
     runSequence(
-        'cleanBuildFolder',
-        'prepareRepoForChromeExtension',
         'setMediModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
+        'buildChromeExtension',
         'setMoodiModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
+        'buildChromeExtension',
         'setQuantiModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
+        'buildChromeExtension',
         callback);
 });
 gulp.task('downloadAllChromeExtensions', function (callback) {
@@ -1920,15 +1898,14 @@ gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
     runSequence(
         'cleanBuildFolder',
         'prepareRepositoryForAndroid',
-        'prepareRepoForChromeExtension',
         'setMediModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
+        'buildChromeExtension',
         'buildAndroidApp',
         'setMoodiModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
+        'buildChromeExtension',
         //'buildAndroidApp',
         'setQuantiModoEnvs',
-        'buildChromeExtensionWithoutCleaning',
+        'buildChromeExtension',
         'buildAndroidApp',
         callback);
 });
