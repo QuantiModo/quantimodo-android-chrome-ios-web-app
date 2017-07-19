@@ -1129,11 +1129,6 @@ gulp.task('deleteIOSApp', function () {
     });
     return deferred.promise;
 });
-gulp.task('encryptWwwManifestJson', [], function (callback) {
-    var fileToEncryptPath = 'www/manifest.json';
-    var encryptedFilePath = 'www/manifest.json.enc';
-    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
-});
 gulp.task('encryptAndroidKeystore', [], function (callback) {
     var fileToEncryptPath = 'quantimodo.keystore';
     var encryptedFilePath = 'quantimodo.keystore.enc';
@@ -1148,11 +1143,6 @@ gulp.task('encryptAndroidDebugKeystore', [], function (callback) {
 gulp.task('decryptAndroidKeystore', [], function (callback) {
     var fileToDecryptPath = 'quantimodo.keystore.enc';
     var decryptedFilePath = 'quantimodo.keystore';
-    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
-});
-gulp.task('decryptWwwManifestJson', [], function (callback) {
-    var decryptedFilePath = 'www/manifest.json';
-    var fileToDecryptPath = 'www/manifest.json.enc';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 gulp.task('decryptAndroidDebugKeystore', [], function (callback) {
@@ -2036,7 +2026,7 @@ gulp.task('prepareAndroidApp', function (callback) {
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
-        'decryptWwwManifestJson',
+        'generatePlayPublicLicenseKeyManifestJson',
         'decryptAndroidKeystore',
         'downloadAndroidReleaseKeystore',
         'generateAndroidResources',
