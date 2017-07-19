@@ -222,7 +222,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         ev.gesture.stopDetect();
     }
     $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
-        preventDragAfterAlert();
+        preventDragAfterAlert(ev);
         var title = "Record " + qmService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
         var textContent = "Do you want to record " + qmService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
 			" for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
