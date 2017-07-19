@@ -69,9 +69,13 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }, 40000);
     };
     function tryToGetUser() {
+        if($rootScope.isChromeExtension){qmService.showBasicLoader();} // Chrome needs to do this because we can't redirect with access token
         qmService.refreshUser().then(function () {
+            qmService.hideLoader();
             leaveIfLoggedIn();
         }, function (error) {
+            qmService.showMaterialAlert(error);
+            qmService.hideLoader();
             leaveIfLoggedIn();
         });
     }
