@@ -214,7 +214,15 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         $scope.track(trackingReminderNotification, modifiedReminderValue, ev, true);
         getTrackingReminderNotifications();
     }
+    function preventDragAfterAlert(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.gesture.stopPropagation();
+        ev.gesture.preventDefault();
+        ev.gesture.stopDetect();
+    }
     $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){
+        preventDragAfterAlert(ev);
         var title = "Record " + qmService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) + " for all?";
         var textContent = "Do you want to record " + qmService.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
 			" for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";

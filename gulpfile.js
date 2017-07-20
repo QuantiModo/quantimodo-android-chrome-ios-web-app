@@ -447,9 +447,14 @@ function getRequestOptions(path) {
     }
     return options;
 }
-function getAppEditUrl() {return getAppsListUrl() + '/' + appSettings.clientId + '/edit';}
+function getAppEditUrl() {
+    return getAppsListUrl() + '/' + appSettings.clientId + '/edit';
+}
 function getAppsListUrl() {
     return appHostName + '/api/v2/apps';
+}
+function getAppDesignerUrl() {
+    return appHostName + 'ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + appSettings.clientId;
 }
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
@@ -675,12 +680,17 @@ gulp.task('createChromeExtensionManifest', function () {
     chromeExtensionManifest = JSON.stringify(chromeExtensionManifest, null, 2);
     var chromeManifestPath = chromeExtensionBuildPath + '/manifest.json';
     logInfo("Creating chrome manifest at " + chromeManifestPath);
-    fs.writeFileSync(chromeManifestPath, chromeExtensionManifest);
+    writeToFile(chromeManifestPath, chromeExtensionManifest);
 });
+function writeToFile(filePath, stringContents) {
+    logDebug("Writing to " + filePath);
+    if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
+    return fs.writeFileSync(filePath, stringContents);
+}
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
-    fs.writeFileSync(devCredentialsPath, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
+    writeToFile(devCredentialsPath, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
     return makeApiRequest(options);
 });
 function downloadFile(url, filename, destinationFolder) {
@@ -703,6 +713,17 @@ gulp.task('downloadIcon', [], function(){
     /** @namespace appSettings.additionalSettings.appImages */
     var iconUrl = (appSettings.additionalSettings.appImages.appIcon) ? appSettings.additionalSettings.appImages.appIcon : appSettings.iconUrl;
     return downloadFile(iconUrl, 'icon.png', "./resources");
+});
+gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], function(){
+    if(!appSettings.additionalSettings.buildSettings.playPublicLicenseKey){
+        logError("No public licence key for Play Store subscriptions.  Please add it at  " + getAppDesignerUrl(), appSettings.additionalSettings);
+        return;
+    }
+    var manifestJson = {
+        'play_store_key': appSettings.additionalSettings.buildSettings.playPublicLicenseKey
+    };
+    /** @namespace appSettings.additionalSettings.buildSettings.playPublicLicenseKey */
+    return writeToFile('./www/manifest.json', manifestJson);
 });
 gulp.task('downloadSplashScreen', [], function(){
     /** @namespace appSettings.additionalSettings.appImages.splashScreen */
@@ -733,38 +754,39 @@ gulp.task('getAppConfigs', [], function () {
         /** @namespace response.privateConfig */
         if(response.privateConfig){
             privateConfig = response.privateConfig;
-            fs.writeFileSync(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+            writeToFile(defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
             try {
-                fs.writeFileSync(chromeExtensionBuildPath + '/' + defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
+                writeToFile(chromeExtensionBuildPath + '/' + defaultPrivateConfigPath, prettyJSONStringify(privateConfig));
             } catch (err){
                 logDebug(err);
             }
         }
-        fs.writeFileSync(defaultAppConfigPath, prettyJSONStringify(appSettings));
+        writeToFile(defaultAppConfigPath, prettyJSONStringify(appSettings));
         try {
-            fs.writeFileSync(chromeExtensionBuildPath + '/' + defaultAppConfigPath, prettyJSONStringify(appSettings));
+            writeToFile(chromeExtensionBuildPath + '/' + defaultAppConfigPath, prettyJSONStringify(appSettings));
         } catch (err){
             logDebug(err);
         }
         logDebug("Writing to " + defaultAppConfigPath + ": " + prettyJSONStringify(appSettings));
-        fs.writeFileSync(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
+        writeToFile(appConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + ".config.json", prettyJSONStringify(appSettings));
         /** @namespace response.allConfigs */
         if(response.allConfigs){
             for (var i = 0; i < response.allConfigs.length; i++) {
-                fs.writeFileSync(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
+                writeToFile(appConfigDirectoryPath + response.allConfigs[i].clientId + ".config.json", prettyJSONStringify(response.allConfigs[i]));
             }
         }
     }
     return makeApiRequest(options, successHandler);
 });
-gulp.task('getAndroidReleaseKeystore', ['getAppConfigs'], function () {
+gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
     /** @namespace appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile */
     if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
-        throw "Please upload your Android release keystore at " + getAppEditUrl();
+        logError( "No Android Keystore provided.  Using QuantiModo one.  If you have your own, please upload it at " + getAppDesignerUrl());
+        return;
     }
-    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "release.keystore");
+    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
 });
-gulp.task('getAndroidDebugKeystore', ['getAppConfigs'], function () {
+gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
     if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
         throw "Please upload your Android release keystore at " + getAppEditUrl();
     }
@@ -1107,11 +1129,6 @@ gulp.task('deleteIOSApp', function () {
     });
     return deferred.promise;
 });
-gulp.task('encryptWwwManifestJson', [], function (callback) {
-    var fileToEncryptPath = 'www/manifest.json';
-    var encryptedFilePath = 'www/manifest.json.enc';
-    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
-});
 gulp.task('encryptAndroidKeystore', [], function (callback) {
     var fileToEncryptPath = 'quantimodo.keystore';
     var encryptedFilePath = 'quantimodo.keystore.enc';
@@ -1126,11 +1143,6 @@ gulp.task('encryptAndroidDebugKeystore', [], function (callback) {
 gulp.task('decryptAndroidKeystore', [], function (callback) {
     var fileToDecryptPath = 'quantimodo.keystore.enc';
     var decryptedFilePath = 'quantimodo.keystore';
-    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
-});
-gulp.task('decryptWwwManifestJson', [], function (callback) {
-    var decryptedFilePath = 'www/manifest.json';
-    var fileToDecryptPath = 'www/manifest.json.enc';
     decryptFile(fileToDecryptPath, decryptedFilePath, callback);
 });
 gulp.task('decryptAndroidDebugKeystore', [], function (callback) {
@@ -2014,8 +2026,9 @@ gulp.task('prepareAndroidApp', function (callback) {
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
-        'decryptWwwManifestJson',
+        'generatePlayPublicLicenseKeyManifestJson',
         'decryptAndroidKeystore',
+        'downloadAndroidReleaseKeystore',
         'generateAndroidResources',
         'copyAndroidResources',
         'copyIconsToWwwImg',

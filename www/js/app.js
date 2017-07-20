@@ -1126,7 +1126,7 @@ angular.module('starter',
             url: "/configuration",
             views: {
                 'menuContent': {
-                    templateUrl: "../../app-configuration/configuration.html",
+                    templateUrl: "../../app-configuration/templates/configuration.html",
                     controller: 'ConfigurationCtrl'
                 }
             }
