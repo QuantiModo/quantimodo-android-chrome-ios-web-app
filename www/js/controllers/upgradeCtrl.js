@@ -116,7 +116,7 @@ angular.module('starter').controller('UpgradeCtrl', function ($scope, $state, $i
     }
     var mobileUpgrade = function (ev) {
         if (!window.inAppPurchase && !mobilePurchaseDebug) {
-            console.error('inAppPurchase not available');
+            qmService.logError('inAppPurchase not available');
             webUpgrade(ev);
             return;
         }

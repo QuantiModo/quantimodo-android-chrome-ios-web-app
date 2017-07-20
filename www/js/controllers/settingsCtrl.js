@@ -51,38 +51,9 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 		} else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
-	function addAppInformationToTemplate(template){
-		if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer') + '\r\n' + '\r\n';}
-		if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync') + '\r\n' + '\r\n';}
-		template = template + "QuantiModo Client ID: " + qmService.getClientId() + '\r\n';
-		template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
-		template = template + "App Name: " + config.appSettings.appDisplayName + '\r\n';
-        template = template + "User ID: " + $rootScope.user.id + '\r\n';
-        template = template + "User Email: " + $rootScope.user.email + '\r\n';
-		return template;
-	}
+
 	$scope.sendBugReport = function() {
-		qmService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server
-		var subjectLine = encodeURIComponent( config.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
-		var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
-			"Additional Information: " + '\r\n';
-		template = addAppInformationToTemplate(template);
-		if(typeof $ionicDeploy !== "undefined"){
-			$ionicPlatform.ready(function () {
-				var snapshotList;
-				$ionicDeploy.getSnapshots().then(function (snapshots) {
-					for (var i = 0; i < snapshots.length; i++) {
-						snapshotList = snapshotList + '\r\n' + snapshots[i];
-					}
-					template = template + '\r\n' + "Snapshots: " + snapshotList;
-				});
-			});
-		}
-		var emailBody = encodeURIComponent(template);
-		var emailAddress = 'mike@quantimo.do';
-		var fallbackUrl = 'http://help.quantimo.do';
-		if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
-		} else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
+		qmService.sendBugReport();
 	};
 	$scope.contactUs = function() {
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
