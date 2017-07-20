@@ -454,7 +454,7 @@ function getAppsListUrl() {
     return appHostName + '/api/v2/apps';
 }
 function getAppDesignerUrl() {
-    return appHostName + 'ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + appSettings.clientId;
+    return appHostName + '/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + appSettings.clientId;
 }
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
