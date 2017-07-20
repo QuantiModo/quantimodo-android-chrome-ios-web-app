@@ -118,7 +118,22 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.logDebug = function(message, stackTrace) {
         logDebug(message, stackTrace);
     };
-    function logError(message, stackTrace) {
+
+    function logError(message, stackTrace, additionalMetaData) {
+        function getTestUrl() {
+            function getCurrentRoute() {
+                var parts = window.location.href.split("#/app");
+                return parts[1];
+            }
+            return "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute() + "?userEmail=" + encodeURIComponent($rootScope.user.email);
+        }
+        function getInstalledPluginList(){
+            return {
+                "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
+                "PushNotification": (typeof PushNotification !== "undefined"),
+                "SplashScreen": (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined")
+            };
+        }
         var name = message;
         message = addStateNameToMessage(message);
         if(!stackTrace){stackTrace = getStackTrace();}
@@ -126,9 +141,22 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             message = addStackTraceToMessage(message, stackTrace);
             alert(message);
         }
-        Bugsnag.notify(name, message, {groupingHash: name, stackTrace: stackTrace}, "error");
+        var metaData = {groupingHash: name, stackTrace: stackTrace};
+        metaData.push_data = {
+            "deviceTokenOnServer": localStorage.getItem('deviceTokenOnServer'),
+            "deviceTokenToSync": localStorage.getItem('deviceTokenToSync')
+        };
+        metaData.test_url = getTestUrl();
+        //metaData.appSettings = config.appSettings;  // Request Entity Too Large
+        if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
+        //if($rootScope.user){metaData.user = $rootScope.user;} // Request Entity Too Large
+        metaData.installed_plugins = getInstalledPluginList();
+        Bugsnag.notify(name, message, metaData, "error");
         console.error(message);
     }
+    qmService.logError = function(message, stackTrace, additionalMetaData){
+        logError(message, stackTrace, additionalMetaData);
+    };
     qmService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
         array = addColors(array);
@@ -7035,5 +7063,47 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(menu.custom){menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);}
         return menu;
     }
+
+    qmService.sendBugReport = function() {
+        qmService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server
+        function addAppInformationToTemplate(template){
+            function addSnapShotList(template) {
+                if(typeof $ionicDeploy !== "undefined"){
+                    $ionicPlatform.ready(function () {
+                        var snapshotList;
+                        $ionicDeploy.getSnapshots().then(function (snapshots) {
+                            for (var i = 0; i < snapshots.length; i++) {
+                                snapshotList = snapshotList + '\r\n' + snapshots[i];
+                            }
+                            template = template + '\r\n' + "Snapshots: " + snapshotList;
+                        });
+                    });
+                }
+                return template;
+            }
+            if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer') + '\r\n' + '\r\n';}
+            if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync') + '\r\n' + '\r\n';}
+            template = template + "QuantiModo Client ID: " + qmService.getClientId() + '\r\n';
+            template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
+            template = template + "User ID: " + $rootScope.user.id + '\r\n';
+            template = template + "User Email: " + $rootScope.user.email + '\r\n';
+            //template = template + "App Settings: " + prettyJsonStringify(config.appSettings) + '\r\n';
+            template = template + "inAppPurchase installed: " + (typeof window.inAppPurchase !== "undefined") + '\r\n';
+            template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
+            template = template + "Splashscreen plugin installed: " + (navigator && navigator.splashscreen) + '\r\n';
+            template = addSnapShotList(template);
+            qmService.logError("Bug Report");
+            return template;
+        }
+        var subjectLine = encodeURIComponent( config.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
+        var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
+            "Additional Information: " + '\r\n';
+        template = addAppInformationToTemplate(template);
+        var emailBody = encodeURIComponent(template);
+        var emailAddress = 'mike@quantimo.do';
+        var fallbackUrl = 'http://help.quantimo.do';
+        if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+        } else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
+    };
     return qmService;
 });
