@@ -6996,20 +6996,27 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
         function convertStateNameAndParamsToHrefInAllMenuItems(menu){
             function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){
-                if(!menuItem.stateName){return menuItem;}
-                for(var i = 0; i++; i < allStates.length){
+                if(!menuItem.stateName){
+                    console.debug("No stateName on menu item", menuItem);
+                    return menuItem;
+                }
+                if(menuItem.subMenu && menuItem.subMenu.length){
+                    console.debug("menuItem is a parent", menuItem);
+                    return menuItem;
+                }
+                for(var i = 0; i < allStates.length; i++){
                     if(menuItem.stateName === allStates[i].name){
                         menuItem.href = "#/app" + allStates[i].url;
                         if(menuItem.href.indexOf(":") !== -1){
                             var pieces = menuItem.href.split(":");
                             var paramName = pieces[pieces.length-1];
-                            if(menuItem.stateParams.paramName){
-                                menuItem.href = menuItem.href.replace(":" + paramName, menuItem.stateParams.paramName)
+                            if(menuItem.params && menuItem.params[paramName]){
+                                menuItem.href = menuItem.href.replace(":" + paramName, menuItem.params[paramName]);
                             } else {
                                 menuItem.href = menuItem.href.replace(":" + paramName, "Anything");
                             }
-                            return menuItem;
                         }
+                        return menuItem;
                     }
                 }
             }
