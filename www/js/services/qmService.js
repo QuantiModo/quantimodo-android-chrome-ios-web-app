@@ -125,7 +125,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 var parts = window.location.href.split("#/app");
                 return parts[1];
             }
-            return "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute() + "?userEmail=" + encodeURIComponent($rootScope.user.email);
+            var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
+            if($rootScope.user){url +=  "?userEmail=" + encodeURIComponent($rootScope.user.email);}
+            return url;
         }
         function getInstalledPluginList(){
             return {
