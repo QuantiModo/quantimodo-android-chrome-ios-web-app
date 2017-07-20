@@ -136,8 +136,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		reminder.hide = true;
 		qmService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId).then(function(){getTrackingReminders();});
 		qmService.deleteTrackingReminderDeferred(reminder).then(function(){console.debug("Reminder deleted");}, function(error){
-			if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-			console.error('Failed to Delete Reminder!');
+			qmService.logError('Failed to Delete Reminder: ' + error);
 		});
 	};
 	$scope.showActionSheet = function(trackingReminder) {

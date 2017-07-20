@@ -210,7 +210,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     };
     var validationFailure = function (message) {
         qmService.showMaterialAlert('Whoops!', message);
-        console.error(message);
+        qmService.logError(message);
         if (typeof Bugsnag !== "undefined") {Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");}
     };
     var validReminderSettings = function(){
@@ -409,7 +409,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
                 }, function () {
                     qmService.hideLoader();
                     $scope.loading = false;
-                    console.error('ERROR: failed to get variable with id ' + variableId);
+                    qmService.logError('ERROR: failed to get variable with id ' + variableId);
                 });
         }
     }
@@ -427,7 +427,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             }, function () {
                 qmService.hideLoader();
                 $scope.loading = false;
-                console.error('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
+                qmService.logError('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
             });
     }
     var setTitle = function(){
@@ -442,7 +442,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     };
     $scope.deleteReminder = function(){
         qmService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id).then(function(){$scope.goBack();});
-        qmService.deleteTrackingReminderDeferred($scope.state.trackingReminder).then(function(){}, function(error){console.error(error);});
+        qmService.deleteTrackingReminderDeferred($scope.state.trackingReminder).then(function(){}, function(error){qmService.logError(error);});
     };
     function setHideDefaultValueField(){
         if(!$scope.state.trackingReminder.variableName){return;}

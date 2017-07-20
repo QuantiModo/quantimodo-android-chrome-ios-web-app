@@ -80,7 +80,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 $scope.searching = false;
-                console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
+                qmService.logError('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
     }
     $scope.loadMore = function () {

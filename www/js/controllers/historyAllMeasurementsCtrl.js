@@ -58,7 +58,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			if(!$rootScope.variableObject){
 				qmService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {
 					$rootScope.variableObject = variables[0];
-				}, function (error) {console.error(error);});
+				}, function (error) {qmService.logError(error);});
 			}
 		}
         //qmService.showBlackRingLoader();  //Let's not lock the user during history loading.  We have a card to tell them that it's loading
@@ -70,7 +70,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		}, function(error){
 			$scope.state.noHistory = true;
 			Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-			console.error('error getting measurements' + JSON.stringify(error));
+			qmService.logError('error getting measurements' + JSON.stringify(error));
             hideLoader();
 		});
 	};

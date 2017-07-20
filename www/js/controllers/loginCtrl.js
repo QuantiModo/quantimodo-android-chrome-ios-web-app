@@ -48,7 +48,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         //     qmService.refreshUser().then(function () {
         //         //qmService.hideLoader();  // Causes loader to hide while still refreshing inbox
         //     }, function (error) {
-        //         console.error(error);
+        //         qmService.logError(error);
         //         qmService.hideLoader();
         //     });
         // }

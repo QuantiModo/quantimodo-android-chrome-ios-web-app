@@ -99,9 +99,9 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             } else {
                 var error = "Wiki not found for " + causeSearchTerm;
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
-                console.error(error);
+                qmService.logError(error);
             }
-        }).catch(function (error) { console.error(error); });
+        }).catch(function (error) { qmService.logError(error); });
         /** @namespace $rootScope.correlationObject.effectVariableCommonAlias */
         var effectSearchTerm = $rootScope.correlationObject.effectVariableCommonAlias;
         if(!effectSearchTerm){ effectSearchTerm = $scope.state.requestParams.effectVariableName; }
@@ -118,9 +118,9 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             } else {
                 var error = "Wiki not found for " + effectSearchTerm;
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
-                console.error(error);
+                qmService.logError(error);
             }
-        }).catch(function (error) { console.error(error); });
+        }).catch(function (error) { qmService.logError(error); });
     }
     $scope.weightedPeriod = 5;
     function createUserCharts() {
@@ -139,7 +139,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
     }
     function getStudy() {
         if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
-            console.error('Cannot get study. Missing cause or effect variable name.');
+            qmService.logError('Cannot get study. Missing cause or effect variable name.');
             $state.go(config.appSettings.appDesign.defaultState);
             return;
         }
@@ -150,7 +150,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             $rootScope.correlationObject = study;
             createUserCharts();
         }, function (error) {
-            console.error(error);
+            qmService.logError(error);
             qmService.hideLoader();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;

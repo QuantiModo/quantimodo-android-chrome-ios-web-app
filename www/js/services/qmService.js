@@ -39,7 +39,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function addVariableCategoryInfo(array){
         angular.forEach(array, function(value, key) {
-            if(!value){console.error("no value for key " + key + " in array " + JSON.stringify(array));}
+            if(!value){logError("no value for key " + key + " in array " + JSON.stringify(array));}
             if(value && value.variableCategoryName && qmService.variableCategories[value.variableCategoryName]){
                 value.iconClass = 'icon positive ' + qmService.variableCategories[value.variableCategoryName].ionIcon;
                 value.ionIcon = qmService.variableCategories[value.variableCategoryName].ionIcon;
@@ -55,7 +55,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function addColors(array){
         angular.forEach(array, function(value, key) {
-            if(!value){console.error("no value for key " + key + " in array " + JSON.stringify(array));}
+            if(!value){logError("no value for key " + key + " in array " + JSON.stringify(array));}
             if(value && value.color && qmService.colors[value.color]){value.color = qmService.colors[value.color];}
         });
         return array;
@@ -69,7 +69,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function addVariableCategoryStateParam(object){
         if(typeof object !== "object"){
-            console.error("not an object", object);
+            logError("not an object", object);
             return object;
         }
         for (var prop in object) {
@@ -77,7 +77,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(!object.hasOwnProperty(prop)) continue;
             if(object[prop].stateParameters){
                 if(object[prop].stateParameters.constructor === Array){
-                    console.error('stateParams should be an object!');
+                    logError('stateParams should be an object!');
                     object[prop].stateParameters = toObject(object[prop].stateParameters);
                 }
                 if(!object[prop].stateParameters.variableCategoryName){
@@ -89,7 +89,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function removeDeprecatedProperties(object) {
         if(typeof object !== "object"){
-            console.error("not an object", object);
+            logError("not an object", object);
             return object;
         }
         var deprecatedProperties = ['newIntroType'];
@@ -152,7 +152,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //if($rootScope.user){metaData.user = $rootScope.user;} // Request Entity Too Large
         metaData.installed_plugins = getInstalledPluginList();
         Bugsnag.notify(name, message, metaData, "error");
-        console.error(message);
+        logError(message);
     }
     qmService.logError = function(message, stackTrace, additionalMetaData){
         logError(message, stackTrace, additionalMetaData);
@@ -265,7 +265,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }, requestSpecificErrorHandler);
     };
     function generalApiErrorHandler(data, status, headers, request, options){
-        console.error("error response from " + request.url);
+        logError("error response from " + request.url);
         if(status === 302){
             logDebug('Got 302 response from ' + JSON.stringify(request), options.stackTrace);
             return;
@@ -292,7 +292,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, currentUrl: window.location.href,
             requestParams: getAllQueryParamsFromUrlString(request.url)};
         var severity = 'error';
-        console.error(message);
+        logError(message);
         if(status > -1 || !isTestUser()){
             if(!envIsDevelopment()){Bugsnag.notify(name, message, metaData, severity);}
         }
@@ -300,7 +300,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var doNotShowOfflineError = false;
             if(options && options.doNotShowOfflineError){doNotShowOfflineError = true;}
             if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
-                console.error("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
+                logError("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
                 $rootScope.offlineConnectionErrorShowing = true;
                 if($rootScope.isIOS){
                     $ionicPopup.show({
@@ -322,13 +322,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             Bugsnag.notify(metaData.groupingHash, status + " response from " + request.url + '. DATA: ' + JSON.stringify(data), metaData, "error");
         }
-        console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data));
-        if(data.success){console.error('Called error handler even though we have data.success');}
+        logError(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data));
+        if(data.success){logError('Called error handler even though we have data.success');}
     }
     // Handler when request is failed
     var onRequestFailed = function(error){
-        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-        console.error("Request error : " + error);
+        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
+        logError("Request error : " + error);
     };
     var canWeMakeRequestYet = function(type, route, options){
         var blockRequests = false;
@@ -340,7 +340,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var message = name + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds. stackTrace: ' + options.stackTrace;
             var metaData = {type: type, route: route, groupingHash: name, state: $state.current, stackTrace: options.stackTrace};
             if(options){metaData.options = options;}
-            console.error(message);
+            logError(message);
             if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
             if(blockRequests){return false;}
         }
@@ -679,7 +679,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     // delete tracking reminder
     qmService.deleteTrackingReminder = function(reminderId, successHandler, errorHandler){
         if(!reminderId){
-            console.error('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
+            logError('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
             return;
         }
         qmService.post('api/v1/trackingReminders/delete',
@@ -829,7 +829,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             $rootScope.accessToken = accessToken;
             localStorage.setItem('accessToken', accessToken);
         } else {
-            console.error('No access token provided to qmService.saveAccessTokenInLocalStorage');
+            logError('No access token provided to qmService.saveAccessTokenInLocalStorage');
             return;
         }
         var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
@@ -855,14 +855,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             localStorage.expiresAtMilliseconds = expiresAtMilliseconds - bufferInMilliseconds;
             return accessToken;
         } else {
-            console.error('No expiresAtMilliseconds!');
+            logError('No expiresAtMilliseconds!');
             Bugsnag.notify('No expiresAtMilliseconds!',
                 'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qmService.getLocalStorageItemAsString('user'),
                 {groupingHash: 'No expiresAtMilliseconds!'},
                 "error");
         }
         var groupingHash = 'Access token expiresAt not provided in recognizable form!';
-        console.error(groupingHash);
+        logError(groupingHash);
         Bugsnag.notify(groupingHash,
             'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + qmService.getLocalStorageItemAsString('user'),
             {groupingHash: groupingHash},
@@ -952,7 +952,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.post(path, [], body, function (response) {
             deferred.resolve(response);
         }, function (error) {
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -982,7 +982,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 deferred.resolve(response.data.data);
             } else {deferred.reject(response);}
         }, function (error) {
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -1021,7 +1021,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 Analytics.configuration.accounts[0].tracker = config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps;
             }
         } else {
-            console.error("No config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps!");
+            logError("No config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps!");
         }
         Analytics.registerScriptTags();
         Analytics.registerTrackers();
@@ -1198,7 +1198,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.refreshUser().then(function(user){
                     logDebug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
                 }, function(error){
-                    console.error('qmService.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
+                    logError('qmService.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
                 });
             }
             deferred.resolve(response);
@@ -1286,7 +1286,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.resolve(study);
         }, function (error) {
             deferred.reject(error);
-            console.error(error);
+            logError(error);
         });
         return deferred.promise;
     };
@@ -1317,7 +1317,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
         if(getUnixTimestampInSeconds() - localStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
             var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
-            console.error(errorMessage);
+            logError(errorMessage);
             return false;
         }
         localStorage.setItem(localStorageItemName, getUnixTimestampInSeconds());
@@ -1328,7 +1328,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var errorMessage;
         if(!weHaveUserOrAccessToken()){
             errorMessage = 'Cannot sync because we do not have a user or access token in url';
-            console.error(errorMessage);
+            logError(errorMessage);
             deferred.reject(errorMessage);
             return deferred.promise;
         }
@@ -1360,7 +1360,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var errorName = 'startTimeEpoch is earlier than last year';
             var errorMessage = startTimeEpoch + ' ' + errorName;
             Bugsnag.notify(errorName, errorMessage, {startTimeEpoch :startTimeEpoch}, "error");
-            console.error(errorMessage);
+            logError(errorMessage);
         }
         return startTimeEpoch;
     }
@@ -1368,7 +1368,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var defer = $q.defer();
         if(!weHaveUserOrAccessToken()){
             var errorMessage = 'Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user or access token in url';
-            console.error(errorMessage);
+            logError(errorMessage);
             defer.reject(errorMessage);
             return defer.promise;
         }
@@ -1787,7 +1787,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     // if a string starts with substring
     qmService.startsWith = function (fullString, search) {
         if(!fullString){
-            console.error('fullString not provided to qmService.startsWith');
+            logError('fullString not provided to qmService.startsWith');
             return false;
         }
         return fullString.slice(0, search.length) === search;
@@ -1901,12 +1901,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var deferred = $q.defer();
         if(!severity){ severity = "error"; }
         if(!message){ message = name; }
-        console.error('NAME: ' + name + '. MESSAGE: ' + message + '. METADATA: ' + JSON.stringify(metaData));
+        logError('NAME: ' + name + '. MESSAGE: ' + message + '. METADATA: ' + JSON.stringify(metaData));
         qmService.setupBugsnag().then(function () {
             Bugsnag.notify(name, message, metaData, severity);
             deferred.resolve();
         }, function (error) {
-            console.error(error);
+            logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -1919,21 +1919,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             stringifiedExceptionOrError = JSON.stringify(exceptionOrError);
             if(typeof exceptionOrError.stack !== 'undefined'){stacktrace = exceptionOrError.stack.toLocaleString();} else {stacktrace = stringifiedExceptionOrError;}
         }
-        console.error('ERROR: ' + stringifiedExceptionOrError);
+        logError('ERROR: ' + stringifiedExceptionOrError);
         qmService.setupBugsnag().then(function () {
             Bugsnag.notify(stringifiedExceptionOrError, stacktrace, {groupingHash: stringifiedExceptionOrError}, "error");
             deferred.resolve();
         }, function (error) {
-            console.error(error);
+            logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
     };
     qmService.reportException = function(exception, name, metaData){
-        console.error('ERROR: ' + exception.message);
+        logError('ERROR: ' + exception.message);
         qmService.setupBugsnag().then(function () {
             Bugsnag.notifyException(exception, name, metaData);
-        }, function (error) {console.error(error);});
+        }, function (error) {logError(error);});
     };
     qmService.setupBugsnag = function(){
         var deferred = $q.defer();
@@ -1986,7 +1986,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getLocationInfoFromGoogleMaps = function ($http) {
         var GOOGLE_MAPS_API_KEY = window.private_keys.GOOGLE_MAPS_API_KEY;
-        if (!GOOGLE_MAPS_API_KEY) {console.error('Please add GOOGLE_MAPS_API_KEY to private config');}
+        if (!GOOGLE_MAPS_API_KEY) {logError('Please add GOOGLE_MAPS_API_KEY to private config');}
         function lookup(latitude, longitude) {
             return $http.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude + '&key=' + GOOGLE_MAPS_API_KEY);
         }
@@ -1995,7 +1995,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.getLocationInfoFromFoursquare = function ($http) {
         var FOURSQUARE_CLIENT_ID = window.private_keys.FOURSQUARE_CLIENT_ID;
         var FOURSQUARE_CLIENT_SECRET = window.private_keys.FOURSQUARE_CLIENT_SECRET;
-        if (!FOURSQUARE_CLIENT_ID) {console.error('Please add FOURSQUARE_CLIENT_ID & FOURSQUARE_CLIENT_SECRET to private config');}
+        if (!FOURSQUARE_CLIENT_ID) {logError('Please add FOURSQUARE_CLIENT_ID & FOURSQUARE_CLIENT_SECRET to private config');}
         function whatsAt(latitude, longitude) {
             return $http.get('https://api.foursquare.com/v2/venues/search?ll=' + latitude + ',' + longitude +
                 '&intent=browse&radius=30&client_id=' + FOURSQUARE_CLIENT_ID + '&client_secret=' + FOURSQUARE_CLIENT_SECRET + '&v=20151201');
@@ -2103,7 +2103,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 //logDebug("My coordinates are: ", position.coords);
             }, function(error) {
                 deferred.reject(error);
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
             });
         });
         return deferred.promise;
@@ -2124,7 +2124,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         };
         var failureFn = function(error) {
             var errorMessage = 'BackgroundGeoLocation error ' + JSON.stringify(error);
-            console.error(errorMessage);
+            logError(errorMessage);
             qmService.reportErrorDeferred(errorMessage);
         };
         backgroundGeoLocation.configure(callbackFn, failureFn, {
@@ -2253,7 +2253,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.skipAllTrackingReminderNotifications(params, function(response){
             if(response.success) {deferred.resolve();} else {deferred.reject();}
         }, function(error){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -2309,7 +2309,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 deferred.resolve(trackingReminderNotifications);
             } else {deferred.reject("error");}
         }, function(error){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -2373,12 +2373,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     deferred.reject("error");
                 }
             }, function(error){
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
                 $rootScope.refreshingTrackingReminderNotifications = false;
                 deferred.reject(error);
             });
         }, function(error){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
             $rootScope.refreshingTrackingReminderNotifications = false;
             deferred.reject(error);
         });
@@ -2391,7 +2391,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var trackingReminders = remindersResponse.data;
             if(remindersResponse.success) {deferred.resolve(trackingReminders);} else {deferred.reject("error");}
         }, function(error){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -2413,7 +2413,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             else {deferred.reject("error");}
         };
         var errorHandler = function(error){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
             deferred.reject(error);
         };
         qmService.get('api/v1/trackingReminderNotifications',
@@ -2471,7 +2471,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             else {deferred.reject();}
         }, function(error){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -2527,7 +2527,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));
                 putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);
                 deferred.resolve(response);
-            }, function(error) { if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error); });
+            }, function(error) { if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } logError(error); });
         } else {
             qmService.getTrackingRemindersFromApi({force: force}, function(remindersResponse){
                 if(remindersResponse && remindersResponse.data) {
@@ -2704,7 +2704,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.clearCorrelationCache();
             deferred.resolve(true);
         }, function(error){
-            console.error("postVote response", error);
+            logError("postVote response", error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -2715,7 +2715,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.clearCorrelationCache();
             deferred.resolve(true);
         }, function(error){
-            console.error("deleteVote response", error);
+            logError("deleteVote response", error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -2927,7 +2927,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.generateWeekdayMeasurementArray = function(allMeasurements){
         if(!allMeasurements){
-            console.error('No measurements provided to generateWeekdayMeasurementArray');
+            logError('No measurements provided to generateWeekdayMeasurementArray');
             return false;
         }
         var weekdayMeasurementArrays = [];
@@ -2943,7 +2943,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.generateMonthlyMeasurementArray = function(allMeasurements){
         if(!allMeasurements){
-            console.error('No measurements provided to generateMonthlyMeasurementArray');
+            logError('No measurements provided to generateMonthlyMeasurementArray');
             return false;
         }
         var monthlyMeasurementArrays = [];
@@ -3116,11 +3116,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
         if(!measurements){
-            console.error('No measurements provided to processDataAndConfigureWeekdayChart');
+            logError('No measurements provided to processDataAndConfigureWeekdayChart');
             return false;
         }
         if(!variableObject.name){
-            console.error("ERROR: No variable name provided to processDataAndConfigureWeekdayChart");
+            logError("ERROR: No variable name provided to processDataAndConfigureWeekdayChart");
             return;
         }
         var weekdayMeasurementArray = this.generateWeekdayMeasurementArray(measurements);
@@ -3129,11 +3129,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureMonthlyChart = function(measurements, variableObject) {
         if(!measurements){
-            console.error('No measurements provided to processDataAndConfigureMonthlyChart');
+            logError('No measurements provided to processDataAndConfigureMonthlyChart');
             return false;
         }
         if(!variableObject.name){
-            console.error("ERROR: No variable name provided to processDataAndConfigureMonthlyChart");
+            logError("ERROR: No variable name provided to processDataAndConfigureMonthlyChart");
             return;
         }
         var monthlyMeasurementArray = this.generateMonthlyMeasurementArray(measurements);
@@ -3142,7 +3142,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureHourlyChart = function(measurements, variableObject) {
         if(!variableObject.name){
-            console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
+            logError("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
             return;
         }
         var hourlyMeasurementArray = this.generateHourlyMeasurementArray(measurements);
@@ -3163,7 +3163,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureDistributionChart = function(measurements, variableObject) {
         if(!variableObject.name){
-            console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
+            logError("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
             return;
         }
         var distributionArray = this.generateDistributionArray(measurements);
@@ -3171,7 +3171,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.configureWeekdayChart = function(averageValueByWeekdayArray, variableObject){
         if(!variableObject.name){
-            console.error("ERROR: No variable name provided to configureWeekdayChart");
+            logError("ERROR: No variable name provided to configureWeekdayChart");
             return;
         }
         var maximum = 0;
@@ -3224,7 +3224,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.configureMonthlyChart = function(averageValueByMonthlyArray, variableObject){
         if(!variableObject.name){
-            console.error("ERROR: No variable name provided to configureMonthlyChart");
+            logError("ERROR: No variable name provided to configureMonthlyChart");
             return;
         }
         var maximum = 0;
@@ -3277,7 +3277,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.configureHourlyChart = function(averageValueByHourArray, variableObject){
         if(!variableObject.name){
-            console.error("ERROR: No variable name provided to configureHourlyChart");
+            logError("ERROR: No variable name provided to configureHourlyChart");
             return;
         }
         var maximum = 0;
@@ -3725,11 +3725,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.configureLineChartForPairs = function(params, pairs) {
         var inputColor = '#26B14C', outputColor = '#3284FF', mixedColor = '#26B14C', linearRegressionColor = '#FFBB00';
         if(!params.causeVariableName){
-            console.error("ERROR: No variable name provided to configureLineChart");
+            logError("ERROR: No variable name provided to configureLineChart");
             return;
         }
         if(pairs.length < 1){
-            console.error("ERROR: No data provided to configureLineChart");
+            logError("ERROR: No data provided to configureLineChart");
             return;
         }
         var date = new Date();
@@ -3861,12 +3861,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(variableObject.variableName){
                 variableObject.name = variableObject.variableName;
             } else {
-                console.error("ERROR: No variable name provided to configureLineChart");
+                logError("ERROR: No variable name provided to configureLineChart");
                 return;
             }
         }
         if(data.length < 1){
-            console.error("ERROR: No data provided to configureLineChart");
+            logError("ERROR: No data provided to configureLineChart");
             return;
         }
         var date = new Date();
@@ -3975,7 +3975,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
             deferred.resolve(variables);
         }, function(error){
-            console.error(JSON.stringify(error));
+            logError(JSON.stringify(error));
             deferred.reject(error);
         });
         return deferred.promise;
@@ -4009,7 +4009,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
             deferred.resolve(variables);
         }, function(error){
-            console.error(JSON.stringify(error));
+            logError(JSON.stringify(error));
             deferred.reject(error);
         });
         return deferred.promise;
@@ -4105,7 +4105,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.resolve();
         }, function(error) {
             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); }
-            console.error('Error deleting all measurements for variable: ', error);
+            logError('Error deleting all measurements for variable: ', error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -4249,7 +4249,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.skipTrackingReminderNotification(params, function(response){
                     logDebug(response);
                 }, function(error){
-                    console.error(JSON.stringify(error));
+                    logError(JSON.stringify(error));
                     if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
                 });
                 logDebug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
@@ -4402,7 +4402,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 }
                 clearOtherLocalNotifications(currentNotification);
             } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-                console.error('onTrigger error');
+                logError('onTrigger error');
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
             }
         });
@@ -4482,7 +4482,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if($rootScope.user.combineNotifications === false){
                     try {this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
                     } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-                        console.error('scheduleAllNotificationsByTrackingReminders error');
+                        logError('scheduleAllNotificationsByTrackingReminders error');
                     }
                 }
             }
@@ -4552,12 +4552,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return;
         }
         if(!$rootScope.user.earliestReminderTime){
-            console.error("Cannot schedule notifications because $rootScope.user.earliestReminderTime not set",
+            logError("Cannot schedule notifications because $rootScope.user.earliestReminderTime not set",
                 $rootScope.user);
             return;
         }
         if(!$rootScope.user.latestReminderTime){
-            console.error("Cannot schedule notifications because $rootScope.user.latestReminderTime not set",
+            logError("Cannot schedule notifications because $rootScope.user.latestReminderTime not set",
                 $rootScope.user);
             return;
         }
@@ -4714,7 +4714,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.scheduleGenericNotification = function(notificationSettings){
         var deferred = $q.defer();
         if(!notificationSettings.every){
-            console.error("scheduleGenericNotification: Called scheduleGenericNotification without providing " +
+            logError("scheduleGenericNotification: Called scheduleGenericNotification without providing " +
                 "notificationSettings.every " +
                 notificationSettings.every + ". Not going to scheduleGenericNotification.");
             deferred.resolve();
@@ -4873,7 +4873,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         var existingLocalNotificationScheduled = false;
                         for (var l = 0; l < existingLocalNotifications.length; l++) {
                             if(!localDailyReminderNotificationTimesFromApi[k]){
-                                console.error('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
+                                logError('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
                                     'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi);
                             }
                             if (parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", "")) ===
@@ -4885,7 +4885,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         }
                         if(!existingLocalNotificationScheduled) {
                             if(!localDailyReminderNotificationTimesFromApi[k]){
-                                console.error("Did not get localDailyReminderNotificationTimesFromApi", trackingReminders);
+                                logError("Did not get localDailyReminderNotificationTimesFromApi", trackingReminders);
                             }
                             var at = new Date();
                             var splitUpLocalDailyReminderNotificationTimesFromApi = localDailyReminderNotificationTimesFromApi[k].split(":");
@@ -4923,7 +4923,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                                         ' notification scheduled: ' + JSON.stringify(notification));
                                 });
                             } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
-                                console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes' +
+                                logError('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes' +
                                     ' notificationSettings: ' + JSON.stringify(notificationSettings));
                             }
                         }
@@ -4959,7 +4959,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                     if(!existingAlarmScheduled) {
                         if(!localDailyReminderNotificationTimesFromApi[k]){
-                            console.error('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
+                            logError('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
                                 'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi);
                         }
                         var alarmInfo = {};
@@ -5142,7 +5142,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var elementsToKeep = [];
         var localStorageItemArray = JSON.parse(qmService.getLocalStorageItemAsString(localStorageItemName));
         if(!localStorageItemArray){
-            console.error("Local storage item " + localStorageItemName + " not found");
+            logError("Local storage item " + localStorageItemName + " not found");
         } else {
             for(var i = 0; i < localStorageItemArray.length; i++){
                 if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
@@ -5265,13 +5265,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var matchingElements = JSON.parse(itemAsString);
         if(matchingElements.length){
             if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
-                console.error(greaterThanPropertyName + " greaterThanPropertyName does not exist for " + localStorageItemName);
+                logError(greaterThanPropertyName + " greaterThanPropertyName does not exist for " + localStorageItemName);
             }
             if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
-                console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
+                logError(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
             }
             if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
-                console.error(lessThanPropertyName + " lessThanPropertyName does not exist for " + localStorageItemName);
+                logError(lessThanPropertyName + " lessThanPropertyName does not exist for " + localStorageItemName);
             }
         }
         if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
@@ -5308,7 +5308,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var unfilteredElementArray = qmService.getElementsFromLocalStorageItemWithRequestParams(localStorageItemName, requestParams);
         if(!unfilteredElementArray || !unfilteredElementArray.length){return null;}
         if(filterPropertyName && typeof unfilteredElementArray[0][filterPropertyName] === "undefined"){
-            console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
+            logError(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
             return null;
         }
         for(var i = 0; i < unfilteredElementArray.length; i++){
@@ -5354,7 +5354,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getCachedResponse = function(requestName, params, ignoreExpiration){
         if(!params){
-            console.error('No params provided to getCachedResponse');
+            logError('No params provided to getCachedResponse');
             return false;
         }
         var cachedResponse = JSON.parse(qmService.getLocalStorageItemAsString(requestName));
@@ -5420,7 +5420,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.hideLoader();
                 if(response.error){
                     qmService.reportErrorDeferred(response.error);
-                    console.error("Error generating access token");
+                    logError("Error generating access token");
                     qmService.setLocalStorageItem('user', null);
                 } else {
                     logDebug("Access token received",response);
@@ -5885,11 +5885,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                                 null,                    // Attachments
                                 null);                   // Attachment Data
                         } else {
-                            console.error('window.plugins.emailComposer not available!');
+                            logError('window.plugins.emailComposer not available!');
                             qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                         }
                     } else {
-                        console.error('Email has not been configured for this device!');
+                        logError('Email has not been configured for this device!');
                         qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                     }
                 }
@@ -6017,11 +6017,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             } else {
                 var error = 'Wiki not found for ' + title;
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
-                console.error(error);
+                logError(error);
                 deferred.reject(error);
             }
         }).catch(function (error) {
-            console.error(error);
+            logError(error);
             deferred.reject(error);
             //on error
         });
@@ -6434,7 +6434,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.validationFailure = function (message, object) {
         qmService.showMaterialAlert(message);
-        console.error(message);
+        logError(message);
         if (typeof Bugsnag !== "undefined") {Bugsnag.notify(message, "measurement is " + JSON.stringify(object), {}, "error");}
     };
     qmService.valueIsValid = function(object, value){
@@ -6479,9 +6479,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var a = array.concat();
         for(var i = 0; i < a.length; i++) {
             for(var j = i + 1; j < a.length; j++) {
-                if(!a[i]){console.error('a[i] not defined!');}
+                if(!a[i]){logError('a[i] not defined!');}
                 if(!a[j]){
-                    console.error('a[j] not defined!');
+                    logError('a[j] not defined!');
                     return a;
                 }
                 if(a[i].id === a[j].id) {
@@ -6765,7 +6765,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getPrivateConfigs = function(){
         $http.get('private_configs/default.private_config.json').success(function(response) {
-            if(typeof response === "string"){console.error('private_configs/default.response.json not found');} else {window.private_keys = response;}
+            if(typeof response === "string"){logError('private_configs/default.response.json not found');} else {window.private_keys = response;}
         });
     };
     qmService.getDevCredentials = function(){
@@ -6895,7 +6895,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         for(var i = 0; i < allStates.length; i++){
             if(allStates[i].name === stateName){ return allStates[i].url; }
         }
-        console.error("Could not find state with name: " + stateName);
+        logError("Could not find state with name: " + stateName);
     }
     qmService.convertHrefInSingleMenuType = function (menu){
         function convertStringToId(string) {
