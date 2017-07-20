@@ -118,7 +118,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.logDebug = function(message, stackTrace) {
         logDebug(message, stackTrace);
     };
-
+    function obfuscateSecrets(object){
+        if(typeof object !== 'object'){return object;}
+        object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
+        for (var propertyName in object) {
+            if (object.hasOwnProperty(propertyName)) {
+                var lowerCaseProperty = propertyName.toLowerCase();
+                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                    object[propertyName] = "HIDDEN";
+                } else {
+                    object[propertyName] = obfuscateSecrets(object[propertyName]);
+                }
+            }
+        }
+        return object;
+    }
     function logError(message, stackTrace, additionalMetaData) {
         function getTestUrl() {
             function getCurrentRoute() {
@@ -292,14 +306,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
         var name = status + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
-        var message = status + ' from ' + request.method + ' ' + request.url + ' DATA:' + JSON.stringify(data) ;
-        var metaData = {groupingHash: name, data: data, status: status, request: request, options: options, currentUrl: window.location.href,
+        var message = status + ' from ' + request.method + ' ' + request.url;
+        var metaData = {groupingHash: name, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
             requestParams: getAllQueryParamsFromUrlString(request.url)};
-        var severity = 'error';
         logError(message);
-        if(status > -1 || !isTestUser()){
-            if(!envIsDevelopment()){Bugsnag.notify(name, message, metaData, severity);}
-        }
         if(!data){
             var doNotShowOfflineError = false;
             if(options && options.doNotShowOfflineError){doNotShowOfflineError = true;}
@@ -317,17 +327,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             return;
         }
-        if (typeof Bugsnag !== "undefined") {
-            metaData.groupingHash = "There was an error and the request object was not provided to the generalApiErrorHandler";
-            if(request){metaData.groupingHash = request.url + ' error';}
-            if(data.error){
-                metaData.groupingHash = JSON.stringify(data.error);
-                if(data.error.message){metaData.groupingHash = JSON.stringify(data.error.message);}
-            }
-            Bugsnag.notify(metaData.groupingHash, status + " response from " + request.url + '. DATA: ' + JSON.stringify(data), metaData, "error");
+        metaData.groupingHash = "There was an error and the request object was not provided to the generalApiErrorHandler";
+        if(request){metaData.groupingHash = request.url + ' error';}
+        if(data.error){
+            metaData.groupingHash = JSON.stringify(data.error);
+            if(data.error.message){metaData.groupingHash = JSON.stringify(data.error.message);}
         }
-        logError(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data));
-        if(data.success){logError('Called error handler even though we have data.success');}
+        logError(status + " response from " + request.url,  options.stackTrace, metaData);
     }
     // Handler when request is failed
     var onRequestFailed = function(error){
@@ -6437,8 +6443,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.validationFailure = function (message, object) {
         qmService.showMaterialAlert(message);
-        logError(message);
-        if (typeof Bugsnag !== "undefined") {Bugsnag.notify(message, "measurement is " + JSON.stringify(object), {}, "error");}
+        logError(message, null, {measurement: object});
     };
     qmService.valueIsValid = function(object, value){
         var message;

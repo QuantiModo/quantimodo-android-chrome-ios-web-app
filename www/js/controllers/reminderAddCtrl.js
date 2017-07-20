@@ -208,8 +208,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     };
     var validationFailure = function (message) {
         qmService.showMaterialAlert('Whoops!', message);
-        qmService.logError(message);
-        if (typeof Bugsnag !== "undefined") {Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");}
+        qmService.logError(message, null, {trackingReminder: $scope.state.trackingReminder});
     };
     var validReminderSettings = function(){
         if(!$scope.state.trackingReminder.variableCategoryName) {
