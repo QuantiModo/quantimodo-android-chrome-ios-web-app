@@ -6828,6 +6828,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return convertUrlAndParamsToHref(menuItem);
     }
     var allStates = $state.get();
+    function prettyJsonStringify(json) {
+        return JSON.stringify(json, null, '  ');
+    }
+    console.debug(prettyJsonStringify(allStates));
     function stripQueryString(pathWithQuery) {
         if(!pathWithQuery){ return pathWithQuery; }
         if(pathWithQuery.indexOf('?') === -1){ return pathWithQuery; }
@@ -6929,11 +6933,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return menu;
     };
-    qmService.convertHrefInAllMenus = function(menu) {
-        menu.active = qmService.convertHrefInSingleMenuType(menu.active);
-        menu.custom = qmService.convertHrefInSingleMenuType(menu.custom);
-        return menu;
-    };
     qmService.convertHrefInFab = function(floatingActionButton) {
         logDebug("convertHrefInFab");
         for(var i = 1; i < 5; i++){
@@ -6961,6 +6960,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         window.config.appSettings = appSettings;
         logDebug("appSettings.clientId is " + window.config.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        window.config.appSettings.appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(window.config.appSettings.appDesign.menu);
         //window.config.appSettings.appDesign.menu = qmService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
         //window.config.appSettings.appDesign.floatingActionButton = qmService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
@@ -6993,5 +6993,40 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         initializeLocalNotifications();
         if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
     };
+    function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
+        function convertStateNameAndParamsToHrefInAllMenuItems(menu){
+            function convertStateNameAndParamsToHrefInSingleMenuItem(menuItem){
+                if(!menuItem.stateName){return menuItem;}
+                for(var i = 0; i++; i < allStates.length){
+                    if(menuItem.stateName === allStates[i].name){
+                        menuItem.href = "#/app" + allStates[i].url;
+                        if(menuItem.href.indexOf(":") !== -1){
+                            var pieces = menuItem.href.split(":");
+                            var paramName = pieces[pieces.length-1];
+                            if(menuItem.stateParams.paramName){
+                                menuItem.href = menuItem.href.replace(":" + paramName, menuItem.stateParams.paramName)
+                            } else {
+                                menuItem.href = menuItem.href.replace(":" + paramName, "Anything");
+                            }
+                            return menuItem;
+                        }
+                    }
+                }
+            }
+            for(var i =0; i < menu.length; i++){
+                if(menu[i].subMenu){
+                    for(var j =0; j < menu[i].subMenu.length; j++){
+                        menu[i].subMenu[j] = convertStateNameAndParamsToHrefInSingleMenuItem(menu[i].subMenu[j]);
+                    }
+                } else {
+                    menu[i] = convertStateNameAndParamsToHrefInSingleMenuItem(menu[i]);
+                }
+            }
+            return menu;
+        }
+        menu.active = convertStateNameAndParamsToHrefInAllMenuItems(menu.active);
+        menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);
+        return menu;
+    }
     return qmService;
 });
