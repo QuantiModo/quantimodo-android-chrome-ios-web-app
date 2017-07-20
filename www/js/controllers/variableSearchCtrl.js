@@ -176,7 +176,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.searching = false;
                 }
             }
-        }, function (error) {console.error(error);});
+        }, function (error) {qmService.logError(error);});
     };
     var populateUserVariables = function(){
         if($scope.state.variableSearchQuery.name.length > 2){return;}
@@ -199,7 +199,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 }
                 if($scope.state.variableSearchResults.length < 1 && $stateParams.variableSearchParameters.includePublic){populateCommonVariables();}
             }
-        }, function (error) {console.error(error);});
+        }, function (error) {qmService.logError(error);});
     };
     $scope.addNewVariable = function(){
         var variableObject = {};
@@ -245,7 +245,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     var checkNameExists = function (item) {
         if(!item.name){
             var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-            console.error(message);
+            qmService.logError(message);
             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
             return false;
         }

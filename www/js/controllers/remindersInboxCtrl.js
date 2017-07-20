@@ -81,7 +81,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 							$scope.refreshTrackingReminderNotifications();
 						}, function(error){
 							if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
-							console.error(error);
+							qmService.logError(error);
 							qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
 						});
 					return true;
@@ -289,9 +289,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				hideInboxLoader();
 			}, function(error){
 				getFallbackInboxContent();
-				console.error(error);
+				qmService.logError(error);
 				hideInboxLoader();
-				console.error("failed to get reminder notifications!");
+				qmService.logError("failed to get reminder notifications!");
 			});
 	};
 	$scope.$on('getTrackingReminderNotificationsFromLocalStorage', function(){
@@ -314,7 +314,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             hideInboxLoader();
 			getTrackingReminderNotifications();
 		}, function (error) {
-			console.error('$scope.refreshTrackingReminderNotifications: ' + error);
+			qmService.logError('$scope.refreshTrackingReminderNotifications: ' + error);
 			hideInboxLoader();
 		});
 	};
@@ -389,7 +389,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 					}, function(error){
 						hideInboxLoader();
 						if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
-						console.error(error);
+						qmService.logError(error);
 						qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
 					});
 				return true;

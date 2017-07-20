@@ -42,7 +42,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
             var deferred = $q.defer();
             if(!query){
-                console.error("Why are we searching without a query?");
+                qmService.logError("Why are we searching without a query?");
                 if(!self.items || self.items.length < 10){self.items = loadAll();}
                 deferred.resolve(self.items);
                 return deferred.promise;

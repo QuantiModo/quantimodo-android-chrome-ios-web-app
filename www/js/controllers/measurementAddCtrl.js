@@ -76,8 +76,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
             }, function(error) {
                 if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
-                console.error(error);
-                console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
+                qmService.logError('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
             });
         $scope.goBack();
     };
@@ -133,7 +132,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             qmService.skipTrackingReminderNotification(params, function(){
                 console.debug($state.current.name + ": skipTrackingReminderNotification");
             }, function(error){
-                console.error($state.current.name + ": skipTrackingReminderNotification error");
+                qmService.logError($state.current.name + ": skipTrackingReminderNotification error");
                 if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(error); }
             });
         }
@@ -188,7 +187,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     };
     function setupUnit(unitAbbreviatedName, valence){
         if(!unitAbbreviatedName){
-            console.error("No unitAbbreviatedName provided to setupUnit!");
+            qmService.logError("No unitAbbreviatedName provided to setupUnit!");
             return;
         }
         if(unitAbbreviatedName === 'Show more units'){
@@ -270,7 +269,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
             qmService.hideLoader();
-            console.error(error);
+            qmService.logError(error);
         });
     };
     var setMeasurementVariablesByMeasurementId = function(){
@@ -284,7 +283,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
                 deferred.resolve();
             }, function(error) {
                 qmService.hideLoader();
-                console.error($state.current.name + ": " + "Error response: " + error);
+                qmService.logError($state.current.name + ": " + "Error response: " + error);
                 deferred.reject(error);
             }
         );
@@ -308,7 +307,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         showMoreUnitsIfNecessary();
         //if($scope.state.measurement.inputType){return;} Why is this here?  It prevents updating when we change a unit!  :(
         if(!unitAbbreviatedName){
-            console.error('No unitAbbreviatedName provided to setupValueFieldType');
+            qmService.logError('No unitAbbreviatedName provided to setupValueFieldType');
             return false;
         }
         $scope.state.measurement.inputType = qmService.getInputType(unitAbbreviatedName, valence, variableName);

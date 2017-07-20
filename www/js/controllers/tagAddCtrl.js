@@ -41,7 +41,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
-            console.error(error);
+            qmService.logError(error);
             goBack();
         });
     };
@@ -90,7 +90,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         qmService.postUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
-            console.error(error);
+            qmService.logError(error);
             goBack();
         });
     };

@@ -51,7 +51,7 @@ angular.module('starter') // Controls the settings page
 
 		}, function(error) {
 			qmService.hideLoader();
-			console.error(error);
+			qmService.logError(error);
 		});
 
 
