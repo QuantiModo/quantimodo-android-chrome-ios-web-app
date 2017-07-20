@@ -3,8 +3,6 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     $scope.controller_name = "LoginCtrl";
     $scope.headline = config.appSettings.headline;
     $rootScope.showFilterBarSearchIcon = false;
-    if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-    if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
     if($rootScope.isMobile){
         if(window && window.plugins && window.plugins.googleplus){
             $scope.showGoogleLoginButton = true;

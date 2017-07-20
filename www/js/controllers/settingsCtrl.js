@@ -7,8 +7,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.userEmail = qmService.getUrlParameter('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		$rootScope.hideNavigationMenu = false;
 		if(qmService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;

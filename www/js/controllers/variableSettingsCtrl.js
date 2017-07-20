@@ -5,8 +5,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         console.debug($state.current.name + ' initializing...');
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.loading = true;
         if($stateParams.variableObject){
             $scope.setupVariableByVariableObject($stateParams.variableObject);
@@ -255,7 +253,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                     if(repsonse.data.query.pages[0].thumbnail){$scope.causeWikiImage = repsonse.data.query.pages[0].thumbnail.source;}
                 } else {
                     var error = 'Wiki not found for ' + query;
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
+                    qmService.logError(error);
                     qmService.logError(error);
                 }
             }).catch(function (error) {qmService.logError(error);});

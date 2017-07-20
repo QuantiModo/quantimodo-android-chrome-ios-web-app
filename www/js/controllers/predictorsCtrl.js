@@ -13,8 +13,6 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
         $rootScope.hideNavigationMenu = false;
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
         $scope.state.requestParams.aggregated = qmService.getUrlParameter('aggregated');
         if(qmService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = qmService.getUrlParameter('causeVariableName', window.location.href, true); }

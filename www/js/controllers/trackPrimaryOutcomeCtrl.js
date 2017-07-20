@@ -10,8 +10,6 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
     $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
         console.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..');
         $rootScope.hideNavigationMenu = false;
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;

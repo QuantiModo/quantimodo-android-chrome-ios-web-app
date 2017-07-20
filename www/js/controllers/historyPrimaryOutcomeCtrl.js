@@ -20,8 +20,6 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 	$scope.$on('$ionicView.beforeEnter', function(){
 		$rootScope.hideNavigationMenu = false;
 		console.debug('HistoryPrimaryOutcomeCtrl beforeEnter...');
-		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		$scope.refreshMeasurementHistory();
 	});
 	$scope.$on('updatePrimaryOutcomeHistory', function(){

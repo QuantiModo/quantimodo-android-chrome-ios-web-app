@@ -36,8 +36,6 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         console.debug($state.current.name + ": beforeEnter");
         $rootScope.hideNavigationMenu = false;
         $rootScope.bloodPressure = {diastolicValue: null, systolicValue: null, show: false};
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.state.title = 'Record a Measurement';
         $scope.state.selectedDate = moment();
         if($stateParams.trackingReminder){
@@ -75,7 +73,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             .then(function () {
                 console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
             }, function(error) {
-                if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
+                qmService.logError(error);
                 qmService.logError('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
             });
         $scope.goBack();

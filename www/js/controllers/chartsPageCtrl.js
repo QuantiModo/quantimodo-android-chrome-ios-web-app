@@ -109,7 +109,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 if ($scope.state.history.length > 0) {updateCharts();}
             }
         }, function(error){
-            if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
             qmService.logError($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
             $scope.state.loadingHistory = false;
         }, function(history) {
@@ -135,7 +134,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 if ($scope.state.dailyHistory.length > 0) {updateDailyCharts();}
             }
         }, function(error){
-            if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
             qmService.logError($state.current.name + ' error getting dailyHistory measurements: ' + JSON.stringify(error));
             $scope.state.loadingDailyHistory = false;
         }, function(history) {
