@@ -7025,7 +7025,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return menu;
         }
         menu.active = convertStateNameAndParamsToHrefInAllMenuItems(menu.active);
-        menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);
+        if(menu.custom){menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);}
         return menu;
     }
     return qmService;
