@@ -30,8 +30,6 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
             $scope.state.addButtonIcon = "ion-ios-medkit-outline";
             $scope.state.title = 'As-Needed Meds';
         }
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.presetVariables){
             $scope.favoritesArray = $stateParams.presetVariables;
             //Stop the ion-refresher from spinning

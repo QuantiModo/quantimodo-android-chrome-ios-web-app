@@ -44,7 +44,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             $scope.state.title = qmService.getTruncatedVariableName($rootScope.variableObject.name);
             getDailyHistoryForVariable(params);
             getHistoryForVariable(params);
-        } else {console.error($state.current.name + ' ERROR: $rootScope.variableObject.name not defined! $rootScope.variableObject: ' + JSON.stringify($rootScope.variableObject));}
+        } else {qmService.logError($state.current.name + ' ERROR: $rootScope.variableObject.name not defined! $rootScope.variableObject: ' + JSON.stringify($rootScope.variableObject));}
         $rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;
     });
     $scope.$on('$ionicView.beforeLeave', function(){
@@ -92,7 +92,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     var getHistoryForVariable = function(params){
         if($scope.stopGettingMeasurements){return;}
         if(!params.variableName){
-            console.error("ERROR: params.variableName not provided to getHistoryForVariable.  params are: " + JSON.stringify(params));
+            qmService.logError("ERROR: params.variableName not provided to getHistoryForVariable.  params are: " + JSON.stringify(params));
             return;
         }
         if(qmService.getUrlParameter('doNotProcess')){params.doNotProcess = true;}
@@ -109,8 +109,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 if ($scope.state.history.length > 0) {updateCharts();}
             }
         }, function(error){
-            if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
-            console.error($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
+            qmService.logError($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
             $scope.state.loadingHistory = false;
         }, function(history) {
             $scope.state.history = $scope.state.history.concat(history);
@@ -119,7 +118,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     var getDailyHistoryForVariable = function(params){
         if($scope.stopGettingMeasurements){return;}
         if(!params.variableName){
-            console.error("ERROR: params.variableName not provided to getHistoryForVariable. params: " + JSON.stringify(params));
+            qmService.logError("ERROR: params.variableName not provided to getHistoryForVariable. params: " + JSON.stringify(params));
             return;
         }
         $scope.state.loadingDailyHistory = true;
@@ -135,8 +134,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 if ($scope.state.dailyHistory.length > 0) {updateDailyCharts();}
             }
         }, function(error){
-            if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
-            console.error($state.current.name + ' error getting dailyHistory measurements: ' + JSON.stringify(error));
+            qmService.logError($state.current.name + ' error getting dailyHistory measurements: ' + JSON.stringify(error));
             $scope.state.loadingDailyHistory = false;
         }, function(history) {
             $scope.state.loadingDailyHistory = false;

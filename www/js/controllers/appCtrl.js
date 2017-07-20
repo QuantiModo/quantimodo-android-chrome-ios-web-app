@@ -131,7 +131,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     if(sharingUrl){qmService.openSharingUrl(sharingUrl);}
                 }, function (error) {
                     qmService.hideLoader();
-                    console.error(error);
+                    qmService.logError(error);
                 });
         }
         function noCallback() {correlationObject.shareUserMeasurements = false;}
@@ -166,7 +166,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 qmService.openSharingUrl(sharingUrl);
             }, function (error) {
                 qmService.hideLoader();
-                console.error(error);
+                qmService.logError(error);
             });
         }
         function noCallback() {variableObject.shareUserMeasurements = false;}
@@ -180,7 +180,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function yesCallback() {
             variableObject.shareUserMeasurements = false;
             var body = {variableId: variableObject.id, shareUserMeasurements: false};
-            qmService.postUserVariableDeferred(body).then(function () {}, function (error) {console.error(error);});
+            qmService.postUserVariableDeferred(body).then(function () {}, function (error) {qmService.logError(error);});
         }
         function noCallback() {variableObject.shareUserMeasurements = true;}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -294,7 +294,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 releaseTrack = "production";
                 message = 'Not updating because user is not signed up for preview builds';
                 console.debug(message);
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                qmService.logError(message);
                 return;
             }
             message = 'Checking for ' + releaseTrack + ' updates...';
@@ -306,7 +306,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     if($rootScope.isAndroid){
                         qmService.showInfoToast(message);
                     }
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                    qmService.logError(message);
                     // When snapshotAvailable is true, you can apply the snapshot
                     $ionicDeploy.download().then(function() {
                         message = 'Downloaded new version.  Extracting...';
@@ -314,7 +314,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         if($rootScope.isAndroid){
                             qmService.showInfoToast(message);
                         }
-                        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                        qmService.logError(message);
                         $ionicDeploy.extract().then(function() {
                             if($rootScope.isAndroid){
                                 $ionicPopup.show({
@@ -340,7 +340,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         qmService.showInfoToast(message);
                     }
                     console.debug(message);
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                    qmService.logError(message);
                 }
             });
 
@@ -376,7 +376,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 0;
                 correlationObject.vote = 0;
-                qmService.postVoteDeferred(correlationObject).then(function () {console.debug('Down voted!');}, function () {console.error('Down vote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {console.debug('Down voted!');}, function () {qmService.logError('Down vote failed!');});
             };
             noCallback = function() {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -398,7 +398,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 1;
                 correlationObject.vote = 1;
-                qmService.postVoteDeferred(correlationObject).then(function () {console.debug('upVote');}, function () {console.error('upVote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {console.debug('upVote');}, function () {qmService.logError('upVote failed!');});
             };
             noCallback = function () {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -416,7 +416,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.deleteVoteDeferred(correlationObject, function(response){
             console.debug("deleteVote response", response);
         }, function(response){
-            console.error("deleteVote response", response);
+            qmService.logError("deleteVote response", response);
         });
     }
     $scope.safeApply = function(fn) {
@@ -431,8 +431,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.favoriteValidationFailure = function (message) {
         qmService.showMaterialAlert('Whoops!', message);
-        console.error(message);
-        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+        qmService.logError(message);
     };
     $scope.trackFavoriteByValueField = function(trackingReminder, $index){
         if(trackingReminder.total === null){
@@ -444,9 +443,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             .then(function () {
                 console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
             }, function(error) {
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                console.error(error);
-                console.error('Failed to track favorite! ', 'Please let me know by pressing the help button.  Thanks!');
+                qmService.logError('Failed to track favorite! ', 'Please let me know by pressing the help button.  Thanks!');
             });
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
@@ -459,7 +456,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(trackingReminder.combinationOperation === "SUM"){trackingReminder.tally += modifiedReminderValue;} else {trackingReminder.tally = modifiedReminderValue;}
         $timeout(function() {
             if(typeof trackingReminder === "undefined"){
-                console.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+                qmService.logError("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
                 return;
             }
             if(trackingReminder.tally) {
@@ -467,9 +464,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     .then(function () {
                         console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                     }, function(error) {
-                        if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
-                        console.error(error);
-                        console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
+                        qmService.logError(error);
+                        qmService.logError('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                     });
                 trackingReminder.tally = 0;
             }
@@ -521,8 +517,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             .then(function () {
                 console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
             }, function(error) {
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                console.error('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
+                qmService.logError('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
             });
     };
     $scope.showExplanationsPopup = function(settingName, ev) {
@@ -572,7 +567,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
             qmService.hideLoader();
-            console.error(error);
+            qmService.logError(error);
         });
     };
     $scope.refreshUserVariable = function (hideLoader) {
@@ -600,6 +595,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.$on('$stateChangeSuccess', function() {
         if($rootScope.offlineConnectionErrorShowing){$rootScope.offlineConnectionErrorShowing = false;}
+        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.closeMenu();
     });
     $scope.showMaterialAlert = function(title, textContent, ev) {

@@ -12,8 +12,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("ImportCtrl beforeEnter");
         if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
-		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
 		if(weCanEnterPage()){
 			loadNativeConnectorPage();
@@ -157,7 +155,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
                 $scope.refreshConnectors();
             }, function() {
-                console.error("error on connectWithAuthCode for " + connector.name);
+                qmService.logError("error on connectWithAuthCode for " + connector.name);
                 $scope.refreshConnectors();
             });
         };
@@ -459,7 +457,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         qmService.disconnectConnectorDeferred(connector.name).then(function (){
             $scope.refreshConnectors();
         }, function(error) {
-            console.error("error disconnecting " + error);
+            qmService.logError("error disconnecting " + error);
         });
     };
     var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
@@ -480,13 +478,13 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 $scope.$broadcast('scroll.refreshComplete');
                 qmService.hideLoader();
             }, function(response){
-                console.error(response);
+                qmService.logError(response);
                 $scope.$broadcast('scroll.refreshComplete');
                 qmService.hideLoader();
             });
     };
     function connectorErrorHandler(error){
-        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+        qmService.logError(error);
     }
     var webConnect = function (connector) {
         /** @namespace connector.connectInstructions */

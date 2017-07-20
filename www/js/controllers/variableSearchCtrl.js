@@ -37,8 +37,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
         console.debug($state.current.name + " enter...");
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
             $stateParams.variableSearchParameters.variableCategoryName = $stateParams.variableCategoryName;
         }
@@ -176,7 +174,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.searching = false;
                 }
             }
-        }, function (error) {console.error(error);});
+        }, function (error) {qmService.logError(error);});
     };
     var populateUserVariables = function(){
         if($scope.state.variableSearchQuery.name.length > 2){return;}
@@ -199,7 +197,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 }
                 if($scope.state.variableSearchResults.length < 1 && $stateParams.variableSearchParameters.includePublic){populateCommonVariables();}
             }
-        }, function (error) {console.error(error);});
+        }, function (error) {qmService.logError(error);});
     };
     $scope.addNewVariable = function(){
         var variableObject = {};
@@ -245,8 +243,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     var checkNameExists = function (item) {
         if(!item.name){
             var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-            console.error(message);
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+            qmService.logError(message);
+            qmService.logError(message);
             return false;
         }
         return true;

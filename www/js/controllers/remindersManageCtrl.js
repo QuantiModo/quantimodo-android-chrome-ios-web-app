@@ -36,8 +36,6 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			{ text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
 			{ text: '<i class="icon ion-clock"></i>Sort by Time' }
 		];
-		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 			if(!$scope.stateParams.title) { $scope.stateParams.title = "Manage Reminders"; }
 			if(!$scope.stateParams.addButtonText) { $scope.stateParams.addButtonText = "Add a Variable"; }
@@ -136,8 +134,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		reminder.hide = true;
 		qmService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId).then(function(){getTrackingReminders();});
 		qmService.deleteTrackingReminderDeferred(reminder).then(function(){console.debug("Reminder deleted");}, function(error){
-			if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-			console.error('Failed to Delete Reminder!');
+			qmService.logError('Failed to Delete Reminder: ' + error);
 		});
 	};
 	$scope.showActionSheet = function(trackingReminder) {

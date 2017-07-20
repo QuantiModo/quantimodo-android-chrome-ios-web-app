@@ -454,7 +454,7 @@ function getAppsListUrl() {
     return appHostName + '/api/v2/apps';
 }
 function getAppDesignerUrl() {
-    return appHostName + 'ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + appSettings.clientId;
+    return appHostName + '/ionic/Modo/www/configuration-index.html#/app/configuration?clientId=' + appSettings.clientId;
 }
 function verifyExistenceOfFile(filePath) {
     return fs.stat(filePath, function (err, stat) {
@@ -743,6 +743,7 @@ gulp.task('getAppConfigs', [], function () {
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
         appSettings = response.appSettings;
+        appSettings.buildServer = currentServerContext;
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());

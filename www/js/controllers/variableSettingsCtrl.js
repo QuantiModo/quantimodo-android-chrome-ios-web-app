@@ -5,8 +5,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         console.debug($state.current.name + ' initializing...');
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.loading = true;
         if($stateParams.variableObject){
             $scope.setupVariableByVariableObject($stateParams.variableObject);
@@ -19,7 +17,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             $scope.setupVariableByVariableObject($rootScope.variableObject);
             refreshUserVariable($rootScope.variableObject.name);
         } else {
-            console.error("Variable name not provided to variable settings controller!");
+            qmService.logError("Variable name not provided to variable settings controller!");
             $state.go(config.appSettings.appDesign.defaultState);
             //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
         }
@@ -177,7 +175,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 $rootScope.variableObject = response.data.parentVariable;
             }, function (error) {
                 qmService.hideLoader();
-                console.error(error);
+                qmService.logError(error);
             });
             $mdDialog.hide();
         };
@@ -255,10 +253,10 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                     if(repsonse.data.query.pages[0].thumbnail){$scope.causeWikiImage = repsonse.data.query.pages[0].thumbnail.source;}
                 } else {
                     var error = 'Wiki not found for ' + query;
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
-                    console.error(error);
+                    qmService.logError(error);
+                    qmService.logError(error);
                 }
-            }).catch(function (error) {console.error(error);});
+            }).catch(function (error) {qmService.logError(error);});
             return deferred.promise;
         }
         function searchTextChange(text) { console.debug('Text changed to ' + text); }
@@ -340,7 +338,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
         }, function(error) {
             qmService.hideLoader();
-            console.error(error);
+            qmService.logError(error);
         });
     };
 });
