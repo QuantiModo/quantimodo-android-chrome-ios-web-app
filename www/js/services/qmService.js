@@ -155,7 +155,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //if($rootScope.user){metaData.user = $rootScope.user;} // Request Entity Too Large
         metaData.installed_plugins = getInstalledPluginList();
         Bugsnag.notify(name, message, metaData, "error");
-        logError(message);
+        console.error(message);
     }
     qmService.logError = function(message, stackTrace, additionalMetaData){
         logError(message, stackTrace, additionalMetaData);
