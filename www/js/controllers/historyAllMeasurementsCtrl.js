@@ -25,8 +25,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
         $rootScope.hideNavigationMenu = false;
         $scope.state.loading = true;
         $scope.state.offset = 0;
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';
             $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";

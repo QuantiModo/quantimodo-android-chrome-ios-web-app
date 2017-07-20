@@ -37,8 +37,6 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
         console.debug($state.current.name + " enter...");
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
             $stateParams.variableSearchParameters.variableCategoryName = $stateParams.variableCategoryName;
         }
@@ -246,7 +244,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         if(!item.name){
             var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
             qmService.logError(message);
-            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+            qmService.logError(message);
             return false;
         }
         return true;

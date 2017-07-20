@@ -294,7 +294,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 releaseTrack = "production";
                 message = 'Not updating because user is not signed up for preview builds';
                 console.debug(message);
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                qmService.logError(message);
                 return;
             }
             message = 'Checking for ' + releaseTrack + ' updates...';
@@ -306,7 +306,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     if($rootScope.isAndroid){
                         qmService.showInfoToast(message);
                     }
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                    qmService.logError(message);
                     // When snapshotAvailable is true, you can apply the snapshot
                     $ionicDeploy.download().then(function() {
                         message = 'Downloaded new version.  Extracting...';
@@ -314,7 +314,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         if($rootScope.isAndroid){
                             qmService.showInfoToast(message);
                         }
-                        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                        qmService.logError(message);
                         $ionicDeploy.extract().then(function() {
                             if($rootScope.isAndroid){
                                 $ionicPopup.show({
@@ -340,7 +340,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         qmService.showInfoToast(message);
                     }
                     console.debug(message);
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
+                    qmService.logError(message);
                 }
             });
 
@@ -432,7 +432,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.favoriteValidationFailure = function (message) {
         qmService.showMaterialAlert('Whoops!', message);
         qmService.logError(message);
-        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
     };
     $scope.trackFavoriteByValueField = function(trackingReminder, $index){
         if(trackingReminder.total === null){
@@ -465,7 +464,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     .then(function () {
                         console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                     }, function(error) {
-                        if (typeof Bugsnag !== "undefined") {Bugsnag.notify(error, JSON.stringify(error), {}, "error");}
                         qmService.logError(error);
                         qmService.logError('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
                     });
@@ -597,6 +595,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.$on('$stateChangeSuccess', function() {
         if($rootScope.offlineConnectionErrorShowing){$rootScope.offlineConnectionErrorShowing = false;}
+        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         $scope.closeMenu();
     });
     $scope.showMaterialAlert = function(title, textContent, ev) {

@@ -15,8 +15,6 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
     $scope.$on("$ionicView.enter", function() {
         console.debug("enter state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== "undefined")  { analytics.trackView($state.current.name); }
         if($stateParams.correlationObject){
             qmService.setLocalStorageItem('lastStudy', JSON.stringify($stateParams.correlationObject));
             $rootScope.correlationObject = $stateParams.correlationObject;
@@ -98,7 +96,6 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
                 if(causeData.data.query.pages[0].thumbnail){ $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source; }
             } else {
                 var error = "Wiki not found for " + causeSearchTerm;
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                 qmService.logError(error);
             }
         }).catch(function (error) { qmService.logError(error); });
@@ -117,7 +114,6 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
                 if(effectData.data.query.pages[0].thumbnail){ $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source; }
             } else {
                 var error = "Wiki not found for " + effectSearchTerm;
-                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                 qmService.logError(error);
             }
         }).catch(function (error) { qmService.logError(error); });

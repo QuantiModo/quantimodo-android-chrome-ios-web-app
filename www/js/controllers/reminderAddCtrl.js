@@ -62,8 +62,6 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
         if($stateParams.reminder){ $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName; }
         $scope.stateParams = $stateParams;
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         setTitle();
         var reminderIdUrlParameter = qmService.getUrlParameter('reminderId');
         var variableIdUrlParameter = qmService.getUrlParameter('variableId');
