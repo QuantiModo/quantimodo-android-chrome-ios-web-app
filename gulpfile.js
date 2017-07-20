@@ -743,6 +743,7 @@ gulp.task('getAppConfigs', [], function () {
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
         appSettings = response.appSettings;
+        appSettings.buildServer = currentServerContext;
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
