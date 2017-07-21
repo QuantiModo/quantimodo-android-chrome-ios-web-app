@@ -2036,6 +2036,7 @@ gulp.task('buildAndroidApp', function (callback) {
     runSequence(
         'copyAndroidLicenses',
         'prepareAndroidApp',
+        'ionicInfo',
         'cordovaBuildAndroidRelease',
         'outputArmv7ApkVersionCode',
         'outputX86ApkVersionCode',
