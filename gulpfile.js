@@ -408,6 +408,7 @@ function logError(message, object) {console.error(obfuscateStringify(message, ob
 function postAppStatus() {
     var options = getPostRequestOptions();
     options.body.appStatus = appSettings.appStatus;
+    logInfo("Posting appStatus", appSettings.appStatus);
     return makeApiRequest(options);
 }
 function makeApiRequest(options, successHandler) {
