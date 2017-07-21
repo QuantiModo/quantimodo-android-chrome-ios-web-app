@@ -513,7 +513,7 @@ function outputVersionCodeForApk(pathToApk) {
     });
 }
 function copyFiles(sourceFiles, destinationPath) {
-    console.log("Copying www/**/* to " + chromeExtensionBuildPath + '/www');
+    console.log("Copying " + sourceFiles + " to " + destinationPath);
     return gulp.src([sourceFiles])
         .pipe(gulp.dest(destinationPath));
 }
