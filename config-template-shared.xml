@@ -61,7 +61,7 @@
   <preference name="android-minSdkVersion" value="16" />
   <preference name="AutoHideSplashScreen" value="true" />
   <preference name="BackupWebStorage" value="none" />
-  <preference name="deployment-target" value="6.0" />
+  <preference name="deployment-target" value="7.0" />
   <preference name="DisallowOverscroll" value="true" />
   <preference name="FadeSplashScreen" value="false"/>
   <preference name="loadUrlTimeoutValue" value="700000" /><!--Trying to fix Connection to the server was unsuccessful. (file ///android_asset/www/index.html)-->

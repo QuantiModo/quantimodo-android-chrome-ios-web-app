@@ -64,11 +64,7 @@
   "scripts": {
     "postinstall": "echo 'Runing npm postinstall commands...' && bower install && npm rebuild node-sass && ionic config build && gulp configureAppAfterNpmInstall"
   },
-  "cordovaPlugins": [
-    "cordova-plugin-file-opener2",
-    "cordova-plugin-ios-non-exempt-encryption",
-    "cordova-plugin-geolocation@2.3.0"
-  ],
+  "cordovaPlugins": [],
   "cordovaPlatforms": [],
   "engines": {
     "node": "6.9.4"
