@@ -186,7 +186,7 @@ function getS3Url(relative_filename) {
     return s3BaseUrl + getS3RelativePath(relative_filename);
 }
 function uploadBuildToS3(filePath) {
-    if(appSettings.apiUrl){
+    if(appSettings.apiUrl === "local.quantimo.do"){
         logInfo("Not uploading because appSettings.apiUrl is " + appSettings.apiUrl);
         return;
     }
@@ -408,6 +408,7 @@ function logError(message, object) {console.error(obfuscateStringify(message, ob
 function postAppStatus() {
     var options = getPostRequestOptions();
     options.body.appStatus = appSettings.appStatus;
+    logInfo("Posting appStatus", appSettings.appStatus);
     return makeApiRequest(options);
 }
 function makeApiRequest(options, successHandler) {
@@ -1857,7 +1858,6 @@ gulp.task('buildMediModo', function (callback) {
     runSequence(
         'setMediModoEnvs',
         'buildChromeExtension',
-        'prepareRepositoryForAndroid',
         'buildAndroidApp',
         'prepareIosApp',
         callback);
@@ -1865,14 +1865,12 @@ gulp.task('buildMediModo', function (callback) {
 gulp.task('buildQuantiModoAndroid', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
-        'prepareRepositoryForAndroid',
         'buildAndroidApp',
         callback);
 });
 gulp.task('buildMediModoAndroid', function (callback) {
     runSequence(
         'setMediModoEnvs',
-        'prepareRepositoryForAndroid',
         'buildAndroidApp',
         callback);
 });
@@ -2039,6 +2037,7 @@ gulp.task('buildAndroidApp', function (callback) {
     runSequence(
         'copyAndroidLicenses',
         'prepareAndroidApp',
+        'ionicInfo',
         'cordovaBuildAndroidRelease',
         'outputArmv7ApkVersionCode',
         'outputX86ApkVersionCode',
