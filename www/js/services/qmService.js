@@ -145,9 +145,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         function getInstalledPluginList(){
             return {
+                "Analytics": (typeof Analytics !== "undefined"),
+                "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined"),
+                "cordova.plugins.notification": (typeof cordova !== "undefined" && typeof cordova.plugins.notification === "undefined"),
+                "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
+                "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus),
                 "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
+                "ionic": (typeof ionic !== "undefined"),
+                "ionicDeploy": (typeof $ionicDeploy !== "undefined"),
                 "PushNotification": (typeof PushNotification !== "undefined"),
-                "SplashScreen": (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined")
+                "SplashScreen": (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined"),
+                "UserVoice": (typeof UserVoice !== "undefined")
             };
         }
         var name = message;
