@@ -186,7 +186,7 @@ function getS3Url(relative_filename) {
     return s3BaseUrl + getS3RelativePath(relative_filename);
 }
 function uploadBuildToS3(filePath) {
-    if(appSettings.apiUrl){
+    if(appSettings.apiUrl === "local.quantimo.do"){
         logInfo("Not uploading because appSettings.apiUrl is " + appSettings.apiUrl);
         return;
     }
@@ -1857,7 +1857,6 @@ gulp.task('buildMediModo', function (callback) {
     runSequence(
         'setMediModoEnvs',
         'buildChromeExtension',
-        'prepareRepositoryForAndroid',
         'buildAndroidApp',
         'prepareIosApp',
         callback);
@@ -1865,14 +1864,12 @@ gulp.task('buildMediModo', function (callback) {
 gulp.task('buildQuantiModoAndroid', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
-        'prepareRepositoryForAndroid',
         'buildAndroidApp',
         callback);
 });
 gulp.task('buildMediModoAndroid', function (callback) {
     runSequence(
         'setMediModoEnvs',
-        'prepareRepositoryForAndroid',
         'buildAndroidApp',
         callback);
 });
