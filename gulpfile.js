@@ -51,7 +51,8 @@ bugsnag.onBeforeNotify(function (notification) {
     var metaData = notification.events[0].metaData;
     // modify meta-data
     metaData.subsystem = { name: getCurrentServerContext() };
-    metaData.clientId = process.env.QUANTIMODO_CLIENT_ID;
+    metaData.client_id = process.env.QUANTIMODO_CLIENT_ID;
+    metaData.build_link = getBuildLink();
 });
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
@@ -63,6 +64,10 @@ function getCurrentServerContext() {
     if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
     if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
     return currentServerContext;
+}
+function getBuildLink() {
+    if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
+    if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
 }
 function setClientId(callback) {
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH;}
