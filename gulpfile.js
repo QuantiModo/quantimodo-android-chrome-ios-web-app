@@ -41,14 +41,34 @@ var revReplace = require('gulp-rev-replace');
 var useref = require('gulp-useref');
 var filter = require('gulp-filter');
 var csso = require('gulp-csso');
+var bugsnag = require("bugsnag");
+bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
+process.on('unhandledRejection', function (err, promise) {
+    console.error("Unhandled rejection: " + (err && err.stack || err));
+    bugsnag.notify(err);
+});
+bugsnag.onBeforeNotify(function (notification) {
+    var metaData = notification.events[0].metaData;
+    // modify meta-data
+    metaData.subsystem = { name: getCurrentServerContext() };
+    metaData.client_id = process.env.QUANTIMODO_CLIENT_ID;
+    metaData.build_link = getBuildLink();
+});
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
 var buildDebug = isTruthy(process.env.BUILD_DEBUG);
-var currentServerContext = "local";
 logInfo("Environmental Variables:", process.env);
-if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
-if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
+function getCurrentServerContext() {
+    var currentServerContext = "local";
+    if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
+    if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
+    return currentServerContext;
+}
+function getBuildLink() {
+    if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
+    if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
+}
 function setClientId(callback) {
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH;}
     if(process.env.CIRCLE_BRANCH && process.env.CIRCLE_BRANCH.indexOf('apps') !== -1){
@@ -68,7 +88,7 @@ function setClientId(callback) {
             logInfo('current git branch: ' + branch);
             if (!process.env.QUANTIMODO_CLIENT_ID) {
                 if (appIds[branch]) {
-                    console.info('Setting process.env.QUANTIMODO_CLIENT_ID using branch name ' + branch);
+                    logInfo('Setting process.env.QUANTIMODO_CLIENT_ID using branch name ' + branch);
                     process.env.QUANTIMODO_CLIENT_ID = branch;
                 } else {
                     console.warn('No process.env.QUANTIMODO_CLIENT_ID set.  Falling back to quantimodo client id');
@@ -403,8 +423,11 @@ function obfuscateStringify(message, object) {
     return message;
 }
 function logDebug(message, object) {if(buildDebug){logInfo(message, object);}}
-function logInfo(message, object) {console.info(obfuscateStringify(message, object));}
-function logError(message, object) {console.error(obfuscateStringify(message, object));}
+function logInfo(message, object) {console.log(obfuscateStringify(message, object));}
+function logError(message, object) {
+    console.error(obfuscateStringify(message, object));
+    bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
+}
 function postAppStatus() {
     var options = getPostRequestOptions();
     options.body.appStatus = appSettings.appStatus;
@@ -733,7 +756,7 @@ gulp.task('downloadSplashScreen', [], function(){
 });
 gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     var options = getRequestOptions('/api/ionic/master/merge');
-    options.qs.server = options.qs.currentServerConext = currentServerContext;
+    options.qs.server = options.qs.currentServerConext = getCurrentServerContext();
     return makeApiRequest(options);
 });
 gulp.task('getAppConfigs', [], function () {
@@ -744,7 +767,7 @@ gulp.task('getAppConfigs', [], function () {
     var options = getRequestOptions('/api/v1/appSettings');
     function successHandler(response) {
         appSettings = response.appSettings;
-        appSettings.buildServer = currentServerContext;
+        appSettings.buildServer = getCurrentServerContext();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
