@@ -1,0 +1,3 @@
+[submodule "www/custom-lib/quantimodo-sdk-javascript"]
+	path = www/custom-lib/quantimodo-sdk-javascript
+	url = https://github.com/QuantiModo/quantimodo-sdk-javascript.git

@@ -118,6 +118,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.logDebug = function(message, stackTrace) {
         logDebug(message, stackTrace);
     };
+    function logInfo(message, stackTrace) {
+        message = addStateNameToMessage(message);
+        if(window.debugMode){
+            if(!stackTrace){stackTrace = getStackTrace();}
+            message = addStackTraceToMessage(message, stackTrace);
+        }
+        console.info(message);
+    }
+    qmService.logInfo = function(message, stackTrace) {
+        logInfo(message, stackTrace);
+    };
     function obfuscateSecrets(object){
         if(typeof object !== 'object'){return object;}
         object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
@@ -840,11 +851,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.reject(response);
         });
     };
+    function setAccessTokenInQuantiModoApiClient(accessToken) {
+        var qmClient = QuantimodoApi.ApiClient.instance;
+        var quantimodo_oauth2 = qmClient.authentications['quantimodo_oauth2'];
+        quantimodo_oauth2.accessToken = accessToken;
+    }
     qmService.saveAccessTokenInLocalStorage = function (accessResponse) {
         var accessToken = accessResponse.accessToken || accessResponse.access_token;
         if (accessToken) {
             $rootScope.accessToken = accessToken;
             localStorage.setItem('accessToken', accessToken);
+            setAccessTokenInQuantiModoApiClient(accessToken)
         } else {
             logError('No access token provided to qmService.saveAccessTokenInLocalStorage');
             return;
@@ -6772,6 +6789,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
+            setAccessTokenInQuantiModoApiClient($rootScope.user.accessToken)
             qmService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
             if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
             if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
