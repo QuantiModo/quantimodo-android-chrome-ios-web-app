@@ -196,8 +196,9 @@ function validateJsonFile(filePath) {
         logInfo(filePath + " is valid json");
         logDebug(filePath + ": ", parsedOutput);
     } catch (error){
-        logError(error);
-        throw(filePath + " is NOT valid json!");
+        var message = filePath + " is NOT valid json!";
+        logError(message, error);
+        throw(message);
     }
 }
 readDevCredentials();
