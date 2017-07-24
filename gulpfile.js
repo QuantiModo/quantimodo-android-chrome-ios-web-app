@@ -41,6 +41,7 @@ var revReplace = require('gulp-rev-replace');
 var useref = require('gulp-useref');
 var filter = require('gulp-filter');
 var csso = require('gulp-csso');
+
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
 process.on('unhandledRejection', function (err, promise) {
@@ -54,6 +55,26 @@ bugsnag.onBeforeNotify(function (notification) {
     metaData.client_id = process.env.QUANTIMODO_CLIENT_ID;
     metaData.build_link = getBuildLink();
 });
+
+var QuantimodoApi = require('quantimodo-api');
+var defaultClient = QuantimodoApi.ApiClient.instance;
+var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
+quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
+
+function getUnits() {
+    var apiInstance = new QuantimodoApi.UnitsApi();
+    var opts = {};
+    var callback = function(error, data, response) {
+        logInfo(response.req.path + " response: ", response);
+        if (error) {
+            logError(response.req.path + "failed: " + response.body.errorMessage, error);
+        } else {
+            console.log('API called successfully. Returned data: ' + data);
+        }
+    };
+    apiInstance.v1UnitsGet(opts, callback);
+}
+
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
