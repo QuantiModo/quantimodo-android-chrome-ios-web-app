@@ -4,10 +4,10 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	$rootScope.showFilterBarSearchIcon = false;
 	function weCanEnterPage() {
         var doNotRequireUpgradeToEnterPage = true;
-        return $rootScope.user.stripeActive || config.appSettings.upgradeDisabled || doNotRequireUpgradeToEnterPage;
+        return $rootScope.user.stripeActive || !config.appSettings.monetizationSettings.subscriptionsEnabled || doNotRequireUpgradeToEnterPage;
     }
     function userCanConnect() {
-	    return $rootScope.user.stripeActive || config.appSettings.upgradeDisabled;
+	    return $rootScope.user.stripeActive || config.appSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		console.debug("ImportCtrl beforeEnter");
