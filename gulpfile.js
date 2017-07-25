@@ -781,6 +781,9 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
     options.qs.server = options.qs.currentServerConext = getCurrentServerContext();
     return makeApiRequest(options);
 });
+function generateDefaultConfigJson(appSettings) {
+    writeToFile(defaultAppConfigPath, prettyJSONStringify(appSettings));
+}
 gulp.task('getAppConfigs', [], function () {
     if(appSettings && appSettings.clientId === process.env.QUANTIMODO_CLIENT_ID){
         logInfo("Already have appSettings for " + appSettings.clientId);
@@ -2079,6 +2082,14 @@ gulp.task('prepareAndroidApp', function (callback) {
         callback);
 });
 gulp.task('buildAndroidApp', function (callback) {
+    /** @namespace appSettings.additionalSettings.monetizationSettings */
+    /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
+    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){
+        logError("Please add your playPublicLicenseKey at " + getAppDesignerUrl());
+        logError("No playPublicLicenseKey so disabling subscriptions on Android build");
+        appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+        generateDefaultConfigJson(appSettings);
+    }
     runSequence(
         'copyAndroidLicenses',
         'prepareAndroidApp',
