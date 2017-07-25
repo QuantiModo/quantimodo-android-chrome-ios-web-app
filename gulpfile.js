@@ -1867,6 +1867,11 @@ gulp.task('configureApp', [], function (callback) {
         callback);
 });
 gulp.task('buildChromeExtension', [], function (callback) {
+    if(!appSettings.appStatus.buildEnabled.chromeExtension){
+        logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is "
+            + appSettings.appStatus.buildEnabled.chromeExtension + ".  You can enabled it at " + getAppDesignerUrl());
+        return;
+    }
     runSequence(
         'cleanChromeBuildFolder',
         'configureApp', // Need to run sass and generate index.html
@@ -2089,6 +2094,13 @@ gulp.task('buildAndroidApp', function (callback) {
         logError("No playPublicLicenseKey so disabling subscriptions on Android build");
         appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
         generateDefaultConfigJson(appSettings);
+    }
+    /** @namespace appSettings.appStatus.buildEnabled */
+    /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
+    if(!appSettings.appStatus.buildEnabled.androidRelease){
+        logError("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is "
+            + appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
+        return;
     }
     runSequence(
         'copyAndroidLicenses',
