@@ -39,9 +39,8 @@
     "ngCordova": "0.1.17-alpha",
     "oclazyload": "~1.0.4",
     "pluralize": "^1.2.1",
-    "quantimodo-sdk-angularjs-ionic": "4.7.5",
-    "ng-file-upload": "^12.2.13",
-    "quantimodo-sdk-angularjs": "5.8.723"
+    "quantimodo-sdk-javascript": "5.8.724",
+    "ng-file-upload": "^12.2.13"
   },
   "resolutions": {
     "angular": "1.6.1",

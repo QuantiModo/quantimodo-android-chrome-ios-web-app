@@ -61,7 +61,8 @@
     "vinyl-source-stream": "^1.1.0",
     "xcode": "0.8.9",
     "xml2js": "^0.4.15",
-    "yargs": "latest"
+    "yargs": "latest",
+    "quantimodo-sdk-javascript": "5.8.724"
   },
   "scripts": {
     "postinstall": "echo 'Runing npm postinstall commands...' && bower install && npm rebuild node-sass && ionic config build && gulp configureAppAfterNpmInstall"
