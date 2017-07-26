@@ -61,19 +61,7 @@ var defaultClient = QuantimodoApi.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 
-function getUnits() {
-    var apiInstance = new QuantimodoApi.UnitsApi();
-    var opts = {};
-    var callback = function(error, data, response) {
-        logInfo(response.req.path + " response: ", response);
-        if (error) {
-            logError(response.req.path + "failed: " + response.body.errorMessage, error);
-        } else {
-            console.log('API called successfully. Returned data: ' + data);
-        }
-    };
-    apiInstance.v1UnitsGet(opts, callback);
-}
+
 
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
@@ -1866,7 +1854,7 @@ gulp.task('configureApp', [], function (callback) {
         'setVersionNumberInFiles',
         callback);
 });
-gulp.task('buildChromeExtension', [], function (callback) {
+gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
         logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is "
             + appSettings.appStatus.buildEnabled.chromeExtension + ".  You can enabled it at " + getAppDesignerUrl());
@@ -1874,6 +1862,7 @@ gulp.task('buildChromeExtension', [], function (callback) {
     }
     runSequence(
         'cleanChromeBuildFolder',
+        'bowerInstall',
         'configureApp', // Need to run sass and generate index.html
         'copyWwwFolderToChromeExtension',  // Can't use symlinks on vagrant
         'createChromeExtensionManifest',
@@ -2086,7 +2075,7 @@ gulp.task('prepareAndroidApp', function (callback) {
         'copyIconsToWwwImg',
         callback);
 });
-gulp.task('buildAndroidApp', function (callback) {
+gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.additionalSettings.monetizationSettings */
     /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
     if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){
@@ -2104,6 +2093,7 @@ gulp.task('buildAndroidApp', function (callback) {
     }
     runSequence(
         'copyAndroidLicenses',
+        'bowerInstall',
         'prepareAndroidApp',
         'ionicInfo',
         'cordovaBuildAndroidRelease',
