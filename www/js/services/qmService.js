@@ -852,7 +852,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
     };
     function setAccessTokenInQuantiModoApiClient(accessToken) {
-        var qmClient = QuantimodoApi.ApiClient.instance;
+        var qmClient = Quantimodo.ApiClient.instance;
         var quantimodo_oauth2 = qmClient.authentications['quantimodo_oauth2'];
         quantimodo_oauth2.accessToken = accessToken;
     }
