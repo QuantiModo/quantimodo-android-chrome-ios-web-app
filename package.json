@@ -52,7 +52,6 @@
     "ng-material-floating-button": "^0.6.2",
     "plist": "^1.2.0",
     "q": "^1.4.1",
-    "quantimodo-api": "^5.8.7",
     "request": "^2.64.0",
     "request-promise": "^4.2.1",
     "run-sequence": "^1.1.4",
@@ -62,7 +61,7 @@
     "xcode": "0.8.9",
     "xml2js": "^0.4.15",
     "yargs": "latest",
-    "quantimodo-sdk-javascript": "5.8.724"
+    "quantimodo": "5.8.725"
   },
   "scripts": {
     "postinstall": "echo 'Runing npm postinstall commands...' && bower install && npm rebuild node-sass && ionic config build && gulp configureAppAfterNpmInstall"
