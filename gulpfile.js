@@ -783,6 +783,11 @@ gulp.task('getAppConfigs', [], function () {
         appSettings.buildServer = getCurrentServerContext();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
+        /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
+        /** @namespace appSettings.appStatus.buildEnabled.androidX86Release */
+        if(appSettings.appStatus.buildEnabled.androidX86Release || appSettings.appStatus.buildEnabled.androidArmv7Release){
+            appSettings.appStatus.additionalSettings.buildSettings.xwalkMultipleApk = true;
+        }
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
