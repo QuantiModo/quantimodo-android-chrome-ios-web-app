@@ -536,7 +536,7 @@ function unzipFile(pathToZipFile, pathToOutputFolder) {
 }
 function getCordovaBuildCommand(releaseStage, platform) {
     var command = 'cordova build --' + releaseStage + ' ' + platform;
-    if(buildDebug){command += " --verbose";}
+    //if(buildDebug){command += " --verbose";}  // Causes stdout maxBuffer exceeded error.  Run this as a command outside gulp if you need verbose output
     return command;
 }
 function outputVersionCodeForApk(pathToApk) {
