@@ -24,6 +24,9 @@ if [ -z ${BUDDYBUILD_SCHEME} ];
         echo "NOT BUILDING IOS APP because BUDDYBUILD_SCHEME env is not set ${BUDDYBUILD_SCHEME}"
         echo "BUILDING ANDROID APP because BUDDYBUILD_SCHEME is not set ${BUDDYBUILD_SCHEME}"
 
+        echo "password | sudo -S apt-get update"
+        echo password | sudo -S apt-get update
+
         echo "Running apt-get install -y imagemagick"
         echo password | sudo -S apt-get install -y imagemagick
 
