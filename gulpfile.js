@@ -772,7 +772,7 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
 function generateDefaultConfigJson(appSettings) {
     writeToFile(defaultAppConfigPath, prettyJSONStringify(appSettings));
 }
-gulp.task('getAppConfigs', [], function () {
+gulp.task('getAppConfigs', ['setClientId'], function () {
     if(appSettings && appSettings.clientId === process.env.QUANTIMODO_CLIENT_ID){
         logInfo("Already have appSettings for " + appSettings.clientId);
         return;
