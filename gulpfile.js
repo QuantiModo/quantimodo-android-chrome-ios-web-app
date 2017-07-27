@@ -751,7 +751,7 @@ gulp.task('downloadIcon', [], function(){
     return downloadFile(iconUrl, 'icon.png', "./resources");
 });
 gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], function(){
-    if(!appSettings.additionalSettings.buildSettings.playPublicLicenseKey){
+    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey){
         logError("No public licence key for Play Store subscriptions.  Please add it at  " + getAppDesignerUrl(), appSettings.additionalSettings);
         return;
     }
