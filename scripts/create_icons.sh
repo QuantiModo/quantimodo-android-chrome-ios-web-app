@@ -5,7 +5,7 @@
 #if ! type "imagemagick" > /dev/null;
 #  then
 #  echo -e "${GREEN}Installing imagemagick package...${NC}"
-#  apt-get install imagemagick # For Linux
+#  apt-get install -y imagemagick # For Linux
 #  echo "If you are using OSX, install https://www.macports.org/install.php and run: 'sudo port install ImageMagick' in a new terminal..."
 #fi
 
