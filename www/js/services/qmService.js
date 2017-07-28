@@ -854,6 +854,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function setAccessTokenInQuantiModoApiClient(accessToken) {
         var qmClient = Quantimodo.ApiClient.instance;
         var quantimodo_oauth2 = qmClient.authentications['quantimodo_oauth2'];
+        qmClient.basePath = qmService.getApiUrl() + '/api';
         quantimodo_oauth2.accessToken = accessToken;
     }
     qmService.saveAccessTokenInLocalStorage = function (accessResponse) {
@@ -861,7 +862,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if (accessToken) {
             $rootScope.accessToken = accessToken;
             localStorage.setItem('accessToken', accessToken);
-            setAccessTokenInQuantiModoApiClient(accessToken)
+            setAccessTokenInQuantiModoApiClient(accessToken);
         } else {
             logError('No access token provided to qmService.saveAccessTokenInLocalStorage');
             return;
