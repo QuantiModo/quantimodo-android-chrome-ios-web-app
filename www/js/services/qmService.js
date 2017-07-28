@@ -182,6 +182,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             "deviceTokenToSync": localStorage.getItem('deviceTokenToSync')
         };
         metaData.build_server = config.appSettings.buildServer;
+        metaData.build_link = config.appSettings.buildLink;
         metaData.test_url = getTestUrl();
         //metaData.appSettings = config.appSettings;  // Request Entity Too Large
         if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
