@@ -5867,11 +5867,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var deferred = $q.defer();
         $rootScope.user.stripeActive = false;
         qmService.reportErrorDeferred('User downgraded subscription: ' + JSON.stringify($rootScope.user));
-        qmService.postDowngradeSubscription({}, function(response){
-            $rootScope.user = response.user;
+        qmService.postDowngradeSubscription({}, function(user){
+            $rootScope.user = user;
             qmService.setLocalStorageItem('user', JSON.stringify($rootScope.user));
             localStorage.user = JSON.stringify($rootScope.user); // For Chrome Extension
-            deferred.resolve(response);
+            deferred.resolve(user);
         }, function(response){deferred.reject(response);});
         return deferred.promise;
     };

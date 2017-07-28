@@ -256,9 +256,9 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 
     var webDowngrade = function() {
         qmService.showBlackRingLoader();
-        qmService.postDowngradeSubscriptionDeferred().then(function (response) {
+        qmService.postDowngradeSubscriptionDeferred().then(function (user) {
             qmService.hideLoader();
-            console.debug(JSON.stringify(response));
+            console.debug(JSON.stringify(user));
             qmService.showMaterialAlert('Downgraded', 'Successfully downgraded to QuantiModo Lite');
         }, function (error) {
             qmService.hideLoader();
@@ -274,8 +274,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         });
         confirmPopup.then(function(res) {
             if(res) {
-                qmService.postDowngradeSubscriptionDeferred().then(function (response) {
-                    console.debug(JSON.stringify(response));
+                qmService.postDowngradeSubscriptionDeferred().then(function (user) {
+                    console.debug(JSON.stringify(user));
                 }, function (error) { qmService.logError(JSON.stringify(error)); });
                 window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
@@ -287,8 +287,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         confirmPopup.then(function(res) {
             if(res) {
                 $rootScope.user.stripeActive = false;
-                qmService.postDowngradeSubscriptionDeferred().then(function (response) {
-                    console.debug(JSON.stringify(response));
+                qmService.postDowngradeSubscriptionDeferred().then(function (user) {
+                    console.debug(JSON.stringify(user));
                 }, function (error) { qmService.logError(JSON.stringify(error)); });
                 window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
