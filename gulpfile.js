@@ -756,7 +756,7 @@ gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], functio
         return;
     }
     var manifestJson = {
-        'play_store_key': buildSettings.playPublicLicenseKey
+        'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey
     };
     /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
