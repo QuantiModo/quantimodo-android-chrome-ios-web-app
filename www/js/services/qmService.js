@@ -118,6 +118,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.logDebug = function(message, stackTrace) {
         logDebug(message, stackTrace);
     };
+    function logInfo(message, stackTrace) {
+        message = addStateNameToMessage(message);
+        if(window.debugMode){
+            if(!stackTrace){stackTrace = getStackTrace();}
+            message = addStackTraceToMessage(message, stackTrace);
+        }
+        console.info(message);
+    }
+    qmService.logInfo = function(message, stackTrace) {
+        logInfo(message, stackTrace);
+    };
     function obfuscateSecrets(object){
         if(typeof object !== 'object'){return object;}
         object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
@@ -746,7 +757,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return $rootScope.accessTokenFromUrl;
     };
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
-    function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();};
+    function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();}
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         logDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
         if($rootScope.user && $rootScope.user.accessToken === qmService.getAccessTokenFromUrl()){
@@ -839,6 +850,24 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             logDebug("qmService.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
             deferred.reject(response);
         });
+    };
+    function configureQmApiClient() {
+        function getAccessToken(){
+            if(qmService.getAccessTokenFromUrl()){return qmService.getAccessTokenFromUrl();}
+            if($rootScope.user && $rootScope.user.accessToken){return $rootScope.user.accessToken;}
+            var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
+            if(accessTokenFromLocalStorage){return accessTokenFromLocalStorage;}
+        }
+        var qmApiClient = Quantimodo.ApiClient.instance;
+        var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
+        qmApiClient.basePath = qmService.getApiUrl() + '/api';
+        quantimodo_oauth2.accessToken = getAccessToken();
+        return qmApiClient;
+    }
+    qmService.getMeasurements = function(params, callback){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.MeasurementsApi();
+        apiInstance.getMeasurements(params, callback);
     };
     qmService.saveAccessTokenInLocalStorage = function (accessResponse) {
         var accessToken = accessResponse.accessToken || accessResponse.access_token;
