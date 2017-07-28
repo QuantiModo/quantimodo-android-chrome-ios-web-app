@@ -61,24 +61,19 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 				}, function (error) {qmService.logError(error);});
 			}
 		}
-        function successHandler(history) {
-			history = qmService.addInfoAndImagesToMeasurements(history);
-            if(!history ||!history.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
-            if (concat) {$scope.state.history = $scope.state.history.concat(history);} else {$scope.state.history = history;}
-            hideLoader();
-            if(history.length < $scope.state.limit){$scope.state.noHistory = history.length === 0;}
-        }
-        function errorHandler(error) {
-            $scope.state.noHistory = true;
-            Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-            console.error('error getting measurements' + JSON.stringify(error));
-            hideLoader();
-        }
-        var callback = function(error, data, response) {
-            if (error) {errorHandler(error);} else {successHandler(response.body);}
-        };
-        var apiInstance = new Quantimodo.MeasurementsApi();
-        apiInstance.getMeasurements(params, callback);
+        qmService.getMeasurements(params, function(error, measurements, response) {
+            if (error) {
+                $scope.state.noHistory = true;
+                qmService.logError('error getting measurements' + JSON.stringify(error));
+                hideLoader();
+            } else {
+                measurements = qmService.addInfoAndImagesToMeasurements(measurements);
+                if(!measurements ||!measurements.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
+                if (concat) {$scope.state.history = $scope.state.history.concat(measurements);} else {$scope.state.history = measurements;}
+                hideLoader();
+                if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
+            }
+        });
 	};
 	function setupVariableCategoryActionSheet() {
 		$rootScope.showActionSheetMenu = function() {

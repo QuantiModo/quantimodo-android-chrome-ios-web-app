@@ -757,7 +757,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return $rootScope.accessTokenFromUrl;
     };
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
-    function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();};
+    function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();}
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         logDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
         if($rootScope.user && $rootScope.user.accessToken === qmService.getAccessTokenFromUrl()){
@@ -851,18 +851,29 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.reject(response);
         });
     };
-    function setAccessTokenInQuantiModoApiClient(accessToken) {
-        var qmClient = Quantimodo.ApiClient.instance;
-        var quantimodo_oauth2 = qmClient.authentications['quantimodo_oauth2'];
-        qmClient.basePath = qmService.getApiUrl() + '/api';
-        quantimodo_oauth2.accessToken = accessToken;
+    function configureQmApiClient() {
+        function getAccessToken(){
+            if(qmService.getAccessTokenFromUrl()){return qmService.getAccessTokenFromUrl();}
+            if($rootScope.user && $rootScope.user.accessToken){return $rootScope.user.accessToken;}
+            var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
+            if(accessTokenFromLocalStorage){return accessTokenFromLocalStorage;}
+        }
+        var qmApiClient = Quantimodo.ApiClient.instance;
+        var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
+        qmApiClient.basePath = qmService.getApiUrl() + '/api';
+        quantimodo_oauth2.accessToken = getAccessToken();
+        return qmApiClient;
     }
+    qmService.getMeasurements = function(params, callback){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.MeasurementsApi();
+        apiInstance.getMeasurements(params, callback);
+    };
     qmService.saveAccessTokenInLocalStorage = function (accessResponse) {
         var accessToken = accessResponse.accessToken || accessResponse.access_token;
         if (accessToken) {
             $rootScope.accessToken = accessToken;
             localStorage.setItem('accessToken', accessToken);
-            setAccessTokenInQuantiModoApiClient(accessToken);
         } else {
             logError('No access token provided to qmService.saveAccessTokenInLocalStorage');
             return;
@@ -6790,7 +6801,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
-            setAccessTokenInQuantiModoApiClient($rootScope.user.accessToken)
             qmService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
             if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
             if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
