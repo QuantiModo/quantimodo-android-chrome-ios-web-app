@@ -824,12 +824,41 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     return makeApiRequest(options, successHandler);
 });
 gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
-    /** @namespace appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile */
-    if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
+    var buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
+    delete appSettings.additionalSettings.buildSettings;
+    /** @namespace buildSettings.androidReleaseKeystoreFile */
+    if(!buildSettings.androidReleaseKeystoreFile){
         logError( "No Android Keystore provided.  Using QuantiModo one.  If you have your own, please upload it at " + getAppDesignerUrl());
         return;
     }
-    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
+    /** @namespace buildSettings.androidReleaseKeystorePassword */
+    if(!buildSettings.androidReleaseKeystorePassword){
+        logError( "No Android keystore storePassword provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    /** @namespace buildSettings.androidReleaseKeyAlias */
+    if(!buildSettings.androidReleaseKeyAlias){
+        logError( "No Android keystore alias provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    /** @namespace buildSettings.androidReleaseKeyPassword */
+    if(!buildSettings.androidReleaseKeyPassword){
+        logError( "No Android keystore password provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    var buildJson = {
+        "android": {
+            "release": {
+                "keystore":"quantimodo.keystore",
+                "storePassword": buildSettings.androidReleaseKeystorePassword,
+                "alias": buildSettings.androidReleaseKeyAlias,
+                "password": buildSettings.androidReleaseKeyPassword,
+                "keystoreType":""
+            }
+        }
+    };
+    writeToFile('build.json', prettyJSONStringify(buildJson));
+    return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
 });
 gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
     if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
