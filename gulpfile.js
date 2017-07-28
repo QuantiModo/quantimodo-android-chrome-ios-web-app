@@ -44,6 +44,7 @@ var csso = require('gulp-csso');
 
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
+bugsnag.releaseStage = getCurrentServerContext();
 process.on('unhandledRejection', function (err, promise) {
     console.error("Unhandled rejection: " + (err && err.stack || err));
     bugsnag.notify(err);
