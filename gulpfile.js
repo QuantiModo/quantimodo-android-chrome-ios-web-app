@@ -783,6 +783,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     function successHandler(response) {
         appSettings = response.appSettings;
         appSettings.buildServer = getCurrentServerContext();
+        appSettings.buildLink = getBuildLink();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
