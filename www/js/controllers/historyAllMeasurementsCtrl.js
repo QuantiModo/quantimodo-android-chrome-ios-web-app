@@ -78,7 +78,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
             if (error) {errorHandler(error);} else {successHandler(response.body);}
         };
         var apiInstance = new Quantimodo.MeasurementsApi();
-        apiInstance.v1MeasurementsGet(params, callback);
+        apiInstance.getMeasurements(params, callback);
 	};
 	function setupVariableCategoryActionSheet() {
 		$rootScope.showActionSheetMenu = function() {
