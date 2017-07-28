@@ -375,8 +375,8 @@ function fastlaneSupply(track, callback) {
     var apk_paths;
     logInfo("If you have problems uploading to Play, promote any alpha releases to beta, disable the alpha channel, and set xwalkMultipleApk to false");
     /** @namespace appSettings.additionalSettings */
-    /** @namespace appSettings.additionalSettings.buildSettings.xwalkMultipleApk */
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk) {
+    /** @namespace buildSettings.xwalkMultipleApk */
+    if(buildSettings.xwalkMultipleApk) {
         apk_paths = pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk;
     } else {
         apk_paths = pathToCombinedReleaseApk;
@@ -557,7 +557,7 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
     parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk",
-        value: (appSettings.additionalSettings.buildSettings.xwalkMultipleApk) ? true : false}});
+        value: (buildSettings.xwalkMultipleApk) ? true : false}});
     return parsedXmlFile;
 }
 function generateConfigXmlFromTemplate(callback) {
@@ -756,9 +756,9 @@ gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], functio
         return;
     }
     var manifestJson = {
-        'play_store_key': appSettings.additionalSettings.buildSettings.playPublicLicenseKey
+        'play_store_key': buildSettings.playPublicLicenseKey
     };
-    /** @namespace appSettings.additionalSettings.buildSettings.playPublicLicenseKey */
+    /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
 });
 gulp.task('downloadSplashScreen', [], function(){
@@ -785,6 +785,8 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         appSettings.buildServer = getCurrentServerContext();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
+        buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
+        delete appSettings.additionalSettings.buildSettings;
         /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
         /** @namespace appSettings.appStatus.buildEnabled.androidX86Release */
         if(appSettings.appStatus.buildEnabled.androidX86Release || appSettings.appStatus.buildEnabled.androidArmv7Release){
@@ -823,9 +825,8 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     }
     return makeApiRequest(options, successHandler);
 });
+var buildSettings;
 gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
-    var buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
-    delete appSettings.additionalSettings.buildSettings;
     /** @namespace buildSettings.androidReleaseKeystoreFile */
     if(!buildSettings.androidReleaseKeystoreFile){
         logError( "No Android Keystore provided.  Using QuantiModo one.  If you have your own, please upload it at " + getAppDesignerUrl());
@@ -861,17 +862,17 @@ gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
     return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
 });
 gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
-    if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
+    if(!buildSettings.androidReleaseKeystoreFile){
         throw "Please upload your Android release keystore at " + getAppEditUrl();
     }
-    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "debug.keystore");
+    return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "debug.keystore");
 });
 gulp.task('getAndroidManifest', ['getAppConfigs'], function () {
-    /** @namespace appSettings.additionalSettings.buildSettings.androidMaifestJsonFile */
-    if(!appSettings.additionalSettings.buildSettings.androidMaifestJsonFile){
+    /** @namespace buildSettings.androidMaifestJsonFile */
+    if(!buildSettings.androidMaifestJsonFile){
         logError("Please add your Android manifest.json at " + getAppEditUrl() + " to enable Google Play Store subscriptions");
     }
-    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidMaifestJsonFile, "www/manifest.json");
+    return downloadEncryptedFile(buildSettings.androidMaifestJsonFile, "www/manifest.json");
 });
 gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
     runSequence(
@@ -894,12 +895,12 @@ gulp.task('verifyExistenceOfDefaultConfig', function () {
     return verifyExistenceOfFile(defaultAppConfigPath);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return verifyExistenceOfFile(pathToReleasex86Apk);
     }
 });
 gulp.task('verifyExistenceOfAndroidArmV7ReleaseBuild', function () {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return verifyExistenceOfFile(pathToReleaseArmv7Apk);
     }
 });
@@ -923,17 +924,17 @@ gulp.task('getSHA1FromAPK', function () {
     });
 });
 gulp.task('outputX86ApkVersionCode', function () {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return outputVersionCodeForApk(pathToReleasex86Apk);
     }
 });
 gulp.task('outputArmv7ApkVersionCode', function () {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return outputVersionCodeForApk(pathToReleaseArmv7Apk);
     }
 });
 gulp.task('outputCombinedApkVersionCode', function () {
-    if(!appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(!buildSettings.xwalkMultipleApk){
         return outputVersionCodeForApk(pathToReleaseArmv7Apk);
     }
 });
@@ -1085,17 +1086,17 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
 });
 gulp.task("upload-chrome-extension-to-s3", function() {return uploadBuildToS3(getPathToChromeExtensionZip());});
 gulp.task("upload-x86-release-apk-to-s3", function() {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(pathToReleasex86Apk);
     }
 });
 gulp.task("upload-armv7-release-apk-to-s3", function() {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(pathToReleaseArmv7Apk);
     }
 });
 gulp.task("upload-combined-release-apk-to-s3", function() {
-    if(!appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(!buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(pathToCombinedReleaseApk);
     }
 });
