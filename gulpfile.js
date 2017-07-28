@@ -56,8 +56,8 @@ bugsnag.onBeforeNotify(function (notification) {
     metaData.build_link = getBuildLink();
 });
 
-var QuantimodoApi = require('quantimodo');
-var defaultClient = QuantimodoApi.ApiClient.instance;
+var Quantimodo = require('quantimodo');
+var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 
