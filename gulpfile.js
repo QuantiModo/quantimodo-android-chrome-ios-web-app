@@ -61,24 +61,12 @@ var defaultClient = QuantimodoApi.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 
-function getUnits() {
-    var apiInstance = new QuantimodoApi.UnitsApi();
-    var opts = {};
-    var callback = function(error, data, response) {
-        logInfo(response.req.path + " response: ", response);
-        if (error) {
-            logError(response.req.path + "failed: " + response.body.errorMessage, error);
-        } else {
-            console.log('API called successfully. Returned data: ' + data);
-        }
-    };
-    apiInstance.v1UnitsGet(opts, callback);
-}
+
 
 var s3 = require('gulp-s3-upload')({accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY});
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 function isTruthy(value) {return (value && value !== "false");}
-var buildDebug = isTruthy(process.env.BUILD_DEBUG);
+var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 logInfo("Environmental Variables:", process.env);
 function getCurrentServerContext() {
     var currentServerContext = "local";
@@ -91,9 +79,11 @@ function getBuildLink() {
     if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
 }
 function setClientId(callback) {
-    if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH;}
+    if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){
+        process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH.replace('apps/', '');
+    }
     if(process.env.CIRCLE_BRANCH && process.env.CIRCLE_BRANCH.indexOf('apps') !== -1){
-        process.env.QUANTIMODO_CLIENT_ID = process.env.CIRCLE_BRANCH;
+        process.env.QUANTIMODO_CLIENT_ID = process.env.CIRCLE_BRANCH.replace('apps/', '');
         logInfo("Using CIRCLE_BRANCH as client id: " + process.env.CIRCLE_BRANCH);
     }
     if(argv.clientId){
@@ -546,7 +536,7 @@ function unzipFile(pathToZipFile, pathToOutputFolder) {
 }
 function getCordovaBuildCommand(releaseStage, platform) {
     var command = 'cordova build --' + releaseStage + ' ' + platform;
-    if(buildDebug){command += " --verbose";}
+    //if(buildDebug){command += " --verbose";}  // Causes stdout maxBuffer exceeded error.  Run this as a command outside gulp if you need verbose output
     return command;
 }
 function outputVersionCodeForApk(pathToApk) {
@@ -761,7 +751,7 @@ gulp.task('downloadIcon', [], function(){
     return downloadFile(iconUrl, 'icon.png', "./resources");
 });
 gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], function(){
-    if(!appSettings.additionalSettings.buildSettings.playPublicLicenseKey){
+    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey){
         logError("No public licence key for Play Store subscriptions.  Please add it at  " + getAppDesignerUrl(), appSettings.additionalSettings);
         return;
     }
@@ -784,7 +774,7 @@ gulp.task('mergeToMasterAndTriggerRebuildsForAllApps', [], function(){
 function generateDefaultConfigJson(appSettings) {
     writeToFile(defaultAppConfigPath, prettyJSONStringify(appSettings));
 }
-gulp.task('getAppConfigs', [], function () {
+gulp.task('getAppConfigs', ['setClientId'], function () {
     if(appSettings && appSettings.clientId === process.env.QUANTIMODO_CLIENT_ID){
         logInfo("Already have appSettings for " + appSettings.clientId);
         return;
@@ -795,6 +785,11 @@ gulp.task('getAppConfigs', [], function () {
         appSettings.buildServer = getCurrentServerContext();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
+        /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
+        /** @namespace appSettings.appStatus.buildEnabled.androidX86Release */
+        if(appSettings.appStatus.buildEnabled.androidX86Release || appSettings.appStatus.buildEnabled.androidArmv7Release){
+            appSettings.appStatus.additionalSettings.buildSettings.xwalkMultipleApk = true;
+        }
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
@@ -829,12 +824,41 @@ gulp.task('getAppConfigs', [], function () {
     return makeApiRequest(options, successHandler);
 });
 gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
-    /** @namespace appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile */
-    if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
+    var buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
+    delete appSettings.additionalSettings.buildSettings;
+    /** @namespace buildSettings.androidReleaseKeystoreFile */
+    if(!buildSettings.androidReleaseKeystoreFile){
         logError( "No Android Keystore provided.  Using QuantiModo one.  If you have your own, please upload it at " + getAppDesignerUrl());
         return;
     }
-    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
+    /** @namespace buildSettings.androidReleaseKeystorePassword */
+    if(!buildSettings.androidReleaseKeystorePassword){
+        logError( "No Android keystore storePassword provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    /** @namespace buildSettings.androidReleaseKeyAlias */
+    if(!buildSettings.androidReleaseKeyAlias){
+        logError( "No Android keystore alias provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    /** @namespace buildSettings.androidReleaseKeyPassword */
+    if(!buildSettings.androidReleaseKeyPassword){
+        logError( "No Android keystore password provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    var buildJson = {
+        "android": {
+            "release": {
+                "keystore":"quantimodo.keystore",
+                "storePassword": buildSettings.androidReleaseKeystorePassword,
+                "alias": buildSettings.androidReleaseKeyAlias,
+                "password": buildSettings.androidReleaseKeyPassword,
+                "keystoreType":""
+            }
+        }
+    };
+    writeToFile('build.json', prettyJSONStringify(buildJson));
+    return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
 });
 gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
     if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
@@ -1866,9 +1890,15 @@ gulp.task('configureApp', [], function (callback) {
         'setVersionNumberInFiles',
         callback);
 });
-gulp.task('buildChromeExtension', [], function (callback) {
+gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
+    if(!appSettings.appStatus.buildEnabled.chromeExtension){
+        logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is "
+            + appSettings.appStatus.buildEnabled.chromeExtension + ".  You can enabled it at " + getAppDesignerUrl());
+        return;
+    }
     runSequence(
         'cleanChromeBuildFolder',
+        'bowerInstall',
         'configureApp', // Need to run sass and generate index.html
         'copyWwwFolderToChromeExtension',  // Can't use symlinks on vagrant
         'createChromeExtensionManifest',
@@ -2081,7 +2111,7 @@ gulp.task('prepareAndroidApp', function (callback) {
         'copyIconsToWwwImg',
         callback);
 });
-gulp.task('buildAndroidApp', function (callback) {
+gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.additionalSettings.monetizationSettings */
     /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
     if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){
@@ -2090,8 +2120,16 @@ gulp.task('buildAndroidApp', function (callback) {
         appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
         generateDefaultConfigJson(appSettings);
     }
+    /** @namespace appSettings.appStatus.buildEnabled */
+    /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
+    if(!appSettings.appStatus.buildEnabled.androidRelease){
+        logError("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is "
+            + appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
+        return;
+    }
     runSequence(
         'copyAndroidLicenses',
+        'bowerInstall',
         'prepareAndroidApp',
         'ionicInfo',
         'cordovaBuildAndroidRelease',

@@ -16,7 +16,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(config.appSettings.versionNumber){
             urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
         } else {
-            Bugsnag.notify("Version number not specified!", "Version number not specified on config.appSettings", {appSettings: config.appSettings}, 'error');
+            logDebug("Version number not specified!", "Version number not specified on config.appSettings");
         }
         urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(qmService.getClientId()));
         if(window.developmentMode && window.devCredentials){
