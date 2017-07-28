@@ -77,7 +77,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
         var callback = function(error, data, response) {
             if (error) {errorHandler(error);} else {successHandler(response.body);}
         };
-        var apiInstance = new QuantiModoApi.MeasurementsApi();
+        var apiInstance = new Quantimodo.MeasurementsApi();
         apiInstance.v1MeasurementsGet(params, callback);
 	};
 	function setupVariableCategoryActionSheet() {
