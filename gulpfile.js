@@ -71,9 +71,9 @@ var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 logInfo("Environmental Variables:", process.env);
 function getCurrentServerContext() {
     var currentServerContext = "local";
-    if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
-    if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
-    return currentServerContext;
+    if(process.env.CIRCLE_BRANCH){return "circleci";}
+    if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
+    return process.env.HOSTNAME;
 }
 function getBuildLink() {
     if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
