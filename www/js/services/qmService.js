@@ -7032,7 +7032,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if(!window.config){window.config = {};}
         window.config.appSettings = appSettings;
-        logDebug("appSettings.clientId is " + window.$rootScope.appSettings.clientId);
+        logDebug("appSettings.clientId is " + $rootScope.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(window.config.appSettings.appDesign.menu);
         //window.config.appSettings.appDesign.menu = qmService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
