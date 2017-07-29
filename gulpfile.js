@@ -44,6 +44,7 @@ var csso = require('gulp-csso');
 
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
+bugsnag.releaseStage = getCurrentServerContext();
 process.on('unhandledRejection', function (err, promise) {
     console.error("Unhandled rejection: " + (err && err.stack || err));
     bugsnag.notify(err);
@@ -70,9 +71,9 @@ var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 logInfo("Environmental Variables:", process.env);
 function getCurrentServerContext() {
     var currentServerContext = "local";
-    if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
-    if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
-    return currentServerContext;
+    if(process.env.CIRCLE_BRANCH){return "circleci";}
+    if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
+    return process.env.HOSTNAME;
 }
 function getBuildLink() {
     if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
@@ -783,6 +784,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     function successHandler(response) {
         appSettings = response.appSettings;
         appSettings.buildServer = getCurrentServerContext();
+        appSettings.buildLink = getBuildLink();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
         buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
