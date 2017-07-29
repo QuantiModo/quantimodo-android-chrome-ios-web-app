@@ -142,7 +142,7 @@ angular.module('starter').controller('UpgradeCtrl', function ($scope, $state, $i
         return subscriptionProvider;
     }
     function getProductId(baseProductId) {
-        if($rootScope.isIOS){ return config.appSettings.clientId + '_' + baseProductId; }
+        if($rootScope.isIOS){ return $rootScope.appSettings.clientId + '_' + baseProductId; }
         return baseProductId;
     }
     function handleSubscribeResponse(baseProductId, data) {
