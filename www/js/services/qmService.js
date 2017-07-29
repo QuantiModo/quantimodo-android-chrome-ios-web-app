@@ -7032,12 +7032,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if(!window.config){window.config = {};}
         window.config.appSettings = appSettings;
-        logDebug("appSettings.clientId is " + $rootScope.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(window.config.appSettings.appDesign.menu);
         //window.config.appSettings.appDesign.menu = qmService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
         //window.config.appSettings.appDesign.floatingActionButton = qmService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
+        logDebug("appSettings.clientId is " + $rootScope.appSettings.clientId);
         if(window.debugMode){logDebug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
         changeFavicon();
