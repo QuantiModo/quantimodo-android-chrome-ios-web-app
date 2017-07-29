@@ -12,9 +12,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     // GET method with the added token
     function addGlobalUrlParams(urlParams) {
-        urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-        if(config.appSettings.versionNumber){
-            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
+        urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent($rootScope.appSettings.appDisplayName));
+        if($rootScope.appSettings.versionNumber){
+            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appSettings.versionNumber));
         } else {
             logDebug("Version number not specified!", "Version number not specified on config.appSettings");
         }
@@ -98,7 +98,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return object;
     }
-    function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName));}
+    function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', $rootScope.appSettings.appDisplayName));}
     function addStackTraceToMessage(message, stackTrace) {
         if(!stackTrace){stackTrace = getStackTrace();}
         return message + ".  StackTrace: " + stackTrace;
@@ -1075,10 +1075,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         // you can set any advanced configuration here
         Analytics.set('&uid', user.id);
         Analytics.set('&ds', $rootScope.currentPlatform);
-        Analytics.set('&cn', config.appSettings.appDisplayName);
-        Analytics.set('&cs', config.appSettings.appDisplayName);
+        Analytics.set('&cn', $rootScope.appSettings.appDisplayName);
+        Analytics.set('&cs', $rootScope.appSettings.appDisplayName);
         Analytics.set('&cm', $rootScope.currentPlatform);
-        Analytics.set('&an', config.appSettings.appDisplayName);
+        Analytics.set('&an', $rootScope.appSettings.appDisplayName);
         if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.appIds && config.appSettings.additionalSettings.appIds.googleReversedClientId){
             Analytics.set('&aid', config.appSettings.additionalSettings.appIds.googleReversedClientId);
         }
@@ -1141,7 +1141,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             name: user.displayName,
             email: user.email,
             user_id: user.id,
-            app_name: config.appSettings.appDisplayName,
+            app_name: $rootScope.appSettings.appDisplayName,
             app_version: config.appSettings.versionNumber,
             platform: $rootScope.currentPlatform
         };
@@ -1511,7 +1511,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
         return measurementObject;
     };
-    function getSourceName() {return config.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
+    function getSourceName() {return $rootScope.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
     var addLocationAndSourceDataToMeasurement = function(measurementObject){
         addLocationDataToMeasurement(measurementObject);
         if(!measurementObject.sourceName){measurementObject.sourceName = getSourceName();}
@@ -1758,11 +1758,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function envIsDevelopment() {return getEnv() === 'development';}
     qmService.getEnv = function(){return getEnv();};
     qmService.getClientId = function(){
-        if(typeof config !== "undefined" && config.appSettings.clientId){
-            logDebug("config.appSettings.clientId is " + config.appSettings.clientId);
-            return config.appSettings.clientId;
+        if(typeof config !== "undefined" && $rootScope.appSettings.clientId){
+            logDebug("$rootScope.appSettings.clientId is " + $rootScope.appSettings.clientId);
+            return $rootScope.appSettings.clientId;
         } else {
-            logDebug("config.appSettings.clientId is not present");
+            logDebug("$rootScope.appSettings.clientId is not present");
         }
         if(!window.private_keys){return appsManager.getQuantiModoClientId();}
         if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
@@ -1815,7 +1815,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return 'https';
     };
     qmService.getApiUrl = function () {
-        //if(config.appSettings.clientId !== "ionic"){return "https://" + config.appSettings.clientId + ".quantimo.do";}
+        //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
         if(config.appSettings.apiUrl){
             if(config.appSettings.apiUrl.indexOf('https://') === -1){config.appSettings.apiUrl = "https://" + config.appSettings.apiUrl;}
             return config.appSettings.apiUrl;
@@ -1996,7 +1996,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     user: {name: $rootScope.user.displayName, email: $rootScope.user.email}
                 };
             } else {Bugsnag.metaData = {platform: ionic.Platform.platform(), platformVersion: ionic.Platform.version()};}
-            if(config){Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;}
+            if(config){Bugsnag.metaData.appDisplayName = $rootScope.appSettings.appDisplayName;}
             deferred.resolve();
         } else {deferred.reject('Bugsnag is not defined');}
         return deferred.promise;
@@ -5547,7 +5547,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.chromeExtensionLogin = function(register) {
         function getAfterLoginRedirectUrl() {
-            return encodeURIComponent("https://" + config.appSettings.clientId + ".quantimo.do");
+            return encodeURIComponent("https://" + $rootScope.appSettings.clientId + ".quantimo.do");
         }
         function getLoginUrl() {
             var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
@@ -5999,12 +5999,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         // example: Analytics.addImpression(baseProductId, name, list, brand, category, variant, position, price);
         Analytics.addImpression(upgradeSubscriptionProducts.monthly7.baseProductId,
             upgradeSubscriptionProducts.monthly7.name, $rootScope.currentPlatform + ' Upgrade Options',
-            config.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
+            $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
             upgradeSubscriptionProducts.monthly7.variant, upgradeSubscriptionProducts.monthly7.position,
             upgradeSubscriptionProducts.monthly7.price);
         Analytics.addImpression(upgradeSubscriptionProducts.yearly60.baseProductId,
             upgradeSubscriptionProducts.yearly60.name, $rootScope.currentPlatform + ' Upgrade Options',
-            config.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
+            $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
             upgradeSubscriptionProducts.yearly60.variant, upgradeSubscriptionProducts.yearly60.position,
             upgradeSubscriptionProducts.yearly60.price);
         Analytics.pageView();
@@ -6012,7 +6012,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.recordUpgradeProductPurchase = function (baseProductId, transactionId, step, coupon) {
         //Analytics.addProduct(baseProductId, name, category, brand, variant, price, quantity, coupon, position);
         Analytics.addProduct(baseProductId, upgradeSubscriptionProducts[baseProductId].name,
-            upgradeSubscriptionProducts[baseProductId].category, config.appSettings.appDisplayName,
+            upgradeSubscriptionProducts[baseProductId].category, $rootScope.appSettings.appDisplayName,
             upgradeSubscriptionProducts[baseProductId].variant, upgradeSubscriptionProducts[baseProductId].price,
             1, coupon, upgradeSubscriptionProducts[baseProductId].position);
         // id	text	Yes*	The transaction ID (e.g. T1234). *Required if the action type is purchase or refund.
@@ -6025,10 +6025,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         // step	integer	No	A number representing a step in the checkout process. Optional on checkout actions.
         // option	text	No	Additional field for checkout and checkout_option actions that can describe option information on the checkout page, like selected payment method.
         var revenue = upgradeSubscriptionProducts[baseProductId].price;
-        var affiliation = config.appSettings.appDisplayName;
+        var affiliation = $rootScope.appSettings.appDisplayName;
         var tax = 0;
         var shipping = 0;
-        var list = config.appSettings.appDisplayName;
+        var list = $rootScope.appSettings.appDisplayName;
         var option = '';
         Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
     };
@@ -6847,7 +6847,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.quantimodoConnectPopup = function(){
         window.QuantiModoIntegration.options = {
             clientUserId: encodeURIComponent($rootScope.user.id),
-            clientId: config.appSettings.clientId,
+            clientId: $rootScope.appSettings.clientId,
             publicToken: ($rootScope.user.quantimodoPublicToken) ? $rootScope.user.quantimodoPublicToken : '',
             finish: function(err, sessionTokenObject) {
                 /* Called after user finishes connecting their health data */
@@ -7032,7 +7032,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if(!window.config){window.config = {};}
         window.config.appSettings = appSettings;
-        logDebug("appSettings.clientId is " + window.config.appSettings.clientId);
+        logDebug("appSettings.clientId is " + window.$rootScope.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(window.config.appSettings.appDesign.menu);
         //window.config.appSettings.appDesign.menu = qmService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
@@ -7141,7 +7141,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.logError("Bug Report");
             return template;
         }
-        var subjectLine = encodeURIComponent( config.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
+        var subjectLine = encodeURIComponent( $rootScope.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
         var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
             "Additional Information: " + '\r\n';
         template = addAppInformationToTemplate(template);

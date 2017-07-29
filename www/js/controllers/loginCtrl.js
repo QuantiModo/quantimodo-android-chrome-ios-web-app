@@ -11,7 +11,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }
         var $cordovaFacebook = {};
         var disableFacebookLogin = true;  // Causing failures on IPv6 networks according to iTunes reviewer
-        if (!disableFacebookLogin && $rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
+        if (!disableFacebookLogin && $rootScope.isIOS && $rootScope.appSettings.appDisplayName === "MoodiModo") {
             console.debug('Injecting $cordovaFacebook');
             $cordovaFacebook = $injector.get('$cordovaFacebook');
             $scope.showFacebookLoginButton = true;
@@ -80,7 +80,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug("beforeEnter in state " + $state.current.name);
         leaveIfLoggedIn();
-        if(config.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
+        if($rootScope.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
         if(qmService.getUrlParameter('loggingIn') || qmService.getAccessTokenFromUrl()){
             loginTimeout();
         } else {
