@@ -303,7 +303,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }, requestSpecificErrorHandler);
     };
     function generalApiErrorHandler(data, status, headers, request, options){
-        logError("error response from " + request.url);
         if(status === 302){
             logDebug('Got 302 response from ' + JSON.stringify(request), options.stackTrace);
             return;
@@ -325,11 +324,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         }
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
-        var name = status + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
+        var errorName = status + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
         var message = status + ' from ' + request.method + ' ' + request.url;
-        var metaData = {groupingHash: name, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
+        var metaData = {groupingHash: errorName, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
             requestParams: getAllQueryParamsFromUrlString(request.url)};
-        logError(message);
         if(!data){
             var doNotShowOfflineError = false;
             if(options && options.doNotShowOfflineError){doNotShowOfflineError = true;}
@@ -353,7 +351,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             metaData.groupingHash = JSON.stringify(data.error);
             if(data.error.message){metaData.groupingHash = JSON.stringify(data.error.message);}
         }
-        logError(status + " response from " + request.url,  options.stackTrace, metaData);
+        logError(errorName, options.stackTrace, metaData);
     }
     // Handler when request is failed
     var onRequestFailed = function(error){
