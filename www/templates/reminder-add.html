@@ -36,10 +36,10 @@
             </label>
             <label ng-hide="true" class="item item-input">
                 <div class="input-label">Reminder time</div>
-                <button id="oldFirstReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('first')"
+                <md-button id="oldFirstReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('first')"
                         style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
                     {{state.firstReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                </button>
+                </md-button>
             </label>
             <label ng-show="state.secondReminderStartTimeEpochTime" class="item item-input">
                 <div class="reminder-row row"><div class="col"><div class="input-label" >2nd reminder time</div></div></div>
@@ -50,10 +50,10 @@
             </label>
             <label ng-hide="true" class="item item-input">
                 <div class="input-label" >2nd reminder time</div>
-                <button id="oldSecondReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('second')"
+                <md-button id="oldSecondReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('second')"
                         style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px; padding-left: 0px;">
                     {{state.secondReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                </button>
+                </md-button>
             </label>
             <label ng-show="state.thirdReminderStartTimeEpochTime" class="item item-input">
                 <div class="reminder-row row"><div class="col"><div class="input-label" >3nd reminder time</div></div></div>
@@ -64,10 +64,10 @@
             </label>
             <label ng-hide="true" class="item item-input">
                 <div class="input-label" >3nd reminder time</div>
-                <button id="oldThirdReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('third')"
+                <md-button id="oldThirdReminderStartTime" class="button button-block up-top reminder-time" ng-click="oldOpenReminderStartTimePicker('third')"
                         style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
                     {{state.thirdReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                </button>
+                </md-button>
             </label>
             <label id="oldAdditionalTimeButton" ng-hide="true" ng-click="oldShowAdditionalReminderTime()" class="item icon-left ion-clock">
             </label>
@@ -103,12 +103,12 @@
                 <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
             </label>
             <div class="button-row-margin row">
-                <div class="col col-50"><button id="cancelButton" class="button button-outline button-block icon-left ion-android-cancel button-assertive" ng-click="goBack()">Cancel</button></div>
-                <div class="col col-50"><button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button></div>
+                <div class="col col-50"><md-button id="cancelButton" class="button button-outline button-block icon-left ion-android-cancel button-assertive" ng-click="goBack()">Cancel</md-button></div>
+                <div class="col col-50"><md-button id="saveButton" class="button button-outline button-block icon-left ion-android-done button-positive" ng-click="save()">Save</md-button></div>
             </div>
             <div class="row">
                 <div class="col">
-                    <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()" class="button button-outline button-block icon-left ion-trash-a button-assertive">Delete</button>
+                    <md-button ng-show="state.trackingReminder.id" ng-click="deleteReminder()" class="button button-outline button-block icon-left ion-trash-a button-assertive">Delete</md-button>
                 </div>
             </div>
         </div>

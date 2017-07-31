@@ -2,14 +2,17 @@
 ****	EVENT HANDLERS
 ***/
 var manifest = chrome.runtime.getManifest();
+var appSettings;
 var apiUrl = "https://app.quantimo.do";
 console.log("API URL is " + apiUrl);
-var requestIdentificationParameters = "appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version) + "&client_id=" + manifest.appSettings.clientId;
+var requestIdentificationParameters;
 var v = null;
 var vid = null;
-var introWindowParams = { url: "/www/index.html#/app/intro", type: 'panel', top: 0.2 * screen.height, left: 0.4 * screen.width, width: 450, height: 750};
+function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
+function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
+var introWindowParams = { url: "/www/index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var facesRatingPopupWindowParams = { url: "www/templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
-var loginPopupWindowParams = { url: "/www/index.html#/app/login", type: 'panel', top: 0.2 * screen.height, left: 0.4 * screen.width, width: 450, height: 750};
+var loginPopupWindowParams = { url: "/www/index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var reminderInboxPopupWindowParams = { url: "/www/index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
 var compactInboxPopupWindowParams = { url: "/www/index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
 var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "www/img/icons/icon_700.png", priority: 2};
@@ -19,6 +22,25 @@ if (!localStorage.introSeen) {
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
 }
+function getRequestIdentificationParameters() {
+    var string =  "appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version);
+    if(appSettings){string +=  "&client_id=" + appSettings.clientId;}
+    return string;
+}
+function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', 'www/configs/default.config.json', true);
+    xobj.onreadystatechange = function () {
+        if (xobj.readyState == 4) {
+            var json = xobj.responseText;
+            console.log("AppSettings:" + json);
+            appSettings = JSON.parse(json);
+        }
+    };
+    xobj.send(null);
+}
+loadAppSettings();
 /*
 **	Called when the extension is installed
 */
@@ -112,13 +134,13 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 ***/
 function pushMeasurements(measurements, onDoneListener) {
 	var xhr = new XMLHttpRequest();
-	var url = apiUrl + "/api/v1/measurements?" + requestIdentificationParameters;
+	var url = apiUrl + "/api/v1/measurements?" + getRequestIdentificationParameters();
 	if(localStorage.accessToken){url = url + '?access_token=' + localStorage.accessToken;}
 	xhr.open("POST", url, true);
 	xhr.onreadystatechange = function() {
         // If the request is completed
         if (xhr.readyState === 4) {
-            console.debug("quantimodoService responds:");
+            console.debug("qmService responds:");
             console.debug(xhr.responseText);
             if(onDoneListener !== null) {onDoneListener(xhr.responseText);}
         }
@@ -141,7 +163,7 @@ function showSignInNotification() {
 }
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
-    var url = apiUrl + ":443/api/v1/trackingReminderNotifications/past?" + requestIdentificationParameters;
+    var url = apiUrl + ":443/api/v1/trackingReminderNotifications/past?" + getRequestIdentificationParameters();
     if (localStorage.accessToken) {
         url = url + '&access_token=' + localStorage.accessToken;
     } else {

@@ -53,36 +53,36 @@
         <div ng-show="variableObject" ng-include="'templates/fragments/tagged-variables-fragment.html'"></div>
         <div ng-show="variableObject" class="row">
             <div class="col">
-                <button class="button button-outline button-block icon-left ion-link button-positive"
+                <md-button class="button button-outline button-block icon-left ion-link button-positive"
                         id="joinButton"
                         ng-click="openJoinVariableSearchDialog($event)">
                     Join a Duplicate Variable
-                </button>
+                </md-button>
             </div>
         </div>
         <div ng-show="variableObject" class="row">
             <div class="col col-50">
-                <button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
+                <md-button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
                         id="cancelButton"
                         ng-click="goBack()">
                     Cancel
-                </button>
+                </md-button>
             </div>
             <div class="col col-50">
-                <button class="button button-outline button-block icon-left ion-android-done button-positive"
+                <md-button class="button button-outline button-block icon-left ion-android-done button-positive"
                         id="saveButton"
                         ng-click="saveVariableSettings(variableObject)">
                     Save
-                </button>
+                </md-button>
             </div>
         </div>
         <div ng-show="variableObject" class="row">
             <div class="col">
-                <button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
+                <md-button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
                         id="resetButton"
                         ng-click="resetVariableToDefaultSettings(variableObject)">
                     Reset to Default Settings
-                </button>
+                </md-button>
             </div>
         </div>
     </ion-content>

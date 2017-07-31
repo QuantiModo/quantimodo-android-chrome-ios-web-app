@@ -63,7 +63,7 @@ angular.module('starter')
             }
             localDateAndTime = moment.utc(epochTime).local().format(" dddd, MMMM Do");
             return localDateAndTime;
-        } 
+        }
         return "";
     };
 })
@@ -161,24 +161,24 @@ angular.module('starter')
         return track_factors[value]? track_factors[value] : 0;
     };
 })
-.filter('positiveImageByValue', function(quantimodoService){
+.filter('positiveImageByValue', function(qmService){
     return function(ratingValue){
-        return quantimodoService.getPositiveImageByRatingValue(ratingValue);
+        return qmService.getPositiveImageByRatingValue(ratingValue);
     };
 })
-.filter('negativeImageByValue', function(quantimodoService){
+.filter('negativeImageByValue', function(qmService){
     return function(ratingValue){
-        return quantimodoService.getNegativeImageByRatingValue(ratingValue);
+        return qmService.getNegativeImageByRatingValue(ratingValue);
     };
 })
-.filter('numericImageByValue', function(quantimodoService){
+.filter('numericImageByValue', function(qmService){
     return function(ratingValue){
-        return quantimodoService.getNumericImageByRatingValue(ratingValue);
+        return qmService.getNumericImageByRatingValue(ratingValue);
     };
 })
-.filter('PrimaryOutcomeVariableByNumber', function(quantimodoService){
+.filter('PrimaryOutcomeVariableByNumber', function(qmService){
     return function(value){
-        return quantimodoService.getPrimaryOutcomeVariableByNumber(value);
+        return qmService.getPrimaryOutcomeVariableByNumber(value);
     };
 })
 .filter('time', function(){
@@ -330,6 +330,12 @@ angular.module('starter')
         var aliasName = config.appSettings.appDesign.wordAliases[originalName];
         if(typeof(aliasName) !== "undefined"){return aliasName;}
         return originalName;
+    };
+})
+.filter('useHttps', function(){
+    return function(originalName){
+        if(!originalName){return originalName;}
+        return originalName.replace("http://", "https://");
     };
 })
 .filter('truncateText', function(){

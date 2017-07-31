@@ -1,8 +1,8 @@
-angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, quantimodoService,
+angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, qmService,
                                            $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
-        variableName: quantimodoService.getPrimaryOutcomeVariable().name,
+        variableName: qmService.getPrimaryOutcomeVariable().name,
         correlationObjects: [],
         showLoadMoreButton: false
     };
@@ -13,13 +13,11 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
         $rootScope.hideNavigationMenu = false;
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
-        $scope.state.requestParams.aggregated = quantimodoService.getUrlParameter('aggregated');
-        if(quantimodoService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = quantimodoService.getUrlParameter('causeVariableName', window.location.href, true); }
-        if(quantimodoService.getUrlParameter('effectVariableName')){ $stateParams.effectVariableName = quantimodoService.getUrlParameter('effectVariableName', window.location.href, true); }
-        if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = quantimodoService.getPrimaryOutcomeVariable().name; }
+        $scope.state.requestParams.aggregated = qmService.getUrlParameter('aggregated');
+        if(qmService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = qmService.getUrlParameter('causeVariableName', window.location.href, true); }
+        if(qmService.getUrlParameter('effectVariableName')){ $stateParams.effectVariableName = qmService.getUrlParameter('effectVariableName', window.location.href, true); }
+        if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = qmService.getPrimaryOutcomeVariable().name; }
         $scope.state.requestParams.offset = 0;
         $scope.state.requestParams.limit = 10;
         if ($stateParams.causeVariableName){
@@ -62,7 +60,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     }
     function populateCorrelationList() {
         $scope.searching = true;
-        quantimodoService.getCorrelationsDeferred($scope.state.requestParams)
+        qmService.getCorrelationsDeferred($scope.state.requestParams)
             .then(function (data) {
                 if(data.correlations.length) {
                     $scope.state.correlationsExplanation = data.explanation;
@@ -72,26 +70,26 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 } else {
                     $scope.state.noCorrelations = true;
                 }
-                quantimodoService.hideLoader();
+                qmService.hideLoader();
                 $scope.searching = false;
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             }, function (error) {
-                quantimodoService.hideLoader();
+                qmService.hideLoader();
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 $scope.searching = false;
-                console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
+                qmService.logError('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
     }
     $scope.loadMore = function () {
-        quantimodoService.showBlackRingLoader();
+        qmService.showBlackRingLoader();
         if($scope.state.correlationObjects.length){
             $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
             populateCorrelationList();
         }
     };
     $scope.refreshList = function () {
-        quantimodoService.clearCorrelationCache();
+        qmService.clearCorrelationCache();
         populateCorrelationList();
     };
     $rootScope.showActionSheetMenu = function() {
@@ -147,7 +145,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
             clickOutsideToClose: false // I think true causes auto-close on iOS
         });
     };
-    var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, quantimodoService, $q, $log) {
+    var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log) {
         var self = this;
         self.correlations        = loadAll();
         self.querySearch   = querySearch;
@@ -168,7 +166,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         self.helpText = self.helpText + "  Then you can see a study exploring the relationship between those variables.";
         self.cancel = function() { $mdDialog.cancel(); };
         self.finish = function() {
-            quantimodoService.goToStudyPageViaCorrelationObject(self.correlationObject);
+            qmService.goToStudyPageViaCorrelationObject(self.correlationObject);
             $mdDialog.hide();
         };
         function querySearch (query) {
@@ -185,7 +183,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 requestParams.effectVariableName = $stateParams.effectVariableName;
                 requestParams.causeVariableName = "**" + query + "**";
             }
-            quantimodoService.getCorrelationsDeferred(requestParams)
+            qmService.getCorrelationsDeferred(requestParams)
                 .then(function (data) { deferred.resolve(loadAll(data.correlations)); }, function (error) { deferred.reject(error); });
             return deferred.promise;
         }

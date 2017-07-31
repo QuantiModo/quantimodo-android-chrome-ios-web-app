@@ -1,4 +1,4 @@
-angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, quantimodoService, $rootScope,
+angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, qmService, $rootScope,
 										  $stateParams) {
     $scope.controller_name = "FavoritesCtrl";
     console.debug('Loading ' + $scope.controller_name);
@@ -30,8 +30,6 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
             $scope.state.addButtonIcon = "ion-ios-medkit-outline";
             $scope.state.title = 'As-Needed Meds';
         }
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
         if($stateParams.presetVariables){
             $scope.favoritesArray = $stateParams.presetVariables;
             //Stop the ion-refresher from spinning
@@ -42,14 +40,13 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
         }
     });
     var getFavoritesFromLocalStorage = function(){
-        quantimodoService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
+        qmService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
     };
     $scope.favoriteAddButtonClick = function () {$state.go('app.favoriteSearch');};
     $scope.refreshFavorites = function () {
         console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-        $scope.showSyncDisplayText('Syncing...');
-        quantimodoService.syncTrackingReminders(true).then(function () {
-            $scope.hideSyncDisplayText();
+        qmService.showInfoToast('Syncing...');
+        qmService.syncTrackingReminders(true).then(function () {
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');

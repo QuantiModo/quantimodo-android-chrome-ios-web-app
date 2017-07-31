@@ -5,14 +5,14 @@
 #if ! type "imagemagick" > /dev/null;
 #  then
 #  echo -e "${GREEN}Installing imagemagick package...${NC}"
-#  apt-get install imagemagick # For Linux
+#  apt-get install -y imagemagick # For Linux
 #  echo "If you are using OSX, install https://www.macports.org/install.php and run: 'sudo port install ImageMagick' in a new terminal..."
 #fi
 
 #ionic platform add ios
 #cd "${INTERMEDIATE_PATH}"
 #echo "Adding android platform for ${QUANTIMODO_CLIENT_ID} at ${PWD}"
-#ionic platform add android@6.1.0
+#ionic platform add android@6.2.2
 echo "Generating images for ${QUANTIMODO_CLIENT_ID} at ${PWD}..."
 ionic resources
 convert resources/icon.psd -flatten -background transparent resources/icon.png || true

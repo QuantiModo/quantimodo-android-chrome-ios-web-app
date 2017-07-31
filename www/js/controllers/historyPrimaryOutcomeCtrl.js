@@ -1,34 +1,30 @@
 angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
-													  $rootScope, quantimodoService) {
+													  $rootScope, qmService) {
 	$scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 	$scope.state = {history : []};
-	$scope.syncDisplayText = 'Syncing ' + quantimodoService.getPrimaryOutcomeVariable().name + ' measurements...';
+	$scope.syncDisplayText = 'Syncing ' + qmService.getPrimaryOutcomeVariable().name + ' measurements...';
 	$scope.editMeasurement = function(measurement){
 		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
 		$state.go('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
 	};
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.refreshMeasurementHistory = function () {
-		$scope.history = quantimodoService.getLocalPrimaryOutcomeMeasurements();
-        $scope.showSyncDisplayText($scope.syncDisplayText);
-        quantimodoService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-            $scope.hideSyncDisplayText();
-            $scope.history = quantimodoService.getLocalPrimaryOutcomeMeasurements();
+		$scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
+        qmService.showInfoToast($scope.syncDisplayText);
+        qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+            $scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
         });
-		$scope.hideSyncDisplayText();
 	};
 	$scope.$on('$ionicView.beforeEnter', function(){
 		$rootScope.hideNavigationMenu = false;
 		console.debug('HistoryPrimaryOutcomeCtrl beforeEnter...');
-		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		$scope.refreshMeasurementHistory();
 	});
 	$scope.$on('updatePrimaryOutcomeHistory', function(){
 		console.debug($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
-		$scope.history = quantimodoService.getLocalPrimaryOutcomeMeasurements();
+		$scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
 	});
 	$scope.showActionSheet = function(measurement) {
 		$scope.state.measurement = measurement;
@@ -40,9 +36,9 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 			buttons: [
 				{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
 				//{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
-				quantimodoService.actionSheetButtons.addReminder,
-				quantimodoService.actionSheetButtons.charts,
-				quantimodoService.actionSheetButtons.analysisSettings
+				qmService.actionSheetButtons.addReminder,
+				qmService.actionSheetButtons.charts,
+				qmService.actionSheetButtons.analysisSettings
 			],
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {console.debug($state.current.name + ": " + 'CANCELLED');},

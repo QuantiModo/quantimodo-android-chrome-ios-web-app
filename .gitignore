@@ -52,8 +52,7 @@ www/configs/*.js
 www/configs/default.config.json
 www/configuration-index.html
 www/configuration/
-www/css/app.css
-www/css/app.min.css
+*.css
 www/data/commonVariables.json
 www/img/CS6.zip
 www/img/icons/*
@@ -84,3 +83,11 @@ changeList.json
 *.suo
 *.jsproj.user
 www/configs/
+Ionic\.jsproj
+Ionic\.sln
+composer.phar
+packages/
+npm-debug.log*
+src/lib/
+www/scripts/
+www/index.html

@@ -1,5 +1,5 @@
 angular.module('starter').controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout,
-																			$ionicActionSheet, quantimodoService, $ionicLoading) {
+																			$ionicActionSheet, qmService, $ionicLoading) {
 	$scope.controller_name = "historyAllMeasurementsCtrl";
 	$scope.state = {
 		offset : 0,
@@ -13,20 +13,20 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		loadingText: "Fetching measurements..."
 	};
 	function hideLoader() {
+        //Stop the ion-refresher from spinning
         $scope.$broadcast('scroll.refreshComplete');
         $scope.state.loading = false;
-        quantimodoService.hideLoader();
+        qmService.hideLoader();
     }
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        $rootScope.hideHistoryPageInstructionsCard = quantimodoService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
+        $rootScope.hideHistoryPageInstructionsCard = qmService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
     });
     $scope.$on('$ionicView.enter', function(e) {
         console.debug($state.current.name + ": " + "Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         $scope.state.loading = true;
         $scope.state.offset = 0;
-        if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-        if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
         if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
             $scope.state.title = $stateParams.variableCategoryName + ' History';
             $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
@@ -36,7 +36,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
             $scope.state.title = $stateParams.variableObject.name + ' History';
             $rootScope.variableObject = $stateParams.variableObject;
         }
-        if ($stateParams.variableName || $stateParams.variableObject) {$rootScope.showActionSheetMenu = quantimodoService.variableObjectActionSheet;}
+        if ($stateParams.variableName || $stateParams.variableObject) {$rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;}
         $scope.getHistory();
     });
 	$scope.editMeasurement = function(measurement){
@@ -56,23 +56,24 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
         if($stateParams.connectorName){params.connectorName = $stateParams.connectorName;}
 		if(params.variableName){
 			if(!$rootScope.variableObject){
-				quantimodoService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {
+				qmService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {
 					$rootScope.variableObject = variables[0];
-				}, function (error) {console.error(error);});
+				}, function (error) {qmService.logError(error);});
 			}
 		}
-        //quantimodoService.showBlackRingLoader();  //Let's not lock the user during history loading.  We have a card to tell them that it's loading
-		quantimodoService.getMeasurementsDeferred(params, refresh).then(function(history){
-			if(!history ||!history.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
-			if (concat) {$scope.state.history = $scope.state.history.concat(history);} else {$scope.state.history = history;}
-			if(history.length < $scope.state.limit){$scope.state.noHistory = history.length === 0;}
-            hideLoader();
-		}, function(error){
-			$scope.state.noHistory = true;
-			Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-			console.error('error getting measurements' + JSON.stringify(error));
-            hideLoader();
-		});
+        qmService.getMeasurements(params, function(error, measurements, response) {
+            if (error) {
+                $scope.state.noHistory = true;
+                qmService.logError('error getting measurements' + JSON.stringify(error));
+                hideLoader();
+            } else {
+                measurements = qmService.addInfoAndImagesToMeasurements(measurements);
+                if(!measurements ||!measurements.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
+                if (concat) {$scope.state.history = $scope.state.history.concat(measurements);} else {$scope.state.history = measurements;}
+                hideLoader();
+                if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
+            }
+        });
 	};
 	function setupVariableCategoryActionSheet() {
 		$rootScope.showActionSheetMenu = function() {
@@ -111,7 +112,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 
 	$scope.deleteMeasurement = function(measurement){
 		measurement.hide = true;
-		quantimodoService.deleteMeasurementFromServer(measurement);
+		qmService.deleteMeasurementFromServer(measurement);
 	};
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.showActionSheetForMeasurement = function(measurement) {
@@ -122,10 +123,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		var hideSheet = $ionicActionSheet.show({
 			buttons: [
 				{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
-				quantimodoService.actionSheetButtons.addReminder,
-				quantimodoService.actionSheetButtons.charts,
-				quantimodoService.actionSheetButtons.history,
-				quantimodoService.actionSheetButtons.analysisSettings
+				qmService.actionSheetButtons.addReminder,
+				qmService.actionSheetButtons.charts,
+				qmService.actionSheetButtons.history,
+				qmService.actionSheetButtons.analysisSettings
 			],
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',

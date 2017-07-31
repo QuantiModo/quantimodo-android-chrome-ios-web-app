@@ -36,17 +36,19 @@ function addPlatformBodyTag(indexPath, platform) {
 
     var classAttr = findClassAttr(bodyTag);
     if(classAttr) {
-      // body tag has existing class attribute, add the classname
+        console.log('body tag has existing class attribute, add the classname');
       var endingQuote = classAttr.substring(classAttr.length-1);
       var newClassAttr = classAttr.substring(0, classAttr.length-1);
       newClassAttr += ' ' + platformClass + ' ' + cordovaClass + endingQuote;
+
+        console.log('newBodyTag = bodyTag.replace(classAttr, newClassAttr);');
       newBodyTag = bodyTag.replace(classAttr, newClassAttr);
 
     } else {
-      // add class attribute to the body tag
+        console.log('add class attribute to the body tag');
       newBodyTag = bodyTag.replace('>', ' class="' + platformClass + ' ' + cordovaClass + '">');
     }
-
+      console.log(' html = html.replace(bodyTag, newBodyTag)');
     html = html.replace(bodyTag, newBodyTag);
 
     fs.writeFileSync(indexPath, html, 'utf8');

@@ -91,8 +91,8 @@ ionic platform remove android
 
 gulp setIonicAppId
 
-echo "ionic platform add android@6.1.0 for $QUANTIMODO_CLIENT_ID Android app..."
-ionic platform add android@6.1.0
+echo "ionic platform add android@6.2.2 for $QUANTIMODO_CLIENT_ID Android app..."
+ionic platform add android@6.2.2
 
 source ${IONIC_PATH}/scripts/create_icons.sh
 

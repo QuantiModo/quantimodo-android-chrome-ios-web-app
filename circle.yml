@@ -1,13 +1,11 @@
 # Customize the test machine
 machine:
-  node:
-    version: 6.10.3
   ruby:
-    version: 2.1.2
-  php:
-    version: 5.6.2
+    version: 2.4.1
   java:
     version: oraclejdk8
+  node:
+    version: 6.1.0
   environment:
     _JAVA_OPTIONS: "-Xms512m -Xmx1024m" # Appears to solve "Your build has exceeded the memory limit of 4G on 1 container"
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'  # Did not solve "Your build has exceeded the memory limit of 4G on 1 container"
@@ -17,6 +15,10 @@ checkout:
     - git submodule sync --recursive
     - git submodule update --recursive --init # use submodules
     - chmod -R +x scripts
+    - chmod +x -R hooks/*
+    - cp -r android-licenses/. $ANDROID_HOME/licenses
+    - git fetch --all --unshallow || true
+    - chmod 777 -R $PWD
 
 # Customize dependencies
 dependencies:
@@ -24,20 +26,34 @@ dependencies:
     #- wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
     #- tar -xzf sc-latest-linux.tar.gz
   pre:
-    - git fetch --all --unshallow || true
-    - chmod +x -R hooks/*
-    - chmod 777 -R $PWD
+    - ruby -v
+    - mkdir node_modules || true # must exist prior to override to cache
+    - mkdir platforms || true # must exist prior to override to cache
+    - mkdir plugins || true # must exist prior to override to cache
+    - mkdir src/lib || true # must exist prior to override to cache
     - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/mikepsinn/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
   override:
-    - sudo apt-add-repository -y ppa:duggan/bats
-    - sudo apt-get update; sudo apt-get install -y bats
-    - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
-    - echo "This line is to prevent automatic dependency installation."
+    - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then sudo apt-add-repository -y ppa:duggan/bats; fi  # Avoid conflicting simultaneous GI testing
+    - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then sudo apt-get update; sudo apt-get install -y bats; fi # Avoid conflicting simultaneous GI testing
+    - if [[ $CIRCLE_BRANCH == *"feature"* ]]; then curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq; fi  # Avoid conflicting simultaneous GI testing
+
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then sudo apt-get update; sudo apt-get install tree imagemagick; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower; fi
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then npm install; fi
+    #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroidWithoutCleaning; fi
+    #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi  # Done in gulpBuildAllAndroidApps
+    - if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gem install fastlane; fi # Don't use sudo or it uses old ruby version
+    #- if [[ $CIRCLE_BRANCH != *"feature"* ]]; then gulp prepareRepositoryForAndroid; fi
 
   cache_directories:
-    #- "node_modules"   # Probably don't want to cache node_modules so we catch problematic dependency changes
+    - node_modules   # Probably don't want to cache node_modules so we catch problematic dependency changes
+    - platforms
+    - plugins
+    - src/lib
+    - /opt/circleci/nodejs/v4.2.6/bin
+    - /opt/circleci/nodejs/v4.2.6/lib/node_modules
 
 test:
   override:
@@ -63,18 +79,14 @@ deployment:
   build:
     branch: /apps\/.*/
     commands:
-      - ./scripts/circleci_install_dependencies.sh
-      - gulp prepareRepositoryForAndroid
+      - gulp buildChromeExtension # Build Chrome first in case Android upload fails
       - gulp buildAndroidApp
-      - gulp buildChromeExtension
   feature:
     branch: /feature\/.*/
     commands:
       - chmod +x do-exclusively
       - ./do-exclusively git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
       - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
-      #- ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
-      #- curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
       - php ghostinspector_parser.php
   pull:
     branch: /pull\/.*/
@@ -86,16 +98,13 @@ deployment:
   staging:
     branch: develop
     commands:
-      - ./scripts/circleci_install_dependencies.sh
-      - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
-      - chmod +x do-exclusively
-      - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
-      - bash buddybuild_postbuild.sh
-      #- gulp ionicUploadStagingForAllApps
-      #- aws s3 cp $CIRCLE_ARTIFACTS/* s3://quantimodo-docs/ Doesn't work for some reason
+      - gulp buildAllChromeExtensions # Build Chrome first in case Android upload fails
+      - gulp buildAllAndroidApps
+      - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
     commands:
-      - ./scripts/circleci_install_dependencies.sh
-      - ./scripts/circleci_build_android_apps_and_chrome_extensions.sh
-      - gulp ionicUploadProductionForAllApps
+      - gulp buildChromeExtension
+      - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
+      - gulp buildAndroidApp
+      #- gulp fastlaneSupplyProduction

@@ -28,16 +28,14 @@
         </ion-nav-bar>
         <div class="col" ng-show="hideNavigationMenu && offlineConnectionErrorShowing;" style="top:0px!important;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
         <div class="col" ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;" ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span> <i class="icon ion-connection-bars"></i> Currently Offline</span> </div>
-        <div class="col" ng-show="!hideNavigationMenu && isSyncing" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}"> <span>{{syncDisplayText}}</span> </div>
-        <div class="col" ng-show="hideNavigationMenu && isSyncing" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}"> <span>{{syncDisplayText}}</span> </div>
         <ion-nav-view name="menuContent"></ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu id="side-menu" side="left" is-enabled="!hideNavigationMenu" expose-aside-when="large">
         <ion-header-bar class="bar-positive">
-            <div id="menu-avatar" style="cursor:pointer;" ng-click="goToState('app.settings')" ng-if="user && user.displayName && (user.stripeActive || appSettings.upgradeDisabled)">
+            <div id="menu-avatar" style="cursor:pointer;" ng-click="goToState('app.settings')" ng-if="user && user.displayName && (user.stripeActive || appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled)">
                 <a ng-if="user && user.avatar" class="button button-clear" ><img class="menu-avatar" id="menuAvatar" ng-src="{{user.avatar}}"></a> <h1 class="title" style="position: fixed; bottom: 0;">{{user.displayName}}</h1>
             </div>
-            <div id="menu-upgrade" style="cursor:pointer;" ng-if="user && user.displayName && !user.stripeActive && !appSettings.upgradeDisabled" ng-click="goToState('app.upgrade')">
+            <div id="menu-upgrade" style="cursor:pointer;" ng-if="user && user.displayName && !user.stripeActive && !appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled" ng-click="goToState('app.upgrade')">
                 <button class="button button-icon ion-android-star-outline"></button> <h1 class="title" style="position: fixed; bottom: 0;">{{appSettings.appDisplayName}} Plus</h1>
             </div>
         </ion-header-bar>
@@ -64,9 +62,7 @@
                         <i class="{{subMenuItem.icon}}" menu-toggle>&nbsp; {{subMenuItem.title}}</i>
                     </ion-item>
                 </div>
-                <ion-item ng-show="appSettings.designMode" ng-href="#/app/configuration" id="configurationMenuItem">
-                    <i class="ion-edit" menu-toggle>&nbsp; App Designer</i>
-                </ion-item>
+                <ion-item ng-show="appSettings.designMode" ng-href="#/app/configuration" id="configurationMenuItem"><i class="ion-edit" menu-toggle>&nbsp; App Designer</i></ion-item>
             </ion-list>
         </ion-content>
     </ion-side-menu>

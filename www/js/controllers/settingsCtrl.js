@@ -1,35 +1,34 @@
 angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
-										  quantimodoService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
+										  qmService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
 										  //$ionicDeploy,
 										  $ionicPlatform) {
 	$scope.controller_name = "SettingsCtrl";
 	$scope.state = {};
-	$scope.userEmail = quantimodoService.getUrlParameter('userEmail');
+	$scope.userEmail = qmService.getUrlParameter('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-		if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-		if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 		$rootScope.hideNavigationMenu = false;
-		if(quantimodoService.getUrlParameter('userEmail')){
+		if(qmService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
-			quantimodoService.showBlackRingLoader();
-			quantimodoService.refreshUserEmailPreferencesDeferred({userEmail: quantimodoService.getUrlParameter('userEmail')}, function(user){
+			qmService.showBlackRingLoader();
+			qmService.refreshUserEmailPreferencesDeferred({userEmail: qmService.getUrlParameter('userEmail')}, function(user){
 				$scope.user = user;
 				$scope.state.loading = false;
-				quantimodoService.hideLoader();
+				qmService.hideLoader();
 			}, function(error){
-				console.error(error);
+				qmService.logError(error);
 				$scope.state.loading = false;
-				quantimodoService.hideLoader();
+				qmService.hideLoader();
 			});
 			return;
 		}
 		if(!$rootScope.user){
-            quantimodoService.sendToLoginIfNecessaryAndComeBack();
+            qmService.sendToLoginIfNecessaryAndComeBack();
 		}
 	});
-    $scope.completelyResetAppStateAndSendToLogin = function(){quantimodoService.completelyResetAppStateAndSendToLogin();};
-	quantimodoService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+    $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();});
+    $scope.completelyResetAppStateAndSendToLogin = function(){qmService.completelyResetAppStateAndSendToLogin();};
+	qmService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		if($rootScope.isIOS){
 			if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
@@ -37,58 +36,22 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 				$scope.primaryOutcomeRatingFrequencyDescription !== 'never'
 			) {
 				$scope.primaryOutcomeRatingFrequencyDescription = 'day';
-				quantimodoService.setLocalStorageItem('primaryOutcomeRatingFrequencyDescription', 'day');
+				qmService.setLocalStorageItem('primaryOutcomeRatingFrequencyDescription', 'day');
 			}
 		}
 	});
-	$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {scope: $scope}).then(function(popover) {$scope.ratingPopover = popover;});
-	$scope.saveRatingInterval = function(interval){
-		$scope.saveInterval(interval);
-		quantimodoService.setLocalStorageItem('primaryOutcomeRatingFrequencyDescription', interval);
-		$scope.primaryOutcomeRatingFrequencyDescription = interval;
-		$scope.ratingPopover.hide();
-	};
 	$scope.sendSharingInvitation = function() {
 		var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 		var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20" +
-			encodeURIComponent(quantimodoService.getApiUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
-		var fallbackUrl = quantimodoService.getQuantiModoUrl("api/v2/account/applications", true);
+			encodeURIComponent(qmService.getApiUrl()) + "%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
+		var fallbackUrl = qmService.getQuantiModoUrl("api/v2/account/applications", true);
 		var emailAddress = null;
-		if($rootScope.isMobile){quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
-		} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
+		if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+		} else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
-	function addAppInformationToTemplate(template){
-		if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer') + '\r\n' + '\r\n';}
-		if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync') + '\r\n' + '\r\n';}
-		template = template + "QuantiModo Client ID: " + quantimodoService.getClientId() + '\r\n';
-		template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
-		template = template + "App Name: " + config.appSettings.appDisplayName + '\r\n';
-        template = template + "User ID: " + $rootScope.user.id + '\r\n';
-        template = template + "User Email: " + $rootScope.user.email + '\r\n';
-		return template;
-	}
+
 	$scope.sendBugReport = function() {
-		quantimodoService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server
-		var subjectLine = encodeURIComponent( config.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
-		var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
-			"Additional Information: " + '\r\n';
-		template = addAppInformationToTemplate(template);
-		if(typeof $ionicDeploy !== "undefined"){
-			$ionicPlatform.ready(function () {
-				var snapshotList;
-				$ionicDeploy.getSnapshots().then(function (snapshots) {
-					for (var i = 0; i < snapshots.length; i++) {
-						snapshotList = snapshotList + '\r\n' + snapshots[i];
-					}
-					template = template + '\r\n' + "Snapshots: " + snapshotList;
-				});
-			});
-		}
-		var emailBody = encodeURIComponent(template);
-		var emailAddress = 'mike@quantimo.do';
-		var fallbackUrl = 'http://help.quantimo.do';
-		if($rootScope.isMobile){quantimodoService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
-		} else {quantimodoService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
+		qmService.sendBugReport();
 	};
 	$scope.contactUs = function() {
 		if ($rootScope.isChromeApp) {window.location = 'mailto:help@quantimo.do';}
@@ -99,49 +62,49 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		} else {window.open('http://help.quantimo.do/forums/211661-general', '_blank');}
 	};
 	$scope.combineNotificationChange = function(ev) {
-		quantimodoService.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
+		qmService.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
 		if($rootScope.user.combineNotifications){
-			quantimodoService.showMaterialAlert('Disabled Individual Notifications',
+			qmService.showMaterialAlert('Disabled Individual Notifications',
 				'You will only get a single generic notification instead of a separate notification for each reminder that you create.  All ' +
 				'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.', ev);
-			quantimodoService.cancelAllNotifications().then(function() {
+			qmService.cancelAllNotifications().then(function() {
 				console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
 					"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
 					"frequency reminder");
 				if(!localStorage.getItem('deviceTokenOnServer')){
 					console.warn("Could not find device token for push notifications so scheduling combined local notifications");
-					quantimodoService.syncTrackingReminders();
+					qmService.syncTrackingReminders();
 				}
 			});
 		} else {
-            quantimodoService.showMaterialAlert('Enabled Multiple Notifications', 'You will get a separate device notification for each reminder that you create.', ev);
-			quantimodoService.cancelAllNotifications().then(function() {quantimodoService.syncTrackingReminders();});
+            qmService.showMaterialAlert('Enabled Multiple Notifications', 'You will get a separate device notification for each reminder that you create.', ev);
+			qmService.cancelAllNotifications().then(function() {qmService.syncTrackingReminders();});
 		}
 	};
 	$scope.getPreviewBuildsChange = function() {
 		var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
-		quantimodoService.updateUserSettingsDeferred(params);
+		qmService.updateUserSettingsDeferred(params);
 		$scope.autoUpdateApp();
 	};
 	var sendReminderNotificationEmailsChange = function (ev) {
 		var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
-		if(quantimodoService.getUrlParameter('userEmail')){params.userEmail = quantimodoService.getUrlParameter('userEmail');}
-		quantimodoService.updateUserSettingsDeferred(params);
+		if(qmService.getUrlParameter('userEmail')){params.userEmail = qmService.getUrlParameter('userEmail');}
+		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendReminderNotificationEmails){
-            quantimodoService.showMaterialAlert('Reminder Emails Enabled', "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email.", ev);
+            qmService.showMaterialAlert('Reminder Emails Enabled', "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email.", ev);
 		} else {
-            quantimodoService.showMaterialAlert('Reminder Emails Disabled', "If you forget to record a measurement for a reminder you've created, I won't send you a daily reminder email.", ev);
+            qmService.showMaterialAlert('Reminder Emails Disabled', "If you forget to record a measurement for a reminder you've created, I won't send you a daily reminder email.", ev);
 		}
 	};
 	$scope.sendReminderNotificationEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);};
 	var sendPredictorEmailsChange = function (ev) {
 		var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-		if(quantimodoService.getUrlParameter('userEmail')){params.userEmail = quantimodoService.getUrlParameter('userEmail');}
-		quantimodoService.updateUserSettingsDeferred(params);
+		if(qmService.getUrlParameter('userEmail')){params.userEmail = qmService.getUrlParameter('userEmail');}
+		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendPredictorEmails){
-            quantimodoService.showMaterialAlert('Discovery Emails Enabled', "I'll send you a weekly email with new discoveries from your data.", ev);
+            qmService.showMaterialAlert('Discovery Emails Enabled', "I'll send you a weekly email with new discoveries from your data.", ev);
 		} else {
-            quantimodoService.showMaterialAlert('Discovery Emails Disabled', "I won't send you a weekly email with new discoveries from your data.", ev);
+            qmService.showMaterialAlert('Discovery Emails Disabled', "I won't send you a weekly email with new discoveries from your data.", ev);
 		}
 	};
 	$scope.sendPredictorEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendPredictorEmailsChange);};
@@ -160,17 +123,17 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 						selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 					var newEarliestReminderTime = moment(a).format('HH:mm:ss');
 					if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
-                        quantimodoService.showMaterialAlert('Choose Another Time', 'Earliest reminder time cannot be greater than latest reminder time.  ' +
+                        qmService.showMaterialAlert('Choose Another Time', 'Earliest reminder time cannot be greater than latest reminder time.  ' +
 							'Please change the latest reminder time and try again or select a different earliest reminder time.', ev);
 					} else if (newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 						$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 						params.earliestReminderTime = $rootScope.user.earliestReminderTime;
-						quantimodoService.updateUserSettingsDeferred(params).then(function(){quantimodoService.syncTrackingReminders();});
-                        quantimodoService.showMaterialAlert('Earliest Notification Time Updated', 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.', ev);
+						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
+                        qmService.showMaterialAlert('Earliest Notification Time Updated', 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.', ev);
 					}
 				}
 			},
-			inputTime: quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.earliestReminderTime),
+			inputTime: qmService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.earliestReminderTime),
 			step: 15,
 			closeLabel: 'Cancel'
 		};
@@ -191,17 +154,17 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 						selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 					var newLatestReminderTime = moment(a).format('HH:mm:ss');
 					if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
-                        quantimodoService.showMaterialAlert('Choose Another Time', 'Latest reminder time cannot be less than earliest reminder time.  Please ' +
+                        qmService.showMaterialAlert('Choose Another Time', 'Latest reminder time cannot be less than earliest reminder time.  Please ' +
 							'change the earliest reminder time and try again or select a different latest reminder time.', ev);
 					} else if (newLatestReminderTime !== $rootScope.user.latestReminderTime){
 						$rootScope.user.latestReminderTime = newLatestReminderTime;
 						params.latestReminderTime = $rootScope.user.latestReminderTime;
-						quantimodoService.updateUserSettingsDeferred(params).then(function(){quantimodoService.syncTrackingReminders();});
-                        quantimodoService.showMaterialAlert('Latest Notification Time Updated', 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.', ev);
+						qmService.updateUserSettingsDeferred(params).then(function(){qmService.syncTrackingReminders();});
+                        qmService.showMaterialAlert('Latest Notification Time Updated', 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.', ev);
 					}
 				}
 			},
-			inputTime: quantimodoService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.latestReminderTime),
+			inputTime: qmService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.latestReminderTime),
 			step: 15,
 			closeLabel: 'Cancel'
 		};
@@ -211,27 +174,27 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		// Getting token so we can post as the new user if they log in again
 		if(localStorage.getItem('deviceTokenOnServer')){
 			localStorage.setItem('deviceTokenToSync', localStorage.getItem('deviceTokenOnServer'));
-			quantimodoService.deleteDeviceTokenFromServer();
+			qmService.deleteDeviceTokenFromServer();
 		}
 	}
 	function logOutOfWebsite() {
-		var logoutUrl = quantimodoService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(quantimodoService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
+		var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
 		window.location.replace(logoutUrl);
 	}
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
 		var completelyResetAppStateAndLogout = function(){
-			quantimodoService.showBlackRingLoader();
-			quantimodoService.completelyResetAppState();
+			qmService.showBlackRingLoader();
+			qmService.completelyResetAppState();
 			logOutOfWebsite();
 			saveDeviceTokenToSyncWhenWeLogInAgain();
 			$state.go('app.intro');
 		};
 		var afterLogoutDoNotDeleteMeasurements = function(){
-            quantimodoService.showBlackRingLoader();
+            qmService.showBlackRingLoader();
 			$rootScope.user = null;
 			saveDeviceTokenToSyncWhenWeLogInAgain();
-			quantimodoService.clearOAuthTokensFromLocalStorage();
+			qmService.clearOAuthTokensFromLocalStorage();
 			logOutOfWebsite();
 			window.localStorage.introSeen = false;
 			window.localStorage.onboarded = false;
@@ -242,7 +205,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             var textContent = 'Do you want do delete all data from local storage?';
             function yesCallback(){completelyResetAppStateAndLogout();}
             function noCallback(){afterLogoutDoNotDeleteMeasurements();}
-            quantimodoService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
 		console.debug('Logging out...');
 		$rootScope.user = null;
@@ -272,13 +235,13 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$scope.updateEmailAndExecuteCallback(callback);
 	};
 	var exportRequestAlert = function (ev) {
-        quantimodoService.showMaterialAlert('Export Request Sent!', 'Your data will be emailed to you within the next 24 hours.  Enjoy your life! So do we!', ev);
+        qmService.showMaterialAlert('Export Request Sent!', 'Your data will be emailed to you within the next 24 hours.  Enjoy your life! So do we!', ev);
 	};
 	function exportMeasurements(type, ev){
-		quantimodoService.postMeasurementsExport(type, function(response){
-			if(!response.success) {quantimodoService.reportErrorDeferred("Could not export measurements. Response: " + JSON.stringify(response));}
+		qmService.postMeasurementsExport(type, function(response){
+			if(!response.success) {qmService.reportErrorDeferred("Could not export measurements. Response: " + JSON.stringify(response));}
 		}, function(error){
-			quantimodoService.reportErrorDeferred("Could not export measurements. Response: " + JSON.stringify(error));
+			qmService.reportErrorDeferred("Could not export measurements. Response: " + JSON.stringify(error));
 		});
 		exportRequestAlert(ev);
 	}
@@ -290,4 +253,51 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		if(type === 'pdf'){verifyEmailAddressAndExecuteCallback(exportPdf);}
 		if(type === 'xls'){verifyEmailAddressAndExecuteCallback(exportXls);}
 	};
+
+    var webDowngrade = function() {
+        qmService.showBlackRingLoader();
+        qmService.postDowngradeSubscriptionDeferred().then(function (response) {
+            qmService.hideLoader();
+            console.debug(JSON.stringify(response));
+            qmService.showMaterialAlert('Downgraded', 'Successfully downgraded to QuantiModo Lite');
+        }, function (error) {
+            qmService.hideLoader();
+            qmService.showMaterialAlert('Error', 'An error occurred while downgrading. Please email mike@quantimo.do');
+            console.debug(JSON.stringify(error));
+        });
+    };
+    var androidDowngrade = function () {
+        var confirmPopup = $ionicPopup.confirm({
+            title: 'Google Play',
+            template: "You subscribed through Google Play so I have to send you to a page that tells you how to " +
+            "unsubscribe from Play subscriptions"
+        });
+        confirmPopup.then(function(res) {
+            if(res) {
+                qmService.postDowngradeSubscriptionDeferred().then(function (response) {
+                    console.debug(JSON.stringify(response));
+                }, function (error) { qmService.logError(JSON.stringify(error)); });
+                window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
+            } else { console.log('You are not sure'); }
+        });
+    };
+    var appleDowngrade = function () {
+        var confirmPopup = $ionicPopup.confirm({title: 'App Store',
+            template: "You subscribed through the App Store so I have to send you to a page that tells you how to unsubscribe from App Store subscriptions"});
+        confirmPopup.then(function(res) {
+            if(res) {
+                $rootScope.user.stripeActive = false;
+                qmService.postDowngradeSubscriptionDeferred().then(function (response) {
+                    console.debug(JSON.stringify(response));
+                }, function (error) { qmService.logError(JSON.stringify(error)); });
+                window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
+            } else { console.log('You are not sure'); }
+        });
+    };
+    var googleDowngradeDebug = false;
+    $scope.downgrade = function () {
+        if ($rootScope.user.subscriptionProvider === 'google' || googleDowngradeDebug) { androidDowngrade();
+        } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
+        } else { webDowngrade(); }
+    };
 });
