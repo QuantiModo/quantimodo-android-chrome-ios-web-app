@@ -4079,7 +4079,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
   /**
    * @module ApiClient
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -4652,7 +4652,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Analytics service.
    * @module api/AnalyticsApi
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -4728,12 +4728,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Get correlations based on the anonymized aggregate data from all QuantiModo users.
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
-     * @param {String} opts.effectVariableName Variable name of the effect variable for which the user desires correlations
-     * @param {String} opts.causeVariableName Variable name of the cause variable for which the user desires correlations
+     * @param {String} opts.effectVariableName Variable name of the hypothetical effect variable.  Example: Overall Mood
+     * @param {String} opts.causeVariableName Variable name of the hypothetical cause variable.  Example: Sleep Duration
      * @param {String} opts.correlationCoefficient Pearson correlation coefficient between cause and effect after lagging by onset delay and grouping by duration of action
      * @param {String} opts.onsetDelay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
      * @param {String} opts.durationOfAction The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
-     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
@@ -4791,12 +4791,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Get correlations based on data from a single user.
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
-     * @param {String} opts.effectVariableName Variable name of the effect variable for which the user desires correlations
-     * @param {String} opts.causeVariableName Variable name of the cause variable for which the user desires correlations
+     * @param {String} opts.effectVariableName Variable name of the hypothetical effect variable.  Example: Overall Mood
+     * @param {String} opts.causeVariableName Variable name of the hypothetical cause variable.  Example: Sleep Duration
      * @param {String} opts.correlationCoefficient Pearson correlation coefficient between cause and effect after lagging by onset delay and grouping by duration of action
      * @param {String} opts.onsetDelay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
      * @param {String} opts.durationOfAction The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
-     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
@@ -4853,8 +4853,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Get correlation explanations
      * Get explanations of  correlations based on data from a single user.
      * @param {Object} opts Optional parameters
-     * @param {String} opts.effectVariableName Variable name of the effect variable for which the user desires correlations
-     * @param {String} opts.causeVariableName Variable name of the cause variable for which the user desires correlations
+     * @param {String} opts.effectVariableName Variable name of the hypothetical effect variable.  Example: Overall Mood
+     * @param {String} opts.causeVariableName Variable name of the hypothetical cause variable.  Example: Sleep Duration
      * @param {module:api/AnalyticsApi~getUserCorrelationExplantionsCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link Array.<module:model/Correlation>}
      */
@@ -4987,7 +4987,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/CommonResponse":26,"../model/Correlation":31,"../model/Correlations":32,"../model/JsonErrorResponse":36,"../model/PostCorrelation":44,"../model/Vote":70,"../model/VoteDelete":71}],18:[function(require,module,exports){
+},{"../ApiClient":16,"../model/CommonResponse":26,"../model/Correlation":30,"../model/Correlations":31,"../model/JsonErrorResponse":35,"../model/PostCorrelation":42,"../model/Vote":61,"../model/VoteDelete":62}],18:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -5023,7 +5023,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Authentication service.
    * @module api/AuthenticationApi
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -5054,7 +5054,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {String} code Authorization code you received with the previous request.
      * @param {Object} opts Optional parameters
      * @param {String} opts.responseType If the value is code, launches a Basic flow, requiring a POST to the token endpoint to obtain the tokens. If the value is token id_token or id_token token, launches an Implicit flow, requiring the use of Javascript at the redirect URI to retrieve tokens from the URI #fragment.
-     * @param {String} opts.scope Scopes include basic, readmeasurements, and writemeasurements. The \&quot;basic\&quot; scope allows you to read user info (displayname, email, etc). The \&quot;readmeasurements\&quot; scope allows one to read a user&#39;s data. The \&quot;writemeasurements\&quot; scope allows you to write user data. Separate multiple scopes by a space.
+     * @param {String} opts.scope Scopes include basic, readmeasurements, and writemeasurements. The &#x60;basic&#x60; scope allows you to read user info (displayname, email, etc). The &#x60;readmeasurements&#x60; scope allows one to read a user&#39;s data. The &#x60;writemeasurements&#x60; scope allows you to write user data. Separate multiple scopes by a space.
      * @param {String} opts.redirectUri The redirect URI is the URL within your client application that will receive the OAuth2 credentials.
      * @param {String} opts.state An opaque string that is round-tripped in the protocol; that is to say, it is returned as a URI parameter in the Basic flow, and in the URI
      * @param {module:api/AuthenticationApi~getAccessTokenCallback} callback The callback function, accepting three arguments: error, data, response
@@ -5107,7 +5107,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var returnType = null;
 
       return this.apiClient.callApi(
-        '/v2/oauth2/access_token', 'GET',
+        '/v3/oauth2/token', 'GET',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, callback
       );
@@ -5123,11 +5123,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
     /**
      * Request Authorization Code
-     * You can implement OAuth2 authentication to your application using our **OAuth2** endpoints.  You need to redirect users to &#x60;/api/v2/oauth/authorize&#x60; endpoint to get an authorization code and include the parameters below.   This page will ask the user if they want to allow a client&#39;s application to submit or obtain data from their QM account. It will redirect the user to the url provided by the client application with the code as a query parameter or error in case of an error. See the /api/v2/oauth/access_token endpoint for the next steps.
+     * You can implement OAuth2 authentication to your application using our **OAuth2** endpoints.  You need to redirect users to &#x60;/api/v3/oauth2/authorize&#x60; endpoint to get an authorization code and include the parameters below.   This page will ask the user if they want to allow a client&#39;s application to submit or obtain data from their QM account. It will redirect the user to the url provided by the client application with the code as a query parameter or error in case of an error. See the /api/v2/oauth/access_token endpoint for the next steps.
      * @param {String} clientId This is the unique ID that QuantiModo uses to identify your application. Obtain a client id by creating a free application at [https://app.quantimo.do/api/v2/apps](https://app.quantimo.do/api/v2/apps).
      * @param {String} clientSecret This is the secret for your obtained clientId. QuantiModo uses this to validate that only your application uses the clientId.  Obtain this by creating a free application at [https://app.quantimo.do/api/v2/apps](https://app.quantimo.do/api/v2/apps).
      * @param {String} responseType If the value is code, launches a Basic flow, requiring a POST to the token endpoint to obtain the tokens. If the value is token id_token or id_token token, launches an Implicit flow, requiring the use of Javascript at the redirect URI to retrieve tokens from the URI #fragment.
-     * @param {String} scope Scopes include basic, readmeasurements, and writemeasurements. The \&quot;basic\&quot; scope allows you to read user info (displayname, email, etc). The \&quot;readmeasurements\&quot; scope allows one to read a user&#39;s data. The \&quot;writemeasurements\&quot; scope allows you to write user data. Separate multiple scopes by a space.
+     * @param {String} scope Scopes include basic, readmeasurements, and writemeasurements. The &#x60;basic&#x60; scope allows you to read user info (displayName, email, etc). The &#x60;readmeasurements&#x60; scope allows one to read a user&#39;s data. The &#x60;writemeasurements&#x60; scope allows you to write user data. Separate multiple scopes by a space.
      * @param {Object} opts Optional parameters
      * @param {String} opts.redirectUri The redirect URI is the URL within your client application that will receive the OAuth2 credentials.
      * @param {String} opts.state An opaque string that is round-tripped in the protocol; that is to say, it is returned as a URI parameter in the Basic flow, and in the URI
@@ -5179,167 +5179,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var returnType = null;
 
       return this.apiClient.callApi(
-        '/v2/oauth/authorize', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the getSocialAuthorizationCode operation.
-     * @callback module:api/AuthenticationApi~getSocialAuthorizationCodeCallback
-     * @param {String} error Error message, if any.
-     * @param data This operation does not return a value.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Second Step in Social Authentication flow with JWT Token
-     *  Here is the flow for how social authentication works with a JWT Token 1.**Client:** The client needs to open popup with social auth url (&#x60;https://app/quantimo.do/api/v2/auth/social/login?provider&#x3D;{provider}&amp;redirectUrl&#x3D;{url}&#x60;) of server with &#x60;provider&#x60; and &#x60;redirectUrl&#x60;. (Url should be registered with our social apps. Facebook is fine with any redirect url with the same domain base url but Google needs exact redirect url.) 2.**Server:** The QM server will redirect user to that provider to get access. 3.**Client:** After successful or failed authentication, it will be redirected to given &#x60;redirectUrl&#x60; with code or error. 4.**Client:** The client needs to get that code and needs to send an Ajax request to server at &#x60;https://app.quantimo.do/api/v2/auth/social/authorizeCode?provider&#x3D;{provider}&amp;code&#x3D;{authorizationCode}&#x60; 5.**Server:** The QM server will authorize that code from the social connection and will authenticate user and will retrieve user info. 6.**Server:** The QM server will try to find existing user by unique identity. If the user already exists then it will login. Otherwise, it will create new user and will then login. 7.**Server:** Once user is found/created, it will return a JWT token for that user in the response.
-     * @param {String} code Authorization code obtained from the provider.
-     * @param {String} provider The current options are &#x60;google&#x60; and &#x60;facebook&#x60;.
-     * @param {module:api/AuthenticationApi~getSocialAuthorizationCodeCallback} callback The callback function, accepting three arguments: error, data, response
-     */
-    this.getSocialAuthorizationCode = function(code, provider, callback) {
-      var postBody = null;
-
-      // verify the required parameter 'code' is set
-      if (code === undefined || code === null) {
-        throw new Error("Missing the required parameter 'code' when calling getSocialAuthorizationCode");
-      }
-
-      // verify the required parameter 'provider' is set
-      if (provider === undefined || provider === null) {
-        throw new Error("Missing the required parameter 'provider' when calling getSocialAuthorizationCode");
-      }
-
-
-      var pathParams = {
-      };
-      var queryParams = {
-        'code': code,
-        'provider': provider
-      };
-      var headerParams = {
-      };
-      var formParams = {
-      };
-
-      var authNames = ['access_token', 'quantimodo_oauth2'];
-      var contentTypes = ['application/json'];
-      var accepts = ['application/json'];
-      var returnType = null;
-
-      return this.apiClient.callApi(
-        '/v2/auth/social/authorizeCode', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the getSocialAuthorizationToken operation.
-     * @callback module:api/AuthenticationApi~getSocialAuthorizationTokenCallback
-     * @param {String} error Error message, if any.
-     * @param data This operation does not return a value.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Native Social Authentication
-     * If you are using native authentication via Facebook or Google SDKs then you should use the following flow. 1.**Client:** Using native authentication via your native mobile app, get an access token using the instructions provided by the Facebook SDK (https://developers.facebook.com/docs/facebook-login) or Google (https://developers.google.com/identity/protocols/OAuth2) 2.**Client:** Send an Ajax request with provider name and access token on &#x60;https://app.quantimo.do/api/v2/auth/social/authorizeToken?provider&#x3D;{provider}&amp;accessToken&#x3D;{accessToken}&amp;refreshToken&#x3D;{refreshToken}&#x60; (&#x60;refreshToken&#x60; is optional) 3.**Server:** Server will try to get user info and will find existing user by unique identity. If user exist then it will do a login for that or it will create new user and will do login 4.**Server:** Once user is found/created, it will return a JWT token for that user in response 5.**Client:** After getting the JWT token to get a QM access token follow these steps and include your JWT token in them as a header (Authorization: Bearer **{yourJWThere}**) or as a url parameter (https://app.quantimo.do/api/v2/oauth/authorize?token&#x3D;{yourJWThere}).
-     * @param {String} accessToken User&#39;s OAuth2 access token obtained from Google or FB native SDK
-     * @param {String} provider The current options are &#x60;google&#x60; and &#x60;facebook&#x60;.
-     * @param {Object} opts Optional parameters
-     * @param {String} opts.refreshToken Optional refresh token obtained from Google or FB native SDK
-     * @param {module:api/AuthenticationApi~getSocialAuthorizationTokenCallback} callback The callback function, accepting three arguments: error, data, response
-     */
-    this.getSocialAuthorizationToken = function(accessToken, provider, opts, callback) {
-      opts = opts || {};
-      var postBody = null;
-
-      // verify the required parameter 'accessToken' is set
-      if (accessToken === undefined || accessToken === null) {
-        throw new Error("Missing the required parameter 'accessToken' when calling getSocialAuthorizationToken");
-      }
-
-      // verify the required parameter 'provider' is set
-      if (provider === undefined || provider === null) {
-        throw new Error("Missing the required parameter 'provider' when calling getSocialAuthorizationToken");
-      }
-
-
-      var pathParams = {
-      };
-      var queryParams = {
-        'refreshToken': opts['refreshToken'],
-        'accessToken': accessToken,
-        'provider': provider
-      };
-      var headerParams = {
-      };
-      var formParams = {
-      };
-
-      var authNames = ['access_token', 'quantimodo_oauth2'];
-      var contentTypes = ['application/json'];
-      var accepts = ['application/json'];
-      var returnType = null;
-
-      return this.apiClient.callApi(
-        '/v2/auth/social/authorizeToken', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the getSocialLoginPage operation.
-     * @callback module:api/AuthenticationApi~getSocialLoginPageCallback
-     * @param {String} error Error message, if any.
-     * @param data This operation does not return a value.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * First Setp in Social Authentication flow with JWT Token
-     *  Here is the flow for how social authentication works with a JWT Token 1.**Client:** The client needs to open popup with social auth url (&#x60;https://app/quantimo.do/api/v2/auth/social/login?provider&#x3D;{provider}&amp;redirectUrl&#x3D;{url}&#x60;) of server with &#x60;provider&#x60; and &#x60;redirectUrl&#x60;. (Url should be registered with our social apps. Facebook and Twitter are fine with any redirect url with the same domain base url but Google needs exact redirect url.) 2.**Server:** The QM server will redirect user to that provider to get access. 3.**Client:** After successful or failed authentication, it will be redirected to given &#x60;redirectUrl&#x60; with code or error. 4.**Client:** The client needs to get that code and needs to send an Ajax request to server at &#x60;https://app.quantimo.do/api/v2/auth/social/authorizeCode?provider&#x3D;{provider}&amp;code&#x3D;{authorizationCode}&#x60; 5.**Server:** The QM server will authorize that code from the social connection and will authenticate user and will retrieve user info. 6.**Server:** The QM server will try to find existing user by unique identity. If the user already exists then it will login. Otherwise, it will create new user and will then login. 7.**Server:** Once user is found/created, it will return a JWT token for that user in the response.
-     * @param {String} redirectUrl The redirect URI is the URL within your client application that will receive the OAuth2 credentials. Url should be registered with our social apps. Facebook and Twitter are fine with any redirect url with the same domain base url but Google needs exact redirect url.
-     * @param {String} provider The current options are &#x60;google&#x60; and &#x60;facebook&#x60;.
-     * @param {module:api/AuthenticationApi~getSocialLoginPageCallback} callback The callback function, accepting three arguments: error, data, response
-     */
-    this.getSocialLoginPage = function(redirectUrl, provider, callback) {
-      var postBody = null;
-
-      // verify the required parameter 'redirectUrl' is set
-      if (redirectUrl === undefined || redirectUrl === null) {
-        throw new Error("Missing the required parameter 'redirectUrl' when calling getSocialLoginPage");
-      }
-
-      // verify the required parameter 'provider' is set
-      if (provider === undefined || provider === null) {
-        throw new Error("Missing the required parameter 'provider' when calling getSocialLoginPage");
-      }
-
-
-      var pathParams = {
-      };
-      var queryParams = {
-        'redirectUrl': redirectUrl,
-        'provider': provider
-      };
-      var headerParams = {
-      };
-      var formParams = {
-      };
-
-      var authNames = ['access_token', 'quantimodo_oauth2'];
-      var contentTypes = ['application/json'];
-      var accepts = ['application/json'];
-      var returnType = null;
-
-      return this.apiClient.callApi(
-        '/v2/auth/social/login', 'GET',
+        '/v3/oauth2/authorize', 'GET',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, callback
       );
@@ -5368,24 +5208,24 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/Connector', 'model/ConnectorInstruction'], factory);
+    define(['ApiClient', 'model/Connector'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('../model/Connector'), require('../model/ConnectorInstruction'));
+    module.exports = factory(require('../ApiClient'), require('../model/Connector'));
   } else {
     // Browser globals (root is window)
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.ConnectorsApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.Connector, root.Quantimodo.ConnectorInstruction);
+    root.Quantimodo.ConnectorsApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.Connector);
   }
-}(this, function(ApiClient, Connector, ConnectorInstruction) {
+}(this, function(ApiClient, Connector) {
   'use strict';
 
   /**
    * Connectors service.
    * @module api/ConnectorsApi
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -5410,7 +5250,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     /**
      * Obtain a token from 3rd party data source
      * Attempt to obtain a token from the data provider, store it in the database. With this, the connector to continue to obtain new user data until the token is revoked.
-     * @param {String} connectorName Lowercase system name of the source application or device. Get a list of available connectors from the /v3/connectors/list endpoint.
+     * @param {module:model/String} connectorName Lowercase system name of the source application or device. Get a list of available connectors from the /v3/connectors/list endpoint.
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
      * @param {module:api/ConnectorsApi~connectConnectorCallback} callback The callback function, accepting three arguments: error, data, response
@@ -5449,93 +5289,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
     }
 
     /**
-     * Callback function to receive the result of the connectConnectorWithParameters operation.
-     * @callback module:api/ConnectorsApi~connectConnectorWithParametersCallback
-     * @param {String} error Error message, if any.
-     * @param {module:model/ConnectorInstruction} data The data returned by the service call.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Connect Parameter
-     * Returns instructions that describe what parameters and endpoint to use to connect to the given data provider.
-     * @param {String} connectorName Lowercase system name of the source application or device. Get a list of available connectors from the /v3/connectors/list endpoint.
-     * @param {String} displayName Name of the parameter that is user visible in the form
-     * @param {String} key Name of the property that the user has to enter such as username or password Connector (used in HTTP request)
-     * @param {String} placeholder Placeholder hint value for the parameter input tag.
-     * @param {String} type Type of input field such as those found here http://www.w3schools.com/tags/tag_input.asp
-     * @param {Boolean} usePopup Should use popup when enabling connector
-     * @param {Object} opts Optional parameters
-     * @param {Number} opts.userId User&#39;s id
-     * @param {String} opts.defaultValue Default parameter value
-     * @param {module:api/ConnectorsApi~connectConnectorWithParametersCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/ConnectorInstruction}
-     */
-    this.connectConnectorWithParameters = function(connectorName, displayName, key, placeholder, type, usePopup, opts, callback) {
-      opts = opts || {};
-      var postBody = null;
-
-      // verify the required parameter 'connectorName' is set
-      if (connectorName === undefined || connectorName === null) {
-        throw new Error("Missing the required parameter 'connectorName' when calling connectConnectorWithParameters");
-      }
-
-      // verify the required parameter 'displayName' is set
-      if (displayName === undefined || displayName === null) {
-        throw new Error("Missing the required parameter 'displayName' when calling connectConnectorWithParameters");
-      }
-
-      // verify the required parameter 'key' is set
-      if (key === undefined || key === null) {
-        throw new Error("Missing the required parameter 'key' when calling connectConnectorWithParameters");
-      }
-
-      // verify the required parameter 'placeholder' is set
-      if (placeholder === undefined || placeholder === null) {
-        throw new Error("Missing the required parameter 'placeholder' when calling connectConnectorWithParameters");
-      }
-
-      // verify the required parameter 'type' is set
-      if (type === undefined || type === null) {
-        throw new Error("Missing the required parameter 'type' when calling connectConnectorWithParameters");
-      }
-
-      // verify the required parameter 'usePopup' is set
-      if (usePopup === undefined || usePopup === null) {
-        throw new Error("Missing the required parameter 'usePopup' when calling connectConnectorWithParameters");
-      }
-
-
-      var pathParams = {
-        'connectorName': connectorName
-      };
-      var queryParams = {
-        'userId': opts['userId'],
-        'defaultValue': opts['defaultValue'],
-        'displayName': displayName,
-        'key': key,
-        'placeholder': placeholder,
-        'type': type,
-        'usePopup': usePopup
-      };
-      var headerParams = {
-      };
-      var formParams = {
-      };
-
-      var authNames = ['access_token', 'quantimodo_oauth2'];
-      var contentTypes = ['application/json'];
-      var accepts = ['application/json'];
-      var returnType = ConnectorInstruction;
-
-      return this.apiClient.callApi(
-        '/v3/connectors/{connectorName}/connectParameter', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, callback
-      );
-    }
-
-    /**
      * Callback function to receive the result of the disconnectConnector operation.
      * @callback module:api/ConnectorsApi~disconnectConnectorCallback
      * @param {String} error Error message, if any.
@@ -5546,7 +5299,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     /**
      * Delete stored connection info
      * The disconnect method deletes any stored tokens or connection information from the connectors database.
-     * @param {String} connectorName Lowercase system name of the source application or device. Get a list of available connectors from the /v3/connectors/list endpoint.
+     * @param {module:model/String} connectorName Lowercase system name of the source application or device. Get a list of available connectors from the /v3/connectors/list endpoint.
      * @param {module:api/ConnectorsApi~disconnectConnectorCallback} callback The callback function, accepting three arguments: error, data, response
      */
     this.disconnectConnector = function(connectorName, callback) {
@@ -5714,7 +5467,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     /**
      * Sync with data source
      * The update method tells the QM Connector Framework to check with the data provider (such as Fitbit or MyFitnessPal) and retrieve any new measurements available.
-     * @param {String} connectorName Lowercase system name of the source application or device. Get a list of available connectors from the /v3/connectors/list endpoint.
+     * @param {module:model/String} connectorName Lowercase system name of the source application or device. Get a list of available connectors from the /v3/connectors/list endpoint.
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
      * @param {module:api/ConnectorsApi~updateConnectorCallback} callback The callback function, accepting three arguments: error, data, response
@@ -5756,7 +5509,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/Connector":27,"../model/ConnectorInstruction":28}],20:[function(require,module,exports){
+},{"../ApiClient":16,"../model/Connector":27}],20:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -5775,24 +5528,24 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/CommonResponse', 'model/MeasurementDelete', 'model/MeasurementSet', 'model/MeasurementUpdate', 'model/Measurements', 'model/Pairs'], factory);
+    define(['ApiClient', 'model/CommonResponse', 'model/Measurement', 'model/MeasurementDelete', 'model/MeasurementSet', 'model/MeasurementUpdate', 'model/Pairs'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('../model/CommonResponse'), require('../model/MeasurementDelete'), require('../model/MeasurementSet'), require('../model/MeasurementUpdate'), require('../model/Measurements'), require('../model/Pairs'));
+    module.exports = factory(require('../ApiClient'), require('../model/CommonResponse'), require('../model/Measurement'), require('../model/MeasurementDelete'), require('../model/MeasurementSet'), require('../model/MeasurementUpdate'), require('../model/Pairs'));
   } else {
     // Browser globals (root is window)
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.MeasurementsApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.CommonResponse, root.Quantimodo.MeasurementDelete, root.Quantimodo.MeasurementSet, root.Quantimodo.MeasurementUpdate, root.Quantimodo.Measurements, root.Quantimodo.Pairs);
+    root.Quantimodo.MeasurementsApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.CommonResponse, root.Quantimodo.Measurement, root.Quantimodo.MeasurementDelete, root.Quantimodo.MeasurementSet, root.Quantimodo.MeasurementUpdate, root.Quantimodo.Pairs);
   }
-}(this, function(ApiClient, CommonResponse, MeasurementDelete, MeasurementSet, MeasurementUpdate, Measurements, Pairs) {
+}(this, function(ApiClient, CommonResponse, Measurement, MeasurementDelete, MeasurementSet, MeasurementUpdate, Pairs) {
   'use strict';
 
   /**
    * Measurements service.
    * @module api/MeasurementsApi
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -5855,32 +5608,32 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the getMeasurements operation.
      * @callback module:api/MeasurementsApi~getMeasurementsCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/Measurements} data The data returned by the service call.
+     * @param {Array.<module:model/Measurement>} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Get measurements for this user
-     * Measurements are any value that can be recorded like daily steps, a mood rating, or apples eaten. Supported filter parameters:&lt;ul&gt;&lt;li&gt;&lt;b&gt;value&lt;/b&gt; - Value of measurement&lt;/li&gt;&lt;li&gt;&lt;b&gt;updatedAt&lt;/b&gt; - The time that this measurement was created or last updated in the UTC format \&quot;YYYY-MM-DDThh:mm:ss\&quot;&lt;/li&gt;&lt;/ul&gt;
+     * Measurements are any value that can be recorded like daily steps, a mood rating, or apples eaten.
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
      * @param {Number} opts.id Measurement id
      * @param {String} opts.variableName Name of the variable you want measurements for
-     * @param {String} opts.variableCategoryName Limit results to a specific variable category
+     * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
      * @param {String} opts.sourceName ID of the source you want measurements for (supports exact name match only)
      * @param {String} opts.value Value of measurement
-     * @param {String} opts.unitAbbreviatedName The unit you want the measurements returned in
-     * @param {String} opts.earliestMeasurementTime The lower limit of measurements returned in ISO 8601 format or epoch seconds (unixtime)
-     * @param {String} opts.latestMeasurementTime The upper limit of measurements returned in ISO 8601 format or epoch seconds (unixtime)
-     * @param {String} opts.createdAt When the record was first created. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
-     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
+     * @param {module:model/String} opts.unitName Example: 86400
+     * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.createdAt When the record was first created. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.groupingWidth The time (in seconds) over which measurements are grouped together
      * @param {String} opts.groupingTimezone The time (in seconds) over which measurements are grouped together
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
      * @param {module:api/MeasurementsApi~getMeasurementsCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/Measurements}
+     * data is of type: {@link Array.<module:model/Measurement>}
      */
     this.getMeasurements = function(opts, callback) {
       opts = opts || {};
@@ -5896,7 +5649,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'variableCategoryName': opts['variableCategoryName'],
         'sourceName': opts['sourceName'],
         'value': opts['value'],
-        'unitAbbreviatedName': opts['unitAbbreviatedName'],
+        'unitName': opts['unitName'],
         'earliestMeasurementTime': opts['earliestMeasurementTime'],
         'latestMeasurementTime': opts['latestMeasurementTime'],
         'createdAt': opts['createdAt'],
@@ -5915,7 +5668,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = Measurements;
+      var returnType = [Measurement];
 
       return this.apiClient.callApi(
         '/v3/measurements', 'GET',
@@ -5935,53 +5688,39 @@ exports.cleanHeader = function(header, shouldStripCookie){
     /**
      * Get pairs of measurements for correlational analysis
      * Pairs cause measurements with effect measurements grouped over the duration of action after the onset delay.
-     * @param {String} causeVariableName Original variable name for the explanatory or independent variable
-     * @param {String} effectVariableName Original variable name for the outcome or dependent variable
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
-     * @param {String} opts.causeSource Name of data source that the cause measurements should come from
-     * @param {String} opts.causeUnit Abbreviated name for the unit cause measurements to be returned in
+     * @param {String} opts.effectVariableName Variable name of the hypothetical effect variable.  Example: Overall Mood
+     * @param {String} opts.causeVariableName Variable name of the hypothetical cause variable.  Example: Sleep Duration
+     * @param {String} opts.causeUnitName Name for the unit cause measurements to be returned in
      * @param {String} opts.delay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
      * @param {String} opts.duration The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
-     * @param {String} opts.effectSource Name of data source that the effectmeasurements should come from
-     * @param {String} opts.effectUnit Abbreviated name for the unit effect measurements to be returned in
-     * @param {String} opts.endTime The most recent date (in epoch time) for which we should return measurements
-     * @param {String} opts.startTime The earliest date (in epoch time) for which we should return measurements
+     * @param {String} opts.effectUnitName Name for the unit effect measurements to be returned in
+     * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
      * @param {module:api/MeasurementsApi~getPairsCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link Array.<module:model/Pairs>}
      */
-    this.getPairs = function(causeVariableName, effectVariableName, opts, callback) {
+    this.getPairs = function(opts, callback) {
       opts = opts || {};
       var postBody = null;
-
-      // verify the required parameter 'causeVariableName' is set
-      if (causeVariableName === undefined || causeVariableName === null) {
-        throw new Error("Missing the required parameter 'causeVariableName' when calling getPairs");
-      }
-
-      // verify the required parameter 'effectVariableName' is set
-      if (effectVariableName === undefined || effectVariableName === null) {
-        throw new Error("Missing the required parameter 'effectVariableName' when calling getPairs");
-      }
 
 
       var pathParams = {
       };
       var queryParams = {
         'userId': opts['userId'],
-        'causeVariableName': causeVariableName,
-        'causeSource': opts['causeSource'],
-        'causeUnit': opts['causeUnit'],
+        'effectVariableName': opts['effectVariableName'],
+        'causeVariableName': opts['causeVariableName'],
+        'causeUnitName': opts['causeUnitName'],
         'delay': opts['delay'],
         'duration': opts['duration'],
-        'effectVariableName': effectVariableName,
-        'effectSource': opts['effectSource'],
-        'effectUnit': opts['effectUnit'],
-        'endTime': opts['endTime'],
-        'startTime': opts['startTime'],
+        'effectUnitName': opts['effectUnitName'],
+        'earliestMeasurementTime': opts['earliestMeasurementTime'],
+        'latestMeasurementTime': opts['latestMeasurementTime'],
         'limit': opts['limit'],
         'offset': opts['offset'],
         'sort': opts['sort']
@@ -6056,7 +5795,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
     /**
      * Post a new set or update existing measurements to the database
-     * You can submit or update multiple measurements in a \&quot;measurements\&quot; sub-array.  If the variable these measurements correspond to does not already exist in the database, it will be automatically added.  The request body should look something like [{\&quot;measurements\&quot;:[{\&quot;startTime\&quot;:1439389320,\&quot;value\&quot;:\&quot;3\&quot;}, {\&quot;startTime\&quot;:1439389319,\&quot;value\&quot;:\&quot;2\&quot;}],\&quot;name\&quot;:\&quot;Acne (out of 5)\&quot;,\&quot;source\&quot;:\&quot;QuantiModo\&quot;,\&quot;category\&quot;:\&quot;Symptoms\&quot;,\&quot;combinationOperation\&quot;:\&quot;MEAN\&quot;,\&quot;unit\&quot;:\&quot;/5\&quot;}]
+     * You can submit or update multiple measurements in a \&quot;measurements\&quot; sub-array.  If the variable these measurements correspond to does not already exist in the database, it will be automatically added.
      * @param {Array.<module:model/MeasurementSet>} body An array of measurement sets containing measurement items you want to insert.
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
@@ -6095,8 +5834,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
     }
 
     /**
-     * Callback function to receive the result of the v3MeasurementsUpdatePut operation.
-     * @callback module:api/MeasurementsApi~v3MeasurementsUpdatePutCallback
+     * Callback function to receive the result of the v3MeasurementsUpdatePost operation.
+     * @callback module:api/MeasurementsApi~v3MeasurementsUpdatePostCallback
      * @param {String} error Error message, if any.
      * @param {module:model/CommonResponse} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
@@ -6106,15 +5845,15 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Update a measurement
      * Delete a previously submitted measurement
      * @param {module:model/MeasurementUpdate} body The id as well as the new startTime, note, and/or value of the measurement to be updated
-     * @param {module:api/MeasurementsApi~v3MeasurementsUpdatePutCallback} callback The callback function, accepting three arguments: error, data, response
+     * @param {module:api/MeasurementsApi~v3MeasurementsUpdatePostCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link module:model/CommonResponse}
      */
-    this.v3MeasurementsUpdatePut = function(body, callback) {
+    this.v3MeasurementsUpdatePost = function(body, callback) {
       var postBody = body;
 
       // verify the required parameter 'body' is set
       if (body === undefined || body === null) {
-        throw new Error("Missing the required parameter 'body' when calling v3MeasurementsUpdatePut");
+        throw new Error("Missing the required parameter 'body' when calling v3MeasurementsUpdatePost");
       }
 
 
@@ -6133,7 +5872,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var returnType = CommonResponse;
 
       return this.apiClient.callApi(
-        '/v3/measurements/update', 'PUT',
+        '/v3/measurements/update', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, callback
       );
@@ -6143,7 +5882,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/CommonResponse":26,"../model/MeasurementDelete":38,"../model/MeasurementSet":40,"../model/MeasurementUpdate":41,"../model/Measurements":42,"../model/Pairs":43}],21:[function(require,module,exports){
+},{"../ApiClient":16,"../model/CommonResponse":26,"../model/Measurement":36,"../model/MeasurementDelete":37,"../model/MeasurementSet":39,"../model/MeasurementUpdate":40,"../model/Pairs":41}],21:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -6162,24 +5901,24 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/CommonResponse', 'model/InlineResponse200', 'model/InlineResponse2001', 'model/InlineResponse2002', 'model/TrackingReminder', 'model/TrackingReminderDelete', 'model/TrackingReminderNotificationPost'], factory);
+    define(['ApiClient', 'model/CommonResponse', 'model/InlineResponse200', 'model/InlineResponse2001', 'model/InlineResponse201', 'model/TrackingReminder', 'model/TrackingReminderDelete', 'model/TrackingReminderNotificationPost'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('../model/CommonResponse'), require('../model/InlineResponse200'), require('../model/InlineResponse2001'), require('../model/InlineResponse2002'), require('../model/TrackingReminder'), require('../model/TrackingReminderDelete'), require('../model/TrackingReminderNotificationPost'));
+    module.exports = factory(require('../ApiClient'), require('../model/CommonResponse'), require('../model/InlineResponse200'), require('../model/InlineResponse2001'), require('../model/InlineResponse201'), require('../model/TrackingReminder'), require('../model/TrackingReminderDelete'), require('../model/TrackingReminderNotificationPost'));
   } else {
     // Browser globals (root is window)
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.RemindersApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.CommonResponse, root.Quantimodo.InlineResponse200, root.Quantimodo.InlineResponse2001, root.Quantimodo.InlineResponse2002, root.Quantimodo.TrackingReminder, root.Quantimodo.TrackingReminderDelete, root.Quantimodo.TrackingReminderNotificationPost);
+    root.Quantimodo.RemindersApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.CommonResponse, root.Quantimodo.InlineResponse200, root.Quantimodo.InlineResponse2001, root.Quantimodo.InlineResponse201, root.Quantimodo.TrackingReminder, root.Quantimodo.TrackingReminderDelete, root.Quantimodo.TrackingReminderNotificationPost);
   }
-}(this, function(ApiClient, CommonResponse, InlineResponse200, InlineResponse2001, InlineResponse2002, TrackingReminder, TrackingReminderDelete, TrackingReminderNotificationPost) {
+}(this, function(ApiClient, CommonResponse, InlineResponse200, InlineResponse2001, InlineResponse201, TrackingReminder, TrackingReminderDelete, TrackingReminderNotificationPost) {
   'use strict';
 
   /**
    * Reminders service.
    * @module api/RemindersApi
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -6246,7 +5985,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the getTrackingReminderNotifications operation.
      * @callback module:api/RemindersApi~getTrackingReminderNotificationsCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/InlineResponse2002} data The data returned by the service call.
+     * @param {module:model/InlineResponse2001} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -6255,14 +5994,14 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Specfic pending reminder instances that still need to be tracked.  
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
-     * @param {String} opts.variableCategoryName Limit results to a specific variable category
-     * @param {String} opts.createdAt When the record was first created. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
-     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
+     * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
+     * @param {String} opts.createdAt When the record was first created. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
      * @param {module:api/RemindersApi~getTrackingReminderNotificationsCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/InlineResponse2002}
+     * data is of type: {@link module:model/InlineResponse2001}
      */
     this.getTrackingReminderNotifications = function(opts, callback) {
       opts = opts || {};
@@ -6288,7 +6027,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = InlineResponse2002;
+      var returnType = InlineResponse2001;
 
       return this.apiClient.callApi(
         '/v3/trackingReminderNotifications', 'GET',
@@ -6310,9 +6049,9 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Users can be reminded to track certain variables at a specified frequency with a default value.
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
-     * @param {String} opts.variableCategoryName Limit results to a specific variable category
-     * @param {String} opts.createdAt When the record was first created. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
-     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
+     * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
+     * @param {String} opts.createdAt When the record was first created. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
@@ -6405,7 +6144,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the postTrackingReminders operation.
      * @callback module:api/RemindersApi~postTrackingRemindersCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/InlineResponse2001} data The data returned by the service call.
+     * @param {module:model/InlineResponse201} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -6416,7 +6155,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {Number} opts.userId User&#39;s id
      * @param {module:model/TrackingReminder} opts.body TrackingReminder that should be stored
      * @param {module:api/RemindersApi~postTrackingRemindersCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/InlineResponse2001}
+     * data is of type: {@link module:model/InlineResponse201}
      */
     this.postTrackingReminders = function(opts, callback) {
       opts = opts || {};
@@ -6436,7 +6175,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = InlineResponse2001;
+      var returnType = InlineResponse201;
 
       return this.apiClient.callApi(
         '/v3/trackingReminders', 'POST',
@@ -6449,7 +6188,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/CommonResponse":26,"../model/InlineResponse200":33,"../model/InlineResponse2001":34,"../model/InlineResponse2002":35,"../model/TrackingReminder":45,"../model/TrackingReminderDelete":46,"../model/TrackingReminderNotificationPost":48}],22:[function(require,module,exports){
+},{"../ApiClient":16,"../model/CommonResponse":26,"../model/InlineResponse200":32,"../model/InlineResponse2001":33,"../model/InlineResponse201":34,"../model/TrackingReminder":43,"../model/TrackingReminderDelete":44,"../model/TrackingReminderNotificationPost":46}],22:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -6468,24 +6207,24 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/UnitCategories', 'model/Units'], factory);
+    define(['ApiClient', 'model/Unit', 'model/UnitCategory'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('../model/UnitCategories'), require('../model/Units'));
+    module.exports = factory(require('../ApiClient'), require('../model/Unit'), require('../model/UnitCategory'));
   } else {
     // Browser globals (root is window)
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.UnitsApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.UnitCategories, root.Quantimodo.Units);
+    root.Quantimodo.UnitsApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.Unit, root.Quantimodo.UnitCategory);
   }
-}(this, function(ApiClient, UnitCategories, Units) {
+}(this, function(ApiClient, Unit, UnitCategory) {
   'use strict';
 
   /**
    * Units service.
    * @module api/UnitsApi
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -6503,7 +6242,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the getUnitCategories operation.
      * @callback module:api/UnitsApi~getUnitCategoriesCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/UnitCategories} data The data returned by the service call.
+     * @param {Array.<module:model/UnitCategory>} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -6511,7 +6250,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Get unit categories
      * Get a list of the categories of measurement units such as &#39;Distance&#39;, &#39;Duration&#39;, &#39;Energy&#39;, &#39;Frequency&#39;, &#39;Miscellany&#39;, &#39;Pressure&#39;, &#39;Proportion&#39;, &#39;Rating&#39;, &#39;Temperature&#39;, &#39;Volume&#39;, and &#39;Weight&#39;.
      * @param {module:api/UnitsApi~getUnitCategoriesCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/UnitCategories}
+     * data is of type: {@link Array.<module:model/UnitCategory>}
      */
     this.getUnitCategories = function(callback) {
       var postBody = null;
@@ -6529,7 +6268,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = UnitCategories;
+      var returnType = [UnitCategory];
 
       return this.apiClient.callApi(
         '/v3/unitCategories', 'GET',
@@ -6542,7 +6281,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the getUnits operation.
      * @callback module:api/UnitsApi~getUnitsCallback
      * @param {String} error Error message, if any.
-     * @param {Array.<module:model/Units>} data The data returned by the service call.
+     * @param {Array.<module:model/Unit>} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -6550,7 +6289,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Get units
      * Get a list of the available measurement units
      * @param {module:api/UnitsApi~getUnitsCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link Array.<module:model/Units>}
+     * data is of type: {@link Array.<module:model/Unit>}
      */
     this.getUnits = function(callback) {
       var postBody = null;
@@ -6568,7 +6307,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = [Units];
+      var returnType = [Unit];
 
       return this.apiClient.callApi(
         '/v3/units', 'GET',
@@ -6581,7 +6320,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/UnitCategories":52,"../model/Units":54}],23:[function(require,module,exports){
+},{"../ApiClient":16,"../model/Unit":47,"../model/UnitCategory":48}],23:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -6617,7 +6356,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * User service.
    * @module api/UserApi
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -6644,8 +6383,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Returns user info.  If no userId is specified, returns info for currently authenticated user
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
-     * @param {String} opts.createdAt When the record was first created. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
-     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.createdAt When the record was first created. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
@@ -6688,7 +6427,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/User":56}],24:[function(require,module,exports){
+},{"../ApiClient":16,"../model/User":50}],24:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -6707,24 +6446,24 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/CommonResponse', 'model/UserTag', 'model/UserVariableDelete', 'model/UserVariables', 'model/VariableCategory', 'model/Variables'], factory);
+    define(['ApiClient', 'model/CommonResponse', 'model/UserTag', 'model/UserVariable', 'model/UserVariableDelete', 'model/Variable', 'model/VariableCategory'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('../model/CommonResponse'), require('../model/UserTag'), require('../model/UserVariableDelete'), require('../model/UserVariables'), require('../model/VariableCategory'), require('../model/Variables'));
+    module.exports = factory(require('../ApiClient'), require('../model/CommonResponse'), require('../model/UserTag'), require('../model/UserVariable'), require('../model/UserVariableDelete'), require('../model/Variable'), require('../model/VariableCategory'));
   } else {
     // Browser globals (root is window)
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.VariablesApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.CommonResponse, root.Quantimodo.UserTag, root.Quantimodo.UserVariableDelete, root.Quantimodo.UserVariables, root.Quantimodo.VariableCategory, root.Quantimodo.Variables);
+    root.Quantimodo.VariablesApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.CommonResponse, root.Quantimodo.UserTag, root.Quantimodo.UserVariable, root.Quantimodo.UserVariableDelete, root.Quantimodo.Variable, root.Quantimodo.VariableCategory);
   }
-}(this, function(ApiClient, CommonResponse, UserTag, UserVariableDelete, UserVariables, VariableCategory, Variables) {
+}(this, function(ApiClient, CommonResponse, UserTag, UserVariable, UserVariableDelete, Variable, VariableCategory) {
   'use strict';
 
   /**
    * Variables service.
    * @module api/VariablesApi
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -6839,7 +6578,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the getPublicVariables operation.
      * @callback module:api/VariablesApi~getPublicVariablesCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/Variables} data The data returned by the service call.
+     * @param {Array.<module:model/Variable>} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -6849,18 +6588,19 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
      * @param {Number} opts.id Common variable id
-     * @param {String} opts.variableCategoryName Limit results to a specific variable category
+     * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
      * @param {String} opts.name Original name of the variable (supports exact name match only)
-     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {String} opts.source The name of the data source that created the variable (supports exact name match only). So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here
-     * @param {String} opts.latestMeasurementTime Filter variables based on the last time a measurement for them was created or updated in the UTC format \&quot;YYYY-MM-DDThh:mm:ss\&quot;
+     * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.numberOfRawMeasurements Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.
      * @param {String} opts.lastSource Limit variables to those which measurements were last submitted by a specific source. So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here. (supports exact name match only)
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
      * @param {module:api/VariablesApi~getPublicVariablesCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/Variables}
+     * data is of type: {@link Array.<module:model/Variable>}
      */
     this.getPublicVariables = function(opts, callback) {
       opts = opts || {};
@@ -6876,6 +6616,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'name': opts['name'],
         'updatedAt': opts['updatedAt'],
         'source': opts['source'],
+        'earliestMeasurementTime': opts['earliestMeasurementTime'],
         'latestMeasurementTime': opts['latestMeasurementTime'],
         'numberOfRawMeasurements': opts['numberOfRawMeasurements'],
         'lastSource': opts['lastSource'],
@@ -6891,7 +6632,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = Variables;
+      var returnType = [Variable];
 
       return this.apiClient.callApi(
         '/v3/public/variables', 'GET',
@@ -6904,7 +6645,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the getUserVariables operation.
      * @callback module:api/VariablesApi~getUserVariablesCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/UserVariables} data The data returned by the service call.
+     * @param {Array.<module:model/UserVariable>} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -6914,18 +6655,19 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {Object} opts Optional parameters
      * @param {Number} opts.userId User&#39;s id
      * @param {Number} opts.id Common variable id
-     * @param {String} opts.variableCategoryName Limit results to a specific variable category
+     * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
      * @param {String} opts.name Original name of the variable (supports exact name match only)
-     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 \&quot;YYYY-MM-DDThh:mm:ss\&quot;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {String} opts.source The name of the data source that created the variable (supports exact name match only). So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here
-     * @param {String} opts.latestMeasurementTime Filter variables based on the last time a measurement for them was created or updated in the UTC format \&quot;YYYY-MM-DDThh:mm:ss\&quot;
+     * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
+     * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.numberOfRawMeasurements Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.
      * @param {String} opts.lastSource Limit variables to those which measurements were last submitted by a specific source. So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here. (supports exact name match only)
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
      * @param {module:api/VariablesApi~getUserVariablesCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/UserVariables}
+     * data is of type: {@link Array.<module:model/UserVariable>}
      */
     this.getUserVariables = function(opts, callback) {
       opts = opts || {};
@@ -6941,6 +6683,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'name': opts['name'],
         'updatedAt': opts['updatedAt'],
         'source': opts['source'],
+        'earliestMeasurementTime': opts['earliestMeasurementTime'],
         'latestMeasurementTime': opts['latestMeasurementTime'],
         'numberOfRawMeasurements': opts['numberOfRawMeasurements'],
         'lastSource': opts['lastSource'],
@@ -6956,7 +6699,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = UserVariables;
+      var returnType = [UserVariable];
 
       return this.apiClient.callApi(
         '/v3/userVariables', 'GET',
@@ -7057,15 +6800,16 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the postUserVariables operation.
      * @callback module:api/VariablesApi~postUserVariablesCallback
      * @param {String} error Error message, if any.
-     * @param data This operation does not return a value.
+     * @param {module:model/CommonResponse} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Update User Settings for a Variable
      * Users can change the parameters used in analysis of that variable such as the expected duration of action for a variable to have an effect, the estimated delay before the onset of action. In order to filter out erroneous data, they are able to set the maximum and minimum reasonable daily values for a variable.
-     * @param {module:model/UserVariables} userVariables Variable user settings data
+     * @param {Array.<module:model/UserVariable>} userVariables Variable user settings data
      * @param {module:api/VariablesApi~postUserVariablesCallback} callback The callback function, accepting three arguments: error, data, response
+     * data is of type: {@link module:model/CommonResponse}
      */
     this.postUserVariables = function(userVariables, callback) {
       var postBody = userVariables;
@@ -7088,7 +6832,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = null;
+      var returnType = CommonResponse;
 
       return this.apiClient.callApi(
         '/v3/userVariables', 'POST',
@@ -7145,7 +6889,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/CommonResponse":26,"../model/UserTag":57,"../model/UserVariableDelete":64,"../model/UserVariables":65,"../model/VariableCategory":68,"../model/Variables":69}],25:[function(require,module,exports){
+},{"../ApiClient":16,"../model/CommonResponse":26,"../model/UserTag":51,"../model/UserVariable":57,"../model/UserVariableDelete":58,"../model/Variable":59,"../model/VariableCategory":60}],25:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -7164,12 +6908,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/CommonResponse', 'model/Connector', 'model/ConnectorInstruction', 'model/Connectors', 'model/ConversionStep', 'model/Correlation', 'model/Correlations', 'model/InlineResponse200', 'model/InlineResponse2001', 'model/InlineResponse2002', 'model/JsonErrorResponse', 'model/Measurement', 'model/MeasurementDelete', 'model/MeasurementItem', 'model/MeasurementSet', 'model/MeasurementUpdate', 'model/Measurements', 'model/Pairs', 'model/PostCorrelation', 'model/TrackingReminder', 'model/TrackingReminderDelete', 'model/TrackingReminderNotification', 'model/TrackingReminderNotificationPost', 'model/TrackingReminderNotifications', 'model/TrackingReminders', 'model/Unit', 'model/UnitCategories', 'model/UnitCategory', 'model/Units', 'model/Update', 'model/User', 'model/UserTag', 'model/UserTokenFailedResponse', 'model/UserTokenRequest', 'model/UserTokenRequestInnerUserField', 'model/UserTokenSuccessfulResponse', 'model/UserTokenSuccessfulResponseInnerUserField', 'model/UserVariable', 'model/UserVariableDelete', 'model/UserVariables', 'model/Variable', 'model/VariableCategories', 'model/VariableCategory', 'model/Variables', 'model/Vote', 'model/VoteDelete', 'api/AnalyticsApi', 'api/AuthenticationApi', 'api/ConnectorsApi', 'api/MeasurementsApi', 'api/RemindersApi', 'api/UnitsApi', 'api/UserApi', 'api/VariablesApi'], factory);
+    define(['ApiClient', 'model/CommonResponse', 'model/Connector', 'model/ConnectorInstruction', 'model/ConversionStep', 'model/Correlation', 'model/Correlations', 'model/InlineResponse200', 'model/InlineResponse2001', 'model/InlineResponse201', 'model/JsonErrorResponse', 'model/Measurement', 'model/MeasurementDelete', 'model/MeasurementItem', 'model/MeasurementSet', 'model/MeasurementUpdate', 'model/Pairs', 'model/PostCorrelation', 'model/TrackingReminder', 'model/TrackingReminderDelete', 'model/TrackingReminderNotification', 'model/TrackingReminderNotificationPost', 'model/Unit', 'model/UnitCategory', 'model/Update', 'model/User', 'model/UserTag', 'model/UserTokenFailedResponse', 'model/UserTokenRequest', 'model/UserTokenRequestInnerUserField', 'model/UserTokenSuccessfulResponse', 'model/UserTokenSuccessfulResponseInnerUserField', 'model/UserVariable', 'model/UserVariableDelete', 'model/Variable', 'model/VariableCategory', 'model/Vote', 'model/VoteDelete', 'api/AnalyticsApi', 'api/AuthenticationApi', 'api/ConnectorsApi', 'api/MeasurementsApi', 'api/RemindersApi', 'api/UnitsApi', 'api/UserApi', 'api/VariablesApi'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('./ApiClient'), require('./model/CommonResponse'), require('./model/Connector'), require('./model/ConnectorInstruction'), require('./model/Connectors'), require('./model/ConversionStep'), require('./model/Correlation'), require('./model/Correlations'), require('./model/InlineResponse200'), require('./model/InlineResponse2001'), require('./model/InlineResponse2002'), require('./model/JsonErrorResponse'), require('./model/Measurement'), require('./model/MeasurementDelete'), require('./model/MeasurementItem'), require('./model/MeasurementSet'), require('./model/MeasurementUpdate'), require('./model/Measurements'), require('./model/Pairs'), require('./model/PostCorrelation'), require('./model/TrackingReminder'), require('./model/TrackingReminderDelete'), require('./model/TrackingReminderNotification'), require('./model/TrackingReminderNotificationPost'), require('./model/TrackingReminderNotifications'), require('./model/TrackingReminders'), require('./model/Unit'), require('./model/UnitCategories'), require('./model/UnitCategory'), require('./model/Units'), require('./model/Update'), require('./model/User'), require('./model/UserTag'), require('./model/UserTokenFailedResponse'), require('./model/UserTokenRequest'), require('./model/UserTokenRequestInnerUserField'), require('./model/UserTokenSuccessfulResponse'), require('./model/UserTokenSuccessfulResponseInnerUserField'), require('./model/UserVariable'), require('./model/UserVariableDelete'), require('./model/UserVariables'), require('./model/Variable'), require('./model/VariableCategories'), require('./model/VariableCategory'), require('./model/Variables'), require('./model/Vote'), require('./model/VoteDelete'), require('./api/AnalyticsApi'), require('./api/AuthenticationApi'), require('./api/ConnectorsApi'), require('./api/MeasurementsApi'), require('./api/RemindersApi'), require('./api/UnitsApi'), require('./api/UserApi'), require('./api/VariablesApi'));
+    module.exports = factory(require('./ApiClient'), require('./model/CommonResponse'), require('./model/Connector'), require('./model/ConnectorInstruction'), require('./model/ConversionStep'), require('./model/Correlation'), require('./model/Correlations'), require('./model/InlineResponse200'), require('./model/InlineResponse2001'), require('./model/InlineResponse201'), require('./model/JsonErrorResponse'), require('./model/Measurement'), require('./model/MeasurementDelete'), require('./model/MeasurementItem'), require('./model/MeasurementSet'), require('./model/MeasurementUpdate'), require('./model/Pairs'), require('./model/PostCorrelation'), require('./model/TrackingReminder'), require('./model/TrackingReminderDelete'), require('./model/TrackingReminderNotification'), require('./model/TrackingReminderNotificationPost'), require('./model/Unit'), require('./model/UnitCategory'), require('./model/Update'), require('./model/User'), require('./model/UserTag'), require('./model/UserTokenFailedResponse'), require('./model/UserTokenRequest'), require('./model/UserTokenRequestInnerUserField'), require('./model/UserTokenSuccessfulResponse'), require('./model/UserTokenSuccessfulResponseInnerUserField'), require('./model/UserVariable'), require('./model/UserVariableDelete'), require('./model/Variable'), require('./model/VariableCategory'), require('./model/Vote'), require('./model/VoteDelete'), require('./api/AnalyticsApi'), require('./api/AuthenticationApi'), require('./api/ConnectorsApi'), require('./api/MeasurementsApi'), require('./api/RemindersApi'), require('./api/UnitsApi'), require('./api/UserApi'), require('./api/VariablesApi'));
   }
-}(function(ApiClient, CommonResponse, Connector, ConnectorInstruction, Connectors, ConversionStep, Correlation, Correlations, InlineResponse200, InlineResponse2001, InlineResponse2002, JsonErrorResponse, Measurement, MeasurementDelete, MeasurementItem, MeasurementSet, MeasurementUpdate, Measurements, Pairs, PostCorrelation, TrackingReminder, TrackingReminderDelete, TrackingReminderNotification, TrackingReminderNotificationPost, TrackingReminderNotifications, TrackingReminders, Unit, UnitCategories, UnitCategory, Units, Update, User, UserTag, UserTokenFailedResponse, UserTokenRequest, UserTokenRequestInnerUserField, UserTokenSuccessfulResponse, UserTokenSuccessfulResponseInnerUserField, UserVariable, UserVariableDelete, UserVariables, Variable, VariableCategories, VariableCategory, Variables, Vote, VoteDelete, AnalyticsApi, AuthenticationApi, ConnectorsApi, MeasurementsApi, RemindersApi, UnitsApi, UserApi, VariablesApi) {
+}(function(ApiClient, CommonResponse, Connector, ConnectorInstruction, ConversionStep, Correlation, Correlations, InlineResponse200, InlineResponse2001, InlineResponse201, JsonErrorResponse, Measurement, MeasurementDelete, MeasurementItem, MeasurementSet, MeasurementUpdate, Pairs, PostCorrelation, TrackingReminder, TrackingReminderDelete, TrackingReminderNotification, TrackingReminderNotificationPost, Unit, UnitCategory, Update, User, UserTag, UserTokenFailedResponse, UserTokenRequest, UserTokenRequestInnerUserField, UserTokenSuccessfulResponse, UserTokenSuccessfulResponseInnerUserField, UserVariable, UserVariableDelete, Variable, VariableCategory, Vote, VoteDelete, AnalyticsApi, AuthenticationApi, ConnectorsApi, MeasurementsApi, RemindersApi, UnitsApi, UserApi, VariablesApi) {
   'use strict';
 
   /**
@@ -7201,7 +6945,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * </pre>
    * </p>
    * @module index
-   * @version 5.8.728
+   * @version 5.8.730
    */
   var exports = {
     /**
@@ -7224,11 +6968,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @property {module:model/ConnectorInstruction}
      */
     ConnectorInstruction: ConnectorInstruction,
-    /**
-     * The Connectors model constructor.
-     * @property {module:model/Connectors}
-     */
-    Connectors: Connectors,
     /**
      * The ConversionStep model constructor.
      * @property {module:model/ConversionStep}
@@ -7255,10 +6994,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
      */
     InlineResponse2001: InlineResponse2001,
     /**
-     * The InlineResponse2002 model constructor.
-     * @property {module:model/InlineResponse2002}
+     * The InlineResponse201 model constructor.
+     * @property {module:model/InlineResponse201}
      */
-    InlineResponse2002: InlineResponse2002,
+    InlineResponse201: InlineResponse201,
     /**
      * The JsonErrorResponse model constructor.
      * @property {module:model/JsonErrorResponse}
@@ -7290,11 +7029,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
      */
     MeasurementUpdate: MeasurementUpdate,
     /**
-     * The Measurements model constructor.
-     * @property {module:model/Measurements}
-     */
-    Measurements: Measurements,
-    /**
      * The Pairs model constructor.
      * @property {module:model/Pairs}
      */
@@ -7325,35 +7059,15 @@ exports.cleanHeader = function(header, shouldStripCookie){
      */
     TrackingReminderNotificationPost: TrackingReminderNotificationPost,
     /**
-     * The TrackingReminderNotifications model constructor.
-     * @property {module:model/TrackingReminderNotifications}
-     */
-    TrackingReminderNotifications: TrackingReminderNotifications,
-    /**
-     * The TrackingReminders model constructor.
-     * @property {module:model/TrackingReminders}
-     */
-    TrackingReminders: TrackingReminders,
-    /**
      * The Unit model constructor.
      * @property {module:model/Unit}
      */
     Unit: Unit,
     /**
-     * The UnitCategories model constructor.
-     * @property {module:model/UnitCategories}
-     */
-    UnitCategories: UnitCategories,
-    /**
      * The UnitCategory model constructor.
      * @property {module:model/UnitCategory}
      */
     UnitCategory: UnitCategory,
-    /**
-     * The Units model constructor.
-     * @property {module:model/Units}
-     */
-    Units: Units,
     /**
      * The Update model constructor.
      * @property {module:model/Update}
@@ -7405,30 +7119,15 @@ exports.cleanHeader = function(header, shouldStripCookie){
      */
     UserVariableDelete: UserVariableDelete,
     /**
-     * The UserVariables model constructor.
-     * @property {module:model/UserVariables}
-     */
-    UserVariables: UserVariables,
-    /**
      * The Variable model constructor.
      * @property {module:model/Variable}
      */
     Variable: Variable,
     /**
-     * The VariableCategories model constructor.
-     * @property {module:model/VariableCategories}
-     */
-    VariableCategories: VariableCategories,
-    /**
      * The VariableCategory model constructor.
      * @property {module:model/VariableCategory}
      */
     VariableCategory: VariableCategory,
-    /**
-     * The Variables model constructor.
-     * @property {module:model/Variables}
-     */
-    Variables: Variables,
     /**
      * The Vote model constructor.
      * @property {module:model/Vote}
@@ -7484,7 +7183,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"./ApiClient":16,"./api/AnalyticsApi":17,"./api/AuthenticationApi":18,"./api/ConnectorsApi":19,"./api/MeasurementsApi":20,"./api/RemindersApi":21,"./api/UnitsApi":22,"./api/UserApi":23,"./api/VariablesApi":24,"./model/CommonResponse":26,"./model/Connector":27,"./model/ConnectorInstruction":28,"./model/Connectors":29,"./model/ConversionStep":30,"./model/Correlation":31,"./model/Correlations":32,"./model/InlineResponse200":33,"./model/InlineResponse2001":34,"./model/InlineResponse2002":35,"./model/JsonErrorResponse":36,"./model/Measurement":37,"./model/MeasurementDelete":38,"./model/MeasurementItem":39,"./model/MeasurementSet":40,"./model/MeasurementUpdate":41,"./model/Measurements":42,"./model/Pairs":43,"./model/PostCorrelation":44,"./model/TrackingReminder":45,"./model/TrackingReminderDelete":46,"./model/TrackingReminderNotification":47,"./model/TrackingReminderNotificationPost":48,"./model/TrackingReminderNotifications":49,"./model/TrackingReminders":50,"./model/Unit":51,"./model/UnitCategories":52,"./model/UnitCategory":53,"./model/Units":54,"./model/Update":55,"./model/User":56,"./model/UserTag":57,"./model/UserTokenFailedResponse":58,"./model/UserTokenRequest":59,"./model/UserTokenRequestInnerUserField":60,"./model/UserTokenSuccessfulResponse":61,"./model/UserTokenSuccessfulResponseInnerUserField":62,"./model/UserVariable":63,"./model/UserVariableDelete":64,"./model/UserVariables":65,"./model/Variable":66,"./model/VariableCategories":67,"./model/VariableCategory":68,"./model/Variables":69,"./model/Vote":70,"./model/VoteDelete":71}],26:[function(require,module,exports){
+},{"./ApiClient":16,"./api/AnalyticsApi":17,"./api/AuthenticationApi":18,"./api/ConnectorsApi":19,"./api/MeasurementsApi":20,"./api/RemindersApi":21,"./api/UnitsApi":22,"./api/UserApi":23,"./api/VariablesApi":24,"./model/CommonResponse":26,"./model/Connector":27,"./model/ConnectorInstruction":28,"./model/ConversionStep":29,"./model/Correlation":30,"./model/Correlations":31,"./model/InlineResponse200":32,"./model/InlineResponse2001":33,"./model/InlineResponse201":34,"./model/JsonErrorResponse":35,"./model/Measurement":36,"./model/MeasurementDelete":37,"./model/MeasurementItem":38,"./model/MeasurementSet":39,"./model/MeasurementUpdate":40,"./model/Pairs":41,"./model/PostCorrelation":42,"./model/TrackingReminder":43,"./model/TrackingReminderDelete":44,"./model/TrackingReminderNotification":45,"./model/TrackingReminderNotificationPost":46,"./model/Unit":47,"./model/UnitCategory":48,"./model/Update":49,"./model/User":50,"./model/UserTag":51,"./model/UserTokenFailedResponse":52,"./model/UserTokenRequest":53,"./model/UserTokenRequestInnerUserField":54,"./model/UserTokenSuccessfulResponse":55,"./model/UserTokenSuccessfulResponseInnerUserField":56,"./model/UserVariable":57,"./model/UserVariableDelete":58,"./model/Variable":59,"./model/VariableCategory":60,"./model/Vote":61,"./model/VoteDelete":62}],26:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -7523,7 +7222,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CommonResponse model module.
    * @module model/CommonResponse
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -7626,7 +7325,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Connector model module.
    * @module model/Connector
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -7791,7 +7490,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConnectorInstruction model module.
    * @module model/ConnectorInstruction
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -7873,87 +7572,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/Connector'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./Connector'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.Connectors = factory(root.Quantimodo.ApiClient, root.Quantimodo.Connector);
-  }
-}(this, function(ApiClient, Connector) {
-  'use strict';
-
-
-
-
-  /**
-   * The Connectors model module.
-   * @module model/Connectors
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>Connectors</code>.
-   * Array
-   * @alias module:model/Connectors
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>Connectors</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/Connectors} obj Optional instance to populate.
-   * @return {module:model/Connectors} The populated <code>Connectors</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'Connector');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./Connector":27}],30:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
     define(['ApiClient'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
@@ -7974,7 +7592,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConversionStep model module.
    * @module model/ConversionStep
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -8047,7 +7665,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],31:[function(require,module,exports){
+},{"../ApiClient":16}],30:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -8086,7 +7704,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Correlation model module.
    * @module model/Correlation
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -8474,7 +8092,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['correlationCoefficient'] = undefined;
   /**
-   * When the record was first created. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * When the record was first created. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} createdAt
    */
   exports.prototype['createdAt'] = undefined;
@@ -8659,7 +8277,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['timestamp'] = undefined;
   /**
-   * When the record in the database was last updated. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format. Time zone should be UTC and not local.
+   * When the record in the database was last updated. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format. Time zone should be UTC and not local.
    * @member {Date} updatedAt
    */
   exports.prototype['updatedAt'] = undefined;
@@ -8696,7 +8314,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],32:[function(require,module,exports){
+},{"../ApiClient":16}],31:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -8735,7 +8353,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Correlations model module.
    * @module model/Correlations
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -8777,7 +8395,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./Correlation":31}],33:[function(require,module,exports){
+},{"../ApiClient":16,"./Correlation":30}],32:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -8796,18 +8414,18 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/TrackingReminders'], factory);
+    define(['ApiClient', 'model/TrackingReminder'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./TrackingReminders'));
+    module.exports = factory(require('../ApiClient'), require('./TrackingReminder'));
   } else {
     // Browser globals (root is window)
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.InlineResponse200 = factory(root.Quantimodo.ApiClient, root.Quantimodo.TrackingReminders);
+    root.Quantimodo.InlineResponse200 = factory(root.Quantimodo.ApiClient, root.Quantimodo.TrackingReminder);
   }
-}(this, function(ApiClient, TrackingReminders) {
+}(this, function(ApiClient, TrackingReminder) {
   'use strict';
 
 
@@ -8816,7 +8434,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The InlineResponse200 model module.
    * @module model/InlineResponse200
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -8846,7 +8464,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         obj['success'] = ApiClient.convertToType(data['success'], 'Boolean');
       }
       if (data.hasOwnProperty('data')) {
-        obj['data'] = ApiClient.convertToType(data['data'], [TrackingReminders]);
+        obj['data'] = ApiClient.convertToType(data['data'], [TrackingReminder]);
       }
     }
     return obj;
@@ -8857,7 +8475,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['success'] = undefined;
   /**
-   * @member {Array.<module:model/TrackingReminders>} data
+   * @member {Array.<module:model/TrackingReminder>} data
    */
   exports.prototype['data'] = undefined;
 
@@ -8868,7 +8486,98 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./TrackingReminders":50}],34:[function(require,module,exports){
+},{"../ApiClient":16,"./TrackingReminder":43}],33:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient', 'model/TrackingReminderNotification'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'), require('./TrackingReminderNotification'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.InlineResponse2001 = factory(root.Quantimodo.ApiClient, root.Quantimodo.TrackingReminderNotification);
+  }
+}(this, function(ApiClient, TrackingReminderNotification) {
+  'use strict';
+
+
+
+
+  /**
+   * The InlineResponse2001 model module.
+   * @module model/InlineResponse2001
+   * @version 5.8.730
+   */
+
+  /**
+   * Constructs a new <code>InlineResponse2001</code>.
+   * @alias module:model/InlineResponse2001
+   * @class
+   */
+  var exports = function() {
+    var _this = this;
+
+
+
+  };
+
+  /**
+   * Constructs a <code>InlineResponse2001</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/InlineResponse2001} obj Optional instance to populate.
+   * @return {module:model/InlineResponse2001} The populated <code>InlineResponse2001</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('success')) {
+        obj['success'] = ApiClient.convertToType(data['success'], 'Boolean');
+      }
+      if (data.hasOwnProperty('data')) {
+        obj['data'] = ApiClient.convertToType(data['data'], [TrackingReminderNotification]);
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * @member {Boolean} success
+   */
+  exports.prototype['success'] = undefined;
+  /**
+   * @member {Array.<module:model/TrackingReminderNotification>} data
+   */
+  exports.prototype['data'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16,"./TrackingReminderNotification":45}],34:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -8896,7 +8605,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.InlineResponse2001 = factory(root.Quantimodo.ApiClient, root.Quantimodo.TrackingReminder);
+    root.Quantimodo.InlineResponse201 = factory(root.Quantimodo.ApiClient, root.Quantimodo.TrackingReminder);
   }
 }(this, function(ApiClient, TrackingReminder) {
   'use strict';
@@ -8905,14 +8614,14 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
   /**
-   * The InlineResponse2001 model module.
-   * @module model/InlineResponse2001
-   * @version 5.8.728
+   * The InlineResponse201 model module.
+   * @module model/InlineResponse201
+   * @version 5.8.730
    */
 
   /**
-   * Constructs a new <code>InlineResponse2001</code>.
-   * @alias module:model/InlineResponse2001
+   * Constructs a new <code>InlineResponse201</code>.
+   * @alias module:model/InlineResponse201
    * @class
    */
   var exports = function() {
@@ -8923,11 +8632,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
   };
 
   /**
-   * Constructs a <code>InlineResponse2001</code> from a plain JavaScript object, optionally creating a new instance.
+   * Constructs a <code>InlineResponse201</code> from a plain JavaScript object, optionally creating a new instance.
    * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
    * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/InlineResponse2001} obj Optional instance to populate.
-   * @return {module:model/InlineResponse2001} The populated <code>InlineResponse2001</code> instance.
+   * @param {module:model/InlineResponse201} obj Optional instance to populate.
+   * @return {module:model/InlineResponse201} The populated <code>InlineResponse201</code> instance.
    */
   exports.constructFromObject = function(data, obj) {
     if (data) {
@@ -8959,98 +8668,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./TrackingReminder":45}],35:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/TrackingReminderNotifications'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./TrackingReminderNotifications'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.InlineResponse2002 = factory(root.Quantimodo.ApiClient, root.Quantimodo.TrackingReminderNotifications);
-  }
-}(this, function(ApiClient, TrackingReminderNotifications) {
-  'use strict';
-
-
-
-
-  /**
-   * The InlineResponse2002 model module.
-   * @module model/InlineResponse2002
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>InlineResponse2002</code>.
-   * @alias module:model/InlineResponse2002
-   * @class
-   */
-  var exports = function() {
-    var _this = this;
-
-
-
-  };
-
-  /**
-   * Constructs a <code>InlineResponse2002</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/InlineResponse2002} obj Optional instance to populate.
-   * @return {module:model/InlineResponse2002} The populated <code>InlineResponse2002</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-
-      if (data.hasOwnProperty('success')) {
-        obj['success'] = ApiClient.convertToType(data['success'], 'Boolean');
-      }
-      if (data.hasOwnProperty('data')) {
-        obj['data'] = ApiClient.convertToType(data['data'], [TrackingReminderNotifications]);
-      }
-    }
-    return obj;
-  }
-
-  /**
-   * @member {Boolean} success
-   */
-  exports.prototype['success'] = undefined;
-  /**
-   * @member {Array.<module:model/TrackingReminderNotifications>} data
-   */
-  exports.prototype['data'] = undefined;
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./TrackingReminderNotifications":49}],36:[function(require,module,exports){
+},{"../ApiClient":16,"./TrackingReminder":43}],35:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9089,7 +8707,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The JsonErrorResponse model module.
    * @module model/JsonErrorResponse
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -9144,7 +8762,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],37:[function(require,module,exports){
+},{"../ApiClient":16}],36:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9183,7 +8801,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Measurement model module.
    * @module model/Measurement
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -9192,7 +8810,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @class
    * @param variableName {String} Name of the variable for which we are creating the measurement records
    * @param sourceName {String} Application or device used to record the measurement values
-   * @param startTimeString {String} Start Time for the measurement event in UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"
+   * @param startTimeString {String} Start Time for the measurement event in UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`
    * @param value {Number} Converted measurement value in requested unit
    * @param unitAbbreviatedName {String} Abbreviated name for the unit of measurement
    */
@@ -9263,7 +8881,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['sourceName'] = undefined;
   /**
-   * Start Time for the measurement event in UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"
+   * Start Time for the measurement event in UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`
    * @member {String} startTimeString
    */
   exports.prototype['startTimeString'] = undefined;
@@ -9305,7 +8923,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],38:[function(require,module,exports){
+},{"../ApiClient":16}],37:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9344,7 +8962,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementDelete model module.
    * @module model/MeasurementDelete
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -9400,7 +9018,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],39:[function(require,module,exports){
+},{"../ApiClient":16}],38:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9439,7 +9057,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementItem model module.
    * @module model/MeasurementItem
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -9504,7 +9122,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],40:[function(require,module,exports){
+},{"../ApiClient":16}],39:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9543,7 +9161,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementSet model module.
    * @module model/MeasurementSet
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -9654,7 +9272,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./MeasurementItem":39}],41:[function(require,module,exports){
+},{"../ApiClient":16,"./MeasurementItem":38}],40:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9693,7 +9311,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementUpdate model module.
    * @module model/MeasurementUpdate
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -9766,88 +9384,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],42:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/Measurement'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./Measurement'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.Measurements = factory(root.Quantimodo.ApiClient, root.Quantimodo.Measurement);
-  }
-}(this, function(ApiClient, Measurement) {
-  'use strict';
-
-
-
-
-  /**
-   * The Measurements model module.
-   * @module model/Measurements
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>Measurements</code>.
-   * Array of mesaurements
-   * @alias module:model/Measurements
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>Measurements</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/Measurements} obj Optional instance to populate.
-   * @return {module:model/Measurements} The populated <code>Measurements</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'Measurement');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./Measurement":37}],43:[function(require,module,exports){
+},{"../ApiClient":16}],41:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9886,7 +9423,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Pairs model module.
    * @module model/Pairs
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -9932,7 +9469,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],44:[function(require,module,exports){
+},{"../ApiClient":16}],42:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9971,7 +9508,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostCorrelation model module.
    * @module model/PostCorrelation
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -10046,7 +9583,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],45:[function(require,module,exports){
+},{"../ApiClient":16}],43:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10085,7 +9622,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminder model module.
    * @module model/TrackingReminder
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -10270,12 +9807,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['notificationBar'] = undefined;
   /**
-   * UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  timestamp for the reminder time of the latest tracking reminder notification that has been pre-emptively generated in the database
+   * UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  timestamp for the reminder time of the latest tracking reminder notification that has been pre-emptively generated in the database
    * @member {Date} latestTrackingReminderNotificationReminderTime
    */
   exports.prototype['latestTrackingReminderNotificationReminderTime'] = undefined;
   /**
-   * UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  timestamp for the last time a measurement was received for this user and variable
+   * UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  timestamp for the last time a measurement was received for this user and variable
    * @member {Date} lastTracked
    */
   exports.prototype['lastTracked'] = undefined;
@@ -10290,7 +9827,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['stopTrackingDate'] = undefined;
   /**
-   * When the record in the database was last updated. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format. Time zone should be UTC and not local.
+   * When the record in the database was last updated. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format. Time zone should be UTC and not local.
    * @member {Date} updatedAt
    */
   exports.prototype['updatedAt'] = undefined;
@@ -10339,7 +9876,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],46:[function(require,module,exports){
+},{"../ApiClient":16}],44:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10378,7 +9915,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderDelete model module.
    * @module model/TrackingReminderDelete
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -10424,7 +9961,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],47:[function(require,module,exports){
+},{"../ApiClient":16}],45:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10463,7 +10000,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotification model module.
    * @module model/TrackingReminderNotification
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -10586,7 +10123,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['variableId'] = undefined;
   /**
-   * UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  timestamp for the specific time the variable should be tracked in UTC.  This will be used for the measurement startTime if the track endpoint is used.
+   * UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  timestamp for the specific time the variable should be tracked in UTC.  This will be used for the measurement startTime if the track endpoint is used.
    * @member {Date} pendingReminderTime
    */
   exports.prototype['pendingReminderTime'] = undefined;
@@ -10621,7 +10158,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['notificationBar'] = undefined;
   /**
-   * When the record in the database was last updated. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format. Time zone should be UTC and not local.
+   * When the record in the database was last updated. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format. Time zone should be UTC and not local.
    * @member {Date} updatedAt
    */
   exports.prototype['updatedAt'] = undefined;
@@ -10670,7 +10207,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],48:[function(require,module,exports){
+},{"../ApiClient":16}],46:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10709,7 +10246,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationPost model module.
    * @module model/TrackingReminderNotificationPost
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -10796,169 +10333,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],49:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/TrackingReminderNotification'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./TrackingReminderNotification'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.TrackingReminderNotifications = factory(root.Quantimodo.ApiClient, root.Quantimodo.TrackingReminderNotification);
-  }
-}(this, function(ApiClient, TrackingReminderNotification) {
-  'use strict';
-
-
-
-
-  /**
-   * The TrackingReminderNotifications model module.
-   * @module model/TrackingReminderNotifications
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>TrackingReminderNotifications</code>.
-   * Array
-   * @alias module:model/TrackingReminderNotifications
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>TrackingReminderNotifications</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/TrackingReminderNotifications} obj Optional instance to populate.
-   * @return {module:model/TrackingReminderNotifications} The populated <code>TrackingReminderNotifications</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'TrackingReminderNotification');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./TrackingReminderNotification":47}],50:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/TrackingReminder'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./TrackingReminder'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.TrackingReminders = factory(root.Quantimodo.ApiClient, root.Quantimodo.TrackingReminder);
-  }
-}(this, function(ApiClient, TrackingReminder) {
-  'use strict';
-
-
-
-
-  /**
-   * The TrackingReminders model module.
-   * @module model/TrackingReminders
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>TrackingReminders</code>.
-   * Array
-   * @alias module:model/TrackingReminders
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>TrackingReminders</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/TrackingReminders} obj Optional instance to populate.
-   * @return {module:model/TrackingReminders} The populated <code>TrackingReminders</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'TrackingReminder');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./TrackingReminder":45}],51:[function(require,module,exports){
+},{"../ApiClient":16}],47:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10997,7 +10372,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Unit model module.
    * @module model/Unit
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -11153,88 +10528,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./ConversionStep":30}],52:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/UnitCategory'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./UnitCategory'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.UnitCategories = factory(root.Quantimodo.ApiClient, root.Quantimodo.UnitCategory);
-  }
-}(this, function(ApiClient, UnitCategory) {
-  'use strict';
-
-
-
-
-  /**
-   * The UnitCategories model module.
-   * @module model/UnitCategories
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>UnitCategories</code>.
-   * Array
-   * @alias module:model/UnitCategories
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>UnitCategories</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/UnitCategories} obj Optional instance to populate.
-   * @return {module:model/UnitCategories} The populated <code>UnitCategories</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'UnitCategory');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./UnitCategory":53}],53:[function(require,module,exports){
+},{"../ApiClient":16,"./ConversionStep":29}],48:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -11273,7 +10567,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UnitCategory model module.
    * @module model/UnitCategory
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -11319,88 +10613,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],54:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/Unit'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./Unit'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.Units = factory(root.Quantimodo.ApiClient, root.Quantimodo.Unit);
-  }
-}(this, function(ApiClient, Unit) {
-  'use strict';
-
-
-
-
-  /**
-   * The Units model module.
-   * @module model/Units
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>Units</code>.
-   * Array
-   * @alias module:model/Units
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>Units</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/Units} obj Optional instance to populate.
-   * @return {module:model/Units} The populated <code>Units</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'Unit');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./Unit":51}],55:[function(require,module,exports){
+},{"../ApiClient":16}],49:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -11439,7 +10652,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Update model module.
    * @module model/Update
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -11535,12 +10748,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['message'] = undefined;
   /**
-   * When the record was first created. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * When the record was first created. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} createdAt
    */
   exports.prototype['createdAt'] = undefined;
   /**
-   * When the record in the database was last updated. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * When the record in the database was last updated. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} updatedAt
    */
   exports.prototype['updatedAt'] = undefined;
@@ -11552,7 +10765,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],56:[function(require,module,exports){
+},{"../ApiClient":16}],50:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -11591,7 +10804,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The User model module.
    * @module model/User
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -11687,7 +10900,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],57:[function(require,module,exports){
+},{"../ApiClient":16}],51:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -11726,7 +10939,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTag model module.
    * @module model/UserTag
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -11792,7 +11005,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],58:[function(require,module,exports){
+},{"../ApiClient":16}],52:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -11831,7 +11044,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenFailedResponse model module.
    * @module model/UserTokenFailedResponse
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -11896,7 +11109,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],59:[function(require,module,exports){
+},{"../ApiClient":16}],53:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -11935,7 +11148,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenRequest model module.
    * @module model/UserTokenRequest
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -11989,7 +11202,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./UserTokenRequestInnerUserField":60}],60:[function(require,module,exports){
+},{"../ApiClient":16,"./UserTokenRequestInnerUserField":54}],54:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12028,7 +11241,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenRequestInnerUserField model module.
    * @module model/UserTokenRequestInnerUserField
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -12073,7 +11286,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],61:[function(require,module,exports){
+},{"../ApiClient":16}],55:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12112,7 +11325,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenSuccessfulResponse model module.
    * @module model/UserTokenSuccessfulResponse
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -12177,7 +11390,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./UserTokenSuccessfulResponseInnerUserField":62}],62:[function(require,module,exports){
+},{"../ApiClient":16,"./UserTokenSuccessfulResponseInnerUserField":56}],56:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12216,7 +11429,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenSuccessfulResponseInnerUserField model module.
    * @module model/UserTokenSuccessfulResponseInnerUserField
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -12272,7 +11485,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],63:[function(require,module,exports){
+},{"../ApiClient":16}],57:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12311,7 +11524,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariable model module.
    * @module model/UserVariable
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -12775,22 +11988,22 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['location'] = undefined;
   /**
-   * Earliest measurement start_time to be used in analysis. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * Earliest measurement start_time to be used in analysis. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} experimentStartTime
    */
   exports.prototype['experimentStartTime'] = undefined;
   /**
-   * Latest measurement start_time to be used in analysis. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * Latest measurement start_time to be used in analysis. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} experimentEndTime
    */
   exports.prototype['experimentEndTime'] = undefined;
   /**
-   * When the record was first created. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * When the record was first created. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} createdAt
    */
   exports.prototype['createdAt'] = undefined;
   /**
-   * When the record in the database was last updated. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * When the record in the database was last updated. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} updatedAt
    */
   exports.prototype['updatedAt'] = undefined;
@@ -12852,7 +12065,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],64:[function(require,module,exports){
+},{"../ApiClient":16}],58:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12891,7 +12104,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariableDelete model module.
    * @module model/UserVariableDelete
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -12937,88 +12150,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],65:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/UserVariable'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./UserVariable'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.UserVariables = factory(root.Quantimodo.ApiClient, root.Quantimodo.UserVariable);
-  }
-}(this, function(ApiClient, UserVariable) {
-  'use strict';
-
-
-
-
-  /**
-   * The UserVariables model module.
-   * @module model/UserVariables
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>UserVariables</code>.
-   * Array of user variables
-   * @alias module:model/UserVariables
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>UserVariables</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/UserVariables} obj Optional instance to populate.
-   * @return {module:model/UserVariables} The populated <code>UserVariables</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'UserVariable');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./UserVariable":63}],66:[function(require,module,exports){
+},{"../ApiClient":16}],59:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -13057,7 +12189,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Variable model module.
    * @module model/Variable
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -13066,8 +12198,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @class
    * @param name {String} User-defined variable display name.
    * @param variableCategoryName {String} Variable category like Mood, Sleep, Physical Activity, Treatment, Symptom, etc.
-   * @param unitAbbreviatedName {String} Abbreviated name of the default unit for the variable
-   * @param abbreviatedUnitId {Number} Id of the default unit for the variable
+   * @param defaultUnitAbbreviatedName {String} Abbreviated name of the default unit for the variable
+   * @param defaultUnitId {Number} Id of the default unit for the variable
    * @param sources {String} Comma-separated list of source names to limit variables to those sources
    * @param minimumAllowedValue {Number} The minimum allowed value for measurements. While you can record a value below this minimum, it will be excluded from the correlation analysis.
    * @param maximumAllowedValue {Number} The maximum allowed value for measurements. While you can record a value above this maximum, it will be excluded from the correlation analysis.
@@ -13093,14 +12225,14 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @param mostCommonUnit {String} Most common unit
    * @param lastSource {Number} Last source
    */
-  var exports = function(name, variableCategoryName, unitAbbreviatedName, abbreviatedUnitId, sources, minimumAllowedValue, maximumAllowedValue, combinationOperation, fillingValue, joinWith, joinedVariables, parent, subVariables, onsetDelay, durationOfAction, earliestMeasurementTime, latestMeasurementTime, updated, causeOnly, numberOfCorrelations, outcome, rawMeasurementsAtLastAnalysis, numberOfRawMeasurements, lastUnit, lastValue, mostCommonValue, mostCommonUnit, lastSource) {
+  var exports = function(name, variableCategoryName, defaultUnitAbbreviatedName, defaultUnitId, sources, minimumAllowedValue, maximumAllowedValue, combinationOperation, fillingValue, joinWith, joinedVariables, parent, subVariables, onsetDelay, durationOfAction, earliestMeasurementTime, latestMeasurementTime, updated, causeOnly, numberOfCorrelations, outcome, rawMeasurementsAtLastAnalysis, numberOfRawMeasurements, lastUnit, lastValue, mostCommonValue, mostCommonUnit, lastSource) {
     var _this = this;
 
 
     _this['name'] = name;
     _this['variableCategoryName'] = variableCategoryName;
-    _this['unitAbbreviatedName'] = unitAbbreviatedName;
-    _this['abbreviatedUnitId'] = abbreviatedUnitId;
+    _this['defaultUnitAbbreviatedName'] = defaultUnitAbbreviatedName;
+    _this['defaultUnitId'] = defaultUnitId;
     _this['sources'] = sources;
     _this['minimumAllowedValue'] = minimumAllowedValue;
     _this['maximumAllowedValue'] = maximumAllowedValue;
@@ -13149,11 +12281,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('variableCategoryName')) {
         obj['variableCategoryName'] = ApiClient.convertToType(data['variableCategoryName'], 'String');
       }
-      if (data.hasOwnProperty('unitAbbreviatedName')) {
-        obj['unitAbbreviatedName'] = ApiClient.convertToType(data['unitAbbreviatedName'], 'String');
+      if (data.hasOwnProperty('defaultUnitAbbreviatedName')) {
+        obj['defaultUnitAbbreviatedName'] = ApiClient.convertToType(data['defaultUnitAbbreviatedName'], 'String');
       }
-      if (data.hasOwnProperty('abbreviatedUnitId')) {
-        obj['abbreviatedUnitId'] = ApiClient.convertToType(data['abbreviatedUnitId'], 'Number');
+      if (data.hasOwnProperty('defaultUnitId')) {
+        obj['defaultUnitId'] = ApiClient.convertToType(data['defaultUnitId'], 'Number');
       }
       if (data.hasOwnProperty('sources')) {
         obj['sources'] = ApiClient.convertToType(data['sources'], 'String');
@@ -13254,14 +12386,14 @@ exports.cleanHeader = function(header, shouldStripCookie){
   exports.prototype['variableCategoryName'] = undefined;
   /**
    * Abbreviated name of the default unit for the variable
-   * @member {String} unitAbbreviatedName
+   * @member {String} defaultUnitAbbreviatedName
    */
-  exports.prototype['unitAbbreviatedName'] = undefined;
+  exports.prototype['defaultUnitAbbreviatedName'] = undefined;
   /**
    * Id of the default unit for the variable
-   * @member {Number} abbreviatedUnitId
+   * @member {Number} defaultUnitId
    */
-  exports.prototype['abbreviatedUnitId'] = undefined;
+  exports.prototype['defaultUnitId'] = undefined;
   /**
    * Comma-separated list of source names to limit variables to those sources
    * @member {String} sources
@@ -13417,88 +12549,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./Variable":66}],67:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/VariableCategory'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./VariableCategory'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.VariableCategories = factory(root.Quantimodo.ApiClient, root.Quantimodo.VariableCategory);
-  }
-}(this, function(ApiClient, VariableCategory) {
-  'use strict';
-
-
-
-
-  /**
-   * The VariableCategories model module.
-   * @module model/VariableCategories
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>VariableCategories</code>.
-   * Array
-   * @alias module:model/VariableCategories
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>VariableCategories</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/VariableCategories} obj Optional instance to populate.
-   * @return {module:model/VariableCategories} The populated <code>VariableCategories</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'VariableCategory');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./VariableCategory":68}],68:[function(require,module,exports){
+},{"../ApiClient":16,"./Variable":59}],60:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -13537,7 +12588,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VariableCategory model module.
    * @module model/VariableCategory
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -13583,88 +12634,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],69:[function(require,module,exports){
-/**
- * quantimodo
- * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
- *
- * OpenAPI spec version: 5.8.728
- *
- * NOTE: This class is auto generated by the swagger code generator program.
- * https://github.com/swagger-api/swagger-codegen.git
- *
- * Swagger Codegen version: 2.2.3
- *
- * Do not edit the class manually.
- *
- */
-
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/Variable'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./Variable'));
-  } else {
-    // Browser globals (root is window)
-    if (!root.Quantimodo) {
-      root.Quantimodo = {};
-    }
-    root.Quantimodo.Variables = factory(root.Quantimodo.ApiClient, root.Quantimodo.Variable);
-  }
-}(this, function(ApiClient, Variable) {
-  'use strict';
-
-
-
-
-  /**
-   * The Variables model module.
-   * @module model/Variables
-   * @version 5.8.728
-   */
-
-  /**
-   * Constructs a new <code>Variables</code>.
-   * Array
-   * @alias module:model/Variables
-   * @class
-   * @extends Array
-   */
-  var exports = function() {
-    var _this = this;
-    _this = new Array();
-    Object.setPrototypeOf(_this, exports);
-
-    return _this;
-  };
-
-  /**
-   * Constructs a <code>Variables</code> from a plain JavaScript object, optionally creating a new instance.
-   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
-   * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/Variables} obj Optional instance to populate.
-   * @return {module:model/Variables} The populated <code>Variables</code> instance.
-   */
-  exports.constructFromObject = function(data, obj) {
-    if (data) {
-      obj = obj || new exports();
-      ApiClient.constructFromObject(data, obj, 'Variable');
-
-    }
-    return obj;
-  }
-
-
-
-
-  return exports;
-}));
-
-
-
-},{"../ApiClient":16,"./Variable":66}],70:[function(require,module,exports){
+},{"../ApiClient":16}],61:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -13703,7 +12673,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Vote model module.
    * @module model/Vote
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
@@ -13799,12 +12769,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['value'] = undefined;
   /**
-   * When the record was first created. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * When the record was first created. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} createdAt
    */
   exports.prototype['createdAt'] = undefined;
   /**
-   * When the record in the database was last updated. Use UTC ISO 8601 \"YYYY-MM-DDThh:mm:ss\"  datetime format
+   * When the record in the database was last updated. Use UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  datetime format
    * @member {Date} updatedAt
    */
   exports.prototype['updatedAt'] = undefined;
@@ -13816,7 +12786,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],71:[function(require,module,exports){
+},{"../ApiClient":16}],62:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -13855,7 +12825,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VoteDelete model module.
    * @module model/VoteDelete
-   * @version 5.8.728
+   * @version 5.8.730
    */
 
   /**
