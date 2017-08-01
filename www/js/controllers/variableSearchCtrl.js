@@ -78,7 +78,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             }
         } else if($stateParams.userTagVariableObject) {
-            if($stateParams.userTagvariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+            if($stateParams.userTagVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
                 $state.go($stateParams.nextState, {
                     userTaggedVariableObject: variableObject,
                     fromState: $stateParams.fromState,
