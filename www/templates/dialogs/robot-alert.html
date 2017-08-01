@@ -7,7 +7,7 @@
       </div>
     </md-toolbar>
     <md-dialog-content>
-      <div class="md-dialog-content"> <p style="text-align: center"> {{ctrl.textContent}} </p> </div>
+      <div class="md-dialog-content"> <div style="text-align: center"><div ng-bind-html="ctrl.textContent"></div></div> </div>
     </md-dialog-content>
     <md-dialog-actions layout="row">
       <md-button id="helpButton" ng-click="answer('help')"> More Help </md-button>
