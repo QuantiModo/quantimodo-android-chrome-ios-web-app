@@ -863,9 +863,33 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         quantimodo_oauth2.accessToken = getAccessToken();
         return qmApiClient;
     }
-    qmService.getMeasurements = function(params, callback){
+    qmService.getMeasurements = function(params, successHandler, errorHandler){
         configureQmApiClient();
         var apiInstance = new Quantimodo.MeasurementsApi();
+        function callback(error, measurements, response) {
+            if (error) {
+                logError(error);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(error, measurements, response);
+            }
+        }
+        apiInstance.getMeasurements(params, callback);
+    };
+    function qmApiGeneralErrorHandler(error, data, response) {
+        logError(error);
+    }
+    qmService.getMeasurements = function(params, successHandler, errorHandler){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.MeasurementsApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
         apiInstance.getMeasurements(params, callback);
     };
     qmService.saveAccessTokenInLocalStorage = function (accessResponse) {
