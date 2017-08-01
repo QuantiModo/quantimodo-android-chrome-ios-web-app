@@ -4079,7 +4079,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
   /**
    * @module ApiClient
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -4652,7 +4652,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Analytics service.
    * @module api/AnalyticsApi
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -4731,8 +4731,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {String} opts.effectVariableName Variable name of the hypothetical effect variable.  Example: Overall Mood
      * @param {String} opts.causeVariableName Variable name of the hypothetical cause variable.  Example: Sleep Duration
      * @param {String} opts.correlationCoefficient Pearson correlation coefficient between cause and effect after lagging by onset delay and grouping by duration of action
-     * @param {String} opts.onsetDelay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
-     * @param {String} opts.durationOfAction The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
+     * @param {String} opts.onsetDelay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the onset delay. For example, the onset delay between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
+     * @param {String} opts.durationOfAction The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
      * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
@@ -4794,8 +4794,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {String} opts.effectVariableName Variable name of the hypothetical effect variable.  Example: Overall Mood
      * @param {String} opts.causeVariableName Variable name of the hypothetical cause variable.  Example: Sleep Duration
      * @param {String} opts.correlationCoefficient Pearson correlation coefficient between cause and effect after lagging by onset delay and grouping by duration of action
-     * @param {String} opts.onsetDelay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
-     * @param {String} opts.durationOfAction The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
+     * @param {String} opts.onsetDelay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the onset delay. For example, the onset delay between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
+     * @param {String} opts.durationOfAction The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
      * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
@@ -5023,7 +5023,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Authentication service.
    * @module api/AuthenticationApi
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -5048,25 +5048,20 @@ exports.cleanHeader = function(header, shouldStripCookie){
     /**
      * Get a user access token
      * Client provides authorization token obtained from /api/v3/oauth2/authorize to this endpoint and receives an access token. Access token can then be used to query different API endpoints of QuantiModo. ### Request Access Token After user approves your access to the given scope form the https:/app.quantimo.do/v2/oauth2/authorize endpoint, you&#39;ll receive an authorization code to request an access token. This time make a &#x60;POST&#x60; request to &#x60;/api/v2/oauth/access_token&#x60; with parameters including: * &#x60;grant_type&#x60; Can be &#x60;authorization_code&#x60; or &#x60;refresh_token&#x60; since we are getting the &#x60;access_token&#x60; for the first time we don&#39;t have a &#x60;refresh_token&#x60; so this must be &#x60;authorization_code&#x60;. * &#x60;code&#x60; Authorization code you received with the previous request. * &#x60;redirect_uri&#x60; Your application&#39;s redirect url. ### Refreshing Access Token Access tokens expire at some point, to continue using our api you need to refresh them with &#x60;refresh_token&#x60; you received along with the &#x60;access_token&#x60;. To do this make a &#x60;POST&#x60; request to &#x60;/api/v2/oauth/access_token&#x60; with correct parameters, which are: * &#x60;grant_type&#x60; This time grant type must be &#x60;refresh_token&#x60; since we have it. * &#x60;clientId&#x60; Your application&#39;s client id. * &#x60;client_secret&#x60; Your application&#39;s client secret. * &#x60;refresh_token&#x60; The refresh token you received with the &#x60;access_token&#x60;. Every request you make to this endpoint will give you a new refresh token and make the old one expired. So you can keep getting new access tokens with new refresh tokens. ### Using Access Token Currently we support 2 ways for this, you can&#39;t use both at the same time. * Adding access token to the request header as &#x60;Authorization: Bearer {access_token}&#x60; * Adding to the url as a query parameter &#x60;?access_token&#x3D;{access_token}&#x60; You can read more about OAuth2 from [here](http://oauth.net/2/)
-     * @param {String} clientId This is the unique ID that QuantiModo uses to identify your application. Obtain a client id by emailing info@quantimo.do.
-     * @param {String} clientSecret This is the secret for your obtained clientId. QuantiModo uses this to validate that only your application uses the clientId.
+     * @param {String} clientSecret This is the secret for your obtained clientId. QuantiModo uses this to validate that only your application uses the clientId.  Obtain this by creating a free application at [https://app.quantimo.do/api/v2/apps](https://app.quantimo.do/api/v2/apps).
      * @param {String} grantType Grant Type can be &#39;authorization_code&#39; or &#39;refresh_token&#39;
      * @param {String} code Authorization code you received with the previous request.
+     * @param {String} responseType If the value is code, launches a Basic flow, requiring a POST to the token endpoint to obtain the tokens. If the value is token id_token or id_token token, launches an Implicit flow, requiring the use of Javascript at the redirect URI to retrieve tokens from the URI #fragment.
+     * @param {String} scope Scopes include basic, readmeasurements, and writemeasurements. The &#x60;basic&#x60; scope allows you to read user info (displayName, email, etc). The &#x60;readmeasurements&#x60; scope allows one to read a user&#39;s data. The &#x60;writemeasurements&#x60; scope allows you to write user data. Separate multiple scopes by a space.
      * @param {Object} opts Optional parameters
-     * @param {String} opts.responseType If the value is code, launches a Basic flow, requiring a POST to the token endpoint to obtain the tokens. If the value is token id_token or id_token token, launches an Implicit flow, requiring the use of Javascript at the redirect URI to retrieve tokens from the URI #fragment.
-     * @param {String} opts.scope Scopes include basic, readmeasurements, and writemeasurements. The &#x60;basic&#x60; scope allows you to read user info (displayname, email, etc). The &#x60;readmeasurements&#x60; scope allows one to read a user&#39;s data. The &#x60;writemeasurements&#x60; scope allows you to write user data. Separate multiple scopes by a space.
+     * @param {String} opts.clientId Example: oauth_test_client
      * @param {String} opts.redirectUri The redirect URI is the URL within your client application that will receive the OAuth2 credentials.
      * @param {String} opts.state An opaque string that is round-tripped in the protocol; that is to say, it is returned as a URI parameter in the Basic flow, and in the URI
      * @param {module:api/AuthenticationApi~getAccessTokenCallback} callback The callback function, accepting three arguments: error, data, response
      */
-    this.getAccessToken = function(clientId, clientSecret, grantType, code, opts, callback) {
+    this.getAccessToken = function(clientSecret, grantType, code, responseType, scope, opts, callback) {
       opts = opts || {};
       var postBody = null;
-
-      // verify the required parameter 'clientId' is set
-      if (clientId === undefined || clientId === null) {
-        throw new Error("Missing the required parameter 'clientId' when calling getAccessToken");
-      }
 
       // verify the required parameter 'clientSecret' is set
       if (clientSecret === undefined || clientSecret === null) {
@@ -5083,16 +5078,26 @@ exports.cleanHeader = function(header, shouldStripCookie){
         throw new Error("Missing the required parameter 'code' when calling getAccessToken");
       }
 
+      // verify the required parameter 'responseType' is set
+      if (responseType === undefined || responseType === null) {
+        throw new Error("Missing the required parameter 'responseType' when calling getAccessToken");
+      }
+
+      // verify the required parameter 'scope' is set
+      if (scope === undefined || scope === null) {
+        throw new Error("Missing the required parameter 'scope' when calling getAccessToken");
+      }
+
 
       var pathParams = {
       };
       var queryParams = {
-        'clientId': clientId,
+        'clientId': opts['clientId'],
         'client_secret': clientSecret,
         'grant_type': grantType,
         'code': code,
-        'response_type': opts['responseType'],
-        'scope': opts['scope'],
+        'response_type': responseType,
+        'scope': scope,
         'redirect_uri': opts['redirectUri'],
         'state': opts['state']
       };
@@ -5124,23 +5129,18 @@ exports.cleanHeader = function(header, shouldStripCookie){
     /**
      * Request Authorization Code
      * You can implement OAuth2 authentication to your application using our **OAuth2** endpoints.  You need to redirect users to &#x60;/api/v3/oauth2/authorize&#x60; endpoint to get an authorization code and include the parameters below.   This page will ask the user if they want to allow a client&#39;s application to submit or obtain data from their QM account. It will redirect the user to the url provided by the client application with the code as a query parameter or error in case of an error. See the /api/v2/oauth/access_token endpoint for the next steps.
-     * @param {String} clientId This is the unique ID that QuantiModo uses to identify your application. Obtain a client id by creating a free application at [https://app.quantimo.do/api/v2/apps](https://app.quantimo.do/api/v2/apps).
      * @param {String} clientSecret This is the secret for your obtained clientId. QuantiModo uses this to validate that only your application uses the clientId.  Obtain this by creating a free application at [https://app.quantimo.do/api/v2/apps](https://app.quantimo.do/api/v2/apps).
      * @param {String} responseType If the value is code, launches a Basic flow, requiring a POST to the token endpoint to obtain the tokens. If the value is token id_token or id_token token, launches an Implicit flow, requiring the use of Javascript at the redirect URI to retrieve tokens from the URI #fragment.
      * @param {String} scope Scopes include basic, readmeasurements, and writemeasurements. The &#x60;basic&#x60; scope allows you to read user info (displayName, email, etc). The &#x60;readmeasurements&#x60; scope allows one to read a user&#39;s data. The &#x60;writemeasurements&#x60; scope allows you to write user data. Separate multiple scopes by a space.
      * @param {Object} opts Optional parameters
+     * @param {String} opts.clientId Example: oauth_test_client
      * @param {String} opts.redirectUri The redirect URI is the URL within your client application that will receive the OAuth2 credentials.
      * @param {String} opts.state An opaque string that is round-tripped in the protocol; that is to say, it is returned as a URI parameter in the Basic flow, and in the URI
      * @param {module:api/AuthenticationApi~getOauthAuthorizationCodeCallback} callback The callback function, accepting three arguments: error, data, response
      */
-    this.getOauthAuthorizationCode = function(clientId, clientSecret, responseType, scope, opts, callback) {
+    this.getOauthAuthorizationCode = function(clientSecret, responseType, scope, opts, callback) {
       opts = opts || {};
       var postBody = null;
-
-      // verify the required parameter 'clientId' is set
-      if (clientId === undefined || clientId === null) {
-        throw new Error("Missing the required parameter 'clientId' when calling getOauthAuthorizationCode");
-      }
 
       // verify the required parameter 'clientSecret' is set
       if (clientSecret === undefined || clientSecret === null) {
@@ -5161,7 +5161,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var pathParams = {
       };
       var queryParams = {
-        'clientId': clientId,
+        'clientId': opts['clientId'],
         'client_secret': clientSecret,
         'response_type': responseType,
         'scope': scope,
@@ -5225,7 +5225,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Connectors service.
    * @module api/ConnectorsApi
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -5384,7 +5384,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Get embeddable connect javascript
      * Get embeddable connect javascript. Usage:   - Embedding in applications with popups for 3rd-party authentication windows.     Use &#x60;qmSetupInPopup&#x60; function after connecting &#x60;connect.js&#x60;.   - Embedding in applications with popups for 3rd-party authentication windows.     Requires a selector to block. It will be embedded in this block.     Use &#x60;qmSetupOnPage&#x60; function after connecting &#x60;connect.js&#x60;.   - Embedding in mobile applications without popups for 3rd-party authentication.     Use &#x60;qmSetupOnMobile&#x60; function after connecting &#x60;connect.js&#x60;.     If using in a Cordova application call  &#x60;qmSetupOnIonic&#x60; function after connecting &#x60;connect.js&#x60;.
      * @param {Object} opts Optional parameters
-     * @param {String} opts.clientId Your app&#39;s client id
+     * @param {String} opts.clientId Example: oauth_test_client
      * @param {module:api/ConnectorsApi~getIntegrationJsCallback} callback The callback function, accepting three arguments: error, data, response
      */
     this.getIntegrationJs = function(opts, callback) {
@@ -5545,7 +5545,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Measurements service.
    * @module api/MeasurementsApi
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -5693,8 +5693,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {String} opts.effectVariableName Variable name of the hypothetical effect variable.  Example: Overall Mood
      * @param {String} opts.causeVariableName Variable name of the hypothetical cause variable.  Example: Sleep Duration
      * @param {String} opts.causeUnitName Name for the unit cause measurements to be returned in
-     * @param {String} opts.delay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
-     * @param {String} opts.duration The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
+     * @param {String} opts.onsetDelay The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the onset delay. For example, the onset delay between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
+     * @param {String} opts.durationOfAction The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
      * @param {String} opts.effectUnitName Name for the unit effect measurements to be returned in
      * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
@@ -5716,8 +5716,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'effectVariableName': opts['effectVariableName'],
         'causeVariableName': opts['causeVariableName'],
         'causeUnitName': opts['causeUnitName'],
-        'delay': opts['delay'],
-        'duration': opts['duration'],
+        'onsetDelay': opts['onsetDelay'],
+        'durationOfAction': opts['durationOfAction'],
         'effectUnitName': opts['effectUnitName'],
         'earliestMeasurementTime': opts['earliestMeasurementTime'],
         'latestMeasurementTime': opts['latestMeasurementTime'],
@@ -5918,7 +5918,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Reminders service.
    * @module api/RemindersApi
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -6224,7 +6224,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Units service.
    * @module api/UnitsApi
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -6356,7 +6356,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * User service.
    * @module api/UserApi
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -6463,7 +6463,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Variables service.
    * @module api/VariablesApi
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -6591,7 +6591,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
      * @param {String} opts.name Original name of the variable (supports exact name match only)
      * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
-     * @param {String} opts.source The name of the data source that created the variable (supports exact name match only). So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here
+     * @param {String} opts.sourceName ID of the source you want measurements for (supports exact name match only)
      * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.numberOfRawMeasurements Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.
@@ -6615,7 +6615,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'variableCategoryName': opts['variableCategoryName'],
         'name': opts['name'],
         'updatedAt': opts['updatedAt'],
-        'source': opts['source'],
+        'sourceName': opts['sourceName'],
         'earliestMeasurementTime': opts['earliestMeasurementTime'],
         'latestMeasurementTime': opts['latestMeasurementTime'],
         'numberOfRawMeasurements': opts['numberOfRawMeasurements'],
@@ -6658,7 +6658,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
      * @param {String} opts.name Original name of the variable (supports exact name match only)
      * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
-     * @param {String} opts.source The name of the data source that created the variable (supports exact name match only). So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here
+     * @param {String} opts.sourceName ID of the source you want measurements for (supports exact name match only)
      * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.numberOfRawMeasurements Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.
@@ -6682,7 +6682,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'variableCategoryName': opts['variableCategoryName'],
         'name': opts['name'],
         'updatedAt': opts['updatedAt'],
-        'source': opts['source'],
+        'sourceName': opts['sourceName'],
         'earliestMeasurementTime': opts['earliestMeasurementTime'],
         'latestMeasurementTime': opts['latestMeasurementTime'],
         'numberOfRawMeasurements': opts['numberOfRawMeasurements'],
@@ -6852,7 +6852,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     /**
      * Reset user settings for a variable to defaults
      * Reset user settings for a variable to defaults
-     * @param {module:model/UserVariableDelete} variableId Id of the variable that should be reset
+     * @param {module:model/UserVariableDelete} variableId Id of the variable whose measurements should be deleted
      * @param {module:api/VariablesApi~resetUserVariableSettingsCallback} callback The callback function, accepting three arguments: error, data, response
      */
     this.resetUserVariableSettings = function(variableId, callback) {
@@ -6945,7 +6945,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * </pre>
    * </p>
    * @module index
-   * @version 5.8.730
+   * @version 5.8.731
    */
   var exports = {
     /**
@@ -7222,7 +7222,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The CommonResponse model module.
    * @module model/CommonResponse
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -7325,7 +7325,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Connector model module.
    * @module model/Connector
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -7354,6 +7354,24 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['connectInstructions'] = connectInstructions;
     _this['lastUpdate'] = lastUpdate;
     _this['totalMeasurementsInLastUpdate'] = totalMeasurementsInLastUpdate;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   };
 
   /**
@@ -7393,6 +7411,60 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('totalMeasurementsInLastUpdate')) {
         obj['totalMeasurementsInLastUpdate'] = ApiClient.convertToType(data['totalMeasurementsInLastUpdate'], 'Number');
+      }
+      if (data.hasOwnProperty('connectStatus')) {
+        obj['connectStatus'] = ApiClient.convertToType(data['connectStatus'], 'String');
+      }
+      if (data.hasOwnProperty('updateRequestedAt')) {
+        obj['updateRequestedAt'] = ApiClient.convertToType(data['updateRequestedAt'], 'Date');
+      }
+      if (data.hasOwnProperty('shortDescription')) {
+        obj['shortDescription'] = ApiClient.convertToType(data['shortDescription'], 'String');
+      }
+      if (data.hasOwnProperty('message')) {
+        obj['message'] = ApiClient.convertToType(data['message'], 'String');
+      }
+      if (data.hasOwnProperty('lastSuccessfulUpdatedAt')) {
+        obj['lastSuccessfulUpdatedAt'] = ApiClient.convertToType(data['lastSuccessfulUpdatedAt'], 'Date');
+      }
+      if (data.hasOwnProperty('imageHtml')) {
+        obj['imageHtml'] = ApiClient.convertToType(data['imageHtml'], 'String');
+      }
+      if (data.hasOwnProperty('updateStatus')) {
+        obj['updateStatus'] = ApiClient.convertToType(data['updateStatus'], 'String');
+      }
+      if (data.hasOwnProperty('oauth')) {
+        obj['oauth'] = ApiClient.convertToType(data['oauth'], Object);
+      }
+      if (data.hasOwnProperty('defaultVariableCategoryName')) {
+        obj['defaultVariableCategoryName'] = ApiClient.convertToType(data['defaultVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('connectorClientId')) {
+        obj['connectorClientId'] = ApiClient.convertToType(data['connectorClientId'], 'String');
+      }
+      if (data.hasOwnProperty('longDescription')) {
+        obj['longDescription'] = ApiClient.convertToType(data['longDescription'], 'String');
+      }
+      if (data.hasOwnProperty('enabled')) {
+        obj['enabled'] = ApiClient.convertToType(data['enabled'], 'Number');
+      }
+      if (data.hasOwnProperty('linkedDisplayNameHtml')) {
+        obj['linkedDisplayNameHtml'] = ApiClient.convertToType(data['linkedDisplayNameHtml'], 'String');
+      }
+      if (data.hasOwnProperty('clientId')) {
+        obj['clientId'] = ApiClient.convertToType(data['clientId'], 'String');
+      }
+      if (data.hasOwnProperty('userId')) {
+        obj['userId'] = ApiClient.convertToType(data['userId'], 'Number');
+      }
+      if (data.hasOwnProperty('connectorId')) {
+        obj['connectorId'] = ApiClient.convertToType(data['connectorId'], 'Number');
+      }
+      if (data.hasOwnProperty('createdAt')) {
+        obj['createdAt'] = ApiClient.convertToType(data['createdAt'], 'Date');
+      }
+      if (data.hasOwnProperty('updatedAt')) {
+        obj['updatedAt'] = ApiClient.convertToType(data['updatedAt'], 'Date');
       }
     }
     return obj;
@@ -7443,6 +7515,96 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {Number} totalMeasurementsInLastUpdate
    */
   exports.prototype['totalMeasurementsInLastUpdate'] = undefined;
+  /**
+   * Example: CONNECTED
+   * @member {String} connectStatus
+   */
+  exports.prototype['connectStatus'] = undefined;
+  /**
+   * Example: 2017-07-18 05:16:31
+   * @member {Date} updateRequestedAt
+   */
+  exports.prototype['updateRequestedAt'] = undefined;
+  /**
+   * Example: Tracks social interaction. QuantiModo requires permission to access your Facebook \"user likes\" and \"user posts\".
+   * @member {String} shortDescription
+   */
+  exports.prototype['shortDescription'] = undefined;
+  /**
+   * Example: Got 412 new measurements on 2017-07-31 10:10:34
+   * @member {String} message
+   */
+  exports.prototype['message'] = undefined;
+  /**
+   * Example: 2017-07-31 10:10:34
+   * @member {Date} lastSuccessfulUpdatedAt
+   */
+  exports.prototype['lastSuccessfulUpdatedAt'] = undefined;
+  /**
+   * Example: <a href=\"http://www.facebook.com\"><img id=\"facebook_image\" title=\"Facebook\" src=\"https://i.imgur.com/GhwqK4f.png\" alt=\"Facebook\"></a>
+   * @member {String} imageHtml
+   */
+  exports.prototype['imageHtml'] = undefined;
+  /**
+   * Example: UPDATED
+   * @member {String} updateStatus
+   */
+  exports.prototype['updateStatus'] = undefined;
+  /**
+   * Example: {}
+   * @member {Object} oauth
+   */
+  exports.prototype['oauth'] = undefined;
+  /**
+   * Example: Social Interactions
+   * @member {String} defaultVariableCategoryName
+   */
+  exports.prototype['defaultVariableCategoryName'] = undefined;
+  /**
+   * Example: 225078261031461
+   * @member {String} connectorClientId
+   */
+  exports.prototype['connectorClientId'] = undefined;
+  /**
+   * Example: Facebook is a social networking website where users may create a personal profile, add other users as friends, and exchange messages.
+   * @member {String} longDescription
+   */
+  exports.prototype['longDescription'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} enabled
+   */
+  exports.prototype['enabled'] = undefined;
+  /**
+   * Example: <a href=\"http://www.facebook.com\">Facebook</a>
+   * @member {String} linkedDisplayNameHtml
+   */
+  exports.prototype['linkedDisplayNameHtml'] = undefined;
+  /**
+   * Example: ghostInspector
+   * @member {String} clientId
+   */
+  exports.prototype['clientId'] = undefined;
+  /**
+   * Example: 230
+   * @member {Number} userId
+   */
+  exports.prototype['userId'] = undefined;
+  /**
+   * Example: 8
+   * @member {Number} connectorId
+   */
+  exports.prototype['connectorId'] = undefined;
+  /**
+   * Example: 2000-01-01 00:00:00
+   * @member {Date} createdAt
+   */
+  exports.prototype['createdAt'] = undefined;
+  /**
+   * Example: 2017-07-31 10:10:34
+   * @member {Date} updatedAt
+   */
+  exports.prototype['updatedAt'] = undefined;
 
 
 
@@ -7490,7 +7652,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConnectorInstruction model module.
    * @module model/ConnectorInstruction
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -7592,7 +7754,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConversionStep model module.
    * @module model/ConversionStep
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -7704,7 +7866,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Correlation model module.
    * @module model/Correlation
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -7713,10 +7875,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @class
    * @param cause {String} Variable name of the cause variable for which the user desires correlations.
    * @param correlationCoefficient {Number} Pearson correlation coefficient between cause and effect measurements
-   * @param durationOfAction {Number} The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
+   * @param durationOfAction {Number} The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
    * @param effect {String} Variable name of the effect variable for which the user desires correlations.
    * @param numberOfPairs {Number} Number of points that went into the correlation calculation
-   * @param onsetDelay {Number} The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
+   * @param onsetDelay {Number} The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the onset delay. For example, the onset delay between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
    * @param timestamp {Number} Time at which correlation was calculated
    */
   var exports = function(cause, correlationCoefficient, durationOfAction, effect, numberOfPairs, onsetDelay, timestamp) {
@@ -7779,6 +7941,57 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
     _this['timestamp'] = timestamp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7987,6 +8200,159 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('valuePredictingLowOutcomeExplanation')) {
         obj['valuePredictingLowOutcomeExplanation'] = ApiClient.convertToType(data['valuePredictingLowOutcomeExplanation'], 'String');
       }
+      if (data.hasOwnProperty('averageForwardPearsonCorrelationOverOnsetDelays')) {
+        obj['averageForwardPearsonCorrelationOverOnsetDelays'] = ApiClient.convertToType(data['averageForwardPearsonCorrelationOverOnsetDelays'], 'Number');
+      }
+      if (data.hasOwnProperty('averageReversePearsonCorrelationOverOnsetDelays')) {
+        obj['averageReversePearsonCorrelationOverOnsetDelays'] = ApiClient.convertToType(data['averageReversePearsonCorrelationOverOnsetDelays'], 'Number');
+      }
+      if (data.hasOwnProperty('confidenceInterval')) {
+        obj['confidenceInterval'] = ApiClient.convertToType(data['confidenceInterval'], 'Number');
+      }
+      if (data.hasOwnProperty('criticalTValue')) {
+        obj['criticalTValue'] = ApiClient.convertToType(data['criticalTValue'], 'Number');
+      }
+      if (data.hasOwnProperty('effectChanges')) {
+        obj['effectChanges'] = ApiClient.convertToType(data['effectChanges'], 'Number');
+      }
+      if (data.hasOwnProperty('experimentEndTime')) {
+        obj['experimentEndTime'] = ApiClient.convertToType(data['experimentEndTime'], 'Date');
+      }
+      if (data.hasOwnProperty('experimentStartTime')) {
+        obj['experimentStartTime'] = ApiClient.convertToType(data['experimentStartTime'], 'Date');
+      }
+      if (data.hasOwnProperty('forwardSpearmanCorrelationCoefficient')) {
+        obj['forwardSpearmanCorrelationCoefficient'] = ApiClient.convertToType(data['forwardSpearmanCorrelationCoefficient'], 'Number');
+      }
+      if (data.hasOwnProperty('onsetDelayWithStrongestPearsonCorrelation')) {
+        obj['onsetDelayWithStrongestPearsonCorrelation'] = ApiClient.convertToType(data['onsetDelayWithStrongestPearsonCorrelation'], 'Number');
+      }
+      if (data.hasOwnProperty('pearsonCorrelationWithNoOnsetDelay')) {
+        obj['pearsonCorrelationWithNoOnsetDelay'] = ApiClient.convertToType(data['pearsonCorrelationWithNoOnsetDelay'], 'Number');
+      }
+      if (data.hasOwnProperty('predictivePearsonCorrelation')) {
+        obj['predictivePearsonCorrelation'] = ApiClient.convertToType(data['predictivePearsonCorrelation'], 'Number');
+      }
+      if (data.hasOwnProperty('predictsHighEffectChange')) {
+        obj['predictsHighEffectChange'] = ApiClient.convertToType(data['predictsHighEffectChange'], 'Number');
+      }
+      if (data.hasOwnProperty('predictsLowEffectChange')) {
+        obj['predictsLowEffectChange'] = ApiClient.convertToType(data['predictsLowEffectChange'], 'Number');
+      }
+      if (data.hasOwnProperty('strongestPearsonCorrelationCoefficient')) {
+        obj['strongestPearsonCorrelationCoefficient'] = ApiClient.convertToType(data['strongestPearsonCorrelationCoefficient'], 'Number');
+      }
+      if (data.hasOwnProperty('tValue')) {
+        obj['tValue'] = ApiClient.convertToType(data['tValue'], 'Number');
+      }
+      if (data.hasOwnProperty('userId')) {
+        obj['userId'] = ApiClient.convertToType(data['userId'], 'Number');
+      }
+      if (data.hasOwnProperty('causeVariableMostCommonConnectorId')) {
+        obj['causeVariableMostCommonConnectorId'] = ApiClient.convertToType(data['causeVariableMostCommonConnectorId'], 'Number');
+      }
+      if (data.hasOwnProperty('causeVariableCategoryId')) {
+        obj['causeVariableCategoryId'] = ApiClient.convertToType(data['causeVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('effectVariableCombinationOperation')) {
+        obj['effectVariableCombinationOperation'] = ApiClient.convertToType(data['effectVariableCombinationOperation'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableCommonAlias')) {
+        obj['effectVariableCommonAlias'] = ApiClient.convertToType(data['effectVariableCommonAlias'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableDefaultUnitId')) {
+        obj['effectVariableDefaultUnitId'] = ApiClient.convertToType(data['effectVariableDefaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('effectVariableMostCommonConnectorId')) {
+        obj['effectVariableMostCommonConnectorId'] = ApiClient.convertToType(data['effectVariableMostCommonConnectorId'], 'Number');
+      }
+      if (data.hasOwnProperty('effectVariableCategoryId')) {
+        obj['effectVariableCategoryId'] = ApiClient.convertToType(data['effectVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('causeUserVariableShareUserMeasurements')) {
+        obj['causeUserVariableShareUserMeasurements'] = ApiClient.convertToType(data['causeUserVariableShareUserMeasurements'], 'Number');
+      }
+      if (data.hasOwnProperty('effectUserVariableShareUserMeasurements')) {
+        obj['effectUserVariableShareUserMeasurements'] = ApiClient.convertToType(data['effectUserVariableShareUserMeasurements'], 'Number');
+      }
+      if (data.hasOwnProperty('predictorFillingValue')) {
+        obj['predictorFillingValue'] = ApiClient.convertToType(data['predictorFillingValue'], 'Number');
+      }
+      if (data.hasOwnProperty('outcomeFillingValue')) {
+        obj['outcomeFillingValue'] = ApiClient.convertToType(data['outcomeFillingValue'], 'Number');
+      }
+      if (data.hasOwnProperty('createdTime')) {
+        obj['createdTime'] = ApiClient.convertToType(data['createdTime'], 'Date');
+      }
+      if (data.hasOwnProperty('updatedTime')) {
+        obj['updatedTime'] = ApiClient.convertToType(data['updatedTime'], 'Date');
+      }
+      if (data.hasOwnProperty('durationOfActionInHours')) {
+        obj['durationOfActionInHours'] = ApiClient.convertToType(data['durationOfActionInHours'], 'Number');
+      }
+      if (data.hasOwnProperty('onsetDelayWithStrongestPearsonCorrelationInHours')) {
+        obj['onsetDelayWithStrongestPearsonCorrelationInHours'] = ApiClient.convertToType(data['onsetDelayWithStrongestPearsonCorrelationInHours'], 'Number');
+      }
+      if (data.hasOwnProperty('direction')) {
+        obj['direction'] = ApiClient.convertToType(data['direction'], 'String');
+      }
+      if (data.hasOwnProperty('causeVariableDefaultUnitAbbreviatedName')) {
+        obj['causeVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['causeVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableDefaultUnitAbbreviatedName')) {
+        obj['effectVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['effectVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('causeVariableDefaultUnitName')) {
+        obj['causeVariableDefaultUnitName'] = ApiClient.convertToType(data['causeVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableDefaultUnitName')) {
+        obj['effectVariableDefaultUnitName'] = ApiClient.convertToType(data['effectVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('shareUserMeasurements')) {
+        obj['shareUserMeasurements'] = ApiClient.convertToType(data['shareUserMeasurements'], 'Boolean');
+      }
+      if (data.hasOwnProperty('effectUnit')) {
+        obj['effectUnit'] = ApiClient.convertToType(data['effectUnit'], 'String');
+      }
+      if (data.hasOwnProperty('significantDifference')) {
+        obj['significantDifference'] = ApiClient.convertToType(data['significantDifference'], 'Boolean');
+      }
+      if (data.hasOwnProperty('predictsHighEffectChangeSentenceFragment')) {
+        obj['predictsHighEffectChangeSentenceFragment'] = ApiClient.convertToType(data['predictsHighEffectChangeSentenceFragment'], 'String');
+      }
+      if (data.hasOwnProperty('predictsLowEffectChangeSentenceFragment')) {
+        obj['predictsLowEffectChangeSentenceFragment'] = ApiClient.convertToType(data['predictsLowEffectChangeSentenceFragment'], 'String');
+      }
+      if (data.hasOwnProperty('confidenceLevel')) {
+        obj['confidenceLevel'] = ApiClient.convertToType(data['confidenceLevel'], 'String');
+      }
+      if (data.hasOwnProperty('predictivePearsonCorrelationCoefficient')) {
+        obj['predictivePearsonCorrelationCoefficient'] = ApiClient.convertToType(data['predictivePearsonCorrelationCoefficient'], 'Number');
+      }
+      if (data.hasOwnProperty('studyLinkEmail')) {
+        obj['studyLinkEmail'] = ApiClient.convertToType(data['studyLinkEmail'], 'String');
+      }
+      if (data.hasOwnProperty('gaugeImageSquare')) {
+        obj['gaugeImageSquare'] = ApiClient.convertToType(data['gaugeImageSquare'], 'String');
+      }
+      if (data.hasOwnProperty('causeDataSource')) {
+        obj['causeDataSource'] = ApiClient.convertToType(data['causeDataSource'], Object);
+      }
+      if (data.hasOwnProperty('dataSourcesParagraphForCause')) {
+        obj['dataSourcesParagraphForCause'] = ApiClient.convertToType(data['dataSourcesParagraphForCause'], 'String');
+      }
+      if (data.hasOwnProperty('instructionsForCause')) {
+        obj['instructionsForCause'] = ApiClient.convertToType(data['instructionsForCause'], 'String');
+      }
+      if (data.hasOwnProperty('effectDataSource')) {
+        obj['effectDataSource'] = ApiClient.convertToType(data['effectDataSource'], Object);
+      }
+      if (data.hasOwnProperty('dataSourcesParagraphForEffect')) {
+        obj['dataSourcesParagraphForEffect'] = ApiClient.convertToType(data['dataSourcesParagraphForEffect'], 'String');
+      }
+      if (data.hasOwnProperty('instructionsForEffect')) {
+        obj['instructionsForEffect'] = ApiClient.convertToType(data['instructionsForEffect'], 'String');
+      }
     }
     return obj;
   }
@@ -8107,7 +8473,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['dataSources'] = undefined;
   /**
-   * The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
+   * The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
    * @member {Number} durationOfAction
    */
   exports.prototype['durationOfAction'] = undefined;
@@ -8162,7 +8528,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['numberOfPairs'] = undefined;
   /**
-   * The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
+   * The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the onset delay. For example, the onset delay between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
    * @member {Number} onsetDelay
    */
   exports.prototype['onsetDelay'] = undefined;
@@ -8306,6 +8672,261 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {String} valuePredictingLowOutcomeExplanation
    */
   exports.prototype['valuePredictingLowOutcomeExplanation'] = undefined;
+  /**
+   * Example: 0.396
+   * @member {Number} averageForwardPearsonCorrelationOverOnsetDelays
+   */
+  exports.prototype['averageForwardPearsonCorrelationOverOnsetDelays'] = undefined;
+  /**
+   * Example: 0.453667
+   * @member {Number} averageReversePearsonCorrelationOverOnsetDelays
+   */
+  exports.prototype['averageReversePearsonCorrelationOverOnsetDelays'] = undefined;
+  /**
+   * Example: 0.14344467795996
+   * @member {Number} confidenceInterval
+   */
+  exports.prototype['confidenceInterval'] = undefined;
+  /**
+   * Example: 1.646
+   * @member {Number} criticalTValue
+   */
+  exports.prototype['criticalTValue'] = undefined;
+  /**
+   * Example: 193
+   * @member {Number} effectChanges
+   */
+  exports.prototype['effectChanges'] = undefined;
+  /**
+   * Example: 2014-07-30 12:50:00
+   * @member {Date} experimentEndTime
+   */
+  exports.prototype['experimentEndTime'] = undefined;
+  /**
+   * Example: 2012-05-06 21:15:00
+   * @member {Date} experimentStartTime
+   */
+  exports.prototype['experimentStartTime'] = undefined;
+  /**
+   * Example: 0.528359
+   * @member {Number} forwardSpearmanCorrelationCoefficient
+   */
+  exports.prototype['forwardSpearmanCorrelationCoefficient'] = undefined;
+  /**
+   * Example: -86400
+   * @member {Number} onsetDelayWithStrongestPearsonCorrelation
+   */
+  exports.prototype['onsetDelayWithStrongestPearsonCorrelation'] = undefined;
+  /**
+   * Example: 0.477
+   * @member {Number} pearsonCorrelationWithNoOnsetDelay
+   */
+  exports.prototype['pearsonCorrelationWithNoOnsetDelay'] = undefined;
+  /**
+   * Example: 0.538
+   * @member {Number} predictivePearsonCorrelation
+   */
+  exports.prototype['predictivePearsonCorrelation'] = undefined;
+  /**
+   * Example: 17
+   * @member {Number} predictsHighEffectChange
+   */
+  exports.prototype['predictsHighEffectChange'] = undefined;
+  /**
+   * Example: -11
+   * @member {Number} predictsLowEffectChange
+   */
+  exports.prototype['predictsLowEffectChange'] = undefined;
+  /**
+   * Example: 0.613
+   * @member {Number} strongestPearsonCorrelationCoefficient
+   */
+  exports.prototype['strongestPearsonCorrelationCoefficient'] = undefined;
+  /**
+   * Example: 9.6986079652717
+   * @member {Number} tValue
+   */
+  exports.prototype['tValue'] = undefined;
+  /**
+   * Example: 230
+   * @member {Number} userId
+   */
+  exports.prototype['userId'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} causeVariableMostCommonConnectorId
+   */
+  exports.prototype['causeVariableMostCommonConnectorId'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} causeVariableCategoryId
+   */
+  exports.prototype['causeVariableCategoryId'] = undefined;
+  /**
+   * Example: MEAN
+   * @member {String} effectVariableCombinationOperation
+   */
+  exports.prototype['effectVariableCombinationOperation'] = undefined;
+  /**
+   * Example: Mood_(psychology)
+   * @member {String} effectVariableCommonAlias
+   */
+  exports.prototype['effectVariableCommonAlias'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} effectVariableDefaultUnitId
+   */
+  exports.prototype['effectVariableDefaultUnitId'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} effectVariableMostCommonConnectorId
+   */
+  exports.prototype['effectVariableMostCommonConnectorId'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} effectVariableCategoryId
+   */
+  exports.prototype['effectVariableCategoryId'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} causeUserVariableShareUserMeasurements
+   */
+  exports.prototype['causeUserVariableShareUserMeasurements'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} effectUserVariableShareUserMeasurements
+   */
+  exports.prototype['effectUserVariableShareUserMeasurements'] = undefined;
+  /**
+   * Example: -1
+   * @member {Number} predictorFillingValue
+   */
+  exports.prototype['predictorFillingValue'] = undefined;
+  /**
+   * Example: -1
+   * @member {Number} outcomeFillingValue
+   */
+  exports.prototype['outcomeFillingValue'] = undefined;
+  /**
+   * Example: 2016-12-28 20:47:30
+   * @member {Date} createdTime
+   */
+  exports.prototype['createdTime'] = undefined;
+  /**
+   * Example: 2017-05-06 15:40:38
+   * @member {Date} updatedTime
+   */
+  exports.prototype['updatedTime'] = undefined;
+  /**
+   * Example: 168
+   * @member {Number} durationOfActionInHours
+   */
+  exports.prototype['durationOfActionInHours'] = undefined;
+  /**
+   * Example: -24
+   * @member {Number} onsetDelayWithStrongestPearsonCorrelationInHours
+   */
+  exports.prototype['onsetDelayWithStrongestPearsonCorrelationInHours'] = undefined;
+  /**
+   * Example: higher
+   * @member {String} direction
+   */
+  exports.prototype['direction'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} causeVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['causeVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} effectVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['effectVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} causeVariableDefaultUnitName
+   */
+  exports.prototype['causeVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} effectVariableDefaultUnitName
+   */
+  exports.prototype['effectVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} shareUserMeasurements
+   */
+  exports.prototype['shareUserMeasurements'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} effectUnit
+   */
+  exports.prototype['effectUnit'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} significantDifference
+   */
+  exports.prototype['significantDifference'] = undefined;
+  /**
+   * Example: , on average, 17% 
+   * @member {String} predictsHighEffectChangeSentenceFragment
+   */
+  exports.prototype['predictsHighEffectChangeSentenceFragment'] = undefined;
+  /**
+   * Example: , on average, 11% 
+   * @member {String} predictsLowEffectChangeSentenceFragment
+   */
+  exports.prototype['predictsLowEffectChangeSentenceFragment'] = undefined;
+  /**
+   * Example: high
+   * @member {String} confidenceLevel
+   */
+  exports.prototype['confidenceLevel'] = undefined;
+  /**
+   * Example: 0.538
+   * @member {Number} predictivePearsonCorrelationCoefficient
+   */
+  exports.prototype['predictivePearsonCorrelationCoefficient'] = undefined;
+  /**
+   * Example: mailto:?subject=N1%20Study%3A%20Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood&body=Check%20out%20my%20study%20at%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%0A%0AHave%20a%20great%20day!
+   * @member {String} studyLinkEmail
+   */
+  exports.prototype['studyLinkEmail'] = undefined;
+  /**
+   * Example: https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship-200-200.png
+   * @member {String} gaugeImageSquare
+   */
+  exports.prototype['gaugeImageSquare'] = undefined;
+  /**
+   * Example: {\"id\":6,\"name\":\"up\",\"connectorClientId\":\"10RfjEgKr8U\",\"connectorClientSecret\":\"e17fd34e4bc4642f0c4c99d7acb6e661\",\"displayName\":\"Up by Jawbone\",\"image\":\"https://i.imgur.com/MXNQy3T.png\",\"getItUrl\":\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\",\"shortDescription\":\"Tracks sleep, exercise, and diet.\",\"longDescription\":\"UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.\",\"enabled\":1,\"affiliate\":true,\"defaultVariableCategoryName\":\"Physical Activity\",\"imageHtml\":\"<a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\"><img id=\\\"up_image\\\" title=\\\"Up by Jawbone\\\" src=\\\"https://i.imgur.com/MXNQy3T.png\\\" alt=\\\"Up by Jawbone\\\"></a>\",\"linkedDisplayNameHtml\":\"<a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a>\"}
+   * @member {Object} causeDataSource
+   */
+  exports.prototype['causeDataSource'] = undefined;
+  /**
+   * Example: Sleep Quality data was primarily collected using <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.
+   * @member {String} dataSourcesParagraphForCause
+   */
+  exports.prototype['dataSourcesParagraphForCause'] = undefined;
+  /**
+   * Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Obtain Up by Jawbone</a> and use it to record your Sleep Quality. Once you have a <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  Up by Jawbone account at QuantiModo</a> to automatically import and analyze your data.
+   * @member {String} instructionsForCause
+   */
+  exports.prototype['instructionsForCause'] = undefined;
+  /**
+   * Example: {\"id\":72,\"name\":\"quantimodo\",\"displayName\":\"QuantiModo\",\"image\":\"https://app.quantimo.do/ionic/Modo/www/img/logos/quantimodo-logo-qm-rainbow-200-200.png\",\"getItUrl\":\"https://quantimo.do\",\"shortDescription\":\"Tracks anything\",\"longDescription\":\"QuantiModo is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  QuantiModo then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.\",\"enabled\":0,\"affiliate\":true,\"defaultVariableCategoryName\":\"Foods\",\"imageHtml\":\"<a href=\\\"https://quantimo.do\\\"><img id=\\\"quantimodo_image\\\" title=\\\"QuantiModo\\\" src=\\\"https://app.quantimo.do/ionic/Modo/www/img/logos/quantimodo-logo-qm-rainbow-200-200.png\\\" alt=\\\"QuantiModo\\\"></a>\",\"linkedDisplayNameHtml\":\"<a href=\\\"https://quantimo.do\\\">QuantiModo</a>\"}
+   * @member {Object} effectDataSource
+   */
+  exports.prototype['effectDataSource'] = undefined;
+  /**
+   * Example: Overall Mood data was primarily collected using <a href=\"https://quantimo.do\">QuantiModo</a>.  <a href=\"https://quantimo.do\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\"https://quantimo.do\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.
+   * @member {String} dataSourcesParagraphForEffect
+   */
+  exports.prototype['dataSourcesParagraphForEffect'] = undefined;
+  /**
+   * Example: <a href=\"https://quantimo.do\">Obtain QuantiModo</a> and use it to record your Overall Mood. Once you have a <a href=\"https://quantimo.do\">QuantiModo</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  QuantiModo account at QuantiModo</a> to automatically import and analyze your data.
+   * @member {String} instructionsForEffect
+   */
+  exports.prototype['instructionsForEffect'] = undefined;
 
 
 
@@ -8353,7 +8974,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Correlations model module.
    * @module model/Correlations
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -8434,7 +9055,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The InlineResponse200 model module.
    * @module model/InlineResponse200
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -8525,7 +9146,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The InlineResponse2001 model module.
    * @module model/InlineResponse2001
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -8616,7 +9237,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The InlineResponse201 model module.
    * @module model/InlineResponse201
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -8707,7 +9328,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The JsonErrorResponse model module.
    * @module model/JsonErrorResponse
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -8801,7 +9422,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Measurement model module.
    * @module model/Measurement
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -8825,6 +9446,42 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
     _this['unitAbbreviatedName'] = unitAbbreviatedName;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   };
 
@@ -8865,6 +9522,114 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('note')) {
         obj['note'] = ApiClient.convertToType(data['note'], 'String');
+      }
+      if (data.hasOwnProperty('unitId')) {
+        obj['unitId'] = ApiClient.convertToType(data['unitId'], 'Number');
+      }
+      if (data.hasOwnProperty('variableId')) {
+        obj['variableId'] = ApiClient.convertToType(data['variableId'], 'Number');
+      }
+      if (data.hasOwnProperty('variableCategoryId')) {
+        obj['variableCategoryId'] = ApiClient.convertToType(data['variableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitId')) {
+        obj['userVariableDefaultUnitId'] = ApiClient.convertToType(data['userVariableDefaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('id')) {
+        obj['id'] = ApiClient.convertToType(data['id'], 'Number');
+      }
+      if (data.hasOwnProperty('originalUnitId')) {
+        obj['originalUnitId'] = ApiClient.convertToType(data['originalUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('clientId')) {
+        obj['clientId'] = ApiClient.convertToType(data['clientId'], 'String');
+      }
+      if (data.hasOwnProperty('createdAt')) {
+        obj['createdAt'] = ApiClient.convertToType(data['createdAt'], 'String');
+      }
+      if (data.hasOwnProperty('updatedAt')) {
+        obj['updatedAt'] = ApiClient.convertToType(data['updatedAt'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryName')) {
+        obj['variableCategoryName'] = ApiClient.convertToType(data['variableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryId')) {
+        obj['userVariableVariableCategoryId'] = ApiClient.convertToType(data['userVariableVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('ionIcon')) {
+        obj['ionIcon'] = ApiClient.convertToType(data['ionIcon'], 'String');
+      }
+      if (data.hasOwnProperty('svgUrl')) {
+        obj['svgUrl'] = ApiClient.convertToType(data['svgUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngUrl')) {
+        obj['pngUrl'] = ApiClient.convertToType(data['pngUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngPath')) {
+        obj['pngPath'] = ApiClient.convertToType(data['pngPath'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryImageUrl')) {
+        obj['variableCategoryImageUrl'] = ApiClient.convertToType(data['variableCategoryImageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('manualTracking')) {
+        obj['manualTracking'] = ApiClient.convertToType(data['manualTracking'], 'Boolean');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryName')) {
+        obj['userVariableVariableCategoryName'] = ApiClient.convertToType(data['userVariableVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('humanTime')) {
+        obj['humanTime'] = ApiClient.convertToType(data['humanTime'], Object);
+      }
+      if (data.hasOwnProperty('unitName')) {
+        obj['unitName'] = ApiClient.convertToType(data['unitName'], 'String');
+      }
+      if (data.hasOwnProperty('unitCategoryId')) {
+        obj['unitCategoryId'] = ApiClient.convertToType(data['unitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('unitCategoryName')) {
+        obj['unitCategoryName'] = ApiClient.convertToType(data['unitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitName')) {
+        obj['userVariableDefaultUnitName'] = ApiClient.convertToType(data['userVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitAbbreviatedName')) {
+        obj['userVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['userVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryId')) {
+        obj['userVariableDefaultUnitCategoryId'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryName')) {
+        obj['userVariableDefaultUnitCategoryName'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('originalUnitName')) {
+        obj['originalUnitName'] = ApiClient.convertToType(data['originalUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('originalUnitAbbreviatedName')) {
+        obj['originalUnitAbbreviatedName'] = ApiClient.convertToType(data['originalUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('originalUnitCategoryId')) {
+        obj['originalUnitCategoryId'] = ApiClient.convertToType(data['originalUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('originalUnitCategoryName')) {
+        obj['originalUnitCategoryName'] = ApiClient.convertToType(data['originalUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('inputType')) {
+        obj['inputType'] = ApiClient.convertToType(data['inputType'], 'String');
+      }
+      if (data.hasOwnProperty('variableDescription')) {
+        obj['variableDescription'] = ApiClient.convertToType(data['variableDescription'], 'String');
+      }
+      if (data.hasOwnProperty('valence')) {
+        obj['valence'] = ApiClient.convertToType(data['valence'], 'String');
+      }
+      if (data.hasOwnProperty('iconIcon')) {
+        obj['iconIcon'] = ApiClient.convertToType(data['iconIcon'], 'String');
+      }
+      if (data.hasOwnProperty('minimumAllowedValue')) {
+        obj['minimumAllowedValue'] = ApiClient.convertToType(data['minimumAllowedValue'], 'Number');
+      }
+      if (data.hasOwnProperty('maximumAllowedValue')) {
+        obj['maximumAllowedValue'] = ApiClient.convertToType(data['maximumAllowedValue'], 'Number');
       }
     }
     return obj;
@@ -8915,6 +9680,186 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {String} note
    */
   exports.prototype['note'] = undefined;
+  /**
+   * Example: 23
+   * @member {Number} unitId
+   */
+  exports.prototype['unitId'] = undefined;
+  /**
+   * Example: 5956846
+   * @member {Number} variableId
+   */
+  exports.prototype['variableId'] = undefined;
+  /**
+   * Example: 13
+   * @member {Number} variableCategoryId
+   */
+  exports.prototype['variableCategoryId'] = undefined;
+  /**
+   * Example: 23
+   * @member {Number} userVariableDefaultUnitId
+   */
+  exports.prototype['userVariableDefaultUnitId'] = undefined;
+  /**
+   * Example: 1051466127
+   * @member {Number} id
+   */
+  exports.prototype['id'] = undefined;
+  /**
+   * Example: 23
+   * @member {Number} originalUnitId
+   */
+  exports.prototype['originalUnitId'] = undefined;
+  /**
+   * Example: quantimodo
+   * @member {String} clientId
+   */
+  exports.prototype['clientId'] = undefined;
+  /**
+   * Example: 2017-07-30 21:08:36
+   * @member {String} createdAt
+   */
+  exports.prototype['createdAt'] = undefined;
+  /**
+   * Example: 2017-07-30 21:08:36
+   * @member {String} updatedAt
+   */
+  exports.prototype['updatedAt'] = undefined;
+  /**
+   * Example: Treatments
+   * @member {String} variableCategoryName
+   */
+  exports.prototype['variableCategoryName'] = undefined;
+  /**
+   * Example: 13
+   * @member {Number} userVariableVariableCategoryId
+   */
+  exports.prototype['userVariableVariableCategoryId'] = undefined;
+  /**
+   * Example: ion-ios-medkit-outline
+   * @member {String} ionIcon
+   */
+  exports.prototype['ionIcon'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/treatments.svg
+   * @member {String} svgUrl
+   */
+  exports.prototype['svgUrl'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/treatments.png
+   * @member {String} pngUrl
+   */
+  exports.prototype['pngUrl'] = undefined;
+  /**
+   * Example: img/variable_categories/treatments.png
+   * @member {String} pngPath
+   */
+  exports.prototype['pngPath'] = undefined;
+  /**
+   * Example: https://maxcdn.icons8.com/Color/PNG/96/Healthcare/pill-96.png
+   * @member {String} variableCategoryImageUrl
+   */
+  exports.prototype['variableCategoryImageUrl'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} manualTracking
+   */
+  exports.prototype['manualTracking'] = undefined;
+  /**
+   * Example: Treatments
+   * @member {String} userVariableVariableCategoryName
+   */
+  exports.prototype['userVariableVariableCategoryName'] = undefined;
+  /**
+   * Example: {\"date\":\"2017-07-30 20:05:30.000000\",\"timezone_type\":1,\"timezone\":\"+00:00\"}
+   * @member {Object} humanTime
+   */
+  exports.prototype['humanTime'] = undefined;
+  /**
+   * Example: Count
+   * @member {String} unitName
+   */
+  exports.prototype['unitName'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} unitCategoryId
+   */
+  exports.prototype['unitCategoryId'] = undefined;
+  /**
+   * Example: Miscellany
+   * @member {String} unitCategoryName
+   */
+  exports.prototype['unitCategoryName'] = undefined;
+  /**
+   * Example: Count
+   * @member {String} userVariableDefaultUnitName
+   */
+  exports.prototype['userVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: count
+   * @member {String} userVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['userVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} userVariableDefaultUnitCategoryId
+   */
+  exports.prototype['userVariableDefaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Miscellany
+   * @member {String} userVariableDefaultUnitCategoryName
+   */
+  exports.prototype['userVariableDefaultUnitCategoryName'] = undefined;
+  /**
+   * Example: Count
+   * @member {String} originalUnitName
+   */
+  exports.prototype['originalUnitName'] = undefined;
+  /**
+   * Example: count
+   * @member {String} originalUnitAbbreviatedName
+   */
+  exports.prototype['originalUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} originalUnitCategoryId
+   */
+  exports.prototype['originalUnitCategoryId'] = undefined;
+  /**
+   * Example: Miscellany
+   * @member {String} originalUnitCategoryName
+   */
+  exports.prototype['originalUnitCategoryName'] = undefined;
+  /**
+   * Example: value
+   * @member {String} inputType
+   */
+  exports.prototype['inputType'] = undefined;
+  /**
+   * Example: negative
+   * @member {String} variableDescription
+   */
+  exports.prototype['variableDescription'] = undefined;
+  /**
+   * Example: negative
+   * @member {String} valence
+   */
+  exports.prototype['valence'] = undefined;
+  /**
+   * Example: ion-sad-outline
+   * @member {String} iconIcon
+   */
+  exports.prototype['iconIcon'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} minimumAllowedValue
+   */
+  exports.prototype['minimumAllowedValue'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} maximumAllowedValue
+   */
+  exports.prototype['maximumAllowedValue'] = undefined;
 
 
 
@@ -8962,7 +9907,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementDelete model module.
    * @module model/MeasurementDelete
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -9057,7 +10002,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementItem model module.
    * @module model/MeasurementItem
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -9161,7 +10106,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementSet model module.
    * @module model/MeasurementSet
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -9311,7 +10256,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementUpdate model module.
    * @module model/MeasurementUpdate
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -9423,7 +10368,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Pairs model module.
    * @module model/Pairs
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -9508,7 +10453,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostCorrelation model module.
    * @module model/PostCorrelation
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -9622,7 +10567,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminder model module.
    * @module model/TrackingReminder
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -9645,6 +10590,52 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
     _this['reminderFrequency'] = reminderFrequency;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -9736,6 +10727,144 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('combinationOperation')) {
         obj['combinationOperation'] = ApiClient.convertToType(data['combinationOperation'], 'String');
+      }
+      if (data.hasOwnProperty('createdAt')) {
+        obj['createdAt'] = ApiClient.convertToType(data['createdAt'], 'Date');
+      }
+      if (data.hasOwnProperty('trackingReminderId')) {
+        obj['trackingReminderId'] = ApiClient.convertToType(data['trackingReminderId'], 'Number');
+      }
+      if (data.hasOwnProperty('defaultUnitId')) {
+        obj['defaultUnitId'] = ApiClient.convertToType(data['defaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('variableDescription')) {
+        obj['variableDescription'] = ApiClient.convertToType(data['variableDescription'], 'String');
+      }
+      if (data.hasOwnProperty('valence')) {
+        obj['valence'] = ApiClient.convertToType(data['valence'], 'String');
+      }
+      if (data.hasOwnProperty('ionIcon')) {
+        obj['ionIcon'] = ApiClient.convertToType(data['ionIcon'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryId')) {
+        obj['variableCategoryId'] = ApiClient.convertToType(data['variableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('lastValue')) {
+        obj['lastValue'] = ApiClient.convertToType(data['lastValue'], 'Number');
+      }
+      if (data.hasOwnProperty('secondToLastValue')) {
+        obj['secondToLastValue'] = ApiClient.convertToType(data['secondToLastValue'], 'Number');
+      }
+      if (data.hasOwnProperty('thirdToLastValue')) {
+        obj['thirdToLastValue'] = ApiClient.convertToType(data['thirdToLastValue'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitId')) {
+        obj['userVariableDefaultUnitId'] = ApiClient.convertToType(data['userVariableDefaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryId')) {
+        obj['userVariableVariableCategoryId'] = ApiClient.convertToType(data['userVariableVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfRawMeasurements')) {
+        obj['numberOfRawMeasurements'] = ApiClient.convertToType(data['numberOfRawMeasurements'], 'Number');
+      }
+      if (data.hasOwnProperty('svgUrl')) {
+        obj['svgUrl'] = ApiClient.convertToType(data['svgUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngUrl')) {
+        obj['pngUrl'] = ApiClient.convertToType(data['pngUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngPath')) {
+        obj['pngPath'] = ApiClient.convertToType(data['pngPath'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryImageUrl')) {
+        obj['variableCategoryImageUrl'] = ApiClient.convertToType(data['variableCategoryImageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('manualTracking')) {
+        obj['manualTracking'] = ApiClient.convertToType(data['manualTracking'], 'Boolean');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryName')) {
+        obj['userVariableVariableCategoryName'] = ApiClient.convertToType(data['userVariableVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('reminderStartTimeLocal')) {
+        obj['reminderStartTimeLocal'] = ApiClient.convertToType(data['reminderStartTimeLocal'], 'Date');
+      }
+      if (data.hasOwnProperty('reminderStartTimeLocalHumanFormatted')) {
+        obj['reminderStartTimeLocalHumanFormatted'] = ApiClient.convertToType(data['reminderStartTimeLocalHumanFormatted'], 'Date');
+      }
+      if (data.hasOwnProperty('lastValueInUserVariableDefaultUnit')) {
+        obj['lastValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['lastValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('secondToLastValueInUserVariableDefaultUnit')) {
+        obj['secondToLastValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['secondToLastValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('thirdToLastValueInUserVariableDefaultUnit')) {
+        obj['thirdToLastValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['thirdToLastValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('unitId')) {
+        obj['unitId'] = ApiClient.convertToType(data['unitId'], 'Number');
+      }
+      if (data.hasOwnProperty('unitName')) {
+        obj['unitName'] = ApiClient.convertToType(data['unitName'], 'String');
+      }
+      if (data.hasOwnProperty('unitCategoryId')) {
+        obj['unitCategoryId'] = ApiClient.convertToType(data['unitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('unitCategoryName')) {
+        obj['unitCategoryName'] = ApiClient.convertToType(data['unitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitName')) {
+        obj['defaultUnitName'] = ApiClient.convertToType(data['defaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitAbbreviatedName')) {
+        obj['defaultUnitAbbreviatedName'] = ApiClient.convertToType(data['defaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitCategoryId')) {
+        obj['defaultUnitCategoryId'] = ApiClient.convertToType(data['defaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('defaultUnitCategoryName')) {
+        obj['defaultUnitCategoryName'] = ApiClient.convertToType(data['defaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitName')) {
+        obj['userVariableDefaultUnitName'] = ApiClient.convertToType(data['userVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitAbbreviatedName')) {
+        obj['userVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['userVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryId')) {
+        obj['userVariableDefaultUnitCategoryId'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryName')) {
+        obj['userVariableDefaultUnitCategoryName'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('minimumAllowedValue')) {
+        obj['minimumAllowedValue'] = ApiClient.convertToType(data['minimumAllowedValue'], 'Number');
+      }
+      if (data.hasOwnProperty('maximumAllowedValue')) {
+        obj['maximumAllowedValue'] = ApiClient.convertToType(data['maximumAllowedValue'], 'Number');
+      }
+      if (data.hasOwnProperty('inputType')) {
+        obj['inputType'] = ApiClient.convertToType(data['inputType'], 'String');
+      }
+      if (data.hasOwnProperty('reminderStartEpochSeconds')) {
+        obj['reminderStartEpochSeconds'] = ApiClient.convertToType(data['reminderStartEpochSeconds'], 'Number');
+      }
+      if (data.hasOwnProperty('nextReminderTimeEpochSeconds')) {
+        obj['nextReminderTimeEpochSeconds'] = ApiClient.convertToType(data['nextReminderTimeEpochSeconds'], 'Number');
+      }
+      if (data.hasOwnProperty('firstDailyReminderTime')) {
+        obj['firstDailyReminderTime'] = ApiClient.convertToType(data['firstDailyReminderTime'], 'Date');
+      }
+      if (data.hasOwnProperty('frequencyTextDescription')) {
+        obj['frequencyTextDescription'] = ApiClient.convertToType(data['frequencyTextDescription'], 'String');
+      }
+      if (data.hasOwnProperty('frequencyTextDescriptionWithTime')) {
+        obj['frequencyTextDescriptionWithTime'] = ApiClient.convertToType(data['frequencyTextDescriptionWithTime'], 'String');
+      }
+      if (data.hasOwnProperty('valueAndFrequencyTextDescription')) {
+        obj['valueAndFrequencyTextDescription'] = ApiClient.convertToType(data['valueAndFrequencyTextDescription'], 'String');
+      }
+      if (data.hasOwnProperty('valueAndFrequencyTextDescriptionWithTime')) {
+        obj['valueAndFrequencyTextDescriptionWithTime'] = ApiClient.convertToType(data['valueAndFrequencyTextDescriptionWithTime'], 'String');
       }
     }
     return obj;
@@ -9851,6 +10980,236 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {module:model/TrackingReminder.CombinationOperationEnum} combinationOperation
    */
   exports.prototype['combinationOperation'] = undefined;
+  /**
+   * Example: 2016-05-18 02:24:08
+   * @member {Date} createdAt
+   */
+  exports.prototype['createdAt'] = undefined;
+  /**
+   * Example: 11841
+   * @member {Number} trackingReminderId
+   */
+  exports.prototype['trackingReminderId'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} defaultUnitId
+   */
+  exports.prototype['defaultUnitId'] = undefined;
+  /**
+   * Example: negative
+   * @member {String} variableDescription
+   */
+  exports.prototype['variableDescription'] = undefined;
+  /**
+   * Example: negative
+   * @member {String} valence
+   */
+  exports.prototype['valence'] = undefined;
+  /**
+   * Example: ion-sad-outline
+   * @member {String} ionIcon
+   */
+  exports.prototype['ionIcon'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} variableCategoryId
+   */
+  exports.prototype['variableCategoryId'] = undefined;
+  /**
+   * Example: 2
+   * @member {Number} lastValue
+   */
+  exports.prototype['lastValue'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} secondToLastValue
+   */
+  exports.prototype['secondToLastValue'] = undefined;
+  /**
+   * Example: 3
+   * @member {Number} thirdToLastValue
+   */
+  exports.prototype['thirdToLastValue'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} userVariableDefaultUnitId
+   */
+  exports.prototype['userVariableDefaultUnitId'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} userVariableVariableCategoryId
+   */
+  exports.prototype['userVariableVariableCategoryId'] = undefined;
+  /**
+   * Example: 445
+   * @member {Number} numberOfRawMeasurements
+   */
+  exports.prototype['numberOfRawMeasurements'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/symptoms.svg
+   * @member {String} svgUrl
+   */
+  exports.prototype['svgUrl'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/symptoms.png
+   * @member {String} pngUrl
+   */
+  exports.prototype['pngUrl'] = undefined;
+  /**
+   * Example: img/variable_categories/symptoms.png
+   * @member {String} pngPath
+   */
+  exports.prototype['pngPath'] = undefined;
+  /**
+   * Example: https://maxcdn.icons8.com/Color/PNG/96/Messaging/sad-96.png
+   * @member {String} variableCategoryImageUrl
+   */
+  exports.prototype['variableCategoryImageUrl'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} manualTracking
+   */
+  exports.prototype['manualTracking'] = undefined;
+  /**
+   * Example: Symptoms
+   * @member {String} userVariableVariableCategoryName
+   */
+  exports.prototype['userVariableVariableCategoryName'] = undefined;
+  /**
+   * Example: 21:45:20
+   * @member {Date} reminderStartTimeLocal
+   */
+  exports.prototype['reminderStartTimeLocal'] = undefined;
+  /**
+   * Example: 09:45 PM
+   * @member {Date} reminderStartTimeLocalHumanFormatted
+   */
+  exports.prototype['reminderStartTimeLocalHumanFormatted'] = undefined;
+  /**
+   * Example: 2
+   * @member {Number} lastValueInUserVariableDefaultUnit
+   */
+  exports.prototype['lastValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} secondToLastValueInUserVariableDefaultUnit
+   */
+  exports.prototype['secondToLastValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 3
+   * @member {Number} thirdToLastValueInUserVariableDefaultUnit
+   */
+  exports.prototype['thirdToLastValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} unitId
+   */
+  exports.prototype['unitId'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} unitName
+   */
+  exports.prototype['unitName'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} unitCategoryId
+   */
+  exports.prototype['unitCategoryId'] = undefined;
+  /**
+   * Example: Rating
+   * @member {String} unitCategoryName
+   */
+  exports.prototype['unitCategoryName'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} defaultUnitName
+   */
+  exports.prototype['defaultUnitName'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} defaultUnitAbbreviatedName
+   */
+  exports.prototype['defaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} defaultUnitCategoryId
+   */
+  exports.prototype['defaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Rating
+   * @member {String} defaultUnitCategoryName
+   */
+  exports.prototype['defaultUnitCategoryName'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} userVariableDefaultUnitName
+   */
+  exports.prototype['userVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} userVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['userVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} userVariableDefaultUnitCategoryId
+   */
+  exports.prototype['userVariableDefaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Rating
+   * @member {String} userVariableDefaultUnitCategoryName
+   */
+  exports.prototype['userVariableDefaultUnitCategoryName'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} minimumAllowedValue
+   */
+  exports.prototype['minimumAllowedValue'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} maximumAllowedValue
+   */
+  exports.prototype['maximumAllowedValue'] = undefined;
+  /**
+   * Example: saddestFaceIsFive
+   * @member {String} inputType
+   */
+  exports.prototype['inputType'] = undefined;
+  /**
+   * Example: 1469760320
+   * @member {Number} reminderStartEpochSeconds
+   */
+  exports.prototype['reminderStartEpochSeconds'] = undefined;
+  /**
+   * Example: 1501555520
+   * @member {Number} nextReminderTimeEpochSeconds
+   */
+  exports.prototype['nextReminderTimeEpochSeconds'] = undefined;
+  /**
+   * Example: 02:45:20
+   * @member {Date} firstDailyReminderTime
+   */
+  exports.prototype['firstDailyReminderTime'] = undefined;
+  /**
+   * Example: Daily
+   * @member {String} frequencyTextDescription
+   */
+  exports.prototype['frequencyTextDescription'] = undefined;
+  /**
+   * Example: Daily at 09:45 PM
+   * @member {String} frequencyTextDescriptionWithTime
+   */
+  exports.prototype['frequencyTextDescriptionWithTime'] = undefined;
+  /**
+   * Example: Rate daily
+   * @member {String} valueAndFrequencyTextDescription
+   */
+  exports.prototype['valueAndFrequencyTextDescription'] = undefined;
+  /**
+   * Example: Rate daily at 09:45 PM
+   * @member {String} valueAndFrequencyTextDescriptionWithTime
+   */
+  exports.prototype['valueAndFrequencyTextDescriptionWithTime'] = undefined;
 
 
   /**
@@ -9915,7 +11274,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderDelete model module.
    * @module model/TrackingReminderDelete
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -10000,7 +11359,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotification model module.
    * @module model/TrackingReminderNotification
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -10013,6 +11372,56 @@ exports.cleanHeader = function(header, shouldStripCookie){
     var _this = this;
 
     _this['id'] = id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -10057,9 +11466,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('variableId')) {
         obj['variableId'] = ApiClient.convertToType(data['variableId'], 'Number');
       }
-      if (data.hasOwnProperty('pendingReminderTime')) {
-        obj['pendingReminderTime'] = ApiClient.convertToType(data['pendingReminderTime'], 'Date');
-      }
       if (data.hasOwnProperty('defaultValue')) {
         obj['defaultValue'] = ApiClient.convertToType(data['defaultValue'], 'Number');
       }
@@ -10093,6 +11499,159 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('combinationOperation')) {
         obj['combinationOperation'] = ApiClient.convertToType(data['combinationOperation'], 'String');
       }
+      if (data.hasOwnProperty('reminderFrequency')) {
+        obj['reminderFrequency'] = ApiClient.convertToType(data['reminderFrequency'], 'Number');
+      }
+      if (data.hasOwnProperty('reminderStartTime')) {
+        obj['reminderStartTime'] = ApiClient.convertToType(data['reminderStartTime'], 'String');
+      }
+      if (data.hasOwnProperty('createdAt')) {
+        obj['createdAt'] = ApiClient.convertToType(data['createdAt'], 'Date');
+      }
+      if (data.hasOwnProperty('trackingReminderNotificationId')) {
+        obj['trackingReminderNotificationId'] = ApiClient.convertToType(data['trackingReminderNotificationId'], 'Number');
+      }
+      if (data.hasOwnProperty('reminderTime')) {
+        obj['reminderTime'] = ApiClient.convertToType(data['reminderTime'], 'Date');
+      }
+      if (data.hasOwnProperty('trackingReminderNotificationTime')) {
+        obj['trackingReminderNotificationTime'] = ApiClient.convertToType(data['trackingReminderNotificationTime'], 'Date');
+      }
+      if (data.hasOwnProperty('defaultUnitId')) {
+        obj['defaultUnitId'] = ApiClient.convertToType(data['defaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('description')) {
+        obj['description'] = ApiClient.convertToType(data['description'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryId')) {
+        obj['variableCategoryId'] = ApiClient.convertToType(data['variableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('valence')) {
+        obj['valence'] = ApiClient.convertToType(data['valence'], 'String');
+      }
+      if (data.hasOwnProperty('mostCommonValue')) {
+        obj['mostCommonValue'] = ApiClient.convertToType(data['mostCommonValue'], 'Number');
+      }
+      if (data.hasOwnProperty('secondMostCommonValue')) {
+        obj['secondMostCommonValue'] = ApiClient.convertToType(data['secondMostCommonValue'], 'Number');
+      }
+      if (data.hasOwnProperty('thirdMostCommonValue')) {
+        obj['thirdMostCommonValue'] = ApiClient.convertToType(data['thirdMostCommonValue'], 'Number');
+      }
+      if (data.hasOwnProperty('lastValue')) {
+        obj['lastValue'] = ApiClient.convertToType(data['lastValue'], 'Number');
+      }
+      if (data.hasOwnProperty('secondToLastValue')) {
+        obj['secondToLastValue'] = ApiClient.convertToType(data['secondToLastValue'], 'Number');
+      }
+      if (data.hasOwnProperty('thirdToLastValue')) {
+        obj['thirdToLastValue'] = ApiClient.convertToType(data['thirdToLastValue'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitId')) {
+        obj['userVariableDefaultUnitId'] = ApiClient.convertToType(data['userVariableDefaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryId')) {
+        obj['userVariableVariableCategoryId'] = ApiClient.convertToType(data['userVariableVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfUniqueValues')) {
+        obj['numberOfUniqueValues'] = ApiClient.convertToType(data['numberOfUniqueValues'], 'Number');
+      }
+      if (data.hasOwnProperty('ionIcon')) {
+        obj['ionIcon'] = ApiClient.convertToType(data['ionIcon'], 'String');
+      }
+      if (data.hasOwnProperty('svgUrl')) {
+        obj['svgUrl'] = ApiClient.convertToType(data['svgUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngUrl')) {
+        obj['pngUrl'] = ApiClient.convertToType(data['pngUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngPath')) {
+        obj['pngPath'] = ApiClient.convertToType(data['pngPath'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryImageUrl')) {
+        obj['variableCategoryImageUrl'] = ApiClient.convertToType(data['variableCategoryImageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('manualTracking')) {
+        obj['manualTracking'] = ApiClient.convertToType(data['manualTracking'], 'Boolean');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryName')) {
+        obj['userVariableVariableCategoryName'] = ApiClient.convertToType(data['userVariableVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('trackingReminderNotificationTimeEpoch')) {
+        obj['trackingReminderNotificationTimeEpoch'] = ApiClient.convertToType(data['trackingReminderNotificationTimeEpoch'], 'Number');
+      }
+      if (data.hasOwnProperty('trackingReminderNotificationTimeLocal')) {
+        obj['trackingReminderNotificationTimeLocal'] = ApiClient.convertToType(data['trackingReminderNotificationTimeLocal'], 'String');
+      }
+      if (data.hasOwnProperty('lastValueInUserVariableDefaultUnit')) {
+        obj['lastValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['lastValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('secondToLastValueInUserVariableDefaultUnit')) {
+        obj['secondToLastValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['secondToLastValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('thirdToLastValueInUserVariableDefaultUnit')) {
+        obj['thirdToLastValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['thirdToLastValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('mostCommonValueInUserVariableDefaultUnit')) {
+        obj['mostCommonValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['mostCommonValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('secondMostCommonValueInUserVariableDefaultUnit')) {
+        obj['secondMostCommonValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['secondMostCommonValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('thirdMostCommonValueInUserVariableDefaultUnit')) {
+        obj['thirdMostCommonValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['thirdMostCommonValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('unitId')) {
+        obj['unitId'] = ApiClient.convertToType(data['unitId'], 'Number');
+      }
+      if (data.hasOwnProperty('unitName')) {
+        obj['unitName'] = ApiClient.convertToType(data['unitName'], 'String');
+      }
+      if (data.hasOwnProperty('unitCategoryId')) {
+        obj['unitCategoryId'] = ApiClient.convertToType(data['unitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('unitCategoryName')) {
+        obj['unitCategoryName'] = ApiClient.convertToType(data['unitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitName')) {
+        obj['defaultUnitName'] = ApiClient.convertToType(data['defaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitAbbreviatedName')) {
+        obj['defaultUnitAbbreviatedName'] = ApiClient.convertToType(data['defaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitCategoryId')) {
+        obj['defaultUnitCategoryId'] = ApiClient.convertToType(data['defaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('defaultUnitCategoryName')) {
+        obj['defaultUnitCategoryName'] = ApiClient.convertToType(data['defaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitName')) {
+        obj['userVariableDefaultUnitName'] = ApiClient.convertToType(data['userVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitAbbreviatedName')) {
+        obj['userVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['userVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryId')) {
+        obj['userVariableDefaultUnitCategoryId'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryName')) {
+        obj['userVariableDefaultUnitCategoryName'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('minimumAllowedValue')) {
+        obj['minimumAllowedValue'] = ApiClient.convertToType(data['minimumAllowedValue'], 'Number');
+      }
+      if (data.hasOwnProperty('maximumAllowedValue')) {
+        obj['maximumAllowedValue'] = ApiClient.convertToType(data['maximumAllowedValue'], 'Number');
+      }
+      if (data.hasOwnProperty('inputType')) {
+        obj['inputType'] = ApiClient.convertToType(data['inputType'], 'String');
+      }
+      if (data.hasOwnProperty('total')) {
+        obj['total'] = ApiClient.convertToType(data['total'], 'Number');
+      }
+      if (data.hasOwnProperty('title')) {
+        obj['title'] = ApiClient.convertToType(data['title'], 'String');
+      }
     }
     return obj;
   }
@@ -10122,11 +11681,6 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {Number} variableId
    */
   exports.prototype['variableId'] = undefined;
-  /**
-   * UTC ISO 8601 `YYYY-MM-DDThh:mm:ss`  timestamp for the specific time the variable should be tracked in UTC.  This will be used for the measurement startTime if the track endpoint is used.
-   * @member {Date} pendingReminderTime
-   */
-  exports.prototype['pendingReminderTime'] = undefined;
   /**
    * Default value to use for the measurement when tracking
    * @member {Number} defaultValue
@@ -10182,6 +11736,261 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {module:model/TrackingReminderNotification.CombinationOperationEnum} combinationOperation
    */
   exports.prototype['combinationOperation'] = undefined;
+  /**
+   * How often user should be reminded in seconds. Example: 86400
+   * @member {Number} reminderFrequency
+   */
+  exports.prototype['reminderFrequency'] = undefined;
+  /**
+   * Earliest time of day at which reminders should appear in UTC HH:MM:SS format
+   * @member {String} reminderStartTime
+   */
+  exports.prototype['reminderStartTime'] = undefined;
+  /**
+   * Example: 2017-07-29 20:49:54
+   * @member {Date} createdAt
+   */
+  exports.prototype['createdAt'] = undefined;
+  /**
+   * Example: 5072482
+   * @member {Number} trackingReminderNotificationId
+   */
+  exports.prototype['trackingReminderNotificationId'] = undefined;
+  /**
+   * UTC ISO 8601 `YYYY-MM-DDThh:mm:ss` timestamp for the specific time the variable should be tracked in UTC.  This will be used for the measurement startTime if the track endpoint is used.
+   * @member {Date} reminderTime
+   */
+  exports.prototype['reminderTime'] = undefined;
+  /**
+   * UTC ISO 8601 `YYYY-MM-DDThh:mm:ss` timestamp for the specific time the variable should be tracked in UTC.  This will be used for the measurement startTime if the track endpoint is used.
+   * @member {Date} trackingReminderNotificationTime
+   */
+  exports.prototype['trackingReminderNotificationTime'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} defaultUnitId
+   */
+  exports.prototype['defaultUnitId'] = undefined;
+  /**
+   * Example: positive
+   * @member {String} description
+   */
+  exports.prototype['description'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} variableCategoryId
+   */
+  exports.prototype['variableCategoryId'] = undefined;
+  /**
+   * Example: positive
+   * @member {String} valence
+   */
+  exports.prototype['valence'] = undefined;
+  /**
+   * Example: 3
+   * @member {Number} mostCommonValue
+   */
+  exports.prototype['mostCommonValue'] = undefined;
+  /**
+   * Example: 4
+   * @member {Number} secondMostCommonValue
+   */
+  exports.prototype['secondMostCommonValue'] = undefined;
+  /**
+   * Example: 2
+   * @member {Number} thirdMostCommonValue
+   */
+  exports.prototype['thirdMostCommonValue'] = undefined;
+  /**
+   * Example: 3
+   * @member {Number} lastValue
+   */
+  exports.prototype['lastValue'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} secondToLastValue
+   */
+  exports.prototype['secondToLastValue'] = undefined;
+  /**
+   * Example: 2
+   * @member {Number} thirdToLastValue
+   */
+  exports.prototype['thirdToLastValue'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} userVariableDefaultUnitId
+   */
+  exports.prototype['userVariableDefaultUnitId'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} userVariableVariableCategoryId
+   */
+  exports.prototype['userVariableVariableCategoryId'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} numberOfUniqueValues
+   */
+  exports.prototype['numberOfUniqueValues'] = undefined;
+  /**
+   * Example: ion-happy-outline
+   * @member {String} ionIcon
+   */
+  exports.prototype['ionIcon'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/emotions.svg
+   * @member {String} svgUrl
+   */
+  exports.prototype['svgUrl'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/emotions.png
+   * @member {String} pngUrl
+   */
+  exports.prototype['pngUrl'] = undefined;
+  /**
+   * Example: img/variable_categories/emotions.png
+   * @member {String} pngPath
+   */
+  exports.prototype['pngPath'] = undefined;
+  /**
+   * Example: https://maxcdn.icons8.com/Color/PNG/96/Cinema/theatre_mask-96.png
+   * @member {String} variableCategoryImageUrl
+   */
+  exports.prototype['variableCategoryImageUrl'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} manualTracking
+   */
+  exports.prototype['manualTracking'] = undefined;
+  /**
+   * Example: Emotions
+   * @member {String} userVariableVariableCategoryName
+   */
+  exports.prototype['userVariableVariableCategoryName'] = undefined;
+  /**
+   * Example: 1501534124
+   * @member {Number} trackingReminderNotificationTimeEpoch
+   */
+  exports.prototype['trackingReminderNotificationTimeEpoch'] = undefined;
+  /**
+   * Example: 15:48:44
+   * @member {String} trackingReminderNotificationTimeLocal
+   */
+  exports.prototype['trackingReminderNotificationTimeLocal'] = undefined;
+  /**
+   * Example: 3
+   * @member {Number} lastValueInUserVariableDefaultUnit
+   */
+  exports.prototype['lastValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} secondToLastValueInUserVariableDefaultUnit
+   */
+  exports.prototype['secondToLastValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 2
+   * @member {Number} thirdToLastValueInUserVariableDefaultUnit
+   */
+  exports.prototype['thirdToLastValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 3
+   * @member {Number} mostCommonValueInUserVariableDefaultUnit
+   */
+  exports.prototype['mostCommonValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 4
+   * @member {Number} secondMostCommonValueInUserVariableDefaultUnit
+   */
+  exports.prototype['secondMostCommonValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 2
+   * @member {Number} thirdMostCommonValueInUserVariableDefaultUnit
+   */
+  exports.prototype['thirdMostCommonValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} unitId
+   */
+  exports.prototype['unitId'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} unitName
+   */
+  exports.prototype['unitName'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} unitCategoryId
+   */
+  exports.prototype['unitCategoryId'] = undefined;
+  /**
+   * Example: Rating
+   * @member {String} unitCategoryName
+   */
+  exports.prototype['unitCategoryName'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} defaultUnitName
+   */
+  exports.prototype['defaultUnitName'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} defaultUnitAbbreviatedName
+   */
+  exports.prototype['defaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} defaultUnitCategoryId
+   */
+  exports.prototype['defaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Rating
+   * @member {String} defaultUnitCategoryName
+   */
+  exports.prototype['defaultUnitCategoryName'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} userVariableDefaultUnitName
+   */
+  exports.prototype['userVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} userVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['userVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} userVariableDefaultUnitCategoryId
+   */
+  exports.prototype['userVariableDefaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Rating
+   * @member {String} userVariableDefaultUnitCategoryName
+   */
+  exports.prototype['userVariableDefaultUnitCategoryName'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} minimumAllowedValue
+   */
+  exports.prototype['minimumAllowedValue'] = undefined;
+  /**
+   * Example: 5
+   * @member {Number} maximumAllowedValue
+   */
+  exports.prototype['maximumAllowedValue'] = undefined;
+  /**
+   * Example: happiestFaceIsFive
+   * @member {String} inputType
+   */
+  exports.prototype['inputType'] = undefined;
+  /**
+   * Example: 3
+   * @member {Number} total
+   */
+  exports.prototype['total'] = undefined;
+  /**
+   * Example: Rate Overall Mood
+   * @member {String} title
+   */
+  exports.prototype['title'] = undefined;
 
 
   /**
@@ -10246,7 +12055,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationPost model module.
    * @module model/TrackingReminderNotificationPost
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -10372,7 +12181,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Unit model module.
    * @module model/Unit
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -10393,6 +12202,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
     _this['conversionSteps'] = conversionSteps;
+
+
+
+
   };
 
   /**
@@ -10423,6 +12236,18 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('conversionSteps')) {
         obj['conversionSteps'] = ApiClient.convertToType(data['conversionSteps'], [ConversionStep]);
+      }
+      if (data.hasOwnProperty('id')) {
+        obj['id'] = ApiClient.convertToType(data['id'], 'Number');
+      }
+      if (data.hasOwnProperty('categoryName')) {
+        obj['categoryName'] = ApiClient.convertToType(data['categoryName'], 'String');
+      }
+      if (data.hasOwnProperty('categoryId')) {
+        obj['categoryId'] = ApiClient.convertToType(data['categoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('advanced')) {
+        obj['advanced'] = ApiClient.convertToType(data['advanced'], 'Number');
       }
     }
     return obj;
@@ -10458,6 +12283,26 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {Array.<module:model/ConversionStep>} conversionSteps
    */
   exports.prototype['conversionSteps'] = undefined;
+  /**
+   * Example: 29
+   * @member {Number} id
+   */
+  exports.prototype['id'] = undefined;
+  /**
+   * Example: Miscellany
+   * @member {String} categoryName
+   */
+  exports.prototype['categoryName'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} categoryId
+   */
+  exports.prototype['categoryId'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} advanced
+   */
+  exports.prototype['advanced'] = undefined;
 
 
   /**
@@ -10567,7 +12412,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UnitCategory model module.
    * @module model/UnitCategory
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -10652,7 +12497,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Update model module.
    * @module model/Update
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -10804,7 +12649,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The User model module.
    * @module model/User
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -10827,6 +12672,28 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['email'] = email;
     _this['accessToken'] = accessToken;
     _this['administrator'] = administrator;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   };
 
   /**
@@ -10857,6 +12724,72 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('administrator')) {
         obj['administrator'] = ApiClient.convertToType(data['administrator'], 'Boolean');
+      }
+      if (data.hasOwnProperty('clientId')) {
+        obj['clientId'] = ApiClient.convertToType(data['clientId'], 'String');
+      }
+      if (data.hasOwnProperty('earliestReminderTime')) {
+        obj['earliestReminderTime'] = ApiClient.convertToType(data['earliestReminderTime'], 'Date');
+      }
+      if (data.hasOwnProperty('lastFour')) {
+        obj['lastFour'] = ApiClient.convertToType(data['lastFour'], 'String');
+      }
+      if (data.hasOwnProperty('latestReminderTime')) {
+        obj['latestReminderTime'] = ApiClient.convertToType(data['latestReminderTime'], 'String');
+      }
+      if (data.hasOwnProperty('clientUserId')) {
+        obj['clientUserId'] = ApiClient.convertToType(data['clientUserId'], 'String');
+      }
+      if (data.hasOwnProperty('pushNotificationsEnabled')) {
+        obj['pushNotificationsEnabled'] = ApiClient.convertToType(data['pushNotificationsEnabled'], 'Boolean');
+      }
+      if (data.hasOwnProperty('roles')) {
+        obj['roles'] = ApiClient.convertToType(data['roles'], 'String');
+      }
+      if (data.hasOwnProperty('sendPredictorEmails')) {
+        obj['sendPredictorEmails'] = ApiClient.convertToType(data['sendPredictorEmails'], 'Boolean');
+      }
+      if (data.hasOwnProperty('sendReminderNotificationEmails')) {
+        obj['sendReminderNotificationEmails'] = ApiClient.convertToType(data['sendReminderNotificationEmails'], 'Boolean');
+      }
+      if (data.hasOwnProperty('stripeId')) {
+        obj['stripeId'] = ApiClient.convertToType(data['stripeId'], 'String');
+      }
+      if (data.hasOwnProperty('stripePlan')) {
+        obj['stripePlan'] = ApiClient.convertToType(data['stripePlan'], 'String');
+      }
+      if (data.hasOwnProperty('stripeSubscription')) {
+        obj['stripeSubscription'] = ApiClient.convertToType(data['stripeSubscription'], 'String');
+      }
+      if (data.hasOwnProperty('subscriptionProvider')) {
+        obj['subscriptionProvider'] = ApiClient.convertToType(data['subscriptionProvider'], 'String');
+      }
+      if (data.hasOwnProperty('timeZoneOffset')) {
+        obj['timeZoneOffset'] = ApiClient.convertToType(data['timeZoneOffset'], 'Number');
+      }
+      if (data.hasOwnProperty('password')) {
+        obj['password'] = ApiClient.convertToType(data['password'], 'String');
+      }
+      if (data.hasOwnProperty('avatar')) {
+        obj['avatar'] = ApiClient.convertToType(data['avatar'], 'String');
+      }
+      if (data.hasOwnProperty('userRegistered')) {
+        obj['userRegistered'] = ApiClient.convertToType(data['userRegistered'], 'Date');
+      }
+      if (data.hasOwnProperty('userUrl')) {
+        obj['userUrl'] = ApiClient.convertToType(data['userUrl'], 'String');
+      }
+      if (data.hasOwnProperty('capabilities')) {
+        obj['capabilities'] = ApiClient.convertToType(data['capabilities'], 'String');
+      }
+      if (data.hasOwnProperty('firstName')) {
+        obj['firstName'] = ApiClient.convertToType(data['firstName'], 'String');
+      }
+      if (data.hasOwnProperty('lastName')) {
+        obj['lastName'] = ApiClient.convertToType(data['lastName'], 'String');
+      }
+      if (data.hasOwnProperty('trackLocation')) {
+        obj['trackLocation'] = ApiClient.convertToType(data['trackLocation'], 'Boolean');
       }
     }
     return obj;
@@ -10892,6 +12825,116 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {Boolean} administrator
    */
   exports.prototype['administrator'] = undefined;
+  /**
+   * Example: quantimodo
+   * @member {String} clientId
+   */
+  exports.prototype['clientId'] = undefined;
+  /**
+   * Earliest time user should get notifications. Example: 05:00:00
+   * @member {Date} earliestReminderTime
+   */
+  exports.prototype['earliestReminderTime'] = undefined;
+  /**
+   * Example: 2009
+   * @member {String} lastFour
+   */
+  exports.prototype['lastFour'] = undefined;
+  /**
+   * Latest time user should get notifications. Example: 23:00:00
+   * @member {String} latestReminderTime
+   */
+  exports.prototype['latestReminderTime'] = undefined;
+  /**
+   * Example: 118444693184829555362
+   * @member {String} clientUserId
+   */
+  exports.prototype['clientUserId'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} pushNotificationsEnabled
+   */
+  exports.prototype['pushNotificationsEnabled'] = undefined;
+  /**
+   * Example: [\"admin\"]
+   * @member {String} roles
+   */
+  exports.prototype['roles'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} sendPredictorEmails
+   */
+  exports.prototype['sendPredictorEmails'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} sendReminderNotificationEmails
+   */
+  exports.prototype['sendReminderNotificationEmails'] = undefined;
+  /**
+   * Example: cus_A8CEmcvl8jwLhV
+   * @member {String} stripeId
+   */
+  exports.prototype['stripeId'] = undefined;
+  /**
+   * Example: monthly7
+   * @member {String} stripePlan
+   */
+  exports.prototype['stripePlan'] = undefined;
+  /**
+   * Example: sub_ANTx3nOE7nzjQf
+   * @member {String} stripeSubscription
+   */
+  exports.prototype['stripeSubscription'] = undefined;
+  /**
+   * Example: google
+   * @member {String} subscriptionProvider
+   */
+  exports.prototype['subscriptionProvider'] = undefined;
+  /**
+   * Example: 300
+   * @member {Number} timeZoneOffset
+   */
+  exports.prototype['timeZoneOffset'] = undefined;
+  /**
+   * Example: PASSWORD
+   * @member {String} password
+   */
+  exports.prototype['password'] = undefined;
+  /**
+   * Example: https://lh6.googleusercontent.com/-BHr4hyUWqZU/AAAAAAAAAAI/AAAAAAAIG28/2Lv0en738II/photo.jpg?sz=50
+   * @member {String} avatar
+   */
+  exports.prototype['avatar'] = undefined;
+  /**
+   * Example: 2013-12-03 15:25:13
+   * @member {Date} userRegistered
+   */
+  exports.prototype['userRegistered'] = undefined;
+  /**
+   * Example: https://plus.google.com/+MikeSinn
+   * @member {String} userUrl
+   */
+  exports.prototype['userUrl'] = undefined;
+  /**
+   * Example: a:1:{s:13:\"administrator\";b:1;}
+   * @member {String} capabilities
+   */
+  exports.prototype['capabilities'] = undefined;
+  /**
+   * Example: Mike
+   * @member {String} firstName
+   */
+  exports.prototype['firstName'] = undefined;
+  /**
+   * Example: Sinn
+   * @member {String} lastName
+   */
+  exports.prototype['lastName'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} trackLocation
+   */
+  exports.prototype['trackLocation'] = undefined;
 
 
 
@@ -10939,7 +12982,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTag model module.
    * @module model/UserTag
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -11044,7 +13087,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenFailedResponse model module.
    * @module model/UserTokenFailedResponse
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -11148,7 +13191,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenRequest model module.
    * @module model/UserTokenRequest
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -11241,7 +13284,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenRequestInnerUserField model module.
    * @module model/UserTokenRequestInnerUserField
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -11325,7 +13368,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenSuccessfulResponse model module.
    * @module model/UserTokenSuccessfulResponse
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -11429,7 +13472,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenSuccessfulResponseInnerUserField model module.
    * @module model/UserTokenSuccessfulResponseInnerUserField
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -11524,7 +13567,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariable model module.
    * @module model/UserVariable
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -11540,6 +13583,58 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
     _this['variableId'] = variableId;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -11773,6 +13868,162 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('ionIcon')) {
         obj['ionIcon'] = ApiClient.convertToType(data['ionIcon'], 'String');
       }
+      if (data.hasOwnProperty('id')) {
+        obj['id'] = ApiClient.convertToType(data['id'], 'Number');
+      }
+      if (data.hasOwnProperty('name')) {
+        obj['name'] = ApiClient.convertToType(data['name'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitId')) {
+        obj['userVariableDefaultUnitId'] = ApiClient.convertToType(data['userVariableDefaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableFillingValue')) {
+        obj['userVariableFillingValue'] = ApiClient.convertToType(data['userVariableFillingValue'], 'Number');
+      }
+      if (data.hasOwnProperty('latestUserMeasurementTime')) {
+        obj['latestUserMeasurementTime'] = ApiClient.convertToType(data['latestUserMeasurementTime'], 'Number');
+      }
+      if (data.hasOwnProperty('maximumRecordedValue')) {
+        obj['maximumRecordedValue'] = ApiClient.convertToType(data['maximumRecordedValue'], 'Number');
+      }
+      if (data.hasOwnProperty('rawMeasurementsAtLastAnalysis')) {
+        obj['rawMeasurementsAtLastAnalysis'] = ApiClient.convertToType(data['rawMeasurementsAtLastAnalysis'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfRawMeasurements')) {
+        obj['numberOfRawMeasurements'] = ApiClient.convertToType(data['numberOfRawMeasurements'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfUserCorrelationsAsCause')) {
+        obj['numberOfUserCorrelationsAsCause'] = ApiClient.convertToType(data['numberOfUserCorrelationsAsCause'], 'Number');
+      }
+      if (data.hasOwnProperty('standardDeviation')) {
+        obj['standardDeviation'] = ApiClient.convertToType(data['standardDeviation'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryId')) {
+        obj['userVariableVariableCategoryId'] = ApiClient.convertToType(data['userVariableVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('variableFillingValue')) {
+        obj['variableFillingValue'] = ApiClient.convertToType(data['variableFillingValue'], 'Number');
+      }
+      if (data.hasOwnProperty('mostCommonOriginalUnitId')) {
+        obj['mostCommonOriginalUnitId'] = ApiClient.convertToType(data['mostCommonOriginalUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfAggregateCorrelationsAsCause')) {
+        obj['numberOfAggregateCorrelationsAsCause'] = ApiClient.convertToType(data['numberOfAggregateCorrelationsAsCause'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfUserVariables')) {
+        obj['numberOfUserVariables'] = ApiClient.convertToType(data['numberOfUserVariables'], 'Number');
+      }
+      if (data.hasOwnProperty('secondMostCommonValue')) {
+        obj['secondMostCommonValue'] = ApiClient.convertToType(data['secondMostCommonValue'], 'Number');
+      }
+      if (data.hasOwnProperty('updatedTime')) {
+        obj['updatedTime'] = ApiClient.convertToType(data['updatedTime'], 'Date');
+      }
+      if (data.hasOwnProperty('commonVariableUpdatedAt')) {
+        obj['commonVariableUpdatedAt'] = ApiClient.convertToType(data['commonVariableUpdatedAt'], 'Date');
+      }
+      if (data.hasOwnProperty('userVariableUpdatedAt')) {
+        obj['userVariableUpdatedAt'] = ApiClient.convertToType(data['userVariableUpdatedAt'], 'Date');
+      }
+      if (data.hasOwnProperty('combinationOperation')) {
+        obj['combinationOperation'] = ApiClient.convertToType(data['combinationOperation'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryName')) {
+        obj['variableCategoryName'] = ApiClient.convertToType(data['variableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('svgUrl')) {
+        obj['svgUrl'] = ApiClient.convertToType(data['svgUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngUrl')) {
+        obj['pngUrl'] = ApiClient.convertToType(data['pngUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngPath')) {
+        obj['pngPath'] = ApiClient.convertToType(data['pngPath'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryImageUrl')) {
+        obj['variableCategoryImageUrl'] = ApiClient.convertToType(data['variableCategoryImageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('manualTracking')) {
+        obj['manualTracking'] = ApiClient.convertToType(data['manualTracking'], 'Boolean');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryName')) {
+        obj['userVariableVariableCategoryName'] = ApiClient.convertToType(data['userVariableVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('meanInUserVariableDefaultUnit')) {
+        obj['meanInUserVariableDefaultUnit'] = ApiClient.convertToType(data['meanInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('secondMostCommonValueInUserVariableDefaultUnit')) {
+        obj['secondMostCommonValueInUserVariableDefaultUnit'] = ApiClient.convertToType(data['secondMostCommonValueInUserVariableDefaultUnit'], 'Number');
+      }
+      if (data.hasOwnProperty('unitId')) {
+        obj['unitId'] = ApiClient.convertToType(data['unitId'], 'Number');
+      }
+      if (data.hasOwnProperty('unitName')) {
+        obj['unitName'] = ApiClient.convertToType(data['unitName'], 'String');
+      }
+      if (data.hasOwnProperty('unitAbbreviatedName')) {
+        obj['unitAbbreviatedName'] = ApiClient.convertToType(data['unitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('unitCategoryId')) {
+        obj['unitCategoryId'] = ApiClient.convertToType(data['unitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('unitCategoryName')) {
+        obj['unitCategoryName'] = ApiClient.convertToType(data['unitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitName')) {
+        obj['defaultUnitName'] = ApiClient.convertToType(data['defaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitAbbreviatedName')) {
+        obj['defaultUnitAbbreviatedName'] = ApiClient.convertToType(data['defaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitCategoryId')) {
+        obj['defaultUnitCategoryId'] = ApiClient.convertToType(data['defaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('defaultUnitCategoryName')) {
+        obj['defaultUnitCategoryName'] = ApiClient.convertToType(data['defaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitName')) {
+        obj['userVariableDefaultUnitName'] = ApiClient.convertToType(data['userVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitAbbreviatedName')) {
+        obj['userVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['userVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryId')) {
+        obj['userVariableDefaultUnitCategoryId'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryName')) {
+        obj['userVariableDefaultUnitCategoryName'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('variableName')) {
+        obj['variableName'] = ApiClient.convertToType(data['variableName'], 'String');
+      }
+      if (data.hasOwnProperty('inputType')) {
+        obj['inputType'] = ApiClient.convertToType(data['inputType'], 'String');
+      }
+      if (data.hasOwnProperty('durationOfActionInHours')) {
+        obj['durationOfActionInHours'] = ApiClient.convertToType(data['durationOfActionInHours'], 'Number');
+      }
+      if (data.hasOwnProperty('onsetDelayInHours')) {
+        obj['onsetDelayInHours'] = ApiClient.convertToType(data['onsetDelayInHours'], 'Number');
+      }
+      if (data.hasOwnProperty('chartsLinkStatic')) {
+        obj['chartsLinkStatic'] = ApiClient.convertToType(data['chartsLinkStatic'], 'String');
+      }
+      if (data.hasOwnProperty('chartsLinkDynamic')) {
+        obj['chartsLinkDynamic'] = ApiClient.convertToType(data['chartsLinkDynamic'], 'String');
+      }
+      if (data.hasOwnProperty('chartsLinkFacebook')) {
+        obj['chartsLinkFacebook'] = ApiClient.convertToType(data['chartsLinkFacebook'], 'String');
+      }
+      if (data.hasOwnProperty('chartsLinkGoogle')) {
+        obj['chartsLinkGoogle'] = ApiClient.convertToType(data['chartsLinkGoogle'], 'String');
+      }
+      if (data.hasOwnProperty('chartsLinkTwitter')) {
+        obj['chartsLinkTwitter'] = ApiClient.convertToType(data['chartsLinkTwitter'], 'String');
+      }
+      if (data.hasOwnProperty('chartsLinkEmail')) {
+        obj['chartsLinkEmail'] = ApiClient.convertToType(data['chartsLinkEmail'], 'String');
+      }
     }
     return obj;
   }
@@ -11823,12 +14074,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['joinWith'] = undefined;
   /**
-   * The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
+   * The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the onset delay. For example, the onset delay between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
    * @member {Number} onsetDelay
    */
   exports.prototype['onsetDelay'] = undefined;
   /**
-   * The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
+   * The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
    * @member {Number} durationOfAction
    */
   exports.prototype['durationOfAction'] = undefined;
@@ -12057,6 +14308,266 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {String} ionIcon
    */
   exports.prototype['ionIcon'] = undefined;
+  /**
+   * Example: 95614
+   * @member {Number} id
+   */
+  exports.prototype['id'] = undefined;
+  /**
+   * Example: Trader Joes Bedtime Tea / Sleepytime Tea (any Brand)
+   * @member {String} name
+   */
+  exports.prototype['name'] = undefined;
+  /**
+   * Example: 23
+   * @member {Number} userVariableDefaultUnitId
+   */
+  exports.prototype['userVariableDefaultUnitId'] = undefined;
+  /**
+   * Example: -1
+   * @member {Number} userVariableFillingValue
+   */
+  exports.prototype['userVariableFillingValue'] = undefined;
+  /**
+   * Example: 1501383600
+   * @member {Number} latestUserMeasurementTime
+   */
+  exports.prototype['latestUserMeasurementTime'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} maximumRecordedValue
+   */
+  exports.prototype['maximumRecordedValue'] = undefined;
+  /**
+   * Example: 131
+   * @member {Number} rawMeasurementsAtLastAnalysis
+   */
+  exports.prototype['rawMeasurementsAtLastAnalysis'] = undefined;
+  /**
+   * Example: 295
+   * @member {Number} numberOfRawMeasurements
+   */
+  exports.prototype['numberOfRawMeasurements'] = undefined;
+  /**
+   * Example: 115
+   * @member {Number} numberOfUserCorrelationsAsCause
+   */
+  exports.prototype['numberOfUserCorrelationsAsCause'] = undefined;
+  /**
+   * Example: 0.46483219855434
+   * @member {Number} standardDeviation
+   */
+  exports.prototype['standardDeviation'] = undefined;
+  /**
+   * Example: 13
+   * @member {Number} userVariableVariableCategoryId
+   */
+  exports.prototype['userVariableVariableCategoryId'] = undefined;
+  /**
+   * Example: -1
+   * @member {Number} variableFillingValue
+   */
+  exports.prototype['variableFillingValue'] = undefined;
+  /**
+   * Example: 23
+   * @member {Number} mostCommonOriginalUnitId
+   */
+  exports.prototype['mostCommonOriginalUnitId'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} numberOfAggregateCorrelationsAsCause
+   */
+  exports.prototype['numberOfAggregateCorrelationsAsCause'] = undefined;
+  /**
+   * Example: 2
+   * @member {Number} numberOfUserVariables
+   */
+  exports.prototype['numberOfUserVariables'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} secondMostCommonValue
+   */
+  exports.prototype['secondMostCommonValue'] = undefined;
+  /**
+   * Example: 2017-07-30 14:58:26
+   * @member {Date} updatedTime
+   */
+  exports.prototype['updatedTime'] = undefined;
+  /**
+   * Example: 2017-02-07 23:43:39
+   * @member {Date} commonVariableUpdatedAt
+   */
+  exports.prototype['commonVariableUpdatedAt'] = undefined;
+  /**
+   * Example: 2017-07-30 14:58:26
+   * @member {Date} userVariableUpdatedAt
+   */
+  exports.prototype['userVariableUpdatedAt'] = undefined;
+  /**
+   * Example: MEAN
+   * @member {String} combinationOperation
+   */
+  exports.prototype['combinationOperation'] = undefined;
+  /**
+   * Example: Treatments
+   * @member {String} variableCategoryName
+   */
+  exports.prototype['variableCategoryName'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/treatments.svg
+   * @member {String} svgUrl
+   */
+  exports.prototype['svgUrl'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/treatments.png
+   * @member {String} pngUrl
+   */
+  exports.prototype['pngUrl'] = undefined;
+  /**
+   * Example: img/variable_categories/treatments.png
+   * @member {String} pngPath
+   */
+  exports.prototype['pngPath'] = undefined;
+  /**
+   * Example: https://maxcdn.icons8.com/Color/PNG/96/Healthcare/pill-96.png
+   * @member {String} variableCategoryImageUrl
+   */
+  exports.prototype['variableCategoryImageUrl'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} manualTracking
+   */
+  exports.prototype['manualTracking'] = undefined;
+  /**
+   * Example: Treatments
+   * @member {String} userVariableVariableCategoryName
+   */
+  exports.prototype['userVariableVariableCategoryName'] = undefined;
+  /**
+   * Example: 0.31159
+   * @member {Number} meanInUserVariableDefaultUnit
+   */
+  exports.prototype['meanInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} secondMostCommonValueInUserVariableDefaultUnit
+   */
+  exports.prototype['secondMostCommonValueInUserVariableDefaultUnit'] = undefined;
+  /**
+   * Example: 23
+   * @member {Number} unitId
+   */
+  exports.prototype['unitId'] = undefined;
+  /**
+   * Example: Count
+   * @member {String} unitName
+   */
+  exports.prototype['unitName'] = undefined;
+  /**
+   * Example: count
+   * @member {String} unitAbbreviatedName
+   */
+  exports.prototype['unitAbbreviatedName'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} unitCategoryId
+   */
+  exports.prototype['unitCategoryId'] = undefined;
+  /**
+   * Example: Miscellany
+   * @member {String} unitCategoryName
+   */
+  exports.prototype['unitCategoryName'] = undefined;
+  /**
+   * Example: Count
+   * @member {String} defaultUnitName
+   */
+  exports.prototype['defaultUnitName'] = undefined;
+  /**
+   * Example: count
+   * @member {String} defaultUnitAbbreviatedName
+   */
+  exports.prototype['defaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} defaultUnitCategoryId
+   */
+  exports.prototype['defaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Miscellany
+   * @member {String} defaultUnitCategoryName
+   */
+  exports.prototype['defaultUnitCategoryName'] = undefined;
+  /**
+   * Example: Count
+   * @member {String} userVariableDefaultUnitName
+   */
+  exports.prototype['userVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: count
+   * @member {String} userVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['userVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} userVariableDefaultUnitCategoryId
+   */
+  exports.prototype['userVariableDefaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Miscellany
+   * @member {String} userVariableDefaultUnitCategoryName
+   */
+  exports.prototype['userVariableDefaultUnitCategoryName'] = undefined;
+  /**
+   * Example: Trader Joes Bedtime Tea / Sleepytime Tea (any Brand)
+   * @member {String} variableName
+   */
+  exports.prototype['variableName'] = undefined;
+  /**
+   * Example: value
+   * @member {String} inputType
+   */
+  exports.prototype['inputType'] = undefined;
+  /**
+   * Example: 168
+   * @member {Number} durationOfActionInHours
+   */
+  exports.prototype['durationOfActionInHours'] = undefined;
+  /**
+   * Example: 0.5
+   * @member {Number} onsetDelayInHours
+   */
+  exports.prototype['onsetDelayInHours'] = undefined;
+  /**
+   * Example: https://local.quantimo.do/api/v2/charts?variableName=Trader%20Joes%20Bedtime%20Tea%20%2F%20Sleepytime%20Tea%20%28any%20Brand%29&userId=230&pngUrl=https%3A%2F%2Fapp.quantimo.do%2Fionic%2FModo%2Fwww%2Fimg%2Fvariable_categories%2Ftreatments.png
+   * @member {String} chartsLinkStatic
+   */
+  exports.prototype['chartsLinkStatic'] = undefined;
+  /**
+   * Example: https://local.quantimo.do/ionic/Modo/www/#/app/charts/Trader%20Joes%20Bedtime%20Tea%20%2F%20Sleepytime%20Tea%20%28any%20Brand%29?variableName=Trader%20Joes%20Bedtime%20Tea%20%2F%20Sleepytime%20Tea%20%28any%20Brand%29&userId=230&pngUrl=https%3A%2F%2Fapp.quantimo.do%2Fionic%2FModo%2Fwww%2Fimg%2Fvariable_categories%2Ftreatments.png
+   * @member {String} chartsLinkDynamic
+   */
+  exports.prototype['chartsLinkDynamic'] = undefined;
+  /**
+   * Example: https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fcharts%3FvariableName%3DTrader%2520Joes%2520Bedtime%2520Tea%2520%252F%2520Sleepytime%2520Tea%2520%2528any%2520Brand%2529%26userId%3D230%26pngUrl%3Dhttps%253A%252F%252Fapp.quantimo.do%252Fionic%252FModo%252Fwww%252Fimg%252Fvariable_categories%252Ftreatments.png
+   * @member {String} chartsLinkFacebook
+   */
+  exports.prototype['chartsLinkFacebook'] = undefined;
+  /**
+   * Example: https://plus.google.com/share?url=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fcharts%3FvariableName%3DTrader%2520Joes%2520Bedtime%2520Tea%2520%252F%2520Sleepytime%2520Tea%2520%2528any%2520Brand%2529%26userId%3D230%26pngUrl%3Dhttps%253A%252F%252Fapp.quantimo.do%252Fionic%252FModo%252Fwww%252Fimg%252Fvariable_categories%252Ftreatments.png
+   * @member {String} chartsLinkGoogle
+   */
+  exports.prototype['chartsLinkGoogle'] = undefined;
+  /**
+   * Example: https://twitter.com/home?status=Check%20out%20my%20Trader%20Joes%20Bedtime%20Tea%20%2F%20Sleepytime%20Tea%20%28any%20Brand%29%20data%21%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fcharts%3FvariableName%3DTrader%2520Joes%2520Bedtime%2520Tea%2520%252F%2520Sleepytime%2520Tea%2520%2528any%2520Brand%2529%26userId%3D230%26pngUrl%3Dhttps%253A%252F%252Fapp.quantimo.do%252Fionic%252FModo%252Fwww%252Fimg%252Fvariable_categories%252Ftreatments.png%20%40quantimodo
+   * @member {String} chartsLinkTwitter
+   */
+  exports.prototype['chartsLinkTwitter'] = undefined;
+  /**
+   * Example: mailto:?subject=Check%20out%20my%20Trader%20Joes%20Bedtime%20Tea%20%2F%20Sleepytime%20Tea%20%28any%20Brand%29%20data%21&body=See%20my%20Trader%20Joes%20Bedtime%20Tea%20%2F%20Sleepytime%20Tea%20%28any%20Brand%29%20history%20at%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fcharts%3FvariableName%3DTrader%2520Joes%2520Bedtime%2520Tea%2520%252F%2520Sleepytime%2520Tea%2520%2528any%2520Brand%2529%26userId%3D230%26pngUrl%3Dhttps%253A%252F%252Fapp.quantimo.do%252Fionic%252FModo%252Fwww%252Fimg%252Fvariable_categories%252Ftreatments.png%0A%0AHave%20a%20great%20day!
+   * @member {String} chartsLinkEmail
+   */
+  exports.prototype['chartsLinkEmail'] = undefined;
 
 
 
@@ -12104,7 +14615,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariableDelete model module.
    * @module model/UserVariableDelete
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -12189,7 +14700,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Variable model module.
    * @module model/Variable
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -12209,8 +14720,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @param joinedVariables {Array.<module:model/Variable>} Array of Variables that are joined with this Variable
    * @param parent {Number} Id of the parent variable if this variable has any parent
    * @param subVariables {Array.<module:model/Variable>} Array of Variables that are sub variables to this Variable
-   * @param onsetDelay {Number} The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
-   * @param durationOfAction {Number} The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
+   * @param onsetDelay {Number} The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the onset delay. For example, the onset delay between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
+   * @param durationOfAction {Number} The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
    * @param earliestMeasurementTime {Number} Earliest measurement time
    * @param latestMeasurementTime {Number} Latest measurement time
    * @param updated {Number} When this variable or its settings were last updated
@@ -12257,6 +14768,50 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['mostCommonValue'] = mostCommonValue;
     _this['mostCommonUnit'] = mostCommonUnit;
     _this['lastSource'] = lastSource;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   };
@@ -12365,6 +14920,138 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('ionIcon')) {
         obj['ionIcon'] = ApiClient.convertToType(data['ionIcon'], 'String');
       }
+      if (data.hasOwnProperty('createdAt')) {
+        obj['createdAt'] = ApiClient.convertToType(data['createdAt'], 'Date');
+      }
+      if (data.hasOwnProperty('unitId')) {
+        obj['unitId'] = ApiClient.convertToType(data['unitId'], 'Number');
+      }
+      if (data.hasOwnProperty('kurtosis')) {
+        obj['kurtosis'] = ApiClient.convertToType(data['kurtosis'], 'Number');
+      }
+      if (data.hasOwnProperty('mean')) {
+        obj['mean'] = ApiClient.convertToType(data['mean'], 'Number');
+      }
+      if (data.hasOwnProperty('median')) {
+        obj['median'] = ApiClient.convertToType(data['median'], 'Number');
+      }
+      if (data.hasOwnProperty('mostCommonConnectorId')) {
+        obj['mostCommonConnectorId'] = ApiClient.convertToType(data['mostCommonConnectorId'], 'Number');
+      }
+      if (data.hasOwnProperty('mostCommonOriginalUnitId')) {
+        obj['mostCommonOriginalUnitId'] = ApiClient.convertToType(data['mostCommonOriginalUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfAggregateCorrelationsAsCause')) {
+        obj['numberOfAggregateCorrelationsAsCause'] = ApiClient.convertToType(data['numberOfAggregateCorrelationsAsCause'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfAggregateCorrelationsAsEffect')) {
+        obj['numberOfAggregateCorrelationsAsEffect'] = ApiClient.convertToType(data['numberOfAggregateCorrelationsAsEffect'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfTrackingReminders')) {
+        obj['numberOfTrackingReminders'] = ApiClient.convertToType(data['numberOfTrackingReminders'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfUniqueValues')) {
+        obj['numberOfUniqueValues'] = ApiClient.convertToType(data['numberOfUniqueValues'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfUserVariables')) {
+        obj['numberOfUserVariables'] = ApiClient.convertToType(data['numberOfUserVariables'], 'Number');
+      }
+      if (data.hasOwnProperty('secondMostCommonValue')) {
+        obj['secondMostCommonValue'] = ApiClient.convertToType(data['secondMostCommonValue'], 'Number');
+      }
+      if (data.hasOwnProperty('skewness')) {
+        obj['skewness'] = ApiClient.convertToType(data['skewness'], 'Number');
+      }
+      if (data.hasOwnProperty('standardDeviation')) {
+        obj['standardDeviation'] = ApiClient.convertToType(data['standardDeviation'], 'Number');
+      }
+      if (data.hasOwnProperty('thirdMostCommonValue')) {
+        obj['thirdMostCommonValue'] = ApiClient.convertToType(data['thirdMostCommonValue'], 'Number');
+      }
+      if (data.hasOwnProperty('updatedAt')) {
+        obj['updatedAt'] = ApiClient.convertToType(data['updatedAt'], 'Date');
+      }
+      if (data.hasOwnProperty('variableCategoryId')) {
+        obj['variableCategoryId'] = ApiClient.convertToType(data['variableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('variance')) {
+        obj['variance'] = ApiClient.convertToType(data['variance'], 'Number');
+      }
+      if (data.hasOwnProperty('public')) {
+        obj['public'] = ApiClient.convertToType(data['public'], 'Boolean');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryId')) {
+        obj['userVariableVariableCategoryId'] = ApiClient.convertToType(data['userVariableVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('svgUrl')) {
+        obj['svgUrl'] = ApiClient.convertToType(data['svgUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngUrl')) {
+        obj['pngUrl'] = ApiClient.convertToType(data['pngUrl'], 'String');
+      }
+      if (data.hasOwnProperty('pngPath')) {
+        obj['pngPath'] = ApiClient.convertToType(data['pngPath'], 'String');
+      }
+      if (data.hasOwnProperty('variableCategoryImageUrl')) {
+        obj['variableCategoryImageUrl'] = ApiClient.convertToType(data['variableCategoryImageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('manualTracking')) {
+        obj['manualTracking'] = ApiClient.convertToType(data['manualTracking'], 'Boolean');
+      }
+      if (data.hasOwnProperty('userVariableVariableCategoryName')) {
+        obj['userVariableVariableCategoryName'] = ApiClient.convertToType(data['userVariableVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('category')) {
+        obj['category'] = ApiClient.convertToType(data['category'], 'String');
+      }
+      if (data.hasOwnProperty('durationOfActionInHours')) {
+        obj['durationOfActionInHours'] = ApiClient.convertToType(data['durationOfActionInHours'], 'Number');
+      }
+      if (data.hasOwnProperty('variableName')) {
+        obj['variableName'] = ApiClient.convertToType(data['variableName'], 'String');
+      }
+      if (data.hasOwnProperty('numberOfMeasurements')) {
+        obj['numberOfMeasurements'] = ApiClient.convertToType(data['numberOfMeasurements'], 'Number');
+      }
+      if (data.hasOwnProperty('unitName')) {
+        obj['unitName'] = ApiClient.convertToType(data['unitName'], 'String');
+      }
+      if (data.hasOwnProperty('unitAbbreviatedName')) {
+        obj['unitAbbreviatedName'] = ApiClient.convertToType(data['unitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('unitCategoryId')) {
+        obj['unitCategoryId'] = ApiClient.convertToType(data['unitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('unitCategoryName')) {
+        obj['unitCategoryName'] = ApiClient.convertToType(data['unitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitName')) {
+        obj['defaultUnitName'] = ApiClient.convertToType(data['defaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('defaultUnitCategoryId')) {
+        obj['defaultUnitCategoryId'] = ApiClient.convertToType(data['defaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('defaultUnitCategoryName')) {
+        obj['defaultUnitCategoryName'] = ApiClient.convertToType(data['defaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitId')) {
+        obj['userVariableDefaultUnitId'] = ApiClient.convertToType(data['userVariableDefaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitName')) {
+        obj['userVariableDefaultUnitName'] = ApiClient.convertToType(data['userVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitAbbreviatedName')) {
+        obj['userVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['userVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryId')) {
+        obj['userVariableDefaultUnitCategoryId'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('userVariableDefaultUnitCategoryName')) {
+        obj['userVariableDefaultUnitCategoryName'] = ApiClient.convertToType(data['userVariableDefaultUnitCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('inputType')) {
+        obj['inputType'] = ApiClient.convertToType(data['inputType'], 'String');
+      }
     }
     return obj;
   }
@@ -12440,12 +15127,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['subVariables'] = undefined;
   /**
-   * The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the “onset delay”. For example, the “onset delay” between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
+   * The amount of time in seconds that elapses after the predictor/stimulus event before the outcome as perceived by a self-tracker is known as the onset delay. For example, the onset delay between the time a person takes an aspirin (predictor/stimulus event) and the time a person perceives a change in their headache severity (outcome) is approximately 30 minutes.
    * @member {Number} onsetDelay
    */
   exports.prototype['onsetDelay'] = undefined;
   /**
-   * The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable’s value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
+   * The amount of time over which a predictor/stimulus event can exert an observable influence on an outcome variable value. For instance, aspirin (stimulus/predictor) typically decreases headache severity for approximately four hours (duration of action) following the onset delay.
    * @member {Number} durationOfAction
    */
   exports.prototype['durationOfAction'] = undefined;
@@ -12524,6 +15211,226 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {String} ionIcon
    */
   exports.prototype['ionIcon'] = undefined;
+  /**
+   * Example: 2014-10-23 03:41:06
+   * @member {Date} createdAt
+   */
+  exports.prototype['createdAt'] = undefined;
+  /**
+   * Example: 34
+   * @member {Number} unitId
+   */
+  exports.prototype['unitId'] = undefined;
+  /**
+   * Example: 10.764488721491
+   * @member {Number} kurtosis
+   */
+  exports.prototype['kurtosis'] = undefined;
+  /**
+   * Example: 2202.3886251393
+   * @member {Number} mean
+   */
+  exports.prototype['mean'] = undefined;
+  /**
+   * Example: 2255.9284755781
+   * @member {Number} median
+   */
+  exports.prototype['median'] = undefined;
+  /**
+   * Example: 7
+   * @member {Number} mostCommonConnectorId
+   */
+  exports.prototype['mostCommonConnectorId'] = undefined;
+  /**
+   * Example: 2
+   * @member {Number} mostCommonOriginalUnitId
+   */
+  exports.prototype['mostCommonOriginalUnitId'] = undefined;
+  /**
+   * Example: 386
+   * @member {Number} numberOfAggregateCorrelationsAsCause
+   */
+  exports.prototype['numberOfAggregateCorrelationsAsCause'] = undefined;
+  /**
+   * Example: 2074
+   * @member {Number} numberOfAggregateCorrelationsAsEffect
+   */
+  exports.prototype['numberOfAggregateCorrelationsAsEffect'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} numberOfTrackingReminders
+   */
+  exports.prototype['numberOfTrackingReminders'] = undefined;
+  /**
+   * Example: 74
+   * @member {Number} numberOfUniqueValues
+   */
+  exports.prototype['numberOfUniqueValues'] = undefined;
+  /**
+   * Example: 307
+   * @member {Number} numberOfUserVariables
+   */
+  exports.prototype['numberOfUserVariables'] = undefined;
+  /**
+   * Example: 8
+   * @member {Number} secondMostCommonValue
+   */
+  exports.prototype['secondMostCommonValue'] = undefined;
+  /**
+   * Example: 0.2461351905455
+   * @member {Number} skewness
+   */
+  exports.prototype['skewness'] = undefined;
+  /**
+   * Example: 1840.535129803
+   * @member {Number} standardDeviation
+   */
+  exports.prototype['standardDeviation'] = undefined;
+  /**
+   * Example: 7
+   * @member {Number} thirdMostCommonValue
+   */
+  exports.prototype['thirdMostCommonValue'] = undefined;
+  /**
+   * Example: 2017-07-31 03:57:06
+   * @member {Date} updatedAt
+   */
+  exports.prototype['updatedAt'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} variableCategoryId
+   */
+  exports.prototype['variableCategoryId'] = undefined;
+  /**
+   * Example: 115947037.40816
+   * @member {Number} variance
+   */
+  exports.prototype['variance'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} public
+   */
+  exports.prototype['public'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} userVariableVariableCategoryId
+   */
+  exports.prototype['userVariableVariableCategoryId'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/sleep.svg
+   * @member {String} svgUrl
+   */
+  exports.prototype['svgUrl'] = undefined;
+  /**
+   * Example: https://app.quantimo.do/ionic/Modo/www/img/variable_categories/sleep.png
+   * @member {String} pngUrl
+   */
+  exports.prototype['pngUrl'] = undefined;
+  /**
+   * Example: img/variable_categories/sleep.png
+   * @member {String} pngPath
+   */
+  exports.prototype['pngPath'] = undefined;
+  /**
+   * Example: https://maxcdn.icons8.com/Color/PNG/96/Household/sleeping_in_bed-96.png
+   * @member {String} variableCategoryImageUrl
+   */
+  exports.prototype['variableCategoryImageUrl'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} manualTracking
+   */
+  exports.prototype['manualTracking'] = undefined;
+  /**
+   * Example: Sleep
+   * @member {String} userVariableVariableCategoryName
+   */
+  exports.prototype['userVariableVariableCategoryName'] = undefined;
+  /**
+   * Example: Sleep
+   * @member {String} category
+   */
+  exports.prototype['category'] = undefined;
+  /**
+   * Example: 168
+   * @member {Number} durationOfActionInHours
+   */
+  exports.prototype['durationOfActionInHours'] = undefined;
+  /**
+   * Example: Sleep Duration
+   * @member {String} variableName
+   */
+  exports.prototype['variableName'] = undefined;
+  /**
+   * Example: 308554
+   * @member {Number} numberOfMeasurements
+   */
+  exports.prototype['numberOfMeasurements'] = undefined;
+  /**
+   * Example: Hours
+   * @member {String} unitName
+   */
+  exports.prototype['unitName'] = undefined;
+  /**
+   * Example: h
+   * @member {String} unitAbbreviatedName
+   */
+  exports.prototype['unitAbbreviatedName'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} unitCategoryId
+   */
+  exports.prototype['unitCategoryId'] = undefined;
+  /**
+   * Example: Duration
+   * @member {String} unitCategoryName
+   */
+  exports.prototype['unitCategoryName'] = undefined;
+  /**
+   * Example: Hours
+   * @member {String} defaultUnitName
+   */
+  exports.prototype['defaultUnitName'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} defaultUnitCategoryId
+   */
+  exports.prototype['defaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Duration
+   * @member {String} defaultUnitCategoryName
+   */
+  exports.prototype['defaultUnitCategoryName'] = undefined;
+  /**
+   * Example: 34
+   * @member {Number} userVariableDefaultUnitId
+   */
+  exports.prototype['userVariableDefaultUnitId'] = undefined;
+  /**
+   * Example: Hours
+   * @member {String} userVariableDefaultUnitName
+   */
+  exports.prototype['userVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: h
+   * @member {String} userVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['userVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} userVariableDefaultUnitCategoryId
+   */
+  exports.prototype['userVariableDefaultUnitCategoryId'] = undefined;
+  /**
+   * Example: Duration
+   * @member {String} userVariableDefaultUnitCategoryName
+   */
+  exports.prototype['userVariableDefaultUnitCategoryName'] = undefined;
+  /**
+   * Example: slider
+   * @member {String} inputType
+   */
+  exports.prototype['inputType'] = undefined;
 
 
   /**
@@ -12588,7 +15495,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VariableCategory model module.
    * @module model/VariableCategory
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -12673,7 +15580,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Vote model module.
    * @module model/Vote
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
@@ -12825,7 +15732,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VoteDelete model module.
    * @module model/VoteDelete
-   * @version 5.8.730
+   * @version 5.8.731
    */
 
   /**
