@@ -91,3 +91,4 @@ npm-debug.log*
 src/lib/
 www/scripts/
 www/index.html
+www/custom-lib/quantimodo/

@@ -61,7 +61,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
             $state.go($stateParams.nextState, {causeVariableName: variableObject.name});
         } else if ($stateParams.userTaggedVariableObject) {
-            if($stateParams.userTaggedvariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+            if($stateParams.userTaggedVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
                 $state.go($stateParams.nextState, {
                     userTaggedVariableObject: $stateParams.userTaggedVariableObject,
                     fromState: $stateParams.fromState,
@@ -78,7 +78,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 });
             }
         } else if($stateParams.userTagVariableObject) {
-            if($stateParams.userTagvariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+            if($stateParams.userTagVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
                 $state.go($stateParams.nextState, {
                     userTaggedVariableObject: variableObject,
                     fromState: $stateParams.fromState,
