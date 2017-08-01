@@ -6770,8 +6770,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $ionicLoading.show({duration: 10000});
     };
     qmService.showBlackRingLoader = function(){
+        if($rootScope.isIOS){
+            qmService.showBasicLoader();  // Centering is messed up on iOS for some reason
+        } else {
+            $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
+        }
         logDebug(arguments.callee.caller.name + " called showBlackRingLoader in " + $state.current.name, getStackTrace());
-        $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     };
     qmService.hideLoader = function(delay){
         logDebug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
