@@ -956,5 +956,26 @@
       "name": "Volume",
       "standardUnitAbbreviatedName": "L"
     }
+  },
+  {
+    "id": 206,
+    "name": "Ounces",
+    "abbreviatedName": "oz",
+    "categoryName": "Volume",
+    "minimumValue": 0,
+    "maximumValue": null,
+    "categoryId": 4,
+    "conversionSteps": [
+      {
+        "operation": "MULTIPLY",
+        "value": 0.0295735
+      }
+    ],
+    "advanced": 1,
+    "manualTracking": 1,
+    "unitCategory": {
+      "name": "Volume",
+      "standardUnitAbbreviatedName": "L"
+    }
   }
 ]

@@ -466,9 +466,6 @@ function postNotifyCollaborators(appType) {
     return makeApiRequest(options);
 }
 function getRequestOptions(path) {
-    if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET){logError( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
     var options = {
         uri: appHostName + path,
         qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
