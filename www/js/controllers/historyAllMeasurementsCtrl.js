@@ -61,19 +61,18 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 				}, function (error) {qmService.logError(error);});
 			}
 		}
-        qmService.getMeasurements(params, function(error, measurements, response) {
-            if (error) {
-                $scope.state.noHistory = true;
-                qmService.logError('error getting measurements' + JSON.stringify(error));
-                hideLoader();
-            } else {
-                measurements = qmService.addInfoAndImagesToMeasurements(measurements);
-                if(!measurements ||!measurements.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
-                if (concat) {$scope.state.history = $scope.state.history.concat(measurements);} else {$scope.state.history = measurements;}
-                hideLoader();
-                if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
-            }
-        });
+		function successHandler(measurements) {
+            measurements = qmService.addInfoAndImagesToMeasurements(measurements);
+            if(!measurements ||!measurements.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
+            if (concat) {$scope.state.history = $scope.state.history.concat(measurements);} else {$scope.state.history = measurements;}
+            hideLoader();
+            if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
+        }
+        function errorHandler(error) {
+            $scope.state.noHistory = true;
+            hideLoader();
+        }
+        qmService.getMeasurements(params, successHandler, errorHandler);
 	};
 	function setupVariableCategoryActionSheet() {
 		$rootScope.showActionSheetMenu = function() {
