@@ -19,7 +19,7 @@ npm install -g gulp cordova@7.0.0 ionic@2.2.3 bower
 
 echo "QUANTIMODO_CLIENT_ID is ${QUANTIMODO_CLIENT_ID}"
 
-if [ -z ${BUDDYBUILD_SCHEME} ];
+if [ -z "${BUDDYBUILD_SCHEME}" ];
     then
         echo "NOT BUILDING IOS APP because BUDDYBUILD_SCHEME env is not set ${BUDDYBUILD_SCHEME}"
         echo "BUILDING ANDROID APP because BUDDYBUILD_SCHEME is not set ${BUDDYBUILD_SCHEME}"
