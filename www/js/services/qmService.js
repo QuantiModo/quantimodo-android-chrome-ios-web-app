@@ -324,7 +324,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         }
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
-        var errorName = status + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
+        var pathWithoutQuery = pathWithQuery.split("?")[0];
+        var errorName = status + ' from ' + request.method + ' ' + pathWithoutQuery;
         var message = status + ' from ' + request.method + ' ' + request.url;
         var metaData = {groupingHash: errorName, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
             requestParams: getAllQueryParamsFromUrlString(request.url)};
@@ -332,7 +333,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var doNotShowOfflineError = false;
             if(options && options.doNotShowOfflineError){doNotShowOfflineError = true;}
             if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
-                logError("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
+                logError("Showing offline indicator because no data was returned from this request: "  + pathWithoutQuery, options.stackTrace, request);
                 $rootScope.offlineConnectionErrorShowing = true;
                 if($rootScope.isIOS){
                     $ionicPopup.show({
