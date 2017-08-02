@@ -1814,17 +1814,6 @@ gulp.task('ionicResourcesIos', [], function (callback) {
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
     generateConfigXmlFromTemplate(callback);
 });
-gulp.task('prepareIosAppIfEnvIsSet', function (callback) {
-    if (!process.env.PREPARE_IOS_APP) {
-        logInfo('process.env.PREPARE_IOS_APP not true, so not preparing iOS app');
-        callback();
-        return;
-    }
-    logInfo('process.env.PREPARE_IOS_APP is true, so going to prepareIosApp');
-    runSequence(
-        'prepareIosApp',
-        callback);
-});
 gulp.task('prepareIosApp', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     runSequence(
