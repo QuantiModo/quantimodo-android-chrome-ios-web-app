@@ -326,7 +326,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
         var pathWithoutQuery = pathWithQuery.split("?")[0];
         var errorName = status + ' from ' + request.method + ' ' + pathWithoutQuery;
-        var message = status + ' from ' + request.method + ' ' + request.url;
         var metaData = {groupingHash: errorName, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
             requestParams: getAllQueryParamsFromUrlString(request.url)};
         if(!data){
