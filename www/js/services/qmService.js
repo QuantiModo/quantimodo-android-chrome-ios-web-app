@@ -160,7 +160,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined"),
                 "cordova.plugins.notification": (typeof cordova !== "undefined" && typeof cordova.plugins.notification === "undefined"),
                 "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
-                "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus),
+                "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus) ? true : false,
                 "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
                 "ionic": (typeof ionic !== "undefined"),
                 "ionicDeploy": (typeof $ionicDeploy !== "undefined"),
