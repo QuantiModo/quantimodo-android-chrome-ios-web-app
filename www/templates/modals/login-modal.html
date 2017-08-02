@@ -10,10 +10,10 @@
         <md-dialog-content layout="row">
             <div layout-padding> <img src="https://s22.postimg.org/pshxr4mnl/login.png" /> </div>
             <div class="md-dialog-content">
-                <md-input-container class="md-block"> <label>User Name</label> <input type="text" ng-model="user.name" autocomplete="off"> </md-input-container>
-                <md-input-container class="md-block"> <label>User Password</label> <input type="password" ng-model="user.password" autocomplete="nope"> </md-input-container>
-                <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="answer('LogIn')"> LogIn </md-button>
-                <md-button ng-click="answer('Cancel')"> Cancel </md-button>
+                <md-input-container class="md-block"> <label>User Name</label> <input type="text" ng-model="credentials.username" autocomplete="off"> </md-input-container>
+                <md-input-container class="md-block"> <label>User Password</label> <input type="password" ng-model="credentials.password" autocomplete="nope"> </md-input-container>
+                <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="answer(credentials)"> LogIn </md-button>
+                <md-button ng-click="close()"> Cancel </md-button>
             </div>
         </md-dialog-content>
     </form>
