@@ -2598,11 +2598,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 deferred.resolve(response);
             }, function(error) { logError(error); });
         } else {
-            qmService.getTrackingRemindersFromApi({force: force}, function(remindersResponse){
-                if(remindersResponse && remindersResponse.data) {
-                    qmService.setLocalStorageItem('trackingReminders', JSON.stringify(remindersResponse.data));
-                    deferred.resolve(remindersResponse.data);
-                } else { deferred.reject("error in getTrackingRemindersFromApi"); }
+            qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
+                qmService.setLocalStorageItem('trackingReminders', JSON.stringify(trackingReminders));
+                deferred.resolve(trackingReminders);
             }, function(error){
                 logError(error);
                 deferred.reject(error);
