@@ -82,9 +82,12 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Treatments') > -1 || $stateParams.variableCategoryName === 'Anything');
 		$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
 	}
+	function hideLoader() {
+        $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
+        qmService.hideLoader();
+    }
 	function addRemindersToScope(allTrackingReminderTypes) {
-		$scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
-		qmService.hideLoader();
+		hideLoader();
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
 			$scope.state.showNoRemindersCard = true;
 			return;
@@ -97,7 +100,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	}
 	$scope.refreshReminders = function () {
 		qmService.showInfoToast('Syncing...');
-		qmService.syncTrackingReminders(true).then(function(){getTrackingReminders();});
+		qmService.syncTrackingReminders(true).then(function(){
+            hideLoader();
+			getTrackingReminders();
+		});
 	};
 	var getTrackingReminders = function(){
 		qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {addRemindersToScope(allTrackingReminderTypes);});
