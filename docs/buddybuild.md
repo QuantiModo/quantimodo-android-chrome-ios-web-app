@@ -12,3 +12,8 @@
 - To release follow the rest of the setup steps in the [BuddyBuild Docs](http://docs.buddybuild.com/docs)
 - If you want to release but don't want to spend hundreds on an iOS and Android development certificate or deal with the setup headaches, email mike@quantimo.do and we can use my certificates
 
+### Working iOS Build Configuration
+
+The Google and InAppBrowser plugins don't seem to work on XCode versions > 7.3.1
+
+![alt text](https://image.prntscr.com/image/3U-Zfi1ZSTiOJlqwgjMZlg.png "Working iOS Build Configuration")
