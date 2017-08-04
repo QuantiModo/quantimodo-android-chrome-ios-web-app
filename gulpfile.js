@@ -1841,6 +1841,12 @@ gulp.task('removeAndroidManifestFromChromeExtension', [], function () {
 gulp.task('zipChromeExtension', [], function () {
     return zipAFolder(chromeExtensionBuildPath, getChromeExtensionZipFilename(), buildPath);
 });
+gulp.task('zipBuild', [], function () {
+    return zipAFolder(process.env.BUDDYBUILD_WORKSPACE, "buddybuild.zip", './');
+});
+gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
+    return uploadBuildToS3("buddybuild.zip");
+});
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     logInfo('gulp configureAppAfterNpmInstall');
@@ -1881,8 +1887,8 @@ gulp.task('configureApp', [], function (callback) {
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
-        logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is "
-            + appSettings.appStatus.buildEnabled.chromeExtension + ".  You can enabled it at " + getAppDesignerUrl());
+        logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
+            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can enabled it at " + getAppDesignerUrl());
         return;
     }
     runSequence(
@@ -2065,7 +2071,7 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         callback);
 });
 gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
-    if(!process.env.ANDROID_HOME){throw "ANDROID_HOME env is not set!"}
+    if(!process.env.ANDROID_HOME){throw "ANDROID_HOME env is not set!";}
     console.log("ANDROID_HOME is " + process.env.ANDROID_HOME);
     platformCurrentlyBuildingFor = 'android';
     runSequence(
