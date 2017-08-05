@@ -554,7 +554,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 logError(error);
                 if(errorHandler){errorHandler(error);}
             } else {
-                successHandler(error, data, response);
+                successHandler(data, response);
             }
         }
         var params = {id: variableId};
@@ -623,7 +623,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 logError(error);
                 if(errorHandler){errorHandler(error);}
             } else {
-                successHandler(error, data, response);
+                successHandler(data, response);
             }
         }
         apiInstance.getUser(params, callback);
@@ -644,7 +644,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 logError(error);
                 if(errorHandler){errorHandler(error);}
             } else {
-                successHandler(error, data, response);
+                successHandler(data, response);
             }
         }
         apiInstance.getTrackingReminderNotifications(params, callback);
@@ -669,7 +669,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 logError(error);
                 if(errorHandler){errorHandler(error);}
             } else {
-                successHandler(error, data, response);
+                successHandler(data, response);
             }
         }
         apiInstance.getTrackingReminders(params, callback);
@@ -683,7 +683,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 logError(error);
                 if(errorHandler){errorHandler(error);}
             } else {
-                successHandler(error, data, response);
+                successHandler(data, response);
             }
         }
         apiInstance.getStudy(params, callback);
@@ -786,7 +786,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 logError(error);
                 if(errorHandler){errorHandler(error);}
             } else {
-                successHandler(error, data, response);
+                successHandler(data, response);
             }
         }
         apiInstance.getUserTags(params, callback);
