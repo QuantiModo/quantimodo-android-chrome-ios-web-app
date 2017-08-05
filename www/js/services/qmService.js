@@ -547,7 +547,19 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.get('api/v3/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
     };
     qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
-        qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.VariablesApi();
+        function callback(error, data, response) {
+            if (error) {
+                logError(error);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(error, data, response);
+            }
+        }
+        var params = {id: variableId};
+        apiInstance.getUserVariables(params, callback);
+        //qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
     };
     qmService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
         var options = {};
@@ -604,7 +616,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var options = {};
         options.minimumSecondsBetweenRequests = 3;
         options.doNotSendToLogin = true;
-        qmService.get('api/user/me', [], params, successHandler, errorHandler, options);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.UserApi();
+        function callback(error, data, response) {
+            if (error) {
+                logError(error);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(error, data, response);
+            }
+        }
+        apiInstance.getUser(params, callback);
+        //qmService.get('api/user/me', [], params, successHandler, errorHandler, options);
     };
     qmService.getUserEmailPreferences = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
@@ -614,7 +637,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
     };
     qmService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.RemindersApi();
+        function callback(error, data, response) {
+            if (error) {
+                logError(error);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(error, data, response);
+            }
+        }
+        apiInstance.getTrackingReminderNotifications(params, callback);
+        //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
     };
     qmService.postTrackingReminderNotificationsToApi = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
         if(!trackingReminderNotificationsArray){
@@ -628,10 +662,32 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.post('api/v3/trackingReminderNotifications', [], trackingReminderNotificationsArray, successHandler, errorHandler, options);
     };
     qmService.getTrackingRemindersFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v3/trackingReminders', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.RemindersApi();
+        function callback(error, data, response) {
+            if (error) {
+                logError(error);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(error, data, response);
+            }
+        }
+        apiInstance.getTrackingReminders(params, callback);
+        //qmService.get('api/v3/trackingReminders', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
     };
     qmService.getStudy = function(params, successHandler, errorHandler){
-        qmService.get('api/v4/study', [], params, successHandler, errorHandler);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.AnalyticsApi();
+        function callback(error, data, response) {
+            if (error) {
+                logError(error);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(error, data, response);
+            }
+        }
+        apiInstance.getStudy(params, callback);
+        //qmService.get('api/v4/study', [], params, successHandler, errorHandler);
     };
     qmService.postUserSettings = function(params, successHandler, errorHandler) {
         qmService.post('api/v3/userSettings', [], params, successHandler, errorHandler);
@@ -723,7 +779,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.getUserTags = function(params, successHandler, errorHandler){
-        qmService.get('api/v3/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.VariablesApi();
+        function callback(error, data, response) {
+            if (error) {
+                logError(error);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(error, data, response);
+            }
+        }
+        apiInstance.getUserTags(params, callback);
+        //qmService.get('api/v3/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
     };
     qmService.updateUserTimeZoneIfNecessary = function () {
         var d = new Date();
