@@ -526,6 +526,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.post('api/v3/votes/delete', ['causeVariableName', 'effectVariableName', 'correlation'], correlationSet, successHandler, errorHandler);
     };
     qmService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
+        if(query){params.name = "%" + query + "%";}
         configureQmApiClient();
         var apiInstance = new Quantimodo.VariablesApi();
         function callback(error, data, response) {
