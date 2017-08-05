@@ -391,8 +391,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         dataCache.destroy();
     }
     qmService.getMeasurementsFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v3/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
-            params, successHandler, errorHandler);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.MeasurementsApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
+        apiInstance.getMeasurements(params, callback);
+        //qmService.get('api/v3/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
     };
     qmService.getMeasurementsDeferred = function(params, refresh){
         var deferred = $q.defer();
@@ -435,8 +445,19 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.getMeasurementsDailyFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v3/measurements/daily',
-            ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.MeasurementsApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
+        params.groupingWidth = 86400;
+        apiInstance.getMeasurements(params, callback);
+        //qmService.get('api/v3/measurements/daily', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
     };
     qmService.getMeasurementsDailyFromApiDeferred = function(params, successHandler, errorHandler){
         var deferred = $q.defer();
@@ -461,17 +482,39 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.get('api/v2/auth/logout', [], {}, successHandler, errorHandler);
     };
     qmService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.AnalyticsApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
+        apiInstance.getAggregatedCorrelations(params, callback);
         var options = {};
-        qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
+        //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
     qmService.getNotesFromApi = function(params, successHandler, errorHandler){
         var options = {};
         qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
     };
     qmService.getUserCorrelationsFromApi = function (params, successHandler, errorHandler) {
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.AnalyticsApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
+        apiInstance.getUserCorrelations(params, callback);
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
-        qmService.get('api/v3/correlations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler);
+        //qmService.get('api/v3/correlations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler);
     };
     qmService.postCorrelationToApi = function(correlationSet, successHandler ,errorHandler){
         qmService.post('api/v3/correlations', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
@@ -483,9 +526,20 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.post('api/v3/votes/delete', ['causeVariableName', 'effectVariableName', 'correlation'], correlationSet, successHandler, errorHandler);
     };
     qmService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.VariablesApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
+        apiInstance.getUserVariables(params, callback);
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
-        qmService.get('api/v3/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
+        //qmService.get('api/v3/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
     };
     qmService.getVariablesByNameFromApi = function(variableName, params, successHandler, errorHandler){
         var options = {};
@@ -577,7 +631,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.get('api/v3/trackingReminders', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
     };
     qmService.getStudy = function(params, successHandler, errorHandler){
-        qmService.get('api/v3/study', [], params, successHandler, errorHandler);
+        qmService.get('api/v4/study', [], params, successHandler, errorHandler);
     };
     qmService.postUserSettings = function(params, successHandler, errorHandler) {
         qmService.post('api/v3/userSettings', [], params, successHandler, errorHandler);
@@ -863,19 +917,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         quantimodo_oauth2.accessToken = getAccessToken();
         return qmApiClient;
     }
-    qmService.getMeasurements = function(params, successHandler, errorHandler){
-        configureQmApiClient();
-        var apiInstance = new Quantimodo.MeasurementsApi();
-        function callback(error, measurements, response) {
-            if (error) {
-                logError(error);
-                if(errorHandler){errorHandler(error);}
-            } else {
-                successHandler(error, measurements, response);
-            }
-        }
-        apiInstance.getMeasurements(params, callback);
-    };
     function qmApiGeneralErrorHandler(error, data, response) {
         logError(error);
     }
@@ -1345,6 +1386,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var study;
             if(response.userStudy){ study = response.userStudy; }
             if(response.publicStudy){ study = response.publicStudy; }
+            if(!study){study = response;}
             if(study.charts){
                 study.charts = Object.keys(study.charts).map(function (key) { return study.charts[key]; });
                 for(var i=0; i < study.charts.length; i++){
@@ -2485,9 +2527,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             logError(error);
             deferred.reject(error);
         };
-        qmService.get('api/v3/trackingReminderNotifications',
-            ['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
-            params, successHandler, errorHandler);
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.RemindersApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
+        apiInstance.getTrackingReminderNotifications(params, callback);
+        //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'], params, successHandler, errorHandler);
         return deferred.promise;
     };
     qmService.getTrackingReminderNotificationsDeferredFromLocalStorage = function(category, today){
