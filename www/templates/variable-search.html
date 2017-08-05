@@ -32,18 +32,16 @@
                 <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() | unique:'name' track by $index">
                     <div>
                         <p style="font-size:18px; white-space: pre;"><i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i> &nbsp; {{item.name}}</p>
-<!--                        <p>{{item.latestMeasurementTime | fromNow}}</p>-->
+                        <small ng-if="item.latestMeasurementTime">Recorded {{item.latestMeasurementTime | fromNow}} - {{item.numberOfRawMeasurements}} measurements</small>
                     </div>
                 </ion-item>
             </ion-list>
-
             <ion-list ng-if="state.showAddVariableButton && !state.searching">
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
                     {{state.addNewVariableButtonText}}
                 </ion-item>
             </ion-list>
         </div>
-
         <div class="list card"  ng-if="state.noVariablesFoundCard.show && !state.searching  && !$scope.state.variableSearchResults">
             <div style="padding-bottom:10px;">
                 <div class="row">

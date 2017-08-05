@@ -44,6 +44,7 @@ var csso = require('gulp-csso');
 
 var bugsnag = require("bugsnag");
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
+bugsnag.releaseStage = getCurrentServerContext();
 process.on('unhandledRejection', function (err, promise) {
     console.error("Unhandled rejection: " + (err && err.stack || err));
     bugsnag.notify(err);
@@ -56,8 +57,8 @@ bugsnag.onBeforeNotify(function (notification) {
     metaData.build_link = getBuildLink();
 });
 
-var QuantimodoApi = require('quantimodo-api');
-var defaultClient = QuantimodoApi.ApiClient.instance;
+var Quantimodo = require('quantimodo');
+var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications['quantimodo_oauth2'];
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 
@@ -70,9 +71,9 @@ var buildDebug = isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD);
 logInfo("Environmental Variables:", process.env);
 function getCurrentServerContext() {
     var currentServerContext = "local";
-    if(process.env.CIRCLE_BRANCH){currentServerContext = "circleci";}
-    if(process.env.BUDDYBUILD_BRANCH){currentServerContext = "buddybuild";}
-    return currentServerContext;
+    if(process.env.CIRCLE_BRANCH){return "circleci";}
+    if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
+    return process.env.HOSTNAME;
 }
 function getBuildLink() {
     if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
@@ -375,8 +376,8 @@ function fastlaneSupply(track, callback) {
     var apk_paths;
     logInfo("If you have problems uploading to Play, promote any alpha releases to beta, disable the alpha channel, and set xwalkMultipleApk to false");
     /** @namespace appSettings.additionalSettings */
-    /** @namespace appSettings.additionalSettings.buildSettings.xwalkMultipleApk */
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk) {
+    /** @namespace buildSettings.xwalkMultipleApk */
+    if(buildSettings.xwalkMultipleApk) {
         apk_paths = pathToReleaseArmv7Apk + ',' + pathToReleasex86Apk;
     } else {
         apk_paths = pathToCombinedReleaseApk;
@@ -465,9 +466,6 @@ function postNotifyCollaborators(appType) {
     return makeApiRequest(options);
 }
 function getRequestOptions(path) {
-    if(!process.env.QUANTIMODO_CLIENT_ID){process.env.QUANTIMODO_CLIENT_ID = "quantimodo";}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET  && process.env.ENCRYPTION_SECRET){process.env.QUANTIMODO_CLIENT_SECRET = process.env.ENCRYPTION_SECRET;}
-    if(!process.env.QUANTIMODO_CLIENT_SECRET){logError( "Please provide clientSecret parameter or set QUANTIMODO_CLIENT_SECRET env");}
     var options = {
         uri: appHostName + path,
         qs: {clientId: process.env.QUANTIMODO_CLIENT_ID, clientSecret: process.env.QUANTIMODO_CLIENT_SECRET},
@@ -557,7 +555,7 @@ function addAppSettingsToParsedConfigXml(parsedXmlFile) {
     parsedXmlFile.widget.description[0] = appSettings.appDescription;
     parsedXmlFile.widget.$.id = appSettings.additionalSettings.appIds.appIdentifier;
     parsedXmlFile.widget.preference.push({$: {name: "xwalkMultipleApk",
-        value: (appSettings.additionalSettings.buildSettings.xwalkMultipleApk) ? true : false}});
+        value: (buildSettings.xwalkMultipleApk) ? true : false}});
     return parsedXmlFile;
 }
 function generateConfigXmlFromTemplate(callback) {
@@ -756,9 +754,9 @@ gulp.task('generatePlayPublicLicenseKeyManifestJson', ['getAppConfigs'], functio
         return;
     }
     var manifestJson = {
-        'play_store_key': appSettings.additionalSettings.buildSettings.playPublicLicenseKey
+        'play_store_key': appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey
     };
-    /** @namespace appSettings.additionalSettings.buildSettings.playPublicLicenseKey */
+    /** @namespace buildSettings.playPublicLicenseKey */
     return writeToFile('./www/manifest.json', manifestJson);
 });
 gulp.task('downloadSplashScreen', [], function(){
@@ -783,8 +781,11 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     function successHandler(response) {
         appSettings = response.appSettings;
         appSettings.buildServer = getCurrentServerContext();
+        appSettings.buildLink = getBuildLink();
         appSettings.versionNumber = versionNumbers.ionicApp;
         appSettings.debugMode = isTruthy(process.env.APP_DEBUG);
+        buildSettings = JSON.parse(JSON.stringify(appSettings.additionalSettings.buildSettings));
+        delete appSettings.additionalSettings.buildSettings;
         /** @namespace appSettings.appStatus.buildEnabled.androidArmv7Release */
         /** @namespace appSettings.appStatus.buildEnabled.androidX86Release */
         if(appSettings.appStatus.buildEnabled.androidX86Release || appSettings.appStatus.buildEnabled.androidArmv7Release){
@@ -823,26 +824,54 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
     }
     return makeApiRequest(options, successHandler);
 });
+var buildSettings;
 gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
-    /** @namespace appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile */
-    if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
+    /** @namespace buildSettings.androidReleaseKeystoreFile */
+    if(!buildSettings.androidReleaseKeystoreFile){
         logError( "No Android Keystore provided.  Using QuantiModo one.  If you have your own, please upload it at " + getAppDesignerUrl());
         return;
     }
-    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
+    /** @namespace buildSettings.androidReleaseKeystorePassword */
+    if(!buildSettings.androidReleaseKeystorePassword){
+        logError( "No Android keystore storePassword provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    /** @namespace buildSettings.androidReleaseKeyAlias */
+    if(!buildSettings.androidReleaseKeyAlias){
+        logError( "No Android keystore alias provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    /** @namespace buildSettings.androidReleaseKeyPassword */
+    if(!buildSettings.androidReleaseKeyPassword){
+        logError( "No Android keystore password provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        return;
+    }
+    var buildJson = {
+        "android": {
+            "release": {
+                "keystore":"quantimodo.keystore",
+                "storePassword": buildSettings.androidReleaseKeystorePassword,
+                "alias": buildSettings.androidReleaseKeyAlias,
+                "password": buildSettings.androidReleaseKeyPassword,
+                "keystoreType":""
+            }
+        }
+    };
+    writeToFile('build.json', prettyJSONStringify(buildJson));
+    return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "quantimodo.keystore");
 });
 gulp.task('downloadAndroidDebugKeystore', ['getAppConfigs'], function () {
-    if(!appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile){
+    if(!buildSettings.androidReleaseKeystoreFile){
         throw "Please upload your Android release keystore at " + getAppEditUrl();
     }
-    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidReleaseKeystoreFile, "debug.keystore");
+    return downloadEncryptedFile(buildSettings.androidReleaseKeystoreFile, "debug.keystore");
 });
 gulp.task('getAndroidManifest', ['getAppConfigs'], function () {
-    /** @namespace appSettings.additionalSettings.buildSettings.androidMaifestJsonFile */
-    if(!appSettings.additionalSettings.buildSettings.androidMaifestJsonFile){
+    /** @namespace buildSettings.androidMaifestJsonFile */
+    if(!buildSettings.androidMaifestJsonFile){
         logError("Please add your Android manifest.json at " + getAppEditUrl() + " to enable Google Play Store subscriptions");
     }
-    return downloadEncryptedFile(appSettings.additionalSettings.buildSettings.androidMaifestJsonFile, "www/manifest.json");
+    return downloadEncryptedFile(buildSettings.androidMaifestJsonFile, "www/manifest.json");
 });
 gulp.task('verify-and-post-notify-collaborators-android', ['getAppConfigs'], function (callback) {
     runSequence(
@@ -865,12 +894,12 @@ gulp.task('verifyExistenceOfDefaultConfig', function () {
     return verifyExistenceOfFile(defaultAppConfigPath);
 });
 gulp.task('verifyExistenceOfAndroidX86ReleaseBuild', function () {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return verifyExistenceOfFile(pathToReleasex86Apk);
     }
 });
 gulp.task('verifyExistenceOfAndroidArmV7ReleaseBuild', function () {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return verifyExistenceOfFile(pathToReleaseArmv7Apk);
     }
 });
@@ -894,17 +923,17 @@ gulp.task('getSHA1FromAPK', function () {
     });
 });
 gulp.task('outputX86ApkVersionCode', function () {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return outputVersionCodeForApk(pathToReleasex86Apk);
     }
 });
 gulp.task('outputArmv7ApkVersionCode', function () {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return outputVersionCodeForApk(pathToReleaseArmv7Apk);
     }
 });
 gulp.task('outputCombinedApkVersionCode', function () {
-    if(!appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(!buildSettings.xwalkMultipleApk){
         return outputVersionCodeForApk(pathToReleaseArmv7Apk);
     }
 });
@@ -1056,17 +1085,17 @@ gulp.task('getAccessTokenFromGoogle', ['getChromeAuthorizationCode'], function (
 });
 gulp.task("upload-chrome-extension-to-s3", function() {return uploadBuildToS3(getPathToChromeExtensionZip());});
 gulp.task("upload-x86-release-apk-to-s3", function() {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(pathToReleasex86Apk);
     }
 });
 gulp.task("upload-armv7-release-apk-to-s3", function() {
-    if(appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(pathToReleaseArmv7Apk);
     }
 });
 gulp.task("upload-combined-release-apk-to-s3", function() {
-    if(!appSettings.additionalSettings.buildSettings.xwalkMultipleApk){
+    if(!buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(pathToCombinedReleaseApk);
     }
 });
@@ -1785,17 +1814,6 @@ gulp.task('ionicResourcesIos', [], function (callback) {
 gulp.task('generateConfigXmlFromTemplate', ['setClientId', 'getAppConfigs'], function (callback) {
     generateConfigXmlFromTemplate(callback);
 });
-gulp.task('prepareIosAppIfEnvIsSet', function (callback) {
-    if (!process.env.PREPARE_IOS_APP) {
-        logInfo('process.env.PREPARE_IOS_APP not true, so not preparing iOS app');
-        callback();
-        return;
-    }
-    logInfo('process.env.PREPARE_IOS_APP is true, so going to prepareIosApp');
-    runSequence(
-        'prepareIosApp',
-        callback);
-});
 gulp.task('prepareIosApp', function (callback) {
     platformCurrentlyBuildingFor = 'ios';
     runSequence(
@@ -1822,6 +1840,12 @@ gulp.task('removeAndroidManifestFromChromeExtension', [], function () {
 });
 gulp.task('zipChromeExtension', [], function () {
     return zipAFolder(chromeExtensionBuildPath, getChromeExtensionZipFilename(), buildPath);
+});
+gulp.task('zipBuild', [], function () {
+    return zipAFolder(process.env.BUDDYBUILD_WORKSPACE, "buddybuild.zip", './');
+});
+gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
+    return uploadBuildToS3("buddybuild.zip");
 });
 // Need configureAppAfterNpmInstall or prepareIosApp results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
@@ -1863,8 +1887,8 @@ gulp.task('configureApp', [], function (callback) {
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
-        logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is "
-            + appSettings.appStatus.buildEnabled.chromeExtension + ".  You can enabled it at " + getAppDesignerUrl());
+        logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
+            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can enabled it at " + getAppDesignerUrl());
         return;
     }
     runSequence(
@@ -2047,7 +2071,7 @@ gulp.task('prepareRepositoryForAndroid', function (callback) {
         callback);
 });
 gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
-    if(!process.env.ANDROID_HOME){throw "ANDROID_HOME env is not set!"}
+    if(!process.env.ANDROID_HOME){throw "ANDROID_HOME env is not set!";}
     console.log("ANDROID_HOME is " + process.env.ANDROID_HOME);
     platformCurrentlyBuildingFor = 'android';
     runSequence(

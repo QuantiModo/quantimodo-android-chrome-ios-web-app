@@ -12,7 +12,7 @@
       https://widget.intercom.io/
       https://js.intercomcdn.com
       'unsafe-inline' 'unsafe-eval'"> -->
-    <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com/;">
+    <meta http-equiv="Content-Security-Policy" content="frame-src * gap://ready; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com/;">
     <title></title>
 
     <link href="css/app.min.css" rel="stylesheet">
@@ -91,6 +91,7 @@
   </head>
   <body ng-app="starter">
     <ion-nav-view></ion-nav-view>
+    <script src="custom-lib/quantimodo-web.js"></script>
     <!-- build:js scripts/combined-body-libraries.js -->
     <script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
     <!-- google maps -->

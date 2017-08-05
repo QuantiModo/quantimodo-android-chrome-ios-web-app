@@ -11,7 +11,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }
         var $cordovaFacebook = {};
         var disableFacebookLogin = true;  // Causing failures on IPv6 networks according to iTunes reviewer
-        if (!disableFacebookLogin && $rootScope.isIOS && config.appSettings.appDisplayName === "MoodiModo") {
+        if (!disableFacebookLogin && $rootScope.isIOS && $rootScope.appSettings.appDisplayName === "MoodiModo") {
             console.debug('Injecting $cordovaFacebook');
             $cordovaFacebook = $injector.get('$cordovaFacebook');
             $scope.showFacebookLoginButton = true;
@@ -80,7 +80,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug("beforeEnter in state " + $state.current.name);
         leaveIfLoggedIn();
-        if(config.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
+        if($rootScope.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
         if(qmService.getUrlParameter('loggingIn') || qmService.getAccessTokenFromUrl()){
             loginTimeout();
         } else {
@@ -141,9 +141,13 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         }
     };
     $scope.login = function(register, event) {
-        if(window.developmentMode){
+        if(window.developmentMode && window.devCredentials){
             //showLoginModal(event);
             qmService.refreshUser();
+            return;
+        }
+        if(window.location.href.indexOf('localhost') !== -1){
+            showLoginModal(event);
             return;
         }
         if(window && window.plugins && window.plugins.googleplus){googleLogout();}
@@ -300,9 +304,17 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             fullscreen: $scope.customFullscreen
         });
     };
-    function LoginModalController($scope, $mdDialog) {
+    function LoginModalController($scope, $mdDialog, qmService) {
+        $scope.credentials = {};
         $scope.close = function () { $mdDialog.cancel(); };
         $scope.hide = function () { $mdDialog.hide(); };
-        $scope.answer = function (answer) { $mdDialog.hide(answer); };
+        $scope.answer = function (credentials) {
+            window.devCredentials = credentials;
+            qmService.showBasicLoader();
+            qmService.refreshUser().then(function () {
+                $mdDialog.hide();
+                $state.go(config.appSettings.defaultState);
+            });
+        };
     }
 });

@@ -12,9 +12,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     // GET method with the added token
     function addGlobalUrlParams(urlParams) {
-        urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appDisplayName));
-        if(config.appSettings.versionNumber){
-            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent(config.appSettings.versionNumber));
+        urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent($rootScope.appSettings.appDisplayName));
+        if($rootScope.appSettings.versionNumber){
+            urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appSettings.versionNumber));
         } else {
             logDebug("Version number not specified!", "Version number not specified on config.appSettings");
         }
@@ -98,7 +98,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return object;
     }
-    function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', config.appSettings.appDisplayName));}
+    function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', $rootScope.appSettings.appDisplayName));}
     function addStackTraceToMessage(message, stackTrace) {
         if(!stackTrace){stackTrace = getStackTrace();}
         return message + ".  StackTrace: " + stackTrace;
@@ -117,6 +117,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     qmService.logDebug = function(message, stackTrace) {
         logDebug(message, stackTrace);
+    };
+    function logInfo(message, stackTrace) {
+        message = addStateNameToMessage(message);
+        if(window.debugMode){
+            if(!stackTrace){stackTrace = getStackTrace();}
+            message = addStackTraceToMessage(message, stackTrace);
+        }
+        console.info(message);
+    }
+    qmService.logInfo = function(message, stackTrace) {
+        logInfo(message, stackTrace);
     };
     function obfuscateSecrets(object){
         if(typeof object !== 'object'){return object;}
@@ -149,7 +160,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined"),
                 "cordova.plugins.notification": (typeof cordova !== "undefined" && typeof cordova.plugins.notification === "undefined"),
                 "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
-                "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus),
+                "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus) ? true : false,
                 "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
                 "ionic": (typeof ionic !== "undefined"),
                 "ionicDeploy": (typeof $ionicDeploy !== "undefined"),
@@ -171,6 +182,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             "deviceTokenToSync": localStorage.getItem('deviceTokenToSync')
         };
         metaData.build_server = config.appSettings.buildServer;
+        metaData.build_link = config.appSettings.buildLink;
         metaData.test_url = getTestUrl();
         //metaData.appSettings = config.appSettings;  // Request Entity Too Large
         if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
@@ -291,7 +303,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }, requestSpecificErrorHandler);
     };
     function generalApiErrorHandler(data, status, headers, request, options){
-        logError("error response from " + request.url);
         if(status === 302){
             logDebug('Got 302 response from ' + JSON.stringify(request), options.stackTrace);
             return;
@@ -313,16 +324,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         }
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
-        var name = status + ' from ' + request.method + ' ' + pathWithQuery.split("?")[0];
-        var message = status + ' from ' + request.method + ' ' + request.url;
-        var metaData = {groupingHash: name, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
+        var pathWithoutQuery = pathWithQuery.split("?")[0];
+        var errorName = status + ' from ' + request.method + ' ' + pathWithoutQuery;
+        var metaData = {groupingHash: errorName, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
             requestParams: getAllQueryParamsFromUrlString(request.url)};
-        logError(message);
         if(!data){
             var doNotShowOfflineError = false;
             if(options && options.doNotShowOfflineError){doNotShowOfflineError = true;}
             if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
-                logError("Showing offline indicator because no data was returned from this request: "  + JSON.stringify(request));
+                logError("Showing offline indicator because no data was returned from this request: "  + pathWithoutQuery, options.stackTrace, request);
                 $rootScope.offlineConnectionErrorShowing = true;
                 if($rootScope.isIOS){
                     $ionicPopup.show({
@@ -341,7 +351,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             metaData.groupingHash = JSON.stringify(data.error);
             if(data.error.message){metaData.groupingHash = JSON.stringify(data.error.message);}
         }
-        logError(status + " response from " + request.url,  options.stackTrace, metaData);
+        logError(errorName, options.stackTrace, metaData);
     }
     // Handler when request is failed
     var onRequestFailed = function(error){
@@ -381,7 +391,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         dataCache.destroy();
     }
     qmService.getMeasurementsFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v1/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
+        qmService.get('api/v3/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
             params, successHandler, errorHandler);
     };
     qmService.getMeasurementsDeferred = function(params, refresh){
@@ -425,7 +435,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.getMeasurementsDailyFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v1/measurements/daily',
+        qmService.get('api/v3/measurements/daily',
             ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
     };
     qmService.getMeasurementsDailyFromApiDeferred = function(params, successHandler, errorHandler){
@@ -434,14 +444,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
-        qmService.post('api/v1/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
+        qmService.post('api/v3/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
     };
     qmService.postMeasurementsExport = function(type, successHandler, errorHandler) {
         qmService.post('api/v2/measurements/request_' + type, [], [], successHandler, errorHandler);
     };
     // post new Measurements for user
     qmService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
-        qmService.post('api/v1/measurements',
+        qmService.post('api/v3/measurements',
             //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
             [], measurementSet, successHandler, errorHandler);
     };
@@ -452,11 +462,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getAggregatedCorrelationsFromApi = function(params, successHandler, errorHandler){
         var options = {};
-        qmService.get('api/v1/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
+        qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
     qmService.getNotesFromApi = function(params, successHandler, errorHandler){
         var options = {};
-        qmService.get('api/v1/notes', ['variableName'], params, successHandler, errorHandler, options);
+        qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
     };
     qmService.getUserCorrelationsFromApi = function (params, successHandler, errorHandler) {
         var options = {};
@@ -464,26 +474,26 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.get('api/v3/correlations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler);
     };
     qmService.postCorrelationToApi = function(correlationSet, successHandler ,errorHandler){
-        qmService.post('api/v1/correlations', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
+        qmService.post('api/v3/correlations', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
     };
     qmService.postVoteToApi = function(correlationSet, successHandler ,errorHandler){
-        qmService.post('api/v1/votes', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
+        qmService.post('api/v3/votes', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], correlationSet, successHandler, errorHandler);
     };
     qmService.deleteVoteToApi = function(correlationSet, successHandler ,errorHandler){
-        qmService.post('api/v1/votes/delete', ['causeVariableName', 'effectVariableName', 'correlation'], correlationSet, successHandler, errorHandler);
+        qmService.post('api/v3/votes/delete', ['causeVariableName', 'effectVariableName', 'correlation'], correlationSet, successHandler, errorHandler);
     };
     qmService.searchUserVariablesFromApi = function(query, params, successHandler, errorHandler){
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
-        qmService.get('api/v1/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
+        qmService.get('api/v3/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
     };
     qmService.getVariablesByNameFromApi = function(variableName, params, successHandler, errorHandler){
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
-        qmService.get('api/v1/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
+        qmService.get('api/v3/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
     };
     qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
-        qmService.get('api/v1/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
+        qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
     };
     qmService.getUserVariablesFromApi = function(params, successHandler, errorHandler){
         var options = {};
@@ -491,10 +501,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!params){params = {};}
         if(!params.limit){params.limit = 200;}
         if(params.variableCategoryName && params.variableCategoryName === 'Anything'){params.variableCategoryName = null;}
-        qmService.get('api/v1/variables', ['variableCategoryName', 'limit'], params, successHandler, errorHandler);
+        qmService.get('api/v3/variables', ['variableCategoryName', 'limit'], params, successHandler, errorHandler);
     };
     qmService.postUserVariableToApi = function(userVariable, successHandler, errorHandler) {
-        qmService.post('api/v1/userVariables',
+        qmService.post('api/v3/userVariables',
             [
                 'user',
                 'variableId',
@@ -509,31 +519,31 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             ], userVariable, successHandler, errorHandler);
     };
     qmService.resetUserVariable = function(body, successHandler, errorHandler) {
-        qmService.post('api/v1/userVariables/reset', ['variableId'], body, successHandler, errorHandler);
+        qmService.post('api/v3/userVariables/reset', ['variableId'], body, successHandler, errorHandler);
     };
     qmService.deleteUserVariableMeasurements = function(variableId, successHandler, errorHandler) {
         qmService.deleteElementsOfLocalStorageItemByProperty('userVariables', 'variableId', variableId);
         qmService.deleteElementOfLocalStorageItemById('commonVariables', variableId);
-        qmService.post('api/v1/userVariables/delete', ['variableId'], {variableId: variableId}, successHandler, errorHandler);
+        qmService.post('api/v3/userVariables/delete', ['variableId'], {variableId: variableId}, successHandler, errorHandler);
     };
     qmService.getConnectorsFromApi = function(params, successHandler, errorHandler){
         qmService.get('api/v3/connectors/list', [], params, successHandler, errorHandler);
     };
     qmService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
-        qmService.get('api/v1/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
+        qmService.get('api/v3/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
     };
     qmService.connectConnectorWithParamsToApi = function(params, lowercaseConnectorName, successHandler, errorHandler){
         var allowedParams = ['location', 'username', 'password', 'email'];
-        qmService.get('api/v1/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
+        qmService.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
     qmService.connectConnectorWithTokenToApi = function(body, lowercaseConnectorName, successHandler, errorHandler){
         var requiredProperties = ['connector', 'connectorCredentials'];
-        qmService.post('api/v1/connectors/connect', requiredProperties, body, successHandler, errorHandler);
+        qmService.post('api/v3/connectors/connect', requiredProperties, body, successHandler, errorHandler);
     };
     qmService.connectWithAuthCodeToApi = function(code, connectorLowercaseName, successHandler, errorHandler){
         var allowedParams = ['code', 'noRedirect'];
         var params = {noRedirect: true, code: code};
-        qmService.get('api/v1/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
+        qmService.get('api/v3/connectors/' + connectorLowercaseName + '/connect', allowedParams, params, successHandler, errorHandler);
     };
     qmService.getUserFromApi = function(params, successHandler, errorHandler){
         if($rootScope.user){console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);}
@@ -547,10 +557,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var options = {};
         options.minimumSecondsBetweenRequests = 10;
         options.doNotSendToLogin = true;
-        qmService.get('api/v1/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
+        qmService.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
     };
     qmService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v1/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
+        qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
     };
     qmService.postTrackingReminderNotificationsToApi = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
         if(!trackingReminderNotificationsArray){
@@ -561,25 +571,25 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var options = {};
         options.doNotSendToLogin = false;
         options.doNotShowOfflineError = true;
-        qmService.post('api/v1/trackingReminderNotifications', [], trackingReminderNotificationsArray, successHandler, errorHandler, options);
+        qmService.post('api/v3/trackingReminderNotifications', [], trackingReminderNotificationsArray, successHandler, errorHandler, options);
     };
     qmService.getTrackingRemindersFromApi = function(params, successHandler, errorHandler){
-        qmService.get('api/v1/trackingReminders', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
+        qmService.get('api/v3/trackingReminders', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
     };
     qmService.getStudy = function(params, successHandler, errorHandler){
-        qmService.get('api/v1/study', [], params, successHandler, errorHandler);
+        qmService.get('api/v3/study', [], params, successHandler, errorHandler);
     };
     qmService.postUserSettings = function(params, successHandler, errorHandler) {
-        qmService.post('api/v1/userSettings', [], params, successHandler, errorHandler);
+        qmService.post('api/v3/userSettings', [], params, successHandler, errorHandler);
     };
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
         if(trackingRemindersArray.constructor !== Array){trackingRemindersArray = [trackingRemindersArray];}
         var d = new Date();
         for(var i = 0; i < trackingRemindersArray.length; i++){trackingRemindersArray[i].timeZoneOffset = d.getTimezoneOffset();}
-        qmService.post('api/v1/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
+        qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
     };
     qmService.postStudy = function(body, successHandler, errorHandler){
-        qmService.post('api/v1/study', [], body, successHandler, errorHandler);
+        qmService.post('api/v3/study', [], body, successHandler, errorHandler);
     };
     qmService.postStudyDeferred = function(body) {
         var deferred = $q.defer();
@@ -587,7 +597,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.joinStudy = function(body, successHandler, errorHandler){
-        qmService.post('api/v1/study/join', [], body, successHandler, errorHandler);
+        qmService.post('api/v3/study/join', [], body, successHandler, errorHandler);
     };
     qmService.joinStudyDeferred = function(body) {
         var deferred = $q.defer();
@@ -614,7 +624,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.postUserTag = function(userTagData, successHandler, errorHandler) {
         if(userTagData.constructor !== Array){userTagData = [userTagData];}
-        qmService.post('api/v1/userTags', [], userTagData, successHandler, errorHandler);
+        qmService.post('api/v3/userTags', [], userTagData, successHandler, errorHandler);
     };
     qmService.postVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
@@ -627,7 +637,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.postVariableJoin = function(variableJoinData, successHandler, errorHandler) {
         if(variableJoinData.constructor !== Array){variableJoinData = [variableJoinData];}
-        qmService.post('api/v1/variables/join', [], variableJoinData, successHandler, errorHandler);
+        qmService.post('api/v3/variables/join', [], variableJoinData, successHandler, errorHandler);
     };
     qmService.deleteVariableJoinDeferred = function(tagData) {
         var deferred = $q.defer();
@@ -639,7 +649,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.deleteVariableJoin = function(variableJoinData, successHandler, errorHandler) {
-        qmService.post('api/v1/variables/join/delete', [], variableJoinData, successHandler, errorHandler);
+        qmService.post('api/v3/variables/join/delete', [], variableJoinData, successHandler, errorHandler);
     };
     qmService.deleteUserTagDeferred = function(tagData) {
         var deferred = $q.defer();
@@ -651,7 +661,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.deleteUserTag = function(userTagData, successHandler, errorHandler) {
-        qmService.post('api/v1/userTags/delete', [], userTagData, successHandler, errorHandler);
+        qmService.post('api/v3/userTags/delete', [], userTagData, successHandler, errorHandler);
     };
     qmService.getUserTagsDeferred = function() {
         var deferred = $q.defer();
@@ -659,7 +669,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.getUserTags = function(params, successHandler, errorHandler){
-        qmService.get('api/v1/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
+        qmService.get('api/v3/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
     };
     qmService.updateUserTimeZoneIfNecessary = function () {
         var d = new Date();
@@ -675,7 +685,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if($rootScope.isIOS){platform = 'ios';}
         if($rootScope.isWindows){platform = 'windows';}
         var params = {platform: platform, deviceToken: deviceToken, clientId: qmService.getClientId()};
-        qmService.post('api/v1/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
+        qmService.post('api/v3/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
     };
     qmService.deleteDeviceTokenFromServer = function(successHandler, errorHandler) {
         var deferred = $q.defer();
@@ -683,7 +693,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.reject('No deviceToken provided to qmService.deleteDeviceTokenFromServer');
         } else {
             var params = {deviceToken: localStorage.getItem('deviceTokenOnServer')};
-            qmService.post('api/v1/deviceTokens/delete',
+            qmService.post('api/v3/deviceTokens/delete',
                 ['deviceToken'],
                 params,
                 successHandler,
@@ -699,7 +709,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             logError('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
             return;
         }
-        qmService.post('api/v1/trackingReminders/delete',
+        qmService.post('api/v3/trackingReminders/delete',
             ['id'],
             {id: reminderId},
             successHandler,
@@ -707,7 +717,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     // snooze tracking reminder
     qmService.snoozeTrackingReminderNotification = function(params, successHandler, errorHandler){
-        qmService.post('api/v1/trackingReminderNotifications/snooze',
+        qmService.post('api/v3/trackingReminderNotifications/snooze',
             ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
             params,
             successHandler,
@@ -715,7 +725,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     // skip tracking reminder
     qmService.skipTrackingReminderNotification = function(params, successHandler, errorHandler){
-        qmService.post('api/v1/trackingReminderNotifications/skip',
+        qmService.post('api/v3/trackingReminderNotifications/skip',
             ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
             params,
             successHandler,
@@ -724,7 +734,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     // skip tracking reminder
     qmService.skipAllTrackingReminderNotifications = function(params, successHandler, errorHandler){
         if(!params){params = [];}
-        qmService.post('api/v1/trackingReminderNotifications/skip/all',
+        qmService.post('api/v3/trackingReminderNotifications/skip/all',
             //['trackingReminderId'],
             [],
             params,
@@ -746,7 +756,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return $rootScope.accessTokenFromUrl;
     };
     function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
-    function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();};
+    function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();}
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         logDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
         if($rootScope.user && $rootScope.user.accessToken === qmService.getAccessTokenFromUrl()){
@@ -839,6 +849,48 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             logDebug("qmService.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
             deferred.reject(response);
         });
+    };
+    function configureQmApiClient() {
+        function getAccessToken(){
+            if(qmService.getAccessTokenFromUrl()){return qmService.getAccessTokenFromUrl();}
+            if($rootScope.user && $rootScope.user.accessToken){return $rootScope.user.accessToken;}
+            var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
+            if(accessTokenFromLocalStorage){return accessTokenFromLocalStorage;}
+        }
+        var qmApiClient = Quantimodo.ApiClient.instance;
+        var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
+        qmApiClient.basePath = qmService.getApiUrl() + '/api';
+        quantimodo_oauth2.accessToken = getAccessToken();
+        return qmApiClient;
+    }
+    qmService.getMeasurements = function(params, successHandler, errorHandler){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.MeasurementsApi();
+        function callback(error, measurements, response) {
+            if (error) {
+                logError(error);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(error, measurements, response);
+            }
+        }
+        apiInstance.getMeasurements(params, callback);
+    };
+    function qmApiGeneralErrorHandler(error, data, response) {
+        logError(error);
+    }
+    qmService.getMeasurements = function(params, successHandler, errorHandler){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.MeasurementsApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
+        apiInstance.getMeasurements(params, callback);
     };
     qmService.saveAccessTokenInLocalStorage = function (accessResponse) {
         var accessToken = accessResponse.accessToken || accessResponse.access_token;
@@ -965,7 +1017,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getTokensAndUserViaNativeGoogleLogin = function (body) {
         var deferred = $q.defer();
-        var path = 'api/v1/googleIdToken';
+        var path = 'api/v3/googleIdToken';
         qmService.post(path, [], body, function (response) {
             deferred.resolve(response);
         }, function (error) {
@@ -1045,10 +1097,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         // you can set any advanced configuration here
         Analytics.set('&uid', user.id);
         Analytics.set('&ds', $rootScope.currentPlatform);
-        Analytics.set('&cn', config.appSettings.appDisplayName);
-        Analytics.set('&cs', config.appSettings.appDisplayName);
+        Analytics.set('&cn', $rootScope.appSettings.appDisplayName);
+        Analytics.set('&cs', $rootScope.appSettings.appDisplayName);
         Analytics.set('&cm', $rootScope.currentPlatform);
-        Analytics.set('&an', config.appSettings.appDisplayName);
+        Analytics.set('&an', $rootScope.appSettings.appDisplayName);
         if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.appIds && config.appSettings.additionalSettings.appIds.googleReversedClientId){
             Analytics.set('&aid', config.appSettings.additionalSettings.appIds.googleReversedClientId);
         }
@@ -1111,7 +1163,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             name: user.displayName,
             email: user.email,
             user_id: user.id,
-            app_name: config.appSettings.appDisplayName,
+            app_name: $rootScope.appSettings.appDisplayName,
             app_version: config.appSettings.versionNumber,
             platform: $rootScope.currentPlatform
         };
@@ -1481,7 +1533,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
         return measurementObject;
     };
-    function getSourceName() {return config.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
+    function getSourceName() {return $rootScope.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
     var addLocationAndSourceDataToMeasurement = function(measurementObject){
         addLocationDataToMeasurement(measurementObject);
         if(!measurementObject.sourceName){measurementObject.sourceName = getSourceName();}
@@ -1728,11 +1780,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function envIsDevelopment() {return getEnv() === 'development';}
     qmService.getEnv = function(){return getEnv();};
     qmService.getClientId = function(){
-        if(typeof config !== "undefined" && config.appSettings.clientId){
-            logDebug("config.appSettings.clientId is " + config.appSettings.clientId);
-            return config.appSettings.clientId;
+        if(typeof config !== "undefined" && $rootScope.appSettings.clientId){
+            logDebug("$rootScope.appSettings.clientId is " + $rootScope.appSettings.clientId);
+            return $rootScope.appSettings.clientId;
         } else {
-            logDebug("config.appSettings.clientId is not present");
+            logDebug("$rootScope.appSettings.clientId is not present");
         }
         if(!window.private_keys){return appsManager.getQuantiModoClientId();}
         if (window.chrome && chrome.runtime && chrome.runtime.id) {return window.private_keys.client_ids.Chrome;}
@@ -1785,7 +1837,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return 'https';
     };
     qmService.getApiUrl = function () {
-        //if(config.appSettings.clientId !== "ionic"){return "https://" + config.appSettings.clientId + ".quantimo.do";}
+        //if($rootScope.appSettings.clientId !== "ionic"){return "https://" + $rootScope.appSettings.clientId + ".quantimo.do";}
         if(config.appSettings.apiUrl){
             if(config.appSettings.apiUrl.indexOf('https://') === -1){config.appSettings.apiUrl = "https://" + config.appSettings.apiUrl;}
             return config.appSettings.apiUrl;
@@ -1966,7 +2018,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     user: {name: $rootScope.user.displayName, email: $rootScope.user.email}
                 };
             } else {Bugsnag.metaData = {platform: ionic.Platform.platform(), platformVersion: ionic.Platform.version()};}
-            if(config){Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;}
+            if(config){Bugsnag.metaData.appDisplayName = $rootScope.appSettings.appDisplayName;}
             deferred.resolve();
         } else {deferred.reject('Bugsnag is not defined');}
         return deferred.promise;
@@ -2433,7 +2485,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             logError(error);
             deferred.reject(error);
         };
-        qmService.get('api/v1/trackingReminderNotifications',
+        qmService.get('api/v3/trackingReminderNotifications',
             ['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
             params, successHandler, errorHandler);
         return deferred.promise;
@@ -2546,11 +2598,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 deferred.resolve(response);
             }, function(error) { logError(error); });
         } else {
-            qmService.getTrackingRemindersFromApi({force: force}, function(remindersResponse){
-                if(remindersResponse && remindersResponse.data) {
-                    qmService.setLocalStorageItem('trackingReminders', JSON.stringify(remindersResponse.data));
-                    deferred.resolve(remindersResponse.data);
-                } else { deferred.reject("error in getTrackingRemindersFromApi"); }
+            qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
+                qmService.setLocalStorageItem('trackingReminders', JSON.stringify(trackingReminders));
+                deferred.resolve(trackingReminders);
             }, function(error){
                 logError(error);
                 deferred.reject(error);
@@ -5517,7 +5567,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.chromeExtensionLogin = function(register) {
         function getAfterLoginRedirectUrl() {
-            return encodeURIComponent("https://" + config.appSettings.clientId + ".quantimo.do");
+            return encodeURIComponent("https://" + $rootScope.appSettings.clientId + ".quantimo.do");
         }
         function getLoginUrl() {
             var loginUrl = qmService.getQuantiModoUrl("api/v2/auth/login");
@@ -5969,12 +6019,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         // example: Analytics.addImpression(baseProductId, name, list, brand, category, variant, position, price);
         Analytics.addImpression(upgradeSubscriptionProducts.monthly7.baseProductId,
             upgradeSubscriptionProducts.monthly7.name, $rootScope.currentPlatform + ' Upgrade Options',
-            config.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
+            $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
             upgradeSubscriptionProducts.monthly7.variant, upgradeSubscriptionProducts.monthly7.position,
             upgradeSubscriptionProducts.monthly7.price);
         Analytics.addImpression(upgradeSubscriptionProducts.yearly60.baseProductId,
             upgradeSubscriptionProducts.yearly60.name, $rootScope.currentPlatform + ' Upgrade Options',
-            config.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
+            $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
             upgradeSubscriptionProducts.yearly60.variant, upgradeSubscriptionProducts.yearly60.position,
             upgradeSubscriptionProducts.yearly60.price);
         Analytics.pageView();
@@ -5982,7 +6032,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.recordUpgradeProductPurchase = function (baseProductId, transactionId, step, coupon) {
         //Analytics.addProduct(baseProductId, name, category, brand, variant, price, quantity, coupon, position);
         Analytics.addProduct(baseProductId, upgradeSubscriptionProducts[baseProductId].name,
-            upgradeSubscriptionProducts[baseProductId].category, config.appSettings.appDisplayName,
+            upgradeSubscriptionProducts[baseProductId].category, $rootScope.appSettings.appDisplayName,
             upgradeSubscriptionProducts[baseProductId].variant, upgradeSubscriptionProducts[baseProductId].price,
             1, coupon, upgradeSubscriptionProducts[baseProductId].position);
         // id	text	Yes*	The transaction ID (e.g. T1234). *Required if the action type is purchase or refund.
@@ -5995,10 +6045,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         // step	integer	No	A number representing a step in the checkout process. Optional on checkout actions.
         // option	text	No	Additional field for checkout and checkout_option actions that can describe option information on the checkout page, like selected payment method.
         var revenue = upgradeSubscriptionProducts[baseProductId].price;
-        var affiliation = config.appSettings.appDisplayName;
+        var affiliation = $rootScope.appSettings.appDisplayName;
         var tax = 0;
         var shipping = 0;
-        var list = config.appSettings.appDisplayName;
+        var list = $rootScope.appSettings.appDisplayName;
         var option = '';
         Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
     };
@@ -6742,8 +6792,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $ionicLoading.show({duration: 10000});
     };
     qmService.showBlackRingLoader = function(){
+        if($rootScope.isIOS){
+            qmService.showBasicLoader();  // Centering is messed up on iOS for some reason
+        } else {
+            $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
+        }
         logDebug(arguments.callee.caller.name + " called showBlackRingLoader in " + $state.current.name, getStackTrace());
-        $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
     };
     qmService.hideLoader = function(delay){
         logDebug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
@@ -6797,7 +6851,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             finish: function(err, sessionTokenObject) {
                 /* Called after user finishes connecting their health data */
                 //POST sessionTokenObject as-is to your server for step 2.
-                qmService.post('api/v1/human/connect/finish', [], sessionTokenObject).then(function (response) {
+                qmService.post('api/v3/human/connect/finish', [], sessionTokenObject).then(function (response) {
                     console.log(response);
                     $rootScope.user = response.data.user;
                 });
@@ -6817,12 +6871,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.quantimodoConnectPopup = function(){
         window.QuantiModoIntegration.options = {
             clientUserId: encodeURIComponent($rootScope.user.id),
-            clientId: config.appSettings.clientId,
+            clientId: $rootScope.appSettings.clientId,
             publicToken: ($rootScope.user.quantimodoPublicToken) ? $rootScope.user.quantimodoPublicToken : '',
             finish: function(err, sessionTokenObject) {
                 /* Called after user finishes connecting their health data */
                 //POST sessionTokenObject as-is to your server for step 2.
-                qmService.post('api/v1/quantimodo/connect/finish', [], sessionTokenObject, function (response) {
+                qmService.post('api/v3/quantimodo/connect/finish', [], sessionTokenObject, function (response) {
                     console.log(response);
                     $rootScope.user = response.data.user;
                 });
@@ -7002,12 +7056,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if(!window.config){window.config = {};}
         window.config.appSettings = appSettings;
-        logDebug("appSettings.clientId is " + window.config.appSettings.clientId);
         window.config.appSettings.designMode = window.location.href.indexOf('configuration-index.html') !== -1;
         window.config.appSettings.appDesign.menu = convertStateNameAndParamsToHrefInActiveAndCustomMenus(window.config.appSettings.appDesign.menu);
         //window.config.appSettings.appDesign.menu = qmService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
         //window.config.appSettings.appDesign.floatingActionButton = qmService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
+        logDebug("appSettings.clientId is " + $rootScope.appSettings.clientId);
         if(window.debugMode){logDebug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
         changeFavicon();
@@ -7111,7 +7165,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.logError("Bug Report");
             return template;
         }
-        var subjectLine = encodeURIComponent( config.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
+        var subjectLine = encodeURIComponent( $rootScope.appSettings.appDisplayName + ' ' + config.appSettings.versionNumber + ' Bug Report');
         var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
             "Additional Information: " + '\r\n';
         template = addAppInformationToTemplate(template);

@@ -13,6 +13,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		loadingText: "Fetching measurements..."
 	};
 	function hideLoader() {
+        //Stop the ion-refresher from spinning
         $scope.$broadcast('scroll.refreshComplete');
         $scope.state.loading = false;
         qmService.hideLoader();
@@ -60,18 +61,18 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 				}, function (error) {qmService.logError(error);});
 			}
 		}
-        //qmService.showBlackRingLoader();  //Let's not lock the user during history loading.  We have a card to tell them that it's loading
-		qmService.getMeasurementsDeferred(params, refresh).then(function(history){
-			if(!history ||!history.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
-			if (concat) {$scope.state.history = $scope.state.history.concat(history);} else {$scope.state.history = history;}
-			if(history.length < $scope.state.limit){$scope.state.noHistory = history.length === 0;}
+		function successHandler(measurements) {
+            measurements = qmService.addInfoAndImagesToMeasurements(measurements);
+            if(!measurements ||!measurements.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
+            if (concat) {$scope.state.history = $scope.state.history.concat(measurements);} else {$scope.state.history = measurements;}
             hideLoader();
-		}, function(error){
-			$scope.state.noHistory = true;
-			Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-			qmService.logError('error getting measurements' + JSON.stringify(error));
+            if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
+        }
+        function errorHandler(error) {
+            $scope.state.noHistory = true;
             hideLoader();
-		});
+        }
+        qmService.getMeasurements(params, successHandler, errorHandler);
 	};
 	function setupVariableCategoryActionSheet() {
 		$rootScope.showActionSheetMenu = function() {

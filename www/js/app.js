@@ -1121,6 +1121,16 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.configurationClientId', {
+            cache: true,
+            url: "/configuration/:clientId",
+            views: {
+                'menuContent': {
+                    templateUrl: "../../app-configuration/templates/configuration.html",
+                    controller: 'ConfigurationCtrl'
+                }
+            }
+        })
         .state('app.configuration', {
             cache: true,
             url: "/configuration",

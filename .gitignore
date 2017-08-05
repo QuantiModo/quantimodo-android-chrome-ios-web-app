@@ -30,7 +30,6 @@ build.json
 dev-credentials.json
 dropbox
 gradle-2.14.1-bin.zip
-ionic.config.json
 my-bot/
 node_modules/
 npm-debug.log
@@ -91,3 +90,5 @@ npm-debug.log*
 src/lib/
 www/scripts/
 www/index.html
+www/custom-lib/quantimodo/
+.DS_Store

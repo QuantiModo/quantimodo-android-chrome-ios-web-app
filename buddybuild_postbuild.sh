@@ -1,5 +1,14 @@
 #!/bin/bash
 echo "=== buddybuild_postbuild.sh ==="
+
+if [ -z ${BUILD_ANDROID} ];
+    then
+        echo "BUILD_ANDROID is ${BUILD_ANDROID} so going to print sha1"
+    else
+        echo "Don't need to print sha1 because BUILD_ANDROID is ${BUILD_ANDROID}"
+        exit 1
+fi
+
 print_sha1(){
     APK_NAME=$1
     echo "=== android-${APK_NAME}.apk INFO ==="
