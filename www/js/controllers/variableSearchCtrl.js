@@ -1,45 +1,28 @@
-angular.module('starter').controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, qmService, $timeout, $ionicLoading) {
+angular.module('starter').controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, qmService) {
     $scope.controller_name = "VariableSearchCtrl";
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.state = {
-        showAddVariableButton: false,
-        showVariableCategorySelector: false,
-        variableSearchResults : [],
-        variableCategoryName: $stateParams.variableCategoryName,
-        variableSearchQuery : {name:''},
-        trackingReminder: {},
-        noVariablesFoundCard: {show: false, title: 'No Variables Found', body: "You don't have any data, yet.  Start tracking!"},
-        searching: true,
-        title : "Select Variable",
-        variableSearchPlaceholderText: "Search for a variable here..."
-    };
+    $scope.state = $stateParams;
+    $scope.state.searching = true;
+    $scope.state.variableSearchResults = [];
+    $scope.state.variableSearchQuery = {name:''};
+    if(!$scope.state.noVariablesFoundCard) {$scope.state.noVariablesFoundCard = {show: false, title: 'No Variables Found', body: "You don't have any data, yet.  Start tracking!"};}
+    if(!$scope.state.title) {$scope.state.title = "Select Variable";}
+    if(!$scope.state.variableSearchPlaceholderText) {$scope.state.variableSearchPlaceholderText = "Search for a variable here...";}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         console.debug($state.current.name + " beforeEnter...");
-        $scope.stateParams = $stateParams;
-        //if(!$stateParams.hideNavigationMenu){$rootScope.hideNavigationMenu = false;}
         $rootScope.hideNavigationMenu = false;
-        if($stateParams.helpText){$scope.state.helpText = $stateParams.helpText;}
-        if($stateParams.title){$scope.state.title = $stateParams.title;}
-        if($stateParams.variableSearchPlaceholderText){$scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;}
-        if ($scope.variableCategoryName === 'Anything') {$scope.variableCategoryName = null;}
-        if(!$stateParams.variableSearchParameters){$stateParams.variableSearchParameters = {};}
-        if(!$stateParams.variableSearchParameters.variableCategoryName){$stateParams.variableSearchParameters.variableCategoryName = $scope.variableCategoryName;}
-        if(!$stateParams.commonVariableSearchParameters){$stateParams.commonVariableSearchParameters = $stateParams.variableSearchParameters;}
-        if(!$stateParams.commonVariableSearchParameters.variableCategoryName){$stateParams.commonVariableSearchParameters.variableCategoryName = $scope.variableCategoryName;}
-        if($stateParams.variableCategoryName){$scope.variableCategoryName = $stateParams.variableCategoryName;}
-        if ($scope.variableCategoryName && $scope.variableCategoryName !== 'Anything') {
-            $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.variableCategoryName, 1).toLowerCase()) + " here...";
-            $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.variableCategoryName, 1));
-            $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
+        if(qmService.getUrlParameter('variableCategoryName')){
+            $scope.state.variableSearchParameters.variableCategoryName = qmService.getUrlParameter('variableCategoryName');
+        }
+        if ($scope.state.variableSearchParameters.variableCategoryName && $scope.state.variableSearchParameters.variableCategoryName !== 'Anything') {
+            $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1).toLowerCase()) + " here...";
+            $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableSearchParameters.variableCategoryName, 1));
+            $scope.state.noVariablesFoundCard.title = 'No ' + $scope.state.variableSearchParameters.variableCategoryName + ' Found';
         }
         setHelpText();
     });
-    // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
         console.debug($state.current.name + " enter...");
-        if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-            $stateParams.variableSearchParameters.variableCategoryName = $stateParams.variableCategoryName;
-        }
         // We always need to repopulate in case variable was updated in local storage and the search view was cached
         populateUserVariables();
         populateCommonVariables();
@@ -54,56 +37,56 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         if($state.current.name === 'app.favoriteSearch') {
             qmService.addToFavoritesUsingVariableObject(variableObject);
         } else if (window.location.href.indexOf('reminder-search') !== -1) {
-            var options = {skipReminderSettingsIfPossible: $stateParams.skipReminderSettingsIfPossible, doneState: $stateParams.doneState};
+            var options = {skipReminderSettingsIfPossible: $scope.state.skipReminderSettingsIfPossible, doneState: $scope.state.doneState};
             qmService.addToRemindersUsingVariableObject(variableObject, options);
-        } else if ($stateParams.nextState.indexOf('predictor') !== -1) {
-            $state.go($stateParams.nextState, {effectVariableName: variableObject.name});
-        } else if ($stateParams.nextState.indexOf('outcome') !== -1) {
-            $state.go($stateParams.nextState, {causeVariableName: variableObject.name});
-        } else if ($stateParams.userTaggedVariableObject) {
-            if($stateParams.userTaggedVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
-                $state.go($stateParams.nextState, {
-                    userTaggedVariableObject: $stateParams.userTaggedVariableObject,
-                    fromState: $stateParams.fromState,
-                    fromStateParams: {variableObject: $stateParams.userTaggedVariableObject},
+        } else if ($scope.state.nextState.indexOf('predictor') !== -1) {
+            $state.go($scope.state.nextState, {effectVariableName: variableObject.name});
+        } else if ($scope.state.nextState.indexOf('outcome') !== -1) {
+            $state.go($scope.state.nextState, {causeVariableName: variableObject.name});
+        } else if ($scope.state.userTaggedVariableObject) {
+            if($scope.state.userTaggedVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+                $state.go($scope.state.nextState, {
+                    userTaggedVariableObject: $scope.state.userTaggedVariableObject,
+                    fromState: $scope.state.fromState,
+                    fromStateParams: {variableObject: $scope.state.userTaggedVariableObject},
                     userTagVariableObject: variableObject
                 });
             } else {
-                userTagData = {userTagVariableId: variableObject.id, userTaggedVariableId: $stateParams.userTaggedVariableObject.id, conversionFactor: 1};
+                userTagData = {userTagVariableId: variableObject.id, userTaggedVariableId: $scope.state.userTaggedVariableObject.id, conversionFactor: 1};
                 qmService.showBlackRingLoader();
                 qmService.postUserTagDeferred(userTagData).then(function () {
                     qmService.hideLoader();
-                    if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTaggedVariableObject.name});
+                    if ($scope.state.fromState) {$state.go($scope.state.fromState, {variableName: $scope.state.userTaggedVariableObject.name});
                     } else {$state.go(config.appSettings.appDesign.defaultState);}
                 });
             }
-        } else if($stateParams.userTagVariableObject) {
-            if($stateParams.userTagVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
-                $state.go($stateParams.nextState, {
+        } else if($scope.state.userTagVariableObject) {
+            if($scope.state.userTagVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
+                $state.go($scope.state.nextState, {
                     userTaggedVariableObject: variableObject,
-                    fromState: $stateParams.fromState,
-                    fromStateParams: {variableObject: $stateParams.userTagVariableObject},
-                    userTagVariableObject: $stateParams.userTagVariableObject
+                    fromState: $scope.state.fromState,
+                    fromStateParams: {variableObject: $scope.state.userTagVariableObject},
+                    userTagVariableObject: $scope.state.userTagVariableObject
                 });
             } else {
-                userTagData = {userTagVariableId: $stateParams.userTagVariableObject.id, userTaggedVariableId: variableObject.id, conversionFactor: 1};
+                userTagData = {userTagVariableId: $scope.state.userTagVariableObject.id, userTaggedVariableId: variableObject.id, conversionFactor: 1};
                 qmService.showBlackRingLoader();
                 qmService.postUserTagDeferred(userTagData).then(function () {
                     qmService.hideLoader();
-                    if ($stateParams.fromState) {$state.go($stateParams.fromState, {variableName: $stateParams.userTagVariableObject.name});
+                    if ($scope.state.fromState) {$state.go($scope.state.fromState, {variableName: $scope.state.userTagVariableObject.name});
                     } else {$state.go(config.appSettings.appDesign.defaultState);}
                 });
             }
         } else {
-            $scope.stateParams.variableName = variableObject.name;
-            $scope.stateParams.variableObject = variableObject;
-            $state.go($stateParams.nextState, $scope.stateParams);
+            $scope.state.variableName = variableObject.name;
+            $scope.state.variableObject = variableObject;
+            $state.go($scope.state.nextState, $scope.stateParams);
         }
     };
     $scope.goToStateFromVariableSearch = function(stateName){$state.go(stateName, $stateParams);};
     // when a query is searched in the search box
     function showAddVariableButtonIfNecessary(variables) {
-        if($stateParams.doNotShowAddVariableButton){
+        if($scope.state.doNotShowAddVariableButton){
             $scope.state.showAddVariableButton = false;
             return;
         }
@@ -120,9 +103,9 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             $scope.showSearchLoader = false;
             console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
             $scope.state.showAddVariableButton = true;
-            if ($stateParams.nextState === "app.reminderAdd") {
+            if ($scope.state.nextState === "app.reminderAdd") {
                 $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
-            } else if ($stateParams.nextState === "app.measurementAdd") {
+            } else if ($scope.state.nextState === "app.measurementAdd") {
                 $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' measurement';
             } else {
                 $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
@@ -130,13 +113,13 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         }
     }
     function showNoVariablesFoundCardIfNecessary() {
-        if ($scope.state.variableSearchResults.length || !$stateParams.doNotShowAddVariableButton) {
+        if ($scope.state.variableSearchResults.length || !$scope.state.doNotShowAddVariableButton) {
             $scope.state.noVariablesFoundCard.show = false;
             return;
         }
         $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
-        if($stateParams.noVariablesFoundCard && $stateParams.noVariablesFoundCard.body){
-            $scope.state.noVariablesFoundCard.body = $stateParams.noVariablesFoundCard.body.replace('__VARIABLE_NAME__', $scope.state.variableSearchQuery.name.toUpperCase());
+        if($scope.state.noVariablesFoundCard && $scope.state.noVariablesFoundCard.body){
+            $scope.state.noVariablesFoundCard.body = $scope.state.noVariablesFoundCard.body.replace('__VARIABLE_NAME__', $scope.state.variableSearchQuery.name.toUpperCase());
         } else {
             $scope.state.noVariablesFoundCard.body = "You don't have any data for " + $scope.state.variableSearchQuery.name.toUpperCase() + ", yet.  Start tracking!";
         }
@@ -148,7 +131,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         console.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
-            qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
+            qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
                 .then(function(variables){
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
@@ -162,11 +145,11 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         }
     };
     var populateCommonVariables = function(){
-        if(!$stateParams.variableSearchParameters.includePublic) {return;}
+        if(!$scope.state.variableSearchParameters.includePublic) {return;}
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qmService.getCommonVariablesDeferred($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
+        qmService.getCommonVariablesDeferred($scope.state.variableSearchParameters).then(function (commonVariables) {
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = qmService.removeArrayElementsWithDuplicateIds($scope.state.variableSearchResults.concat(commonVariables));
@@ -180,7 +163,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         if($scope.state.variableSearchQuery.name.length > 2){return;}
         $scope.state.showAddVariableButton = false;
         if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){$scope.state.searching = true;}
-        qmService.getUserVariablesFromLocalStorageOrApiDeferred($stateParams.variableSearchParameters).then(function (userVariables) {
+        qmService.getUserVariablesFromLocalStorageOrApiDeferred($scope.state.variableSearchParameters).then(function (userVariables) {
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     // Put user variables at top of list
@@ -191,51 +174,51 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     //checkThatVariableNamesExist();
                 }
             } else {
-                if(!$stateParams.variableSearchParameters.includePublic){
+                if(!$scope.state.variableSearchParameters.includePublic){
                     $scope.state.noVariablesFoundCard.show = true;
                     $scope.state.searching = false;
                 }
-                if($scope.state.variableSearchResults.length < 1 && $stateParams.variableSearchParameters.includePublic){populateCommonVariables();}
+                if($scope.state.variableSearchResults.length < 1 && $scope.state.variableSearchParameters.includePublic){populateCommonVariables();}
             }
         }, function (error) {qmService.logError(error);});
     };
     $scope.addNewVariable = function(){
         var variableObject = {};
         variableObject.name = $scope.state.variableSearchQuery.name;
-        if($scope.variableCategoryName && $scope.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $scope.variableCategoryName;}
+        if($scope.state.variableSearchParameters.variableCategoryName && $scope.state.variableSearchParameters.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;}
         console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
-        if ($stateParams.nextState) {
-            $scope.stateParams.variableObject = variableObject;
-            $state.go($stateParams.nextState, $scope.stateParams);
+        if ($scope.state.nextState) {
+            $scope.state.variableObject = variableObject;
+            $state.go($scope.state.nextState, $scope.stateParams);
         }
     };
     function setHelpText() {
-        if ($stateParams.userTaggedVariableObject) {
+        if ($scope.state.userTaggedVariableObject) {
             $scope.state.helpText = "Search for a variable like an ingredient, category, or duplicate variable " +
-                "that you'd like to tag " + $stateParams.userTaggedVariableObject.name.toUpperCase() + " with.  Then " +
+                "that you'd like to tag " + $scope.state.userTaggedVariableObject.name.toUpperCase() + " with.  Then " +
                 "when your tag variable is analyzed, measurements from " +
-                $stateParams.userTaggedVariableObject.name.toUpperCase() + " will be included.";
-            $scope.stateParams.helpText = " <br><br> Search for a variable " +
-                "that you'd like to tag with " + $stateParams.userTaggedVariableObject.name.toUpperCase() + ".  Then " +
-                "when " + $stateParams.userTaggedVariableObject.name.toUpperCase() +
+                $scope.state.userTaggedVariableObject.name.toUpperCase() + " will be included.";
+            $scope.state.helpText = " <br><br> Search for a variable " +
+                "that you'd like to tag with " + $scope.state.userTaggedVariableObject.name.toUpperCase() + ".  Then " +
+                "when " + $scope.state.userTaggedVariableObject.name.toUpperCase() +
                 " is analyzed, measurements from your selected tagged variable will be included. <br><br> For instance, if " +
                 "your currently selected variable were Inflammatory Pain, you could search for and select Back Pain " +
                 "to be tagged with Inflammatory Pain since Inflammatory Pain includes Back Pain.  Then Back Pain " +
                 "measurements would be included when Inflammatory Pain is analyzed";
         }
-        if ($stateParams.userTagVariableObject) {
+        if ($scope.state.userTagVariableObject) {
             $scope.state.helpText = "Search for a child variable " +
-                "that you'd like to tag with " + $stateParams.userTagVariableObject.name.toUpperCase() + ".  Then " +
-                "when " + $stateParams.userTagVariableObject.name.toUpperCase() +
+                "that you'd like to tag with " + $scope.state.userTagVariableObject.name.toUpperCase() + ".  Then " +
+                "when " + $scope.state.userTagVariableObject.name.toUpperCase() +
                 " is analyzed, measurements from your selected tagged variable will be included.";
-            $scope.stateParams.helpText = $scope.state.helpText + " <br><br> For instance, if " +
+            $scope.state.helpText = $scope.state.helpText + " <br><br> For instance, if " +
                 "your currently selected variable were Sugar, you could search for Coke and tag it with 37 grams of " +
                 "sugar per serving. Then coke measurements would be included when analyzing to see how sugar affects you.  <br><br>" +
                 "If your current parent tag variable were Inflammatory Pain, you could search for Back Pain and then your " +
                 "Inflammatory Pain analysis would include Back Pain measurements as well.";
         }
-        if(!$scope.state.helpText && $stateParams.variableCategoryName && $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular){
-            $scope.state.helpText = 'Enter a ' + $rootScope.variableCategories[$stateParams.variableCategoryName].variableCategoryNameSingular.toLowerCase() +
+        if(!$scope.state.helpText && $scope.state.variableSearchParameters.variableCategoryName && $rootScope.variableCategories[$scope.state.variableSearchParameters.variableCategoryName].variableCategoryNameSingular){
+            $scope.state.helpText = 'Enter a ' + $rootScope.variableCategories[$scope.state.variableSearchParameters.variableCategoryName].variableCategoryNameSingular.toLowerCase() +
                 ' in the search box or select one from the list below.';
         }
         if(!$scope.state.helpText){$scope.state.helpText = 'Enter a variable in the search box or select one from the list below.';}
@@ -253,16 +236,16 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         return function( item ) {
             if(!checkNameExists(item)){return false;}
             if(item.variableCategoryName){
-                if($stateParams.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
+                if($scope.state.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
                     if(item.variableCategoryName.indexOf('Location') !== -1 || item.variableCategoryName.indexOf('Software') !== -1 || item.variableCategoryName.indexOf('Environment') !== -1){
                         return false;
                     }
                 }
             }
-            if( $stateParams.excludeDuplicateBloodPressure ) {
+            if( $scope.state.excludeDuplicateBloodPressure ) {
                 if(item.name.toLowerCase().indexOf('diastolic') !== -1 || item.name.toLowerCase().indexOf('systolic') !== -1 ) {return false;}
             }
-            if($stateParams.excludeSingularBloodPressure && item.name.toLowerCase() === 'blood pressure') {return false;}
+            if($scope.state.excludeSingularBloodPressure && item.name.toLowerCase() === 'blood pressure') {return false;}
             var variableObjectAsString = JSON.stringify(item).toLowerCase();
             var lowercaseVariableSearchQuery = $scope.state.variableSearchQuery.name.toLowerCase();
             var filterBy = lowercaseVariableSearchQuery.split(/\s+/);
