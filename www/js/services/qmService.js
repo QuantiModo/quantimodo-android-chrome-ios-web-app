@@ -6447,7 +6447,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!trackingReminders || !trackingReminders.length){return {};}
         for(var i = 0; i < trackingReminders.length; i++){
             trackingReminders[i].total = null;
-            trackingReminders[i].valueAndFrequencyTextDescriptionWithTime = qmService.getValueAndFrequencyTextDescriptionWithTime(trackingReminders[i]);
             if(typeof trackingReminders[i].defaultValue === "undefined"){trackingReminders[i].defaultValue = null;}
         }
         trackingReminders = qmService.attachVariableCategoryIcons(trackingReminders);
