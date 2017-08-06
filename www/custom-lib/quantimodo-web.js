@@ -4087,7 +4087,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
   /**
    * @module ApiClient
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -4643,24 +4643,24 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/AggregatedCorrelation', 'model/CommonResponse', 'model/JsonErrorResponse', 'model/PostCorrelation', 'model/Study', 'model/UserCorrelation', 'model/Vote', 'model/VoteDelete'], factory);
+    define(['ApiClient', 'model/AggregatedCorrelation', 'model/CommonResponse', 'model/GetCorrelationsResponse', 'model/JsonErrorResponse', 'model/PostCorrelation', 'model/Study', 'model/UserCorrelation', 'model/Vote', 'model/VoteDelete'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('../model/AggregatedCorrelation'), require('../model/CommonResponse'), require('../model/JsonErrorResponse'), require('../model/PostCorrelation'), require('../model/Study'), require('../model/UserCorrelation'), require('../model/Vote'), require('../model/VoteDelete'));
+    module.exports = factory(require('../ApiClient'), require('../model/AggregatedCorrelation'), require('../model/CommonResponse'), require('../model/GetCorrelationsResponse'), require('../model/JsonErrorResponse'), require('../model/PostCorrelation'), require('../model/Study'), require('../model/UserCorrelation'), require('../model/Vote'), require('../model/VoteDelete'));
   } else {
     // Browser globals (root is window)
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.AnalyticsApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.AggregatedCorrelation, root.Quantimodo.CommonResponse, root.Quantimodo.JsonErrorResponse, root.Quantimodo.PostCorrelation, root.Quantimodo.Study, root.Quantimodo.UserCorrelation, root.Quantimodo.Vote, root.Quantimodo.VoteDelete);
+    root.Quantimodo.AnalyticsApi = factory(root.Quantimodo.ApiClient, root.Quantimodo.AggregatedCorrelation, root.Quantimodo.CommonResponse, root.Quantimodo.GetCorrelationsResponse, root.Quantimodo.JsonErrorResponse, root.Quantimodo.PostCorrelation, root.Quantimodo.Study, root.Quantimodo.UserCorrelation, root.Quantimodo.Vote, root.Quantimodo.VoteDelete);
   }
-}(this, function(ApiClient, AggregatedCorrelation, CommonResponse, JsonErrorResponse, PostCorrelation, Study, UserCorrelation, Vote, VoteDelete) {
+}(this, function(ApiClient, AggregatedCorrelation, CommonResponse, GetCorrelationsResponse, JsonErrorResponse, PostCorrelation, Study, UserCorrelation, Vote, VoteDelete) {
   'use strict';
 
   /**
    * Analytics service.
    * @module api/AnalyticsApi
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -4886,7 +4886,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * Callback function to receive the result of the getUserCorrelations operation.
      * @callback module:api/AnalyticsApi~getUserCorrelationsCallback
      * @param {String} error Error message, if any.
-     * @param {Array.<module:model/UserCorrelation>} data The data returned by the service call.
+     * @param {module:model/GetCorrelationsResponse} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -4905,8 +4905,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
      * @param {Boolean} opts.outcomesOfInterest Only include correlations for which the effect is an outcome of interest for the user
+     * @param {String} opts.appName Example: MoodiModo
+     * @param {String} opts.clientId Example: oauth_test_client
      * @param {module:api/AnalyticsApi~getUserCorrelationsCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link Array.<module:model/UserCorrelation>}
+     * data is of type: {@link module:model/GetCorrelationsResponse}
      */
     this.getUserCorrelations = function(opts, callback) {
       opts = opts || {};
@@ -4926,7 +4928,9 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'limit': opts['limit'],
         'offset': opts['offset'],
         'sort': opts['sort'],
-        'outcomesOfInterest': opts['outcomesOfInterest']
+        'outcomesOfInterest': opts['outcomesOfInterest'],
+        'appName': opts['appName'],
+        'clientId': opts['clientId']
       };
       var headerParams = {
       };
@@ -4936,10 +4940,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
       var authNames = ['access_token', 'quantimodo_oauth2'];
       var contentTypes = ['application/json'];
       var accepts = ['application/json'];
-      var returnType = [UserCorrelation];
+      var returnType = GetCorrelationsResponse;
 
       return this.apiClient.callApi(
-        '/v4/correlations', 'GET',
+        '/v3/correlations', 'GET',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, callback
       );
@@ -5046,7 +5050,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/AggregatedCorrelation":26,"../model/CommonResponse":27,"../model/JsonErrorResponse":32,"../model/PostCorrelation":39,"../model/Study":40,"../model/UserCorrelation":49,"../model/Vote":60,"../model/VoteDelete":61}],18:[function(require,module,exports){
+},{"../ApiClient":16,"../model/AggregatedCorrelation":26,"../model/CommonResponse":28,"../model/GetCorrelationsResponse":37,"../model/JsonErrorResponse":42,"../model/PostCorrelation":49,"../model/Study":50,"../model/UserCorrelation":59,"../model/Vote":70,"../model/VoteDelete":71}],18:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -5082,7 +5086,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Authentication service.
    * @module api/AuthenticationApi
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -5284,7 +5288,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Connectors service.
    * @module api/ConnectorsApi
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -5574,7 +5578,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/Connector":28}],20:[function(require,module,exports){
+},{"../ApiClient":16,"../model/Connector":29}],20:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -5610,7 +5614,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Measurements service.
    * @module api/MeasurementsApi
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -5953,7 +5957,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/CommonResponse":27,"../model/Measurement":33,"../model/MeasurementDelete":34,"../model/MeasurementSet":36,"../model/MeasurementUpdate":37,"../model/Pairs":38}],21:[function(require,module,exports){
+},{"../ApiClient":16,"../model/CommonResponse":28,"../model/Measurement":43,"../model/MeasurementDelete":44,"../model/MeasurementSet":46,"../model/MeasurementUpdate":47,"../model/Pairs":48}],21:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -5989,7 +5993,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Reminders service.
    * @module api/RemindersApi
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -6273,7 +6277,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/CommonResponse":27,"../model/InlineResponse201":31,"../model/TrackingReminder":41,"../model/TrackingReminderDelete":42,"../model/TrackingReminderNotification":43,"../model/TrackingReminderNotificationPost":44}],22:[function(require,module,exports){
+},{"../ApiClient":16,"../model/CommonResponse":28,"../model/InlineResponse201":41,"../model/TrackingReminder":51,"../model/TrackingReminderDelete":52,"../model/TrackingReminderNotification":53,"../model/TrackingReminderNotificationPost":54}],22:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -6309,7 +6313,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Units service.
    * @module api/UnitsApi
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -6405,7 +6409,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/Unit":45,"../model/UnitCategory":46}],23:[function(require,module,exports){
+},{"../ApiClient":16,"../model/Unit":55,"../model/UnitCategory":56}],23:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -6441,7 +6445,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * User service.
    * @module api/UserApi
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -6556,7 +6560,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/User":48}],24:[function(require,module,exports){
+},{"../ApiClient":16,"../model/User":58}],24:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -6592,7 +6596,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * Variables service.
    * @module api/VariablesApi
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -6718,13 +6722,13 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {Number} opts.userId User&#39;s id
      * @param {Number} opts.id Common variable id
      * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
-     * @param {String} opts.name Original name of the variable (supports exact name match only)
+     * @param {String} opts.name Name of the variable. To get results matching a substring, add % as a wildcard as the first and/or last character of a query string parameter. In order to get variables that contain &#x60;Mood&#x60;, the following query should be used: ?variableName&#x3D;%Mood%
      * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {String} opts.sourceName ID of the source you want measurements for (supports exact name match only)
      * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.numberOfRawMeasurements Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.
-     * @param {String} opts.lastSource Limit variables to those which measurements were last submitted by a specific source. So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here. (supports exact name match only)
+     * @param {String} opts.lastSourceName Limit variables to those which measurements were last submitted by a specific source. So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
@@ -6748,7 +6752,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'earliestMeasurementTime': opts['earliestMeasurementTime'],
         'latestMeasurementTime': opts['latestMeasurementTime'],
         'numberOfRawMeasurements': opts['numberOfRawMeasurements'],
-        'lastSource': opts['lastSource'],
+        'lastSourceName': opts['lastSourceName'],
         'limit': opts['limit'],
         'offset': opts['offset'],
         'sort': opts['sort']
@@ -6785,13 +6789,13 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @param {Number} opts.userId User&#39;s id
      * @param {Number} opts.id Common variable id
      * @param {module:model/String} opts.variableCategoryName Limit results to a specific variable category
-     * @param {String} opts.name Original name of the variable (supports exact name match only)
+     * @param {String} opts.name Name of the variable. To get results matching a substring, add % as a wildcard as the first and/or last character of a query string parameter. In order to get variables that contain &#x60;Mood&#x60;, the following query should be used: ?variableName&#x3D;%Mood%
      * @param {String} opts.updatedAt When the record was last updated. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60; datetime format. Time zone should be UTC and not local.
      * @param {String} opts.sourceName ID of the source you want measurements for (supports exact name match only)
      * @param {String} opts.earliestMeasurementTime Excluded records with measurement times earlier than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.latestMeasurementTime Excluded records with measurement times later than this value. Use UTC ISO 8601 &#x60;YYYY-MM-DDThh:mm:ss&#x60;  datetime format. Time zone should be UTC and not local.
      * @param {String} opts.numberOfRawMeasurements Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.
-     * @param {String} opts.lastSource Limit variables to those which measurements were last submitted by a specific source. So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here. (supports exact name match only)
+     * @param {String} opts.lastSourceName Limit variables to those which measurements were last submitted by a specific source. So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here
      * @param {Number} opts.limit The LIMIT is used to limit the number of results returned. So if youhave 1000 results, but only want to the first 10, you would set this to 10 and offset to 0. The maximum limit is 200 records. (default to 100)
      * @param {Number} opts.offset OFFSET says to skip that many rows before beginning to return rows to the client. OFFSET 0 is the same as omitting the OFFSET clause.If both OFFSET and LIMIT appear, then OFFSET rows are skipped before starting to count the LIMIT rows that are returned.
      * @param {String} opts.sort Sort by one of the listed field names. If the field name is prefixed with &#x60;-&#x60;, it will sort in descending order.
@@ -6815,7 +6819,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
         'earliestMeasurementTime': opts['earliestMeasurementTime'],
         'latestMeasurementTime': opts['latestMeasurementTime'],
         'numberOfRawMeasurements': opts['numberOfRawMeasurements'],
-        'lastSource': opts['lastSource'],
+        'lastSourceName': opts['lastSourceName'],
         'limit': opts['limit'],
         'offset': opts['offset'],
         'sort': opts['sort']
@@ -7024,7 +7028,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"../ApiClient":16,"../model/CommonResponse":27,"../model/UserTag":50,"../model/UserVariable":56,"../model/UserVariableDelete":57,"../model/Variable":58,"../model/VariableCategory":59}],25:[function(require,module,exports){
+},{"../ApiClient":16,"../model/CommonResponse":28,"../model/UserTag":60,"../model/UserVariable":66,"../model/UserVariableDelete":67,"../model/Variable":68,"../model/VariableCategory":69}],25:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -7043,12 +7047,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/AggregatedCorrelation', 'model/CommonResponse', 'model/Connector', 'model/ConnectorInstruction', 'model/ConversionStep', 'model/InlineResponse201', 'model/JsonErrorResponse', 'model/Measurement', 'model/MeasurementDelete', 'model/MeasurementItem', 'model/MeasurementSet', 'model/MeasurementUpdate', 'model/Pairs', 'model/PostCorrelation', 'model/Study', 'model/TrackingReminder', 'model/TrackingReminderDelete', 'model/TrackingReminderNotification', 'model/TrackingReminderNotificationPost', 'model/Unit', 'model/UnitCategory', 'model/Update', 'model/User', 'model/UserCorrelation', 'model/UserTag', 'model/UserTokenFailedResponse', 'model/UserTokenRequest', 'model/UserTokenRequestInnerUserField', 'model/UserTokenSuccessfulResponse', 'model/UserTokenSuccessfulResponseInnerUserField', 'model/UserVariable', 'model/UserVariableDelete', 'model/Variable', 'model/VariableCategory', 'model/Vote', 'model/VoteDelete', 'api/AnalyticsApi', 'api/AuthenticationApi', 'api/ConnectorsApi', 'api/MeasurementsApi', 'api/RemindersApi', 'api/UnitsApi', 'api/UserApi', 'api/VariablesApi'], factory);
+    define(['ApiClient', 'model/AggregatedCorrelation', 'model/Button', 'model/CommonResponse', 'model/Connector', 'model/ConnectorInstruction', 'model/ConversionStep', 'model/Correlation', 'model/DataSource', 'model/Explanation', 'model/ExplanationStartTracking', 'model/GetCorrelationsDataResponse', 'model/GetCorrelationsResponse', 'model/GetUserCorrelationsDataResponse', 'model/GetUserCorrelationsDataResponseData', 'model/Image', 'model/InlineResponse201', 'model/JsonErrorResponse', 'model/Measurement', 'model/MeasurementDelete', 'model/MeasurementItem', 'model/MeasurementSet', 'model/MeasurementUpdate', 'model/Pairs', 'model/PostCorrelation', 'model/Study', 'model/TrackingReminder', 'model/TrackingReminderDelete', 'model/TrackingReminderNotification', 'model/TrackingReminderNotificationPost', 'model/Unit', 'model/UnitCategory', 'model/Update', 'model/User', 'model/UserCorrelation', 'model/UserTag', 'model/UserTokenFailedResponse', 'model/UserTokenRequest', 'model/UserTokenRequestInnerUserField', 'model/UserTokenSuccessfulResponse', 'model/UserTokenSuccessfulResponseInnerUserField', 'model/UserVariable', 'model/UserVariableDelete', 'model/Variable', 'model/VariableCategory', 'model/Vote', 'model/VoteDelete', 'api/AnalyticsApi', 'api/AuthenticationApi', 'api/ConnectorsApi', 'api/MeasurementsApi', 'api/RemindersApi', 'api/UnitsApi', 'api/UserApi', 'api/VariablesApi'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('./ApiClient'), require('./model/AggregatedCorrelation'), require('./model/CommonResponse'), require('./model/Connector'), require('./model/ConnectorInstruction'), require('./model/ConversionStep'), require('./model/InlineResponse201'), require('./model/JsonErrorResponse'), require('./model/Measurement'), require('./model/MeasurementDelete'), require('./model/MeasurementItem'), require('./model/MeasurementSet'), require('./model/MeasurementUpdate'), require('./model/Pairs'), require('./model/PostCorrelation'), require('./model/Study'), require('./model/TrackingReminder'), require('./model/TrackingReminderDelete'), require('./model/TrackingReminderNotification'), require('./model/TrackingReminderNotificationPost'), require('./model/Unit'), require('./model/UnitCategory'), require('./model/Update'), require('./model/User'), require('./model/UserCorrelation'), require('./model/UserTag'), require('./model/UserTokenFailedResponse'), require('./model/UserTokenRequest'), require('./model/UserTokenRequestInnerUserField'), require('./model/UserTokenSuccessfulResponse'), require('./model/UserTokenSuccessfulResponseInnerUserField'), require('./model/UserVariable'), require('./model/UserVariableDelete'), require('./model/Variable'), require('./model/VariableCategory'), require('./model/Vote'), require('./model/VoteDelete'), require('./api/AnalyticsApi'), require('./api/AuthenticationApi'), require('./api/ConnectorsApi'), require('./api/MeasurementsApi'), require('./api/RemindersApi'), require('./api/UnitsApi'), require('./api/UserApi'), require('./api/VariablesApi'));
+    module.exports = factory(require('./ApiClient'), require('./model/AggregatedCorrelation'), require('./model/Button'), require('./model/CommonResponse'), require('./model/Connector'), require('./model/ConnectorInstruction'), require('./model/ConversionStep'), require('./model/Correlation'), require('./model/DataSource'), require('./model/Explanation'), require('./model/ExplanationStartTracking'), require('./model/GetCorrelationsDataResponse'), require('./model/GetCorrelationsResponse'), require('./model/GetUserCorrelationsDataResponse'), require('./model/GetUserCorrelationsDataResponseData'), require('./model/Image'), require('./model/InlineResponse201'), require('./model/JsonErrorResponse'), require('./model/Measurement'), require('./model/MeasurementDelete'), require('./model/MeasurementItem'), require('./model/MeasurementSet'), require('./model/MeasurementUpdate'), require('./model/Pairs'), require('./model/PostCorrelation'), require('./model/Study'), require('./model/TrackingReminder'), require('./model/TrackingReminderDelete'), require('./model/TrackingReminderNotification'), require('./model/TrackingReminderNotificationPost'), require('./model/Unit'), require('./model/UnitCategory'), require('./model/Update'), require('./model/User'), require('./model/UserCorrelation'), require('./model/UserTag'), require('./model/UserTokenFailedResponse'), require('./model/UserTokenRequest'), require('./model/UserTokenRequestInnerUserField'), require('./model/UserTokenSuccessfulResponse'), require('./model/UserTokenSuccessfulResponseInnerUserField'), require('./model/UserVariable'), require('./model/UserVariableDelete'), require('./model/Variable'), require('./model/VariableCategory'), require('./model/Vote'), require('./model/VoteDelete'), require('./api/AnalyticsApi'), require('./api/AuthenticationApi'), require('./api/ConnectorsApi'), require('./api/MeasurementsApi'), require('./api/RemindersApi'), require('./api/UnitsApi'), require('./api/UserApi'), require('./api/VariablesApi'));
   }
-}(function(ApiClient, AggregatedCorrelation, CommonResponse, Connector, ConnectorInstruction, ConversionStep, InlineResponse201, JsonErrorResponse, Measurement, MeasurementDelete, MeasurementItem, MeasurementSet, MeasurementUpdate, Pairs, PostCorrelation, Study, TrackingReminder, TrackingReminderDelete, TrackingReminderNotification, TrackingReminderNotificationPost, Unit, UnitCategory, Update, User, UserCorrelation, UserTag, UserTokenFailedResponse, UserTokenRequest, UserTokenRequestInnerUserField, UserTokenSuccessfulResponse, UserTokenSuccessfulResponseInnerUserField, UserVariable, UserVariableDelete, Variable, VariableCategory, Vote, VoteDelete, AnalyticsApi, AuthenticationApi, ConnectorsApi, MeasurementsApi, RemindersApi, UnitsApi, UserApi, VariablesApi) {
+}(function(ApiClient, AggregatedCorrelation, Button, CommonResponse, Connector, ConnectorInstruction, ConversionStep, Correlation, DataSource, Explanation, ExplanationStartTracking, GetCorrelationsDataResponse, GetCorrelationsResponse, GetUserCorrelationsDataResponse, GetUserCorrelationsDataResponseData, Image, InlineResponse201, JsonErrorResponse, Measurement, MeasurementDelete, MeasurementItem, MeasurementSet, MeasurementUpdate, Pairs, PostCorrelation, Study, TrackingReminder, TrackingReminderDelete, TrackingReminderNotification, TrackingReminderNotificationPost, Unit, UnitCategory, Update, User, UserCorrelation, UserTag, UserTokenFailedResponse, UserTokenRequest, UserTokenRequestInnerUserField, UserTokenSuccessfulResponse, UserTokenSuccessfulResponseInnerUserField, UserVariable, UserVariableDelete, Variable, VariableCategory, Vote, VoteDelete, AnalyticsApi, AuthenticationApi, ConnectorsApi, MeasurementsApi, RemindersApi, UnitsApi, UserApi, VariablesApi) {
   'use strict';
 
   /**
@@ -7080,7 +7084,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * </pre>
    * </p>
    * @module index
-   * @version 5.8.805
+   * @version 5.8.806
    */
   var exports = {
     /**
@@ -7093,6 +7097,11 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @property {module:model/AggregatedCorrelation}
      */
     AggregatedCorrelation: AggregatedCorrelation,
+    /**
+     * The Button model constructor.
+     * @property {module:model/Button}
+     */
+    Button: Button,
     /**
      * The CommonResponse model constructor.
      * @property {module:model/CommonResponse}
@@ -7113,6 +7122,51 @@ exports.cleanHeader = function(header, shouldStripCookie){
      * @property {module:model/ConversionStep}
      */
     ConversionStep: ConversionStep,
+    /**
+     * The Correlation model constructor.
+     * @property {module:model/Correlation}
+     */
+    Correlation: Correlation,
+    /**
+     * The DataSource model constructor.
+     * @property {module:model/DataSource}
+     */
+    DataSource: DataSource,
+    /**
+     * The Explanation model constructor.
+     * @property {module:model/Explanation}
+     */
+    Explanation: Explanation,
+    /**
+     * The ExplanationStartTracking model constructor.
+     * @property {module:model/ExplanationStartTracking}
+     */
+    ExplanationStartTracking: ExplanationStartTracking,
+    /**
+     * The GetCorrelationsDataResponse model constructor.
+     * @property {module:model/GetCorrelationsDataResponse}
+     */
+    GetCorrelationsDataResponse: GetCorrelationsDataResponse,
+    /**
+     * The GetCorrelationsResponse model constructor.
+     * @property {module:model/GetCorrelationsResponse}
+     */
+    GetCorrelationsResponse: GetCorrelationsResponse,
+    /**
+     * The GetUserCorrelationsDataResponse model constructor.
+     * @property {module:model/GetUserCorrelationsDataResponse}
+     */
+    GetUserCorrelationsDataResponse: GetUserCorrelationsDataResponse,
+    /**
+     * The GetUserCorrelationsDataResponseData model constructor.
+     * @property {module:model/GetUserCorrelationsDataResponseData}
+     */
+    GetUserCorrelationsDataResponseData: GetUserCorrelationsDataResponseData,
+    /**
+     * The Image model constructor.
+     * @property {module:model/Image}
+     */
+    Image: Image,
     /**
      * The InlineResponse201 model constructor.
      * @property {module:model/InlineResponse201}
@@ -7313,7 +7367,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   return exports;
 }));
 
-},{"./ApiClient":16,"./api/AnalyticsApi":17,"./api/AuthenticationApi":18,"./api/ConnectorsApi":19,"./api/MeasurementsApi":20,"./api/RemindersApi":21,"./api/UnitsApi":22,"./api/UserApi":23,"./api/VariablesApi":24,"./model/AggregatedCorrelation":26,"./model/CommonResponse":27,"./model/Connector":28,"./model/ConnectorInstruction":29,"./model/ConversionStep":30,"./model/InlineResponse201":31,"./model/JsonErrorResponse":32,"./model/Measurement":33,"./model/MeasurementDelete":34,"./model/MeasurementItem":35,"./model/MeasurementSet":36,"./model/MeasurementUpdate":37,"./model/Pairs":38,"./model/PostCorrelation":39,"./model/Study":40,"./model/TrackingReminder":41,"./model/TrackingReminderDelete":42,"./model/TrackingReminderNotification":43,"./model/TrackingReminderNotificationPost":44,"./model/Unit":45,"./model/UnitCategory":46,"./model/Update":47,"./model/User":48,"./model/UserCorrelation":49,"./model/UserTag":50,"./model/UserTokenFailedResponse":51,"./model/UserTokenRequest":52,"./model/UserTokenRequestInnerUserField":53,"./model/UserTokenSuccessfulResponse":54,"./model/UserTokenSuccessfulResponseInnerUserField":55,"./model/UserVariable":56,"./model/UserVariableDelete":57,"./model/Variable":58,"./model/VariableCategory":59,"./model/Vote":60,"./model/VoteDelete":61}],26:[function(require,module,exports){
+},{"./ApiClient":16,"./api/AnalyticsApi":17,"./api/AuthenticationApi":18,"./api/ConnectorsApi":19,"./api/MeasurementsApi":20,"./api/RemindersApi":21,"./api/UnitsApi":22,"./api/UserApi":23,"./api/VariablesApi":24,"./model/AggregatedCorrelation":26,"./model/Button":27,"./model/CommonResponse":28,"./model/Connector":29,"./model/ConnectorInstruction":30,"./model/ConversionStep":31,"./model/Correlation":32,"./model/DataSource":33,"./model/Explanation":34,"./model/ExplanationStartTracking":35,"./model/GetCorrelationsDataResponse":36,"./model/GetCorrelationsResponse":37,"./model/GetUserCorrelationsDataResponse":38,"./model/GetUserCorrelationsDataResponseData":39,"./model/Image":40,"./model/InlineResponse201":41,"./model/JsonErrorResponse":42,"./model/Measurement":43,"./model/MeasurementDelete":44,"./model/MeasurementItem":45,"./model/MeasurementSet":46,"./model/MeasurementUpdate":47,"./model/Pairs":48,"./model/PostCorrelation":49,"./model/Study":50,"./model/TrackingReminder":51,"./model/TrackingReminderDelete":52,"./model/TrackingReminderNotification":53,"./model/TrackingReminderNotificationPost":54,"./model/Unit":55,"./model/UnitCategory":56,"./model/Update":57,"./model/User":58,"./model/UserCorrelation":59,"./model/UserTag":60,"./model/UserTokenFailedResponse":61,"./model/UserTokenRequest":62,"./model/UserTokenRequestInnerUserField":63,"./model/UserTokenSuccessfulResponse":64,"./model/UserTokenSuccessfulResponseInnerUserField":65,"./model/UserVariable":66,"./model/UserVariableDelete":67,"./model/Variable":68,"./model/VariableCategory":69,"./model/Vote":70,"./model/VoteDelete":71}],26:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -7352,7 +7406,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The AggregatedCorrelation model module.
    * @module model/AggregatedCorrelation
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -8539,7 +8593,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.CommonResponse = factory(root.Quantimodo.ApiClient);
+    root.Quantimodo.Button = factory(root.Quantimodo.ApiClient);
   }
 }(this, function(ApiClient) {
   'use strict';
@@ -8548,9 +8602,104 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
   /**
+   * The Button model module.
+   * @module model/Button
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>Button</code>.
+   * @alias module:model/Button
+   * @class
+   * @param text {String} Example: Start Tracking
+   * @param link {String} Example: https://local.quantimo.do
+   */
+  var exports = function(text, link) {
+    var _this = this;
+
+    _this['text'] = text;
+    _this['link'] = link;
+  };
+
+  /**
+   * Constructs a <code>Button</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/Button} obj Optional instance to populate.
+   * @return {module:model/Button} The populated <code>Button</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('text')) {
+        obj['text'] = ApiClient.convertToType(data['text'], 'String');
+      }
+      if (data.hasOwnProperty('link')) {
+        obj['link'] = ApiClient.convertToType(data['link'], 'String');
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Example: Start Tracking
+   * @member {String} text
+   */
+  exports.prototype['text'] = undefined;
+  /**
+   * Example: https://local.quantimo.do
+   * @member {String} link
+   */
+  exports.prototype['link'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16}],28:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient', 'model/GetCorrelationsDataResponse'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'), require('./GetCorrelationsDataResponse'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.CommonResponse = factory(root.Quantimodo.ApiClient, root.Quantimodo.GetCorrelationsDataResponse);
+  }
+}(this, function(ApiClient, GetCorrelationsDataResponse) {
+  'use strict';
+
+
+
+
+  /**
    * The CommonResponse model module.
    * @module model/CommonResponse
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -8566,6 +8715,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
     _this['status'] = status;
 
     _this['success'] = success;
+
   };
 
   /**
@@ -8588,6 +8738,9 @@ exports.cleanHeader = function(header, shouldStripCookie){
       if (data.hasOwnProperty('success')) {
         obj['success'] = ApiClient.convertToType(data['success'], 'Boolean');
       }
+      if (data.hasOwnProperty('data')) {
+        obj['data'] = GetCorrelationsDataResponse.constructFromObject(data['data']);
+      }
     }
     return obj;
   }
@@ -8606,6 +8759,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {Boolean} success
    */
   exports.prototype['success'] = undefined;
+  /**
+   * @member {module:model/GetCorrelationsDataResponse} data
+   */
+  exports.prototype['data'] = undefined;
 
 
 
@@ -8614,7 +8771,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],28:[function(require,module,exports){
+},{"../ApiClient":16,"./GetCorrelationsDataResponse":36}],29:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -8653,7 +8810,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Connector model module.
    * @module model/Connector
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -8941,7 +9098,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],29:[function(require,module,exports){
+},{"../ApiClient":16}],30:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -8980,7 +9137,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConnectorInstruction model module.
    * @module model/ConnectorInstruction
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -9043,7 +9200,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],30:[function(require,module,exports){
+},{"../ApiClient":16}],31:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9082,7 +9239,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The ConversionStep model module.
    * @module model/ConversionStep
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -9155,7 +9312,2125 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],31:[function(require,module,exports){
+},{"../ApiClient":16}],32:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.Correlation = factory(root.Quantimodo.ApiClient);
+  }
+}(this, function(ApiClient) {
+  'use strict';
+
+
+
+
+  /**
+   * The Correlation model module.
+   * @module model/Correlation
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>Correlation</code>.
+   * @alias module:model/Correlation
+   * @class
+   * @param causeVariableName {String} Example: Sleep Quality
+   * @param effectVariableName {String} Example: Overall Mood
+   * @param averageDailyHighCause {Number} Example: 4.19
+   * @param averageDailyLowCause {Number} Example: 1.97
+   * @param averageEffect {Number} Example: 3.0791054117396
+   * @param averageEffectFollowingHighCause {Number} Example: 3.55
+   * @param averageEffectFollowingLowCause {Number} Example: 2.65
+   * @param averageForwardPearsonCorrelationOverOnsetDelays {Number} Example: 0.396
+   * @param averageReversePearsonCorrelationOverOnsetDelays {Number} Example: 0.453667
+   * @param causeChanges {Number} Example: 164
+   * @param causeVariableId {Number} Example: 1448
+   * @param confidenceInterval {Number} Example: 0.14344467795996
+   * @param createdAt {Date} Example: 2016-12-28 20:47:30
+   * @param criticalTValue {Number} Example: 1.646
+   * @param durationOfAction {Number} Example: 604800
+   * @param effectChanges {Number} Example: 193
+   * @param effectVariableId {Number} Example: 1398
+   * @param experimentEndTime {Date} Example: 2014-07-30 12:50:00
+   * @param experimentStartTime {Date} Example: 2012-05-06 21:15:00
+   * @param correlationCoefficient {Number} Example: 0.538
+   * @param forwardSpearmanCorrelationCoefficient {Number} Example: 0.528359
+   * @param numberOfPairs {Number} Example: 298
+   * @param onsetDelayWithStrongestPearsonCorrelation {Number} Example: -86400
+   * @param optimalPearsonProduct {Number} Example: 0.68582816186982
+   * @param pearsonCorrelationWithNoOnsetDelay {Number} Example: 0.477
+   * @param predictivePearsonCorrelation {Number} Example: 0.538
+   * @param predictsHighEffectChange {Number} Example: 17
+   * @param predictsLowEffectChange {Number} Example: -11
+   * @param qmScore {Number} Example: 0.528
+   * @param statisticalSignificance {Number} Example: 0.9813
+   * @param strongestPearsonCorrelationCoefficient {Number} Example: 0.613
+   * @param tValue {Number} Example: 9.6986079652717
+   * @param updatedAt {Date} Example: 2017-05-06 15:40:38
+   * @param userId {Number} Example: 230
+   * @param valuePredictingHighOutcome {Number} Example: 4.14
+   * @param valuePredictingLowOutcome {Number} Example: 3.03
+   * @param causeVariableCombinationOperation {String} Example: MEAN
+   * @param causeVariableDefaultUnitId {Number} Example: 10
+   * @param causeVariableImageUrl {String} Example: https://maxcdn.icons8.com/Color/PNG/96/Household/sleeping_in_bed-96.png
+   * @param causeVariableIonIcon {String} Example: ion-ios-cloudy-night-outline
+   * @param causeVariableMostCommonConnectorId {Number} Example: 6
+   * @param causeVariableCategoryId {Number} Example: 6
+   * @param effectVariableCombinationOperation {String} Example: MEAN
+   * @param effectVariableCommonAlias {String} Example: Mood_(psychology)
+   * @param effectVariableDefaultUnitId {Number} Example: 10
+   * @param effectVariableImageUrl {String} Example: https://maxcdn.icons8.com/Color/PNG/96/Cinema/theatre_mask-96.png
+   * @param effectVariableIonIcon {String} Example: ion-happy-outline
+   * @param effectVariableMostCommonConnectorId {Number} Example: 10
+   * @param effectVariableCategoryId {Number} Example: 1
+   * @param timestamp {Number} Example: 1494085127
+   * @param userVote {Number} Example: 1
+   * @param causeUserVariableShareUserMeasurements {Number} Example: 1
+   * @param effectUserVariableShareUserMeasurements {Number} Example: 1
+   * @param predictorFillingValue {Number} Example: -1
+   * @param outcomeFillingValue {Number} Example: -1
+   * @param averageVote {String} Example: 0.9855
+   * @param durationOfActionInHours {Number} Example: 168
+   * @param onsetDelayWithStrongestPearsonCorrelationInHours {Number} Example: -24
+   * @param effectVariableCategoryName {String} Example: Emotions
+   * @param causeVariableCategoryName {String} Example: Sleep
+   * @param direction {String} Example: higher
+   * @param causeVariableDefaultUnitAbbreviatedName {String} Example: /5
+   * @param effectVariableDefaultUnitAbbreviatedName {String} Example: /5
+   * @param causeVariableDefaultUnitName {String} Example: 1 to 5 Rating
+   * @param effectVariableDefaultUnitName {String} Example: 1 to 5 Rating
+   * @param shareUserMeasurements {Boolean} Example: 1
+   * @param effectUnit {String} Example: /5
+   * @param significanceExplanation {String} Example: Using a two-tailed t-test with alpha = 0.05, it was determined that the change in Overall Mood is statistically significant at 95% confidence interval. 
+   * @param significantDifference {Boolean} Example: 1
+   * @param effectSize {String} Example: moderately positive
+   * @param predictsHighEffectChangeSentenceFragment {String} Example: , on average, 17% 
+   * @param predictsLowEffectChangeSentenceFragment {String} Example: , on average, 11% 
+   * @param valuePredictingHighOutcomeExplanation {String} Example: Overall Mood, on average, 17% higher after around 4.14/5 Sleep Quality 
+   * @param averageEffectFollowingHighCauseExplanation {String} Example: Overall Mood is 3.55/5 (15% higher) on average after days with around 4.19/5 Sleep Quality
+   * @param averageEffectFollowingLowCauseExplanation {String} Example: Overall Mood is 2.65/5 (14% lower) on average after days with around 1.97/5 Sleep Quality
+   * @param valuePredictingLowOutcomeExplanation {String} Example: Overall Mood, on average, 11% lower after around 3.03/5 Sleep Quality 
+   * @param strengthLevel {String} Example: moderate
+   * @param confidenceLevel {String} Example: high
+   * @param predictivePearsonCorrelationCoefficient {Number} Example: 0.538
+   * @param predictorExplanation {String} Example: Sleep Quality Predicts Higher Overall Mood
+   * @param studyTitle {String} Example: N1 Study: Sleep Quality Predicts Higher Overall Mood
+   * @param studyAbstract {String} Example: Your data suggests with a high degree of confidence (p=0) that Sleep Quality (Sleep) has a moderately positive predictive relationship (R=0.538) with Overall Mood  (Emotions).  The highest quartile of Overall Mood  measurements were observed following an average 4.14/5 Sleep Quality.  The lowest quartile of Overall Mood  measurements were observed following an average 3.03/5 Sleep Quality.
+   * @param studyLinkStatic {String} Example: https://local.quantimo.do/api/v2/study?causeVariableName=Sleep%20Quality&effectVariableName=Overall%20Mood&userId=230
+   * @param studyLinkDynamic {String} Example: https://local.quantimo.do/ionic/Modo/www/index.html#/app/study?causeVariableName=Sleep%20Quality&effectVariableName=Overall%20Mood&userId=230
+   * @param studyLinkFacebook {String} Example: https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230
+   * @param studyLinkGoogle {String} Example: https://plus.google.com/share?url=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230
+   * @param studyLinkTwitter {String} Example: https://twitter.com/home?status=Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%20%40quantimodo
+   * @param studyLinkEmail {String} Example: mailto:?subject=N1%20Study%3A%20Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood&body=Check%20out%20my%20study%20at%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%0A%0AHave%20a%20great%20day!
+   * @param gaugeImage {String} Example: https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship.png
+   * @param gaugeImageSquare {String} Example: https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship-200-200.png
+   * @param imageUrl {String} Example: https://s3-us-west-1.amazonaws.com/qmimages/variable_categories_gauges_logo_background/gauge-moderately-positive-relationship_sleep_emotions_logo_background.png
+   * @param studyDesign {String} Example: This study is based on data donated by one QuantiModo user. Thus, the study design is consistent with an n=1 observational natural experiment. 
+   * @param studyObjective {String} Example: The objective of this study is to determine the nature of the relationship (if any) between the Sleep Quality and the Overall Mood. Additionally, we attempt to determine the Sleep Quality values most likely to produce optimal Overall Mood values. 
+   * @param dataSources {String} Example: Sleep Quality data was primarily collected using <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.<br>Overall Mood data was primarily collected using <a href=\"https://quantimo.do\">QuantiModo</a>.  <a href=\"https://quantimo.do\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\"https://quantimo.do\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.
+   * @param causeDataSource {Object} Example: {\"id\":6,\"name\":\"up\",\"connectorClientId\":\"10RfjEgKr8U\",\"connectorClientSecret\":\"e17fd34e4bc4642f0c4c99d7acb6e661\",\"displayName\":\"Up by Jawbone\",\"image\":\"https://i.imgur.com/MXNQy3T.png\",\"getItUrl\":\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\",\"shortDescription\":\"Tracks sleep, exercise, and diet.\",\"longDescription\":\"UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.\",\"enabled\":1,\"affiliate\":true,\"defaultVariableCategoryName\":\"Physical Activity\",\"imageHtml\":\"<a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\"><img id=\\\"up_image\\\" title=\\\"Up by Jawbone\\\" src=\\\"https://i.imgur.com/MXNQy3T.png\\\" alt=\\\"Up by Jawbone\\\"></a>\",\"linkedDisplayNameHtml\":\"<a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a>\"}
+   * @param dataSourcesParagraphForCause {String} Example: Sleep Quality data was primarily collected using <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.
+   * @param instructionsForCause {String} Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Obtain Up by Jawbone</a> and use it to record your Sleep Quality. Once you have a <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  Up by Jawbone account at QuantiModo</a> to automatically import and analyze your data.
+   * @param effectDataSource {Object} Example: {\"id\":72,\"name\":\"quantimodo\",\"displayName\":\"QuantiModo\",\"image\":\"https://app.quantimo.do/ionic/Modo/www/img/logos/quantimodo-logo-qm-rainbow-200-200.png\",\"getItUrl\":\"https://quantimo.do\",\"shortDescription\":\"Tracks anything\",\"longDescription\":\"QuantiModo is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  QuantiModo then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.\",\"enabled\":0,\"affiliate\":true,\"defaultVariableCategoryName\":\"Foods\",\"imageHtml\":\"<a href=\\\"https://quantimo.do\\\"><img id=\\\"quantimodo_image\\\" title=\\\"QuantiModo\\\" src=\\\"https://app.quantimo.do/ionic/Modo/www/img/logos/quantimodo-logo-qm-rainbow-200-200.png\\\" alt=\\\"QuantiModo\\\"></a>\",\"linkedDisplayNameHtml\":\"<a href=\\\"https://quantimo.do\\\">QuantiModo</a>\"}
+   * @param dataSourcesParagraphForEffect {String} Example: Overall Mood data was primarily collected using <a href=\"https://quantimo.do\">QuantiModo</a>.  <a href=\"https://quantimo.do\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\"https://quantimo.do\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.
+   * @param instructionsForEffect {String} Example: <a href=\"https://quantimo.do\">Obtain QuantiModo</a> and use it to record your Overall Mood. Once you have a <a href=\"https://quantimo.do\">QuantiModo</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  QuantiModo account at QuantiModo</a> to automatically import and analyze your data.
+   * @param dataAnalysis {String} Example: It was assumed that 0 hours would pass before a change in Sleep Quality would produce an observable change in Overall Mood.  It was assumed that Sleep Quality could produce an observable change in Overall Mood for as much as 7 days after the stimulus event.  
+   * @param studyResults {String} Example: This analysis suggests that higher Sleep Quality (Sleep) generally predicts higher Overall Mood (p = 0).  Overall Mood is, on average, 17%  higher after around 4.14 Sleep Quality.  After an onset delay of 168 hours, Overall Mood is, on average, 11%  lower than its average over the 168 hours following around 3.03 Sleep Quality.  298 data points were used in this analysis.  The value for Sleep Quality changed 164 times, effectively running 82 separate natural experiments.  The top quartile outcome values are preceded by an average 4.14 /5 of Sleep Quality.  The bottom quartile outcome values are preceded by an average 3.03 /5 of Sleep Quality.  Forward Pearson Correlation Coefficient was 0.538 (p=0, 95% CI 0.395 to 0.681 onset delay = 0 hours, duration of action = 168 hours) .  The Reverse Pearson Correlation Coefficient was 0 (P=0, 95% CI -0.143 to 0.143, onset delay = -0 hours, duration of action = -168 hours). When the Sleep Quality value is closer to 4.14 /5 than 3.03 /5, the Overall Mood value which follows is, on average, 17%  percent higher than its typical value.  When the Sleep Quality value is closer to 3.03 /5 than 4.14 /5, the Overall Mood value which follows is 0% lower than its typical value.  Overall Mood is 3.55/5 (15% higher) on average after days with around 4.19/5 Sleep Quality  Overall Mood is 2.65/5 (14% lower) on average after days with around 1.97/5 Sleep Quality
+   * @param studyLimitations {String} Example: As with any human experiment, it was impossible to control for all potentially confounding variables.                           Correlation does not necessarily imply correlation.  We can never know for sure if one factor is definitely the cause of an outcome.               However, lack of correlation definitely implies the lack of a causal relationship.  Hence, we can with great              confidence rule out non-existent relationships. For instance, if we discover no relationship between mood             and an antidepressant this information is just as or even more valuable than the discovery that there is a relationship.              <br>             <br>                         We can also take advantage of several characteristics of time series data from many subjects  to infer the likelihood of a causal relationship if we do find a correlational relationship.              The criteria for causation are a group of minimal conditions necessary to provide adequate evidence of a causal relationship between an incidence and a possible consequence.             The list of the criteria is as follows:             <br>             1. Strength (effect size): A small association does not mean that there is not a causal effect, though the larger the association, the more likely that it is causal.             <br>             2. Consistency (reproducibility): Consistent findings observed by different persons in different places with different samples strengthens the likelihood of an effect.             <br>             3. Specificity: Causation is likely if a very specific population at a specific site and disease with no other likely explanation. The more specific an association between a factor and an effect is, the bigger the probability of a causal relationship.             <br>             4. Temporality: The effect has to occur after the cause (and if there is an expected delay between the cause and expected effect, then the effect must occur after that delay).             <br>             5. Biological gradient: Greater exposure should generally lead to greater incidence of the effect. However, in some cases, the mere presence of the factor can trigger the effect. In other cases, an inverse proportion is observed: greater exposure leads to lower incidence.             <br>             6. Plausibility: A plausible mechanism between cause and effect is helpful.             <br>             7. Coherence: Coherence between epidemiological and laboratory findings increases the likelihood of an effect.             <br>             8. Experiment: \"Occasionally it is possible to appeal to experimental evidence\".             <br>             9. Analogy: The effect of similar factors may be considered.             <br>             <br>                            The confidence in a causal relationship is bolstered by the fact that time-precedence was taken into account in all calculations. Furthermore, in accordance with the law of large numbers (LLN), the predictive power and accuracy of these results will continually grow over time.  298 paired data points were used in this analysis.   Assuming that the relationship is merely coincidental, as the participant independently modifies their Sleep Quality values, the observed strength of the relationship will decline until it is below the threshold of significance.  To it another way, in the case that we do find a spurious correlation, suggesting that banana intake improves mood for instance,             one will likely increase their banana intake.  Due to the fact that this correlation is spurious, it is unlikely             that you will see a continued and persistent corresponding increase in mood.  So over time, the spurious correlation will             naturally dissipate.Furthermore, it will be very enlightening to aggregate this data with the data from other participants  with similar genetic, diseasomic, environmentomic, and demographic profiles.
+   * @param onsetDelay {Number} Example: 0
+   * @param onsetDelayInHours {Number} Example: 0
+   * @param predictorMinimumAllowedValue {Number} Example: 30
+   * @param predictorMaximumAllowedValue {Number} Example: 200
+   * @param reversePearsonCorrelationCoefficient {Number} Example: 0.01377184270977
+   * @param predictorDataSources {String} Example: RescueTime
+   */
+  var exports = function(causeVariableName, effectVariableName, averageDailyHighCause, averageDailyLowCause, averageEffect, averageEffectFollowingHighCause, averageEffectFollowingLowCause, averageForwardPearsonCorrelationOverOnsetDelays, averageReversePearsonCorrelationOverOnsetDelays, causeChanges, causeVariableId, confidenceInterval, createdAt, criticalTValue, durationOfAction, effectChanges, effectVariableId, experimentEndTime, experimentStartTime, correlationCoefficient, forwardSpearmanCorrelationCoefficient, numberOfPairs, onsetDelayWithStrongestPearsonCorrelation, optimalPearsonProduct, pearsonCorrelationWithNoOnsetDelay, predictivePearsonCorrelation, predictsHighEffectChange, predictsLowEffectChange, qmScore, statisticalSignificance, strongestPearsonCorrelationCoefficient, tValue, updatedAt, userId, valuePredictingHighOutcome, valuePredictingLowOutcome, causeVariableCombinationOperation, causeVariableDefaultUnitId, causeVariableImageUrl, causeVariableIonIcon, causeVariableMostCommonConnectorId, causeVariableCategoryId, effectVariableCombinationOperation, effectVariableCommonAlias, effectVariableDefaultUnitId, effectVariableImageUrl, effectVariableIonIcon, effectVariableMostCommonConnectorId, effectVariableCategoryId, timestamp, userVote, causeUserVariableShareUserMeasurements, effectUserVariableShareUserMeasurements, predictorFillingValue, outcomeFillingValue, averageVote, durationOfActionInHours, onsetDelayWithStrongestPearsonCorrelationInHours, effectVariableCategoryName, causeVariableCategoryName, direction, causeVariableDefaultUnitAbbreviatedName, effectVariableDefaultUnitAbbreviatedName, causeVariableDefaultUnitName, effectVariableDefaultUnitName, shareUserMeasurements, effectUnit, significanceExplanation, significantDifference, effectSize, predictsHighEffectChangeSentenceFragment, predictsLowEffectChangeSentenceFragment, valuePredictingHighOutcomeExplanation, averageEffectFollowingHighCauseExplanation, averageEffectFollowingLowCauseExplanation, valuePredictingLowOutcomeExplanation, strengthLevel, confidenceLevel, predictivePearsonCorrelationCoefficient, predictorExplanation, studyTitle, studyAbstract, studyLinkStatic, studyLinkDynamic, studyLinkFacebook, studyLinkGoogle, studyLinkTwitter, studyLinkEmail, gaugeImage, gaugeImageSquare, imageUrl, studyDesign, studyObjective, dataSources, causeDataSource, dataSourcesParagraphForCause, instructionsForCause, effectDataSource, dataSourcesParagraphForEffect, instructionsForEffect, dataAnalysis, studyResults, studyLimitations, onsetDelay, onsetDelayInHours, predictorMinimumAllowedValue, predictorMaximumAllowedValue, reversePearsonCorrelationCoefficient, predictorDataSources) {
+    var _this = this;
+
+    _this['causeVariableName'] = causeVariableName;
+    _this['effectVariableName'] = effectVariableName;
+    _this['averageDailyHighCause'] = averageDailyHighCause;
+    _this['averageDailyLowCause'] = averageDailyLowCause;
+    _this['averageEffect'] = averageEffect;
+    _this['averageEffectFollowingHighCause'] = averageEffectFollowingHighCause;
+    _this['averageEffectFollowingLowCause'] = averageEffectFollowingLowCause;
+    _this['averageForwardPearsonCorrelationOverOnsetDelays'] = averageForwardPearsonCorrelationOverOnsetDelays;
+    _this['averageReversePearsonCorrelationOverOnsetDelays'] = averageReversePearsonCorrelationOverOnsetDelays;
+    _this['causeChanges'] = causeChanges;
+    _this['causeVariableId'] = causeVariableId;
+    _this['confidenceInterval'] = confidenceInterval;
+    _this['createdAt'] = createdAt;
+    _this['criticalTValue'] = criticalTValue;
+    _this['durationOfAction'] = durationOfAction;
+    _this['effectChanges'] = effectChanges;
+    _this['effectVariableId'] = effectVariableId;
+    _this['experimentEndTime'] = experimentEndTime;
+    _this['experimentStartTime'] = experimentStartTime;
+    _this['correlationCoefficient'] = correlationCoefficient;
+    _this['forwardSpearmanCorrelationCoefficient'] = forwardSpearmanCorrelationCoefficient;
+    _this['numberOfPairs'] = numberOfPairs;
+    _this['onsetDelayWithStrongestPearsonCorrelation'] = onsetDelayWithStrongestPearsonCorrelation;
+    _this['optimalPearsonProduct'] = optimalPearsonProduct;
+    _this['pearsonCorrelationWithNoOnsetDelay'] = pearsonCorrelationWithNoOnsetDelay;
+    _this['predictivePearsonCorrelation'] = predictivePearsonCorrelation;
+    _this['predictsHighEffectChange'] = predictsHighEffectChange;
+    _this['predictsLowEffectChange'] = predictsLowEffectChange;
+    _this['qmScore'] = qmScore;
+    _this['statisticalSignificance'] = statisticalSignificance;
+    _this['strongestPearsonCorrelationCoefficient'] = strongestPearsonCorrelationCoefficient;
+    _this['tValue'] = tValue;
+    _this['updatedAt'] = updatedAt;
+    _this['userId'] = userId;
+    _this['valuePredictingHighOutcome'] = valuePredictingHighOutcome;
+    _this['valuePredictingLowOutcome'] = valuePredictingLowOutcome;
+    _this['causeVariableCombinationOperation'] = causeVariableCombinationOperation;
+    _this['causeVariableDefaultUnitId'] = causeVariableDefaultUnitId;
+    _this['causeVariableImageUrl'] = causeVariableImageUrl;
+    _this['causeVariableIonIcon'] = causeVariableIonIcon;
+    _this['causeVariableMostCommonConnectorId'] = causeVariableMostCommonConnectorId;
+    _this['causeVariableCategoryId'] = causeVariableCategoryId;
+    _this['effectVariableCombinationOperation'] = effectVariableCombinationOperation;
+    _this['effectVariableCommonAlias'] = effectVariableCommonAlias;
+    _this['effectVariableDefaultUnitId'] = effectVariableDefaultUnitId;
+    _this['effectVariableImageUrl'] = effectVariableImageUrl;
+    _this['effectVariableIonIcon'] = effectVariableIonIcon;
+    _this['effectVariableMostCommonConnectorId'] = effectVariableMostCommonConnectorId;
+    _this['effectVariableCategoryId'] = effectVariableCategoryId;
+    _this['timestamp'] = timestamp;
+    _this['userVote'] = userVote;
+    _this['causeUserVariableShareUserMeasurements'] = causeUserVariableShareUserMeasurements;
+    _this['effectUserVariableShareUserMeasurements'] = effectUserVariableShareUserMeasurements;
+    _this['predictorFillingValue'] = predictorFillingValue;
+    _this['outcomeFillingValue'] = outcomeFillingValue;
+    _this['averageVote'] = averageVote;
+    _this['durationOfActionInHours'] = durationOfActionInHours;
+    _this['onsetDelayWithStrongestPearsonCorrelationInHours'] = onsetDelayWithStrongestPearsonCorrelationInHours;
+    _this['effectVariableCategoryName'] = effectVariableCategoryName;
+    _this['causeVariableCategoryName'] = causeVariableCategoryName;
+    _this['direction'] = direction;
+    _this['causeVariableDefaultUnitAbbreviatedName'] = causeVariableDefaultUnitAbbreviatedName;
+    _this['effectVariableDefaultUnitAbbreviatedName'] = effectVariableDefaultUnitAbbreviatedName;
+    _this['causeVariableDefaultUnitName'] = causeVariableDefaultUnitName;
+    _this['effectVariableDefaultUnitName'] = effectVariableDefaultUnitName;
+    _this['shareUserMeasurements'] = shareUserMeasurements;
+    _this['effectUnit'] = effectUnit;
+    _this['significanceExplanation'] = significanceExplanation;
+    _this['significantDifference'] = significantDifference;
+    _this['effectSize'] = effectSize;
+    _this['predictsHighEffectChangeSentenceFragment'] = predictsHighEffectChangeSentenceFragment;
+    _this['predictsLowEffectChangeSentenceFragment'] = predictsLowEffectChangeSentenceFragment;
+    _this['valuePredictingHighOutcomeExplanation'] = valuePredictingHighOutcomeExplanation;
+    _this['averageEffectFollowingHighCauseExplanation'] = averageEffectFollowingHighCauseExplanation;
+    _this['averageEffectFollowingLowCauseExplanation'] = averageEffectFollowingLowCauseExplanation;
+    _this['valuePredictingLowOutcomeExplanation'] = valuePredictingLowOutcomeExplanation;
+    _this['strengthLevel'] = strengthLevel;
+    _this['confidenceLevel'] = confidenceLevel;
+    _this['predictivePearsonCorrelationCoefficient'] = predictivePearsonCorrelationCoefficient;
+    _this['predictorExplanation'] = predictorExplanation;
+    _this['studyTitle'] = studyTitle;
+    _this['studyAbstract'] = studyAbstract;
+    _this['studyLinkStatic'] = studyLinkStatic;
+    _this['studyLinkDynamic'] = studyLinkDynamic;
+    _this['studyLinkFacebook'] = studyLinkFacebook;
+    _this['studyLinkGoogle'] = studyLinkGoogle;
+    _this['studyLinkTwitter'] = studyLinkTwitter;
+    _this['studyLinkEmail'] = studyLinkEmail;
+    _this['gaugeImage'] = gaugeImage;
+    _this['gaugeImageSquare'] = gaugeImageSquare;
+    _this['imageUrl'] = imageUrl;
+    _this['studyDesign'] = studyDesign;
+    _this['studyObjective'] = studyObjective;
+    _this['dataSources'] = dataSources;
+    _this['causeDataSource'] = causeDataSource;
+    _this['dataSourcesParagraphForCause'] = dataSourcesParagraphForCause;
+    _this['instructionsForCause'] = instructionsForCause;
+    _this['effectDataSource'] = effectDataSource;
+    _this['dataSourcesParagraphForEffect'] = dataSourcesParagraphForEffect;
+    _this['instructionsForEffect'] = instructionsForEffect;
+    _this['dataAnalysis'] = dataAnalysis;
+    _this['studyResults'] = studyResults;
+    _this['studyLimitations'] = studyLimitations;
+    _this['onsetDelay'] = onsetDelay;
+    _this['onsetDelayInHours'] = onsetDelayInHours;
+    _this['predictorMinimumAllowedValue'] = predictorMinimumAllowedValue;
+    _this['predictorMaximumAllowedValue'] = predictorMaximumAllowedValue;
+    _this['reversePearsonCorrelationCoefficient'] = reversePearsonCorrelationCoefficient;
+    _this['predictorDataSources'] = predictorDataSources;
+  };
+
+  /**
+   * Constructs a <code>Correlation</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/Correlation} obj Optional instance to populate.
+   * @return {module:model/Correlation} The populated <code>Correlation</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('causeVariableName')) {
+        obj['causeVariableName'] = ApiClient.convertToType(data['causeVariableName'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableName')) {
+        obj['effectVariableName'] = ApiClient.convertToType(data['effectVariableName'], 'String');
+      }
+      if (data.hasOwnProperty('averageDailyHighCause')) {
+        obj['averageDailyHighCause'] = ApiClient.convertToType(data['averageDailyHighCause'], 'Number');
+      }
+      if (data.hasOwnProperty('averageDailyLowCause')) {
+        obj['averageDailyLowCause'] = ApiClient.convertToType(data['averageDailyLowCause'], 'Number');
+      }
+      if (data.hasOwnProperty('averageEffect')) {
+        obj['averageEffect'] = ApiClient.convertToType(data['averageEffect'], 'Number');
+      }
+      if (data.hasOwnProperty('averageEffectFollowingHighCause')) {
+        obj['averageEffectFollowingHighCause'] = ApiClient.convertToType(data['averageEffectFollowingHighCause'], 'Number');
+      }
+      if (data.hasOwnProperty('averageEffectFollowingLowCause')) {
+        obj['averageEffectFollowingLowCause'] = ApiClient.convertToType(data['averageEffectFollowingLowCause'], 'Number');
+      }
+      if (data.hasOwnProperty('averageForwardPearsonCorrelationOverOnsetDelays')) {
+        obj['averageForwardPearsonCorrelationOverOnsetDelays'] = ApiClient.convertToType(data['averageForwardPearsonCorrelationOverOnsetDelays'], 'Number');
+      }
+      if (data.hasOwnProperty('averageReversePearsonCorrelationOverOnsetDelays')) {
+        obj['averageReversePearsonCorrelationOverOnsetDelays'] = ApiClient.convertToType(data['averageReversePearsonCorrelationOverOnsetDelays'], 'Number');
+      }
+      if (data.hasOwnProperty('causeChanges')) {
+        obj['causeChanges'] = ApiClient.convertToType(data['causeChanges'], 'Number');
+      }
+      if (data.hasOwnProperty('causeVariableId')) {
+        obj['causeVariableId'] = ApiClient.convertToType(data['causeVariableId'], 'Number');
+      }
+      if (data.hasOwnProperty('confidenceInterval')) {
+        obj['confidenceInterval'] = ApiClient.convertToType(data['confidenceInterval'], 'Number');
+      }
+      if (data.hasOwnProperty('createdAt')) {
+        obj['createdAt'] = ApiClient.convertToType(data['createdAt'], 'Date');
+      }
+      if (data.hasOwnProperty('criticalTValue')) {
+        obj['criticalTValue'] = ApiClient.convertToType(data['criticalTValue'], 'Number');
+      }
+      if (data.hasOwnProperty('durationOfAction')) {
+        obj['durationOfAction'] = ApiClient.convertToType(data['durationOfAction'], 'Number');
+      }
+      if (data.hasOwnProperty('effectChanges')) {
+        obj['effectChanges'] = ApiClient.convertToType(data['effectChanges'], 'Number');
+      }
+      if (data.hasOwnProperty('effectVariableId')) {
+        obj['effectVariableId'] = ApiClient.convertToType(data['effectVariableId'], 'Number');
+      }
+      if (data.hasOwnProperty('experimentEndTime')) {
+        obj['experimentEndTime'] = ApiClient.convertToType(data['experimentEndTime'], 'Date');
+      }
+      if (data.hasOwnProperty('experimentStartTime')) {
+        obj['experimentStartTime'] = ApiClient.convertToType(data['experimentStartTime'], 'Date');
+      }
+      if (data.hasOwnProperty('correlationCoefficient')) {
+        obj['correlationCoefficient'] = ApiClient.convertToType(data['correlationCoefficient'], 'Number');
+      }
+      if (data.hasOwnProperty('forwardSpearmanCorrelationCoefficient')) {
+        obj['forwardSpearmanCorrelationCoefficient'] = ApiClient.convertToType(data['forwardSpearmanCorrelationCoefficient'], 'Number');
+      }
+      if (data.hasOwnProperty('numberOfPairs')) {
+        obj['numberOfPairs'] = ApiClient.convertToType(data['numberOfPairs'], 'Number');
+      }
+      if (data.hasOwnProperty('onsetDelayWithStrongestPearsonCorrelation')) {
+        obj['onsetDelayWithStrongestPearsonCorrelation'] = ApiClient.convertToType(data['onsetDelayWithStrongestPearsonCorrelation'], 'Number');
+      }
+      if (data.hasOwnProperty('optimalPearsonProduct')) {
+        obj['optimalPearsonProduct'] = ApiClient.convertToType(data['optimalPearsonProduct'], 'Number');
+      }
+      if (data.hasOwnProperty('pearsonCorrelationWithNoOnsetDelay')) {
+        obj['pearsonCorrelationWithNoOnsetDelay'] = ApiClient.convertToType(data['pearsonCorrelationWithNoOnsetDelay'], 'Number');
+      }
+      if (data.hasOwnProperty('predictivePearsonCorrelation')) {
+        obj['predictivePearsonCorrelation'] = ApiClient.convertToType(data['predictivePearsonCorrelation'], 'Number');
+      }
+      if (data.hasOwnProperty('predictsHighEffectChange')) {
+        obj['predictsHighEffectChange'] = ApiClient.convertToType(data['predictsHighEffectChange'], 'Number');
+      }
+      if (data.hasOwnProperty('predictsLowEffectChange')) {
+        obj['predictsLowEffectChange'] = ApiClient.convertToType(data['predictsLowEffectChange'], 'Number');
+      }
+      if (data.hasOwnProperty('qmScore')) {
+        obj['qmScore'] = ApiClient.convertToType(data['qmScore'], 'Number');
+      }
+      if (data.hasOwnProperty('statisticalSignificance')) {
+        obj['statisticalSignificance'] = ApiClient.convertToType(data['statisticalSignificance'], 'Number');
+      }
+      if (data.hasOwnProperty('strongestPearsonCorrelationCoefficient')) {
+        obj['strongestPearsonCorrelationCoefficient'] = ApiClient.convertToType(data['strongestPearsonCorrelationCoefficient'], 'Number');
+      }
+      if (data.hasOwnProperty('tValue')) {
+        obj['tValue'] = ApiClient.convertToType(data['tValue'], 'Number');
+      }
+      if (data.hasOwnProperty('updatedAt')) {
+        obj['updatedAt'] = ApiClient.convertToType(data['updatedAt'], 'Date');
+      }
+      if (data.hasOwnProperty('userId')) {
+        obj['userId'] = ApiClient.convertToType(data['userId'], 'Number');
+      }
+      if (data.hasOwnProperty('valuePredictingHighOutcome')) {
+        obj['valuePredictingHighOutcome'] = ApiClient.convertToType(data['valuePredictingHighOutcome'], 'Number');
+      }
+      if (data.hasOwnProperty('valuePredictingLowOutcome')) {
+        obj['valuePredictingLowOutcome'] = ApiClient.convertToType(data['valuePredictingLowOutcome'], 'Number');
+      }
+      if (data.hasOwnProperty('causeVariableCombinationOperation')) {
+        obj['causeVariableCombinationOperation'] = ApiClient.convertToType(data['causeVariableCombinationOperation'], 'String');
+      }
+      if (data.hasOwnProperty('causeVariableDefaultUnitId')) {
+        obj['causeVariableDefaultUnitId'] = ApiClient.convertToType(data['causeVariableDefaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('causeVariableImageUrl')) {
+        obj['causeVariableImageUrl'] = ApiClient.convertToType(data['causeVariableImageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('causeVariableIonIcon')) {
+        obj['causeVariableIonIcon'] = ApiClient.convertToType(data['causeVariableIonIcon'], 'String');
+      }
+      if (data.hasOwnProperty('causeVariableMostCommonConnectorId')) {
+        obj['causeVariableMostCommonConnectorId'] = ApiClient.convertToType(data['causeVariableMostCommonConnectorId'], 'Number');
+      }
+      if (data.hasOwnProperty('causeVariableCategoryId')) {
+        obj['causeVariableCategoryId'] = ApiClient.convertToType(data['causeVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('effectVariableCombinationOperation')) {
+        obj['effectVariableCombinationOperation'] = ApiClient.convertToType(data['effectVariableCombinationOperation'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableCommonAlias')) {
+        obj['effectVariableCommonAlias'] = ApiClient.convertToType(data['effectVariableCommonAlias'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableDefaultUnitId')) {
+        obj['effectVariableDefaultUnitId'] = ApiClient.convertToType(data['effectVariableDefaultUnitId'], 'Number');
+      }
+      if (data.hasOwnProperty('effectVariableImageUrl')) {
+        obj['effectVariableImageUrl'] = ApiClient.convertToType(data['effectVariableImageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableIonIcon')) {
+        obj['effectVariableIonIcon'] = ApiClient.convertToType(data['effectVariableIonIcon'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableMostCommonConnectorId')) {
+        obj['effectVariableMostCommonConnectorId'] = ApiClient.convertToType(data['effectVariableMostCommonConnectorId'], 'Number');
+      }
+      if (data.hasOwnProperty('effectVariableCategoryId')) {
+        obj['effectVariableCategoryId'] = ApiClient.convertToType(data['effectVariableCategoryId'], 'Number');
+      }
+      if (data.hasOwnProperty('timestamp')) {
+        obj['timestamp'] = ApiClient.convertToType(data['timestamp'], 'Number');
+      }
+      if (data.hasOwnProperty('userVote')) {
+        obj['userVote'] = ApiClient.convertToType(data['userVote'], 'Number');
+      }
+      if (data.hasOwnProperty('causeUserVariableShareUserMeasurements')) {
+        obj['causeUserVariableShareUserMeasurements'] = ApiClient.convertToType(data['causeUserVariableShareUserMeasurements'], 'Number');
+      }
+      if (data.hasOwnProperty('effectUserVariableShareUserMeasurements')) {
+        obj['effectUserVariableShareUserMeasurements'] = ApiClient.convertToType(data['effectUserVariableShareUserMeasurements'], 'Number');
+      }
+      if (data.hasOwnProperty('predictorFillingValue')) {
+        obj['predictorFillingValue'] = ApiClient.convertToType(data['predictorFillingValue'], 'Number');
+      }
+      if (data.hasOwnProperty('outcomeFillingValue')) {
+        obj['outcomeFillingValue'] = ApiClient.convertToType(data['outcomeFillingValue'], 'Number');
+      }
+      if (data.hasOwnProperty('averageVote')) {
+        obj['averageVote'] = ApiClient.convertToType(data['averageVote'], 'String');
+      }
+      if (data.hasOwnProperty('durationOfActionInHours')) {
+        obj['durationOfActionInHours'] = ApiClient.convertToType(data['durationOfActionInHours'], 'Number');
+      }
+      if (data.hasOwnProperty('onsetDelayWithStrongestPearsonCorrelationInHours')) {
+        obj['onsetDelayWithStrongestPearsonCorrelationInHours'] = ApiClient.convertToType(data['onsetDelayWithStrongestPearsonCorrelationInHours'], 'Number');
+      }
+      if (data.hasOwnProperty('effectVariableCategoryName')) {
+        obj['effectVariableCategoryName'] = ApiClient.convertToType(data['effectVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('causeVariableCategoryName')) {
+        obj['causeVariableCategoryName'] = ApiClient.convertToType(data['causeVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('direction')) {
+        obj['direction'] = ApiClient.convertToType(data['direction'], 'String');
+      }
+      if (data.hasOwnProperty('causeVariableDefaultUnitAbbreviatedName')) {
+        obj['causeVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['causeVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableDefaultUnitAbbreviatedName')) {
+        obj['effectVariableDefaultUnitAbbreviatedName'] = ApiClient.convertToType(data['effectVariableDefaultUnitAbbreviatedName'], 'String');
+      }
+      if (data.hasOwnProperty('causeVariableDefaultUnitName')) {
+        obj['causeVariableDefaultUnitName'] = ApiClient.convertToType(data['causeVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('effectVariableDefaultUnitName')) {
+        obj['effectVariableDefaultUnitName'] = ApiClient.convertToType(data['effectVariableDefaultUnitName'], 'String');
+      }
+      if (data.hasOwnProperty('shareUserMeasurements')) {
+        obj['shareUserMeasurements'] = ApiClient.convertToType(data['shareUserMeasurements'], 'Boolean');
+      }
+      if (data.hasOwnProperty('effectUnit')) {
+        obj['effectUnit'] = ApiClient.convertToType(data['effectUnit'], 'String');
+      }
+      if (data.hasOwnProperty('significanceExplanation')) {
+        obj['significanceExplanation'] = ApiClient.convertToType(data['significanceExplanation'], 'String');
+      }
+      if (data.hasOwnProperty('significantDifference')) {
+        obj['significantDifference'] = ApiClient.convertToType(data['significantDifference'], 'Boolean');
+      }
+      if (data.hasOwnProperty('effectSize')) {
+        obj['effectSize'] = ApiClient.convertToType(data['effectSize'], 'String');
+      }
+      if (data.hasOwnProperty('predictsHighEffectChangeSentenceFragment')) {
+        obj['predictsHighEffectChangeSentenceFragment'] = ApiClient.convertToType(data['predictsHighEffectChangeSentenceFragment'], 'String');
+      }
+      if (data.hasOwnProperty('predictsLowEffectChangeSentenceFragment')) {
+        obj['predictsLowEffectChangeSentenceFragment'] = ApiClient.convertToType(data['predictsLowEffectChangeSentenceFragment'], 'String');
+      }
+      if (data.hasOwnProperty('valuePredictingHighOutcomeExplanation')) {
+        obj['valuePredictingHighOutcomeExplanation'] = ApiClient.convertToType(data['valuePredictingHighOutcomeExplanation'], 'String');
+      }
+      if (data.hasOwnProperty('averageEffectFollowingHighCauseExplanation')) {
+        obj['averageEffectFollowingHighCauseExplanation'] = ApiClient.convertToType(data['averageEffectFollowingHighCauseExplanation'], 'String');
+      }
+      if (data.hasOwnProperty('averageEffectFollowingLowCauseExplanation')) {
+        obj['averageEffectFollowingLowCauseExplanation'] = ApiClient.convertToType(data['averageEffectFollowingLowCauseExplanation'], 'String');
+      }
+      if (data.hasOwnProperty('valuePredictingLowOutcomeExplanation')) {
+        obj['valuePredictingLowOutcomeExplanation'] = ApiClient.convertToType(data['valuePredictingLowOutcomeExplanation'], 'String');
+      }
+      if (data.hasOwnProperty('strengthLevel')) {
+        obj['strengthLevel'] = ApiClient.convertToType(data['strengthLevel'], 'String');
+      }
+      if (data.hasOwnProperty('confidenceLevel')) {
+        obj['confidenceLevel'] = ApiClient.convertToType(data['confidenceLevel'], 'String');
+      }
+      if (data.hasOwnProperty('predictivePearsonCorrelationCoefficient')) {
+        obj['predictivePearsonCorrelationCoefficient'] = ApiClient.convertToType(data['predictivePearsonCorrelationCoefficient'], 'Number');
+      }
+      if (data.hasOwnProperty('predictorExplanation')) {
+        obj['predictorExplanation'] = ApiClient.convertToType(data['predictorExplanation'], 'String');
+      }
+      if (data.hasOwnProperty('studyTitle')) {
+        obj['studyTitle'] = ApiClient.convertToType(data['studyTitle'], 'String');
+      }
+      if (data.hasOwnProperty('studyAbstract')) {
+        obj['studyAbstract'] = ApiClient.convertToType(data['studyAbstract'], 'String');
+      }
+      if (data.hasOwnProperty('studyLinkStatic')) {
+        obj['studyLinkStatic'] = ApiClient.convertToType(data['studyLinkStatic'], 'String');
+      }
+      if (data.hasOwnProperty('studyLinkDynamic')) {
+        obj['studyLinkDynamic'] = ApiClient.convertToType(data['studyLinkDynamic'], 'String');
+      }
+      if (data.hasOwnProperty('studyLinkFacebook')) {
+        obj['studyLinkFacebook'] = ApiClient.convertToType(data['studyLinkFacebook'], 'String');
+      }
+      if (data.hasOwnProperty('studyLinkGoogle')) {
+        obj['studyLinkGoogle'] = ApiClient.convertToType(data['studyLinkGoogle'], 'String');
+      }
+      if (data.hasOwnProperty('studyLinkTwitter')) {
+        obj['studyLinkTwitter'] = ApiClient.convertToType(data['studyLinkTwitter'], 'String');
+      }
+      if (data.hasOwnProperty('studyLinkEmail')) {
+        obj['studyLinkEmail'] = ApiClient.convertToType(data['studyLinkEmail'], 'String');
+      }
+      if (data.hasOwnProperty('gaugeImage')) {
+        obj['gaugeImage'] = ApiClient.convertToType(data['gaugeImage'], 'String');
+      }
+      if (data.hasOwnProperty('gaugeImageSquare')) {
+        obj['gaugeImageSquare'] = ApiClient.convertToType(data['gaugeImageSquare'], 'String');
+      }
+      if (data.hasOwnProperty('imageUrl')) {
+        obj['imageUrl'] = ApiClient.convertToType(data['imageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('studyDesign')) {
+        obj['studyDesign'] = ApiClient.convertToType(data['studyDesign'], 'String');
+      }
+      if (data.hasOwnProperty('studyObjective')) {
+        obj['studyObjective'] = ApiClient.convertToType(data['studyObjective'], 'String');
+      }
+      if (data.hasOwnProperty('dataSources')) {
+        obj['dataSources'] = ApiClient.convertToType(data['dataSources'], 'String');
+      }
+      if (data.hasOwnProperty('causeDataSource')) {
+        obj['causeDataSource'] = ApiClient.convertToType(data['causeDataSource'], Object);
+      }
+      if (data.hasOwnProperty('dataSourcesParagraphForCause')) {
+        obj['dataSourcesParagraphForCause'] = ApiClient.convertToType(data['dataSourcesParagraphForCause'], 'String');
+      }
+      if (data.hasOwnProperty('instructionsForCause')) {
+        obj['instructionsForCause'] = ApiClient.convertToType(data['instructionsForCause'], 'String');
+      }
+      if (data.hasOwnProperty('effectDataSource')) {
+        obj['effectDataSource'] = ApiClient.convertToType(data['effectDataSource'], Object);
+      }
+      if (data.hasOwnProperty('dataSourcesParagraphForEffect')) {
+        obj['dataSourcesParagraphForEffect'] = ApiClient.convertToType(data['dataSourcesParagraphForEffect'], 'String');
+      }
+      if (data.hasOwnProperty('instructionsForEffect')) {
+        obj['instructionsForEffect'] = ApiClient.convertToType(data['instructionsForEffect'], 'String');
+      }
+      if (data.hasOwnProperty('dataAnalysis')) {
+        obj['dataAnalysis'] = ApiClient.convertToType(data['dataAnalysis'], 'String');
+      }
+      if (data.hasOwnProperty('studyResults')) {
+        obj['studyResults'] = ApiClient.convertToType(data['studyResults'], 'String');
+      }
+      if (data.hasOwnProperty('studyLimitations')) {
+        obj['studyLimitations'] = ApiClient.convertToType(data['studyLimitations'], 'String');
+      }
+      if (data.hasOwnProperty('onsetDelay')) {
+        obj['onsetDelay'] = ApiClient.convertToType(data['onsetDelay'], 'Number');
+      }
+      if (data.hasOwnProperty('onsetDelayInHours')) {
+        obj['onsetDelayInHours'] = ApiClient.convertToType(data['onsetDelayInHours'], 'Number');
+      }
+      if (data.hasOwnProperty('predictorMinimumAllowedValue')) {
+        obj['predictorMinimumAllowedValue'] = ApiClient.convertToType(data['predictorMinimumAllowedValue'], 'Number');
+      }
+      if (data.hasOwnProperty('predictorMaximumAllowedValue')) {
+        obj['predictorMaximumAllowedValue'] = ApiClient.convertToType(data['predictorMaximumAllowedValue'], 'Number');
+      }
+      if (data.hasOwnProperty('reversePearsonCorrelationCoefficient')) {
+        obj['reversePearsonCorrelationCoefficient'] = ApiClient.convertToType(data['reversePearsonCorrelationCoefficient'], 'Number');
+      }
+      if (data.hasOwnProperty('predictorDataSources')) {
+        obj['predictorDataSources'] = ApiClient.convertToType(data['predictorDataSources'], 'String');
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Example: Sleep Quality
+   * @member {String} causeVariableName
+   */
+  exports.prototype['causeVariableName'] = undefined;
+  /**
+   * Example: Overall Mood
+   * @member {String} effectVariableName
+   */
+  exports.prototype['effectVariableName'] = undefined;
+  /**
+   * Example: 4.19
+   * @member {Number} averageDailyHighCause
+   */
+  exports.prototype['averageDailyHighCause'] = undefined;
+  /**
+   * Example: 1.97
+   * @member {Number} averageDailyLowCause
+   */
+  exports.prototype['averageDailyLowCause'] = undefined;
+  /**
+   * Example: 3.0791054117396
+   * @member {Number} averageEffect
+   */
+  exports.prototype['averageEffect'] = undefined;
+  /**
+   * Example: 3.55
+   * @member {Number} averageEffectFollowingHighCause
+   */
+  exports.prototype['averageEffectFollowingHighCause'] = undefined;
+  /**
+   * Example: 2.65
+   * @member {Number} averageEffectFollowingLowCause
+   */
+  exports.prototype['averageEffectFollowingLowCause'] = undefined;
+  /**
+   * Example: 0.396
+   * @member {Number} averageForwardPearsonCorrelationOverOnsetDelays
+   */
+  exports.prototype['averageForwardPearsonCorrelationOverOnsetDelays'] = undefined;
+  /**
+   * Example: 0.453667
+   * @member {Number} averageReversePearsonCorrelationOverOnsetDelays
+   */
+  exports.prototype['averageReversePearsonCorrelationOverOnsetDelays'] = undefined;
+  /**
+   * Example: 164
+   * @member {Number} causeChanges
+   */
+  exports.prototype['causeChanges'] = undefined;
+  /**
+   * Example: 1448
+   * @member {Number} causeVariableId
+   */
+  exports.prototype['causeVariableId'] = undefined;
+  /**
+   * Example: 0.14344467795996
+   * @member {Number} confidenceInterval
+   */
+  exports.prototype['confidenceInterval'] = undefined;
+  /**
+   * Example: 2016-12-28 20:47:30
+   * @member {Date} createdAt
+   */
+  exports.prototype['createdAt'] = undefined;
+  /**
+   * Example: 1.646
+   * @member {Number} criticalTValue
+   */
+  exports.prototype['criticalTValue'] = undefined;
+  /**
+   * Example: 604800
+   * @member {Number} durationOfAction
+   */
+  exports.prototype['durationOfAction'] = undefined;
+  /**
+   * Example: 193
+   * @member {Number} effectChanges
+   */
+  exports.prototype['effectChanges'] = undefined;
+  /**
+   * Example: 1398
+   * @member {Number} effectVariableId
+   */
+  exports.prototype['effectVariableId'] = undefined;
+  /**
+   * Example: 2014-07-30 12:50:00
+   * @member {Date} experimentEndTime
+   */
+  exports.prototype['experimentEndTime'] = undefined;
+  /**
+   * Example: 2012-05-06 21:15:00
+   * @member {Date} experimentStartTime
+   */
+  exports.prototype['experimentStartTime'] = undefined;
+  /**
+   * Example: 0.538
+   * @member {Number} correlationCoefficient
+   */
+  exports.prototype['correlationCoefficient'] = undefined;
+  /**
+   * Example: 0.528359
+   * @member {Number} forwardSpearmanCorrelationCoefficient
+   */
+  exports.prototype['forwardSpearmanCorrelationCoefficient'] = undefined;
+  /**
+   * Example: 298
+   * @member {Number} numberOfPairs
+   */
+  exports.prototype['numberOfPairs'] = undefined;
+  /**
+   * Example: -86400
+   * @member {Number} onsetDelayWithStrongestPearsonCorrelation
+   */
+  exports.prototype['onsetDelayWithStrongestPearsonCorrelation'] = undefined;
+  /**
+   * Example: 0.68582816186982
+   * @member {Number} optimalPearsonProduct
+   */
+  exports.prototype['optimalPearsonProduct'] = undefined;
+  /**
+   * Example: 0.477
+   * @member {Number} pearsonCorrelationWithNoOnsetDelay
+   */
+  exports.prototype['pearsonCorrelationWithNoOnsetDelay'] = undefined;
+  /**
+   * Example: 0.538
+   * @member {Number} predictivePearsonCorrelation
+   */
+  exports.prototype['predictivePearsonCorrelation'] = undefined;
+  /**
+   * Example: 17
+   * @member {Number} predictsHighEffectChange
+   */
+  exports.prototype['predictsHighEffectChange'] = undefined;
+  /**
+   * Example: -11
+   * @member {Number} predictsLowEffectChange
+   */
+  exports.prototype['predictsLowEffectChange'] = undefined;
+  /**
+   * Example: 0.528
+   * @member {Number} qmScore
+   */
+  exports.prototype['qmScore'] = undefined;
+  /**
+   * Example: 0.9813
+   * @member {Number} statisticalSignificance
+   */
+  exports.prototype['statisticalSignificance'] = undefined;
+  /**
+   * Example: 0.613
+   * @member {Number} strongestPearsonCorrelationCoefficient
+   */
+  exports.prototype['strongestPearsonCorrelationCoefficient'] = undefined;
+  /**
+   * Example: 9.6986079652717
+   * @member {Number} tValue
+   */
+  exports.prototype['tValue'] = undefined;
+  /**
+   * Example: 2017-05-06 15:40:38
+   * @member {Date} updatedAt
+   */
+  exports.prototype['updatedAt'] = undefined;
+  /**
+   * Example: 230
+   * @member {Number} userId
+   */
+  exports.prototype['userId'] = undefined;
+  /**
+   * Example: 4.14
+   * @member {Number} valuePredictingHighOutcome
+   */
+  exports.prototype['valuePredictingHighOutcome'] = undefined;
+  /**
+   * Example: 3.03
+   * @member {Number} valuePredictingLowOutcome
+   */
+  exports.prototype['valuePredictingLowOutcome'] = undefined;
+  /**
+   * Example: MEAN
+   * @member {String} causeVariableCombinationOperation
+   */
+  exports.prototype['causeVariableCombinationOperation'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} causeVariableDefaultUnitId
+   */
+  exports.prototype['causeVariableDefaultUnitId'] = undefined;
+  /**
+   * Example: https://maxcdn.icons8.com/Color/PNG/96/Household/sleeping_in_bed-96.png
+   * @member {String} causeVariableImageUrl
+   */
+  exports.prototype['causeVariableImageUrl'] = undefined;
+  /**
+   * Example: ion-ios-cloudy-night-outline
+   * @member {String} causeVariableIonIcon
+   */
+  exports.prototype['causeVariableIonIcon'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} causeVariableMostCommonConnectorId
+   */
+  exports.prototype['causeVariableMostCommonConnectorId'] = undefined;
+  /**
+   * Example: 6
+   * @member {Number} causeVariableCategoryId
+   */
+  exports.prototype['causeVariableCategoryId'] = undefined;
+  /**
+   * Example: MEAN
+   * @member {String} effectVariableCombinationOperation
+   */
+  exports.prototype['effectVariableCombinationOperation'] = undefined;
+  /**
+   * Example: Mood_(psychology)
+   * @member {String} effectVariableCommonAlias
+   */
+  exports.prototype['effectVariableCommonAlias'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} effectVariableDefaultUnitId
+   */
+  exports.prototype['effectVariableDefaultUnitId'] = undefined;
+  /**
+   * Example: https://maxcdn.icons8.com/Color/PNG/96/Cinema/theatre_mask-96.png
+   * @member {String} effectVariableImageUrl
+   */
+  exports.prototype['effectVariableImageUrl'] = undefined;
+  /**
+   * Example: ion-happy-outline
+   * @member {String} effectVariableIonIcon
+   */
+  exports.prototype['effectVariableIonIcon'] = undefined;
+  /**
+   * Example: 10
+   * @member {Number} effectVariableMostCommonConnectorId
+   */
+  exports.prototype['effectVariableMostCommonConnectorId'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} effectVariableCategoryId
+   */
+  exports.prototype['effectVariableCategoryId'] = undefined;
+  /**
+   * Example: 1494085127
+   * @member {Number} timestamp
+   */
+  exports.prototype['timestamp'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} userVote
+   */
+  exports.prototype['userVote'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} causeUserVariableShareUserMeasurements
+   */
+  exports.prototype['causeUserVariableShareUserMeasurements'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} effectUserVariableShareUserMeasurements
+   */
+  exports.prototype['effectUserVariableShareUserMeasurements'] = undefined;
+  /**
+   * Example: -1
+   * @member {Number} predictorFillingValue
+   */
+  exports.prototype['predictorFillingValue'] = undefined;
+  /**
+   * Example: -1
+   * @member {Number} outcomeFillingValue
+   */
+  exports.prototype['outcomeFillingValue'] = undefined;
+  /**
+   * Example: 0.9855
+   * @member {String} averageVote
+   */
+  exports.prototype['averageVote'] = undefined;
+  /**
+   * Example: 168
+   * @member {Number} durationOfActionInHours
+   */
+  exports.prototype['durationOfActionInHours'] = undefined;
+  /**
+   * Example: -24
+   * @member {Number} onsetDelayWithStrongestPearsonCorrelationInHours
+   */
+  exports.prototype['onsetDelayWithStrongestPearsonCorrelationInHours'] = undefined;
+  /**
+   * Example: Emotions
+   * @member {String} effectVariableCategoryName
+   */
+  exports.prototype['effectVariableCategoryName'] = undefined;
+  /**
+   * Example: Sleep
+   * @member {String} causeVariableCategoryName
+   */
+  exports.prototype['causeVariableCategoryName'] = undefined;
+  /**
+   * Example: higher
+   * @member {String} direction
+   */
+  exports.prototype['direction'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} causeVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['causeVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} effectVariableDefaultUnitAbbreviatedName
+   */
+  exports.prototype['effectVariableDefaultUnitAbbreviatedName'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} causeVariableDefaultUnitName
+   */
+  exports.prototype['causeVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: 1 to 5 Rating
+   * @member {String} effectVariableDefaultUnitName
+   */
+  exports.prototype['effectVariableDefaultUnitName'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} shareUserMeasurements
+   */
+  exports.prototype['shareUserMeasurements'] = undefined;
+  /**
+   * Example: /5
+   * @member {String} effectUnit
+   */
+  exports.prototype['effectUnit'] = undefined;
+  /**
+   * Example: Using a two-tailed t-test with alpha = 0.05, it was determined that the change in Overall Mood is statistically significant at 95% confidence interval. 
+   * @member {String} significanceExplanation
+   */
+  exports.prototype['significanceExplanation'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} significantDifference
+   */
+  exports.prototype['significantDifference'] = undefined;
+  /**
+   * Example: moderately positive
+   * @member {String} effectSize
+   */
+  exports.prototype['effectSize'] = undefined;
+  /**
+   * Example: , on average, 17% 
+   * @member {String} predictsHighEffectChangeSentenceFragment
+   */
+  exports.prototype['predictsHighEffectChangeSentenceFragment'] = undefined;
+  /**
+   * Example: , on average, 11% 
+   * @member {String} predictsLowEffectChangeSentenceFragment
+   */
+  exports.prototype['predictsLowEffectChangeSentenceFragment'] = undefined;
+  /**
+   * Example: Overall Mood, on average, 17% higher after around 4.14/5 Sleep Quality 
+   * @member {String} valuePredictingHighOutcomeExplanation
+   */
+  exports.prototype['valuePredictingHighOutcomeExplanation'] = undefined;
+  /**
+   * Example: Overall Mood is 3.55/5 (15% higher) on average after days with around 4.19/5 Sleep Quality
+   * @member {String} averageEffectFollowingHighCauseExplanation
+   */
+  exports.prototype['averageEffectFollowingHighCauseExplanation'] = undefined;
+  /**
+   * Example: Overall Mood is 2.65/5 (14% lower) on average after days with around 1.97/5 Sleep Quality
+   * @member {String} averageEffectFollowingLowCauseExplanation
+   */
+  exports.prototype['averageEffectFollowingLowCauseExplanation'] = undefined;
+  /**
+   * Example: Overall Mood, on average, 11% lower after around 3.03/5 Sleep Quality 
+   * @member {String} valuePredictingLowOutcomeExplanation
+   */
+  exports.prototype['valuePredictingLowOutcomeExplanation'] = undefined;
+  /**
+   * Example: moderate
+   * @member {String} strengthLevel
+   */
+  exports.prototype['strengthLevel'] = undefined;
+  /**
+   * Example: high
+   * @member {String} confidenceLevel
+   */
+  exports.prototype['confidenceLevel'] = undefined;
+  /**
+   * Example: 0.538
+   * @member {Number} predictivePearsonCorrelationCoefficient
+   */
+  exports.prototype['predictivePearsonCorrelationCoefficient'] = undefined;
+  /**
+   * Example: Sleep Quality Predicts Higher Overall Mood
+   * @member {String} predictorExplanation
+   */
+  exports.prototype['predictorExplanation'] = undefined;
+  /**
+   * Example: N1 Study: Sleep Quality Predicts Higher Overall Mood
+   * @member {String} studyTitle
+   */
+  exports.prototype['studyTitle'] = undefined;
+  /**
+   * Example: Your data suggests with a high degree of confidence (p=0) that Sleep Quality (Sleep) has a moderately positive predictive relationship (R=0.538) with Overall Mood  (Emotions).  The highest quartile of Overall Mood  measurements were observed following an average 4.14/5 Sleep Quality.  The lowest quartile of Overall Mood  measurements were observed following an average 3.03/5 Sleep Quality.
+   * @member {String} studyAbstract
+   */
+  exports.prototype['studyAbstract'] = undefined;
+  /**
+   * Example: https://local.quantimo.do/api/v2/study?causeVariableName=Sleep%20Quality&effectVariableName=Overall%20Mood&userId=230
+   * @member {String} studyLinkStatic
+   */
+  exports.prototype['studyLinkStatic'] = undefined;
+  /**
+   * Example: https://local.quantimo.do/ionic/Modo/www/index.html#/app/study?causeVariableName=Sleep%20Quality&effectVariableName=Overall%20Mood&userId=230
+   * @member {String} studyLinkDynamic
+   */
+  exports.prototype['studyLinkDynamic'] = undefined;
+  /**
+   * Example: https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230
+   * @member {String} studyLinkFacebook
+   */
+  exports.prototype['studyLinkFacebook'] = undefined;
+  /**
+   * Example: https://plus.google.com/share?url=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230
+   * @member {String} studyLinkGoogle
+   */
+  exports.prototype['studyLinkGoogle'] = undefined;
+  /**
+   * Example: https://twitter.com/home?status=Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%20%40quantimodo
+   * @member {String} studyLinkTwitter
+   */
+  exports.prototype['studyLinkTwitter'] = undefined;
+  /**
+   * Example: mailto:?subject=N1%20Study%3A%20Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood&body=Check%20out%20my%20study%20at%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%0A%0AHave%20a%20great%20day!
+   * @member {String} studyLinkEmail
+   */
+  exports.prototype['studyLinkEmail'] = undefined;
+  /**
+   * Example: https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship.png
+   * @member {String} gaugeImage
+   */
+  exports.prototype['gaugeImage'] = undefined;
+  /**
+   * Example: https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship-200-200.png
+   * @member {String} gaugeImageSquare
+   */
+  exports.prototype['gaugeImageSquare'] = undefined;
+  /**
+   * Example: https://s3-us-west-1.amazonaws.com/qmimages/variable_categories_gauges_logo_background/gauge-moderately-positive-relationship_sleep_emotions_logo_background.png
+   * @member {String} imageUrl
+   */
+  exports.prototype['imageUrl'] = undefined;
+  /**
+   * Example: This study is based on data donated by one QuantiModo user. Thus, the study design is consistent with an n=1 observational natural experiment. 
+   * @member {String} studyDesign
+   */
+  exports.prototype['studyDesign'] = undefined;
+  /**
+   * Example: The objective of this study is to determine the nature of the relationship (if any) between the Sleep Quality and the Overall Mood. Additionally, we attempt to determine the Sleep Quality values most likely to produce optimal Overall Mood values. 
+   * @member {String} studyObjective
+   */
+  exports.prototype['studyObjective'] = undefined;
+  /**
+   * Example: Sleep Quality data was primarily collected using <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.<br>Overall Mood data was primarily collected using <a href=\"https://quantimo.do\">QuantiModo</a>.  <a href=\"https://quantimo.do\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\"https://quantimo.do\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.
+   * @member {String} dataSources
+   */
+  exports.prototype['dataSources'] = undefined;
+  /**
+   * Example: {\"id\":6,\"name\":\"up\",\"connectorClientId\":\"10RfjEgKr8U\",\"connectorClientSecret\":\"e17fd34e4bc4642f0c4c99d7acb6e661\",\"displayName\":\"Up by Jawbone\",\"image\":\"https://i.imgur.com/MXNQy3T.png\",\"getItUrl\":\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\",\"shortDescription\":\"Tracks sleep, exercise, and diet.\",\"longDescription\":\"UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.\",\"enabled\":1,\"affiliate\":true,\"defaultVariableCategoryName\":\"Physical Activity\",\"imageHtml\":\"<a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\"><img id=\\\"up_image\\\" title=\\\"Up by Jawbone\\\" src=\\\"https://i.imgur.com/MXNQy3T.png\\\" alt=\\\"Up by Jawbone\\\"></a>\",\"linkedDisplayNameHtml\":\"<a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a>\"}
+   * @member {Object} causeDataSource
+   */
+  exports.prototype['causeDataSource'] = undefined;
+  /**
+   * Example: Sleep Quality data was primarily collected using <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.
+   * @member {String} dataSourcesParagraphForCause
+   */
+  exports.prototype['dataSourcesParagraphForCause'] = undefined;
+  /**
+   * Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Obtain Up by Jawbone</a> and use it to record your Sleep Quality. Once you have a <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  Up by Jawbone account at QuantiModo</a> to automatically import and analyze your data.
+   * @member {String} instructionsForCause
+   */
+  exports.prototype['instructionsForCause'] = undefined;
+  /**
+   * Example: {\"id\":72,\"name\":\"quantimodo\",\"displayName\":\"QuantiModo\",\"image\":\"https://app.quantimo.do/ionic/Modo/www/img/logos/quantimodo-logo-qm-rainbow-200-200.png\",\"getItUrl\":\"https://quantimo.do\",\"shortDescription\":\"Tracks anything\",\"longDescription\":\"QuantiModo is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  QuantiModo then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.\",\"enabled\":0,\"affiliate\":true,\"defaultVariableCategoryName\":\"Foods\",\"imageHtml\":\"<a href=\\\"https://quantimo.do\\\"><img id=\\\"quantimodo_image\\\" title=\\\"QuantiModo\\\" src=\\\"https://app.quantimo.do/ionic/Modo/www/img/logos/quantimodo-logo-qm-rainbow-200-200.png\\\" alt=\\\"QuantiModo\\\"></a>\",\"linkedDisplayNameHtml\":\"<a href=\\\"https://quantimo.do\\\">QuantiModo</a>\"}
+   * @member {Object} effectDataSource
+   */
+  exports.prototype['effectDataSource'] = undefined;
+  /**
+   * Example: Overall Mood data was primarily collected using <a href=\"https://quantimo.do\">QuantiModo</a>.  <a href=\"https://quantimo.do\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\"https://quantimo.do\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.
+   * @member {String} dataSourcesParagraphForEffect
+   */
+  exports.prototype['dataSourcesParagraphForEffect'] = undefined;
+  /**
+   * Example: <a href=\"https://quantimo.do\">Obtain QuantiModo</a> and use it to record your Overall Mood. Once you have a <a href=\"https://quantimo.do\">QuantiModo</a> account, <a href=\"https://app.quantimo.do/ionic/Modo/www/#/app/import\">connect your  QuantiModo account at QuantiModo</a> to automatically import and analyze your data.
+   * @member {String} instructionsForEffect
+   */
+  exports.prototype['instructionsForEffect'] = undefined;
+  /**
+   * Example: It was assumed that 0 hours would pass before a change in Sleep Quality would produce an observable change in Overall Mood.  It was assumed that Sleep Quality could produce an observable change in Overall Mood for as much as 7 days after the stimulus event.  
+   * @member {String} dataAnalysis
+   */
+  exports.prototype['dataAnalysis'] = undefined;
+  /**
+   * Example: This analysis suggests that higher Sleep Quality (Sleep) generally predicts higher Overall Mood (p = 0).  Overall Mood is, on average, 17%  higher after around 4.14 Sleep Quality.  After an onset delay of 168 hours, Overall Mood is, on average, 11%  lower than its average over the 168 hours following around 3.03 Sleep Quality.  298 data points were used in this analysis.  The value for Sleep Quality changed 164 times, effectively running 82 separate natural experiments.  The top quartile outcome values are preceded by an average 4.14 /5 of Sleep Quality.  The bottom quartile outcome values are preceded by an average 3.03 /5 of Sleep Quality.  Forward Pearson Correlation Coefficient was 0.538 (p=0, 95% CI 0.395 to 0.681 onset delay = 0 hours, duration of action = 168 hours) .  The Reverse Pearson Correlation Coefficient was 0 (P=0, 95% CI -0.143 to 0.143, onset delay = -0 hours, duration of action = -168 hours). When the Sleep Quality value is closer to 4.14 /5 than 3.03 /5, the Overall Mood value which follows is, on average, 17%  percent higher than its typical value.  When the Sleep Quality value is closer to 3.03 /5 than 4.14 /5, the Overall Mood value which follows is 0% lower than its typical value.  Overall Mood is 3.55/5 (15% higher) on average after days with around 4.19/5 Sleep Quality  Overall Mood is 2.65/5 (14% lower) on average after days with around 1.97/5 Sleep Quality
+   * @member {String} studyResults
+   */
+  exports.prototype['studyResults'] = undefined;
+  /**
+   * Example: As with any human experiment, it was impossible to control for all potentially confounding variables.                           Correlation does not necessarily imply correlation.  We can never know for sure if one factor is definitely the cause of an outcome.               However, lack of correlation definitely implies the lack of a causal relationship.  Hence, we can with great              confidence rule out non-existent relationships. For instance, if we discover no relationship between mood             and an antidepressant this information is just as or even more valuable than the discovery that there is a relationship.              <br>             <br>                         We can also take advantage of several characteristics of time series data from many subjects  to infer the likelihood of a causal relationship if we do find a correlational relationship.              The criteria for causation are a group of minimal conditions necessary to provide adequate evidence of a causal relationship between an incidence and a possible consequence.             The list of the criteria is as follows:             <br>             1. Strength (effect size): A small association does not mean that there is not a causal effect, though the larger the association, the more likely that it is causal.             <br>             2. Consistency (reproducibility): Consistent findings observed by different persons in different places with different samples strengthens the likelihood of an effect.             <br>             3. Specificity: Causation is likely if a very specific population at a specific site and disease with no other likely explanation. The more specific an association between a factor and an effect is, the bigger the probability of a causal relationship.             <br>             4. Temporality: The effect has to occur after the cause (and if there is an expected delay between the cause and expected effect, then the effect must occur after that delay).             <br>             5. Biological gradient: Greater exposure should generally lead to greater incidence of the effect. However, in some cases, the mere presence of the factor can trigger the effect. In other cases, an inverse proportion is observed: greater exposure leads to lower incidence.             <br>             6. Plausibility: A plausible mechanism between cause and effect is helpful.             <br>             7. Coherence: Coherence between epidemiological and laboratory findings increases the likelihood of an effect.             <br>             8. Experiment: \"Occasionally it is possible to appeal to experimental evidence\".             <br>             9. Analogy: The effect of similar factors may be considered.             <br>             <br>                            The confidence in a causal relationship is bolstered by the fact that time-precedence was taken into account in all calculations. Furthermore, in accordance with the law of large numbers (LLN), the predictive power and accuracy of these results will continually grow over time.  298 paired data points were used in this analysis.   Assuming that the relationship is merely coincidental, as the participant independently modifies their Sleep Quality values, the observed strength of the relationship will decline until it is below the threshold of significance.  To it another way, in the case that we do find a spurious correlation, suggesting that banana intake improves mood for instance,             one will likely increase their banana intake.  Due to the fact that this correlation is spurious, it is unlikely             that you will see a continued and persistent corresponding increase in mood.  So over time, the spurious correlation will             naturally dissipate.Furthermore, it will be very enlightening to aggregate this data with the data from other participants  with similar genetic, diseasomic, environmentomic, and demographic profiles.
+   * @member {String} studyLimitations
+   */
+  exports.prototype['studyLimitations'] = undefined;
+  /**
+   * Example: 0
+   * @member {Number} onsetDelay
+   */
+  exports.prototype['onsetDelay'] = undefined;
+  /**
+   * Example: 0
+   * @member {Number} onsetDelayInHours
+   */
+  exports.prototype['onsetDelayInHours'] = undefined;
+  /**
+   * Example: 30
+   * @member {Number} predictorMinimumAllowedValue
+   */
+  exports.prototype['predictorMinimumAllowedValue'] = undefined;
+  /**
+   * Example: 200
+   * @member {Number} predictorMaximumAllowedValue
+   */
+  exports.prototype['predictorMaximumAllowedValue'] = undefined;
+  /**
+   * Example: 0.01377184270977
+   * @member {Number} reversePearsonCorrelationCoefficient
+   */
+  exports.prototype['reversePearsonCorrelationCoefficient'] = undefined;
+  /**
+   * Example: RescueTime
+   * @member {String} predictorDataSources
+   */
+  exports.prototype['predictorDataSources'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16}],33:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.DataSource = factory(root.Quantimodo.ApiClient);
+  }
+}(this, function(ApiClient) {
+  'use strict';
+
+
+
+
+  /**
+   * The DataSource model module.
+   * @module model/DataSource
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>DataSource</code>.
+   * @alias module:model/DataSource
+   * @class
+   * @param id {Number} Example: 6
+   * @param name {String} Example: up
+   * @param connectorClientId {String} Example: 10RfjEgKr8U
+   * @param connectorClientSecret {String} Example: e17fd34e4bc4642f0c4c99d7acb6e661
+   * @param displayName {String} Example: Up by Jawbone
+   * @param image {String} Example: https://i.imgur.com/MXNQy3T.png
+   * @param getItUrl {String} Example: http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20
+   * @param shortDescription {String} Example: Tracks sleep, exercise, and diet.
+   * @param longDescription {String} Example: UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.
+   * @param enabled {Number} Example: 1
+   * @param affiliate {Boolean} Example: 1
+   * @param defaultVariableCategoryName {String} Example: Physical Activity
+   * @param imageHtml {String} Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\"><img id=\"up_image\" title=\"Up by Jawbone\" src=\"https://i.imgur.com/MXNQy3T.png\" alt=\"Up by Jawbone\"></a>
+   * @param linkedDisplayNameHtml {String} Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>
+   */
+  var exports = function(id, name, connectorClientId, connectorClientSecret, displayName, image, getItUrl, shortDescription, longDescription, enabled, affiliate, defaultVariableCategoryName, imageHtml, linkedDisplayNameHtml) {
+    var _this = this;
+
+    _this['id'] = id;
+    _this['name'] = name;
+    _this['connectorClientId'] = connectorClientId;
+    _this['connectorClientSecret'] = connectorClientSecret;
+    _this['displayName'] = displayName;
+    _this['image'] = image;
+    _this['getItUrl'] = getItUrl;
+    _this['shortDescription'] = shortDescription;
+    _this['longDescription'] = longDescription;
+    _this['enabled'] = enabled;
+    _this['affiliate'] = affiliate;
+    _this['defaultVariableCategoryName'] = defaultVariableCategoryName;
+    _this['imageHtml'] = imageHtml;
+    _this['linkedDisplayNameHtml'] = linkedDisplayNameHtml;
+  };
+
+  /**
+   * Constructs a <code>DataSource</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/DataSource} obj Optional instance to populate.
+   * @return {module:model/DataSource} The populated <code>DataSource</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('id')) {
+        obj['id'] = ApiClient.convertToType(data['id'], 'Number');
+      }
+      if (data.hasOwnProperty('name')) {
+        obj['name'] = ApiClient.convertToType(data['name'], 'String');
+      }
+      if (data.hasOwnProperty('connectorClientId')) {
+        obj['connectorClientId'] = ApiClient.convertToType(data['connectorClientId'], 'String');
+      }
+      if (data.hasOwnProperty('connectorClientSecret')) {
+        obj['connectorClientSecret'] = ApiClient.convertToType(data['connectorClientSecret'], 'String');
+      }
+      if (data.hasOwnProperty('displayName')) {
+        obj['displayName'] = ApiClient.convertToType(data['displayName'], 'String');
+      }
+      if (data.hasOwnProperty('image')) {
+        obj['image'] = ApiClient.convertToType(data['image'], 'String');
+      }
+      if (data.hasOwnProperty('getItUrl')) {
+        obj['getItUrl'] = ApiClient.convertToType(data['getItUrl'], 'String');
+      }
+      if (data.hasOwnProperty('shortDescription')) {
+        obj['shortDescription'] = ApiClient.convertToType(data['shortDescription'], 'String');
+      }
+      if (data.hasOwnProperty('longDescription')) {
+        obj['longDescription'] = ApiClient.convertToType(data['longDescription'], 'String');
+      }
+      if (data.hasOwnProperty('enabled')) {
+        obj['enabled'] = ApiClient.convertToType(data['enabled'], 'Number');
+      }
+      if (data.hasOwnProperty('affiliate')) {
+        obj['affiliate'] = ApiClient.convertToType(data['affiliate'], 'Boolean');
+      }
+      if (data.hasOwnProperty('defaultVariableCategoryName')) {
+        obj['defaultVariableCategoryName'] = ApiClient.convertToType(data['defaultVariableCategoryName'], 'String');
+      }
+      if (data.hasOwnProperty('imageHtml')) {
+        obj['imageHtml'] = ApiClient.convertToType(data['imageHtml'], 'String');
+      }
+      if (data.hasOwnProperty('linkedDisplayNameHtml')) {
+        obj['linkedDisplayNameHtml'] = ApiClient.convertToType(data['linkedDisplayNameHtml'], 'String');
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Example: 6
+   * @member {Number} id
+   */
+  exports.prototype['id'] = undefined;
+  /**
+   * Example: up
+   * @member {String} name
+   */
+  exports.prototype['name'] = undefined;
+  /**
+   * Example: 10RfjEgKr8U
+   * @member {String} connectorClientId
+   */
+  exports.prototype['connectorClientId'] = undefined;
+  /**
+   * Example: e17fd34e4bc4642f0c4c99d7acb6e661
+   * @member {String} connectorClientSecret
+   */
+  exports.prototype['connectorClientSecret'] = undefined;
+  /**
+   * Example: Up by Jawbone
+   * @member {String} displayName
+   */
+  exports.prototype['displayName'] = undefined;
+  /**
+   * Example: https://i.imgur.com/MXNQy3T.png
+   * @member {String} image
+   */
+  exports.prototype['image'] = undefined;
+  /**
+   * Example: http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20
+   * @member {String} getItUrl
+   */
+  exports.prototype['getItUrl'] = undefined;
+  /**
+   * Example: Tracks sleep, exercise, and diet.
+   * @member {String} shortDescription
+   */
+  exports.prototype['shortDescription'] = undefined;
+  /**
+   * Example: UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.
+   * @member {String} longDescription
+   */
+  exports.prototype['longDescription'] = undefined;
+  /**
+   * Example: 1
+   * @member {Number} enabled
+   */
+  exports.prototype['enabled'] = undefined;
+  /**
+   * Example: 1
+   * @member {Boolean} affiliate
+   */
+  exports.prototype['affiliate'] = undefined;
+  /**
+   * Example: Physical Activity
+   * @member {String} defaultVariableCategoryName
+   */
+  exports.prototype['defaultVariableCategoryName'] = undefined;
+  /**
+   * Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\"><img id=\"up_image\" title=\"Up by Jawbone\" src=\"https://i.imgur.com/MXNQy3T.png\" alt=\"Up by Jawbone\"></a>
+   * @member {String} imageHtml
+   */
+  exports.prototype['imageHtml'] = undefined;
+  /**
+   * Example: <a href=\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\">Up by Jawbone</a>
+   * @member {String} linkedDisplayNameHtml
+   */
+  exports.prototype['linkedDisplayNameHtml'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16}],34:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient', 'model/ExplanationStartTracking', 'model/Image'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'), require('./ExplanationStartTracking'), require('./Image'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.Explanation = factory(root.Quantimodo.ApiClient, root.Quantimodo.ExplanationStartTracking, root.Quantimodo.Image);
+  }
+}(this, function(ApiClient, ExplanationStartTracking, Image) {
+  'use strict';
+
+
+
+
+  /**
+   * The Explanation model module.
+   * @module model/Explanation
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>Explanation</code>.
+   * @alias module:model/Explanation
+   * @class
+   * @param ionIcon {String} Example: ion-ios-person
+   * @param description {String} Example: These factors are most predictive of Overall Mood based on your own data.
+   * @param title {String} Example: Top Predictors of Overall Mood
+   * @param image {module:model/Image} 
+   * @param startTracking {module:model/ExplanationStartTracking} 
+   */
+  var exports = function(ionIcon, description, title, image, startTracking) {
+    var _this = this;
+
+    _this['ionIcon'] = ionIcon;
+    _this['description'] = description;
+    _this['title'] = title;
+    _this['image'] = image;
+    _this['startTracking'] = startTracking;
+  };
+
+  /**
+   * Constructs a <code>Explanation</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/Explanation} obj Optional instance to populate.
+   * @return {module:model/Explanation} The populated <code>Explanation</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('ionIcon')) {
+        obj['ionIcon'] = ApiClient.convertToType(data['ionIcon'], 'String');
+      }
+      if (data.hasOwnProperty('description')) {
+        obj['description'] = ApiClient.convertToType(data['description'], 'String');
+      }
+      if (data.hasOwnProperty('title')) {
+        obj['title'] = ApiClient.convertToType(data['title'], 'String');
+      }
+      if (data.hasOwnProperty('image')) {
+        obj['image'] = Image.constructFromObject(data['image']);
+      }
+      if (data.hasOwnProperty('startTracking')) {
+        obj['startTracking'] = ExplanationStartTracking.constructFromObject(data['startTracking']);
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Example: ion-ios-person
+   * @member {String} ionIcon
+   */
+  exports.prototype['ionIcon'] = undefined;
+  /**
+   * Example: These factors are most predictive of Overall Mood based on your own data.
+   * @member {String} description
+   */
+  exports.prototype['description'] = undefined;
+  /**
+   * Example: Top Predictors of Overall Mood
+   * @member {String} title
+   */
+  exports.prototype['title'] = undefined;
+  /**
+   * @member {module:model/Image} image
+   */
+  exports.prototype['image'] = undefined;
+  /**
+   * @member {module:model/ExplanationStartTracking} startTracking
+   */
+  exports.prototype['startTracking'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16,"./ExplanationStartTracking":35,"./Image":40}],35:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient', 'model/Button'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'), require('./Button'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.ExplanationStartTracking = factory(root.Quantimodo.ApiClient, root.Quantimodo.Button);
+  }
+}(this, function(ApiClient, Button) {
+  'use strict';
+
+
+
+
+  /**
+   * The ExplanationStartTracking model module.
+   * @module model/ExplanationStartTracking
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>ExplanationStartTracking</code>.
+   * @alias module:model/ExplanationStartTracking
+   * @class
+   * @param title {String} Example: Improve Accuracy
+   * @param description {String} Example: The more data I have the more accurate your results will be so track regularly!
+   * @param button {module:model/Button} 
+   */
+  var exports = function(title, description, button) {
+    var _this = this;
+
+    _this['title'] = title;
+    _this['description'] = description;
+    _this['button'] = button;
+  };
+
+  /**
+   * Constructs a <code>ExplanationStartTracking</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/ExplanationStartTracking} obj Optional instance to populate.
+   * @return {module:model/ExplanationStartTracking} The populated <code>ExplanationStartTracking</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('title')) {
+        obj['title'] = ApiClient.convertToType(data['title'], 'String');
+      }
+      if (data.hasOwnProperty('description')) {
+        obj['description'] = ApiClient.convertToType(data['description'], 'String');
+      }
+      if (data.hasOwnProperty('button')) {
+        obj['button'] = Button.constructFromObject(data['button']);
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Example: Improve Accuracy
+   * @member {String} title
+   */
+  exports.prototype['title'] = undefined;
+  /**
+   * Example: The more data I have the more accurate your results will be so track regularly!
+   * @member {String} description
+   */
+  exports.prototype['description'] = undefined;
+  /**
+   * @member {module:model/Button} button
+   */
+  exports.prototype['button'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16,"./Button":27}],36:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient', 'model/Correlation', 'model/Explanation'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'), require('./Correlation'), require('./Explanation'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.GetCorrelationsDataResponse = factory(root.Quantimodo.ApiClient, root.Quantimodo.Correlation, root.Quantimodo.Explanation);
+  }
+}(this, function(ApiClient, Correlation, Explanation) {
+  'use strict';
+
+
+
+
+  /**
+   * The GetCorrelationsDataResponse model module.
+   * @module model/GetCorrelationsDataResponse
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>GetCorrelationsDataResponse</code>.
+   * @alias module:model/GetCorrelationsDataResponse
+   * @class
+   * @param correlations {Array.<module:model/Correlation>} 
+   * @param explanation {module:model/Explanation} 
+   */
+  var exports = function(correlations, explanation) {
+    var _this = this;
+
+    _this['correlations'] = correlations;
+    _this['explanation'] = explanation;
+  };
+
+  /**
+   * Constructs a <code>GetCorrelationsDataResponse</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/GetCorrelationsDataResponse} obj Optional instance to populate.
+   * @return {module:model/GetCorrelationsDataResponse} The populated <code>GetCorrelationsDataResponse</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('correlations')) {
+        obj['correlations'] = ApiClient.convertToType(data['correlations'], [Correlation]);
+      }
+      if (data.hasOwnProperty('explanation')) {
+        obj['explanation'] = Explanation.constructFromObject(data['explanation']);
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * @member {Array.<module:model/Correlation>} correlations
+   */
+  exports.prototype['correlations'] = undefined;
+  /**
+   * @member {module:model/Explanation} explanation
+   */
+  exports.prototype['explanation'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16,"./Correlation":32,"./Explanation":34}],37:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient', 'model/GetCorrelationsDataResponse'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'), require('./GetCorrelationsDataResponse'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.GetCorrelationsResponse = factory(root.Quantimodo.ApiClient, root.Quantimodo.GetCorrelationsDataResponse);
+  }
+}(this, function(ApiClient, GetCorrelationsDataResponse) {
+  'use strict';
+
+
+
+
+  /**
+   * The GetCorrelationsResponse model module.
+   * @module model/GetCorrelationsResponse
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>GetCorrelationsResponse</code>.
+   * @alias module:model/GetCorrelationsResponse
+   * @class
+   * @param status {Number} Status code
+   * @param success {Boolean} 
+   */
+  var exports = function(status, success) {
+    var _this = this;
+
+    _this['status'] = status;
+
+    _this['success'] = success;
+
+  };
+
+  /**
+   * Constructs a <code>GetCorrelationsResponse</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/GetCorrelationsResponse} obj Optional instance to populate.
+   * @return {module:model/GetCorrelationsResponse} The populated <code>GetCorrelationsResponse</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('status')) {
+        obj['status'] = ApiClient.convertToType(data['status'], 'Number');
+      }
+      if (data.hasOwnProperty('message')) {
+        obj['message'] = ApiClient.convertToType(data['message'], 'String');
+      }
+      if (data.hasOwnProperty('success')) {
+        obj['success'] = ApiClient.convertToType(data['success'], 'Boolean');
+      }
+      if (data.hasOwnProperty('data')) {
+        obj['data'] = GetCorrelationsDataResponse.constructFromObject(data['data']);
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Status code
+   * @member {Number} status
+   */
+  exports.prototype['status'] = undefined;
+  /**
+   * Message
+   * @member {String} message
+   */
+  exports.prototype['message'] = undefined;
+  /**
+   * @member {Boolean} success
+   */
+  exports.prototype['success'] = undefined;
+  /**
+   * @member {module:model/GetCorrelationsDataResponse} data
+   */
+  exports.prototype['data'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16,"./GetCorrelationsDataResponse":36}],38:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient', 'model/GetUserCorrelationsDataResponseData'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'), require('./GetUserCorrelationsDataResponseData'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.GetUserCorrelationsDataResponse = factory(root.Quantimodo.ApiClient, root.Quantimodo.GetUserCorrelationsDataResponseData);
+  }
+}(this, function(ApiClient, GetUserCorrelationsDataResponseData) {
+  'use strict';
+
+
+
+
+  /**
+   * The GetUserCorrelationsDataResponse model module.
+   * @module model/GetUserCorrelationsDataResponse
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>GetUserCorrelationsDataResponse</code>.
+   * @alias module:model/GetUserCorrelationsDataResponse
+   * @class
+   * @param status {Number} Status code
+   * @param success {Boolean} 
+   */
+  var exports = function(status, success) {
+    var _this = this;
+
+    _this['status'] = status;
+
+    _this['success'] = success;
+
+  };
+
+  /**
+   * Constructs a <code>GetUserCorrelationsDataResponse</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/GetUserCorrelationsDataResponse} obj Optional instance to populate.
+   * @return {module:model/GetUserCorrelationsDataResponse} The populated <code>GetUserCorrelationsDataResponse</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('status')) {
+        obj['status'] = ApiClient.convertToType(data['status'], 'Number');
+      }
+      if (data.hasOwnProperty('message')) {
+        obj['message'] = ApiClient.convertToType(data['message'], 'String');
+      }
+      if (data.hasOwnProperty('success')) {
+        obj['success'] = ApiClient.convertToType(data['success'], 'Boolean');
+      }
+      if (data.hasOwnProperty('data')) {
+        obj['data'] = GetUserCorrelationsDataResponseData.constructFromObject(data['data']);
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Status code
+   * @member {Number} status
+   */
+  exports.prototype['status'] = undefined;
+  /**
+   * Message
+   * @member {String} message
+   */
+  exports.prototype['message'] = undefined;
+  /**
+   * @member {Boolean} success
+   */
+  exports.prototype['success'] = undefined;
+  /**
+   * @member {module:model/GetUserCorrelationsDataResponseData} data
+   */
+  exports.prototype['data'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16,"./GetUserCorrelationsDataResponseData":39}],39:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient', 'model/Correlation', 'model/Explanation'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'), require('./Correlation'), require('./Explanation'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.GetUserCorrelationsDataResponseData = factory(root.Quantimodo.ApiClient, root.Quantimodo.Correlation, root.Quantimodo.Explanation);
+  }
+}(this, function(ApiClient, Correlation, Explanation) {
+  'use strict';
+
+
+
+
+  /**
+   * The GetUserCorrelationsDataResponseData model module.
+   * @module model/GetUserCorrelationsDataResponseData
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>GetUserCorrelationsDataResponseData</code>.
+   * @alias module:model/GetUserCorrelationsDataResponseData
+   * @class
+   */
+  var exports = function() {
+    var _this = this;
+
+
+
+  };
+
+  /**
+   * Constructs a <code>GetUserCorrelationsDataResponseData</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/GetUserCorrelationsDataResponseData} obj Optional instance to populate.
+   * @return {module:model/GetUserCorrelationsDataResponseData} The populated <code>GetUserCorrelationsDataResponseData</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('correlations')) {
+        obj['correlations'] = ApiClient.convertToType(data['correlations'], [Correlation]);
+      }
+      if (data.hasOwnProperty('explanation')) {
+        obj['explanation'] = Explanation.constructFromObject(data['explanation']);
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * @member {Array.<module:model/Correlation>} correlations
+   */
+  exports.prototype['correlations'] = undefined;
+  /**
+   * @member {module:model/Explanation} explanation
+   */
+  exports.prototype['explanation'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16,"./Correlation":32,"./Explanation":34}],40:[function(require,module,exports){
+/**
+ * quantimodo
+ * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
+ *
+ * OpenAPI spec version: 5.8.728
+ *
+ * NOTE: This class is auto generated by the swagger code generator program.
+ * https://github.com/swagger-api/swagger-codegen.git
+ *
+ * Swagger Codegen version: 2.2.3
+ *
+ * Do not edit the class manually.
+ *
+ */
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['ApiClient'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like environments that support module.exports, like Node.
+    module.exports = factory(require('../ApiClient'));
+  } else {
+    // Browser globals (root is window)
+    if (!root.Quantimodo) {
+      root.Quantimodo = {};
+    }
+    root.Quantimodo.Image = factory(root.Quantimodo.ApiClient);
+  }
+}(this, function(ApiClient) {
+  'use strict';
+
+
+
+
+  /**
+   * The Image model module.
+   * @module model/Image
+   * @version 5.8.806
+   */
+
+  /**
+   * Constructs a new <code>Image</code>.
+   * @alias module:model/Image
+   * @class
+   * @param imageUrl {String} Example: https://www.filepicker.io/api/file/TjmeNWS5Q2SFmtJlUGLf
+   * @param height {String} Example: 240
+   * @param width {String} Example: 224
+   */
+  var exports = function(imageUrl, height, width) {
+    var _this = this;
+
+    _this['imageUrl'] = imageUrl;
+    _this['height'] = height;
+    _this['width'] = width;
+  };
+
+  /**
+   * Constructs a <code>Image</code> from a plain JavaScript object, optionally creating a new instance.
+   * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
+   * @param {Object} data The plain JavaScript object bearing properties of interest.
+   * @param {module:model/Image} obj Optional instance to populate.
+   * @return {module:model/Image} The populated <code>Image</code> instance.
+   */
+  exports.constructFromObject = function(data, obj) {
+    if (data) {
+      obj = obj || new exports();
+
+      if (data.hasOwnProperty('imageUrl')) {
+        obj['imageUrl'] = ApiClient.convertToType(data['imageUrl'], 'String');
+      }
+      if (data.hasOwnProperty('height')) {
+        obj['height'] = ApiClient.convertToType(data['height'], 'String');
+      }
+      if (data.hasOwnProperty('width')) {
+        obj['width'] = ApiClient.convertToType(data['width'], 'String');
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Example: https://www.filepicker.io/api/file/TjmeNWS5Q2SFmtJlUGLf
+   * @member {String} imageUrl
+   */
+  exports.prototype['imageUrl'] = undefined;
+  /**
+   * Example: 240
+   * @member {String} height
+   */
+  exports.prototype['height'] = undefined;
+  /**
+   * Example: 224
+   * @member {String} width
+   */
+  exports.prototype['width'] = undefined;
+
+
+
+  return exports;
+}));
+
+
+
+},{"../ApiClient":16}],41:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9194,7 +11469,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The InlineResponse201 model module.
    * @module model/InlineResponse201
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -9246,7 +11521,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./TrackingReminder":41}],32:[function(require,module,exports){
+},{"../ApiClient":16,"./TrackingReminder":51}],42:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9285,7 +11560,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The JsonErrorResponse model module.
    * @module model/JsonErrorResponse
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -9340,7 +11615,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],33:[function(require,module,exports){
+},{"../ApiClient":16}],43:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9379,7 +11654,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Measurement model module.
    * @module model/Measurement
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -9852,7 +12127,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],34:[function(require,module,exports){
+},{"../ApiClient":16}],44:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9891,7 +12166,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementDelete model module.
    * @module model/MeasurementDelete
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -9947,7 +12222,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],35:[function(require,module,exports){
+},{"../ApiClient":16}],45:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -9986,7 +12261,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementItem model module.
    * @module model/MeasurementItem
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -10051,7 +12326,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],36:[function(require,module,exports){
+},{"../ApiClient":16}],46:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10090,7 +12365,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementSet model module.
    * @module model/MeasurementSet
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -10201,7 +12476,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./MeasurementItem":35}],37:[function(require,module,exports){
+},{"../ApiClient":16,"./MeasurementItem":45}],47:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10240,7 +12515,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The MeasurementUpdate model module.
    * @module model/MeasurementUpdate
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -10313,7 +12588,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],38:[function(require,module,exports){
+},{"../ApiClient":16}],48:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10352,7 +12627,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Pairs model module.
    * @module model/Pairs
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -10398,7 +12673,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],39:[function(require,module,exports){
+},{"../ApiClient":16}],49:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10437,7 +12712,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The PostCorrelation model module.
    * @module model/PostCorrelation
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -10512,7 +12787,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],40:[function(require,module,exports){
+},{"../ApiClient":16}],50:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10551,7 +12826,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Study model module.
    * @module model/Study
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -10608,7 +12883,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
    */
   exports.prototype['effectVariable'] = undefined;
   /**
-   * Example: {\"correlationCoefficient\":0.537,\"onsetDelay\":0,\"durationOfAction\":604800,\"numberOfPairs\":298,\"effectSize\":\"moderately positive\",\"statisticalSignificance\":0.98208629357249,\"timestamp\":1501905598,\"reversePearsonCorrelationCoefficient\":null,\"predictivePearsonCorrelationCoefficient\":0.537,\"causalityFactor\":0.537,\"causeVariableCategoryName\":\"Sleep\",\"effectVariableCategoryName\":\"Emotions\",\"valuePredictingHighOutcome\":4.21,\"valuePredictingLowOutcome\":3.06,\"optimalPearsonProduct\":0.71265032912368,\"userVote\":null,\"averageVote\":null,\"causeVariableDefaultUnitId\":10,\"createdAt\":null,\"updatedAt\":null,\"causeChanges\":164,\"effectChanges\":195,\"qmScore\":null,\"error\":\"optimalPearsonProduct is not defined\",\"predictsHighEffectChange\":17.13,\"predictsLowEffectChange\":-11.07,\"pValue\":0,\"tValue\":9.6961816920828,\"criticalTValue\":1.646,\"confidenceInterval\":0.14990034554268,\"experimentStartTime\":1336338900,\"experimentEndTime\":1406724600,\"userId\":230,\"studyResults\":\"This analysis suggests that higher Sleep Quality (Sleep) generally predicts higher Overall Mood (p = 0).  Overall Mood is, on average, 17.13%  higher after around 4.21 Sleep Quality.  After an onset delay of 168 hours, Overall Mood is, on average, 11.07%  lower than its average over the 168 hours following around 3.06 Sleep Quality.  298 data points were used in this analysis.  The value for Sleep Quality changed 164 times, effectively running 82 separate natural experiments.  The top quartile outcome values are preceded by an average 4.21 /5 of Sleep Quality.  The bottom quartile outcome values are preceded by an average 3.06 /5 of Sleep Quality.  Forward Pearson Correlation Coefficient was 0.537 (p=0, 95% CI 0.387 to 0.687 onset delay = 0 hours, duration of action = 168 hours) .  The Reverse Pearson Correlation Coefficient was 0 (P=0, 95% CI -0.15 to 0.15, onset delay = -0 hours, duration of action = -168 hours). When the Sleep Quality value is closer to 4.21 /5 than 3.06 /5, the Overall Mood value which follows is, on average, 17.13%  percent higher than its typical value.  When the Sleep Quality value is closer to 3.06 /5 than 4.21 /5, the Overall Mood value which follows is 0% lower than its typical value.  Overall Mood is 3.62/5 (16% higher) on average after days with around 4.19/5 Sleep Quality  Overall Mood is 2.72/5 (13% lower) on average after days with around 1.97/5 Sleep Quality\",\"dataAnalysis\":\"It was assumed that 0 hours would pass before a change in Sleep Quality would produce an observable change in Overall Mood.  It was assumed that Sleep Quality could produce an observable change in Overall Mood for as much as 7 days after the stimulus event.  \",\"outcomeMaximumAllowedValue\":null,\"predictorMaximumAllowedValue\":null,\"studyLimitations\":\"As with any human experiment, it was impossible to control for all potentially confounding variables. \\n            \\n            Correlation does not necessarily imply correlation.  We can never know for sure if one factor is definitely the cause of an outcome.  \\n            However, lack of correlation definitely implies the lack of a causal relationship.  Hence, we can with great \\n            confidence rule out non-existent relationships. For instance, if we discover no relationship between mood\\n            and an antidepressant this information is just as or even more valuable than the discovery that there is a relationship. \\n            <br>\\n            <br>\\n           \\n            We can also take advantage of several characteristics of time series data from many subjects  to infer the likelihood of a causal relationship if we do find a correlational relationship. \\n            The criteria for causation are a group of minimal conditions necessary to provide adequate evidence of a causal relationship between an incidence and a possible consequence.\\n            The list of the criteria is as follows:\\n            <br>\\n            1. Strength (effect size): A small association does not mean that there is not a causal effect, though the larger the association, the more likely that it is causal.\\n            <br>\\n            2. Consistency (reproducibility): Consistent findings observed by different persons in different places with different samples strengthens the likelihood of an effect.\\n            <br>\\n            3. Specificity: Causation is likely if a very specific population at a specific site and disease with no other likely explanation. The more specific an association between a factor and an effect is, the bigger the probability of a causal relationship.\\n            <br>\\n            4. Temporality: The effect has to occur after the cause (and if there is an expected delay between the cause and expected effect, then the effect must occur after that delay).\\n            <br>\\n            5. Biological gradient: Greater exposure should generally lead to greater incidence of the effect. However, in some cases, the mere presence of the factor can trigger the effect. In other cases, an inverse proportion is observed: greater exposure leads to lower incidence.\\n            <br>\\n            6. Plausibility: A plausible mechanism between cause and effect is helpful.\\n            <br>\\n            7. Coherence: Coherence between epidemiological and laboratory findings increases the likelihood of an effect.\\n            <br>\\n            8. Experiment: \\\"Occasionally it is possible to appeal to experimental evidence\\\".\\n            <br>\\n            9. Analogy: The effect of similar factors may be considered.\\n            <br>\\n            <br>\\n             \\n             The confidence in a causal relationship is bolstered by the fact that time-precedence was taken into account in all calculations. Furthermore, in accordance with the law of large numbers (LLN), the predictive power and accuracy of these results will continually grow over time.  298 paired data points were used in this analysis.   Assuming that the relationship is merely coincidental, as the participant independently modifies their Sleep Quality values, the observed strength of the relationship will decline until it is below the threshold of significance.  To it another way, in the case that we do find a spurious correlation, suggesting that banana intake improves mood for instance,\\n            one will likely increase their banana intake.  Due to the fact that this correlation is spurious, it is unlikely\\n            that you will see a continued and persistent corresponding increase in mood.  So over time, the spurious correlation will\\n            naturally dissipate.Furthermore, it will be very enlightening to aggregate this data with the data from other participants  with similar genetic, diseasomic, environmentomic, and demographic profiles.\",\"significantDifference\":true,\"significanceExplanation\":\"Using a two-tailed t-test with alpha = 0.05, it was determined that the change in Overall Mood is statistically significant at 95% confidence interval. \",\"strengthLevel\":\"moderate\",\"confidenceLevel\":\"high\",\"studyObjective\":\"The objective of this study is to determine the nature of the relationship (if any) between the Sleep Quality and the Overall Mood. Additionally, we attempt to determine the Sleep Quality values most likely to produce optimal Overall Mood values. \",\"studyTitle\":\"N1 Study: Sleep Quality Predicts Higher Overall Mood\",\"dataSources\":\"Sleep Quality data was primarily collected using <a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.<br>Overall Mood data was primarily collected using <a href=\\\"https://quantimo.do\\\">QuantiModo</a>.  <a href=\\\"https://quantimo.do\\\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\\\"https://quantimo.do\\\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.\",\"studyAbstract\":\"Your data suggests with a high degree of confidence (p=0) that Sleep Quality (Sleep) has a moderately positive predictive relationship (R=0.537) with Overall Mood  (Emotions).  The highest quartile of Overall Mood  measurements were observed following an average 4.21/5 Sleep Quality.  The lowest quartile of Overall Mood  measurements were observed following an average 3.06/5 Sleep Quality.\",\"direction\":\"higher\",\"predictivePearsonCorrelation\":null,\"predictorExplanation\":\"Sleep Quality Predicts Higher Overall Mood\",\"studyBackground\":null,\"studyDesign\":\"This study is based on data donated by one QuantiModo user. Thus, the study design is consistent with an n=1 observational natural experiment. \",\"dataPoints\":null,\"numberOfDays\":814,\"reversePairsCount\":null,\"causeChangesStatisticalSignificance\":0.99577470697973,\"causeVariableCategoryId\":6,\"effectVariableCategoryId\":1,\"predictorFillingValue\":null,\"outcomeFillingValue\":null,\"causeNumberOfRawMeasurements\":614,\"effectNumberOfRawMeasurements\":11829,\"causeNumberOfProcessedDailyMeasurements\":312,\"effectNumberOfProcessedDailyMeasurements\":1492,\"causeVariableMostCommonConnectorId\":6,\"effectVariableMostCommonConnectorId\":5,\"studyLinkFacebook\":\"https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230\",\"studyLinkTwitter\":\"https://twitter.com/home?status=Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%20%40quantimodo\",\"studyLinkGoogle\":\"https://plus.google.com/share?url=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230\",\"causeVariableName\":\"Sleep Quality\",\"effectVariableName\":\"Overall Mood\",\"averageEffect\":3.1318379141366,\"numberOfLowEffectPairs\":126,\"numberOfHighEffectPairs\":46,\"degreesOfFreedom\":200,\"numberOfUniqueCauseValuesForOptimalValues\":18,\"numberOfUniqueEffectValuesForOptimalValues\":49,\"numberOfCauseChangesForOptimalValues\":164,\"medianOfUpperHalfOfEffectMeasurements\":null,\"medianOfLowerHalfOfEffectMeasurements\":null,\"numberOfEffectChangesForOptimalValues\":195,\"minimumEffectValue\":2,\"maximumEffectValue\":5,\"effectValueSpread\":3,\"minimumCauseValue\":1,\"maximumCauseValue\":5,\"causeValueSpread\":4,\"averageEffectFollowingHighCause\":3.62,\"averageEffectFollowingLowCause\":2.72,\"averageDailyLowCause\":1.97,\"averageDailyHighCause\":4.19,\"principalInvestigator\":null,\"causeVariableCombinationOperation\":null,\"valuePredictingHighOutcomeExplanation\":\"Overall Mood, on average, 17.13% higher after around 4.21/5 Sleep Quality \",\"averageEffectFollowingHighCauseExplanation\":\"Overall Mood is 3.62/5 (16% higher) on average after days with around 4.19/5 Sleep Quality\",\"averageEffectFollowingLowCauseExplanation\":\"Overall Mood is 2.72/5 (13% lower) on average after days with around 1.97/5 Sleep Quality\",\"valuePredictingLowOutcomeExplanation\":\"Overall Mood, on average, 11.07% lower after around 3.06/5 Sleep Quality \",\"numberOfUsers\":null,\"outcomeDataSources\":null,\"correlationIsContradictoryToOptimalValues\":false,\"forwardSpearmanCorrelationCoefficient\":0.52191019757404,\"minimumProbability\":0.05,\"strongestPearsonCorrelationCoefficient\":null,\"pairsOverTimeChartConfig\":null,\"correlationsOverOnsetDelaysChartConfig\":null,\"correlationsOverDurationsOfActionChartConfig\":null,\"onsetDelayWithStrongestPearsonCorrelation\":null,\"averageForwardPearsonCorrelationOverOnsetDelays\":null,\"averageReversePearsonCorrelationOverOnsetDelays\":null,\"pearsonCorrelationWithNoOnsetDelay\":null,\"voteStatisticalSignificance\":0.98630136986301,\"calculationStartTime\":null,\"shareUserMeasurements\":true,\"causeUserVariableShareUserMeasurements\":null,\"effectUserVariableShareUserMeasurements\":null,\"averagePearsonCorrelationCoefficientOverOnsetDelays\":null,\"onsetDelayWithStrongestPearsonCorrelationInHours\":null,\"causeVariableId\":1448,\"effectVariableId\":1398,\"studyLinkStatic\":\"https://local.quantimo.do/api/v2/study?causeVariableName=Sleep%20Quality&effectVariableName=Overall%20Mood&userId=230\",\"studyLinkDynamic\":\"https://local.quantimo.do/ionic/Modo/www/index.html#/app/study?causeVariableName=Sleep%20Quality&effectVariableName=Overall%20Mood&userId=230\",\"gaugeImage\":\"https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship.png\",\"imageUrl\":\"https://s3-us-west-1.amazonaws.com/qmimages/variable_categories_gauges_logo_background/gauge-moderately-positive-relationship_sleep_emotions_logo_background.png\",\"gaugeImageSquare\":\"https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship-200-200.png\",\"onsetDelayInHours\":0,\"durationOfActionInHours\":0,\"effectVariableDefaultUnitId\":10,\"causeVariableDefaultUnitName\":null,\"causeVariableDefaultUnitAbbreviatedName\":\"/5\",\"effectVariableDefaultUnitName\":null,\"effectVariableDefaultUnitAbbreviatedName\":\"/5\",\"rawCauseMeasurementSignificance\":0.99999999870747,\"allPairsSignificance\":0.99995147023968,\"numberOfDaysSignificance\":0.99999999999836,\"rawEffectMeasurementSignificance\":1,\"optimalChangeSpread\":28.2,\"optimalChangeSpreadSignificance\":0.99991727593444,\"correlationsOverDurationsOfAction\":null,\"dataSourcesParagraphForEffect\":\"Overall Mood data was primarily collected using <a href=\\\"https://quantimo.do\\\">QuantiModo</a>.  <a href=\\\"https://quantimo.do\\\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\\\"https://quantimo.do\\\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.\",\"dataSourcesParagraphForCause\":\"Sleep Quality data was primarily collected using <a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.\",\"instructionsForEffect\":\"<a href=\\\"https://quantimo.do\\\">Obtain QuantiModo</a> and use it to record your Overall Mood. Once you have a <a href=\\\"https://quantimo.do\\\">QuantiModo</a> account, <a href=\\\"https://app.quantimo.do/ionic/Modo/www/#/app/import\\\">connect your  QuantiModo account at QuantiModo</a> to automatically import and analyze your data.\",\"instructionsForCause\":\"<a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Obtain Up by Jawbone</a> and use it to record your Sleep Quality. Once you have a <a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a> account, <a href=\\\"https://app.quantimo.do/ionic/Modo/www/#/app/import\\\">connect your  Up by Jawbone account at QuantiModo</a> to automatically import and analyze your data.\",\"perDaySentenceFragment\":\"\",\"predictsLowEffectChangeSentenceFragment\":\", on average, 11.07% \",\"predictsHighEffectChangeSentenceFragment\":\", on average, 17.13% \",\"studyLinkEmail\":\"mailto:?subject=N1%20Study%3A%20Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood&body=Check%20out%20my%20study%20at%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%0A%0AHave%20a%20great%20day!\",\"distanceFromMiddleToBeHightLowEffect\":25,\"numberOfSamples\":298,\"effectUnit\":\"/5\",\"causeVariableImageUrl\":\"https://maxcdn.icons8.com/Color/PNG/96/Household/sleeping_in_bed-96.png\",\"causeVariableIonIcon\":\"ion-ios-cloudy-night-outline\",\"effectVariableImageUrl\":\"https://maxcdn.icons8.com/Color/PNG/96/Cinema/theatre_mask-96.png\",\"effectVariableIonIcon\":\"ion-happy-outline\"}
+   * Example: {\"correlationCoefficient\":0.537,\"onsetDelay\":0,\"durationOfAction\":604800,\"numberOfPairs\":298,\"effectSize\":\"moderately positive\",\"statisticalSignificance\":0.98208629357249,\"timestamp\":1501905598,\"reversePearsonCorrelationCoefficient\":null,\"predictivePearsonCorrelationCoefficient\":0.537,\"causalityFactor\":0.537,\"causeVariableCategoryName\":\"Sleep\",\"effectVariableCategoryName\":\"Emotions\",\"valuePredictingHighOutcome\":4.21,\"valuePredictingLowOutcome\":3.06,\"optimalPearsonProduct\":0.71265032912368,\"userVote\":null,\"averageVote\":null,\"causeVariableDefaultUnitId\":10,\"createdAt\":null,\"updatedAt\":null,\"causeChanges\":164,\"effectChanges\":195,\"qmScore\":null,\"error\":\"optimalPearsonProduct is not defined\",\"predictsHighEffectChange\":17.13,\"predictsLowEffectChange\":-11.07,\"pValue\":0,\"tValue\":9.6961816920828,\"criticalTValue\":1.646,\"confidenceInterval\":0.14990034554268,\"experimentStartTime\":1336338900,\"experimentEndTime\":1406724600,\"userId\":230,\"studyResults\":\"This analysis suggests that higher Sleep Quality (Sleep) generally predicts higher Overall Mood (p = 0).  Overall Mood is, on average, 17.13% higher after around 4.21 Sleep Quality.  After an onset delay of 168 hours, Overall Mood is, on average, 11.07%  lower than its average over the 168 hours following around 3.06 Sleep Quality.  298 data points were used in this analysis.  The value for Sleep Quality changed 164 times, effectively running 82 separate natural experiments.  The top quartile outcome values are preceded by an average 4.21 /5 of Sleep Quality.  The bottom quartile outcome values are preceded by an average 3.06 /5 of Sleep Quality.  Forward Pearson Correlation Coefficient was 0.537 (p=0, 95% CI 0.387 to 0.687 onset delay = 0 hours, duration of action = 168 hours) .  The Reverse Pearson Correlation Coefficient was 0 (P=0, 95% CI -0.15 to 0.15, onset delay = -0 hours, duration of action = -168 hours). When the Sleep Quality value is closer to 4.21 /5 than 3.06 /5, the Overall Mood value which follows is, on average, 17.13%  percent higher than its typical value.  When the Sleep Quality value is closer to 3.06 /5 than 4.21 /5, the Overall Mood value which follows is 0% lower than its typical value.  Overall Mood is 3.62/5 (16% higher) on average after days with around 4.19/5 Sleep Quality  Overall Mood is 2.72/5 (13% lower) on average after days with around 1.97/5 Sleep Quality\",\"dataAnalysis\":\"It was assumed that 0 hours would pass before a change in Sleep Quality would produce an observable change in Overall Mood.  It was assumed that Sleep Quality could produce an observable change in Overall Mood for as much as 7 days after the stimulus event. \",\"outcomeMaximumAllowedValue\":null,\"predictorMaximumAllowedValue\":null,\"studyLimitations\":\"As with any human experiment, it was impossible to control for all potentially confounding variables. \\n            \\n Correlation does not necessarily imply correlation.  We can never know for sure if one factor is definitely the cause of an outcome. \\n            However, lack of correlation definitely implies the lack of a causal relationship.  Hence, we can with great \\n confidence rule out non-existent relationships. For instance, if we discover no relationship between mood\\n            and an antidepressant this information is just as or even more valuable than the discovery that there is a relationship. \\n <br>\\n            <br>\\n           \\n            We can also take advantage of several characteristics of time series data from many subjects  to infer the likelihood of a causal relationship if we do find a correlational relationship. \\n            The criteria for causation are a group of minimal conditions necessary to provide adequate evidence of a causal relationship between an incidence and a possible consequence.\\n            The list of the criteria is as follows:\\n            <br>\\n            1. Strength (effect size): A small association does not mean that there is not a causal effect, though the larger the association, the more likely that it is causal.\\n            <br>\\n            2. Consistency (reproducibility): Consistent findings observed by different persons in different places with different samples strengthens the likelihood of an effect.\\n            <br>\\n            3. Specificity: Causation is likely if a very specific population at a specific site and disease with no other likely explanation. The more specific an association between a factor and an effect is, the bigger the probability of a causal relationship.\\n            <br>\\n            4. Temporality: The effect has to occur after the cause (and if there is an expected delay between the cause and expected effect, then the effect must occur after that delay).\\n            <br>\\n            5. Biological gradient: Greater exposure should generally lead to greater incidence of the effect. However, in some cases, the mere presence of the factor can trigger the effect. In other cases, an inverse proportion is observed: greater exposure leads to lower incidence.\\n <br>\\n            6. Plausibility: A plausible mechanism between cause and effect is helpful.\\n            <br>\\n            7. Coherence: Coherence between epidemiological and laboratory findings increases the likelihood of an effect.\\n            <br>\\n            8. Experiment: \\\"Occasionally it is possible to appeal to experimental evidence\\\".\\n            <br>\\n            9. Analogy: The effect of similar factors may be considered.\\n            <br>\\n <br>\\n             \\n             The confidence in a causal relationship is bolstered by the fact that time-precedence was taken into account in all calculations. Furthermore, in accordance with the law of large numbers (LLN), the predictive power and accuracy of these results will continually grow over time.  298 paired data points were used in this analysis.   Assuming that the relationship is merely coincidental, as the participant independently modifies their Sleep Quality values, the observed strength of the relationship will decline until it is below the threshold of significance.  To it another way, in the case that we do find a spurious correlation, suggesting that banana intake improves mood for instance,\\n            one will likely increase their banana intake.  Due to the fact that this correlation is spurious, it is unlikely\\n            that you will see a continued and persistent corresponding increase in mood.  So over time, the spurious correlation will\\n            naturally dissipate.Furthermore, it will be very enlightening to aggregate this data with the data from other participants  with similar genetic, diseasomic, environmentomic, and demographic profiles.\",\"significantDifference\":true,\"significanceExplanation\":\"Using a two-tailed t-test with alpha = 0.05, it was determined that the change in Overall Mood is statistically significant at 95% confidence interval. \",\"strengthLevel\":\"moderate\",\"confidenceLevel\":\"high\",\"studyObjective\":\"The objective of this study is to determine the nature of the relationship (if any) between the Sleep Quality and the Overall Mood. Additionally, we attempt to determine the Sleep Quality values most likely to produce optimal Overall Mood values. \",\"studyTitle\":\"N1 Study: Sleep Quality Predicts Higher Overall Mood\",\"dataSources\":\"Sleep Quality data was primarily collected using <a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.<br>Overall Mood data was primarily collected using <a href=\\\"https://quantimo.do\\\">QuantiModo</a>.  <a href=\\\"https://quantimo.do\\\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\\\"https://quantimo.do\\\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.\",\"studyAbstract\":\"Your data suggests with a high degree of confidence (p=0) that Sleep Quality (Sleep) has a moderately positive predictive relationship (R=0.537) with Overall Mood  (Emotions).  The highest quartile of Overall Mood  measurements were observed following an average 4.21/5 Sleep Quality.  The lowest quartile of Overall Mood  measurements were observed following an average 3.06/5 Sleep Quality.\",\"direction\":\"higher\",\"predictivePearsonCorrelation\":null,\"predictorExplanation\":\"Sleep Quality Predicts Higher Overall Mood\",\"studyBackground\":null,\"studyDesign\":\"This study is based on data donated by one QuantiModo user. Thus, the study design is consistent with an n=1 observational natural experiment. \",\"dataPoints\":null,\"numberOfDays\":814,\"reversePairsCount\":null,\"causeChangesStatisticalSignificance\":0.99577470697973,\"causeVariableCategoryId\":6,\"effectVariableCategoryId\":1,\"predictorFillingValue\":null,\"outcomeFillingValue\":null,\"causeNumberOfRawMeasurements\":614,\"effectNumberOfRawMeasurements\":11829,\"causeNumberOfProcessedDailyMeasurements\":312,\"effectNumberOfProcessedDailyMeasurements\":1492,\"causeVariableMostCommonConnectorId\":6,\"effectVariableMostCommonConnectorId\":5,\"studyLinkFacebook\":\"https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230\",\"studyLinkTwitter\":\"https://twitter.com/home?status=Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%20%40quantimodo\",\"studyLinkGoogle\":\"https://plus.google.com/share?url=https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230\",\"causeVariableName\":\"Sleep Quality\",\"effectVariableName\":\"Overall Mood\",\"averageEffect\":3.1318379141366,\"numberOfLowEffectPairs\":126,\"numberOfHighEffectPairs\":46,\"degreesOfFreedom\":200,\"numberOfUniqueCauseValuesForOptimalValues\":18,\"numberOfUniqueEffectValuesForOptimalValues\":49,\"numberOfCauseChangesForOptimalValues\":164,\"medianOfUpperHalfOfEffectMeasurements\":null,\"medianOfLowerHalfOfEffectMeasurements\":null,\"numberOfEffectChangesForOptimalValues\":195,\"minimumEffectValue\":2,\"maximumEffectValue\":5,\"effectValueSpread\":3,\"minimumCauseValue\":1,\"maximumCauseValue\":5,\"causeValueSpread\":4,\"averageEffectFollowingHighCause\":3.62,\"averageEffectFollowingLowCause\":2.72,\"averageDailyLowCause\":1.97,\"averageDailyHighCause\":4.19,\"principalInvestigator\":null,\"causeVariableCombinationOperation\":null,\"valuePredictingHighOutcomeExplanation\":\"Overall Mood, on average, 17.13% higher after around 4.21/5 Sleep Quality \",\"averageEffectFollowingHighCauseExplanation\":\"Overall Mood is 3.62/5 (16% higher) on average after days with around 4.19/5 Sleep Quality\",\"averageEffectFollowingLowCauseExplanation\":\"Overall Mood is 2.72/5 (13% lower) on average after days with around 1.97/5 Sleep Quality\",\"valuePredictingLowOutcomeExplanation\":\"Overall Mood, on average, 11.07% lower after around 3.06/5 Sleep Quality \",\"numberOfUsers\":null,\"outcomeDataSources\":null,\"correlationIsContradictoryToOptimalValues\":false,\"forwardSpearmanCorrelationCoefficient\":0.52191019757404,\"minimumProbability\":0.05,\"strongestPearsonCorrelationCoefficient\":null,\"pairsOverTimeChartConfig\":null,\"correlationsOverOnsetDelaysChartConfig\":null,\"correlationsOverDurationsOfActionChartConfig\":null,\"onsetDelayWithStrongestPearsonCorrelation\":null,\"averageForwardPearsonCorrelationOverOnsetDelays\":null,\"averageReversePearsonCorrelationOverOnsetDelays\":null,\"pearsonCorrelationWithNoOnsetDelay\":null,\"voteStatisticalSignificance\":0.98630136986301,\"calculationStartTime\":null,\"shareUserMeasurements\":true,\"causeUserVariableShareUserMeasurements\":null,\"effectUserVariableShareUserMeasurements\":null,\"averagePearsonCorrelationCoefficientOverOnsetDelays\":null,\"onsetDelayWithStrongestPearsonCorrelationInHours\":null,\"causeVariableId\":1448,\"effectVariableId\":1398,\"studyLinkStatic\":\"https://local.quantimo.do/api/v2/study?causeVariableName=Sleep%20Quality&effectVariableName=Overall%20Mood&userId=230\",\"studyLinkDynamic\":\"https://local.quantimo.do/ionic/Modo/www/index.html#/app/study?causeVariableName=Sleep%20Quality&effectVariableName=Overall%20Mood&userId=230\",\"gaugeImage\":\"https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship.png\",\"imageUrl\":\"https://s3-us-west-1.amazonaws.com/qmimages/variable_categories_gauges_logo_background/gauge-moderately-positive-relationship_sleep_emotions_logo_background.png\",\"gaugeImageSquare\":\"https://s3.amazonaws.com/quantimodo-docs/images/gauge-moderately-positive-relationship-200-200.png\",\"onsetDelayInHours\":0,\"durationOfActionInHours\":0,\"effectVariableDefaultUnitId\":10,\"causeVariableDefaultUnitName\":null,\"causeVariableDefaultUnitAbbreviatedName\":\"/5\",\"effectVariableDefaultUnitName\":null,\"effectVariableDefaultUnitAbbreviatedName\":\"/5\",\"rawCauseMeasurementSignificance\":0.99999999870747,\"allPairsSignificance\":0.99995147023968,\"numberOfDaysSignificance\":0.99999999999836,\"rawEffectMeasurementSignificance\":1,\"optimalChangeSpread\":28.2,\"optimalChangeSpreadSignificance\":0.99991727593444,\"correlationsOverDurationsOfAction\":null,\"dataSourcesParagraphForEffect\":\"Overall Mood data was primarily collected using <a href=\\\"https://quantimo.do\\\">QuantiModo</a>.  <a href=\\\"https://quantimo.do\\\">QuantiModo</a> is a Chrome extension, Android app, iOS app, and web app that allows you to easily track mood, symptoms, or any outcome you want to optimize in a fraction of a second.  You can also import your data from over 30 other apps and devices like Fitbit, Rescuetime, Jawbone Up, Withings, Facebook, Github, Google Calendar, Runkeeper, MoodPanda, Slice, Google Fit, and more.  <a href=\\\"https://quantimo.do\\\">QuantiModo</a> then analyzes your data to identify which hidden factors are most likely to be influencing your mood or symptoms and their optimal daily values.\",\"dataSourcesParagraphForCause\":\"Sleep Quality data was primarily collected using <a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a>.  UP by Jawbone is a wristband and app that tracks how you sleep, move and eat and then helps you use that information to feel your best.\",\"instructionsForEffect\":\"<a href=\\\"https://quantimo.do\\\">Obtain QuantiModo</a> and use it to record your Overall Mood. Once you have a <a href=\\\"https://quantimo.do\\\">QuantiModo</a> account, <a href=\\\"https://app.quantimo.do/ionic/Modo/www/#/app/import\\\">connect your  QuantiModo account at QuantiModo</a> to automatically import and analyze your data.\",\"instructionsForCause\":\"<a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Obtain Up by Jawbone</a> and use it to record your Sleep Quality. Once you have a <a href=\\\"http://www.amazon.com/gp/product/B00A17IAO0/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B00A17IAO0&linkCode=as2&tag=quant08-20\\\">Up by Jawbone</a> account, <a href=\\\"https://app.quantimo.do/ionic/Modo/www/#/app/import\\\">connect your  Up by Jawbone account at QuantiModo</a> to automatically import and analyze your data.\",\"perDaySentenceFragment\":\"\",\"predictsLowEffectChangeSentenceFragment\":\", on average, 11.07% \",\"predictsHighEffectChangeSentenceFragment\":\", on average, 17.13% \",\"studyLinkEmail\":\"mailto:?subject=N1%20Study%3A%20Sleep%20Quality%20Predicts%20Higher%20Overall%20Mood&body=Check%20out%20my%20study%20at%20https%3A%2F%2Flocal.quantimo.do%2Fapi%2Fv2%2Fstudy%3FcauseVariableName%3DSleep%2520Quality%26effectVariableName%3DOverall%2520Mood%26userId%3D230%0A%0AHave%20a%20great%20day!\",\"distanceFromMiddleToBeHightLowEffect\":25,\"numberOfSamples\":298,\"effectUnit\":\"/5\",\"causeVariableImageUrl\":\"https://maxcdn.icons8.com/Color/PNG/96/Household/sleeping_in_bed-96.png\",\"causeVariableIonIcon\":\"ion-ios-cloudy-night-outline\",\"effectVariableImageUrl\":\"https://maxcdn.icons8.com/Color/PNG/96/Cinema/theatre_mask-96.png\",\"effectVariableIonIcon\":\"ion-happy-outline\"}
    * @member {Object} statistics
    */
   exports.prototype['statistics'] = undefined;
@@ -10625,7 +12900,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],41:[function(require,module,exports){
+},{"../ApiClient":16}],51:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -10664,7 +12939,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminder model module.
    * @module model/TrackingReminder
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -11332,7 +13607,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],42:[function(require,module,exports){
+},{"../ApiClient":16}],52:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -11371,7 +13646,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderDelete model module.
    * @module model/TrackingReminderDelete
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -11417,7 +13692,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],43:[function(require,module,exports){
+},{"../ApiClient":16}],53:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -11456,7 +13731,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotification model module.
    * @module model/TrackingReminderNotification
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -12140,7 +14415,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],44:[function(require,module,exports){
+},{"../ApiClient":16}],54:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12179,7 +14454,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The TrackingReminderNotificationPost model module.
    * @module model/TrackingReminderNotificationPost
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -12266,7 +14541,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],45:[function(require,module,exports){
+},{"../ApiClient":16}],55:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12285,18 +14560,18 @@ exports.cleanHeader = function(header, shouldStripCookie){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['ApiClient', 'model/ConversionStep'], factory);
+    define(['ApiClient', 'model/ConversionStep', 'model/UnitCategory'], factory);
   } else if (typeof module === 'object' && module.exports) {
     // CommonJS-like environments that support module.exports, like Node.
-    module.exports = factory(require('../ApiClient'), require('./ConversionStep'));
+    module.exports = factory(require('../ApiClient'), require('./ConversionStep'), require('./UnitCategory'));
   } else {
     // Browser globals (root is window)
     if (!root.Quantimodo) {
       root.Quantimodo = {};
     }
-    root.Quantimodo.Unit = factory(root.Quantimodo.ApiClient, root.Quantimodo.ConversionStep);
+    root.Quantimodo.Unit = factory(root.Quantimodo.ApiClient, root.Quantimodo.ConversionStep, root.Quantimodo.UnitCategory);
   }
-}(this, function(ApiClient, ConversionStep) {
+}(this, function(ApiClient, ConversionStep, UnitCategory) {
   'use strict';
 
 
@@ -12305,7 +14580,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Unit model module.
    * @module model/Unit
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -12316,8 +14591,10 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @param abbreviatedName {String} Unit abbreviation
    * @param category {module:model/Unit.CategoryEnum} Unit category
    * @param conversionSteps {Array.<module:model/ConversionStep>} Conversion steps list
+   * @param unitCategory {module:model/UnitCategory} 
+   * @param maximumValue {Number} Example: 4
    */
-  var exports = function(name, abbreviatedName, category, conversionSteps) {
+  var exports = function(name, abbreviatedName, category, conversionSteps, unitCategory, maximumValue) {
     var _this = this;
 
     _this['name'] = name;
@@ -12332,6 +14609,8 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
+    _this['unitCategory'] = unitCategory;
+    _this['maximumValue'] = maximumValue;
   };
 
   /**
@@ -12380,6 +14659,12 @@ exports.cleanHeader = function(header, shouldStripCookie){
       }
       if (data.hasOwnProperty('manualTracking')) {
         obj['manualTracking'] = ApiClient.convertToType(data['manualTracking'], 'Number');
+      }
+      if (data.hasOwnProperty('unitCategory')) {
+        obj['unitCategory'] = UnitCategory.constructFromObject(data['unitCategory']);
+      }
+      if (data.hasOwnProperty('maximumValue')) {
+        obj['maximumValue'] = ApiClient.convertToType(data['maximumValue'], 'Number');
       }
     }
     return obj;
@@ -12445,6 +14730,15 @@ exports.cleanHeader = function(header, shouldStripCookie){
    * @member {Number} manualTracking
    */
   exports.prototype['manualTracking'] = undefined;
+  /**
+   * @member {module:model/UnitCategory} unitCategory
+   */
+  exports.prototype['unitCategory'] = undefined;
+  /**
+   * Example: 4
+   * @member {Number} maximumValue
+   */
+  exports.prototype['maximumValue'] = undefined;
 
 
   /**
@@ -12515,7 +14809,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./ConversionStep":30}],46:[function(require,module,exports){
+},{"../ApiClient":16,"./ConversionStep":31,"./UnitCategory":56}],56:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12554,7 +14848,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UnitCategory model module.
    * @module model/UnitCategory
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -12618,7 +14912,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],47:[function(require,module,exports){
+},{"../ApiClient":16}],57:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12657,7 +14951,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Update model module.
    * @module model/Update
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -12770,7 +15064,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],48:[function(require,module,exports){
+},{"../ApiClient":16}],58:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -12809,7 +15103,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The User model module.
    * @module model/User
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -13130,7 +15424,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],49:[function(require,module,exports){
+},{"../ApiClient":16}],59:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -13169,7 +15463,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserCorrelation model module.
    * @module model/UserCorrelation
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -14283,7 +16577,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],50:[function(require,module,exports){
+},{"../ApiClient":16}],60:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -14322,7 +16616,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTag model module.
    * @module model/UserTag
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -14388,7 +16682,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],51:[function(require,module,exports){
+},{"../ApiClient":16}],61:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -14427,7 +16721,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenFailedResponse model module.
    * @module model/UserTokenFailedResponse
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -14492,7 +16786,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],52:[function(require,module,exports){
+},{"../ApiClient":16}],62:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -14531,7 +16825,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenRequest model module.
    * @module model/UserTokenRequest
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -14585,7 +16879,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./UserTokenRequestInnerUserField":53}],53:[function(require,module,exports){
+},{"../ApiClient":16,"./UserTokenRequestInnerUserField":63}],63:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -14624,7 +16918,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenRequestInnerUserField model module.
    * @module model/UserTokenRequestInnerUserField
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -14669,7 +16963,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],54:[function(require,module,exports){
+},{"../ApiClient":16}],64:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -14708,7 +17002,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenSuccessfulResponse model module.
    * @module model/UserTokenSuccessfulResponse
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -14773,7 +17067,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./UserTokenSuccessfulResponseInnerUserField":55}],55:[function(require,module,exports){
+},{"../ApiClient":16,"./UserTokenSuccessfulResponseInnerUserField":65}],65:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -14812,7 +17106,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserTokenSuccessfulResponseInnerUserField model module.
    * @module model/UserTokenSuccessfulResponseInnerUserField
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -14868,7 +17162,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],56:[function(require,module,exports){
+},{"../ApiClient":16}],66:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -14907,7 +17201,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariable model module.
    * @module model/UserVariable
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -16159,7 +18453,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],57:[function(require,module,exports){
+},{"../ApiClient":16}],67:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -16198,7 +18492,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The UserVariableDelete model module.
    * @module model/UserVariableDelete
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -16244,7 +18538,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],58:[function(require,module,exports){
+},{"../ApiClient":16}],68:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -16283,7 +18577,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Variable model module.
    * @module model/Variable
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -17066,7 +19360,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16,"./Variable":58}],59:[function(require,module,exports){
+},{"../ApiClient":16,"./Variable":68}],69:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -17105,7 +19399,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VariableCategory model module.
    * @module model/VariableCategory
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -17151,7 +19445,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],60:[function(require,module,exports){
+},{"../ApiClient":16}],70:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -17190,7 +19484,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The Vote model module.
    * @module model/Vote
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
@@ -17303,7 +19597,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 
 
 
-},{"../ApiClient":16}],61:[function(require,module,exports){
+},{"../ApiClient":16}],71:[function(require,module,exports){
 /**
  * quantimodo
  * QuantiModo makes it easy to retrieve normalized user data from a wide array of devices and applications. [Learn about QuantiModo](https://quantimo.do), check out our [docs](https://github.com/QuantiModo/docs) or contact us at [help.quantimo.do](https://help.quantimo.do).
@@ -17342,7 +19636,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
   /**
    * The VoteDelete model module.
    * @module model/VoteDelete
-   * @version 5.8.805
+   * @version 5.8.806
    */
 
   /**
