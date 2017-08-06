@@ -80,7 +80,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         } else {
             $scope.state.variableName = variableObject.name;
             $scope.state.variableObject = variableObject;
-            $state.go($scope.state.nextState, $scope.stateParams);
+            $state.go($scope.state.nextState, $scope.state);
         }
     };
     $scope.goToStateFromVariableSearch = function(stateName){$state.go(stateName, $stateParams);};
@@ -189,7 +189,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
         if ($scope.state.nextState) {
             $scope.state.variableObject = variableObject;
-            $state.go($scope.state.nextState, $scope.stateParams);
+            $state.go($scope.state.nextState, $scope.state);
         }
     };
     function setHelpText() {
