@@ -302,26 +302,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
         }, requestSpecificErrorHandler);
     };
+    function setAfterLoginUrlAndSendToLogin(){
+        setAfterLoginGoToUrl();
+        sendToLogin();
+    }
     function generalApiErrorHandler(data, status, headers, request, options){
         if(status === 302){
             logDebug('Got 302 response from ' + JSON.stringify(request), options.stackTrace);
             return;
         }
         if(status === 401){
-            if(options && options.doNotSendToLogin){
-                return;
-            } else {
-                logDebug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
-                logDebug('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
-                setAfterLoginGoToUrl();
-                if (window.private_keys && qmService.getClientId() !== 'oAuthDisabled') {
-                    qmService.completelyResetAppStateAndSendToLogin();
-                } else {
-                    var register = true;
-                    qmService.sendToNonOAuthBrowserLoginUrl(register);
-                }
-                return;
-            }
+            if(options && options.doNotSendToLogin){return;}
+            logDebug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
+            logDebug('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
+            setAfterLoginUrlAndSendToLogin();
+            return;
         }
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
         var pathWithoutQuery = pathWithQuery.split("?")[0];
@@ -998,8 +993,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         quantimodo_oauth2.accessToken = getAccessToken();
         return qmApiClient;
     }
-    function qmApiGeneralErrorHandler(error, data, response) {
-        logError(error);
+    function qmApiGeneralErrorHandler(error, data, response, options) {
+        if(response.status === 401){
+            if(!options || !options.doNotSendToLogin){setAfterLoginUrlAndSendToLogin();}
+        } else {
+            logError(error);
+        }
     }
     qmService.getMeasurements = function(params, successHandler, errorHandler){
         configureQmApiClient();
