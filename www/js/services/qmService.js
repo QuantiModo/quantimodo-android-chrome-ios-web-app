@@ -543,9 +543,22 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //qmService.get('api/v3/variables/search/' + encodeURIComponent(query), ['limit','includePublic', 'manualTracking'], params, successHandler, errorHandler, options);
     };
     qmService.getVariablesByNameFromApi = function(variableName, params, successHandler, errorHandler){
-        var options = {};
+        params.name = variableName;
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.VariablesApi();
+        function callback(error, data, response) {
+            if (error || !data[0]) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data[0], response);
+            }
+        }
+        apiInstance.getUserVariables(params, callback);
+        //var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
-        qmService.get('api/v3/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
+        //qmService.get('api/v3/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
+
     };
     qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
         configureQmApiClient();
