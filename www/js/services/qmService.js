@@ -530,7 +530,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         configureQmApiClient();
         var apiInstance = new Quantimodo.VariablesApi();
         function callback(error, data, response) {
-            if (error) {
+            if (error || !data[0]) {
                 qmApiGeneralErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
             } else {
