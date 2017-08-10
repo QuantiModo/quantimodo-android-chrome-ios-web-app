@@ -119,20 +119,6 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
         }).catch(function (error) { qmService.logError(error); });
     }
     $scope.weightedPeriod = 5;
-    function createUserCharts() {
-        if(!$scope.state.requestParams.includeCharts){
-            $scope.state.requestParams.includeCharts = true;
-            getStudy();
-            return;
-        }
-        $scope.loadingCharts = false;
-        /** @namespace $rootScope.correlationObject.causeProcessedDailyMeasurements */
-        $scope.causeTimelineChartConfig = qmService.processDataAndConfigureLineChart($rootScope.correlationObject.causeProcessedDailyMeasurements, {variableName: $scope.state.requestParams.causeVariableName});
-        /** @namespace $rootScope.correlationObject.effectProcessedDailyMeasurements */
-        $scope.effectTimelineChartConfig = qmService.processDataAndConfigureLineChart($rootScope.correlationObject.effectProcessedDailyMeasurements, {variableName: $scope.state.requestParams.effectVariableName});
-        qmService.highchartsReflow();
-        qmService.hideLoader();
-    }
     function getStudy() {
         if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
             qmService.logError('Cannot get study. Missing cause or effect variable name.');
@@ -143,8 +129,9 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
         qmService.getStudyDeferred($scope.state.requestParams).then(function (study) {
             qmService.hideLoader();
             if(study){$scope.state.studyNotFound = false;}
-            $rootScope.correlationObject = study;
-            createUserCharts();
+            $scope.study = study;
+            $scope.loadingCharts = false;
+            $rootScope.correlationObject = study.statistics;
         }, function (error) {
             qmService.logError(error);
             qmService.hideLoader();

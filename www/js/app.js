@@ -561,9 +561,6 @@ angular.module('starter',
                     numberOfUserCorrelationsAsEffect: '(gt)1',
                     outcome: true
                 },
-                commonVariableSearchParameters: {
-                    numberOfAggregateCorrelationsAsEffect: '(gt)1'
-                },
                 hideNavigationMenu: null
             },
             views: {
@@ -592,7 +589,6 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true
                 },
-                commonVariableSearchParameters: {},
                 hideNavigationMenu: null,
                 doneState: null
             },
@@ -622,7 +618,6 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true
                 },
-                commonVariableSearchParameters: {},
                 hideNavigationMenu: null,
                 doneState: null
             },
@@ -676,9 +671,6 @@ angular.module('starter',
                     includePublic: true,
                     fallbackToAggregatedCorrelations: true,
                     numberOfUserCorrelationsAsCause: '(gt)1'
-                },
-                commonVariableSearchParameters: {
-                    numberOfAggregateCorrelationsAsCause: '(gt)1'
                 },
                 hideNavigationMenu: null
             },
