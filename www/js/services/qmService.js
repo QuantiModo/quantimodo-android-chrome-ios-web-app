@@ -2375,7 +2375,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var postTrackingRemindersToApiAndHandleResponse = function(){
             qmService.postTrackingRemindersToApi(trackingRemindersArray, function(response){
                 if(response && response.data){
-                    if(response.data.trackingReminderNotifications){putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);}
+                    if(response.data.trackingReminderNotifications){
+                        // Don't update inbox because it might add notifications that we have already tracked since the API returned these ones
+                        //putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);
+                        qmService.setLocalStorageItem('trackingReminderNotifications',  JSON.stringify(response.data.trackingReminderNotifications));
+                    }
                     qmService.deleteItemFromLocalStorage('trackingReminderSyncQueue');
                     if(response.data.trackingReminders){qmService.setLocalStorageItem('trackingReminders', JSON.stringify(response.data.trackingReminders));}
                     if(response.data.userVariables){qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);}
