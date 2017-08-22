@@ -252,10 +252,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                             var groupingHash = 'No data returned from this request';
                             Bugsnag.notify(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
                         }
-                    } else if (data.error) {
-                        generalApiErrorHandler(data, status, headers, request, options);
-                        requestSpecificErrorHandler(data);
                     } else {
+                        if (data.error) {
+                            generalApiErrorHandler(data, status, headers, request, options);
+                            requestSpecificErrorHandler(data);
+                        }
                         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
                         if(data.message){ logDebug(data.message, options.stackTrace); }
                         successHandler(data);
@@ -321,6 +322,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
         var pathWithoutQuery = pathWithQuery.split("?")[0];
         var errorName = status + ' from ' + request.method + ' ' + pathWithoutQuery;
+        if(data && data.error && typeof data.error == "string"){
+            errorName = data.error;
+        }
         var metaData = {groupingHash: errorName, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
             requestParams: getAllQueryParamsFromUrlString(request.url)};
         if(!data){
