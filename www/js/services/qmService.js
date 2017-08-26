@@ -144,7 +144,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return object;
     }
-    function logError(message, stackTrace, additionalMetaData) {
+    function logError(message, additionalMetaData, stackTrace) {
         function getTestUrl() {
             function getCurrentRoute() {
                 var parts = window.location.href.split("#/app");
@@ -193,7 +193,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         console.error(message);
     }
     qmService.logError = function(message, stackTrace, additionalMetaData){
-        logError(message, stackTrace, additionalMetaData);
+        logError(message, additionalMetaData, stackTrace);
     };
     qmService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
@@ -350,7 +350,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             metaData.groupingHash = JSON.stringify(data.error);
             if(data.error.message){metaData.groupingHash = JSON.stringify(data.error.message);}
         }
-        logError(errorName, options.stackTrace, metaData);
+        logError(errorName, metaData, options.stackTrace);
     }
     // Handler when request is failed
     var onRequestFailed = function(error){
@@ -6470,14 +6470,39 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(typeof trackingReminders[i].defaultValue === "undefined"){trackingReminders[i].defaultValue = null;}
         }
         trackingReminders = qmService.attachVariableCategoryIcons(trackingReminders);
+        return separateFavoritesAndArchived(trackingReminders);
+    }
+    function separateFavoritesAndArchived(trackingReminders){
         var reminderTypesArray = {allTrackingReminders: trackingReminders};
-        reminderTypesArray.favorites = trackingReminders.filter(function( trackingReminder ) {return trackingReminder.reminderFrequency === 0;});
-        reminderTypesArray.trackingReminders = trackingReminders.filter(function( trackingReminder ) {
-            return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
-        });
-        reminderTypesArray.archivedTrackingReminders = trackingReminders.filter(function( trackingReminder ) {
-            return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
-        });
+        console.debug("tracking reminders is: ", trackingReminders);
+        if(trackingReminders.constructor !== Array){
+            console.debug("trackingReminders is not an array! trackingReminders:", trackingReminders);
+        } else {
+            console.debug("trackingReminders is an array");
+        }
+        try {
+            reminderTypesArray.favorites = trackingReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency === 0;
+            });
+        } catch (error){
+            reminderTypesArray.favorites = [];
+            logError(error, {trackingReminders: trackingReminders});
+        }
+        try {
+            reminderTypesArray.trackingReminders = trackingReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency !== 0 &&
+                    trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') === -1;
+            });
+        } catch (error){
+            logError(error, {trackingReminders: trackingReminders});
+        }
+        try {
+            reminderTypesArray.archivedTrackingReminders = trackingReminders.filter(function( trackingReminder ) {
+                return trackingReminder.reminderFrequency !== 0 && trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
+            });
+        } catch (error){
+            logError(error, {trackingReminders: trackingReminders});
+        }
         return reminderTypesArray;
     }
     qmService.getAllReminderTypes = function(variableCategoryName, type){
