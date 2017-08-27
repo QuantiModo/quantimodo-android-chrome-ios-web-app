@@ -1182,7 +1182,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.reRegisterDeviceToken = function(){
-        qmService.registerDeviceToken('deviceTokenOnServer');
+        var lastPushTimestamp = localStorage.getItem('lastPushTimestamp');
+        if(!lastPushTimestamp || lastPushTimestamp < getUnixTimestampInSeconds() - 86400){
+            qmService.registerDeviceToken('deviceTokenOnServer');
+        } else {
+            logDebug("Not re-registering because we got a notification in the last 24 hours");
+        }
     };
     qmService.registerDeviceToken = function(localStorageName){
         if(!localStorageName){localStorageName = 'deviceTokenToSync';}
