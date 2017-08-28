@@ -838,14 +838,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     // delete tracking reminder
-    qmService.deleteTrackingReminder = function(reminderId, successHandler, errorHandler){
-        if(!reminderId){
+    qmService.deleteTrackingReminder = function(trackingReminderId, successHandler, errorHandler){
+        if(!trackingReminderId){
             logError('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
             return;
         }
+        qmService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'trackingReminderId', trackingReminderId);
         qmService.post('api/v3/trackingReminders/delete',
             ['id'],
-            {id: reminderId},
+            {id: trackingReminderId},
             successHandler,
             errorHandler);
     };
