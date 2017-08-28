@@ -100,26 +100,44 @@ angular.module('starter',
                      console.debug('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
+            window.trackYesAction = function (data){
+                console.debug("trackYesAction Push data: " + JSON.stringify(data));
+                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
+                qmService.trackTrackingReminderNotificationDeferred(body);
+                finishPush(data);
+            };
+            window.trackNoAction = function (data){
+                console.debug("trackNoAction Push data: " + JSON.stringify(data));
+                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
+                qmService.trackTrackingReminderNotificationDeferred(body);
+                finishPush(data);
+            };
+            window.trackZeroAction = function (data){
+                console.debug("trackZeroAction Push data: " + JSON.stringify(data));
+                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
+                qmService.trackTrackingReminderNotificationDeferred(body);
+                finishPush(data);
+            };
              window.trackOneRatingAction = function (data){
-                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackOneRatingAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
                  qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackTwoRatingAction = function (data){
-                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackTwoRatingAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
                  qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackThreeRatingAction = function (data){
-                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackThreeRatingAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
                  qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
              };
              window.trackFourRatingAction = function (data){
-                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackFourRatingAction Push data: " + JSON.stringify(data));
                  var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
                  qmService.trackTrackingReminderNotificationDeferred(body);
                  finishPush(data);
