@@ -296,6 +296,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		if(!$stateParams.today) {getFilteredTrackingReminderNotificationsFromLocalStorage();}
 	});
 	var getTrackingReminderNotifications = function () {
+		qmService.logDebug("Getting notifications from local storage");
 		if($stateParams.today){getFilteredTodayTrackingReminderNotifications();} else {getFilteredTrackingReminderNotificationsFromLocalStorage();}
 	};
 	function shouldWeShowZeroButton(trackingReminderNotification){

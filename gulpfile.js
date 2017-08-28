@@ -607,8 +607,6 @@ var winPlatforms = ['windows'],
         appx: './platforms/windows/AppPackages/**/*',
         binAppx: './bin/Windows/' + buildConfig
     };
-// Set the default to the build task
-gulp.task('default', ['build']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
 // the hardware Gulp is running on which are then placed in platformsToBuild
 gulp.task('build', ['scripts', 'sass'], function () {

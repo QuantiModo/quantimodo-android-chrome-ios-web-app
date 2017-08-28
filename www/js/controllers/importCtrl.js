@@ -2,10 +2,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                                                             $ionicActionSheet, Upload, $timeout, $ionicPopup) {
 	$scope.controller_name = "ImportCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
-	function weCanEnterPage() {
-        var doNotRequireUpgradeToEnterPage = true;
-        return $rootScope.user.stripeActive || !config.appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled || doNotRequireUpgradeToEnterPage;
-    }
     function userCanConnect() {
 	    return $rootScope.user.stripeActive || config.appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
@@ -13,23 +9,10 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		console.debug("ImportCtrl beforeEnter");
         if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
-		if(weCanEnterPage()){
-			loadNativeConnectorPage();
-			return;
-		}
-		// Check if user upgrade via web since last user refresh
-		qmService.showBlackRingLoader();
-		qmService.refreshUser().then(function (user) {
-			qmService.hideLoader();
-			if(weCanEnterPage()){
-				loadNativeConnectorPage();
-				return;
-			}
-			$state.go('app.upgrade', {litePlanState: config.appSettings.appDesign.defaultState});
-		}, function (error) {
-			qmService.hideLoader();
-			$state.go('app.login');
-		});
+        loadNativeConnectorPage();
+        if(!userCanConnect()){
+            qmService.refreshUser(); // Check if user upgrade via web since last user refresh
+        }
 	});
 	$scope.hideImportHelpCard = function () {
 		$scope.showImportHelpCard = false;
@@ -67,7 +50,6 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	};
 	var loadNativeConnectorPage = function(){
 		$scope.showImportHelpCard = (window.localStorage.hideImportHelpCard !== "true");
-		console.debug('importCtrl: $rootScope.isMobile so using native connector page');
 		qmService.showBlackRingLoader();
 		qmService.getConnectorsDeferred()
 			.then(function(connectors){
