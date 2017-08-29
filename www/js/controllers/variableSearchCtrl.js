@@ -136,6 +136,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
                     $scope.state.variableSearchResults = variables;
+                    qmService.logDebug("variable search results", variables);
                     $scope.state.searching = false;
                     showAddVariableButtonIfNecessary(variables);
                     showNoVariablesFoundCardIfNecessary();

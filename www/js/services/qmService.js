@@ -192,7 +192,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         Bugsnag.notify(name, message, obfuscateSecrets(metaData), "error");
         console.error(message);
     }
-    qmService.logError = function(message, stackTrace, additionalMetaData){
+    qmService.logError = function(message, additionalMetaData, stackTrace){
         logError(message, additionalMetaData, stackTrace);
     };
     qmService.addColorsCategoriesAndNames = function(array){
