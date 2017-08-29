@@ -717,9 +717,14 @@ gulp.task('createChromeExtensionManifest', function () {
     writeToFile(chromeManifestPath, chromeExtensionManifest);
 });
 function writeToFile(filePath, stringContents) {
-    logDebug("Writing to " + filePath);
+    logInfo("Writing to " + filePath);
+    logDebug("Writing to " + filePath, stringContents);
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
     return fs.writeFileSync(filePath, stringContents);
+}
+function writeJsonToFile(filePath, contents){
+    contents = prettyJSONStringify(contents);
+    writeToFile(filePath, contents);
 }
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateCredentials', ['setClientId'], function () {
@@ -906,11 +911,57 @@ gulp.task('verifyExistenceOfAndroidArmV7ReleaseBuild', function () {
 gulp.task('verifyExistenceOfChromeExtension', function () {
     return verifyExistenceOfFile(getPathToChromeExtensionZip());
 });
+function handleApiResponse(error, data, response, requiredProperties) {
+    function getUrlFromResponse(response) {
+        return "https://" + response.request.host + response.req.path;
+    }
+    function checkRequiredProperties(data, requiredProperties) {
+        var exampleObject = data;
+        if (data.constructor === Array) {
+            exampleObject = data[0];
+        }
+        if (requiredProperties) {
+            for (var i = 0; i < requiredProperties.length; i++) {
+                if (!exampleObject[requiredProperties[i]]) {
+                    logError('Example object', exampleObject);
+                    throw "Required property " + requiredProperties[i] + " not returned from " + getUrlFromResponse(response);
+                }
+            }
+        }
+    }
+    if (error && error.message) {
+        logError(getUrlFromResponse(response) + " request failed: " + error.message, error);
+        throw error.message;
+    }
+    if(!data || Object.keys(data).length === 0){
+        throw "data not returned from " + getUrlFromResponse(response);
+    }
+    checkRequiredProperties(data, requiredProperties);
+    writeJsonToFile('./www/data/' + filename, contents);
+    logDebug('API returned data', data);
+}
+
+gulp.task('get-common-variables', [], function (callback) {
+    var apiInstance = new Quantimodo.VariablesApi();
+    function qmApiResponseCallback(error, data, response) {
+        var requiredProperties = ['unitAbbreviatedName'];
+        var filename = 'commmonVariables.json';
+        handleApiResponse(error, data, response, requiredProperties, filename);
+        callback();
+    }
+    apiInstance.getCommonVariables({}, qmApiResponseCallback);
+});
 gulp.task('getCommonVariables', function () {
     logInfo('gulp getCommonVariables...');
     return request({url: appHostName + '/api/v1/public/variables?removeAdvancedProperties=true&limit=200&sort=-numberOfUserVariables&numberOfUserVariables=(gt)3', headers: {'User-Agent': 'request'}})
         .pipe(source('commonVariables.json'))
         .pipe(streamify(jeditor(function (commonVariables) {
+            for (let variable of commonVariables) {
+                if(!variable.unitAbbreviatedName) {
+                    logError("No unitAbbreviatedName!", variable);
+                    throw "No unitAbbreviatedName!";
+                }
+            }
             return commonVariables;
         })))
         .pipe(gulp.dest('./www/data/'));
