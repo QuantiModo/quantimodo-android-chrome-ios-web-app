@@ -44,7 +44,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             $scope.state.title = qmService.getTruncatedVariableName($rootScope.variableObject.name);
             getDailyHistoryForVariable(params);
             getHistoryForVariable(params);
-        } else {qmService.logError($state.current.name + ' ERROR: $rootScope.variableObject.name not defined! $rootScope.variableObject: ' + JSON.stringify($rootScope.variableObject));}
+        } else {qmService.logError($state.current.name + ' ERROR: $rootScope.variableObject.name not defined!', $rootScope.variableObject);}
         $rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;
     });
     $scope.$on('$ionicView.beforeLeave', function(){
@@ -92,7 +92,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     var getHistoryForVariable = function(params){
         if($scope.stopGettingMeasurements){return;}
         if(!params.variableName){
-            qmService.logError("ERROR: params.variableName not provided to getHistoryForVariable.  params are: " + JSON.stringify(params));
+            qmService.logError("ERROR: params.variableName not provided to getHistoryForVariable.  params are: ", params);
             return;
         }
         if(qmService.getUrlParameter('doNotProcess')){params.doNotProcess = true;}

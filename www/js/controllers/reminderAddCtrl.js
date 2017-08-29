@@ -161,7 +161,12 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if (!selectedVariable.variableCategoryName) { $scope.state.showAddVariableCard = true; }
         $rootScope.variableObject=selectedVariable;
         setupVariableCategory(selectedVariable.variableCategoryName);
-        if (selectedVariable.unitAbbreviatedName) {$scope.state.trackingReminder.unitAbbreviatedName = selectedVariable.unitAbbreviatedName;}
+        if (selectedVariable.unitAbbreviatedName) {
+            $scope.state.trackingReminder.unitAbbreviatedName = selectedVariable.unitAbbreviatedName;
+        } else {
+            qmService.logError("selectedVariable does not have unitAbbreviatedName", selectedVariable)
+        }
+
         if (selectedVariable.combinationOperation) {$scope.state.trackingReminder.combinationOperation = selectedVariable.combinationOperation;}
         if (selectedVariable.id) {$scope.state.trackingReminder.variableId = selectedVariable.id;}
         if (selectedVariable.name) {$scope.state.trackingReminder.variableName = selectedVariable.name;}
@@ -208,7 +213,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     };
     var validationFailure = function (message) {
         qmService.showMaterialAlert('Whoops!', message);
-        qmService.logError(message, null, {trackingReminder: $scope.state.trackingReminder});
+        qmService.logError(message, {trackingReminder: $scope.state.trackingReminder});
     };
     var validReminderSettings = function(){
         if(!$scope.state.trackingReminder.variableCategoryName) {
