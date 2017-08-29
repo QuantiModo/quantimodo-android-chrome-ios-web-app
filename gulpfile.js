@@ -937,7 +937,6 @@ gulp.task('outputCombinedApkVersionCode', function () {
         return outputVersionCodeForApk(pathToReleaseArmv7Apk);
     }
 });
-gulp.task('default', ['sass']);
 gulp.task('unzipChromeExtension', function () {
     return unzipFile(getPathToChromeExtensionZip(), getPathToUnzippedChromeExtension());
 });
