@@ -443,7 +443,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             .then(function () {
                 console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
             }, function(error) {
-                qmService.logError('Failed to track favorite! ', 'Please let me know by pressing the help button.  Thanks!');
+                qmService.logError('Failed to track favorite! ', trackingReminder);
             });
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
@@ -465,7 +465,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                     }, function(error) {
                         qmService.logError(error);
-                        qmService.logError('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
+                        qmService.logError('Failed to Track by favorite! ', trackingReminder);
                     });
                 trackingReminder.tally = 0;
             }
@@ -517,7 +517,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             .then(function () {
                 console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
             }, function(error) {
-                qmService.logError('Failed to Track by favorite! ', 'Please let me know by pressing the help button.  Thanks!');
+                qmService.logError('Failed to Track by favorite! ', $rootScope.bloodPressure);
             });
     };
     $scope.showExplanationsPopup = function(settingName, ev) {
