@@ -607,6 +607,8 @@ var winPlatforms = ['windows'],
         appx: './platforms/windows/AppPackages/**/*',
         binAppx: './bin/Windows/' + buildConfig
     };
+// Set the default to the build task
+gulp.task('default', ['configureApp']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
 // the hardware Gulp is running on which are then placed in platformsToBuild
 gulp.task('build', ['scripts', 'sass'], function () {
@@ -1263,7 +1265,7 @@ gulp.task('decryptAllPrivateConfigs', [], function () {
         }
     });
 });
-gulp.task('index', ['cleanCombinedFiles'], function() {
+gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
     var jsFilter = filter("**/*.js", { restore: true });
     var cssFilter = filter("**/*.css", { restore: true });
     var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
@@ -1871,7 +1873,7 @@ gulp.task('configureApp', [], function (callback) {
         'setClientId',
         'copyIonIconsToWww',
         'sass',
-        'index',
+        'minify-js-generate-css-and-index-html',
         'removeCordovaJsFromIndexHtml',
         'getCommonVariables',
         'getAppConfigs',
