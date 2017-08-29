@@ -61,7 +61,7 @@
     "xcode": "0.8.9",
     "xml2js": "^0.4.15",
     "yargs": "latest",
-    "quantimodo": "5.8.727"
+    "quantimodo": "5.8.82817"
   },
   "scripts": {
     "postinstall": "echo 'Runing npm postinstall commands...' && bower install && npm rebuild node-sass && ionic config build && gulp configureAppAfterNpmInstall"
