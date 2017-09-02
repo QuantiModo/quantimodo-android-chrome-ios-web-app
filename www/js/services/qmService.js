@@ -359,11 +359,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     var canWeMakeRequestYet = function(type, route, options){
         var blockRequests = false;
         var minimumSecondsBetweenRequests;
-        if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 1;}
+        if(options && options.minimumSecondsBetweenRequests){
+            minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;
+        } else {
+            minimumSecondsBetweenRequests = 1;
+        }
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
             var name = 'Just made a ' + type + ' request to ' + route;
-            var message = name + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds. stackTrace: ' + options.stackTrace;
+            var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds. stackTrace: ' + options.stackTrace;
             var metaData = {type: type, route: route, groupingHash: name, state: $state.current, stackTrace: options.stackTrace};
             if(options){metaData.options = options;}
             logError(message);
@@ -848,7 +852,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             ['id'],
             {id: trackingReminderId},
             successHandler,
-            errorHandler);
+            errorHandler, null, {minimumSecondsBetweenRequests: 0.1});
     };
     // snooze tracking reminder
     qmService.snoozeTrackingReminderNotification = function(params, successHandler, errorHandler){
