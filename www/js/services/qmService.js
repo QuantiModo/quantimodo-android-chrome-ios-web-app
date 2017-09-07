@@ -4287,12 +4287,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.postUserVariableDeferred = function(body) {
         var deferred = $q.defer();
         qmService.postUserVariableToApi(body, function(response) {
-            qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.userVariable);
+            var userVariable;
+            if(response.userVariables){userVariable = response.userVariables[0];}
+            if(response.userVariable){userVariable = response.userVariable;}
+            qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', userVariable);
             qmService.deleteItemFromLocalStorage('lastStudy');
-            $rootScope.variableObject = response.userVariable;
+            $rootScope.variableObject = userVariable;
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
-            logDebug("qmService.postUserVariableDeferred: success: " + JSON.stringify(response.userVariable));
-            deferred.resolve(response.userVariable);
+            logDebug("qmService.postUserVariableDeferred: success: " + JSON.stringify(userVariable));
+            deferred.resolve(userVariable);
         }, function(error){ deferred.reject(error); });
         return deferred.promise;
     };
