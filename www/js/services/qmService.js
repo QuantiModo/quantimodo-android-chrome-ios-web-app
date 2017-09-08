@@ -3145,7 +3145,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.generateWeekdayMeasurementArray = function(allMeasurements){
         if(!allMeasurements){
-            logError('No measurements provided to generateWeekdayMeasurementArray');
+            logInfo('No measurements provided to generateWeekdayMeasurementArray');
             return false;
         }
         var weekdayMeasurementArrays = [];
@@ -3161,7 +3161,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.generateMonthlyMeasurementArray = function(allMeasurements){
         if(!allMeasurements){
-            logError('No measurements provided to generateMonthlyMeasurementArray');
+            logInfo('No measurements provided to generateMonthlyMeasurementArray');
             return false;
         }
         var monthlyMeasurementArrays = [];
@@ -3334,7 +3334,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
         if(!measurements){
-            logError('No measurements provided to processDataAndConfigureWeekdayChart');
+            logInfo('No measurements provided to processDataAndConfigureWeekdayChart');
             return false;
         }
         if(!variableObject.name){
@@ -3347,7 +3347,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureMonthlyChart = function(measurements, variableObject) {
         if(!measurements){
-            logError('No measurements provided to processDataAndConfigureMonthlyChart');
+            logInfo('No measurements provided to processDataAndConfigureMonthlyChart');
             return false;
         }
         if(!variableObject.name){
@@ -3575,7 +3575,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureLineChart = function(measurements, variableObject) {
         if(!measurements || !measurements.length){
-            console.warn('No measurements provided to qmService.processDataAndConfigureLineChart');
+            logInfo('No measurements provided to qmService.processDataAndConfigureLineChart');
             return false;
         }
         var lineChartData = [];
