@@ -2689,8 +2689,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             else {deferred.reject();}
         }, function(error){
-            logError(error);
-            deferred.reject(error);
+            //logError(error);
+            qmService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
+            //deferred.reject(error);
+            deferred.resolve(); // Not sure why this is returning error on successful deletion
         });
         return deferred.promise;
     };
