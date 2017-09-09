@@ -79,8 +79,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	});
 	if(!$rootScope.reminderOrderParameter){ $rootScope.reminderOrderParameter = 'variableName'; }
 	function showAppropriateHelpInfoCards(){
-		$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Treatments') > -1 || $stateParams.variableCategoryName === 'Anything');
-		$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
+		$scope.state.showTreatmentInfoCard = (!$scope.state.trackingReminders || $scope.state.trackingReminders.length === 0) &&
+			(window.location.href.indexOf('Treatments') > -1 || $stateParams.variableCategoryName === 'Anything');
+		$scope.state.showSymptomInfoCard = ((!$scope.state.trackingReminders || $scope.state.trackingReminders.length === 0) &&
+			window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
 	}
 	function hideLoader() {
         $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning

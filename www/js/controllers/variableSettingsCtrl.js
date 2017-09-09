@@ -329,8 +329,8 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             defaultUnitId: variableObject.userVariableDefaultUnitId,
             userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName,
             //userVariableAlias: $scope.state.userVariableAlias
-            experimentStartTimeString: (variableObject.experimentStartTimeString) ? variableObject.experimentStartTimeString.toString() : null,
-            experimentEndTimeString: (variableObject.experimentEndTimeString) ? variableObject.experimentEndTimeString.toString() : null,
+            experimentStartTimeString: (variableObject.experimentStartTimeString) ? variableObject.experimentStartTimeString.toISOString() : null,
+            experimentEndTimeString: (variableObject.experimentEndTimeString) ? variableObject.experimentEndTimeString.toISOString() : null,
         };
         qmService.postUserVariableDeferred(body).then(function(userVariable) {
             qmService.hideLoader();
