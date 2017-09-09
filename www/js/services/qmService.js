@@ -131,7 +131,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     function obfuscateSecrets(object){
         if(typeof object !== 'object'){return object;}
-        object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
+        try {
+            object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
+        } catch (error) {
+            qmService.logError(error, object);
+            return object;
+        }
         for (var propertyName in object) {
             if (object.hasOwnProperty(propertyName)) {
                 var lowerCaseProperty = propertyName.toLowerCase();
