@@ -87,14 +87,18 @@
             <div ng-if="state.showMoreOptions" class="row labeled-control date-fix">
                 <div class="col date-padding-fix"><span>Start</span>&nbsp<i class="ion-android-cancel" ng-click="state.selectedStartTrackingDate = null;" ng-if="state.selectedStartTrackingDate"></i></div>
                 <div class="col-6 date-padding-fix">
-                    <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStartTrackingDate" placeholder="Select Date" style="cursor: pointer;  background-color: white;"
+                    <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStartTrackingDate"
+                           placeholder="Select Date" style="cursor: pointer;  background-color: white;"
                            format="ddd, MMM Do YYYY" ng-model="state.selectedStartTrackingDate">
                 </div>
             </div>
             <div ng-if="state.showMoreOptions" class="row labeled-control date-fix">
-                <div class="col date-padding-fix"><span>End</span>&nbsp<i class="ion-android-cancel" ng-click="state.selectedStopTrackingDate = null;" ng-if="state.selectedStopTrackingDate"></i></div>
+                <div class="col date-padding-fix"><span>End</span>&nbsp
+                    <i class="ion-android-cancel" ng-click="state.selectedStopTrackingDate = null;" ng-if="state.selectedStopTrackingDate"></i>
+                </div>
                 <div class="col-6 date-padding-fix">
-                    <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStopTrackingDate" placeholder="Select Date" style="cursor: pointer;  background-color: white;"
+                    <input time="false" date="true" mdc-datetime-picker type="text" id="selectedStopTrackingDate"
+                           placeholder="Select Date" style="cursor: pointer;  background-color: white;"
                            format="ddd, MMM Do YYYY" ng-model="state.selectedStopTrackingDate">
                 </div>
             </div>

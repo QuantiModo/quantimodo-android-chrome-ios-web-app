@@ -316,6 +316,23 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
 
     $scope.saveVariableSettings = function(variableObject){
         qmService.showBlackRingLoader();
+        var experimentEndTimeString, experimentStartTimeString = null;
+        if(variableObject.experimentStartTimeString){
+            try {
+                experimentStartTimeString = variableObject.experimentStartTimeString.toISOString();
+            } catch (error){
+                qmService.logError("Could not convert experimentStartTimeString " + variableObject.experimentStartTimeString +
+                    " to ISO format: " + error);
+            }
+        }
+        if(variableObject.experimentEndTimeString){
+            try {
+                experimentEndTimeString = variableObject.experimentEndTimeString.toISOString();
+            } catch (error){
+                qmService.logError("Could not convert experimentEndTimeString " + variableObject.experimentEndTimeString +
+                    " to ISO format: " + error);
+            }
+        }
         var body = {
             variableId: variableObject.id,
             durationOfAction: variableObject.durationOfActionInHours*60*60,
@@ -329,8 +346,8 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             defaultUnitId: variableObject.userVariableDefaultUnitId,
             userVariableVariableCategoryName: variableObject.userVariableVariableCategoryName,
             //userVariableAlias: $scope.state.userVariableAlias
-            experimentStartTimeString: (variableObject.experimentStartTimeString) ? variableObject.experimentStartTimeString.toString() : null,
-            experimentEndTimeString: (variableObject.experimentEndTimeString) ? variableObject.experimentEndTimeString.toString() : null,
+            experimentStartTimeString: experimentStartTimeString,
+            experimentEndTimeString: experimentEndTimeString
         };
         qmService.postUserVariableDeferred(body).then(function(userVariable) {
             qmService.hideLoader();

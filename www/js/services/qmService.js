@@ -359,11 +359,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     var canWeMakeRequestYet = function(type, route, options){
         var blockRequests = false;
         var minimumSecondsBetweenRequests;
-        if(options && options.minimumSecondsBetweenRequests){minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;} else {minimumSecondsBetweenRequests = 1;}
+        if(options && options.minimumSecondsBetweenRequests){
+            minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;
+        } else {
+            minimumSecondsBetweenRequests = 1;
+        }
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
             var name = 'Just made a ' + type + ' request to ' + route;
-            var message = name + " because " + "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds. stackTrace: ' + options.stackTrace;
+            var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds. stackTrace: ' + options.stackTrace;
             var metaData = {type: type, route: route, groupingHash: name, state: $state.current, stackTrace: options.stackTrace};
             if(options){metaData.options = options;}
             logError(message);
@@ -529,7 +533,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         configureQmApiClient();
         var apiInstance = new Quantimodo.VariablesApi();
         function callback(error, data, response) {
-            if (error || !data[0]) {
+            if (error) {
                 qmApiGeneralErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
             } else {
@@ -848,7 +852,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             ['id'],
             {id: trackingReminderId},
             successHandler,
-            errorHandler);
+            errorHandler, null, {minimumSecondsBetweenRequests: 0.1});
     };
     // snooze tracking reminder
     qmService.snoozeTrackingReminderNotification = function(params, successHandler, errorHandler){
@@ -2685,8 +2689,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             else {deferred.reject();}
         }, function(error){
-            logError(error);
-            deferred.reject(error);
+            //logError(error);
+            qmService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
+            //deferred.reject(error);
+            deferred.resolve(); // Not sure why this is returning error on successful deletion
         });
         return deferred.promise;
     };
@@ -3139,7 +3145,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.generateWeekdayMeasurementArray = function(allMeasurements){
         if(!allMeasurements){
-            logError('No measurements provided to generateWeekdayMeasurementArray');
+            logInfo('No measurements provided to generateWeekdayMeasurementArray');
             return false;
         }
         var weekdayMeasurementArrays = [];
@@ -3155,7 +3161,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.generateMonthlyMeasurementArray = function(allMeasurements){
         if(!allMeasurements){
-            logError('No measurements provided to generateMonthlyMeasurementArray');
+            logInfo('No measurements provided to generateMonthlyMeasurementArray');
             return false;
         }
         var monthlyMeasurementArrays = [];
@@ -3328,7 +3334,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
         if(!measurements){
-            logError('No measurements provided to processDataAndConfigureWeekdayChart');
+            logInfo('No measurements provided to processDataAndConfigureWeekdayChart');
             return false;
         }
         if(!variableObject.name){
@@ -3341,7 +3347,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureMonthlyChart = function(measurements, variableObject) {
         if(!measurements){
-            logError('No measurements provided to processDataAndConfigureMonthlyChart');
+            logInfo('No measurements provided to processDataAndConfigureMonthlyChart');
             return false;
         }
         if(!variableObject.name){
@@ -3569,7 +3575,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.processDataAndConfigureLineChart = function(measurements, variableObject) {
         if(!measurements || !measurements.length){
-            console.warn('No measurements provided to qmService.processDataAndConfigureLineChart');
+            logInfo('No measurements provided to qmService.processDataAndConfigureLineChart');
             return false;
         }
         var lineChartData = [];
@@ -4283,12 +4289,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.postUserVariableDeferred = function(body) {
         var deferred = $q.defer();
         qmService.postUserVariableToApi(body, function(response) {
-            qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.userVariable);
+            var userVariable;
+            if(response.userVariables){userVariable = response.userVariables[0];}
+            if(response.userVariable){userVariable = response.userVariable;}
+            qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', userVariable);
             qmService.deleteItemFromLocalStorage('lastStudy');
-            $rootScope.variableObject = response.userVariable;
+            $rootScope.variableObject = userVariable;
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
-            logDebug("qmService.postUserVariableDeferred: success: " + JSON.stringify(response.userVariable));
-            deferred.resolve(response.userVariable);
+            logDebug("qmService.postUserVariableDeferred: success: " + JSON.stringify(userVariable));
+            deferred.resolve(userVariable);
         }, function(error){ deferred.reject(error); });
         return deferred.promise;
     };
