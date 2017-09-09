@@ -134,7 +134,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         try {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
-            qmService.logError(error, object);
+            Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            //qmService.logError(error, object); // Avoid infinite recursion
             return object;
         }
         for (var propertyName in object) {
