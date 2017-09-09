@@ -26,7 +26,8 @@ angular.module('starter',
         'ngMessages',
         'angular-cache',
         'angular-d3-word-cloud',
-        'ngFileUpload'
+        'ngFileUpload',
+        'ngOpbeat'
         //'ui-iconpicker'
     ]
 )
@@ -250,7 +251,12 @@ angular.module('starter',
         window.localStorage.onboarded = true;
     }
 })
-.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider, $ionicConfigProvider, AnalyticsProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
+                 $ionicConfigProvider, AnalyticsProvider, $opbeatProvider) {
+    $opbeatProvider.config({
+        orgId: '10d58117acb546c08a2cae66d650480d',
+        appId: 'fc62a74505'
+    });
     window.debugMode = !!(appsManager.getUrlParameter('debug'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
     if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
