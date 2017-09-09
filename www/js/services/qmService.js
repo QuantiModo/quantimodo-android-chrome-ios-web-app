@@ -278,7 +278,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return;
         }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
-        logDebug('qmService.post: About to try to post request to ' + route + ' with body: ' + JSON.stringify(body).substring(0, 140), options.stackTrace);
+        var bodyString = JSON.stringify(body);
+        if(!window.debugMode){bodyString = bodyString.substring(0, 140);}
+        logDebug('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
                 var item = body[i];
