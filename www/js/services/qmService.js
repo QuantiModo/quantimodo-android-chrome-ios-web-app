@@ -246,6 +246,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 }
             }
             urlParams = addGlobalUrlParams(urlParams);
+            if(accessToken){urlParams.push(encodeURIComponent('access_token') + '=' + accessToken);}
             var request = {method: 'GET', url: (qmService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
