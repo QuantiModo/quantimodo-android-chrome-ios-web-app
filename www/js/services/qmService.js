@@ -154,9 +154,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         try {
             variable = JSON.stringify(variable);
         } catch (error) {
-            qmService.logError(error, {});
+            qmService.logError("Could not stringify: " + error, {variable: variable});
             return variable;
         }
+        return variable;
     }
     function stringifyIfNecessary(variable){
         if(!variable || typeof message === "string"){return variable;}
