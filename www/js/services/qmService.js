@@ -286,7 +286,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         var bodyString = JSON.stringify(body);
-        if(!window.debugMode){bodyString = bodyString.substring(0, 140);}
+        if(!debugMode()){bodyString = bodyString.substring(0, 140);}
         logDebug('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
@@ -312,6 +312,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
         }, requestSpecificErrorHandler);
     };
+    function debugMode() {
+        window.debugMode = window.debugMode || getUrlParameter('debug');
+        console.debug("Debug mode is " + window.debugMode);
+        return window.debugMode;
+    }
     function setAfterLoginUrlAndSendToLogin(){
         setAfterLoginGoToUrl();
         sendToLogin();
