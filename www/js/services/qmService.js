@@ -134,7 +134,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         try {
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
-            qmService.logError(error, object);
+            Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            //qmService.logError(error, object); // Avoid infinite recursion
             return object;
         }
         for (var propertyName in object) {
@@ -149,7 +150,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return object;
     }
+    function stringify(variable) {
+        try {
+            variable = JSON.stringify(variable);
+        } catch (error) {
+            qmService.logError("Could not stringify: " + error, {variable: variable});
+            return variable;
+        }
+        return variable;
+    }
+    function stringifyIfNecessary(variable){
+        if(!variable || typeof message === "string"){return variable;}
+        return stringify(variable);
+    }
     function logError(message, additionalMetaData, stackTrace) {
+        message = stringifyIfNecessary(message);
         function getTestUrl() {
             function getCurrentRoute() {
                 var parts = window.location.href.split("#/app");
@@ -284,7 +299,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         var bodyString = JSON.stringify(body);
-        if(!window.debugMode){bodyString = bodyString.substring(0, 140);}
+        if(!debugMode()){bodyString = bodyString.substring(0, 140);}
         logDebug('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
@@ -310,6 +325,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
         }, requestSpecificErrorHandler);
     };
+    function debugMode() {
+        window.debugMode = window.debugMode || getUrlParameter('debug');
+        console.debug("Debug mode is " + window.debugMode);
+        return window.debugMode;
+    }
     function setAfterLoginUrlAndSendToLogin(){
         setAfterLoginGoToUrl();
         sendToLogin();
@@ -4200,7 +4220,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
             deferred.resolve(variables);
         }, function(error){
-            logError(JSON.stringify(error));
+            logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -4234,7 +4254,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
             deferred.resolve(variables);
         }, function(error){
-            logError(JSON.stringify(error));
+            logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -4477,7 +4497,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.skipTrackingReminderNotification(params, function(response){
                     logDebug(response);
                 }, function(error){
-                    logError(JSON.stringify(error));
+                    logError(error);
                     qmService.logError(error);
                 });
                 logDebug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
