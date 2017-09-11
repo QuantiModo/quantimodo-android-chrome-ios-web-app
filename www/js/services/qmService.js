@@ -150,7 +150,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return object;
     }
+    function stringify(variable) {
+        try {
+            variable = JSON.stringify(variable);
+        } catch (error) {
+            qmService.logError("Could not stringify: " + error, {variable: variable});
+            return variable;
+        }
+        return variable;
+    }
+    function stringifyIfNecessary(variable){
+        if(!variable || typeof message === "string"){return variable;}
+        return stringify(variable);
+    }
     function logError(message, additionalMetaData, stackTrace) {
+        message = stringifyIfNecessary(message);
         function getTestUrl() {
             function getCurrentRoute() {
                 var parts = window.location.href.split("#/app");
@@ -4206,7 +4220,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
             deferred.resolve(variables);
         }, function(error){
-            logError(JSON.stringify(error));
+            logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -4240,7 +4254,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.searchUserVariablesFromApi(variableSearchQuery, params, function(variables){
             deferred.resolve(variables);
         }, function(error){
-            logError(JSON.stringify(error));
+            logError(error);
             deferred.reject(error);
         });
         return deferred.promise;
@@ -4483,7 +4497,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.skipTrackingReminderNotification(params, function(response){
                     logDebug(response);
                 }, function(error){
-                    logError(JSON.stringify(error));
+                    logError(error);
                     qmService.logError(error);
                 });
                 logDebug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);

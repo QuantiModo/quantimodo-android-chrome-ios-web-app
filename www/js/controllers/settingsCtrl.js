@@ -276,7 +276,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             if(res) {
                 qmService.postDowngradeSubscriptionDeferred().then(function (user) {
                     console.debug(JSON.stringify(user));
-                }, function (error) { qmService.logError(JSON.stringify(error)); });
+                }, function (error) { qmService.logError(error); });
                 window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
         });
@@ -289,7 +289,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
                 $rootScope.user.stripeActive = false;
                 qmService.postDowngradeSubscriptionDeferred().then(function (user) {
                     console.debug(JSON.stringify(user));
-                }, function (error) { qmService.logError(JSON.stringify(error)); });
+                }, function (error) { qmService.logError(error); });
                 window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
         });
