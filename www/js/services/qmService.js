@@ -1944,7 +1944,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.getEnv = function(){return getEnv();};
     qmService.getClientId = function(){
         if(typeof config !== "undefined" && $rootScope.appSettings.clientId){
-            logDebug("$rootScope.appSettings.clientId is " + $rootScope.appSettings.clientId);
+            if(getUrlParameter('clientIdDebug')){logDebug("$rootScope.appSettings.clientId is " + $rootScope.appSettings.clientId);}
             return $rootScope.appSettings.clientId;
         } else {
             logDebug("$rootScope.appSettings.clientId is not present");
@@ -7005,7 +7005,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         logDebug(arguments.callee.caller.name + " called showBlackRingLoader in " + $state.current.name, getStackTrace());
     };
     qmService.hideLoader = function(delay){
-        logDebug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
+        if(getUrlParameter('loaderDebug')){
+            logDebug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
+        }
         if(delay){
             $timeout(function() { $ionicLoading.hide(); }, delay * 1000);
         } else{
