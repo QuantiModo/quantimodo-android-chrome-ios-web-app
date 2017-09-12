@@ -1373,10 +1373,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.getUserFromApi({stackTrace: stackTrace}, function(user){
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
-        }, function(error){
-            logError("Could not getUserFromApi or refreshUser. Error message: " +  error);
-            deferred.reject(error);
-        });
+        }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
     qmService.sendToNonOAuthBrowserLoginUrl = function(register) {
