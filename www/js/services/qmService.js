@@ -588,7 +588,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
         //qmService.get('api/v3/variables/' + encodeURIComponent(variableName), [], params, successHandler, errorHandler, options);
-
     };
     qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
         configureQmApiClient();
@@ -7340,7 +7339,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(menu.custom){menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);}
         return menu;
     }
-
     qmService.sendBugReport = function() {
         qmService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server
         function addAppInformationToTemplate(template){
@@ -7398,17 +7396,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             console.debug("Going to try to register push with " + JSON.stringify(pushConfig));
             var push = PushNotification.init(pushConfig);
             push.on('registration', function(registerResponse) {
-                console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
+                logError('Registered device for push notifications.  registerResponse: ' + JSON.stringify(registerResponse));
                 if(!registerResponse.registrationId){qmService.bugsnagNotify('No registerResponse.registrationId from push registration');}
-                console.debug("Got device token for push notifications: " + registerResponse.registrationId);
+                logError("Got device token for push notifications: " + registerResponse.registrationId);
                 var deviceTokenOnServer = localStorage.getItem('deviceTokenOnServer');
                 if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
                     localStorage.setItem('deviceTokenToSync', registerResponse.registrationId);
                 }
             });
-
             var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
-
             push.on('notification', function(data) {
                 console.debug('Received push notification: ' + JSON.stringify(data));
                 qmService.updateLocationVariablesAndPostMeasurementIfChanged();
