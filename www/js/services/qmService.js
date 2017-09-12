@@ -1371,6 +1371,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return deferred.promise;
         }
         qmService.getUserFromApi({stackTrace: stackTrace}, function(user){
+            logDebug('getUserFromApi got user: ' + JSON.stringify(obfuscateSecrets(user)));
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
         }, function(error){
