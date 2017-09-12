@@ -857,11 +857,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.reject('No deviceToken provided to qmService.deleteDeviceTokenFromServer');
         } else {
             var params = {deviceToken: localStorage.getItem('deviceTokenOnServer')};
-            qmService.post('api/v3/deviceTokens/delete',
-                ['deviceToken'],
-                params,
-                successHandler,
-                errorHandler);
+            qmService.post('api/v3/deviceTokens/delete', ['deviceToken'], params, successHandler, errorHandler);
             localStorage.removeItem('deviceTokenOnServer');
             deferred.resolve();
         }
@@ -874,10 +870,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return;
         }
         qmService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'trackingReminderId', trackingReminderId);
-        qmService.post('api/v3/trackingReminders/delete',
-            ['id'],
-            {id: trackingReminderId},
-            successHandler,
+        qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler,
             errorHandler, null, {minimumSecondsBetweenRequests: 0.1});
     };
     // snooze tracking reminder
@@ -7396,9 +7389,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             console.debug("Going to try to register push with " + JSON.stringify(pushConfig));
             var push = PushNotification.init(pushConfig);
             push.on('registration', function(registerResponse) {
-                logError('Registered device for push notifications.  registerResponse: ' + JSON.stringify(registerResponse));
+                logInfo('Registered device for push notifications.  registerResponse: ' + JSON.stringify(registerResponse));
                 if(!registerResponse.registrationId){qmService.bugsnagNotify('No registerResponse.registrationId from push registration');}
-                logError("Got device token for push notifications: " + registerResponse.registrationId);
+                logInfo("Got device token for push notifications: " + registerResponse.registrationId);
                 var deviceTokenOnServer = localStorage.getItem('deviceTokenOnServer');
                 if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
                     localStorage.setItem('deviceTokenToSync', registerResponse.registrationId);
