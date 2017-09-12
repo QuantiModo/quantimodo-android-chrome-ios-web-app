@@ -1212,34 +1212,28 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
         return deferred.promise;
     };
-    qmService.reRegisterDeviceToken = function(){
-        var lastPushTimestamp = localStorage.getItem('lastPushTimestamp');
-        if(!lastPushTimestamp || lastPushTimestamp < getUnixTimestampInSeconds() - 86400){
-            qmService.registerDeviceToken('deviceTokenOnServer');
-        } else {
-            logDebug("Not re-registering because we got a notification in the last 24 hours");
-        }
-    };
-    qmService.registerDeviceToken = function(localStorageName){
-        if(!localStorageName){localStorageName = 'deviceTokenToSync';}
+    qmService.registerDeviceToken = function(){
         var deferred = $q.defer();
         if(!$rootScope.isMobile){
             deferred.reject('Not on mobile so not posting device token');
             return deferred.promise;
         }
-        var deviceTokenToSync = localStorage.getItem(localStorageName);
+        var deviceTokenToSync = localStorage.getItem('deviceTokenToSync');
         if(!deviceTokenToSync){
-            deferred.reject('No ' + localStorageName + ' in localStorage');
+            deferred.reject('No ' + 'deviceTokenToSync' + ' in localStorage');
             return deferred.promise;
         }
-        localStorage.removeItem(localStorageName);
+        if(localStorage.getItem('lastPushTimestamp') > getUnixTimestampInSeconds() - 86400){
+            logError("Registering for pushes even though we got a notification in the last 24 hours");
+        }
+        localStorage.removeItem('deviceTokenToSync');
         logDebug("Posting deviceToken to server: ", deviceTokenToSync);
         qmService.postDeviceToken(deviceTokenToSync, function(response){
             localStorage.setItem('deviceTokenOnServer', deviceTokenToSync);
             logDebug(response);
             deferred.resolve();
         }, function(error){
-            localStorage.setItem(localStorageName, deviceTokenToSync);
+            localStorage.setItem('deviceTokenToSync', deviceTokenToSync);
             qmService.logError(error);
             deferred.reject(error);
         });
@@ -2594,7 +2588,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             params.limit = 20; // Limit to notifications to 20 to improve inbox performance (Not sure how much it helps though)
             qmService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
-                    qmService.registerDeviceToken();  // Double check because it's not getting posted sometimes for some reason
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if (window.chrome && window.chrome.browserAction) {
                         chrome.browserAction.setBadgeText({text: "?"});
@@ -7032,7 +7025,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
-            qmService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
+            qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server TODO: remove after 8/1 or so
             if(!$rootScope.user.trackLocation){ $rootScope.user.trackLocation = false; }
             if(!$rootScope.user.getPreviewBuilds){ $rootScope.user.getPreviewBuilds = false; }
             //qmSetupInPopup();
@@ -7340,7 +7333,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return menu;
     }
     qmService.sendBugReport = function() {
-        qmService.reRegisterDeviceToken(); // Try again in case it was accidentally deleted from server
+        qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server
         function addAppInformationToTemplate(template){
             function addSnapShotList(template) {
                 if(typeof $ionicDeploy !== "undefined"){
