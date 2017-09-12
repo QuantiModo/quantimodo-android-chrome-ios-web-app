@@ -922,7 +922,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return;
         }
         if(qmService.getAccessTokenFromUrl()){
-            logDebug("Got access token from url");
+            logDebug("Got " + qmService.getAccessTokenFromUrl() + " access token from url");
             var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
             if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){
                 qmService.clearLocalStorage();
@@ -943,7 +943,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 localStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);
             }
             if(!$rootScope.user){
-                logDebug("No $rootScope.user so going to refreshUser");
+                logDebug("No $rootScope.user so going to refreshUser with access token " + qmService.getAccessTokenFromUrl());
                 qmService.refreshUser();
             }
         }
