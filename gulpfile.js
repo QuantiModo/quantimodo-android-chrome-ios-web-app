@@ -235,11 +235,11 @@ function uploadAppImagesToS3(filePath) {
 }
 function uploadToS3(filePath) {
     if(!process.env.AWS_ACCESS_KEY_ID){
-        logError("Cannot upload to S3. Please set environmental variable AWS_ACCESS_KEY_ID");
+        logInfo("Cannot upload to S3. Please set environmental variable AWS_ACCESS_KEY_ID");
         return;
     }
     if(!process.env.AWS_SECRET_ACCESS_KEY){
-        logError("Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY");
+        logInfo("Cannot upload to S3. Please set environmental variable AWS_SECRET_ACCESS_KEY");
         return;
     }
     logInfo("Uploading " + filePath);
