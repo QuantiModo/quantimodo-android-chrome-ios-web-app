@@ -333,6 +333,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                     " to ISO format: " + error);
             }
         }
+        console.log("debugMode is " + window.debugMode);
         var body = {
             variableId: variableObject.id,
             durationOfAction: variableObject.durationOfActionInHours*60*60,
