@@ -901,7 +901,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getAccessTokenFromCurrentUrl = function(){
         logDebug("getAccessTokenFromCurrentUrl " + window.location.href);
-        return (qmService.getUrlParameter('accessToken')) ? qmService.getUrlParameter('accessToken') : qmService.getUrlParameter('quantimodoAccessToken');
+        var accessTokenFromUrl = (qmService.getUrlParameter('accessToken')) ? qmService.getUrlParameter('accessToken') :
+            qmService.getUrlParameter('quantimodoAccessToken');
+        if(accessTokenFromUrl && !localStorage.getItem('user')){
+            logInfo("Calling refreshUser because we have access token in url but no user in local storage");
+            qmService.refreshUser();
+        }
+        return accessTokenFromUrl;
     };
     qmService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
@@ -913,7 +919,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return $rootScope.accessTokenFromUrl;
     };
-    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
+    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 &&
+        $rootScope.user.id !== 230;}
     function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();}
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         logDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
