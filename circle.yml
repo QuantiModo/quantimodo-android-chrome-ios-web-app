@@ -68,7 +68,7 @@ general:
       - /release\/.*/ # or ignore regexes
       #- /feature\/.*/ # or ignore regexes
   artifacts:
-    #- "build"
+    - "platforms/android/build/outputs/apk"
     #- "dropbox"
 
 deployment:
@@ -108,3 +108,4 @@ deployment:
       - gulp prepareRepositoryForAndroid # Clean and build master to double check that fresh non-cached builds don't fail
       - gulp buildAndroidApp
       #- gulp fastlaneSupplyProduction
+      #- cp platforms/android/build/outputs/apk/* $CIRCLE_ARTIFACTS
