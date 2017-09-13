@@ -901,7 +901,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getAccessTokenFromCurrentUrl = function(){
         logDebug("getAccessTokenFromCurrentUrl " + window.location.href);
-        return (qmService.getUrlParameter('accessToken')) ? qmService.getUrlParameter('accessToken') : qmService.getUrlParameter('quantimodoAccessToken');
+        var accessTokenFromUrl = (qmService.getUrlParameter('accessToken')) ? qmService.getUrlParameter('accessToken') :
+            qmService.getUrlParameter('quantimodoAccessToken');
+        if(accessTokenFromUrl && !localStorage.getItem('user')){
+            logInfo("Calling refreshUser because we have access token in url but no user in local storage");
+            qmService.refreshUser();
+        }
+        return accessTokenFromUrl;
     };
     qmService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
@@ -913,7 +919,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return $rootScope.accessTokenFromUrl;
     };
-    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 && $rootScope.user.id !== 230;}
+    function isTestUser(){return $rootScope.user && $rootScope.user.displayName.indexOf('test') !== -1 &&
+        $rootScope.user.id !== 230;}
     function weHaveUserOrAccessToken(){return $rootScope.user || qmService.getAccessTokenFromUrl();}
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         logDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
@@ -922,7 +929,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return;
         }
         if(qmService.getAccessTokenFromUrl()){
-            logDebug("Got access token from url");
+            logDebug("Got " + qmService.getAccessTokenFromUrl() + " access token from url");
             var accessTokenFromLocalStorage = localStorage.getItem("accessToken");
             if(accessTokenFromLocalStorage && $rootScope.accessTokenFromUrl !== accessTokenFromLocalStorage){
                 qmService.clearLocalStorage();
@@ -943,7 +950,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 localStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);
             }
             if(!$rootScope.user){
-                logDebug("No $rootScope.user so going to refreshUser");
+                logDebug("No $rootScope.user so going to refreshUser with access token " + qmService.getAccessTokenFromUrl());
                 qmService.refreshUser();
             }
         }
@@ -1371,9 +1378,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return deferred.promise;
         }
         qmService.getUserFromApi({stackTrace: stackTrace}, function(user){
+            logDebug('getUserFromApi got user: ' + JSON.stringify(obfuscateSecrets(user)));
             qmService.setUserInLocalStorageBugsnagIntercomPush(user);
             deferred.resolve(user);
-        }, function(error){deferred.reject(error);});
+        }, function(error){
+            logError("Could not getUserFromApi or refreshUser. Error message: " +  error);
+            deferred.reject(error);
+        });
         return deferred.promise;
     };
     qmService.sendToNonOAuthBrowserLoginUrl = function(register) {
