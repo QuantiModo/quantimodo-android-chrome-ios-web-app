@@ -4,7 +4,7 @@ A generic app that can be easily configured to help the user track and optimize 
 -------
 
 # DEMOS
-- [QuantiModo Web App](https://app.quantimo.do)
+- [QuantiModo Web App](https://app.quantimo.do) 
 - [QuantiModo for iOS](https://itunes.apple.com/us/app/quantimodo-life-tracker/id1115037060?mt=8)
 - [QuantiModo Chrome Extension ](https://Chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi)
 - [QuantiModo for Android](https://play.google.com/store/apps/details?id=com.quantimodo.quantimodo)
