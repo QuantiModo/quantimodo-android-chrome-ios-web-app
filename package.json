@@ -64,7 +64,7 @@
     "quantimodo": "5.8.82817"
   },
   "scripts": {
-    "postinstall": "echo 'Runing npm postinstall commands...' && bower install && npm rebuild node-sass && ionic config build && gulp configureAppAfterNpmInstall"
+    "postinstall": "echo 'Runing npm postinstall commands...' && bower install && ionic config build && gulp configureAppAfterNpmInstall"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [],
