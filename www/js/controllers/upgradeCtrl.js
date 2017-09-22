@@ -10,14 +10,14 @@ angular.module('starter').controller('UpgradeCtrl', function ($scope, $state, $i
         qmService.setupUpgradePages();
         qmService.hideLoader();
     });
-    $scope.useLitePlan = function () {if($stateParams.litePlanState){$state.go($stateParams.litePlanState);} else { $scope.goBack();}};
+    $scope.useLitePlan = function () {if($stateParams.litePlanState){qmService.goToState($stateParams.litePlanState);} else { $scope.goBack();}};
     $scope.hideUpgradePage = function () {
         $rootScope.upgradePages = $rootScope.upgradePages.filter(function( obj ) {
             return obj.id !== $rootScope.upgradePages[0].id; });
         if($rootScope.upgradePages.length === 1){ $scope.hideLearnMoreButton = true; }
         if(!$rootScope.upgradePages || $rootScope.upgradePages.length === 0){
             $rootScope.hideMenuButton = false;
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
         } else { $rootScope.hideMenuButton = true; }
     };
     if(!$scope.productId){ $scope.productId = 'monthly7'; }

@@ -42,7 +42,7 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
     var getFavoritesFromLocalStorage = function(){
         qmService.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName).then(function(favorites){$scope.favoritesArray = favorites;});
     };
-    $scope.favoriteAddButtonClick = function () {$state.go('app.favoriteSearch');};
+    $scope.favoriteAddButtonClick = function () {qmService.goToState('app.favoriteSearch');};
     $scope.refreshFavorites = function () {
         console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
         qmService.showInfoToast('Syncing...');

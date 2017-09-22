@@ -287,7 +287,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
         return deferred.promise;
     };
     $scope.goToAddReminder = function(){
-        $state.go('app.reminderAdd', {
+        qmService.goToState('app.reminderAdd', {
             variableObject: $rootScope.variableObject,
             fromState: $state.current.name,
             fromUrl: window.location.href,
@@ -380,10 +380,10 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {console.debug($state.current.name + ": " + 'CANCELLED');},
             buttonClicked: function(index) {
-                if(index === 0){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 1){$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 3) {$state.go('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
+                if(index === 0){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 1){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 3) {qmService.goToState('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
                 if(index === 4) { $scope.state.showMoreUnits = true; }
                 return true;
             },

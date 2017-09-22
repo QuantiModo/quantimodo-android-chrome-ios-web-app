@@ -24,16 +24,16 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         removeImportPage();
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         $scope.circlePage.nextPageButtonText = "Done connecting data sources";
-        $state.go('app.import');
+        qmService.goToState('app.import');
     };
     $scope.goToUpgradePage = function () {
         $rootScope.backButtonState = 'app.onboarding';
-        $state.go('app.upgrade');
+        qmService.goToState('app.upgrade');
     };
     $scope.skipOnboarding = function () {
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
-        $state.go(config.appSettings.appDesign.defaultState);
+        qmService.goToState(config.appSettings.appDesign.defaultState);
     };
     $scope.goToReminderSearchFromOnboarding = function() {
         $rootScope.hideHomeButton = true;
@@ -41,7 +41,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         if(!$rootScope.user){
             $rootScope.appSettings.appDesign.onboarding.active = null;
             qmService.deleteItemFromLocalStorage('onboardingPages');
-            $state.go('app.onboarding');
+            qmService.goToState('app.onboarding');
             return;
         }
         $scope.goToReminderSearch($scope.circlePage.variableCategoryName);
@@ -55,7 +55,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $scope.hideOnboardingPage();
     };
     $scope.doneOnboarding = function () {
-        $state.go('app.remindersInbox');
+        qmService.goToState('app.remindersInbox');
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
         qmService.deleteItemFromLocalStorage('onboardingPages');
@@ -66,13 +66,13 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             $rootScope.hideMenuButton = false;
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
         } else {
             $rootScope.hideMenuButton = true;
         }
     };
     $scope.goToReminderSearch = function(variableCategoryName) {
-        $state.go('app.reminderSearch',
+        qmService.goToState('app.reminderSearch',
             {
                 variableCategoryName : variableCategoryName,
                 fromUrl: window.location.href,

@@ -41,7 +41,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
     });
 	$scope.editMeasurement = function(measurement){
 		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
-		$state.go('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
+		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
 	};
 	$scope.refreshHistory = function(){
 		var concat = false;
@@ -90,13 +90,13 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {console.debug('CANCELLED');},
 				buttonClicked: function(index) {
-					if(index === 0) {$state.go('app.historyAll', {variableCategoryName: 'Emotions'});}
-					if(index === 1) {$state.go('app.historyAll', {variableCategoryName: 'Foods'});}
-					if(index === 2) {$state.go('app.historyAll', {variableCategoryName: 'Symptoms'});}
-					if(index === 3) {$state.go('app.historyAll', {variableCategoryName: 'Treatments'});}
-					if(index === 4) {$state.go('app.historyAll', {variableCategoryName: 'Physical Activity'});}
-					if(index === 5) {$state.go('app.historyAll', {variableCategoryName: 'Vital Signs'});}
-					if(index === 6) {$state.go('app.historyAll', {variableCategoryName: 'Locations'});}
+					if(index === 0) {qmService.goToState('app.historyAll', {variableCategoryName: 'Emotions'});}
+					if(index === 1) {qmService.goToState('app.historyAll', {variableCategoryName: 'Foods'});}
+					if(index === 2) {qmService.goToState('app.historyAll', {variableCategoryName: 'Symptoms'});}
+					if(index === 3) {qmService.goToState('app.historyAll', {variableCategoryName: 'Treatments'});}
+					if(index === 4) {qmService.goToState('app.historyAll', {variableCategoryName: 'Physical Activity'});}
+					if(index === 5) {qmService.goToState('app.historyAll', {variableCategoryName: 'Vital Signs'});}
+					if(index === 6) {qmService.goToState('app.historyAll', {variableCategoryName: 'Locations'});}
 					return true;
 				},
 				destructiveButtonClicked: function() {}
@@ -133,10 +133,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			buttonClicked: function(index) {
 				console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
 				if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
-				if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
-				if(index === 2) {$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-				if(index === 3) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-				if(index === 4){$state.go('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
+				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
+				if(index === 2) {qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+				if(index === 3) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+				if(index === 4){qmService.goToState('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
 				return true;
 			},
 			destructiveButtonClicked: function() {

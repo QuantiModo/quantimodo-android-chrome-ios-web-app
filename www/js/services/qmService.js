@@ -928,6 +928,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return true;
         }
     }
+    qmService.goToState = function(to, params, options){
+        logDebug("Going to state " + to, getStackTrace());
+        $state.go(to, params, options);
+    };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         logDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
         if($rootScope.user && $rootScope.user.accessToken === qmService.getAccessTokenFromUrl()){
@@ -1346,7 +1350,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.updateUserTimeZoneIfNecessary();
     };
     qmService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
-        if(!qmService.afterLoginGoToUrlOrState()){$state.go(config.appSettings.appDesign.defaultState);}
+        if(!qmService.afterLoginGoToUrlOrState()){qmService.goToState(config.appSettings.appDesign.defaultState);}
     };
     function sendToAfterLoginUrlIfNecessary() {
         var afterLoginGoToUrl = qmService.getLocalStorageItemAsString('afterLoginGoToUrl');
@@ -1362,13 +1366,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         logDebug("afterLoginGoToState from localstorage is  " + afterLoginGoToState);
         if(afterLoginGoToState){
             qmService.deleteItemFromLocalStorage('afterLoginGoToState');
-            $state.go(afterLoginGoToState);
+            qmService.goToState(afterLoginGoToState);
             return true;
         }
     }
     function sendToDefaultStateIfNecessary() {
         if($state.current.name === 'app.login'){
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
             return true;
         }
     }
@@ -1472,10 +1476,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             cancel: function() {logDebug('CANCELLED');},
             buttonClicked: function(index) {
                 logDebug('BUTTON CLICKED', index);
-                if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
-                if(index === 3) {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
+                if(index === 3) {qmService.goToState('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});} // Need variable name to populate in url
                 return true;
             },
             destructiveButtonClicked: function() {
@@ -4499,7 +4503,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 params = {trackingReminderId: notificationData.id};
             } else {
                 logDebug("onClick: No notification data provided. Going to remindersInbox page.");
-                $state.go('app.remindersInbox');
+                qmService.goToState('app.remindersInbox');
             }
             if(params.trackingReminderId || params.trackingReminderNotificationId ){
                 qmService.skipTrackingReminderNotification(params, function(response){
@@ -4510,7 +4514,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 });
                 logDebug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
                 //qmService.decrementNotificationBadges();
-                $state.go('app.measurementAdd', {reminderNotification: notificationData, fromState: 'app.remindersInbox'});
+                qmService.goToState('app.measurementAdd', {reminderNotification: notificationData, fromState: 'app.remindersInbox'});
             } else {
                 logDebug("onClick: No params.trackingReminderId || params.trackingReminderNotificationId. " +
                     "Should have already gone to remindersInbox page.");
@@ -6381,13 +6385,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
         }
         if ((trackingReminder.unitAbbreviatedName !== '/5' && trackingReminder.variableName !== "Blood Pressure")) {
-            $state.go('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
+            qmService.goToState('app.favoriteAdd', {variableObject: variableObject, fromState: $state.current.name, fromUrl: window.location.href, doneState: 'app.favorites'});
             return;
         }
         qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminders', trackingReminder)
             .then(function() {
                 // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                $state.go('app.favorites', {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
+                qmService.goToState('app.favorites', {trackingReminder: trackingReminder, fromState: $state.current.name, fromUrl: window.location.href});
                 qmService.syncTrackingReminders();
             });
     };
@@ -6422,13 +6426,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         }
         if (!skipReminderSettings) {
-            $state.go('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
+            qmService.goToState('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
             return;
         }
         qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', trackingReminder)
             .then(function() {
                 // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                $state.go(doneState, {trackingReminder: trackingReminder});
+                qmService.goToState(doneState, {trackingReminder: trackingReminder});
                 qmService.syncTrackingReminders();
             });
     };
@@ -6680,7 +6684,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             locals: {dataToPass: {title: title, textContent: textContent}}
         })
         .then(function(answer) {
-            if(answer === "help"){$state.go('app.help');}
+            if(answer === "help"){qmService.goToState('app.help');}
             //$scope.status = 'You said the information was "' + answer + '".';
         }, function() {
             //$scope.status = 'You cancelled the dialog.';
@@ -6705,7 +6709,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             fullscreen: false,
             locals: {dataToPass: {title: title, textContent: textContent}}
         }).then(function(answer) {
-            if(answer === "help"){$state.go('app.help');}
+            if(answer === "help"){qmService.goToState('app.help');}
             if(answer === 'yes'){yesCallbackFunction(ev);}
             if(answer === 'no' && noCallbackFunction){noCallbackFunction(ev);}
         }, function() {
@@ -6782,7 +6786,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 localStorage.setItem('lastMeasurementSyncTime', 0);
             }
             qmService.hideLoader();
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
             logDebug("All measurements for " + variableObject.name + " deleted!");
         }, function(error) {
             qmService.hideLoader();
@@ -6803,7 +6807,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     function sendToLogin() {
         logDebug("Sending to app.login");
-        $state.go("app.login");
+        qmService.goToState("app.login");
     }
     qmService.sendToLogin = function() {
         sendToLogin();
@@ -6851,7 +6855,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.goToStudyPageViaCorrelationObject = function(correlationObject){
         $rootScope.correlationObject = correlationObject;
         localStorage.setItem('lastStudy', JSON.stringify(correlationObject));
-        $state.go('app.study', {correlationObject: correlationObject});
+        qmService.goToState('app.study', {correlationObject: correlationObject});
     };
     qmService.getPlanFeatureCards = function () {
         var planFeatureCards = [

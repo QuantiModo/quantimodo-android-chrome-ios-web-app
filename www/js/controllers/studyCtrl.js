@@ -53,7 +53,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
         qmService.clearCorrelationCache();
         getStudy();
     };
-    $scope.joinStudy = function () { $state.go("app.studyJoin", {correlationObject: $rootScope.correlationObject}); };
+    $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: $rootScope.correlationObject}); };
     if (!clipboard.supported) {
         console.debug("Sorry, copy to clipboard is not supported");
         $scope.hideClipboardButton = true;
@@ -122,7 +122,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
     function getStudy() {
         if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
             qmService.logError('Cannot get study. Missing cause or effect variable name.');
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
             return;
         }
         $scope.loadingCharts = true;
@@ -151,8 +151,8 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() { console.debug($state.current.name + ": " + 'CANCELLED'); },
             buttonClicked: function(index) {
-                if(index === 0){ $state.go("app.variableSettings", {variableName: $rootScope.correlationObject.causeVariableName}); }
-                if(index === 1){ $state.go("app.variableSettings", {variableName: $rootScope.correlationObject.effectVariableName}); }
+                if(index === 0){ qmService.goToState("app.variableSettings", {variableName: $rootScope.correlationObject.causeVariableName}); }
+                if(index === 1){ qmService.goToState("app.variableSettings", {variableName: $rootScope.correlationObject.effectVariableName}); }
                 if(index === 2){ $scope.upVote($rootScope.correlationObject); }
                 return true;
             },

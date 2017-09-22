@@ -18,7 +18,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             refreshUserVariable($rootScope.variableObject.name);
         } else {
             qmService.logError("Variable name not provided to variable settings controller!");
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
             //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
         }
     });
@@ -44,11 +44,11 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() { console.debug('CANCELLED'); },
             buttonClicked: function(index) {
-                if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 2) {$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 3) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 4) {$state.go('app.tagSearch',  {fromState: $state.current.name, userTaggedVariableObject: $rootScope.variableObject}); }
+                if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 2) {qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 3) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 4) {qmService.goToState('app.tagSearch',  {fromState: $state.current.name, userTaggedVariableObject: $rootScope.variableObject}); }
                 if(index === 5) {$scope.tagAnotherVariable($rootScope.variableObject);}
                 return true;
             },
@@ -84,7 +84,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         self.finish = function($event) {
             var userTagData;
             if($rootScope.variableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
-                $state.go('app.tagAdd', {
+                qmService.goToState('app.tagAdd', {
                     userTaggedVariableObject: $rootScope.variableObject,
                     fromState: $state.current.name,
                     fromStateParams: {variableObject: $rootScope.variableObject},
