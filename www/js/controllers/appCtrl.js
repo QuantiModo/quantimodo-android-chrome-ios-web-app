@@ -667,6 +667,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.goToStudyPage = function(correlationObject) {qmService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
+        qmService.logDebug("Clicked go goToStudyPageWithVariableNames for " + causeVariableName + " and " + effectVariableName);
         if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
             $rootScope.correlationObject = null;
         }
