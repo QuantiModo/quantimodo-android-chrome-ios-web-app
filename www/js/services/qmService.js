@@ -1489,7 +1489,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.getStudyDeferred = function (params){
         var deferred = $q.defer();
         if(qmService.getUrlParameter('aggregated')){params.aggregated = true;}
+        qmService.logDebug("qmService.getStudy params: " + prettyJsonStringify(params), getStackTrace());
         qmService.getStudy(params, function (response) {
+            qmService.logDebug("qmService.getStudy response: " + prettyJsonStringify(response));
             var study;
             if(response.userStudy){ study = response.userStudy; }
             if(response.publicStudy){ study = response.publicStudy; }
@@ -1503,6 +1505,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             localStorage.setItem('lastStudy', JSON.stringify(study));
             deferred.resolve(study);
         }, function (error) {
+            qmService.logError("qmService.getStudy error: " + error);
             deferred.reject(error);
             logError(error);
         });
