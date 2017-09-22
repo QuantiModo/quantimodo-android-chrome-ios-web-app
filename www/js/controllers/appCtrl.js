@@ -98,6 +98,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.openSharingUrl(sharingUrl);
     };
     $scope.shareStudy = function(correlationObject, sharingUrl, ev){
+        if(!sharingUrl){qmService.logError("No sharing url for this correlation: ", {correlation: correlationObject});}
         if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
             showShareStudyConfirmation(correlationObject, sharingUrl, ev);
             return;
