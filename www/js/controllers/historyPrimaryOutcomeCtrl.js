@@ -5,7 +5,7 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 	$scope.syncDisplayText = 'Syncing ' + qmService.getPrimaryOutcomeVariable().name + ' measurements...';
 	$scope.editMeasurement = function(measurement){
 		measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
-		$state.go('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
+		qmService.goToState('app.measurementAdd', {measurement: measurement, fromState: $state.current.name, fromUrl: window.location.href});
 	};
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.refreshMeasurementHistory = function () {
@@ -45,9 +45,9 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 			buttonClicked: function(index) {
 				console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
 				if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
-				if(index === 1){$state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
-				if(index === 2) {$state.go('app.track');}
-				if(index === 3){$state.go('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
+				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
+				if(index === 2) {qmService.goToState('app.track');}
+				if(index === 3){qmService.goToState('app.variableSettings', {variableName: $scope.state.measurement.variableName});}
 				return true;
 			},
 		});

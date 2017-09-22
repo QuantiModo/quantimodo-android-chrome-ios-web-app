@@ -57,17 +57,17 @@ angular.module('starter',
             stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
             stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
         }
-        $state.go(stateName, stateParameters, {reload: stateName === $state.current.name});
+        qmService.goToState(stateName, stateParameters, {reload: stateName === $state.current.name});
     };
     $ionicPlatform.registerBackButtonAction(function (event) {
         if($rootScope.backButtonState){
-            $state.go($rootScope.backButtonState);
+            qmService.goToState($rootScope.backButtonState);
             $rootScope.backButtonState = null;
             return;
         }
         if($ionicHistory.currentStateName() === 'app.upgrade'){
             console.debug('registerBackButtonAction from upgrade: Going to default state...');
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
             return;
         }
         if($ionicHistory.currentStateName() === config.appSettings.appDesign.defaultState){
@@ -81,7 +81,7 @@ angular.module('starter',
         if(localStorage.user){
             $rootScope.hideNavigationMenu = false;
             console.debug('registerBackButtonAction: Going to default state...');
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
             return;
         }
         console.debug('registerBackButtonAction: Closing the app');

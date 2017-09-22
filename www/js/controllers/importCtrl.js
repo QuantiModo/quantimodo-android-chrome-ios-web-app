@@ -20,7 +20,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	};
 	var goToWebImportDataPage = function() {
 		console.debug('importCtrl.init: Going to qmService.getAccessTokenFromAnySource');
-		$state.go(config.appSettings.appDesign.defaultState);
+		qmService.goToState(config.appSettings.appDesign.defaultState);
 		qmService.getAccessTokenFromAnySource().then(function(accessToken){
 			qmService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
@@ -31,7 +31,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				if(!newTab){ alert("Please unblock popups and refresh to access the Import Data page."); }
 				$rootScope.hideNavigationMenu = false;
 				//noinspection JSCheckFunctionSignatures
-				$state.go(config.appSettings.appDesign.defaultState);
+				qmService.goToState(config.appSettings.appDesign.defaultState);
 			} else {
 				var targetUrl = qmService.getQuantiModoUrl("api/v1/connect/mobile", true);
 				if(accessToken){ targetUrl += "access_token=" + accessToken; }
@@ -39,7 +39,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 				ref.addEventListener('exit', function(){
 					$rootScope.hideNavigationMenu = false;
 					//noinspection JSCheckFunctionSignatures
-					$state.go(config.appSettings.appDesign.defaultState);
+					qmService.goToState(config.appSettings.appDesign.defaultState);
 				});
 			}
 		}, function(){
@@ -71,7 +71,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {console.debug('CANCELLED');},
             buttonClicked: function(index) {
-                if(index === 0){$state.go('app.historyAll', {connectorName: connector.name});}
+                if(index === 0){qmService.goToState('app.historyAll', {connectorName: connector.name});}
                 return true;
             },
             destructiveButtonClicked: function() {}
@@ -79,7 +79,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
     };
     $scope.uploadSpreadsheet = function(file, errFiles, connector, button) {
         if(!userCanConnect()){
-            $state.go('app.upgrade');
+            qmService.goToState('app.upgrade');
             return;
         }
         if(!file){
@@ -110,7 +110,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
     };
     var connectConnector = function(connector, button){
         if(!userCanConnect()){
-            $state.go('app.upgrade');
+            qmService.goToState('app.upgrade');
             return;
         }
         var scopes;

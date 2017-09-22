@@ -63,12 +63,12 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				cancel: function() {console.debug('CANCELLED');},
 				buttonClicked: function(index) {
 					console.debug('BUTTON CLICKED', index);
-                    if(index === 0){$state.go('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
-                    if(index === 1){$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 2){$state.go('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 3){$state.go('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 4){$state.go('app.settings');}
-                    if(index === 5){$state.go('app.help');}
+                    if(index === 0){qmService.goToState('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
+                    if(index === 1){qmService.goToState('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 2){qmService.goToState('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 3){qmService.goToState('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 4){qmService.goToState('app.settings');}
+                    if(index === 5){qmService.goToState('app.help');}
 					return true;
 				},
 				destructiveButtonClicked: function() {
@@ -179,7 +179,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		if($rootScope.alreadyEnlargedWindow){return;}
 		var largeInboxWindowParams = {top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
 		if($state.current.name === "app.remindersInboxCompact"){
-			$state.go("app.remindersInbox");
+			qmService.goToState("app.remindersInbox");
 			chrome.windows.getCurrent({}, function (chromeWindow) {
 				$rootScope.alreadyEnlargedWindow = true;
 				var vid = chromeWindow.id;
@@ -323,7 +323,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$rootScope.numberOfPendingNotifications--;
 		$scope.state.numberOfDisplayedNotifications--;
 		qmService.deleteElementOfLocalStorageItemById('trackingReminderNotifications', trackingReminderNotification.id);
-		$state.go('app.measurementAdd', {reminderNotification: trackingReminderNotification, fromUrl: window.location.href});
+		qmService.goToState('app.measurementAdd', {reminderNotification: trackingReminderNotification, fromUrl: window.location.href});
 	};
 	$scope.editReminderSettingsByNotification = function(trackingReminderNotification){
 		enlargeChromePopupIfNecessary();
@@ -333,7 +333,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$scope.state.numberOfDisplayedNotifications--;
 		var trackingReminder = trackingReminderNotification;
 		trackingReminder.id = trackingReminderNotification.trackingReminderId;
-		$state.go('app.reminderAdd', {reminder: trackingReminder, fromUrl: window.location.href, fromState : $state.current.name});
+		qmService.goToState('app.reminderAdd', {reminder: trackingReminder, fromUrl: window.location.href, fromState : $state.current.name});
 	};
 	// Triggered on a button click, or some other target
 	$scope.showActionSheetForNotification = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex) {
@@ -365,9 +365,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				console.debug('BUTTON CLICKED', index);
                 if(index === 0){console.debug("clicked variable name");}
 				if(index === 1){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
-				if(index === 2){$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 3){$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 4){$state.go('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
+				if(index === 2){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 4){qmService.goToState('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
                 var buttonIndex = 5;
                 for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
                     if(index === buttonIndex){trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[i].modifiedValue);}

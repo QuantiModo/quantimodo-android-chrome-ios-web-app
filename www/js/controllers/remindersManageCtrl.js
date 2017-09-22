@@ -67,10 +67,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 					console.debug('BUTTON CLICKED', index);
 					if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
 					if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
-					if(index === 2){$state.go('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
-                    if(index === 3){$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 4){$state.go('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
-                    if(index === 5){$state.go('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+					if(index === 2){qmService.goToState('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
+                    if(index === 3){qmService.goToState('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 4){qmService.goToState('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 5){qmService.goToState('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
 					return true;
 				}
 			});
@@ -118,7 +118,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			template: "It is possible to instead get a separate device notification for each tracking reminder that " +
 				"you create.  You can change this setting or update the notification frequency on the settings page.",
 			buttons:[
-				{text: 'Settings', type: 'button-positive', onTap: function(e) { $state.go('app.settings'); }},
+				{text: 'Settings', type: 'button-positive', onTap: function(e) { qmService.goToState('app.settings'); }},
 				{text: 'OK', type: 'button-assertive'}
 			]
 		});
@@ -126,17 +126,17 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	};
 	$scope.edit = function(trackingReminder){
 		trackingReminder.fromState = $state.current.name;
-		$state.go('app.reminderAdd', { reminder : trackingReminder, fromUrl: window.location.href });
+		qmService.goToState('app.reminderAdd', { reminder : trackingReminder, fromUrl: window.location.href });
 	};
 	$scope.addNewReminderButtonClick = function(){
 		if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
-			$state.go('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
-		else {$state.go('app.reminderSearch');}
+			qmService.goToState('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName, fromUrl: window.location.href});}
+		else {qmService.goToState('app.reminderSearch');}
 	};
 	$scope.addNewMeasurementButtonClick = function(){
 		if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
-			$state.go('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
-		else { $state.go('app.measurementAddSearch'); }
+			qmService.goToState('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+		else { qmService.goToState('app.measurementAddSearch'); }
 	};
 	$scope.deleteReminder = function(reminder){
 		reminder.hide = true;
@@ -161,10 +161,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			buttonClicked: function(index) {
 				console.debug('BUTTON CLICKED', index);
 				if(index === 0){$scope.edit(trackingReminder);}
-				if(index === 1){$state.go('app.measurementAdd', {variableObject: variableObject, variableName: variableObject.name});}
-				if(index === 2){$state.go('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
-				if(index === 3){$state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
-				if(index === 4){$state.go('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 1){qmService.goToState('app.measurementAdd', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 2){qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
+				if(index === 4){qmService.goToState('app.variableSettings', {variableObject: variableObject, variableName: variableObject.name});}
 				return true;
 			},
 			destructiveButtonClicked: function() {

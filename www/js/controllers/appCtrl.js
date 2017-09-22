@@ -78,13 +78,13 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
         /** @namespace correlationObject.causeVariable */
-        if(correlationObject.causeVariable){ $state.go('app.variableSettings', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
-        } else { $state.go('app.variableSettings', {variableName: correlationObject.causeVariableName}); }
+        if(correlationObject.causeVariable){ qmService.goToState('app.variableSettings', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
+        } else { qmService.goToState('app.variableSettings', {variableName: correlationObject.causeVariableName}); }
     };
     $scope.goToVariableSettingsForEffectVariable = function(correlationObject) {
         /** @namespace correlationObject.effectVariable */
-        if(correlationObject.effectVariable){ $state.go('app.variableSettings', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
-        } else { $state.go('app.variableSettings', {variableName: correlationObject.effectVariableName}); }
+        if(correlationObject.effectVariable){ qmService.goToState('app.variableSettings', {variableObject: correlationObject.effectVariable, variableName: correlationObject.effectVariableName});
+        } else { qmService.goToState('app.variableSettings', {variableName: correlationObject.effectVariableName}); }
     };
     $scope.openUrl = function(url){
         if(typeof cordova !== "undefined"){ cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
@@ -237,10 +237,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         qmService.showMaterialAlert(qmService.explanations[explanationId].title, qmService.explanations[explanationId].textContent);
     };
     $scope.tagAnotherVariable = function () {
-        $state.go('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: $rootScope.variableObject});
+        qmService.goToState('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: $rootScope.variableObject});
     };
     $scope.goToChartsPageForVariableObject = function (variableObject) {
-        $state.go('app.charts', {variableObject: variableObject});
+        qmService.goToState('app.charts', {variableObject: variableObject});
     };
     $scope.closeMenuIfNeeded = function (menuItem) {
         menuItem.showSubMenu = !menuItem.showSubMenu;
@@ -357,7 +357,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 */
     $ionicPopover.fromTemplateUrl('templates/popover.html', {scope: $scope}).then(function (popover) {$scope.popover = popover;});
     $scope.editTag = function(userTagVariable){
-        $state.go('app.tagAdd', {
+        qmService.goToState('app.tagAdd', {
             tagConversionFactor: userTagVariable.tagConversionFactor,
             userTaggedVariableObject: $rootScope.variableObject,
             fromState: $state.current.name,
@@ -365,7 +365,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         });
     };
     $scope.editTagged = function(userTaggedVariable){
-        $state.go('app.tagAdd', {
+        qmService.goToState('app.tagAdd', {
             tagConversionFactor: userTaggedVariable.tagConversionFactor,
             userTaggedVariableObject: userTaggedVariable,
             fromState: $state.current.name,
@@ -498,11 +498,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             cancel: function() {console.debug('CANCELLED');},
             buttonClicked: function(index) {
                 console.debug('BUTTON CLICKED', index);
-                if(index === 0){$state.go('app.reminderAdd', {reminder: favorite});}
-                if(index === 1){$state.go('app.measurementAdd', {trackingReminder: favorite});}
-                if(index === 2){$state.go('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
-                if(index === 3){$state.go('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
-                if(index === 4){$state.go('app.variableSettings', {variableName: favorite.variableName});}
+                if(index === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
+                if(index === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
+                if(index === 2){qmService.goToState('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
+                if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject, variableName: variableObject.name});}
+                if(index === 4){qmService.goToState('app.variableSettings', {variableName: favorite.variableName});}
                 return true;
             },
             destructiveButtonClicked: function() {
@@ -534,7 +534,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var stateId = backView.stateName;
             if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
                 $ionicHistory.goBack(-2);
-                //$state.go(config.appSettings.appDesign.defaultState, stateParams);
+                //qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
                 return;
             }
             if(stateParams){
@@ -546,7 +546,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             }
             $ionicHistory.goBack();
         } else {
-            $state.go(config.appSettings.appDesign.defaultState, stateParams);
+            qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
         }
     };
     $scope.setupVariableByVariableObject = function(variableObject) {
@@ -676,7 +676,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
             $rootScope.correlationObject = null;
         }
-        $state.go('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
+        qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
     };
 
 });

@@ -188,7 +188,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			qmService.completelyResetAppState();
 			logOutOfWebsite();
 			saveDeviceTokenToSyncWhenWeLogInAgain();
-			$state.go('app.intro');
+			qmService.goToState('app.intro');
 		};
 		var afterLogoutDoNotDeleteMeasurements = function(){
             qmService.showBlackRingLoader();
@@ -198,7 +198,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 			logOutOfWebsite();
 			window.localStorage.introSeen = false;
 			window.localStorage.onboarded = false;
-			$state.go('app.intro');
+			qmService.goToState('app.intro');
 		};
 		var showDataClearPopup = function(ev){
             var title = 'Clear local storage?';
