@@ -929,7 +929,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     }
     qmService.goToState = function(to, params, options){
-        logDebug("Going to state " + to, getStackTrace());
+        logDebug(arguments.callee.caller.name + " called goToState: " + to, getStackTrace());
         $state.go(to, params, options);
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
