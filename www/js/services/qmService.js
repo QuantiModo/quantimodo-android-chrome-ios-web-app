@@ -330,7 +330,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         console.debug("Debug mode is " + window.debugMode);
         return window.debugMode;
     }
-    function setAfterLoginUrlAndSendToLogin(){
+    function setAfterLoginGoToUrlAndSendToLogin(){
         setAfterLoginGoToUrl();
         sendToLogin();
     }
@@ -343,7 +343,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(options && options.doNotSendToLogin){return;}
             logDebug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
             logDebug('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
-            setAfterLoginUrlAndSendToLogin();
+            setAfterLoginGoToUrlAndSendToLogin();
             return;
         }
         var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
@@ -1048,7 +1048,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function qmApiGeneralErrorHandler(error, data, response, options) {
         if(response.status === 401){
-            if(!options || !options.doNotSendToLogin){setAfterLoginUrlAndSendToLogin();}
+            if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
             logError(error);
         }
@@ -1350,16 +1350,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.afterLoginGoToUrlOrState();
         qmService.updateUserTimeZoneIfNecessary();
     };
-    qmService.goToDefaultStateIfNoAfterLoginUrlOrState = function () {
+    qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState = function () {
         if(!qmService.afterLoginGoToUrlOrState()){qmService.goToState(config.appSettings.appDesign.defaultState);}
     };
-    function sendToAfterLoginUrlIfNecessary() {
+    function sendToAfterLoginGoToUrlIfNecessary() {
         var afterLoginGoToUrl = qmService.getLocalStorageItemAsString('afterLoginGoToUrl');
         if(afterLoginGoToUrl) {
             logDebug("afterLoginGoToUrl from localstorage is  " + afterLoginGoToUrl);
             qmService.deleteItemFromLocalStorage('afterLoginGoToUrl');
             window.location.replace(afterLoginGoToUrl);
             return true;
+        } else {
+            logDebug("sendToAfterLoginGoToUrlIfNecessary: No afterLoginGoToUrl from localstorage");
         }
     }
     function sendToAfterLoginStateIfNecessary() {
@@ -1378,7 +1380,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     }
     qmService.afterLoginGoToUrlOrState = function () {
-        if(sendToAfterLoginUrlIfNecessary()) {return true;}
+        if(sendToAfterLoginGoToUrlIfNecessary()) {return true;}
         if(sendToAfterLoginStateIfNecessary()) {return true;}
         if(sendToDefaultStateIfNecessary()) {return true;}
         return false;
