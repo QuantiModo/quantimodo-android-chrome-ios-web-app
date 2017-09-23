@@ -100,7 +100,7 @@ angular.module('starter',
         orgId: '10d58117acb546c08a2cae66d650480d',
         appId: 'fc62a74505'
     });
-    window.debugMode = !!(appsManager.getUrlParameter('debug'));
+    window.debugMode = (appsManager.getUrlParameter('debug') || appsManager.getUrlParameter('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
     if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
