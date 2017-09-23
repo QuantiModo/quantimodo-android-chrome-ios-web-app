@@ -37,8 +37,8 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
     };
     var leaveIfLoggedIn = function () {
         if($rootScope.user){
-            console.debug("Already logged in on login page.  goToDefaultStateIfNoAfterLoginUrlOrState...");
-            qmService.goToDefaultStateIfNoAfterLoginUrlOrState();
+            console.debug("Already logged in on login page.  goToDefaultStateIfNoAfterLoginGoToUrlOrState...");
+            qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
         }
         // Should already be doing this in AppCtrl
         // if(qmService.getAccessTokenFromUrlParameter()){
@@ -62,7 +62,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
                 qmService.reportErrorDeferred('Login failure');
             }
             if($rootScope.user && $state.current.name.indexOf('login') !== -1){
-                qmService.goToDefaultStateIfNoAfterLoginUrlOrState();
+                qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
             }
         }, 40000);
     };
@@ -168,7 +168,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         if($rootScope.user){
             qmService.createDefaultReminders();
             console.debug($scope.controller_name + ".login: Got user and going to default state");
-            qmService.goToDefaultStateIfNoAfterLoginUrlOrState();
+            qmService.goToDefaultStateIfNoAfterLoginGoToUrlOrState();
         }
     };
     $scope.nativeSocialLogin = function(provider, accessToken){
