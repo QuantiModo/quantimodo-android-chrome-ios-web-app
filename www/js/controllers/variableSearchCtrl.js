@@ -40,12 +40,12 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
             var options = {skipReminderSettingsIfPossible: $scope.state.skipReminderSettingsIfPossible, doneState: $scope.state.doneState};
             qmService.addToRemindersUsingVariableObject(variableObject, options);
         } else if ($scope.state.nextState.indexOf('predictor') !== -1) {
-            $state.go($scope.state.nextState, {effectVariableName: variableObject.name});
+            qmService.goToState($scope.state.nextState, {effectVariableName: variableObject.name});
         } else if ($scope.state.nextState.indexOf('outcome') !== -1) {
-            $state.go($scope.state.nextState, {causeVariableName: variableObject.name});
+            qmService.goToState($scope.state.nextState, {causeVariableName: variableObject.name});
         } else if ($scope.state.userTaggedVariableObject) {
             if($scope.state.userTaggedVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
-                $state.go($scope.state.nextState, {
+                qmService.goToState($scope.state.nextState, {
                     userTaggedVariableObject: $scope.state.userTaggedVariableObject,
                     fromState: $scope.state.fromState,
                     fromStateParams: {variableObject: $scope.state.userTaggedVariableObject},
@@ -56,13 +56,13 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 qmService.showBlackRingLoader();
                 qmService.postUserTagDeferred(userTagData).then(function () {
                     qmService.hideLoader();
-                    if ($scope.state.fromState) {$state.go($scope.state.fromState, {variableName: $scope.state.userTaggedVariableObject.name});
-                    } else {$state.go(config.appSettings.appDesign.defaultState);}
+                    if ($scope.state.fromState) {qmService.goToState($scope.state.fromState, {variableName: $scope.state.userTaggedVariableObject.name});
+                    } else {qmService.goToState(config.appSettings.appDesign.defaultState);}
                 });
             }
         } else if($scope.state.userTagVariableObject) {
             if($scope.state.userTagVariableObject.userVariableDefaultUnitAbbreviatedName !== '/5'){
-                $state.go($scope.state.nextState, {
+                qmService.goToState($scope.state.nextState, {
                     userTaggedVariableObject: variableObject,
                     fromState: $scope.state.fromState,
                     fromStateParams: {variableObject: $scope.state.userTagVariableObject},
@@ -73,17 +73,17 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 qmService.showBlackRingLoader();
                 qmService.postUserTagDeferred(userTagData).then(function () {
                     qmService.hideLoader();
-                    if ($scope.state.fromState) {$state.go($scope.state.fromState, {variableName: $scope.state.userTagVariableObject.name});
-                    } else {$state.go(config.appSettings.appDesign.defaultState);}
+                    if ($scope.state.fromState) {qmService.goToState($scope.state.fromState, {variableName: $scope.state.userTagVariableObject.name});
+                    } else {qmService.goToState(config.appSettings.appDesign.defaultState);}
                 });
             }
         } else {
             $scope.state.variableName = variableObject.name;
             $scope.state.variableObject = variableObject;
-            $state.go($scope.state.nextState, $scope.state);
+            qmService.goToState($scope.state.nextState, $scope.state);
         }
     };
-    $scope.goToStateFromVariableSearch = function(stateName){$state.go(stateName, $stateParams);};
+    $scope.goToStateFromVariableSearch = function(stateName){qmService.goToState(stateName, $stateParams);};
     // when a query is searched in the search box
     function showAddVariableButtonIfNecessary(variables) {
         if($scope.state.doNotShowAddVariableButton){
@@ -190,7 +190,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
         if ($scope.state.nextState) {
             $scope.state.variableObject = variableObject;
-            $state.go($scope.state.nextState, $scope.state);
+            qmService.goToState($scope.state.nextState, $scope.state);
         }
     };
     function setHelpText() {

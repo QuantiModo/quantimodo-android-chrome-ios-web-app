@@ -487,10 +487,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
             cancel: function() {console.debug('CANCELLED');},
             buttonClicked: function(index) {
-                if(index === 0){$state.go('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 1){$state.go('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 2) {$state.go('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 3) {$state.go('app.variableSettings', {variableName: $scope.state.trackingReminder.variableName});}
+                if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 1){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 2) {qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
+                if(index === 3) {qmService.goToState('app.variableSettings', {variableName: $scope.state.trackingReminder.variableName});}
                 if(index === 4) {$scope.state.showMoreUnits = true;}
                 return true;
             },

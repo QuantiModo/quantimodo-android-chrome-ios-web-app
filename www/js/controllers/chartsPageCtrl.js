@@ -57,10 +57,10 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     }
     $scope.addNewReminderButtonClick = function() {
         console.debug("addNewReminderButtonClick");
-        $state.go('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});
+        qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});
     };
-    $scope.recordMeasurementButtonClick = function() {$state.go('app.measurementAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});};
-    $scope.editSettingsButtonClick = function() {$state.go('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});};
+    $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});};
+    $scope.editSettingsButtonClick = function() {qmService.goToState('app.variableSettings', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});};
     var updateDailyCharts = function(){
         if ($scope.state.dailyHistory.length > 0) {
             if($rootScope.variableObject.fillingValue !== null && $rootScope.variableObject.fillingValue !== -1){

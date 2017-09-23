@@ -313,7 +313,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             qmService.showBasicLoader();
             qmService.refreshUser().then(function () {
                 $mdDialog.hide();
-                $state.go('app.remindersInbox');
+                qmService.goToState('app.remindersInbox');
             });
         };
     }

@@ -10,7 +10,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         slideIndex : 0,
         startApp : function() { // Called to navigate to the main app
             if(qmService.sendToLogin()){ return; }
-            $state.go('app.onboarding');
+            qmService.goToState('app.onboarding');
         },
         next : function(index) {
             if(index === $rootScope.appSettings.appDesign.intro.active.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}
@@ -29,7 +29,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         if($rootScope.appSettings.appDesign.intro.active[0].textColor){ $scope.myIntro.textColor = $rootScope.appSettings.appDesign.intro.active[0].textColor; }
         if(qmService.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
             console.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' + config.appSettings.appDesign.defaultState);
-            $state.go(config.appSettings.appDesign.defaultState);
+            qmService.goToState(config.appSettings.appDesign.defaultState);
         } else {
             //console.debug($state.current.name + ' initializing...');
             $scope.myIntro.ready = true;
