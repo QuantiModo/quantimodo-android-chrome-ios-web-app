@@ -104,8 +104,22 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return message + ".  StackTrace: " + stackTrace;
     }
     function addStateNameToMessage(message) {
-        if(!$state.current.name){return message;}
-        return message + " in state " + $state.current.name;
+        if($state.current.name){
+            message = message + " in state " + $state.current.name;
+        }
+        var calleeFunction = arguments.callee.caller.caller;
+        if(calleeFunction && calleeFunction.name && calleeFunction.name !== ""){
+            message = "callee " + calleeFunction.name + ": " + message
+        } else if (window.debugMode) {
+            return message + ".  Stack trace: " + getStackTrace();
+        }
+        var callerFunction = arguments.callee.caller.caller.caller;
+        if(callerFunction && callerFunction.name && callerFunction.name !== ""){
+            return "Caller " + callerFunction.name + " called " + message;
+        } else if (window.debugMode) {
+            return message + ".  Stack trace: " + getStackTrace();
+        }
+        return message;
     }
     function logDebug(message, stackTrace) {
         message = addStateNameToMessage(message);
@@ -201,8 +215,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             "deviceTokenOnServer": localStorage.getItem('deviceTokenOnServer'),
             "deviceTokenToSync": localStorage.getItem('deviceTokenToSync')
         };
-        metaData.build_server = config.appSettings.buildServer;
-        metaData.build_link = config.appSettings.buildLink;
+        if(typeof config !== "undefined"){
+            metaData.build_server = config.appSettings.buildServer;
+            metaData.build_link = config.appSettings.buildLink;
+        }
         metaData.test_url = getTestUrl();
         //metaData.appSettings = config.appSettings;  // Request Entity Too Large
         if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
@@ -929,11 +945,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     }
     qmService.goToState = function(to, params, options){
-        var callerFunction = arguments.callee.caller.name;
-        if(!callerFunction || callerFunction === ''){
-            logDebug("goToState caller function not defined so here's a stacktrace: " + getStackTrace());
-        }
-        logDebug(callerFunction + " called goToState: " + to, getStackTrace());
+        logDebug("Called goToState: " + to, getStackTrace());
         $state.go(to, params, options);
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
@@ -6304,7 +6316,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.setLocalStorageItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
     qmService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState, afterLoginGoToUrl){
-        logDebug(arguments.callee.caller.name + " called qmService.sendToLoginIfNecessaryAndComeBack");
+        logDebug("Called qmService.sendToLoginIfNecessaryAndComeBack");
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
             if(afterLoginGoToState){
@@ -6809,7 +6821,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
     qmService.completelyResetAppStateAndSendToLogin = function(comeBackAfterLogin){
-        logDebug(arguments.callee.caller.name + " called qmService.completelyResetAppStateAndSendToLogin");
+        logDebug("called qmService.completelyResetAppStateAndSendToLogin");
         if(comeBackAfterLogin){setAfterLoginGoToUrl();}
         qmService.completelyResetAppState();
         sendToLogin();
@@ -6819,7 +6831,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.goToState("app.login");
     }
     qmService.sendToLogin = function() {
-        logDebug(arguments.callee.caller.name + " called qmService.sendToLogin");
+        logDebug("called qmService.sendToLogin");
         sendToLogin();
     };
     qmService.highchartsReflow = function() {
@@ -7015,7 +7027,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return planFeatureCards;
     };
     qmService.showBasicLoader = function(){
-        logDebug(arguments.callee.caller.name + " called showBasicLoader in " + $state.current.name, getStackTrace());
+        logDebug("Called showBasicLoader in " + $state.current.name, getStackTrace());
         $ionicLoading.show({duration: 10000});
     };
     qmService.showBlackRingLoader = function(){
@@ -7024,11 +7036,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         } else {
             $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
         }
-        logDebug(arguments.callee.caller.name + " called showBlackRingLoader in " + $state.current.name, getStackTrace());
+        logDebug("Called showBlackRingLoader in " + $state.current.name, getStackTrace());
     };
     qmService.hideLoader = function(delay){
         if(getUrlParameter('loaderDebug')){
-            logDebug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
+            logDebug("Called hideLoader in " + $state.current.name, getStackTrace());
         }
         if(delay){
             $timeout(function() { $ionicLoading.hide(); }, delay * 1000);
