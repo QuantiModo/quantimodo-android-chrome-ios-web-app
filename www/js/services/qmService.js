@@ -929,7 +929,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     }
     qmService.goToState = function(to, params, options){
-        logDebug(arguments.callee.caller.name + " called goToState: " + to, getStackTrace());
+        var callerFunction = arguments.callee.caller.name;
+        if(!callerFunction || callerFunction === ''){
+            logDebug("goToState caller function not defined so here's a stacktrace: " + getStackTrace());
+        }
+        logDebug(callerFunction + " called goToState: " + to, getStackTrace());
         $state.go(to, params, options);
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
@@ -6300,6 +6304,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.setLocalStorageItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
     qmService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState, afterLoginGoToUrl){
+        logDebug(arguments.callee.caller.name + " called qmService.sendToLoginIfNecessaryAndComeBack");
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
             if(afterLoginGoToState){
@@ -6804,6 +6809,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
     qmService.completelyResetAppStateAndSendToLogin = function(comeBackAfterLogin){
+        logDebug(arguments.callee.caller.name + " called qmService.completelyResetAppStateAndSendToLogin");
         if(comeBackAfterLogin){setAfterLoginGoToUrl();}
         qmService.completelyResetAppState();
         sendToLogin();
@@ -6813,6 +6819,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.goToState("app.login");
     }
     qmService.sendToLogin = function() {
+        logDebug(arguments.callee.caller.name + " called qmService.sendToLogin");
         sendToLogin();
     };
     qmService.highchartsReflow = function() {
