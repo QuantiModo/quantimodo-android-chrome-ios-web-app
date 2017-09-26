@@ -100,19 +100,41 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', $rootScope.appSettings.appDisplayName));}
     function addStackTraceToMessage(message, stackTrace) {
+        if(message.indexOf('StackTrace') !== -1){return message;}
         if(!stackTrace){stackTrace = getStackTrace();}
         return message + ".  StackTrace: " + stackTrace;
     }
     function addStateNameToMessage(message) {
-        if(!$state.current.name){return message;}
-        return message + " in state " + $state.current.name;
+        if($state.current.name){
+            message = message + " in state " + $state.current.name;
+        }
+        var calleeFunction = arguments.callee.caller.caller;
+        if(calleeFunction && calleeFunction.name && calleeFunction.name !== ""){
+            message = "callee " + calleeFunction.name + ": " + message
+        } else if (qmService.getDebugMode()) {
+            return addStackTraceToMessage(message);
+        }
+        try {
+            var callerFunction = calleeFunction.caller;
+        } catch (error) {
+            console.error(error);
+        }
+        if(callerFunction && callerFunction.name && callerFunction.name !== ""){
+            return "Caller " + callerFunction.name + " called " + message;
+        } else if (qmService.getDebugMode()) {
+            return addStackTraceToMessage(message);
+        }
+        return message;
     }
+    qmService.getDebugMode = function() {
+        if(getUrlParameter('debug') || getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && isTruthy(appSettings.debugMode))){
+            qmService.debugMode = true;
+            window.debugMode = true;
+        }
+        return window.debugMode || qmService.debugMode;
+    };
     function logDebug(message, stackTrace) {
         message = addStateNameToMessage(message);
-        if(window.debugMode){
-            if(!stackTrace){stackTrace = getStackTrace();}
-            message = addStackTraceToMessage(message, stackTrace);
-        }
         console.debug(message);
     }
     qmService.logDebug = function(message, stackTrace) {
@@ -120,10 +142,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     function logInfo(message, stackTrace) {
         message = addStateNameToMessage(message);
-        if(window.debugMode){
-            if(!stackTrace){stackTrace = getStackTrace();}
-            message = addStackTraceToMessage(message, stackTrace);
-        }
         console.info(message);
     }
     qmService.logInfo = function(message, stackTrace) {
@@ -164,6 +182,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return stringify(variable);
     }
     function logError(message, additionalMetaData, stackTrace) {
+        if(message && message.message){message = message.message;}
         message = stringifyIfNecessary(message);
         function getTestUrl() {
             function getCurrentRoute() {
@@ -191,19 +210,26 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         var name = message;
         message = addStateNameToMessage(message);
-        if(!stackTrace){stackTrace = getStackTrace();}
-        if(window.debugMode){
-            message = addStackTraceToMessage(message, stackTrace);
-            alert(message);
-        }
+        if(window.mobileDebug){alert(message);}
         var metaData = {groupingHash: name, stackTrace: stackTrace};
         metaData.push_data = {
             "deviceTokenOnServer": localStorage.getItem('deviceTokenOnServer'),
             "deviceTokenToSync": localStorage.getItem('deviceTokenToSync')
         };
-        metaData.build_server = config.appSettings.buildServer;
-        metaData.build_link = config.appSettings.buildLink;
-        metaData.test_url = getTestUrl();
+        if(typeof config !== "undefined"){
+            metaData.build_server = config.appSettings.buildServer;
+            metaData.build_link = config.appSettings.buildLink;
+        }
+        metaData.test_app_url = getTestUrl();
+        if(additionalMetaData && additionalMetaData.apiResponse){
+            var request = additionalMetaData.apiResponse.req;
+            metaData.test_api_url = request.method + " " + request.url;
+            if(request.header.Authorization){
+                metaData.test_api_url = addQueryParameter(metaData.test_api_url, "access_token", request.header.Authorization.replace("Bearer ", ""));
+            }
+            console.error("API ERROR URL " + metaData.test_api_url);
+            delete additionalMetaData.apiResponse;
+        }
         //metaData.appSettings = config.appSettings;  // Request Entity Too Large
         if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
         //if($rootScope.user){metaData.user = $rootScope.user;} // Request Entity Too Large
@@ -299,7 +325,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         var bodyString = JSON.stringify(body);
-        if(!debugMode()){bodyString = bodyString.substring(0, 140);}
+        if(!qmService.getDebugMode()){bodyString = bodyString.substring(0, 140);}
         logDebug('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
@@ -325,11 +351,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
         }, requestSpecificErrorHandler);
     };
-    function debugMode() {
-        window.debugMode = window.debugMode || getUrlParameter('debug');
-        console.debug("Debug mode is " + window.debugMode);
-        return window.debugMode;
-    }
     function setAfterLoginGoToUrlAndSendToLogin(){
         setAfterLoginGoToUrl();
         sendToLogin();
@@ -609,7 +630,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var apiInstance = new Quantimodo.VariablesApi();
         function callback(error, data, response) {
             if (error) {
-                logError(error);
+                qmApiGeneralErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
             } else {
                 successHandler(data, response);
@@ -678,7 +699,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var apiInstance = new Quantimodo.UserApi();
         function callback(error, data, response) {
             if (error) {
-                logError(error);
+                qmApiGeneralErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
             } else {
                 successHandler(data, response);
@@ -699,7 +720,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var apiInstance = new Quantimodo.RemindersApi();
         function callback(error, data, response) {
             if (error) {
-                logError(error);
+                qmApiGeneralErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
             } else {
                 successHandler(data, response);
@@ -724,7 +745,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var apiInstance = new Quantimodo.RemindersApi();
         function callback(error, data, response) {
             if (error) {
-                logError(error);
+                qmApiGeneralErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
             } else {
                 successHandler(data, response);
@@ -738,7 +759,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var apiInstance = new Quantimodo.AnalyticsApi();
         function callback(error, data, response) {
             if (error) {
-                logError(error);
+                qmApiGeneralErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
             } else {
                 successHandler(data, response);
@@ -841,7 +862,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var apiInstance = new Quantimodo.VariablesApi();
         function callback(error, data, response) {
             if (error) {
-                logError(error);
+                qmApiGeneralErrorHandler(error, data, response);
                 if(errorHandler){errorHandler(error);}
             } else {
                 successHandler(data, response);
@@ -944,11 +965,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     }
     qmService.goToState = function(to, params, options){
-        var callerFunction = arguments.callee.caller.name;
-        if(!callerFunction || callerFunction === ''){
-            logDebug("goToState caller function not defined so here's a stacktrace: " + getStackTrace());
-        }
-        logDebug(callerFunction + " called goToState: " + to, getStackTrace());
+        logDebug("Called goToState: " + to, getStackTrace());
         $state.go(to, params, options);
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
@@ -1069,7 +1086,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(response.status === 401){
             if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
-            logError(error);
+            logError(error, {apiResponse: response});
         }
     }
     qmService.getMeasurements = function(params, successHandler, errorHandler){
@@ -2111,7 +2128,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.refreshConnectors = function(){
         var stackTrace = getStackTrace();
-        if(window.debugMode){logDebug("Called refresh connectors: " + stackTrace);}
+        if(qmService.getDebugMode()){logDebug("Called refresh connectors: " + stackTrace);}
         var deferred = $q.defer();
         qmService.getConnectorsFromApi({stackTrace: getStackTrace()}, function(response){
             qmService.setLocalStorageItem('connectors', JSON.stringify(response.connectors));
@@ -6333,7 +6350,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.setLocalStorageItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
     qmService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState, afterLoginGoToUrl){
-        logDebug(arguments.callee.caller.name + " called qmService.sendToLoginIfNecessaryAndComeBack");
+        logDebug("Called qmService.sendToLoginIfNecessaryAndComeBack");
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
             if(afterLoginGoToState){
@@ -6838,17 +6855,24 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
     };
     qmService.completelyResetAppStateAndSendToLogin = function(comeBackAfterLogin){
-        logDebug(arguments.callee.caller.name + " called qmService.completelyResetAppStateAndSendToLogin");
+        logDebug("called qmService.completelyResetAppStateAndSendToLogin");
         if(comeBackAfterLogin){setAfterLoginGoToUrl();}
         qmService.completelyResetAppState();
         sendToLogin();
     };
     function sendToLogin() {
+        if(getUrlParameter('access_token')){
+            if(!qmService.getAccessTokenFromCurrentUrl()){
+                logError("Not detecting snake case access_token", {}, getStackTrace());
+            }
+            logError("Why are we sending to login if we have an access token?", {}, getStackTrace());
+            return;
+        }
         logDebug("Sending to app.login");
         qmService.goToState("app.login");
     }
     qmService.sendToLogin = function() {
-        logDebug(arguments.callee.caller.name + " called qmService.sendToLogin");
+        logDebug("called qmService.sendToLogin");
         sendToLogin();
     };
     qmService.highchartsReflow = function() {
@@ -7044,7 +7068,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return planFeatureCards;
     };
     qmService.showBasicLoader = function(){
-        logDebug(arguments.callee.caller.name + " called showBasicLoader in " + $state.current.name, getStackTrace());
+        logDebug("Called showBasicLoader in " + $state.current.name, getStackTrace());
         $ionicLoading.show({duration: 10000});
     };
     qmService.showBlackRingLoader = function(){
@@ -7053,11 +7077,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         } else {
             $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
         }
-        logDebug(arguments.callee.caller.name + " called showBlackRingLoader in " + $state.current.name, getStackTrace());
+        logDebug("Called showBlackRingLoader in " + $state.current.name, getStackTrace());
     };
     qmService.hideLoader = function(delay){
         if(getUrlParameter('loaderDebug')){
-            logDebug(arguments.callee.caller.name + " called hideLoader in " + $state.current.name, getStackTrace());
+            logDebug("Called hideLoader in " + $state.current.name, getStackTrace());
         }
         if(delay){
             $timeout(function() { $ionicLoading.hide(); }, delay * 1000);
@@ -7176,7 +7200,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             menuItem.href += convertObjectToQueryString(params);
             menuItem.href = menuItem.href.replace('app/app', 'app');
         }
-        if(window.debugMode){ logDebug("convertUrlAndParamsToHref ", menuItem); }
+        if(qmService.getDebugMode()){ logDebug("convertUrlAndParamsToHref ", menuItem); }
         return menuItem;
     }
     function convertStateNameAndParamsToHref(menuItem) {
@@ -7199,6 +7223,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return menuItem;
         }
         return stripQueryString(menuItem.url).replace('/app/', 'app.').toLowerCase().replace('-', '');
+    }
+    function addQueryParameter(url, name, value){
+        if(url.indexOf('?') === -1){
+            return url + "?" + name + "=" + value;
+        }
+        return url + "&" + name + "=" + value;
     }
     function convertQueryStringToParams(menuItem){
         if(!menuItem.href){
@@ -7320,7 +7350,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //window.config.appSettings.appDesign.floatingActionButton = qmService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
         logDebug("appSettings.clientId is " + $rootScope.appSettings.clientId);
-        if(window.debugMode){logDebug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
+        if(qmService.getDebugMode()){logDebug('$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings));}
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
         changeFavicon();
     };
