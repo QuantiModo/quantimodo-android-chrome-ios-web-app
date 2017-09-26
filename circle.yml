@@ -86,6 +86,7 @@ deployment:
     commands:
       #- chmod +x do-exclusively
       #- ./do-exclusively git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
+      - git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
       - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
       - php ghostinspector_parser.php
   pull:
@@ -93,6 +94,7 @@ deployment:
     commands:
       #- chmod +x do-exclusively
       #- ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
+      - git push git@heroku.com:medimodo.git $CIRCLE_SHA1:refs/heads/master --force
       - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
       - php ghostinspector_parser.php
   staging:
