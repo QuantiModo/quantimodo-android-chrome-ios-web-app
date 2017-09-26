@@ -526,6 +526,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
+    qmService.getCommonVariablesFromApi = function(params, successHandler, errorHandler){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.VariablesApi();
+        function callback(error, data, response) {
+            if (error) {
+                qmApiGeneralErrorHandler(error, data, response);
+                if(errorHandler){errorHandler(error);}
+            } else {
+                successHandler(data, response);
+            }
+        }
+        apiInstance.getCommonVariables(params, callback);
+        var options = {};
+        //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
+    };
     qmService.getNotesFromApi = function(params, successHandler, errorHandler){
         var options = {};
         qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
@@ -4296,7 +4311,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 variables = variables.concat(commonVariables);
             } else {
                 qmService.reportErrorDeferred("commonVariables from localStorage is not an array!  commonVariables.json didn't load for some reason!");
-                putCommonVariablesInLocalStorage();
+                //putCommonVariablesInLocalStorageUsingJsonFile();
+                putCommonVariablesInLocalStorageUsingApi();
             }
         }
         variables = qmService.removeArrayElementsWithDuplicateIds(variables);
@@ -4412,13 +4428,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var deferred = $q.defer();
         var commonVariables = qmService.getElementsFromLocalStorageItemWithRequestParams('commonVariables', params);
         if(!commonVariables || !commonVariables.length){
-            putCommonVariablesInLocalStorage().then(function (commonVariables) {deferred.resolve(commonVariables);});
+            //putCommonVariablesInLocalStorageUsingJsonFile().then(function (commonVariables) {deferred.resolve(commonVariables);});
+            putCommonVariablesInLocalStorageUsingApi().then(function (commonVariables) {deferred.resolve(commonVariables);});
         } else {
             deferred.resolve(commonVariables);
         }
         return deferred.promise;
     };
-    function putCommonVariablesInLocalStorage(){
+    function putCommonVariablesInLocalStorageUsingJsonFile(){
         var deferred = $q.defer();
         $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
             if(commonVariables.constructor !== Array){
@@ -4428,6 +4445,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
                 deferred.resolve(commonVariables);
             }
+        });
+        return deferred.promise;
+    }
+    function putCommonVariablesInLocalStorageUsingApi(){
+        var deferred = $q.defer();
+        qmService.getCommonVariablesFromApi({}, function(commonVariables){
+            qmService.setLocalStorageItem('commonVariables', JSON.stringify(commonVariables));
+            deferred.resolve(commonVariables);
+        }, function(error){
+            qmService.logError(error);
+            deferred.reject(error);
         });
         return deferred.promise;
     }
@@ -5613,7 +5641,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.clearLocalStorage = function(){
         logDebug('Clearing local storage!');
         if ($rootScope.isChromeApp) {chrome.storage.local.clear();} else {localStorage.clear();}
-        putCommonVariablesInLocalStorage();
+        //putCommonVariablesInLocalStorageUsingJsonFile();
+        putCommonVariablesInLocalStorageUsingApi();
     };
     var convertToObjectIfJsonString = function(stringOrObject) {
         try {stringOrObject = JSON.parse(stringOrObject);} catch (e) {return stringOrObject;}
@@ -7309,10 +7338,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         if(window.config){return;}
         var appSettings = (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data;
-        if(isTruthy(appSettings.debugMode)){window.debugMode = true;}
         qmService.configureAppSettings(appSettings);
         qmService.getUserFromLocalStorageOrRefreshIfNecessary();
-        putCommonVariablesInLocalStorage();
+        //putCommonVariablesInLocalStorageUsingJsonFile();
+        putCommonVariablesInLocalStorageUsingApi();
         qmService.backgroundGeolocationInit();
         qmService.setupBugsnag();
         qmService.getUserAndSetupGoogleAnalytics();
