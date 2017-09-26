@@ -6345,7 +6345,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     function setAfterLoginGoToState(afterLoginGoToState){
-        if($state.current.name.indexOf('login') !== -1){
+        if(afterLoginGoToState.indexOf('login') !== -1){
             qmService.logError("Why are we sending to login from login state?");
             return;
         }
@@ -6353,11 +6353,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.setLocalStorageItem('afterLoginGoToState', afterLoginGoToState);
     }
     function setAfterLoginGoToUrl(afterLoginGoToUrl){
-        if($state.current.name.indexOf('login') !== -1){
+        if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
+        if(afterLoginGoToUrl.indexOf('login') !== -1){
             qmService.logError("Why are we sending to login from login state?");
             return;
         }
-        if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
         logDebug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
         qmService.setLocalStorageItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
