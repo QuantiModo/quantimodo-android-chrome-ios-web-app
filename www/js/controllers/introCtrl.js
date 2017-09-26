@@ -1,4 +1,5 @@
-angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, appSettingsResponse) {
+angular.module('starter').controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
+                                                           $rootScope, $stateParams, qmService, appSettingsResponse) {
 
     if(window.debugMode){console.debug('IntroCtrl first starting in state: ' + $state.current.name);}
     qmService.initializeApplication(appSettingsResponse);
@@ -8,9 +9,14 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
         backgroundColor : 'white',
         textColor : 'black',
         slideIndex : 0,
-        startApp : function() { // Called to navigate to the main app
-            if(qmService.sendToLogin()){ return; }
-            qmService.goToState('app.onboarding');
+        startApp : function() {
+            if($state.current.name.indexOf('intro') !== -1){
+                // Called to navigate to the main app
+                if(qmService.sendToLogin()){ return; }
+                qmService.goToState('app.onboarding');
+            } else {
+                console.error("Why are we calling $scope.myIntro.startApp from state other than into?");
+            }
         },
         next : function(index) {
             if(index === $rootScope.appSettings.appDesign.intro.active.length - 1){$scope.myIntro.startApp();} else {$ionicSlideBoxDelegate.next();}

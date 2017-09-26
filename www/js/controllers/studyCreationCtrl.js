@@ -42,7 +42,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             self.notFoundText = "No variables matching " + query + " were found.  Please try another wording or contact mike@quantimo.do.";
             var deferred = $q.defer();
             if(!query){
-                qmService.logError("Why are we searching without a query?");
+                qmService.logDebug("Why are we searching without a query?");
                 if(!self.items || self.items.length < 10){self.items = loadAll();}
                 deferred.resolve(self.items);
                 return deferred.promise;
@@ -109,6 +109,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
         }).then(function(variable) {
             $scope.outcomeVariable = variable;
             $scope.outcomeVariableName = variable.name;
+            qmService.logDebug("Selected outcome " + variable.name);
         }, function() {console.debug('User cancelled selection');});
     };
     $scope.selectPredictorVariable = function (ev) {
@@ -132,6 +133,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
         }).then(function(variable) {
             $scope.predictorVariable = variable;
             $scope.predictorVariableName = variable.name;
+            qmService.logDebug("Selected predictor " + variable.name);
         }, function() {
             console.debug('User cancelled selection');
         });
