@@ -359,50 +359,78 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         setAfterLoginGoToUrl();
         sendToLogin();
     }
-    function generalApiErrorHandler(data, status, headers, request, options){
-        if(status === 302){
-            logDebug('Got 302 response from ' + JSON.stringify(request), options.stackTrace);
-            return;
-        }
-        if(status === 401){
-            if(options && options.doNotSendToLogin){return;}
-            logDebug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
-            logDebug('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
-            setAfterLoginGoToUrlAndSendToLogin();
-            return;
-        }
-        var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
-        var pathWithoutQuery = pathWithQuery.split("?")[0];
-        var errorName = status + ' from ' + request.method + ' ' + pathWithoutQuery;
-        if(data && data.error && typeof data.error == "string"){
-            errorName = data.error;
-        }
-        var metaData = {groupingHash: errorName, requestData: data, status: status, request: request, requestOptions: options, currentUrl: window.location.href,
-            requestParams: getAllQueryParamsFromUrlString(request.url)};
-        if(!data){
-            var doNotShowOfflineError = false;
-            if(options && options.doNotShowOfflineError){doNotShowOfflineError = true;}
-            if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
-                logError("Showing offline indicator because no data was returned from this request: "  + pathWithoutQuery, options.stackTrace, request);
-                $rootScope.offlineConnectionErrorShowing = true;
-                if($rootScope.isIOS){
-                    $ionicPopup.show({
-                        title: 'NOT CONNECTED',
-                        //subTitle: '',
-                        template: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                        buttons:[{text: 'OK', type: 'button-positive', onTap: function(){$rootScope.offlineConnectionErrorShowing = false;}}]
-                    });
-                }
+    function showOfflineError(options, request) {
+        var pathWithoutQuery = getPathWithoutQuery(request);
+        var doNotShowOfflineError = false;
+        if (options && options.doNotShowOfflineError) {doNotShowOfflineError = true;}
+        if (!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError) {
+            logError("Showing offline indicator because no data was returned from this request: " + pathWithoutQuery,
+                {debugApiUrl: getDebugApiUrlFromRequest(request), request: request}, options.stackTrace);
+            $rootScope.offlineConnectionErrorShowing = true;
+            if ($rootScope.isIOS) {
+                $ionicPopup.show({
+                    title: 'NOT CONNECTED',
+                    //subTitle: '',
+                    template: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
+                    buttons: [{
+                        text: 'OK', type: 'button-positive', onTap: function () {
+                            $rootScope.offlineConnectionErrorShowing = false;
+                        }
+                    }]
+                });
             }
-            return;
         }
-        metaData.groupingHash = "There was an error and the request object was not provided to the generalApiErrorHandler";
-        if(request){metaData.groupingHash = request.url + ' error';}
-        if(data.error){
+    }
+    function logApiError(status, request, data, options) {
+        var errorName = status + ' from ' + request.method + ' ' + getPathWithoutQuery(request);
+        if (data && data.error && typeof data.error === "string") {errorName = data.error;}
+        var metaData = {
+            debugApiUrl: getDebugApiUrlFromRequest(request),
+            appUrl: window.location.href,
+            groupingHash: errorName,
+            requestData: data,
+            status: status,
+            request: request,
+            requestOptions: options,
+            requestParams: getAllQueryParamsFromUrlString(request.url)
+        };
+        if (data.error) {
             metaData.groupingHash = JSON.stringify(data.error);
-            if(data.error.message){metaData.groupingHash = JSON.stringify(data.error.message);}
+            if (data.error.message) {
+                metaData.groupingHash = JSON.stringify(data.error.message);
+            }
         }
         logError(errorName, metaData, options.stackTrace);
+    }
+    function handle401Response(request, options, headers) {
+        if(options && options.doNotSendToLogin){return;}
+        logDebug('qmService.generalApiErrorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request), options.stackTrace);
+        logDebug('HEADERS: ' + JSON.stringify(headers), options.stackTrace);
+        setAfterLoginGoToUrlAndSendToLogin();
+    }
+    function getPathWithoutQuery(request) {
+        var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
+        var pathWithoutQuery = pathWithQuery.split("?")[0];
+        return pathWithoutQuery;
+    }
+    function generalApiErrorHandler(data, status, headers, request, options){
+        if(status === 302){return logDebug('Got 302 response from ' + JSON.stringify(request), options.stackTrace);}
+        if(status === 401){return handle401Response(request, options, headers);}
+        if(!data){
+            showOfflineError(options, request);
+            return;
+        }
+        logApiError(status, request, data, options);
+    }
+    function getDebugApiUrlFromRequest(request){
+        var debugUrl = request.method + " " + request.url;
+        if(request.headers && request.headers.Authorization){
+            var accessToken = request.headers.Authorization.replace("Bearer ", "");
+            debugUrl += "&access_token=" + accessToken;
+        }
+        debugUrl = debugUrl.replace('app.', 'local.');
+        debugUrl = debugUrl.replace('staging.', 'local.');
+        return debugUrl;
     }
     // Handler when request is failed
     var onRequestFailed = function(error){
