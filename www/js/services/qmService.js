@@ -1087,6 +1087,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return qmApiClient;
     }
     function qmApiGeneralErrorHandler(error, data, response, options) {
+        if(!response){return logError("No API response provided to qmApiGeneralErrorHandler", {errorMessage: error, responseData: data, apiResponse: response, requestOptions: options});}
         if(response.status === 401){
             if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
