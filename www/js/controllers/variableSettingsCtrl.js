@@ -38,7 +38,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 qmService.actionSheetButtons.history,
                 { text: '<i class="icon ion-pricetag"></i>Tag ' + getTruncatedVariableName($rootScope.variableObject.name)},
                 { text: '<i class="icon ion-pricetag"></i>Tag Another Variable '}
-
             ],
             destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -304,7 +303,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             console.debug('User cancelled selection');
         });
     };
-
     $scope.resetVariableToDefaultSettings = function(variableObject) {
         // Populate fields with original settings for variable
         qmService.showBlackRingLoader();
@@ -313,7 +311,6 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
         });
     };
-
     $scope.saveVariableSettings = function(variableObject){
         qmService.showBlackRingLoader();
         var experimentEndTimeString, experimentStartTimeString = null;
@@ -321,16 +318,16 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             try {
                 experimentStartTimeString = variableObject.experimentStartTimeString.toISOString();
             } catch (error){
-                qmService.logError("Could not convert experimentStartTimeString " + variableObject.experimentStartTimeString +
-                    " to ISO format: " + error);
+                qmService.logError("Could not convert experimentStartTimeString to ISO format",
+                    {experimentStartTimeString: variableObject.experimentStartTimeString, errorMessage: error});
             }
         }
         if(variableObject.experimentEndTimeString){
             try {
                 experimentEndTimeString = variableObject.experimentEndTimeString.toISOString();
             } catch (error){
-                qmService.logError("Could not convert experimentEndTimeString " + variableObject.experimentEndTimeString +
-                    " to ISO format: " + error);
+                qmService.logError("Could not convert experimentEndTimeString to ISO format",
+                    {experimentEndTimeString: variableObject.experimentEndTimeString, errorMessage: error});
             }
         }
         console.log("debugMode is " + window.debugMode);
