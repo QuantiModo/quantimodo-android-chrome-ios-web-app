@@ -915,6 +915,15 @@ gulp.task('getCommonVariables', function () {
         })))
         .pipe(gulp.dest('./www/data/'));
 });
+gulp.task('getUnits', function () {
+    logInfo('gulp getUnits...');
+    return request({url: appHostName + '/api/v1/units', headers: {'User-Agent': 'request'}})
+        .pipe(source('units.json'))
+        .pipe(streamify(jeditor(function (units) {
+            return units;
+        })))
+        .pipe(gulp.dest('./www/data/'));
+});
 gulp.task('getSHA1FromAPK', function () {
     logInfo('Make sure openssl works on your command line and the bin folder is in your PATH env: https://code.google.com/archive/p/openssl-for-windows/downloads');
     var cmd = 'keytool -list -printcert -jarfile ' + pathToReleaseArmv7Apk + ' | grep -Po "(?<=SHA1:) .*" |  xxd -r -p | openssl base64';
@@ -1875,6 +1884,7 @@ gulp.task('configureApp', [], function (callback) {
         'minify-js-generate-css-and-index-html',
         'removeCordovaJsFromIndexHtml',
         'getCommonVariables',
+        'getUnits',
         'getAppConfigs',
         'downloadIcon',
         'resizeIcons',
