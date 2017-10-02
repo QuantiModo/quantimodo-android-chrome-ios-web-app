@@ -7547,6 +7547,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     return;
                 }
                 push.finish(function () {console.debug("processing of push data is finished: " + JSON.stringify(data));});
+                $http.post("https://utopia.quantimo.do/api/v1/trackingReminderNotification/received", {id: data.additionalData.notId}).success(function (data) {
+                    logDebug("notification received success response: " + data);
+                }).error(function (response) {
+                    logError("notification received error response: " + response)
+                });
             });
             push.on('error', function(e) {qmService.reportException(e, e.message, pushConfig);});
             var finishPush = function (data) {
