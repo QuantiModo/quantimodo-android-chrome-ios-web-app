@@ -203,12 +203,14 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		setLastAction(modifiedReminderValue, trackingReminderNotification.unitAbbreviatedName);
 		var body = notificationAction(trackingReminderNotification);
 		body.modifiedValue = modifiedReminderValue;
+        qmService.logEventToGA("inbox", "track", null, modifiedReminderValue);
 		qmService.trackTrackingReminderNotificationDeferred(body, trackAll);
         refreshIfRunningOutOfNotifications();
 	};
 	function trackAll(trackingReminderNotification, modifiedReminderValue, ev) {
         qmService.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'variableName', trackingReminderNotification.variableName);
         $scope.track(trackingReminderNotification, modifiedReminderValue, ev, true);
+        qmService.logEventToGA("inbox", "trackAll");
         getTrackingReminderNotifications();
     }
     function preventDragAfterAlert(ev) {
@@ -234,6 +236,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$scope.lastAction = 'Skipped';
 		var params = notificationAction(trackingReminderNotification);
 		qmService.skipTrackingReminderNotificationDeferred(params);
+        qmService.logEventToGA("inbox", "skip");
         refreshIfRunningOutOfNotifications();
 	};
 	$scope.snooze = function(trackingReminderNotification, $event){
@@ -241,6 +244,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$scope.lastAction = 'Snoozed';
 		var params = notificationAction(trackingReminderNotification);
 		qmService.snoozeTrackingReminderNotificationDeferred(params);
+        qmService.logEventToGA("inbox", "snooze");
         refreshIfRunningOutOfNotifications();
 	};
 	function wordClicked(word){
