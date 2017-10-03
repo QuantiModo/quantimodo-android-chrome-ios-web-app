@@ -7507,6 +7507,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
         } else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
     };
+    qmService.logEventToGA = function(category, action, label, value, noninteraction, customDimension, customMetric){
+        if(!label){label = $rootScope.user.id.toString();}
+        if(typeof noninteraction === "undefined"){noninteraction = true;}
+        Analytics.trackEvent(category, action, label, value, noninteraction, { dimension15: 'My Custom Dimension', metric18: 8000 });
+    };
     qmService.configurePushNotifications = function(){
         if($rootScope.isMobile){if(typeof PushNotification === "undefined"){qmService.reportErrorDeferred('PushNotification is undefined on mobile!');}}
         if (typeof PushNotification !== "undefined") {
@@ -7548,7 +7553,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 }
                 push.finish(function () {console.debug("processing of push data is finished: " + JSON.stringify(data));});
                 data.deviceToken = localStorage.getItem('deviceTokenOnServer');
-                Analytics.trackEvent('pushNotification', 'received', $rootScope.user.id.toString(), 1, true, { dimension15: 'My Custom Dimension', metric18: 8000 });
+                qmService.logEventToGA('pushNotification', 'received');
                 $http.post("https://utopia.quantimo.do/api/v1/trackingReminderNotification/received", data)
                     .success(function (response) {
                         logDebug("notification received success response: " + JSON.stringify(response));
