@@ -7547,6 +7547,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     return;
                 }
                 push.finish(function () {console.debug("processing of push data is finished: " + JSON.stringify(data));});
+                data.deviceToken = localStorage.getItem('deviceTokenOnServer');
+                Analytics.trackEvent('pushNotification', 'received', $rootScope.user.id.toString(), 1, true, { dimension15: 'My Custom Dimension', metric18: 8000 });
                 $http.post("https://utopia.quantimo.do/api/v1/trackingReminderNotification/received", data)
                     .success(function (response) {
                         logDebug("notification received success response: " + JSON.stringify(response));
