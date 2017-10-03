@@ -7554,12 +7554,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 push.finish(function () {console.debug("processing of push data is finished: " + JSON.stringify(data));});
                 data.deviceToken = localStorage.getItem('deviceTokenOnServer');
                 qmService.logEventToGA('pushNotification', 'received');
-                $http.post("https://utopia.quantimo.do/api/v1/trackingReminderNotification/received", data)
-                    .success(function (response) {
-                        logDebug("notification received success response: " + JSON.stringify(response));
-                    }).error(function (response) {
+                if(data.additionalData.acknowledge){
+                    $http.post("https://utopia.quantimo.do/api/v1/trackingReminderNotification/received", data)
+                        .success(function (response) {
+                            logDebug("notification received success response: " + JSON.stringify(response));
+                        }).error(function (response) {
                         logError("notification received error response: "  + JSON.stringify(response));
                     });
+                }
             });
             push.on('error', function(e) {qmService.reportException(e, e.message, pushConfig);});
             var finishPush = function (data) {
