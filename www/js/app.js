@@ -427,7 +427,8 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true,
                     fallbackToAggregatedCorrelations: true,
-                    numberOfUserCorrelationsAsEffect: '(gt)1',
+                    numberOfCorrelationsAsEffect: '(gt)1',
+                    sort: "-numberOfCorrelationsAsEffect",
                     outcome: true
                 },
                 hideNavigationMenu: null
@@ -539,7 +540,8 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true,
                     fallbackToAggregatedCorrelations: true,
-                    numberOfUserCorrelationsAsCause: '(gt)1'
+                    numberOfCorrelationsAsCause: '(gt)1',
+                    sort: "-numberOfCorrelationsAsCause"
                 },
                 hideNavigationMenu: null
             },
