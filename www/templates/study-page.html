@@ -56,7 +56,7 @@
                 <div id="studyCharts">
                     <div ng-repeat="chart in study.highcharts">
                         <h2>{{chart.chartTitle}}</h2>
-                        <highchart id="{{chart.chartId}}" config="chart.chartConfig"></highchart>
+                        <highchart id="{{chart.chartId}}" config="chart.highchartConfig"></highchart>
                         <p ng-if="chart.explanation">{{chart.explanation}}</p>
                         <br>
                     </div>
