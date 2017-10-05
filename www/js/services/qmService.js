@@ -3352,7 +3352,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return variableObject.userVariableDefaultUnitId === 10 && variableObject.name === qmService.getPrimaryOutcomeVariable().name;
     };
     function setChartExportingOptions(chartConfig){
-        chartConfig.options.exporting = {enabled: $rootScope.isWeb};
+        chartConfig.exporting = {enabled: $rootScope.isWeb};
         return chartConfig;
     }
     qmService.configureDistributionChart = function(dataAndLabels, variableObject){
@@ -3385,56 +3385,54 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             xAxisTitle = '';
         }
         var chartConfig = {
-            options: {
-                chart: {
-                    height : 300,
-                    type : 'column',
-                    renderTo : 'BarContainer',
-                    animation: {
-                        duration: 0
-                    }
-                },
-                title : {
-                    text : variableObject.name + ' Distribution'
-                },
-                xAxis : {
-                    title : {
-                        text : xAxisTitle
-                    },
-                    categories : xAxisLabels
-                },
-                yAxis : {
-                    title : {
-                        text : 'Number of Measurements'
-                    },
-                    min : 0
-                },
-                lang: {
-                    loading: ''
-                },
-                loading: {
-                    style: {
-                        background: 'url(/res/loading3.gif) no-repeat center'
-                    },
-                    hideDuration: 10,
-                    showDuration: 10
-                },
-                legend : {
-                    enabled : false
-                },
-                plotOptions : {
-                    column : {
-                        pointPadding : 0.2,
-                        borderWidth : 0,
-                        pointWidth : 40 * 5 / xAxisLabels.length,
-                        enableMouseTracking : true,
-                        colorByPoint : true
-                    }
-                },
-                credits: {
-                    enabled: false
-                },
-                colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
+          chart: {
+              height : 300,
+              type : 'column',
+              renderTo : 'BarContainer',
+              animation: {
+                  duration: 0
+              }
+          },
+          xAxis : {
+              title : {
+                  text : xAxisTitle
+              },
+              categories : xAxisLabels
+          },
+          yAxis : {
+              title : {
+                  text : 'Number of Measurements'
+              },
+              min : 0
+          },
+          lang: {
+              loading: ''
+          },
+          loading: {
+              style: {
+                  background: 'url(/res/loading3.gif) no-repeat center'
+              },
+              hideDuration: 10,
+              showDuration: 10
+          },
+          legend : {
+              enabled : false
+          },
+          plotOptions : {
+              column : {
+                  pointPadding : 0.2,
+                  borderWidth : 0,
+                  pointWidth : 40 * 5 / xAxisLabels.length,
+                  enableMouseTracking : true,
+                  colorByPoint : true
+              }
+          },
+          credits: {
+              enabled: false
+          },
+          colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
+            title : {
+                text : variableObject.name + ' Distribution'
             },
             series: [{
                 name : variableObject.name + ' Distribution',
@@ -3511,43 +3509,41 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(averageValueByWeekdayArray[i] < minimum){minimum = averageValueByWeekdayArray[i];}
         }
         var chartConfig = {
-            options: {
-                chart: {
-                    height : 300,
-                    type : 'column',
-                    renderTo : 'BarContainer',
-                    animation: {duration: 1000}
-                },
-                title : {text : 'Average  ' + variableObject.name + ' by Day of Week'},
-                xAxis : {categories : xAxisLabels},
-                yAxis : {
-                    title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
-                    min : minimum,
-                    max : maximum
-                },
-                lang: {loading: ''},
-                loading: {
-                    style: {background: 'url(/res/loading3.gif) no-repeat center'},
-                    hideDuration: 10,
-                    showDuration: 10
-                },
-                legend : {enabled : false},
-                plotOptions : {
-                    column : {
-                        pointPadding : 0.2,
-                        borderWidth : 0,
-                        pointWidth : 40 * 5 / xAxisLabels.length,
-                        enableMouseTracking : true,
-                        colorByPoint : true
-                    }
-                },
-                credits: {enabled: false},
-                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
-            },
-            series: [{
-                name : 'Average  ' + variableObject.name + ' by Day of Week',
-                data: averageValueByWeekdayArray
-            }]
+          chart: {
+              height : 300,
+              type : 'column',
+              renderTo : 'BarContainer',
+              animation: {duration: 1000}
+          },
+          xAxis : {categories : xAxisLabels},
+          yAxis : {
+              title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
+              min : minimum,
+              max : maximum
+          },
+          lang: {loading: ''},
+          loading: {
+              style: {background: 'url(/res/loading3.gif) no-repeat center'},
+              hideDuration: 10,
+              showDuration: 10
+          },
+          legend : {enabled : false},
+          plotOptions : {
+              column : {
+                  pointPadding : 0.2,
+                  borderWidth : 0,
+                  pointWidth : 40 * 5 / xAxisLabels.length,
+                  enableMouseTracking : true,
+                  colorByPoint : true
+              }
+          },
+          credits: {enabled: false},
+          title: {text:'Average  ' + variableObject.name + ' by Day of Week'},
+          colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
+          series: [{
+              name : 'Average  ' + variableObject.name + ' by Day of Week',
+              data: averageValueByWeekdayArray
+          }]
         };
         return setChartExportingOptions(chartConfig);
     };
@@ -3564,39 +3560,37 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(averageValueByMonthlyArray[i] < minimum){minimum = averageValueByMonthlyArray[i];}
         }
         var chartConfig = {
-            options: {
-                chart: {
-                    height : 300,
-                    type : 'column',
-                    renderTo : 'BarContainer',
-                    animation: {duration: 1000}
-                },
-                title : {text : 'Average  ' + variableObject.name + ' by Month'},
-                xAxis : {categories : xAxisLabels},
-                yAxis : {
-                    title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
-                    min : minimum,
-                    max : maximum
-                },
-                lang: {loading: ''},
-                loading: {
-                    style: {background: 'url(/res/loading3.gif) no-repeat center'},
-                    hideDuration: 10,
-                    showDuration: 10
-                },
-                legend : {enabled : false},
-                plotOptions : {
-                    column : {
-                        pointPadding : 0.2,
-                        borderWidth : 0,
-                        pointWidth : 40 * 5 / xAxisLabels.length,
-                        enableMouseTracking : true,
-                        colorByPoint : true
-                    }
-                },
-                credits: {enabled: false},
-                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
-            },
+          chart: {
+              height : 300,
+              type : 'column',
+              renderTo : 'BarContainer',
+              animation: {duration: 1000}
+          },
+          xAxis : {categories : xAxisLabels},
+          yAxis : {
+              title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
+              min : minimum,
+              max : maximum
+          },
+          lang: {loading: ''},
+          loading: {
+              style: {background: 'url(/res/loading3.gif) no-repeat center'},
+              hideDuration: 10,
+              showDuration: 10
+          },
+          legend : {enabled : false},
+          plotOptions : {
+              column : {
+                  pointPadding : 0.2,
+                  borderWidth : 0,
+                  pointWidth : 40 * 5 / xAxisLabels.length,
+                  enableMouseTracking : true,
+                  colorByPoint : true
+              }
+          },
+          credits: {enabled: false},
+          colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ],
+            title : {text : 'Average  ' + variableObject.name + ' by Month'},
             series: [{
                 name : 'Average  ' + variableObject.name + ' by Month',
                 data: averageValueByMonthlyArray
@@ -3642,41 +3636,39 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(averageValueByHourArray[i] < minimum){minimum = averageValueByHourArray[i];}
         }
         var chartConfig = {
-            options: {
-                chart: {
-                    height : 300,
-                    type : 'column',
-                    renderTo : 'BarContainer',
-                    animation: {
-                        duration: 1000
-                    }
-                },
-                title : {text : 'Average  ' + variableObject.name + ' by Hour of Day'},
-                xAxis : {categories : xAxisLabels},
-                yAxis : {
-                    title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
-                    min : minimum,
-                    max : maximum
-                },
-                lang: {loading: ''},
-                loading: {
-                    style: {background: 'url(/res/loading3.gif) no-repeat center'},
-                    hideDuration: 10,
-                    showDuration: 10
-                },
-                legend : {enabled : false},
-                plotOptions : {
-                    column : {
-                        pointPadding : 0.2,
-                        borderWidth : 0,
-                        pointWidth : 40 * 5 / xAxisLabels.length,
-                        enableMouseTracking : true,
-                        colorByPoint : true
-                    }
-                },
-                credits: {enabled: false},
-                colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"]
-            },
+          chart: {
+              height : 300,
+              type : 'column',
+              renderTo : 'BarContainer',
+              animation: {
+                  duration: 1000
+              }
+          },
+          title : {text : 'Average  ' + variableObject.name + ' by Hour of Day'},
+          xAxis : {categories : xAxisLabels},
+          yAxis : {
+              title : {text : 'Average Value (' + variableObject.userVariableDefaultUnitName + ')'},
+              min : minimum,
+              max : maximum
+          },
+          lang: {loading: ''},
+          loading: {
+              style: {background: 'url(/res/loading3.gif) no-repeat center'},
+              hideDuration: 10,
+              showDuration: 10
+          },
+          legend : {enabled : false},
+          plotOptions : {
+              column : {
+                  pointPadding : 0.2,
+                  borderWidth : 0,
+                  pointWidth : 40 * 5 / xAxisLabels.length,
+                  enableMouseTracking : true,
+                  colorByPoint : true
+              }
+          },
+          credits: {enabled: false},
+          colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"],
             series: [{
                 name : 'Average  ' + variableObject.name + ' by Hour of Day',
                 data: averageValueByHourArray
@@ -3987,35 +3979,33 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         /** @namespace correlationObject.causeVariableDefaultUnitAbbreviatedName */
         /** @namespace correlationObject.effectVariableDefaultUnitAbbreviatedName */
         var chartConfig = {
-            options: {
-                chart: {
-                    type: 'scatter',
-                    zoomType: 'xy'
-                },
-                plotOptions: {
-                    scatter: {
-                        marker: {
-                            radius: 5,
-                            states: {
-                                hover: {
-                                    enabled: true,
-                                    lineColor: 'rgb(100,100,100)'
-                                }
-                            }
-                        },
-                        states: {
-                            hover: {
-                                marker: {enabled: false}
-                            }
-                        },
-                        tooltip: {
-                            //headerFormat: '<b>{series.name}</b><br>',
-                            pointFormat: '{point.x}' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ', {point.y}' + correlationObject.effectVariableDefaultUnitAbbreviatedName
-                        }
-                    }
-                },
-                credits: {enabled: false}
-            },
+          chart: {
+              type: 'scatter',
+              zoomType: 'xy'
+          },
+          plotOptions: {
+              scatter: {
+                  marker: {
+                      radius: 5,
+                      states: {
+                          hover: {
+                              enabled: true,
+                              lineColor: 'rgb(100,100,100)'
+                          }
+                      }
+                  },
+                  states: {
+                      hover: {
+                          marker: {enabled: false}
+                      }
+                  },
+                  tooltip: {
+                      //headerFormat: '<b>{series.name}</b><br>',
+                      pointFormat: '{point.x}' + correlationObject.causeVariableDefaultUnitAbbreviatedName + ', {point.y}' + correlationObject.effectVariableDefaultUnitAbbreviatedName
+                  }
+              }
+          },
+          credits: {enabled: false},
             xAxis: {
                 title: {
                     enabled: true,
@@ -4221,35 +4211,52 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         var chartConfig = {
             useHighStocks: true,
-            options : {
-                //turboThreshold: 0, // DOESN'T SEEM TO WORK -Disables 1000 data point limitation http://api.highcharts.com/highcharts/plotOptions.series.turboThreshold
-                tooltip: {
-                    shared: true,
-                    formatter: function(){
-                        var value = this;
-                        var string = '';
-                        if(numberOfMeasurements < 1000) {
-                            string += '<h3><b>' + moment(value.x).format("h A, dddd, MMM Do YYYY") + '<b></h3><br/>';
-                        } else {
-                            string += '<h3><b>' + moment(value.x).format("MMM Do YYYY") + '<b></h3><br/>';
-                        }
-                        angular.forEach(value.points,function(point){
-                            //string += '<span>' + point.series.name + ':</span> ';
-                            string += '<span>' + (point.point.y + variableObject.userVariableDefaultUnitAbbreviatedName).replace(' /', '/') + '</span>';
+            //turboThreshold: 0, // DOESN'T SEEM TO WORK -Disables 1000 data point limitation http://api.highcharts.com/highcharts/plotOptions.series.turboThreshold
+            tooltip: {
+                shared: true,
+                formatter: function(){
+                    var value = this;
+                    var string = '';
+                    if(numberOfMeasurements < 1000) {
+                        string += '<h3><b>' + moment(value.x).format("h A, dddd, MMM Do YYYY") + '<b></h3><br/>';
+                    } else {
+                        string += '<h3><b>' + moment(value.x).format("MMM Do YYYY") + '<b></h3><br/>';
+                    }
+                    angular.forEach(value.points,function(point){
+                        //string += '<span>' + point.series.name + ':</span> ';
+                        string += '<span>' + (point.point.y + variableObject.userVariableDefaultUnitAbbreviatedName).replace(' /', '/') + '</span>';
+                        string += '<br/>';
+                        if(value.points["0"].point.name){
+                            string += '<span>' + value.points["0"].point.name + '</span>';
                             string += '<br/>';
-                            if(value.points["0"].point.name){
-                                string += '<span>' + value.points["0"].point.name + '</span>';
-                                string += '<br/>';
-                            }
-                        });
-                        return string;
-                    },
-                    useHtml: true
+                        }
+                    });
+                    return string;
                 },
-                legend : {enabled : false},
-                title: {text: variableObject.name + ' Over Time (' + variableObject.userVariableDefaultUnitAbbreviatedName + ')'},
-                xAxis : {
-                    type: 'datetime',
+                useHtml: true
+            },
+            legend : {enabled : false},
+            xAxis : {
+                type: 'datetime',
+                dateTimeLabelFormats : {
+                    millisecond : '%I:%M %p',
+                    second : '%I:%M %p',
+                    minute: '%I:%M %p',
+                    hour: '%I %p',
+                    day: '%e. %b',
+                    week: '%e. %b',
+                    month: '%b \'%y',
+                    year: '%Y'
+                },
+                min: minimumTimeEpochMilliseconds,
+                max: maximumTimeEpochMilliseconds
+            },
+            credits: {enabled: false},
+            rangeSelector: {enabled: true},
+            navigator: {
+                enabled: true,
+                xAxis: {
+                    type : 'datetime',
                     dateTimeLabelFormats : {
                         millisecond : '%I:%M %p',
                         second : '%I:%M %p',
@@ -4259,29 +4266,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         week: '%e. %b',
                         month: '%b \'%y',
                         year: '%Y'
-                    },
-                    min: minimumTimeEpochMilliseconds,
-                    max: maximumTimeEpochMilliseconds
-                },
-                credits: {enabled: false},
-                rangeSelector: {enabled: true},
-                navigator: {
-                    enabled: true,
-                    xAxis: {
-                        type : 'datetime',
-                        dateTimeLabelFormats : {
-                            millisecond : '%I:%M %p',
-                            second : '%I:%M %p',
-                            minute: '%I:%M %p',
-                            hour: '%I %p',
-                            day: '%e. %b',
-                            week: '%e. %b',
-                            month: '%b \'%y',
-                            year: '%Y'
-                        }
                     }
                 }
             },
+            title: {text: variableObject.name + ' Over Time (' + variableObject.userVariableDefaultUnitAbbreviatedName + ')'},
             series :[{
                 name : variableObject.name + ' Over Time',
                 data : data,
