@@ -43,7 +43,6 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         $scope.averagePrimaryOutcomeVariableValue = Math.round(sum / $scope.state.primaryOutcomeMeasurements.length);
         $scope.averagePrimaryOutcomeVariableText = qmService.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[$scope.averagePrimaryOutcomeVariableValue ];
         if($scope.averagePrimaryOutcomeVariableText){$scope.averagePrimaryOutcomeVariableImage = qmService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);}
-        qmService.highchartsReflow();
     };
     var updateCharts = function(){
         $scope.state.primaryOutcomeMeasurements = qmService.getLocalStorageItemAsObject('primaryOutcomeVariableMeasurements');
@@ -57,7 +56,6 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
             updateAveragePrimaryOutcomeRatingView();
             $scope.lineChartConfig = qmService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements, qmService.getPrimaryOutcomeVariable());
         }
-        qmService.highchartsReflow();
     };
     $scope.$on('updateCharts', function(){
         console.debug('updateCharts broadcast received..');
