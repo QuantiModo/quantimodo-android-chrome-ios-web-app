@@ -3357,7 +3357,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     qmService.configureDistributionChart = function(dataAndLabels, variableObject){
         var xAxisLabels = [];
-        var xAxisTitle = 'Daily Values (' + variableObject.userVariableDefaultUnitAbbreviatedName + ')';
+        var xAxisTitle = 'Daily Values (' + variableObject.unitAbbreviatedName + ')';
         var data = [];
         if(shouldWeUsePrimaryOutcomeLabels(variableObject)){ data = [0, 0, 0, 0, 0]; }
         function isInt(n) { return parseFloat(n) % 1 === 0; }
@@ -4224,7 +4224,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                     angular.forEach(value.points,function(point){
                         //string += '<span>' + point.series.name + ':</span> ';
-                        string += '<span>' + (point.point.y + variableObject.userVariableDefaultUnitAbbreviatedName).replace(' /', '/') + '</span>';
+                        string += '<span>' + (point.point.y + variableObject.unitAbbreviatedName).replace(' /', '/') + '</span>';
                         string += '<br/>';
                         if(value.points["0"].point.name){
                             string += '<span>' + value.points["0"].point.name + '</span>';
@@ -4269,7 +4269,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                 }
             },
-            title: {text: variableObject.name + ' Over Time (' + variableObject.userVariableDefaultUnitAbbreviatedName + ')'},
+            title: {text: variableObject.name + ' Over Time (' + variableObject.unitAbbreviatedName + ')'},
             series :[{
                 name : variableObject.name + ' Over Time',
                 data : data,
