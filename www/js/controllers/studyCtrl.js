@@ -27,7 +27,6 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
                     (lastStudy.causeVariableName === $scope.state.requestParams.causeVariableName && lastStudy.effectVariableName === $scope.state.requestParams.effectVariableName)){
                     $rootScope.correlationObject = lastStudy;
                     setupRequestParams();
-                    qmService.highchartsReflow();  //Need callback to make sure we get the study before we reflow
                 }
             }
         }

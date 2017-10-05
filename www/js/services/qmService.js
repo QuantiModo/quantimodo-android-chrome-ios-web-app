@@ -6904,23 +6904,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         logDebug("called qmService.sendToLogin");
         sendToLogin();
     };
-    qmService.highchartsReflow = function() {
-        // Fixes chart width
-        //$(window).resize(); This doesn't seem to do anything
-        if(!$rootScope.reflowScheduled){
-            $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
-            var seconds = 0.1;
-            //logDebug('Setting highchartsReflow timeout for ' + seconds + ' seconds');
-            $timeout(function() {
-                //logDebug('executing broadcast(highchartsng.reflow)');
-                $rootScope.$broadcast('highchartsng.reflow');
-                $rootScope.reflowScheduled = false;
-            }, seconds * 1000);
-            //$scope.$broadcast('highchartsng.reflow'); This doesn't seem to do anything
-        } else {
-            logDebug('broadcast(highchartsng.reflow) already scheduled');
-        }
-    };
     // Doesn't work yet
     function generateMovingAverageTimeSeries(rawMeasurements) {
         var smoothedMeasurements = [];
