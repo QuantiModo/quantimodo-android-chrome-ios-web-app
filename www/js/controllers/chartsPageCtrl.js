@@ -74,7 +74,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             }
             $scope.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
             $scope.monthlyChartConfig = qmService.processDataAndConfigureMonthlyChart($scope.state.dailyHistory, $rootScope.variableObject);
-            qmService.highchartsReflow();
         }
     };
     var updateCharts = function(){
@@ -86,7 +85,6 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 }
             }
             $scope.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
-            qmService.highchartsReflow();
         }
     };
     var getHistoryForVariable = function(params){

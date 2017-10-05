@@ -11,38 +11,38 @@
                 </div>
             </div>
 
-            <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
+            <div ng-if="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
                 <div class="item item-text-wrap">
                     <highchart id="lineChart" config="lineChartConfig"></highchart>
                 </div>
             </div>
-            <div ng-show="smoothedLineChartConfig" class="card primary-outcome-variable-reporting-chart">
+            <div ng-if="smoothedLineChartConfig" class="card primary-outcome-variable-reporting-chart">
                 <div class="item item-text-wrap">
                     <h2 style="text-align: center">Smoothed and Processed Data</h2>
                     <highchart id="smoothedLineChart" config="lineChartConfig"></highchart>
                 </div>
             </div>
-            <div ng-show="hourlyChartConfig" class="card primary-outcome-variable-reporting-chart">
+            <div ng-if="hourlyChartConfig" class="card primary-outcome-variable-reporting-chart">
                 <div class="item item-text-wrap">
                     <highchart id="hourlyChart" config="hourlyChartConfig"></highchart>
                 </div>
             </div>
-            <div ng-show="weekdayChartConfig" class="card primary-outcome-variable-reporting-chart">
+            <div ng-if="weekdayChartConfig" class="card primary-outcome-variable-reporting-chart">
                 <div class="item item-text-wrap">
                     <highchart id="weekdayChart" config="weekdayChartConfig"></highchart>
                 </div>
             </div>
-            <div ng-show="monthlyChartConfig" class="card primary-outcome-variable-reporting-chart">
+            <div ng-if="monthlyChartConfig" class="card primary-outcome-variable-reporting-chart">
                 <div class="item item-text-wrap">
                     <highchart id="monthlyChart" config="monthlyChartConfig"></highchart>
                 </div>
             </div>
-            <div ng-show="distributionChartConfig" class="card primary-outcome-variable-reporting-chart">
+            <div ng-if="distributionChartConfig" class="card primary-outcome-variable-reporting-chart">
                 <div class="item item-text-wrap">
                     <highchart id="distributionChart" config="distributionChartConfig"></highchart>
                 </div>
             </div>
-            <div ng-show="distributionChartConfig" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
+            <div ng-if="distributionChartConfig" ng-include="'templates/fragments/variable-sharing-fragment.html'"></div>
             <div class="card list" id="statisticsCard" ng-if="variableObject.numberOfRawMeasurements">
                 <label class="item item-content" ng-if="variableObject.numberOfRawMeasurements">
                     <span class="input-label left-text"># of measurements</span>
