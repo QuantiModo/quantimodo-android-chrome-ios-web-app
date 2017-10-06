@@ -916,7 +916,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if($rootScope.isAndroid){platform = 'android';}
         if($rootScope.isIOS){platform = 'ios';}
         if($rootScope.isWindows){platform = 'windows';}
-        var params = {platform: platform, deviceToken: deviceToken, clientId: qmService.getClientId()};
+        var params = {platform: platform, deviceToken: deviceToken, clientId: qmService.getClientId(), stacktrace: getStackTrace()};
         qmService.post('api/v3/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
     };
     qmService.deleteDeviceTokenFromServer = function(successHandler, errorHandler) {
@@ -2627,6 +2627,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.getTrackingReminderNotificationsFromApi(params, function(response){
             if(response.success) {
                 var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
+                if(trackingReminderNotifications.length){
+                  checkHoursSinceLastPushNotificationReceived();
+                }
                 deferred.resolve(trackingReminderNotifications);
             } else {deferred.reject("error");}
         }, function(error){
@@ -7445,6 +7448,25 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
       var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
       return time;
     }
+    function checkHoursSinceLastPushNotificationReceived() {
+      if(!$rootScope.isMobile){return;}
+      var lastPushTimestamp =  localStorage.getItem('lastPushTimestamp');
+      if(!lastPushTimestamp){
+        logError("Push never received!");
+        reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+      }
+      var hoursSinceLastPushRecieved = (getUnixTimestampInSeconds - localStorage.getItem('lastPushTimestamp'))/3600;
+      if(hoursSinceLastPushRecieved > 24){
+        logError("No pushes received in last 24 hours!");
+        reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
+      }
+    }
+    function reconfigurePushNotificationsIfNoTokenOnServerOrToSync() {
+      if($rootScope.isMobile && !localStorage.getItem('deviceTokenOnServer') && !localStorage.getItem('deviceTokenToSync')){
+          logError("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
+          qmService.configurePushNotifications();
+      }
+    }
     qmService.sendBugReport = function() {
         qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server
         function addAppInformationToTemplate(template){
@@ -7464,10 +7486,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             if(localStorage.getItem('deviceTokenOnServer')){template = template + '\r\n' + "deviceTokenOnServer: " + localStorage.getItem('deviceTokenOnServer') + '\r\n' + '\r\n';}
             if(localStorage.getItem('deviceTokenToSync')){template = template + '\r\n' + "deviceTokenToSync: " + localStorage.getItem('deviceTokenToSync') + '\r\n' + '\r\n';}
-            if(!localStorage.getItem('deviceTokenOnServer') && !localStorage.getItem('deviceTokenToSync')){
-                logError("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
-                qmService.configurePushNotifications();
-            }
+            reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
             if(localStorage.getItem('lastPushTimestamp')){
                 template = template + '\r\n' + "lastPushReceived: " + convertUnixTimeStampToISOString(localStorage.getItem('lastPushTimestamp')) + '\r\n' + '\r\n';
             } else {
