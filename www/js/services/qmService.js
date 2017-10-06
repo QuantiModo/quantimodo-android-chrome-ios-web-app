@@ -7433,6 +7433,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(menu.custom){menu.custom = convertStateNameAndParamsToHrefInAllMenuItems(menu.custom);}
         return menu;
     }
+    function convertUnixTimeStampToISOString(UNIX_timestamp){
+      var a = new Date(UNIX_timestamp * 1000);
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var year = a.getFullYear();
+      var month = months[a.getMonth()];
+      var date = a.getDate();
+      var hour = a.getHours();
+      var min = a.getMinutes();
+      var sec = a.getSeconds();
+      var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+      return time;
+    }
     qmService.sendBugReport = function() {
         qmService.registerDeviceToken(); // Try again in case it was accidentally deleted from server
         function addAppInformationToTemplate(template){
@@ -7455,6 +7467,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(!localStorage.getItem('deviceTokenOnServer') && !localStorage.getItem('deviceTokenToSync')){
                 logError("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
                 qmService.configurePushNotifications();
+            }
+            if(localStorage.getItem('lastPushTimestamp')){
+                template = template + '\r\n' + "lastPushReceived: " + convertUnixTimeStampToISOString(localStorage.getItem('lastPushTimestamp')) + '\r\n' + '\r\n';
+            } else {
+                template + '\r\n' + "lastPushReceived: NEVER " + '\r\n' + '\r\n';
             }
             template = template + "QuantiModo Client ID: " + qmService.getClientId() + '\r\n';
             template = template + "Platform: " + $rootScope.currentPlatform + '\r\n';
