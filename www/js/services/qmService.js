@@ -916,7 +916,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if($rootScope.isAndroid){platform = 'android';}
         if($rootScope.isIOS){platform = 'ios';}
         if($rootScope.isWindows){platform = 'windows';}
-        var params = {platform: platform, deviceToken: deviceToken, clientId: qmService.getClientId()};
+        var params = {platform: platform, deviceToken: deviceToken, clientId: qmService.getClientId(), stacktrace: getStackTrace()};
         qmService.post('api/v3/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
     };
     qmService.deleteDeviceTokenFromServer = function(successHandler, errorHandler) {
