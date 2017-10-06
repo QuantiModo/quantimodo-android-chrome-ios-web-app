@@ -60,6 +60,18 @@
                         <p ng-if="chart.explanation">{{chart.explanation}}</p>
                         <br>
                     </div>
+                    <div ng-repeat="chart in study.causeVariable.highcharts">
+                        <h2>{{chart.chartTitle}}</h2>
+                        <highchart id="{{chart.chartId}}" config="chart.highchartConfig"></highchart>
+                        <p ng-if="chart.explanation">{{chart.explanation}}</p>
+                        <br>
+                    </div>
+                    <div ng-repeat="chart in study.effectVariable.highcharts">
+                        <h2>{{chart.chartTitle}}</h2>
+                        <highchart id="{{chart.chartId}}" config="chart.highchartConfig"></highchart>
+                        <p ng-if="chart.explanation">{{chart.explanation}}</p>
+                        <br>
+                    </div>
                 </div>
                 <div id="studyBody" style="padding-left: 20px; padding-right: 20px;">
                     <h3 ng-if="causeWikiEntry || effectWikiEntry || correlationObject.studyBackground" id="studyBackground"> Study Background </h3>
