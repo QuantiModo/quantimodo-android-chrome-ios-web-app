@@ -122,42 +122,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName) {
         qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
     };
-    var showShareStudyConfirmation = function(correlationObject, sharingUrl, ev) {
-        var title = 'Share Study';
-        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
-                ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? You can make them private again at any time on this study page.';
-        function yesCallback() {
-                correlationObject.shareUserMeasurements = true;
-                qmService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
-                var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
-                qmService.showBlackRingLoader();
-                qmService.postStudyDeferred(body).then(function () {
-                    qmService.hideLoader();
-                    if(sharingUrl){qmService.openSharingUrl(sharingUrl);}
-                }, function (error) {
-                    qmService.hideLoader();
-                    qmService.logError(error);
-                });
-        }
-        function noCallback() {correlationObject.shareUserMeasurements = false;}
-        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-    };
-    var showUnshareStudyConfirmation = function(correlationObject, ev) {
-        var title = 'Share Study';
-        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
-            ' and ' + correlationObject.effectVariableName + ' measurements private? Links to studies your ' +
-            'previously shared with these variables will no longer work.';
-        function yesCallback() {
-            correlationObject.shareUserMeasurements = false;
-            var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
-            qmService.postStudyDeferred(body);
-        }
-        function noCallback() {correlationObject.shareUserMeasurements = true;}
-        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-    };
-    $scope.toggleStudyShare = function (correlationObject, ev) {
-        if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
-    };
+
     var showShareVariableConfirmation = function(variableObject, sharingUrl, ev) {
         var title = 'Share Variable';
         var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
