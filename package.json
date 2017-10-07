@@ -67,8 +67,5 @@
     "postinstall": "echo 'Runing npm postinstall commands...' && bower install && ionic config build && gulp configureAppAfterNpmInstall"
   },
   "cordovaPlugins": [],
-  "cordovaPlatforms": [],
-  "engines": {
-    "node": "6.9.4"
-  }
+  "cordovaPlatforms": []
 }
