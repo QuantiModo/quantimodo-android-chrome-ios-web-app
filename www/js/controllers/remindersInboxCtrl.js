@@ -339,6 +339,23 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		trackingReminder.id = trackingReminderNotification.trackingReminderId;
 		qmService.goToState('app.reminderAdd', {reminder: trackingReminder, fromUrl: window.location.href, fromState : $state.current.name});
 	};
+	function skipAllForVariable(trackingReminderNotification) {
+        trackingReminderNotification.hide = true;
+        console.debug("Skipping all notifications for trackingReminder", trackingReminderNotification);
+        var params = {trackingReminderId : trackingReminderNotification.trackingReminderId};
+        //qmService.showInfoToast('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
+        qmService.skipAllTrackingReminderNotificationsDeferred(params)
+            .then(function(){
+                hideInboxLoader();
+                $scope.refreshTrackingReminderNotifications();
+            }, function(error){
+                hideInboxLoader();
+                qmService.logError(error);
+                qmService.logError(error);
+                qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
+            });
+        return true;
+    }
 	// Triggered on a button click, or some other target
 	$scope.showActionSheetForNotification = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex) {
 		if(isGhostClick($event)){return;}
@@ -354,15 +371,16 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
             { text: 'Actions for ' +  trackingReminderNotification.variableName},
             { text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
             qmService.actionSheetButtons.charts,
-            qmService.actionSheetButtons.history,
-            qmService.actionSheetButtons.analysisSettings
+            qmService.actionSheetButtons.history
         ];
 		for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
 		    buttons.push({ text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
         }
+        buttons.push({ text: '<i class="icon ion-trash-a"></i>Skip All '});
+        buttons.push(qmService.actionSheetButtons.analysisSettings);
 		var hideSheetForNotification = $ionicActionSheet.show({
 			buttons: buttons,
-			destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
+			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 			cancel: function() {console.debug('CANCELLED');},
 			buttonClicked: function(index) {
@@ -371,29 +389,18 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				if(index === 1){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
 				if(index === 2){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
-                if(index === 4){qmService.goToState('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
-                var buttonIndex = 5;
+                var buttonIndex = 4;
                 for(var i=0; i < trackingReminderNotification.trackAllActions.length; i++){
                     if(index === buttonIndex){trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[i].modifiedValue);}
-                    buttonIndex++
+                    buttonIndex++;
                 }
+                if(index === buttonIndex){skipAllForVariable(trackingReminderNotification);}
+                buttonIndex++;
+                if(index === buttonIndex){qmService.goToState('app.variableSettings', {variableName: $scope.state.trackingReminderNotification.variableName});}
 				return true;
 			},
 			destructiveButtonClicked: function() {
-				trackingReminderNotification.hide = true;
-				console.debug("Skipping all notifications for trackingReminder", $scope.state.trackingReminderNotification);
-				var params = {trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId};
-				//qmService.showInfoToast('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
-				qmService.skipAllTrackingReminderNotificationsDeferred(params)
-					.then(function(){
-						hideInboxLoader();
-						$scope.refreshTrackingReminderNotifications();
-					}, function(error){
-						hideInboxLoader();
-						qmService.logError(error);
-						qmService.logError(error);
-						qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
-					});
+				skipAllForVariable(trackingReminderNotification);
 				return true;
 			}
 		});
