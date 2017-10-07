@@ -7709,6 +7709,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         };
     };
+    qmService.setupVariableByVariableObject = function(variableObject) {
+        $rootScope.variableName = variableObject.name;
+        $rootScope.variableObject = variableObject;
+    };
     // qmService.autoUpdateApp = function () {
     //     var appUpdatesDisabled = true;
     //     if(appUpdatesDisabled){

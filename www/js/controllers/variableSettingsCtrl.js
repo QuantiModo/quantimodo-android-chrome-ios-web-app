@@ -7,14 +7,14 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         console.debug($state.current.name + ' initializing...');
         $scope.loading = true;
         if($stateParams.variableObject){
-            $scope.setupVariableByVariableObject($stateParams.variableObject);
+            qmService.setupVariableByVariableObject($stateParams.variableObject);
             refreshUserVariable($stateParams.variableObject.name);
         } else if ($stateParams.variableName) {
             $rootScope.variableName = $stateParams.variableName;
             $scope.getUserVariableByName($rootScope.variableName);
             refreshUserVariable($rootScope.variableName);
         } else if ($rootScope.variableObject) {
-            $scope.setupVariableByVariableObject($rootScope.variableObject);
+            qmService.setupVariableByVariableObject($rootScope.variableObject);
             refreshUserVariable($rootScope.variableObject.name);
         } else {
             qmService.logError("Variable name not provided to variable settings controller!");
