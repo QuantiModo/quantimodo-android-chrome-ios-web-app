@@ -84,8 +84,9 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.getPreviewBuildsChange = function() {
 		var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
 		qmService.updateUserSettingsDeferred(params);
-		$scope.autoUpdateApp();
+		//qmService.autoUpdateApp();
 	};
+	//$scope.updateApp = function(){qmService.updateApp();};
 	var sendReminderNotificationEmailsChange = function (ev) {
 		var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
 		if(qmService.getUrlParameter('userEmail')){params.userEmail = qmService.getUrlParameter('userEmail');}
