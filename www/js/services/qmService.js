@@ -2029,7 +2029,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(window.location.origin.indexOf('local') !== -1){env = "development";}
         if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
         if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-        if($rootScope.user && $rootScope.user.email && $rootScope.user.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+        if($rootScope.user){
+            if($rootScope.user.email && $rootScope.user.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+            if($rootScope.user.displayName && $rootScope.user.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
+        }
+        if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
         return env;
     }
     function envIsDevelopment() {return getEnv() === 'development';}
