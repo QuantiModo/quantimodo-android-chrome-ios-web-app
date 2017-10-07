@@ -490,6 +490,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
             $rootScope.correlationObject = null;
         }
-        qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
+        //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
+        qmService.goToStudyPage(causeVariableName, effectVariableName);
     };
 });
