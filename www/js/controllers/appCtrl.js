@@ -56,13 +56,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(typeof cordova !== "undefined"){ cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
         } else { window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes'); }
     };
-    $scope.shareCharts = function(variableObject, sharingUrl, ev){
-        if(!variableObject.shareUserMeasurements){
-            showShareVariableConfirmation(variableObject, sharingUrl, ev);
-            return;
-        }
-        qmService.openSharingUrl(sharingUrl);
-    };
+
     $scope.shareStudy = function(correlationObject, sharingUrl, ev){
         if(!correlationObject){
             qmService.logError("No correlationObject provided to shareStudy!");
@@ -133,9 +127,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.tagAnotherVariable = function () {
         qmService.goToState('app.tageeSearch',  {fromState: $state.current.name, userTagVariableObject: $rootScope.variableObject});
-    };
-    $scope.goToChartsPageForVariableObject = function (variableObject) {
-        qmService.goToState('app.charts', {variableObject: variableObject});
     };
     $scope.closeMenuIfNeeded = function (menuItem) {
         menuItem.showSubMenu = !menuItem.showSubMenu;

@@ -151,4 +151,11 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             refreshUserVariable(variableName);
         });
     };
+    $scope.shareCharts = function(variableObject, sharingUrl, ev){
+        if(!variableObject.shareUserMeasurements){
+            showShareVariableConfirmation(variableObject, sharingUrl, ev);
+            return;
+        }
+        qmService.openSharingUrl(sharingUrl);
+    };
 });
