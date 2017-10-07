@@ -63,6 +63,16 @@
     "yargs": "latest",
     "quantimodo": "5.8.82817"
   },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    }
+  },
+  "jscsConfig": {
+    "preset": "google",
+    "requireCurlyBraces": null
+  },
   "scripts": {
     "postinstall": "echo 'Runing npm postinstall commands...' && bower install && ionic config build && gulp configureAppAfterNpmInstall"
   },
