@@ -67,5 +67,16 @@
     "postinstall": "echo 'Runing npm postinstall commands...' && bower install && ionic config build && gulp configureAppAfterNpmInstall"
   },
   "cordovaPlugins": [],
-  "cordovaPlatforms": []
+  "cordovaPlatforms": [
+    {
+      "platform": "android",
+      "version": "6.2.2",
+      "locator": "android@6.2.2"
+    },
+    {
+      "platform": "ios",
+      "version": "4.1.1",
+      "locator": "ios@4.1.1"
+    }
+  ]
 }
