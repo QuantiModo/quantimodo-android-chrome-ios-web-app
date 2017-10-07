@@ -248,4 +248,40 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
         var mouthBars = new TweenMax.staggerFromTo('#mouthBars rect',.5,{fill:'#398080'},{fill:'#fffff',repeat:-1},0.2)
         var eyes = new TweenMax.to('#blueBotEyes',.5,{scale:1.1,transformOrigin:'50% 50%',ease:Sine.easeInOut,onComplete:function(){eyes.reverse()},onReverseComplete:function(){eyes.play()}})
     }
+    var showShareStudyConfirmation = function(correlationObject, sharingUrl, ev) {
+        var title = 'Share Study';
+        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
+            ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? You can make them private again at any time on this study page.';
+        function yesCallback() {
+            correlationObject.shareUserMeasurements = true;
+            qmService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
+            var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
+            qmService.showBlackRingLoader();
+            qmService.postStudyDeferred(body).then(function () {
+                qmService.hideLoader();
+                if(sharingUrl){qmService.openSharingUrl(sharingUrl);}
+            }, function (error) {
+                qmService.hideLoader();
+                qmService.logError(error);
+            });
+        }
+        function noCallback() {correlationObject.shareUserMeasurements = false;}
+        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+    };
+    var showUnshareStudyConfirmation = function(correlationObject, ev) {
+        var title = 'Share Study';
+        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
+            ' and ' + correlationObject.effectVariableName + ' measurements private? Links to studies your ' +
+            'previously shared with these variables will no longer work.';
+        function yesCallback() {
+            correlationObject.shareUserMeasurements = false;
+            var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
+            qmService.postStudyDeferred(body);
+        }
+        function noCallback() {correlationObject.shareUserMeasurements = true;}
+        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+    };
+    $scope.toggleStudyShare = function (correlationObject, ev) {
+        if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
+    };
 });
