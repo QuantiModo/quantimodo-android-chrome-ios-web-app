@@ -1,9 +1,8 @@
 angular.module('starter')// Parent Controller - This controller runs before every one else
 .controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                                 $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService,
-                                ionicDatePicker, $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
+                                $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
                                 $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
-
     $scope.controller_name = "AppCtrl";
     qmService.initializeApplication(appSettingsResponse);
     $rootScope.numberOfPendingNotifications = null;
@@ -43,39 +42,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.hideMenuButton = false;
         }
     });
-
-    //  Calendar and  Date picker
-    // will update from showCalendarPopup
-    $scope.fromDate = new Date();
-    $scope.toDate = new Date();
-    // "from" datepicker config
-    $scope.fromDatePickerObj = {
-        callback: function (val) {
-            if (typeof(val) === 'undefined') {
-                console.debug('Date not selected');
-            } else {
-                $scope.fromDate = new Date(val);
-                $scope.saveDates();
-            }
-        },
-        inputDate: $scope.fromDate, // previously selected value
-        from: new Date(2012, 8, 1),
-        to: $scope.toDate // don't allow fromDate to be after toDate
-    };
-    // "to" datepicker config
-    $scope.toDatePickerObj = {
-        callback: function (val) {
-            if (typeof(val) === 'undefined') {
-                console.debug('Date not selected');
-            } else {
-                $scope.toDate = new Date(val);
-                $scope.saveDates();
-            }
-        },
-        inputDate: $scope.toDate, // previously selected value
-        from: $scope.fromDate, // don't allow toDate to be after fromDate
-        to: new Date() //today
-    };
     $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
         /** @namespace correlationObject.causeVariable */
         if(correlationObject.causeVariable){ qmService.goToState('app.variableSettings', {variableObject: correlationObject.causeVariable, variableName: correlationObject.causeVariableName});
@@ -122,42 +88,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.openStudyLinkEmail = function (predictorVariableName, outcomeVariableName) {
         qmService.openSharingUrl(qmService.getStudyLinks(predictorVariableName, outcomeVariableName).studyLinkEmail);
     };
-    var showShareStudyConfirmation = function(correlationObject, sharingUrl, ev) {
-        var title = 'Share Study';
-        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
-                ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? You can make them private again at any time on this study page.';
-        function yesCallback() {
-                correlationObject.shareUserMeasurements = true;
-                qmService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
-                var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
-                qmService.showBlackRingLoader();
-                qmService.postStudyDeferred(body).then(function () {
-                    qmService.hideLoader();
-                    if(sharingUrl){qmService.openSharingUrl(sharingUrl);}
-                }, function (error) {
-                    qmService.hideLoader();
-                    qmService.logError(error);
-                });
-        }
-        function noCallback() {correlationObject.shareUserMeasurements = false;}
-        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-    };
-    var showUnshareStudyConfirmation = function(correlationObject, ev) {
-        var title = 'Share Study';
-        var textContent = 'Are you absolutely sure you want to make your ' + correlationObject.causeVariableName +
-            ' and ' + correlationObject.effectVariableName + ' measurements private? Links to studies your ' +
-            'previously shared with these variables will no longer work.';
-        function yesCallback() {
-            correlationObject.shareUserMeasurements = false;
-            var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: false};
-            qmService.postStudyDeferred(body);
-        }
-        function noCallback() {correlationObject.shareUserMeasurements = true;}
-        qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-    };
-    $scope.toggleStudyShare = function (correlationObject, ev) {
-        if(correlationObject.shareUserMeasurements){showShareStudyConfirmation(correlationObject, ev);} else {showUnshareStudyConfirmation(correlationObject, ev);}
-    };
     var showShareVariableConfirmation = function(variableObject, sharingUrl, ev) {
         var title = 'Share Variable';
         var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
@@ -198,41 +128,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $rootScope[flagName] = true;
         qmService.setLocalStorageItem(flagName, true);
     };
-    // open datepicker for "from" date
-    $scope.openFromDatePicker = function () {ionicDatePicker.openDatePicker($scope.fromDatePickerObj);};
-    // open datepicker for "to" date
-    $scope.openToDatePicker = function () {ionicDatePicker.openDatePicker($scope.toDatePickerObj);};
-    // update dates selected from calendar
-    $scope.saveDates = function () {
-        $scope.updateDatesLocalStorage();
-        $scope.updateDatePickerObjects();
-        $scope.popover.hide();
-    };
-    // update fromDate and toDate in datepicker objects
-    $scope.updateDatePickerObjects = function () {
-        $scope.fromDatePickerObj.to = $scope.toDate;
-        $scope.toDatePickerObj.from = $scope.fromDate;
-        $scope.fromDatePickerObj.inputDate = $scope.fromDate;
-        $scope.toDatePickerObj.inputDate = $scope.toDate;
-    };
-    $scope.updateDatesLocalStorage = function () {
-        var to = moment($scope.toDate).unix() * 1000;
-        var from = moment($scope.fromDate).unix() * 1000;
-        console.debug("$scope.updateDatesLocalStorage is calling qmService.setDates");
-        qmService.setDates(to, from);
-    };
-    // show main calendar popup (from and to)
-    $scope.showCalendarPopup = function ($event) {
-        $scope.popover.show($event);
-        qmService.getToDate(function (endDate) {
-            $scope.toDate = new Date(endDate);
-            $scope.fromDatePickerObj.to = $scope.toDate;
-            qmService.getFromDate(function (fromDate) {
-                $scope.fromDate = new Date(fromDate);
-                $scope.toDatePickerObj.from = $scope.fromDate;
-            });
-        });
-    };
     $scope.showHelpInfoPopup = function (explanationId, ev) {
         qmService.showMaterialAlert(qmService.explanations[explanationId].title, qmService.explanations[explanationId].textContent);
     };
@@ -246,36 +141,27 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         menuItem.showSubMenu = !menuItem.showSubMenu;
         if (menuItem.click) { $scope[menuItem.click] && $scope[menuItem.click](); } else if (!menuItem.subMenu) { $scope.closeMenu();}
     };
-    /*Wrapper Config*/
     $scope.positiveRatingOptions = qmService.getPositiveRatingOptions();
     $scope.negativeRatingOptions = qmService.getNegativeRatingOptions();
     $scope.numericRatingOptions = qmService.getNumericRatingOptions();
     $scope.welcomeText = config.appSettings.welcomeText;
-    /*Wrapper Config End*/
-
-
 /*
     $scope.autoUpdateApp = function () {
-
         var appUpdatesDisabled = true;
         if(appUpdatesDisabled){
             console.debug("App updates disabled until more testing is done");
             return;
         }
-
         if(!$rootScope.isMobile){
             console.debug("Cannot update app because platform is not mobile");
             return;
         }
-
         $scope.updateApp();
     };
-
     $scope.updateApp = function () {
         var message;
         var releaseTrack;
         $ionicPlatform.ready(function () {
-
             if(typeof $ionicCloudProvider == "undefined"){
                 console.warn('$ionicCloudProvider is not defined so we cannot use ionic deploy');
                 return;
@@ -348,14 +234,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     qmService.logError(message);
                 }
             });
-
         });
-
     };
-
     $scope.autoUpdateApp();
 */
-    $ionicPopover.fromTemplateUrl('templates/popover.html', {scope: $scope}).then(function (popover) {$scope.popover = popover;});
     $scope.editTag = function(userTagVariable){
         qmService.goToState('app.tagAdd', {
             tagConversionFactor: userTagVariable.tagConversionFactor,
@@ -607,7 +489,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.showMaterialAlert = function(title, textContent, ev) {
         qmService.showMaterialAlert(title, textContent, ev);
     };
-
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
     $scope.copyChartsUrlToClipboard = function () {
         $scope.copyLinkText = 'Copied!';
@@ -678,5 +559,4 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         }
         qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
     };
-
 });
