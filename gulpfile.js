@@ -1859,6 +1859,7 @@ gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     logInfo('gulp configureAppAfterNpmInstall');
     if (process.env.BUDDYBUILD_SCHEME) {
+        process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase();
         logInfo('BUDDYBUILD_SCHEME is ' + process.env.BUDDYBUILD_SCHEME + ' so going to prepareIosApp');
         runSequence(
             'prepareIosApp',
