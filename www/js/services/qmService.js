@@ -181,6 +181,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!variable || typeof message === "string"){return variable;}
         return stringify(variable);
     }
+    function logErrorOrInfoIfTesting(message, additionalMetaData, stackTrace) {
+        if(envIsTesting()){
+            logInfo(message, stackTrace)
+        } else {
+            logError(message, additionalMetaData, stackTrace);
+        }
+    }
     function logError(message, additionalMetaData, stackTrace) {
         if(message && message.message){message = message.message;}
         message = stringifyIfNecessary(message);
@@ -1634,7 +1641,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
         if(getUnixTimestampInSeconds() - localStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
             var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
-            logError(errorMessage);
+            logErrorOrInfoIfTesting(errorMessage);
             return false;
         }
         localStorage.setItem(localStorageItemName, getUnixTimestampInSeconds());
@@ -2026,6 +2033,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return env;
     }
     function envIsDevelopment() {return getEnv() === 'development';}
+    function envIsTesting() {return getEnv() === 'testing';}
     qmService.getEnv = function(){return getEnv();};
     qmService.getClientId = function(){
         if(typeof config !== "undefined" && $rootScope.appSettings.clientId){
