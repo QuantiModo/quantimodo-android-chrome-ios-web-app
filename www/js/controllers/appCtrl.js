@@ -457,10 +457,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
         }
     };
-    $scope.setupVariableByVariableObject = function(variableObject) {
-        $rootScope.variableName = variableObject.name;
-        $rootScope.variableObject = variableObject;
-    };
+
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
             qmService.reportErrorDeferred('No variable name provided to $scope.getUserVariableByName');
@@ -475,7 +472,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.hideLoader();
             $rootScope.variableObject = variableObject;
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
-            $scope.setupVariableByVariableObject(variableObject);
+            qmService.setupVariableByVariableObject(variableObject);
         }, function (error) {
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
