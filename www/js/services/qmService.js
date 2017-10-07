@@ -6933,8 +6933,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.goToStudyPageViaCorrelationObject = function(correlationObject){
         $rootScope.correlationObject = correlationObject;
         localStorage.setItem('lastStudy', JSON.stringify(correlationObject));
-        qmService.goToState('app.study', {correlationObject: correlationObject});
+        //qmService.goToState('app.study', {correlationObject: correlationObject});
+        qmService.goToStudyPage(correlationObject.causeVariableName, correlationObject.effectVariableName);
     };
+    qmService.goToStudyPage = function(causeVariableName, effectVariableName) {
+        window.location.href = getStudyUrl(causeVariableName, effectVariableName);
+    };
+    function getStudyUrl(causeVariableName, effectVariableName) {
+        return getBaseAppUrl() + "#/app/study?causeVariableName=" + causeVariableName + "&effectVariableName=" + effectVariableName;
+    }
+    function getBaseAppUrl(){
+        return window.location.origin + window.location.pathname;
+    }
     qmService.getPlanFeatureCards = function () {
         var planFeatureCards = [
             {
