@@ -85,9 +85,9 @@
         <div ng-if="false" class="card" >
             <div class="item item-divider"> <i class="icon ion-erlenmeyer-flask"></i> &nbsp Beta Program </div>
             <ion-toggle ng-model="user.getPreviewBuilds" ng-change="getPreviewBuildsChange()"> Request to Join </ion-toggle>
-            <a ng-if="isAndroid" class="item" ng-click="updateApp()">
+<!--            <a ng-if="isAndroid" class="item" ng-click="updateApp()">
                 <i class="icon ion-android-download"></i> &nbsp; Update App
-            </a>
+            </a>-->
         </div>
         <div ng-if="user && user.stripeActive" class="list card" ng-click="downgrade()">
             <a class="item"> <i class="icon ion-ios-color-wand"></i> &nbsp; Downgrade to Lite </a>

@@ -171,99 +171,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.negativeRatingOptions = qmService.getNegativeRatingOptions();
     $scope.numericRatingOptions = qmService.getNumericRatingOptions();
     $scope.welcomeText = config.appSettings.welcomeText;
-/*
-    $scope.autoUpdateApp = function () {
-        var appUpdatesDisabled = true;
-        if(appUpdatesDisabled){
-            console.debug("App updates disabled until more testing is done");
-            return;
-        }
-        if(!$rootScope.isMobile){
-            console.debug("Cannot update app because platform is not mobile");
-            return;
-        }
-        $scope.updateApp();
-    };
-    $scope.updateApp = function () {
-        var message;
-        var releaseTrack;
-        $ionicPlatform.ready(function () {
-            if(typeof $ionicCloudProvider == "undefined"){
-                console.warn('$ionicCloudProvider is not defined so we cannot use ionic deploy');
-                return;
-            }
-            // We might need to move this back to app.js if it doesn't work
-            if(config.appSettings.additionalSettings.ionicAppId){
-                $ionicCloudProvider.init({
-                        "core": {
-                            "app_id": config.appSettings.additionalSettings.ionicAppId
-                        }
-                });
-            } else {
-                console.warn('Cannot initialize $ionicCloudProvider because appSettings.additionalSettings.ionicAppId is not set');
-                return;
-            }
-            if($rootScope.user && $rootScope.user.getPreviewBuilds){
-                $ionicDeploy.channel = 'staging';
-                releaseTrack = "beta";
-            } else {
-                $ionicDeploy.channel = 'production';
-                releaseTrack = "production";
-                message = 'Not updating because user is not signed up for preview builds';
-                console.debug(message);
-                qmService.logError(message);
-                return;
-            }
-            message = 'Checking for ' + releaseTrack + ' updates...';
-            qmService.showInfoToast(message);
-            $ionicDeploy.check().then(function(snapshotAvailable) {
-                if (snapshotAvailable) {
-                    message = 'Downloading ' + releaseTrack + ' update...';
-                    console.debug(message);
-                    if($rootScope.isAndroid){
-                        qmService.showInfoToast(message);
-                    }
-                    qmService.logError(message);
-                    // When snapshotAvailable is true, you can apply the snapshot
-                    $ionicDeploy.download().then(function() {
-                        message = 'Downloaded new version.  Extracting...';
-                        console.debug(message);
-                        if($rootScope.isAndroid){
-                            qmService.showInfoToast(message);
-                        }
-                        qmService.logError(message);
-                        $ionicDeploy.extract().then(function() {
-                            if($rootScope.isAndroid){
-                                $ionicPopup.show({
-                                    title: 'Update available',
-                                    //subTitle: '',
-                                    template: 'An update was just downloaded. Would you like to restart your app to use the latest features?',
-                                    buttons: [
-                                        { text: 'Not now' },
-                                        {
-                                            text: 'Restart',
-                                            onTap: function(e) {
-                                                $ionicDeploy.load();
-                                            }
-                                        }
-                                    ]
-                                });
-                            }
-                        });
-                    });
-                } else {
-                    message = 'No updates available';
-                    if($rootScope.isAndroid){
-                        qmService.showInfoToast(message);
-                    }
-                    console.debug(message);
-                    qmService.logError(message);
-                }
-            });
-        });
-    };
-    $scope.autoUpdateApp();
-*/
     $scope.editTag = function(userTagVariable){
         qmService.goToState('app.tagAdd', {
             tagConversionFactor: userTagVariable.tagConversionFactor,
@@ -457,10 +364,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
         }
     };
-    $scope.setupVariableByVariableObject = function(variableObject) {
-        $rootScope.variableName = variableObject.name;
-        $rootScope.variableObject = variableObject;
-    };
+
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
             qmService.reportErrorDeferred('No variable name provided to $scope.getUserVariableByName');
@@ -475,7 +379,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             qmService.hideLoader();
             $rootScope.variableObject = variableObject;
             //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
-            $scope.setupVariableByVariableObject(variableObject);
+            qmService.setupVariableByVariableObject(variableObject);
         }, function (error) {
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
@@ -583,6 +487,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
             $rootScope.correlationObject = null;
         }
-        qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
+        //qmService.goToState('app.study', {causeVariableName: causeVariableName, effectVariableName: effectVariableName});
+        qmService.goToStudyPage(causeVariableName, effectVariableName);
     };
 });

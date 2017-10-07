@@ -357,8 +357,8 @@ function resizeIcon(callback, resolution) {
     var command = 'convert resources/icon.png -resize ' + resolution + 'x' + resolution + ' ' + outputIconPath;
     return execute(command, function (error) {
         if (error) {
-            logError("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
-            logError('ERROR: ' + JSON.stringify(error));
+            logInfo("Please install imagemagick in order to resize icons.  The windows version is here: https://sourceforge.net/projects/imagemagick/?source=typ_redirect");
+            logInfo('ERROR: ' + JSON.stringify(error));
         }
         uploadAppImagesToS3(outputIconPath);
         callback();
@@ -2128,7 +2128,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     /** @namespace appSettings.appStatus.buildEnabled */
     /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
     if(!appSettings.appStatus.buildEnabled.androidRelease){
-        logError("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is "
+        logInfo("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is "
             + appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
         return;
     }
