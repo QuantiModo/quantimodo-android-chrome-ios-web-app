@@ -248,6 +248,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.logError = function(message, additionalMetaData, stackTrace){
         logError(message, additionalMetaData, stackTrace);
     };
+    qmService.logErrorOrInfoIfTesting = function(message, additionalMetaData, stackTrace){
+        logErrorOrInfoIfTesting(message, additionalMetaData, stackTrace);
+    };
     qmService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
         array = addColors(array);
@@ -360,7 +363,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     function setAfterLoginGoToUrlAndSendToLogin(){
         if($state.current.name.indexOf('login') !== -1){
-            qmService.logError("Why are we sending to login from login state?");
+            qmService.logErrorOrInfoIfTesting("Why are we sending to login from login state?");
             return;
         }
         setAfterLoginGoToUrl();
@@ -6378,7 +6381,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     function setAfterLoginGoToState(afterLoginGoToState){
         if(afterLoginGoToState.indexOf('login') !== -1){
-            qmService.logError("Why are we sending to login from login state?");
+            qmService.logErrorOrInfoIfTesting("Why are we sending to login from login state?");
             return;
         }
         logDebug('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ');
@@ -6387,7 +6390,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function setAfterLoginGoToUrl(afterLoginGoToUrl){
         if(!afterLoginGoToUrl){afterLoginGoToUrl = window.location.href;}
         if(afterLoginGoToUrl.indexOf('login') !== -1){
-            qmService.logError("Why are we sending to login from login state?");
+            qmService.logErrorOrInfoIfTesting("Why are we sending to login from login state?");
             return;
         }
         logDebug('Setting afterLoginGoToUrl to ' + afterLoginGoToUrl + ' and going to login.');
