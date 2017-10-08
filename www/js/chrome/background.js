@@ -140,8 +140,8 @@ function pushMeasurements(measurements, onDoneListener) {
 	xhr.onreadystatechange = function() {
         // If the request is completed
         if (xhr.readyState === 4) {
-            console.debug("qmService responds:");
-            console.debug(xhr.responseText);
+            console.log("qmService responds:");
+            console.log(xhr.responseText);
             if(onDoneListener !== null) {onDoneListener(xhr.responseText);}
         }
     };
