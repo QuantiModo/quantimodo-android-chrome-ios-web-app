@@ -204,7 +204,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return {
                 "Analytics": (typeof Analytics !== "undefined"),
                 "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined"),
-                "cordova.plugins.notification": (typeof cordova !== "undefined" && typeof cordova.plugins.notification === "undefined"),
+                "cordova.plugins.notification": localNotificationsPluginInstalled(),
                 "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
                 "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus) ? true : false,
                 "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
@@ -4530,21 +4530,24 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             reminderEndTime: trackingReminder.reminderEndTime
         };
     }
+    function localNotificationsPluginInstalled() {
+        if(!cordova){return false;}
+        if(!cordova.plugins){return false;}
+        if(!cordova.plugins.notification){return false;}
+        return true;
+    }
     qmService.shouldWeUseIonicLocalNotifications = function(){
         $ionicPlatform.ready(function () {
-            if (!config.appSettings.appDesign.cordovaLocalNotificationsEnabled || typeof cordova === "undefined" ||
-                typeof cordova.plugins.notification === "undefined") {
-                if (typeof cordova !== "undefined") {
-                    if(typeof cordova.plugins !== "undefined" && typeof cordova.plugins.notification !== "undefined") {
-                        cordova.plugins.notification.local.cancelAll(function () {
-                            logDebug('cancelAllNotifications: notifications have been cancelled');
-                            cordova.plugins.notification.local.getAll(function (notifications) {
-                                logDebug("cancelAllNotifications: All notifications after cancelling", notifications);
-                            });
+            if (!config.appSettings.appDesign.cordovaLocalNotificationsEnabled){
+                if(localNotificationsPluginInstalled()){
+                    cordova.plugins.notification.local.cancelAll(function () {
+                        logDebug('cancelAllNotifications: notifications have been cancelled');
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            logDebug("cancelAllNotifications: All notifications after cancelling", notifications);
                         });
-                    }
+                    })
                 }
-                logDebug('cordova.plugins.notification is not defined');
+                logDebug('cordova.plugins.notification disabled');
                 return false;
             }
             return true;
