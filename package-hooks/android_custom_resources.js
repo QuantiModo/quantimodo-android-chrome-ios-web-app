@@ -16,9 +16,10 @@ var resourceDirs = [
 
 module.exports = function(ctx) {
 
-  console.log("started module.exports with ctx.opts.platforms.indexOf('android') =" + ctx.opts.platforms.indexOf('android'));
+  console.log("started package-hooks/android_custom_resources.js" + ctx.opts.platforms.indexOf('android'));
 
   if (ctx.opts.platforms.indexOf('android') < 0) {
+    console.log("Platform not android so quitting");
     return;
   }
 
@@ -30,29 +31,31 @@ module.exports = function(ctx) {
   function copy(src, dest) {
     var deferred = Q.defer();
 
-    //console.log("copying " + src + " to " + dest);
+    console.log("copying " + src + " to " + dest);
 
     fs.stat(src, function(err, stats) {
       if (err || !stats.isFile()) {
+          console.log(err);
         return deferred.reject(err);
       }
 
       fs.stat(path.dirname(dest), function(err, stats) {
         if (err || !stats.isDirectory()) {
+            console.log(err);
           return deferred.reject(err);
         }
 
         var rs = fs.createReadStream(src);
 
         rs.on('error', function(err) {
-          console.error(err.stack);
+          console.log(err.stack);
           deferred.reject(err);
         });
 
         var ws = fs.createWriteStream(dest);
 
         ws.on('error', function(err) {
-          console.error(err.stack);
+          console.log(err.stack);
           deferred.reject(err);
         });
 

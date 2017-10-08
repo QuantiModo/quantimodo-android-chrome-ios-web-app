@@ -19,9 +19,10 @@
   </feature>
   <access origin="https://widget.intercom.io/*"/>
   <platform name="android">
+    <allow-intent href="market:*" />
     <icon src="resources/icon.png"/>
     <hook type="after_prepare" src="package-hooks/android_custom_resources.js" />
-    <allow-intent href="market:*" />
+    <plugin name="cordova-plugin-drawoverapps" spec="git+https://github.com/mikepsinn/cordova-plugin-drawoverapps.git" />
   </platform>
   <platform name="ios">
     <allow-intent href="itms:*" />
