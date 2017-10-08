@@ -204,7 +204,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return {
                 "Analytics": (typeof Analytics !== "undefined"),
                 "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined"),
-                "cordova.plugins.notification": (typeof cordova !== "undefined" && typeof cordova.plugins.notification === "undefined"),
+                "cordova.plugins.notification": localNotificationsPluginInstalled(),
                 "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
                 "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus) ? true : false,
                 "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
@@ -2273,15 +2273,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
             //Bugsnag.notifyReleaseStages = ['Production','Staging'];
             Bugsnag.releaseStage = qmService.getEnv();
-            Bugsnag.appVersion = config.appSettings.versionNumber;
-            if($rootScope.user){
-                Bugsnag.metaData = {
-                    platform: ionic.Platform.platform(),
-                    platformVersion: ionic.Platform.version(),
-                    user: {name: $rootScope.user.displayName, email: $rootScope.user.email}
-                };
-            } else {Bugsnag.metaData = {platform: ionic.Platform.platform(), platformVersion: ionic.Platform.version()};}
-            if(config){Bugsnag.metaData.appDisplayName = $rootScope.appSettings.appDisplayName;}
+            Bugsnag.metaData = {platform: ionic.Platform.platform(), platformVersion: ionic.Platform.version()};
+            if(typeof config !== "undefined"){
+                Bugsnag.appVersion = config.appSettings.versionNumber;
+                Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
+            }
+            if($rootScope.user){Bugsnag.metaData.user = {name: $rootScope.user.displayName, email: $rootScope.user.email};}
             deferred.resolve();
         } else {deferred.reject('Bugsnag is not defined');}
         return deferred.promise;
@@ -4530,21 +4527,24 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             reminderEndTime: trackingReminder.reminderEndTime
         };
     }
+    function localNotificationsPluginInstalled() {
+        if(typeof cordova === "undefined"){return false;}
+        if(typeof cordova.plugins === "undefined"){return false;}
+        if(typeof cordova.plugins.notification === "undefined"){return false;}
+        return true;
+    }
     qmService.shouldWeUseIonicLocalNotifications = function(){
         $ionicPlatform.ready(function () {
-            if (!config.appSettings.appDesign.cordovaLocalNotificationsEnabled || typeof cordova === "undefined" ||
-                typeof cordova.plugins.notification === "undefined") {
-                if (typeof cordova !== "undefined") {
-                    if(typeof cordova.plugins !== "undefined" && typeof cordova.plugins.notification !== "undefined") {
-                        cordova.plugins.notification.local.cancelAll(function () {
-                            logDebug('cancelAllNotifications: notifications have been cancelled');
-                            cordova.plugins.notification.local.getAll(function (notifications) {
-                                logDebug("cancelAllNotifications: All notifications after cancelling", notifications);
-                            });
+            if (!config.appSettings.appDesign.cordovaLocalNotificationsEnabled){
+                if(localNotificationsPluginInstalled()){
+                    cordova.plugins.notification.local.cancelAll(function () {
+                        logDebug('cancelAllNotifications: notifications have been cancelled');
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            logDebug("cancelAllNotifications: All notifications after cancelling", notifications);
                         });
-                    }
+                    })
                 }
-                logDebug('cordova.plugins.notification is not defined');
+                logDebug('cordova.plugins.notification disabled');
                 return false;
             }
             return true;
@@ -7806,5 +7806,28 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     //         });
     //     });
     // };
+    qmService.overApps = function() {
+        $ionicPlatform.ready(function() {
+            window.overApps.checkPermission(function(msg){
+                console.log(msg);
+            });
+            var options = {
+                path: "index.html",          // file path to display as view content.
+                hasHead: true,              // display over app head image which open the view up on click.
+                dragToSide: false,          // enable auto move of head to screen side after dragging stop.
+                enableBackBtn: false,       // enable hardware back button to close view.
+                enableCloseBtn: true,      //  whether to show native close btn or to hide it.
+                verticalPosition: "top",    // set vertical alignment of view.
+                horizontalPosition: "left"  // set horizontal alignment of view.
+        };
+
+            window.overApps.startOverApp(options,function (success){
+                console.log(success);
+            },function (err){
+                console.log(err);
+            });
+        });
+
+    };
     return qmService;
 });
