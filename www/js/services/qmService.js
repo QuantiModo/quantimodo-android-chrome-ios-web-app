@@ -4528,9 +4528,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         };
     }
     function localNotificationsPluginInstalled() {
-        if(!cordova){return false;}
-        if(!cordova.plugins){return false;}
-        if(!cordova.plugins.notification){return false;}
+        if(typeof cordova === "undefined"){return false;}
+        if(typeof cordova.plugins === "undefined"){return false;}
+        if(typeof cordova.plugins.notification === "undefined"){return false;}
         return true;
     }
     qmService.shouldWeUseIonicLocalNotifications = function(){
