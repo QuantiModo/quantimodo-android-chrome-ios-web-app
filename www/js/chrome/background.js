@@ -3,9 +3,6 @@
 ***/
 var manifest = chrome.runtime.getManifest();
 var appSettings;
-var apiUrl = "https://app.quantimo.do";
-console.log("API URL is " + apiUrl);
-var requestIdentificationParameters;
 var v = null;
 var vid = null;
 function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
@@ -49,6 +46,12 @@ function loadAppSettings() {  // I think adding appSettings to the chrome manife
     xobj.send(null);
 }
 loadAppSettings();
+function getAppHostName() {
+    if(appSettings && appSettings.apiUrl){
+        return "https://" + appSettings.apiUrl;
+    }
+    return "https://app.quantimo.do";
+}
 /*
 **	Called when the extension is installed
 */
@@ -168,7 +171,7 @@ function showSignInNotification() {
     chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
 }
 function getRequestUrl(path) {
-    var url = apiUrl + "/api/" + path + getQueryParameterString();
+    var url = getAppHostName() + "/api/" + path + getQueryParameterString();
     console.log("Making API request to " + url);
     return url;
 }

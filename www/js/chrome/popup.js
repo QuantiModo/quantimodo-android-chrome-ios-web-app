@@ -60,6 +60,7 @@ var onFaceButtonClicked = function() {
         }]
 
     };
+    pushMeasurements(request.payload, null);
     // Request our background script to upload it for us
     chrome.extension.sendMessage(request);
 
