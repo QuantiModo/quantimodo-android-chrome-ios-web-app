@@ -2273,15 +2273,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
             //Bugsnag.notifyReleaseStages = ['Production','Staging'];
             Bugsnag.releaseStage = qmService.getEnv();
-            Bugsnag.appVersion = config.appSettings.versionNumber;
-            if($rootScope.user){
-                Bugsnag.metaData = {
-                    platform: ionic.Platform.platform(),
-                    platformVersion: ionic.Platform.version(),
-                    user: {name: $rootScope.user.displayName, email: $rootScope.user.email}
-                };
-            } else {Bugsnag.metaData = {platform: ionic.Platform.platform(), platformVersion: ionic.Platform.version()};}
-            if(config){Bugsnag.metaData.appDisplayName = $rootScope.appSettings.appDisplayName;}
+            Bugsnag.metaData = {platform: ionic.Platform.platform(), platformVersion: ionic.Platform.version()};
+            if(typeof config !== "undefined"){
+                Bugsnag.appVersion = config.appSettings.versionNumber;
+                Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
+            }
+            if($rootScope.user){Bugsnag.metaData.user = {name: $rootScope.user.displayName, email: $rootScope.user.email};}
             deferred.resolve();
         } else {deferred.reject('Bugsnag is not defined');}
         return deferred.promise;
