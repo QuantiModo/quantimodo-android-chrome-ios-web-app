@@ -30,7 +30,7 @@ function getRequestIdentificationParameters() {
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
-    xobj.open('GET', 'www/configs/default.config.json', true);
+    xobj.open('GET', '/www/configs/default.config.json', true);
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4) {
             var json = xobj.responseText;
@@ -140,8 +140,8 @@ function pushMeasurements(measurements, onDoneListener) {
 	xhr.onreadystatechange = function() {
         // If the request is completed
         if (xhr.readyState === 4) {
-            console.debug("qmService responds:");
-            console.debug(xhr.responseText);
+            console.log("qmService responds:");
+            console.log(xhr.responseText);
             if(onDoneListener !== null) {onDoneListener(xhr.responseText);}
         }
     };
