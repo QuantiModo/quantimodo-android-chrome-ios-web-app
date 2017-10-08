@@ -11,14 +11,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     // GET method with the added token
-    function addGlobalUrlParams(urlParams) {
+    function addGlobalUrlParamsToArray(urlParams) {
         urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent($rootScope.appSettings.appDisplayName));
         if($rootScope.appSettings.versionNumber){
             urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appSettings.versionNumber));
         } else {
             logDebug("Version number not specified!", "Version number not specified on config.appSettings");
         }
-        urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(qmService.getClientId()));
+        urlParams.push(encodeURIComponent('clientId') + '=' + encodeURIComponent(qmService.getClientId()));
         if(window.developmentMode && window.devCredentials){
             if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
             if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
@@ -28,6 +28,25 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(qmService.getUrlParameter(passableUrlParameters[i])){urlParams.push(encodeURIComponent(passableUrlParameters[i]) + '=' + qmService.getUrlParameter(passableUrlParameters[i]));}
         }
         //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));  //We can't append access token to Ionic requests for some reason
+        return urlParams;
+    }
+    function addGlobalUrlParamsToObject(urlParams) {
+        urlParams.appName = encodeURIComponent($rootScope.appSettings.appDisplayName);
+        if($rootScope.appSettings.versionNumber){
+            urlParams.appVersion = encodeURIComponent($rootScope.appSettings.versionNumber);
+        } else {
+            logDebug("Version number not specified!", "Version number not specified on config.appSettings");
+        }
+        urlParams.clientId = encodeURIComponent(qmService.getClientId());
+        if(window.developmentMode && window.devCredentials){
+            if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
+            if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
+        }
+        var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
+        for(var i = 0; i < passableUrlParameters.length; i++){
+            if(qmService.getUrlParameter(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = qmService.getUrlParameter(passableUrlParameters[i]);}
+        }
+        //urlParams.access_token = encodeURIComponent(tokenObject.accessToken);  //We can't append access token to Ionic requests for some reason
         return urlParams;
     }
     function getStackTrace() {
@@ -295,7 +314,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                 }
             }
-            urlParams = addGlobalUrlParams(urlParams);
+            urlParams = addGlobalUrlParamsToArray(urlParams);
             var request = {method: 'GET', url: (qmService.getQuantiModoUrl(route) + ((urlParams.length === 0) ? '' : '?' + urlParams.join('&'))), responseType: 'json', headers: {'Content-Type': "application/json"}};
             if(cache){ request.cache = cache; }
             if (accessToken) {request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
@@ -347,7 +366,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                 }
             }
-            var url = qmService.getQuantiModoUrl(route) + '?' + addGlobalUrlParams([]).join('&');
+            var url = qmService.getQuantiModoUrl(route) + '?' + addGlobalUrlParamsToArray([]).join('&');
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {
                 logDebug('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
@@ -494,6 +513,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getMeasurements(params, callback);
         //qmService.get('api/v3/measurements', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
     };
@@ -549,6 +569,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         }
         params.groupingWidth = 86400;
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getMeasurements(params, callback);
         //qmService.get('api/v3/measurements/daily', ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'], params, successHandler, errorHandler);
     };
@@ -585,6 +606,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getAggregatedCorrelations(params, callback);
         var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
@@ -600,6 +622,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getCommonVariables(params, callback);
         var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
@@ -619,6 +642,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getUserCorrelations(params, callback);
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
@@ -645,6 +669,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getUserVariables(params, callback);
         var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
@@ -662,6 +687,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data[0], response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getUserVariables(params, callback);
         //var options = {};
         //options.cache = getCache(getCurrentFunctionName(), 15);
@@ -679,6 +705,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         }
         var params = {id: variableId};
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getUserVariables(params, callback);
         //qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
     };
@@ -747,6 +774,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getUser(params, callback);
         //qmService.get('api/user/me', [], params, successHandler, errorHandler, options);
     };
@@ -768,6 +796,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getTrackingReminderNotifications(params, callback);
         //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
     };
@@ -793,6 +822,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getTrackingReminders(params, callback);
         //qmService.get('api/v3/trackingReminders', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
     };
@@ -807,6 +837,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getStudy(params, callback);
         //qmService.get('api/v4/study', [], params, successHandler, errorHandler);
     };
@@ -910,6 +941,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getUserTags(params, callback);
         //qmService.get('api/v3/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
     };
@@ -1143,6 +1175,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getMeasurements(params, callback);
     };
     qmService.saveAccessTokenInLocalStorage = function (accessResponse) {
@@ -2761,6 +2794,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 successHandler(data, response);
             }
         }
+        params = addGlobalUrlParamsToObject(params);
         apiInstance.getTrackingReminderNotifications(params, callback);
         //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'], params, successHandler, errorHandler);
         return deferred.promise;
