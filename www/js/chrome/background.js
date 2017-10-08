@@ -22,10 +22,18 @@ if (!localStorage.introSeen) {
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
 }
-function getRequestIdentificationParameters() {
-    var string =  "appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version);
-    if(appSettings){string +=  "&client_id=" + appSettings.clientId;}
-    return string;
+function getQueryParameterString() {
+    var queryParameterString =  "?appName=" + encodeURIComponent(manifest.name) + "&appVersion=" + encodeURIComponent(manifest.version);
+    if(appSettings){
+        queryParameterString +=  "&clientId=" + encodeURIComponent(appSettings.clientId);
+    }
+    if (localStorage.accessToken) {
+        queryParameterString += '&access_token=' + localStorage.accessToken;
+    } else {
+        showSignInNotification();
+        return;
+    }
+    return queryParameterString;
 }
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
@@ -134,9 +142,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 ***/
 function pushMeasurements(measurements, onDoneListener) {
 	var xhr = new XMLHttpRequest();
-	var url = apiUrl + "/api/v1/measurements?" + getRequestIdentificationParameters();
-	if(localStorage.accessToken){url = url + '?access_token=' + localStorage.accessToken;}
-	xhr.open("POST", url, true);
+	xhr.open("POST",  getRequestUrl("v1/measurements"), true);
 	xhr.onreadystatechange = function() {
         // If the request is completed
         if (xhr.readyState === 4) {
@@ -161,16 +167,14 @@ function showSignInNotification() {
     var notificationId = 'signin';
     chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
 }
+function getRequestUrl(path) {
+    var url = apiUrl + "/api/" + path + getQueryParameterString();
+    console.log("Making API request to " + url);
+    return url;
+}
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
-    var url = apiUrl + ":443/api/v1/trackingReminderNotifications/past?" + getRequestIdentificationParameters();
-    if (localStorage.accessToken) {
-        url = url + '&access_token=' + localStorage.accessToken;
-    } else {
-        showSignInNotification();
-        return;
-	}
-    xhr.open("GET", url, false);
+    xhr.open("GET", getRequestUrl("v1/trackingReminderNotifications/past"), false);
     xhr.onreadystatechange = function () {
         var notificationId;
         if (xhr.status === 401) {
