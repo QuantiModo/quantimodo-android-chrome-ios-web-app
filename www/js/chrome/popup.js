@@ -1,7 +1,11 @@
-var manifest = chrome.runtime.getManifest();
-var apiUrl = "https://quantimo.do";
-if(manifest.apiUrl){apiUrl = manifest.apiUrl;}
-console.log("API URL is " + manifest.apiUrl);
+var apiUrl = "https://app.quantimo.do";
+try {
+    var manifest = chrome.runtime.getManifest();
+    if(manifest.apiUrl){apiUrl = manifest.apiUrl;}
+} catch (error){
+    console.log(error);
+}
+console.log("API URL is " + apiUrl);
 
 function clearNotifications() {
     var badgeParams = {
