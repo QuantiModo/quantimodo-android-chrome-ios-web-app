@@ -7852,10 +7852,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 path: "templates/chrome/faces_popup.html",          // file path to display as view content.
                 hasHead: true,              // display over app head image which open the view up on click.
                 dragToSide: false,          // enable auto move of head to screen side after dragging stop.
-                enableBackBtn: false,       // enable hardware back button to close view.
-                enableCloseBtn: true,      //  whether to show native close btn or to hide it.
+                enableBackBtn: true,       // enable hardware back button to close view.
+                enableCloseBtn: false,      //  whether to show native close btn or to hide it.
                 verticalPosition: "bottom",    // set vertical alignment of view.
-                horizontalPosition: "left"  // set horizontal alignment of view.
+                horizontalPosition: "center"  // set horizontal alignment of view.
             };
             window.overApps.startOverApp(options,function (success){
                 console.log(success);
