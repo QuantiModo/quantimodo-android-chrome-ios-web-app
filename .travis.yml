@@ -4,13 +4,12 @@ jobs:
     script: skip
     deploy:
       provider: heroku
+      api_key:
+          secure: acFBynk7gs5FV3mW220P3dl54fHvOXwicbTlRXnjbFNsZvgTAso5Fzk/OJwTsEdwGi7xGDi6o5IM+DH88AjtD/S9SMTlzCIKeelhvxyo4V5QW6B5Bh33Dn+D5YW/4DSDLMa8QcfqoLWsfUX+fIWmtjGWnge9YEWpmYyl/VYca76o/hME+EUjo4R4oovbK1UaFdyU3roJLMafPpQ2qBJQe4/zCol8IWUiKgW72Rkn+4w2NdZCRe6q6TNFDENHhsWW0ei+q7V48y25kULjL+edyPyOqGHY1OWQnx9kbhPtogUYutF23gb2iQF5xJ8NkVMsw+O2xQTOP7xxQ/Qb7agB0nbTuBJkp3amWNaxBMnhzpUKDMHl03CRXgTCBf7ym+pBC9C6jSKmw87T9Iuh5ZxJ7UuJDeDmddkq5hx1utHAt+SNUvItHMCWzCy3VfR+TodIUJbCMVB/KRF9ukPsOnamUHeaU2a1QYI4WtGW3sA4SXAwQpVRtP61xsHJ/DWLTwffMSYhjWndAWFbIVWlW3ue+B5SGvfGDQBIt9HemuMCKaTDbw2wx73nbHC3OOQ7y/Mx0b6bY1t9fV94m/KxgLOdGhvV8acNBgpM8BHoaDYbcMXqAupDvak/Tuq5KbyacC+wE57cEVQ+ZwhdQgrl3uLAmRS0ZZPTlVwmhW7o5n//SXo=
       app: medimodo
-      api_key: "$HEROKU_AUTH_TOKEN"
   - stage: run ghost inpector tests
     script: curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?startUrl=https://medimodo.herokuapp.com&clientId=oauth_test_client&apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git
       rev-parse HEAD) > ghostinspector.json
   - stage: parse test results
     script: php ghostinspector_parser.php
-deploy:
-  api_key:
-    secure: acFBynk7gs5FV3mW220P3dl54fHvOXwicbTlRXnjbFNsZvgTAso5Fzk/OJwTsEdwGi7xGDi6o5IM+DH88AjtD/S9SMTlzCIKeelhvxyo4V5QW6B5Bh33Dn+D5YW/4DSDLMa8QcfqoLWsfUX+fIWmtjGWnge9YEWpmYyl/VYca76o/hME+EUjo4R4oovbK1UaFdyU3roJLMafPpQ2qBJQe4/zCol8IWUiKgW72Rkn+4w2NdZCRe6q6TNFDENHhsWW0ei+q7V48y25kULjL+edyPyOqGHY1OWQnx9kbhPtogUYutF23gb2iQF5xJ8NkVMsw+O2xQTOP7xxQ/Qb7agB0nbTuBJkp3amWNaxBMnhzpUKDMHl03CRXgTCBf7ym+pBC9C6jSKmw87T9Iuh5ZxJ7UuJDeDmddkq5hx1utHAt+SNUvItHMCWzCy3VfR+TodIUJbCMVB/KRF9ukPsOnamUHeaU2a1QYI4WtGW3sA4SXAwQpVRtP61xsHJ/DWLTwffMSYhjWndAWFbIVWlW3ue+B5SGvfGDQBIt9HemuMCKaTDbw2wx73nbHC3OOQ7y/Mx0b6bY1t9fV94m/KxgLOdGhvV8acNBgpM8BHoaDYbcMXqAupDvak/Tuq5KbyacC+wE57cEVQ+ZwhdQgrl3uLAmRS0ZZPTlVwmhW7o5n//SXo=
+
