@@ -1,20 +1,23 @@
-var apiUrl = "https://app.quantimo.do";
-try {
-    var manifest = chrome.runtime.getManifest();
-    if(manifest.apiUrl){apiUrl = manifest.apiUrl;}
-} catch (error){
-    console.log(error);
+function getApiUrl() {
+    try {
+        if(typeof chrome !== "undefined"){
+            var manifest = chrome.runtime.getManifest();
+            if(manifest.apiUrl){return manifest.apiUrl;}
+        }
+    } catch (error){
+        console.log(error);
+    }
+    return "https://app.quantimo.do";
 }
-console.log("API URL is " + apiUrl);
-
 function clearNotifications() {
-    var badgeParams = {
-        text: ""
-    };
+    if(typeof chrome === "undefined"){
+        console.log("Can't clearNotifications because chrome is undefined");
+        return;
+    }
+    var badgeParams = {text: ""};
     chrome.browserAction.setBadgeText(badgeParams);
     chrome.notifications.clear("moodReportNotification", function() {});
 }
-
 function setFaceButtonListeners() {
     document.getElementById('buttonMoodDepressed').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodSad').onclick = onFaceButtonClicked;
@@ -22,7 +25,6 @@ function setFaceButtonListeners() {
     document.getElementById('buttonMoodHappy').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodEcstatic').onclick = onFaceButtonClicked;
 }
-
 var onFaceButtonClicked = function() {
     // Figure out what rating was selected
     var buttonId = this.id;
@@ -41,7 +43,6 @@ var onFaceButtonClicked = function() {
         console.debug("How did I get here...");
         return;
     }
-
     // Create an array of measurements
     var measurements = [{
         startTimeEpoch: Math.floor(Date.now() / 1000),
@@ -58,23 +59,20 @@ var onFaceButtonClicked = function() {
             combinationOperation: "MEAN",
             unit: "/5"
         }]
-
     };
     pushMeasurements(request.payload, null);
-    // Request our background script to upload it for us
-    chrome.extension.sendMessage(request);
-
+    if(typeof chrome !== "undefined"){
+        // Request our background script to upload it for us
+        chrome.extension.sendMessage(request);
+    }
     clearNotifications();
     window.close();
-
     /*var sectionRate = document.getElementById("sectionRate");
     var sectionSendingMood = document.getElementById("sectionSendingMood");
-
     sectionRate.className = "invisible";
     setTimeout(function()
     {
     		sectionRate.style.display = "none";
-
     		sectionSendingMood.innerText = "Sending mood";
     		sectionSendingMood.style.display = "block";
     		sectionSendingMood.className = "visible";
@@ -86,20 +84,15 @@ var onFaceButtonClicked = function() {
     					window.close();
     				}, 300);
     			});
-
     		clearNotifications();
     	}, 400 );*/
 };
-
 document.addEventListener('DOMContentLoaded', function() {
-
     var wDiff = (380 - window.innerWidth);
     var hDiff = (70 - window.innerHeight);
-
     window.resizeBy(wDiff, hDiff);
-
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", apiUrl + "/api/user/me", true);
+    xhr.open("GET", getApiUrl() + "/api/user/me", true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             var userObject = JSON.parse(xhr.responseText);
@@ -109,15 +102,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof userObject.displayName !== "undefined") {
                 console.debug(userObject.displayName + " is logged in.  ");
             } else {
-                var url = apiUrl + "/api/v2/auth/login";
+                var url = getApiUrl() + "/api/v2/auth/login";
                 chrome.tabs.create({"url": url, "selected": true});
             }
         }
     };
     xhr.send();
-
     setFaceButtonListeners();
 });
-
-
-
