@@ -12,6 +12,3 @@ jobs:
       rev-parse HEAD) > ghostinspector.json
   - stage: parse test results
     script: php ghostinspector_parser.php
-deploy:
-  api_key:
-    secure: JVF71442vJKWCLEphmbxrcRL8l+d4U4dnMNAXdCrHj5UXILM4bTrDP9yf7cBk4YvTjACTqDc/3itFec2DvMKmoYjIhAkNat/A3CpPYqURYiOZs2eRy1Kz10k1CRoSUzk3WRGErsl9wmX8iRPtSUqZEcLFfDdzity27c1VgPeoHHzpUbLLwvX4sG/nJw+pQL66o/Z+liptaeRLN2f7eQ0XlV3FpYwb1F2eVcGQcDS14u4P1Rg2vpP61EwKxM+0wWx4Qjf6j6DixLJMs+XOVX1y1+ckN8CBxopB1WEOqeQbgup1MVKh3ZQ5A0ue/gEQClNEssWn3Mfn3odm08y03jBoximDW17c6zmjp2v9+W+3y7Cj3d/HCPCCw4f8kxiM9jUOqPemAIGmRo5dozpW6C47vjc9rEw5tt5mmk++Tm5vCMFrJchGBhndacmB1pTG7FBefqjk/tjYrENKwn6xVCxafgIl3BRdAIJLcaWjtSX6RSdDfhOP9AzzdFQ6AeUof3dsb4r72iE2RvYQvumccEWWRoAkEeEmQyuTv+7jkHZdGQzdLbM0qnJsbhwnadSO8WuYcjkPYx0kHLMsc5u3yZMhKrJD+zCMpMsfJzLg+2K7yNRFvdLcIlMQBoK6W+1McCZBWTp8ZnEjrYMOaMvh/f28xmXyBK8DXhp/A5xIs5GCVA=
