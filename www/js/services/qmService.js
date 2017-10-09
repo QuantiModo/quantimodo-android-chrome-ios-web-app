@@ -7849,7 +7849,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 console.log(msg);
             });
             var options = {
-                path: "templates/chrome/faces_popup.html",          // file path to display as view content.
+                path: "android_popup.html",          // file path to display as view content.
                 hasHead: true,              // display over app head image which open the view up on click.
                 dragToSide: false,          // enable auto move of head to screen side after dragging stop.
                 enableBackBtn: true,       // enable hardware back button to close view.
