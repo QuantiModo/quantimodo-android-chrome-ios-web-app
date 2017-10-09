@@ -1419,6 +1419,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         logDebug('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user));
         $rootScope.user = user;
         if(qmService.getUrlParameter('doNotRemember')){return;}
+        if(!user.accessToken){
+            logError("User does not have access token!", {userToSave: user});
+        }
         qmService.setLocalStorageItem('user', JSON.stringify(user));
         localStorage.user = JSON.stringify(user); // For Chrome Extension
         qmService.saveAccessTokenInLocalStorage(user);
@@ -7846,15 +7849,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 console.log(msg);
             });
             var options = {
-                path: "index.html",          // file path to display as view content.
+                path: "templates/chrome/faces_popup.html",          // file path to display as view content.
                 hasHead: true,              // display over app head image which open the view up on click.
                 dragToSide: false,          // enable auto move of head to screen side after dragging stop.
-                enableBackBtn: false,       // enable hardware back button to close view.
-                enableCloseBtn: true,      //  whether to show native close btn or to hide it.
-                verticalPosition: "top",    // set vertical alignment of view.
-                horizontalPosition: "left"  // set horizontal alignment of view.
-        };
-
+                enableBackBtn: true,       // enable hardware back button to close view.
+                enableCloseBtn: false,      //  whether to show native close btn or to hide it.
+                verticalPosition: "bottom",    // set vertical alignment of view.
+                horizontalPosition: "center"  // set horizontal alignment of view.
+            };
             window.overApps.startOverApp(options,function (success){
                 console.log(success);
             },function (err){
