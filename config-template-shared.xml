@@ -18,6 +18,7 @@
     <param name="ios-package" onload="true" value="CDVStatusBar" />
   </feature>
   <access origin="https://widget.intercom.io/*"/>
+  <hook src="hooks/uncomment_cordova_js.js" type="before_build" />
   <platform name="android">
     <allow-intent href="market:*" />
     <icon src="resources/icon.png"/>
