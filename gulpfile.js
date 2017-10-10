@@ -722,7 +722,7 @@ function writeToFile(filePath, stringContents) {
     return fs.writeFileSync(filePath, stringContents);
 }
 gulp.task('setClientId', function (callback) {setClientId(callback);});
-gulp.task('validateCredentials', ['setClientId'], function () {
+gulp.task('validateAndSaveDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
     writeToFile(devCredentialsPath, JSON.stringify(devCredentials));  // TODO:  Save QUANTIMODO_ACCESS_TOKEN instead of username and password
     return makeApiRequest(options);
@@ -1003,6 +1003,7 @@ gulp.task('devSetup', [], function (callback) {
         'getDevUsernameFromUserInput',
         'getDevPasswordFromUserInput',
         'getClientIdFromUserInput',
+        'validateAndSaveDevCredentials',
         'configureApp',
         'ionicServe',
         callback);
