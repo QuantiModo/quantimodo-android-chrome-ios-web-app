@@ -1,6 +1,7 @@
 /***
 ****	EVENT HANDLERS
 ***/
+String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 function getUrlParameter(parameterName, url, shouldDecode) {
     if(!url){url = window.location.href;}
     if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
@@ -43,32 +44,32 @@ var v = null;
 var vid = null;
 function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
-var introWindowParams = { url: "/www/index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
-var facesRatingPopupWindowParams = { url: "www/templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
-var loginPopupWindowParams = { url: "/www/index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
-var reminderInboxPopupWindowParams = { url: "/www/index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
-var compactInboxPopupWindowParams = { url: "/www/index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
-var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "www/img/icons/icon_700.png", priority: 2};
-var signInNotificationParams = { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "www/img/icons/icon_700.png", priority: 2};
+var introWindowParams = { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
+var facesRatingPopupWindowParams = { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
+var loginPopupWindowParams = { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
+var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
+var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
+var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2};
+var signInNotificationParams = { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2};
 if (!localStorage.introSeen) {
     window.localStorage.setItem('introSeen', true);
     var focusWindow = true;
     openOrFocusPopupWindow(introWindowParams, focusWindow);
 }
 function getQueryParameterString() {
-    var queryParameterString =  "?appName=" + encodeURIComponent(getAppName()) + "&appVersion=" + encodeURIComponent(getAppVersion()) +  "&clientId=" + encodeURIComponent(getClientId());
     if (getAccessToken()) {
-        queryParameterString += '&access_token=' + getAccessToken();
-    } else {
-        showSignInNotification();
-        return;
+        var queryParameterString = '?access_token=' + getAccessToken();
+        if(getAppName()){queryParameterString += "&appName=" + encodeURIComponent(getAppName());}
+        if(getAppVersion()){queryParameterString += "&appVersion=" + encodeURIComponent(getAppVersion());}
+        if(getClientId()){queryParameterString += "&clientId=" + encodeURIComponent(getClientId());}
+        return queryParameterString;
     }
-    return queryParameterString;
+    showSignInNotification();
 }
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
-    xobj.open('GET', '/www/configs/default.config.json', true);
+    xobj.open('GET', 'configs/default.config.json', true);
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4) {
             var json = xobj.responseText;
@@ -78,11 +79,9 @@ function loadAppSettings() {  // I think adding appSettings to the chrome manife
     };
     xobj.send(null);
 }
-loadAppSettings();
+if(!getUrlParameter('clientId')){loadAppSettings();}
 function getAppHostName() {
-    if(appSettings && appSettings.apiUrl){
-        return "https://" + appSettings.apiUrl;
-    }
+    if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
 }
 if(typeof chrome !== "undefined") {
@@ -158,7 +157,7 @@ function openPopup(notificationId, focusWindow) {
         openOrFocusPopupWindow(loginPopupWindowParams, focusWindow);
 	} else if (notificationId && IsJsonString(notificationId)) {
         var windowParams = reminderInboxPopupWindowParams;
-		windowParams.url = "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
+		windowParams.url = "index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
         openOrFocusPopupWindow(windowParams, focusWindow);
 	} else {
         openOrFocusPopupWindow(reminderInboxPopupWindowParams, focusWindow);
@@ -190,17 +189,22 @@ if(typeof chrome !== "undefined"){
 ****	HELPER FUNCTIONS
 ***/
 function pushMeasurements(measurements, onDoneListener) {
-	var xhr = new XMLHttpRequest();
-	xhr.open("POST",  getRequestUrl("v1/measurements"), true);
-	xhr.onreadystatechange = function() {
+	postToQuantiModo(measurements,"v1/measurements", onDoneListener);
+}
+function postTrackingReminderNotification(trackingReminderNotification, onDoneListener) {
+    postToQuantiModo(trackingReminderNotification, "v1/trackingReminderNotifications", onDoneListener);
+}
+function postToQuantiModo(body, path, onDoneListener) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST",  getRequestUrl(path), true);
+    xhr.onreadystatechange = function() {
         // If the request is completed
         if (xhr.readyState === 4) {
-            console.log("qmService responds:");
-            console.log(xhr.responseText);
+            console.log("POST " + path + " response:" + xhr.responseText);
             if(onDoneListener !== null) {onDoneListener(xhr.responseText);}
         }
     };
-	xhr.send(JSON.stringify(measurements));
+    xhr.send(JSON.stringify(body));
 }
 function objectLength(obj) {
     var result = 0;
