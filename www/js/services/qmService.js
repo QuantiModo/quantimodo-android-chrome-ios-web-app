@@ -483,7 +483,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
             if(blockRequests){return false;}
         }
-        localStorage.setItem(requestVariableName, Math.floor(Date.now() / 1000));
+        qmService.setLocalStorageItem(requestVariableName, Math.floor(Date.now() / 1000));
         return true;
     };
     function getCurrentFunctionName() {
@@ -1071,7 +1071,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
             if(!qmService.getUrlParameter('doNotRemember')){
                 logDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
-                localStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);
+                qmService.setLocalStorageItem('accessToken', $rootScope.accessTokenFromUrl);
             }
             if(!$rootScope.user){
                 logDebug("refreshUserUsingAccessTokenInUrlIfNecessary: No $rootScope.user so going to refreshUser");
@@ -1182,7 +1182,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var accessToken = accessResponse.accessToken || accessResponse.access_token;
         if (accessToken) {
             $rootScope.accessToken = accessToken;
-            localStorage.setItem('accessToken', accessToken);
+            qmService.setLocalStorageItem('accessToken', accessToken);
         } else {
             logError('No access token provided to qmService.saveAccessTokenInLocalStorage');
             return;
@@ -1359,11 +1359,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         localStorage.removeItem('deviceTokenToSync');
         logDebug("Posting deviceToken to server: ", deviceTokenToSync);
         qmService.postDeviceToken(deviceTokenToSync, function(response){
-            localStorage.setItem('deviceTokenOnServer', deviceTokenToSync);
+            qmService.setLocalStorageItem('deviceTokenOnServer', deviceTokenToSync);
             logDebug(response);
             deferred.resolve();
         }, function(error){
-            localStorage.setItem('deviceTokenToSync', deviceTokenToSync);
+            qmService.setLocalStorageItem('deviceTokenToSync', deviceTokenToSync);
             qmService.logError(error);
             deferred.reject(error);
         });
@@ -1546,9 +1546,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $ionicHistory.clearCache();
     };
     qmService.clearOAuthTokensFromLocalStorage = function(){
-        localStorage.setItem('accessToken', null);
-        localStorage.setItem('refreshToken', null);
-        localStorage.setItem('expiresAtMilliseconds', null);
+        qmService.setLocalStorageItem('accessToken', null);
+        qmService.setLocalStorageItem('refreshToken', null);
+        qmService.setLocalStorageItem('expiresAtMilliseconds', null);
     };
     qmService.updateUserSettingsDeferred = function(params){
         var deferred = $q.defer();
@@ -1644,7 +1644,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     study.charts[i].chartConfig = setChartExportingOptions(study.charts[i].chartConfig);
                 }
             }
-            localStorage.setItem('lastStudy', JSON.stringify(study));
+            qmService.setLocalStorageItem('lastStudy', JSON.stringify(study));
             deferred.resolve(study);
         }, function (error) {
             qmService.logError("qmService.getStudy error: " + error);
@@ -1683,7 +1683,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             logErrorOrInfoIfTesting(errorMessage);
             return false;
         }
-        localStorage.setItem(localStorageItemName, getUnixTimestampInSeconds());
+        qmService.setLocalStorageItem(localStorageItemName, getUnixTimestampInSeconds());
         return true;
     }
     qmService.getAndStorePrimaryOutcomeMeasurements = function(){
@@ -2478,7 +2478,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             //console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
             return;
         }
-        window.localStorage.setItem('bgGPS', 1);
+        window.qmService.setLocalStorageItem('bgGPS', 1);
         //logDebug('Starting qmService.backgroundGeolocationStart');
         var callbackFn = function(coordinates) {
             logDebug("background location is " + JSON.stringify(coordinates));
@@ -2524,12 +2524,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.backgroundGeolocationStop = function () {
         if(typeof backgroundGeoLocation !== "undefined"){
-            window.localStorage.setItem('bgGPS', 0);
+            window.qmService.setLocalStorageItem('bgGPS', 0);
             backgroundGeoLocation.stop();
         }
     };
     var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
-        localStorage.setItem('lastGotNotificationsAt', getUnixTimestampInMilliseconds());
+        qmService.setLocalStorageItem('lastGotNotificationsAt', getUnixTimestampInMilliseconds());
         trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
         qmService.setLocalStorageItem('trackingReminderNotifications',
             JSON.stringify(trackingReminderNotifications)).then(function () {
@@ -2599,7 +2599,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var trackingReminderNotificationSyncScheduled = localStorage.getItem('trackingReminderNotificationSyncScheduled');
         if(!trackingReminderNotificationSyncScheduled ||
             parseInt(trackingReminderNotificationSyncScheduled) < getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
-            localStorage.setItem('trackingReminderNotificationSyncScheduled', getUnixTimestampInMilliseconds());
+            qmService.setLocalStorageItem('trackingReminderNotificationSyncScheduled', getUnixTimestampInMilliseconds());
             $timeout(function() {
                 localStorage.removeItem('trackingReminderNotificationSyncScheduled');
                 // Post notification queue in 5 minutes if it's still there
@@ -5574,6 +5574,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             chrome.storage.local.set(obj);
             deferred.resolve();
         } else {
+            logDebug("Setting localStorage." + key + " to " + value);
             try {
                 localStorage.setItem(key, value);
                 deferred.resolve();
@@ -6017,7 +6018,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             locallyStoredHelpCards = JSON.parse(locallyStoredHelpCards);
             return locallyStoredHelpCards;
         }
-        localStorage.setItem('defaultHelpCards', JSON.stringify(config.appSettings.appDesign.helpCard.active));
+        qmService.setLocalStorageItem('defaultHelpCards', JSON.stringify(config.appSettings.appDesign.helpCard.active));
         return config.appSettings.appDesign.helpCard.active;
     };
     qmService.colors = {
@@ -6922,7 +6923,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.setLocalStorageItem('primaryOutcomeVariableMeasurements',[]);
                 qmService.setLocalStorageItem('measurementsQueue',[]);
                 qmService.setLocalStorageItem('averagePrimaryOutcomeVariableValue',0);
-                localStorage.setItem('lastMeasurementSyncTime', 0);
+                qmService.setLocalStorageItem('lastMeasurementSyncTime', 0);
             }
             qmService.hideLoader();
             qmService.goToState(config.appSettings.appDesign.defaultState);
@@ -6985,7 +6986,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     qmService.goToStudyPageViaCorrelationObject = function(correlationObject){
         $rootScope.correlationObject = correlationObject;
-        localStorage.setItem('lastStudy', JSON.stringify(correlationObject));
+        qmService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
         //qmService.goToState('app.study', {correlationObject: correlationObject});
         qmService.goToStudyPage(correlationObject.causeVariableName, correlationObject.effectVariableName);
     };
@@ -7599,7 +7600,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 logInfo("Got device token for push notifications: " + registerResponse.registrationId);
                 var deviceTokenOnServer = localStorage.getItem('deviceTokenOnServer');
                 if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
-                    localStorage.setItem('deviceTokenToSync', registerResponse.registrationId);
+                    qmService.setLocalStorageItem('deviceTokenToSync', registerResponse.registrationId);
                 }
             });
             var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
@@ -7640,7 +7641,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
             push.on('error', function(e) {qmService.reportException(e, e.message, pushConfig);});
             var finishPush = function (data) {
-                localStorage.setItem('lastPushTimestamp', qmService.getUnixTimestampInSeconds());
+                qmService.setLocalStorageItem('lastPushTimestamp', qmService.getUnixTimestampInSeconds());
                 $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');  // Refresh Reminders Inbox
                 if(!finishPushes){
                     console.debug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
