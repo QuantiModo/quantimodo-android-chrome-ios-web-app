@@ -7145,7 +7145,15 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getDevCredentials = function(){
         return $http.get('private_configs/dev-credentials.json').success(function(response) {
-            if(typeof response !== "string"){window.devCredentials = response;}
+            if(typeof response !== "string"){
+                if(response.accessToken && !$rootScope.user){
+                    logInfo("Using access token from dev-credentials.json");
+                    qmService.saveAccessTokenInLocalStorage(response.accessToken);
+                    qmService.refreshUser().then(function () {qmService.goToState(config.appSettings.appDesign.defaultState);});
+                }
+            } else {
+                logDebug("dev-credentials.json response is a string");
+            }
         });
     };
     qmService.humanConnect = function(){
