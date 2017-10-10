@@ -976,7 +976,7 @@ gulp.task('getDevUsernameFromUserInput', [], function () {
         return deferred.promise;
     }
     inquirer.prompt([{
-        type: 'input', name: 'username', message: 'Please enter your QuantiModo user name or email'
+        type: 'input', name: 'username', message: 'Please enter your QuantiModo user name or email: '
     }], function (answers) {
         devCredentials.username = answers.username.trim();
         deferred.resolve();
@@ -991,7 +991,7 @@ gulp.task('getDevPasswordFromUserInput', [], function () {
         return deferred.promise;
     }
     inquirer.prompt([{
-        type: 'input', name: 'password', message: 'Please enter your QuantiModo password'
+        type: 'input', name: 'password', message: 'Please enter your QuantiModo password: '
     }], function (answers) {
         devCredentials.password = answers.password.trim();
         deferred.resolve();
@@ -1010,7 +1010,7 @@ gulp.task('devSetup', [], function (callback) {
 gulp.task('getClientIdFromUserInput', function () {
     var deferred = q.defer();
     inquirer.prompt([{
-        type: 'input', name: 'clientId', message: 'Please enter the client id obtained at '  + getAppsListUrl()
+        type: 'input', name: 'clientId', message: 'Please enter the client id obtained at '  + getAppsListUrl() + ": "
     }], function (answers) {
         process.env.QUANTIMODO_CLIENT_ID = answers.clientId.trim();
         deferred.resolve();
@@ -1055,7 +1055,7 @@ gulp.task('getChromeAuthorizationCode', ['openChromeAuthorizationPage'], functio
     setTimeout(function () {
         logInfo('Starting getChromeAuthorizationCode');
         inquirer.prompt([{
-            type: 'input', name: 'code', message: 'Please Enter the Code Generated from the opened website'
+            type: 'input', name: 'code', message: 'Please Enter the Code Generated from the opened website: '
         }], function (answers) {
             code = answers.code;
             code = code.trim();
