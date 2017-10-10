@@ -80,6 +80,11 @@ function getBuildLink() {
     if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
 }
 function setClientId(callback) {
+    if(process.env.QUANTIMODO_CLIENT_ID){
+        logInfo('Client id already set to ' + process.env.QUANTIMODO_CLIENT_ID);
+        if (callback) {callback();}
+        return;
+    }
     if(process.env.BUDDYBUILD_BRANCH && process.env.BUDDYBUILD_BRANCH.indexOf('apps') !== -1){
         process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_BRANCH.replace('apps/', '');
     }
@@ -472,8 +477,6 @@ function getRequestOptions(path) {
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
         json: true // Automatically parses the JSON string in the response
     };
-    //if(devCredentials.username){options.qs.log = devCredentials.username;}
-    //if(devCredentials.password){options.qs.pwd = devCredentials.password;}
     if(process.env.QUANTIMODO_ACCESS_TOKEN){
         options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
     } else {
@@ -794,7 +797,7 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         logInfo("Got app settings for " + appSettings.appDisplayName + ". You can change your app settings at " + getAppEditUrl());
         //appSettings = removeCustomPropertiesFromAppSettings(appSettings);
         if(process.env.APP_HOST_NAME){appSettings.apiUrl = process.env.APP_HOST_NAME.replace("https://", '');}
-        if(!response.privateConfig && devCredentials.username && devCredentials.password){
+        if(!response.privateConfig && devCredentials.accessToken){
             logError("Could not get privateConfig from " + options.uri + ' Please double check your available client ids at '  + getAppsListUrl() + ' ' + appSettings.additionalSettings.companyEmail + " and ask them to make you a collaborator at "  + getAppsListUrl() +  " and run gulp devSetup again.");
         }
         /** @namespace response.privateConfig */
@@ -968,44 +971,29 @@ gulp.task('deleteNodeModules', function () {
         'task again.');
     return cleanFolder('node_modules');
 });
-gulp.task('getDevUsernameFromUserInput', [], function () {
+gulp.task('getDevAccessTokenFromUserInput', [], function () {
     var deferred = q.defer();
-    if(devCredentials.username){
-        logInfo("Using username " + devCredentials.username + " from " + devCredentialsPath);
+    if(devCredentials.accessToken){
+        process.env.QUANTIMODO_ACCESS_TOKEN = devCredentials.accessToken;
+        logInfo("Using username " + devCredentials.accessToken + " from " + devCredentialsPath);
         deferred.resolve();
         return deferred.promise;
     }
     inquirer.prompt([{
-        type: 'input', name: 'username', message: 'Please enter your QuantiModo user name or email: '
+        type: 'input', name: 'accessToken', message: 'Please enter your QuantiModo access token obtained from http://app.quantimo.do/api/v2/account: '
     }], function (answers) {
-        devCredentials.username = answers.username.trim();
-        deferred.resolve();
-    });
-    return deferred.promise;
-});
-gulp.task('getDevPasswordFromUserInput', [], function () {
-    var deferred = q.defer();
-    if(devCredentials.password){
-        logInfo("Using password from " + devCredentialsPath);
-        deferred.resolve();
-        return deferred.promise;
-    }
-    inquirer.prompt([{
-        type: 'input', name: 'password', message: 'Please enter your QuantiModo password: '
-    }], function (answers) {
-        devCredentials.password = answers.password.trim();
+        process.env.QUANTIMODO_ACCESS_TOKEN = devCredentials.accessToken = answers.accessToken.trim();
         deferred.resolve();
     });
     return deferred.promise;
 });
 gulp.task('devSetup', [], function (callback) {
     runSequence(
-        'getDevUsernameFromUserInput',
-        'getDevPasswordFromUserInput',
+        'getDevAccessTokenFromUserInput',
         'getClientIdFromUserInput',
         'validateAndSaveDevCredentials',
-        'configureApp',
-        'ionicServe',
+        //'configureApp',
+        //'ionicServe',
         callback);
 });
 gulp.task('getClientIdFromUserInput', function () {

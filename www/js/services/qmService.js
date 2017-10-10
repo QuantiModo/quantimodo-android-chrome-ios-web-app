@@ -28,9 +28,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             logDebug("Version number not specified!", "Version number not specified on config.appSettings");
         }
         urlParams.push(encodeURIComponent('clientId') + '=' + encodeURIComponent(qmService.getClientId()));
-        if(window.developmentMode && window.devCredentials){
+        if(window.devCredentials){
             if(window.devCredentials.username){urlParams.push(encodeURIComponent('log') + '=' + encodeURIComponent(window.devCredentials.username));}
             if(window.devCredentials.password){urlParams.push(encodeURIComponent('pwd') + '=' + encodeURIComponent(window.devCredentials.password));}
+        } else {
+            logDebug("No dev credentials");
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -47,9 +49,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             logDebug("Version number not specified!", "Version number not specified on config.appSettings");
         }
         urlParams.clientId = encodeURIComponent(qmService.getClientId());
-        if(window.developmentMode && window.devCredentials){
+        if(window.devCredentials){
             if(window.devCredentials.username){urlParams.log = encodeURIComponent(window.devCredentials.username);}
             if(window.devCredentials.password){urlParams.pwd = encodeURIComponent(window.devCredentials.password);}
+        } else {
+            logDebug("No dev credentials");
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
@@ -1123,7 +1127,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         apiInstance.getMeasurements(params, callback);
     };
     qmService.saveAccessTokenInLocalStorage = function (accessResponse) {
-        var accessToken = accessResponse.accessToken || accessResponse.access_token;
+        var accessToken;
+        if(typeof accessResponse === "string"){accessToken = accessResponse;} else {accessToken = accessResponse.accessToken || accessResponse.access_token;}
         if (accessToken) {
             $rootScope.accessToken = accessToken;
             qmService.setLocalStorageItem('accessToken', accessToken);
