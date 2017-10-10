@@ -2681,6 +2681,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
+                    if($rootScope.isAndroid){qmService.showPopupForMostRecentNotification();}
                     if (window.chrome && window.chrome.browserAction) {
                         chrome.browserAction.setBadgeText({text: "?"});
                         //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
@@ -7560,7 +7561,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 console.debug('Received push notification: ' + JSON.stringify(data));
                 qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                 if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
-                    qmService.overApps(data.additionalData);
+                    qmService.drawOverAppsNotification(data.additionalData);
                 } else {
                     qmService.refreshTrackingReminderNotifications(300).then(function(){
                         console.debug('push.on.notification: successfully refreshed notifications');
@@ -7850,11 +7851,26 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             function yesCallback() {
                 window.overApps.checkPermission(function(msg){console.log(msg);});
                 qmService.setLocalStorageItem('drawOverAppsEnabled', true);
+                qmService.showPopupForMostRecentNotification();
             }
             function noCallback() {disablePopups();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         }
-        if(localStorage.getItem('drawOverAppsEnabled')){disablePopups();} else {showEnablePopupsConfirmation();}
+        if(localStorage.getItem('drawOverAppsEnabled') === 'true'){disablePopups();} else {showEnablePopupsConfirmation();}
+    };
+    qmService.showPopupForMostRecentNotification = function(){
+        if(!$rootScope.isAndroid){logDebug("Can only show popups on Android"); return;}
+        var trackingReminderNotifications = qmService.getTrackingReminderNotificationsFromLocalStorage("Emotions");
+        if(trackingReminderNotifications.length) {
+            qmService.drawOverAppsNotification(trackingReminderNotifications[0]);
+        } else {
+            trackingReminderNotifications = qmService.getTrackingReminderNotificationsFromLocalStorage("Symptoms");
+            if(trackingReminderNotifications.length) {
+                qmService.drawOverAppsNotification(trackingReminderNotifications[0]);
+            } else {
+                logDebug("No notifications for popup");
+            }
+        }
     };
     return qmService;
 });

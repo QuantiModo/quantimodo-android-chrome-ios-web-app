@@ -201,7 +201,7 @@ function postToQuantiModo(body, path, onDoneListener) {
         // If the request is completed
         if (xhr.readyState === 4) {
             console.log("POST " + path + " response:" + xhr.responseText);
-            if(onDoneListener !== null) {onDoneListener(xhr.responseText);}
+            if(onDoneListener) {onDoneListener(xhr.responseText);}
         }
     };
     xhr.send(JSON.stringify(body));
