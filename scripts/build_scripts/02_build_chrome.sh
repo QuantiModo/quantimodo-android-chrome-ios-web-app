@@ -38,7 +38,7 @@ cp -R ${INTERMEDIATE_PATH}/resources/chrome_extension/* "${BUILD_PATH}/${QUANTIM
 #rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app/www/"
 #rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www/"
 cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_app/www/"
-cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www/"
+cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/"
 
 rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/android"
 rm -rf "${BUILD_PATH}/${QUANTIMODO_CLIENT_ID}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/ios"

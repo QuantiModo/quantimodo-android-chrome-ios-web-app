@@ -673,7 +673,7 @@ gulp.task('scripts', function () {
             .pipe(gulp.dest('www/scripts'));
     }
 });
-gulp.task('createChromeExtensionManifest', function () {
+gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToChromeExtension'], function () {
     appSettings.appStatus.buildStatus.chromeExtension = "BUILDING";
     postAppStatus();
     var chromeExtensionManifest = {
@@ -681,11 +681,11 @@ gulp.task('createChromeExtensionManifest', function () {
         'name': appSettings.appDisplayName,
         'description': appSettings.appDescription,
         'version': versionNumbers.ionicApp,
-        'options_page': 'www/chrome_extension/options/options.html',
+        'options_page': 'chrome_extension/options/options.html',
         'icons': {
-            '16': pathToIcons + '/icon_16.png',
-            '48': pathToIcons + '/icon_48.png',
-            '128': pathToIcons + '/icon_128.png'
+            '16': 'img/icons/icon_16.png',
+            '48': 'img/icons/icon_48.png',
+            '128': 'img/icons/icon_128.png'
         },
         'permissions': [
             'alarms',
@@ -702,11 +702,11 @@ gulp.task('createChromeExtensionManifest', function () {
             'https://*.googleapis.com/*'
         ],
         'browser_action': {
-            'default_icon': pathToIcons + '/icon_700.png',
-            'default_popup': 'www/templates/chrome/iframe.html'
+            'default_icon':  'img/icons/icon_700.png',
+            'default_popup': 'chrome_default_popup_iframe.html'
         },
         'background': {
-            'scripts': ['www/js/chrome/background.js'],
+            'scripts': ['js/chrome/background.js'],
             'persistent': false
         }
     };
@@ -1795,14 +1795,14 @@ gulp.task('copyAndroidBuild', [], function () {
 gulp.task('copyIonicCloudLibrary', [], function () {
     return copyFiles('node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js', 'www/lib');
 });
-gulp.task('copyWwwFolderToChromeExtension', [], function () {
-    return copyFiles('www/**/*', chromeExtensionBuildPath + '/www');
+gulp.task('copyWwwFolderToChromeExtension', ['getAppConfigs'], function () {
+    return copyFiles('www/**/*', chromeExtensionBuildPath);
 });
 gulp.task('copyWwwFolderToAndroidApp', [], function () {
     return copyFiles('www/**/*', 'platforms/android/assets/www');
 });
 gulp.task('copyIconsToChromeExtension', [], function () {
-    return copyFiles(pathToIcons + "/*", chromeExtensionBuildPath + '/' + pathToIcons);
+    return copyFiles(pathToIcons + "/*", chromeExtensionBuildPath + '/img/icons');
 });
 gulp.task('removeTransparentPng', [], function () {
     return gulp.src('resources/icon.png', {read: false}).pipe(clean());
@@ -1836,15 +1836,6 @@ gulp.task('prepareIosApp', function (callback) {
         'ionicResourcesIos',
         'copyIconsToWwwImg',
         callback);
-});
-gulp.task('symlinkWwwFolderInChromeExtension', [], function () {
-    return gulp.src(['www/**/*'])
-        .pipe(gulp.dest(chromeExtensionBuildPath + '/www'));
-});
-gulp.task('removeAndroidManifestFromChromeExtension', [], function () {
-    return gulp.src(chromeExtensionBuildPath + '/www/manifest.json',
-        {read: false})
-        .pipe(clean());
 });
 gulp.task('zipChromeExtension', [], function () {
     return zipAFolder(chromeExtensionBuildPath, getChromeExtensionZipFilename(), buildPath);
@@ -1905,9 +1896,7 @@ gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
         'cleanChromeBuildFolder',
         'bowerInstall',
         'configureApp', // Need to run sass and generate index.html
-        'copyWwwFolderToChromeExtension',  // Can't use symlinks on vagrant
-        'createChromeExtensionManifest',
-        'removeAndroidManifestFromChromeExtension',
+        'copyWwwFolderToChromeExtensionAndCreateManifest',
         'zipChromeExtension',
         'unzipChromeExtension',
         'validateChromeManifest',

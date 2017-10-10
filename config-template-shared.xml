@@ -7,6 +7,7 @@
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo
   </author>
+  <access origin="https://widget.intercom.io/*"/>
   <allow-intent href="https://*/*" />
   <allow-intent href="tel:*" />
   <allow-intent href="sms:*" />
@@ -17,7 +18,7 @@
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar" />
   </feature>
-  <access origin="https://widget.intercom.io/*"/>
+  <hook src="hooks/uncomment_cordova_js.js" type="before_build" />
   <platform name="android">
     <allow-intent href="market:*" />
     <icon src="resources/icon.png"/>
