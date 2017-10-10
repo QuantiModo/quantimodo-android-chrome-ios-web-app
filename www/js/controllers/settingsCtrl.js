@@ -7,6 +7,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.userEmail = qmService.getUrlParameter('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+        $scope.drawOverAppsEnabled = localStorage.getItem('drawOverAppsEnabled');
 		$rootScope.hideNavigationMenu = false;
 		if(qmService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
@@ -49,7 +50,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 		} else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
-
 	$scope.sendBugReport = function() {
 		qmService.sendBugReport();
 	};
@@ -301,4 +301,5 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
         } else { webDowngrade(); }
     };
+    if($rootScope.isAndroid){$scope.toggleDrawOverApps = function(ev){qmService.toggleDrawOverApps(ev);};}
 });

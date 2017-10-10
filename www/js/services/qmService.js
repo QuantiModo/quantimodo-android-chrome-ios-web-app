@@ -7457,6 +7457,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
         initializeLocalNotifications();
         if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
+        if($rootScope.isAndroid && localStorage.getItem('drawOverAppsEnabled') === null){qmService.toggleDrawOverApps();}
     };
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {
         function convertStateNameAndParamsToHrefInAllMenuItems(menu){
@@ -7850,9 +7851,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     //         });
     //     });
     // };
-    qmService.overApps = function(trackingReminderNotification) {
+    function isFalsey(value) {if(value === false || value === "false"){return true;}}
+    qmService.drawOverAppsNotification = function(trackingReminderNotification) {
         if(!$rootScope.isAndroid){
             logDebug("Can only show popups on android");
+            return;
+        }
+        if(isFalsey(localStorage.getItem('drawOverAppsEnabled'))){
+            logDebug("drawOverApps is disabled");
             return;
         }
         $ionicPlatform.ready(function() {
@@ -7860,9 +7866,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 logError("window.overApps is undefined!");
                 return;
             }
-            window.overApps.checkPermission(function(msg){
-                console.log(msg);
-            });
+            window.overApps.checkPermission(function(msg){console.log(msg);});
             var options = {
                 path: "android_popup.html?variableName=" + trackingReminderNotification.variableName +
                     "&valence=" + trackingReminderNotification.valence +
@@ -7883,6 +7887,23 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
         });
 
+    };
+    qmService.toggleDrawOverApps = function(ev){
+        function disablePopups() {
+            qmService.showInfoToast("Rating popups disabled");
+            qmService.setLocalStorageItem('drawOverAppsEnabled', false);
+        }
+        function showEnablePopupsConfirmation(){
+            var title = 'Enable Rating Popups';
+            var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in a fraction of a second?';
+            function yesCallback() {
+                window.overApps.checkPermission(function(msg){console.log(msg);});
+                qmService.setLocalStorageItem('drawOverAppsEnabled', true);
+            }
+            function noCallback() {disablePopups();}
+            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+        }
+        if(localStorage.getItem('drawOverAppsEnabled')){disablePopups();} else {showEnablePopupsConfirmation();}
     };
     return qmService;
 });
