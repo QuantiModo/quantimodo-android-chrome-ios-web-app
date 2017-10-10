@@ -2715,10 +2715,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }, function(error){deferred.reject(error);});
         return deferred.promise;
     };
-    qmService.refreshTrackingReminderNotifications = function(){
+    qmService.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests){
         var deferred = $q.defer();
         var options = {};
         options.minimumSecondsBetweenRequests = 3;
+        if(minimumSecondsBetweenRequests){options.minimumSecondsBetweenRequests = minimumSecondsBetweenRequests;}
         if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', options)){
             deferred.reject('Already called refreshTrackingReminderNotifications within last ' + options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
             return deferred.promise;
@@ -7605,11 +7606,16 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             push.on('notification', function(data) {
                 console.debug('Received push notification: ' + JSON.stringify(data));
                 qmService.updateLocationVariablesAndPostMeasurementIfChanged();
-                qmService.refreshTrackingReminderNotifications().then(function(){
-                    console.debug('push.on.notification: successfully refreshed notifications');
-                }, function (error) {
-                    console.error('push.on.notification: ' + error);
-                });
+                if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
+                    qmService.overApps(data.additionalData);
+                } else {
+                    qmService.refreshTrackingReminderNotifications(300).then(function(){
+                        console.debug('push.on.notification: successfully refreshed notifications');
+                    }, function (error) {
+                        console.error('push.on.notification: ' + error);
+                    });
+                }
+
                 // data.message,
                 // data.title,
                 // data.count,
@@ -7843,17 +7849,29 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     //         });
     //     });
     // };
-    qmService.overApps = function() {
+    qmService.overApps = function(trackingReminderNotification) {
+        if(!$rootScope.isAndroid){
+            logDebug("Can only show popups on android");
+            return;
+        }
         $ionicPlatform.ready(function() {
+            if(typeof window.overApps === "undefined"){
+                logError("window.overApps is undefined!");
+                return;
+            }
             window.overApps.checkPermission(function(msg){
                 console.log(msg);
             });
             var options = {
-                path: "templates/chrome/faces_popup.html",          // file path to display as view content.
-                hasHead: true,              // display over app head image which open the view up on click.
+                path: "android_popup.html?variableName=" + trackingReminderNotification.variableName +
+                    "&valence=" + trackingReminderNotification.valence +
+                    "&trackingReminderNotificationId=" + trackingReminderNotification.trackingReminderNotificationId +
+                    "&clientId=" + config.appSettings.clientId +
+                    "&accessToken=" + $rootScope.user.accessToken,          // file path to display as view content.
+                hasHead: false,              // display over app head image which open the view up on click.
                 dragToSide: false,          // enable auto move of head to screen side after dragging stop.
                 enableBackBtn: true,       // enable hardware back button to close view.
-                enableCloseBtn: false,      //  whether to show native close btn or to hide it.
+                enableCloseBtn: true,      //  whether to show native close btn or to hide it.
                 verticalPosition: "bottom",    // set vertical alignment of view.
                 horizontalPosition: "center"  // set horizontal alignment of view.
             };
