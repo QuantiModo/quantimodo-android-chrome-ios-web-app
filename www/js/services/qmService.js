@@ -2737,21 +2737,21 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         chrome.browserAction.setBadgeText({text: "?"});
                         //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                     }
-                    $rootScope.refreshingTrackingReminderNotifications = false;
+                    qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
                 }
                 else {
-                    $rootScope.refreshingTrackingReminderNotifications = false;
+                    qmService.refreshingTrackingReminderNotifications = false;
                     deferred.reject("error");
                 }
             }, function(error){
                 logError(error);
-                $rootScope.refreshingTrackingReminderNotifications = false;
+                qmService.refreshingTrackingReminderNotifications = false;
                 deferred.reject(error);
             });
         }, function(error){
             logError(error);
-            $rootScope.refreshingTrackingReminderNotifications = false;
+            qmService.refreshingTrackingReminderNotifications = false;
             deferred.reject(error);
         });
         return deferred.promise;
