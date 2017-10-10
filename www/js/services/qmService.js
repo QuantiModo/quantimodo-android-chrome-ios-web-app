@@ -11,7 +11,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler) {
-        logDebug("Got " + response.status + " response from " + response.req.url);
+        console.debug(response.status + " response from " + response.req.url);
         if (error) {
             qmApiGeneralErrorHandler(error, data, response);
             if(errorHandler){errorHandler(error);}
@@ -2650,8 +2650,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getTrackingReminderNotificationsDeferred = function(variableCategoryName){
         var deferred = $q.defer();
-        var trackingReminderNotifications =
-            qmService.getTrackingReminderNotificationsFromLocalStorage(variableCategoryName);
+        var trackingReminderNotifications = qmService.getTrackingReminderNotificationsFromLocalStorage(variableCategoryName);
         if(trackingReminderNotifications && trackingReminderNotifications.length){
             deferred.resolve(trackingReminderNotifications);
             return deferred.promise;
@@ -5518,7 +5517,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             chrome.storage.local.set(obj);
             deferred.resolve();
         } else {
-            logDebug("Setting localStorage." + key + " to " + value);
+            logDebug("Setting localStorage." + key + " to " + value.substring(0, 18) + '...');
             try {
                 localStorage.setItem(key, value);
                 deferred.resolve();
