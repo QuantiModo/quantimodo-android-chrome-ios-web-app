@@ -70,6 +70,9 @@
   <preference name="webviewbounce" value="false" />
   <preference name="windows-target-version" value="8.1"/>
   <preference name="WindowsStoreDisplayName" value="YourAppDisplayNameHere"/>
+  <plugin name="cordova-android-support-gradle-release" spec="~1.1.2">
+    <variable name="ANDROID_SUPPORT_VERSION" value="26.+" />
+  </plugin>
   <plugin name="cordova-plugin-console" spec="~1.0.3"/>
   <plugin name="cordova-plugin-datepicker" version="0.9.3"/>
   <plugin name="cordova-plugin-device" spec="~1.1.2"/>
