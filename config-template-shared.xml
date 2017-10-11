@@ -25,7 +25,7 @@
     <hook type="after_prepare" src="package-hooks/android_custom_resources.js" />
     <plugin name="cordova-plugin-drawoverapps" spec="git+https://github.com/mikepsinn/cordova-plugin-drawoverapps.git" />
     <plugin name="cordova-android-support-gradle-release" spec="~1.1.2">
-      <variable name="ANDROID_SUPPORT_VERSION" value="25.+" />
+      <variable name="ANDROID_SUPPORT_VERSION" value="25.3.1" />
     </plugin>
   </platform>
   <platform name="ios">
