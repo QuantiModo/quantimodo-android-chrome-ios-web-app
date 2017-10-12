@@ -2427,7 +2427,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             //console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
             return;
         }
-        window.qmService.setLocalStorageItem('bgGPS', 1);
+        qmService.setLocalStorageItem('bgGPS', 1);
         //logDebug('Starting qmService.backgroundGeolocationStart');
         var callbackFn = function(coordinates) {
             logDebug("background location is " + JSON.stringify(coordinates));
@@ -2473,7 +2473,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.backgroundGeolocationStop = function () {
         if(typeof backgroundGeoLocation !== "undefined"){
-            window.qmService.setLocalStorageItem('bgGPS', 0);
+            qmService.setLocalStorageItem('bgGPS', 0);
             backgroundGeoLocation.stop();
         }
     };
