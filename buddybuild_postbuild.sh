@@ -40,9 +40,11 @@ echo "www/configs FILE LIST:" && cd ${BUDDYBUILD_WORKSPACE}/www/configs && find 
 echo "www/data FILE LIST:" && cd ${BUDDYBUILD_WORKSPACE}/www/data && find .
 if [ -z ${BUDDYBUILD_SCHEME} ];
     then
-        print_sha1 armv7-debug
-        print_sha1 x86-release
-        print_sha1 armv7-release
+        #print_sha1 armv7-debug
+        #print_sha1 x86-release
+        #print_sha1 armv7-release
+        print_sha1 debug
+        print_sha1 release
     else
         echo "BUILDING IOS APP because BUDDYBUILD_SCHEME env is ${BUDDYBUILD_SCHEME} AND NOT BUILDING ANDROID APP because BUDDYBUILD_SCHEME env is set"
 fi
