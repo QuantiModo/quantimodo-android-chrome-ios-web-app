@@ -308,32 +308,6 @@ function encryptFile(fileToEncryptPath, encryptedFilePath, callback) {
     logDebug('executing ' + cmd);
     execute(cmd, callback);
 }
-function removeCustomPropertiesFromAppSettings(appSettings) {
-    for (var propertyName in appSettings.appDesign) {
-        if (appSettings.appDesign.hasOwnProperty(propertyName)){
-            if(appSettings.appDesign[propertyName]){
-                if (appSettings.appDesign[propertyName].type && appSettings.appDesign[propertyName].type === "custom"){
-                    appSettings.appDesign[propertyName].active = appSettings.appDesign[propertyName].custom;
-                }
-                delete appSettings.appDesign[propertyName].custom;
-            } else {
-                logInfo("Could not find property " + propertyName + " in appDesign");
-            }
-        }
-    }
-    return appSettings;
-}
-function outputSHA1ForAndroidKeystore(decryptedFilePath) {
-    if (decryptedFilePath.indexOf('keystore') === -1) {return;}
-    var cmd = 'keytool -exportcert -list -v -alias androiddebugkey -keypass android -keystore ' + decryptedFilePath;
-    execute(cmd, function (error) {
-        if (error !== null) {
-            logError('ERROR: ENCRYPTING: ' + error);
-        } else {
-            logInfo('Should have output SHA1 for the production keystore ' + decryptedFilePath);
-        }
-    });
-}
 function encryptPrivateConfig(callback) {
     var encryptedFilePath = privateConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json.enc';
     var fileToEncryptPath = privateConfigDirectoryPath + process.env.QUANTIMODO_CLIENT_ID + '.private_config.json';
@@ -1200,27 +1174,6 @@ gulp.task('deleteIOSApp', function () {
     });
     return deferred.promise;
 });
-gulp.task('encryptAndroidKeystore', [], function (callback) {
-    var fileToEncryptPath = 'quantimodo.keystore';
-    var encryptedFilePath = 'quantimodo.keystore.enc';
-    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
-});
-// keytool -genkey -keyalg RSA -alias androiddebugkey -keystore debug.keystore -storepass android -validity 10000 -keysize 2048
-gulp.task('encryptAndroidDebugKeystore', [], function (callback) {
-    var fileToEncryptPath = 'debug.keystore';
-    var encryptedFilePath = 'debug.keystore.enc';
-    encryptFile(fileToEncryptPath, encryptedFilePath, callback);
-});
-gulp.task('decryptAndroidKeystore', [], function (callback) {
-    var fileToDecryptPath = 'quantimodo.keystore.enc';
-    var decryptedFilePath = 'quantimodo.keystore';
-    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
-});
-gulp.task('decryptAndroidDebugKeystore', [], function (callback) {
-    var fileToDecryptPath = 'debug.keystore.enc';
-    var decryptedFilePath = 'debug.keystore';
-    decryptFile(fileToDecryptPath, decryptedFilePath, callback);
-});
 gulp.task('encryptSupplyJsonKeyForGooglePlay', [], function (callback) {
     var fileToEncryptPath = 'supply_json_key_for_google_play.json';
     var encryptedFilePath = 'supply_json_key_for_google_play.json.enc';
@@ -2067,12 +2020,6 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',  // Must be run before addGooglePlusPlugin or running any other cordova commands
         'ionicPlatformAddAndroid',
-        'decryptAndroidKeystore',
-        'decryptAndroidDebugKeystore',
-        //'androidDebugKeystoreInfo',
-        //'deleteGooglePlusPlugin',  This breaks flow if plugin is not present.  Can't get it to continue on error.  However, cleanPlugins should already do this
-        //'addGooglePlusPlugin',
-        //'ionicPlatformRemoveAndroid', // This is necessary because the platform version will not necessarily be set to 6.1.0 otherwise (it will just follow platforms.json
         'ionicAddCrosswalk',
         'ionicInfo',
         callback);
@@ -2087,7 +2034,6 @@ gulp.task('prepareAndroidApp', function (callback) {
         'cordovaPlatformVersionAndroid',
         'decryptBuildJson',
         'generatePlayPublicLicenseKeyManifestJson',
-        'decryptAndroidKeystore',
         'downloadAndroidReleaseKeystore',
         'generateAndroidResources',
         'copyAndroidResources',
