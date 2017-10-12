@@ -5,7 +5,7 @@
 	<style>
 	body { width: 100%; height: 56px; margin: 0; background: white; }
 	#sectionRate { width: 100%; opacity: 1; height: 56px; padding-top: 1px; padding-bottom: 1px; overflow: hidden; }
-	#sectionRate img { width: 13.5%; display: inline-block; padding-left: 6px; padding-right: 6px; background-color: #FFFFFF; transition: all 200ms linear; }
+	#sectionRate img { width: 13%; display: inline-block; padding-left: 6px; padding-right: 6px; background-color: #FFFFFF; transition: all 200ms linear; }
 	#sectionRate img:hover { -webkit-filter: blur(1px) brightness(110%) saturate(150%); }
 	#sectionRate div { width: 1px; position: relative; display: inline-block; background: lightgray; bottom: 32%; }
 	@-webkit-keyframes fadeOut {
@@ -17,18 +17,18 @@
 		to { -webkit-transform: rotate(0deg) scale(1) skew(0deg); opacity: 1; }
 	}
 	</style>
-	  <p style="text-align: center; font-size: 20px;" id="question">How are you?</p>
-	<section id="sectionRate">
-		<img src="img/rating/face_rating_button_256_depressed.png" id="buttonMoodDepressed"><div>&nbsp;</div>
-		<img src="img/rating/face_rating_button_256_sad.png" id="buttonMoodSad"><div>&nbsp;</div>
-		<img src="img/rating/face_rating_button_256_ok.png" id="buttonMoodOk"><div>&nbsp;</div>
-		<img src="img/rating/face_rating_button_256_happy.png" id="buttonMoodHappy"><div>&nbsp;</div>
-		<img src="img/rating/face_rating_button_256_ecstatic.png" id="buttonMoodEcstatic">
-	</section>
-	  	<script src="cordova.js"></script>
-		<script src="js/chrome/background.js"></script>
-		<script src="js/chrome/popup.js"></script>
+	<script src="cordova.js"></script>
+	<script src="js/chrome/background.js"></script>
+	<script src="js/chrome/popup.js"></script>
   </head>
   <body>
+	  <p style="text-align: center; font-size: 20px;" id="question">How are you?</p>
+	  <section id="sectionRate">
+		  <img src="img/rating/face_rating_button_256_depressed.png" id="buttonMoodDepressed"><div>&nbsp;</div>
+		  <img src="img/rating/face_rating_button_256_sad.png" id="buttonMoodSad"><div>&nbsp;</div>
+		  <img src="img/rating/face_rating_button_256_ok.png" id="buttonMoodOk"><div>&nbsp;</div>
+		  <img src="img/rating/face_rating_button_256_happy.png" id="buttonMoodHappy"><div>&nbsp;</div>
+		  <img src="img/rating/face_rating_button_256_ecstatic.png" id="buttonMoodEcstatic">
+	  </section>
   </body>
 </html>
