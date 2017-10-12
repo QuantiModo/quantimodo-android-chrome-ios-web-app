@@ -2408,7 +2408,17 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.reject(message);
             return deferred.promise;
         }
+        var currentTimestamp = getUnixTimestampInSeconds();
+        var lastLocationPostUnixtime = parseInt(localStorage.getItem('lastLocationPostUnixtime'));
+        var secondsSinceLastPostedLocation = currentTimestamp - lastLocationPostUnixtime;
+        if(lastLocationPostUnixtime && secondsSinceLastPostedLocation < 300){
+            message = 'Already posted location ' + secondsSinceLastPostedLocation + " seconds ago";
+            logDebug(message);
+            deferred.reject(message);
+            return deferred.promise;
+        }
         $ionicPlatform.ready(function() {
+            localStorage.setItem('lastLocationPostUnixtime', currentTimestamp);
             var posOptions = {enableHighAccuracy: true, timeout: 20000, maximumAge: 0};
             $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
                 qmService.forecastioWeather(position.coords);
