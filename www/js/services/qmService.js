@@ -206,9 +206,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         message = addStateNameToMessage(message);
         window.logError(message, additionalMetaData, stackTrace);
     };
-    qmService.logErrorOrInfoIfTesting = function(message, additionalMetaData, stackTrace){
-        qmService.logErrorOrInfoIfTesting(message, additionalMetaData, stackTrace);
-    };
     qmService.addColorsCategoriesAndNames = function(array){
         array = addVariableCategoryInfo(array);
         array = addColors(array);
