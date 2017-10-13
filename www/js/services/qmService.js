@@ -2411,7 +2411,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $ionicPlatform.ready(function() {
             var posOptions = {enableHighAccuracy: true, timeout: 20000, maximumAge: 0};
             $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                qmService.forecastioWeather(position.coords);
+                qmService.forecastIoWeather(position.coords);
                 lookupGoogleAndFoursquareLocationAndPostMeasurement(position.coords);
                 deferred.resolve();
                 //logDebug("My coordinates are: ", position.coords);
@@ -2427,12 +2427,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             //console.warn('Cannot execute backgroundGeolocationStart because backgroundGeoLocation is not defined');
             return;
         }
-        window.qmService.setLocalStorageItem('bgGPS', 1);
+        qmService.setLocalStorageItem('bgGPS', 1);
         //logDebug('Starting qmService.backgroundGeolocationStart');
         var callbackFn = function(coordinates) {
             logDebug("background location is " + JSON.stringify(coordinates));
             var isBackground = true;
-            qmService.forecastioWeather(coordinates);
+            qmService.forecastIoWeather(coordinates);
             lookupGoogleAndFoursquareLocationAndPostMeasurement(coordinates, isBackground);
             backgroundGeoLocation.finish();
         };
@@ -2473,7 +2473,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.backgroundGeolocationStop = function () {
         if(typeof backgroundGeoLocation !== "undefined"){
-            window.qmService.setLocalStorageItem('bgGPS', 0);
+            qmService.setLocalStorageItem('bgGPS', 0);
             backgroundGeoLocation.stop();
         }
     };
@@ -5852,101 +5852,138 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         createLoginTabAndClose(); // Try this if window.location.replace has problems
         // window.location.replace(getLoginUrl());  Doesn't work!
     };
-    qmService.forecastioWeather = function(coordinates) {
-        if(!$rootScope.user){
-            logDebug("No recording weather because we're not logged in");
-            return;
-        }
-        var lastPostedWeatherAt = Number(qmService.getLocalStorageItemAsString('lastPostedWeatherAt'));
+
+    function createWeatherIconMeasurementSet(data) {
+        return {
+            variableCategoryName: "Environment",
+            variableName: data.daily.data[0].icon.replace('-', ' '),
+            combinationOperation: "MEAN",
+            sourceName: $rootScope.appSettings.appDisplayName,
+            unitAbbreviatedName: "count",
+            fillingValue: 0,
+            measurements: [{
+                value: 1,
+                startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp()),
+                //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
+            }]
+        };
+    }
+
+    function createOutdoorWeatherMeasurementSet(data) {
+        return {
+            variableCategoryName: "Environment",
+            variableName: "Outdoor Temperature",
+            combinationOperation: "MEAN",
+            sourceName: $rootScope.appSettings.appDisplayName,
+            unitAbbreviatedName: "F",
+            measurements: [{
+                value: (data.daily.data[0].temperatureMax + data.daily.data[0].temperatureMin) / 2,
+                startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
+            }]
+        };
+    }
+
+    function getYesterdayNoonTimestamp() {
         var localMidnightMoment = moment(0, "HH");
         var localMidnightTimestamp = localMidnightMoment.unix();
-        var yesterdayNoonTimestamp = localMidnightTimestamp - 86400/2;
-        if(lastPostedWeatherAt && lastPostedWeatherAt > yesterdayNoonTimestamp){
+        var yesterdayNoonTimestamp = localMidnightTimestamp - 86400 / 2;
+        return yesterdayNoonTimestamp;
+    }
+
+    function createBarometricPressureMeasurement(data) {
+        return {
+            variableCategoryName: "Environment",
+            variableName: "Barometric Pressure",
+            combinationOperation: "MEAN",
+            sourceName: $rootScope.appSettings.appDisplayName,
+            unitAbbreviatedName: "Pa",
+            measurements: [{
+                value: data.daily.data[0].pressure * 100,
+                startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
+            }]
+        };
+    }
+
+    function createOutdorrHumidityMeasurement(data) {
+        return {
+            variableCategoryName: "Environment",
+            variableName: "Outdoor Humidity",
+            combinationOperation: "MEAN",
+            sourceName: $rootScope.appSettings.appDisplayName,
+            unitAbbreviatedName: "%",
+            measurements: [{
+                value: data.daily.data[0].humidity * 100,
+                startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
+            }]
+        };
+    }
+
+    function createOutdoorVisibilityMeasurement(data) {
+        return {
+            variableCategoryName: "Environment",
+            variableName: "Outdoor Visibility",
+            combinationOperation: "MEAN",
+            sourceName: $rootScope.appSettings.appDisplayName,
+            unitAbbreviatedName: "miles",
+            measurements: [{
+                value: data.daily.data[0].visibility,
+                startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
+            }]
+        };
+    }
+
+    function createCloudCoverMeasurement(data) {
+        return {
+            variableCategoryName: "Environment",
+            variableName: "Cloud Cover",
+            combinationOperation: "MEAN",
+            sourceName: $rootScope.appSettings.appDisplayName,
+            unitAbbreviatedName: "%",
+            measurements: [{
+                value: data.daily.data[0].cloudCover * 100,
+                startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                //note: data.daily.data[0].icon  // We shouldn't add icon as note because it messes up the note analysis
+            }]
+        };
+    }
+
+    function alreadyPostedWeatherSinceNoonYesterday(){
+        var lastPostedWeatherAt = Number(qmService.getLocalStorageItemAsString('lastPostedWeatherAt'));
+        if(!lastPostedWeatherAt){return false;}
+        if(lastPostedWeatherAt && lastPostedWeatherAt > getYesterdayNoonTimestamp()){
             logDebug("recently posted weather already");
-            return;
+            return true;
         }
+        return false;
+    }
+
+    function getWeatherMeasurementSets(data) {
+        logDebug(data);
+        var measurementSets = [];
+        measurementSets.push(createWeatherIconMeasurementSet(data));
+        measurementSets.push(createOutdoorWeatherMeasurementSet(data));
+        measurementSets.push(createBarometricPressureMeasurement(data));
+        measurementSets.push(createOutdorrHumidityMeasurement(data));
+        if (data.daily.data[0].visibility) {
+            measurementSets.push(createOutdoorVisibilityMeasurement(data));
+        }
+        measurementSets.push(createCloudCoverMeasurement(data));
+        return measurementSets;
+    }
+
+    qmService.forecastIoWeather = function(coordinates) {
+        if(!$rootScope.user){logDebug("No recording weather because we're not logged in");return;}
+        if(alreadyPostedWeatherSinceNoonYesterday()){return;}
         var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
         var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
-        url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + yesterdayNoonTimestamp + '?callback=JSON_CALLBACK';
+        url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + getYesterdayNoonTimestamp() + '?callback=JSON_CALLBACK';
         logDebug('Checking weather forecast at ' + url);
-        var measurementSets = [];
         $http.jsonp(url).success(function(data) {
-            console.log(data);
-            measurementSets.push({
-                variableCategoryName: "Environment",
-                variableName: data.daily.data[0].icon.replace('-', ' '),
-                combinationOperation: "MEAN",
-                sourceName: $rootScope.appSettings.appDisplayName,
-                unitAbbreviatedName: "count",
-                fillingValue: 0,
-                measurements: [{
-                    value: 1,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp),
-                    //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
-                }]}
-            );
-            measurementSets.push({
-                variableCategoryName: "Environment",
-                variableName: "Outdoor Temperature",
-                combinationOperation: "MEAN",
-                sourceName: $rootScope.appSettings.appDisplayName,
-                unitAbbreviatedName: "F",
-                measurements: [{
-                    value: (data.daily.data[0].temperatureMax +  data.daily.data[0].temperatureMin)/2,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
-                    //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
-                }]}
-            );
-            measurementSets.push({
-                variableCategoryName: "Environment",
-                variableName: "Barometric Pressure",
-                combinationOperation: "MEAN",
-                sourceName: $rootScope.appSettings.appDisplayName,
-                unitAbbreviatedName: "Pa",
-                measurements: [{
-                    value: data.daily.data[0].pressure * 100,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
-                    //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
-                }]}
-            );
-            measurementSets.push({
-                variableCategoryName: "Environment",
-                variableName: "Outdoor Humidity",
-                combinationOperation: "MEAN",
-                sourceName: $rootScope.appSettings.appDisplayName,
-                unitAbbreviatedName: "%",
-                measurements: [{
-                    value: data.daily.data[0].humidity * 100,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
-                    //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
-                }]}
-            );
-            if(data.daily.data[0].visibility){
-                measurementSets.push({
-                    variableCategoryName: "Environment",
-                    variableName: "Outdoor Visibility",
-                    combinationOperation: "MEAN",
-                    sourceName: $rootScope.appSettings.appDisplayName,
-                    unitAbbreviatedName: "miles",
-                    measurements: [{
-                        value: data.daily.data[0].visibility,
-                        startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
-                        //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
-                    }]}
-                );
-            }
-            measurementSets.push({
-                variableCategoryName: "Environment",
-                variableName: "Cloud Cover",
-                combinationOperation: "MEAN",
-                sourceName: $rootScope.appSettings.appDisplayName,
-                unitAbbreviatedName: "%",
-                measurements: [{
-                    value: data.daily.data[0].cloudCover * 100,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(yesterdayNoonTimestamp)
-                    //note: data.daily.data[0].icon  // We shouldn't add icon as note because it messes up the note analysis
-                }]}
-            );
+            var measurementSets = getWeatherMeasurementSets(data);
             qmService.postMeasurementsToApi(measurementSets, function (response) {
                 logDebug("posted weather measurements");
                 if(response && response.data && response.data.userVariables){
@@ -5954,7 +5991,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 }
                 if(!lastPostedWeatherAt){qmService.setLocalStorageItem('lastPostedWeatherAt', getUnixTimestampInSeconds());}
             }, function (error) {logDebug("could not post weather measurements: " + error);});
-        }).error(function (data) {logDebug("Request failed");});
+        }).error(function (error) {
+            logError("forecast.io request failed!  error: " + error,  {error_response: error, request_url: url});
+        });
     };
     qmService.setupHelpCards = function () {
         var locallyStoredHelpCards = localStorage.getItem('defaultHelpCards');
