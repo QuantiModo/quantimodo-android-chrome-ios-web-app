@@ -7,8 +7,8 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
 
 $contents = file_get_contents('ghostinspector.json');
 $json = json_decode($contents);
-echo "Contents of ghostinspector.json: ";
-print_r($json);
+#echo "Contents of ghostinspector.json: ";
+#print_r($json);
 $success = $json->code == 'SUCCESS';
 if (!$success) {
     echo "GhostInspector tests failed\n";
