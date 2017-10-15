@@ -5954,8 +5954,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         };
     }
 
+    function getLastPostedWeatherAtTimeUnixtime() {
+        return Number(qmService.getLocalStorageItemAsString('lastPostedWeatherAt'));
+    }
+
     function alreadyPostedWeatherSinceNoonYesterday(){
-        var lastPostedWeatherAt = Number(qmService.getLocalStorageItemAsString('lastPostedWeatherAt'));
+        var lastPostedWeatherAt = getLastPostedWeatherAtTimeUnixtime();
         if(!lastPostedWeatherAt){return false;}
         if(lastPostedWeatherAt && lastPostedWeatherAt > getYesterdayNoonTimestamp()){
             logDebug("recently posted weather already");
@@ -5992,7 +5996,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if(response && response.data && response.data.userVariables){
                     qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
                 }
-                if(!lastPostedWeatherAt){qmService.setLocalStorageItem('lastPostedWeatherAt', getUnixTimestampInSeconds());}
+                qmService.setLocalStorageItem('lastPostedWeatherAt', getUnixTimestampInSeconds());
             }, function (error) {logDebug("could not post weather measurements: " + error);});
         }).error(function (error) {
             logError("forecast.io request failed!  error: " + error,  {error_response: error, request_url: url});
