@@ -180,7 +180,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	}
 	function logOutOfWebsite() {
 		var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
-		window.location.replace(logoutUrl);
+        qmService.get(logoutUrl);
+		//window.location.replace(logoutUrl);
 	}
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
