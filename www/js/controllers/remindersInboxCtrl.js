@@ -151,7 +151,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	function getWeekdayCharts() {
         if(!$scope.weekdayChartConfig){
-            qmService.syncPrimaryOutcomeVariableMeasurements();
+            qmService.syncPrimaryOutcomeVariableMeasurements(60 * 60);
             qmService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, qmService.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
         }
     }
