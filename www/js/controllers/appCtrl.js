@@ -348,9 +348,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var backView = $ionicHistory.backView();
             var stateId = backView.stateName;
             if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
-                $ionicHistory.goBack(-2);
+                $ionicHistory.removeBackView();
+                backView = $ionicHistory.backView();  // TODO: Figure out why $stateParams are null
+                stateId = backView.stateName;
+                //$ionicHistory.goBack(-2);
                 //qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
-                return;
+                //return;
             }
             if(stateParams){
                 for (var key in stateParams) {

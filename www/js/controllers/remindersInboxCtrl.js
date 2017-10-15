@@ -45,8 +45,6 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
         getFavorites();
 		$rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
 		$scope.stateParams = $stateParams;
-		if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){$scope.variableCategoryName = $stateParams.variableCategoryName;
-		} else {$scope.variableCategoryName = null;}
 		$rootScope.showActionSheetMenu = function() {
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
@@ -151,7 +149,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	function getWeekdayCharts() {
         if(!$scope.weekdayChartConfig){
-            qmService.syncPrimaryOutcomeVariableMeasurements();
+            qmService.syncPrimaryOutcomeVariableMeasurements(60 * 60);
             qmService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, qmService.getPrimaryOutcomeVariable()).then(function (chartConfig) {$scope.weekdayChartConfig = chartConfig;});
         }
     }
@@ -260,6 +258,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		});
 	}
 	var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
+		if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
 		var trackingReminderNotifications = qmService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName);
 		for (var i = 0; i < trackingReminderNotifications.length; i++){
 			trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
