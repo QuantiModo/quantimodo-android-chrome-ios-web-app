@@ -166,13 +166,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return window.debugMode || qmService.debugMode;
     };
-    function logDebug(message, stackTrace) {
-        if(qmService.getDebugMode()){
-            message = addStateNameToMessage(message);
-            console.debug(message);
-        }
-    }
     qmService.logDebug = function(message, stackTrace) {
+        message = addStateNameToMessage(message);
         logDebug(message, stackTrace);
     };
     function logInfo(message, stackTrace) {
@@ -219,7 +214,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
         if(!params){params = {};}
-        if(!successHandler){throw "Please provide successHandler function as fourth parameter in qmService.get";}
+        if(!successHandler){
+            throw "Please provide successHandler function as fourth parameter in qmService.get";
+        }
         if(!options){ options = {}; }
         var cache = false;
         options.stackTrace = (params.stackTrace) ? params.stackTrace : 'No stacktrace provided with params';
@@ -995,7 +992,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.resolve();
             return deferred.promise;
         } else {
-            console.warn('Could not get or refresh access token at ' + window.location.href);
+            authDebug('Could not get or refresh access token at ' + window.location.href);
             deferred.resolve();
         }
         return deferred.promise;
@@ -7087,7 +7084,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.weShouldUseOAuthLogin = function(){
         return window.location.href.indexOf('.quantimo.do') === -1;
     };
-    function isTruthy(value){return value && value !== "false"; }
     qmService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         logDebug("getUserFromLocalStorageOrRefreshIfNecessary");
         if(qmService.getUrlParameter('refreshUser')){

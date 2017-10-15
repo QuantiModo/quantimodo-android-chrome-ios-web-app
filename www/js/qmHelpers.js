@@ -1,6 +1,3 @@
-/***
-****	EVENT HANDLERS
-***/
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 function getUrlParameter(parameterName, url, shouldDecode) {
     if(!url){url = window.location.href;}
@@ -22,6 +19,117 @@ function getUrlParameter(parameterName, url, shouldDecode) {
     return null;
 }
 var appSettings;
+// SubDomain : Filename
+var appConfigFileNames = {
+    "app" : "quantimodo",
+    "energymodo" : "energymodo",
+    "default" : "default",
+    "ionic" : "quantimodo",
+    "local" : "quantimodo",
+    "medimodo" : "medimodo",
+    "mindfirst" : "mindfirst",
+    "moodimodo" : "moodimodo",
+    "oauth" : "quantimodo",
+    "quantimodo" : "quantimodo",
+    "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
+};
+window.isTruthy = function(value){return value && value !== "false"; }
+window.getDebugMode = function() {
+    if(getUrlParameter('debug') || getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && isTruthy(appSettings.debugMode))){
+        window.debugMode = true;
+    }
+    return window.debugMode;
+};
+window.logDebug = function(message, stackTrace) {
+    if(getDebugMode()){console.debug(message);}
+};
+function getSubDomain(){
+    var full = window.location.host;
+    var parts = full.split('.');
+    return parts[0].toLowerCase();
+}
+function getClientIdFromQueryParameters() {
+    var clientId = getUrlParameter('clientId');
+    if(!clientId){clientId = getUrlParameter('appName');}
+    if(!clientId){clientId = getUrlParameter('lowerCaseAppName');}
+    if(!clientId){clientId = getUrlParameter('quantimodoClientId');}
+    if(clientId){localStorage.setItem('clientId', clientId);}
+    return clientId;
+}
+
+function getQuantiModoClientId() {
+    if(onMobile()){
+        console.debug("Using default.config.js because we're on mobile");
+        return "default"; // On mobile
+    }
+    var clientId = getClientIdFromQueryParameters();
+    if(clientId){
+        console.debug("Using clientIdFromQueryParams: " + clientId);
+        return clientId;
+    }
+    if(!clientId){clientId = localStorage.getItem('clientId');}
+    if(clientId){
+        console.debug("Using clientId From localStorage: " + clientId);
+        return clientId;
+    }
+    if(window.location.href.indexOf('quantimo.do') === -1){
+        console.debug("Using default.config.js because we're not on a quantimo.do domain");
+        return "default"; // On mobile
+    }
+    var subdomain = getSubDomain();
+    var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
+    if(clientIdFromAppConfigName){
+        console.debug("Using client id " + clientIdFromAppConfigName + " derived from appConfigFileNames using subdomain: " + subdomain);
+        return clientIdFromAppConfigName;
+    }
+    logDebug("Using subdomain as client id: " + subdomain);
+    return subdomain;
+}
+function onMobile() {
+    return window.location.href.indexOf('https://') === -1;
+}
+var appsManager = { // jshint ignore:line
+    defaultApp : "default",
+    getAppConfig : function(){
+        console.debug('getQuantiModoClientId returns ' + getQuantiModoClientId());
+        if(getQuantiModoClientId()){
+            return 'configs/' + getQuantiModoClientId() + '.js';
+        } else {
+            return 'configs/' + appsManager.defaultApp + '.js';
+        }
+    },
+    getPrivateConfig : function(){
+        if(getQuantiModoClientId()){
+            return './private_configs/'+ getQuantiModoClientId() + '.config.js';
+        } else {
+            return './private_configs/'+ appsManager.defaultApp + '.config.js';
+        }
+    },
+    getUrlParameter: function (parameterName, url, shouldDecode) {
+        return getUrlParameter(parameterName, url, shouldDecode);
+    },
+    getQuantiModoClientId: function () {
+        return getQuantiModoClientId();
+    },
+    getQuantiModoApiUrl: function () {
+        var apiUrl = getUrlParameter('apiUrl');
+        if(!apiUrl){apiUrl = localStorage.getItem('apiUrl');}
+        if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
+        if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
+        if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
+        if(!apiUrl){apiUrl = "https://app.quantimo.do";}
+        if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
+        apiUrl = apiUrl.replace("https://https", "https");
+        return apiUrl;
+    },
+    shouldWeUseLocalConfig: function (clientId) {
+        if(clientId === "default"){return true;}
+        if(onMobile()){return true;}
+        var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        if(designMode){return false;}
+        if(getClientIdFromQueryParameters() === 'app'){return true;}
+    }
+};
 function isChromeExtension(){return (typeof chrome !== "undefined" && typeof chrome.runtime !== "undefined" && typeof chrome.runtime.onInstalled !== "undefined");}
 function getChromeManifest() {if(isChromeExtension()){return manifest = chrome.runtime.getManifest();}}
 function getAppName() {
@@ -67,14 +175,16 @@ function getQueryParameterString() {
     }
     showSignInNotification();
 }
+
+
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', 'configs/default.config.json', true);
     xobj.onreadystatechange = function () {
-        if (xobj.readyState == 4) {
+        if (xobj.readyState === 4) {
             var json = xobj.responseText;
-            console.log("AppSettings:" + json);
+            logDebug("AppSettings:" + json);
             appSettings = JSON.parse(json);
         }
     };
@@ -113,12 +223,12 @@ if(isChromeExtension()) {
     });
 }
 function openOrFocusPopupWindow(windowParams, focusWindow) {
-    if(isChromeExtension()){
-        console.log("Can't open popup because chrome is undefined");
+    if(!isChromeExtension()){
+        logDebug("Can't open popup because chrome is undefined");
         return;
     }
     windowParams.focused = true;
-    console.log('openOrFocusPopupWindow', windowParams );
+    logDebug('openOrFocusPopupWindow', windowParams );
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
@@ -146,7 +256,7 @@ function openOrFocusPopupWindow(windowParams, focusWindow) {
 }
 function openPopup(notificationId, focusWindow) {
     if(isChromeExtension()){
-        console.log("Can't open popup because chrome is undefined");
+        logDebug("Can't open popup because chrome is undefined");
         return;
     }
 	if(!notificationId){notificationId = null;}
@@ -185,7 +295,6 @@ if(isChromeExtension()){
         if(request.message === "uploadMeasurements") {pushMeasurements(request.payload, null);}
     });
 }
-
 /***
 ****	HELPER FUNCTIONS
 ***/
@@ -305,7 +414,6 @@ function IsJsonString(str) {
     }
     return true;
 }
-
 window.deleteElementsOfLocalStorageItemByProperty = function(localStorageItemName, propertyName, propertyValue){
     var elementsToKeep = [];
     var localStorageItemArray = JSON.parse(localStorage.getItem(localStorageItemName));
