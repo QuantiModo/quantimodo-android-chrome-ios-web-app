@@ -54,10 +54,10 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
     };
     if($rootScope.user && $rootScope.user.administrator){$scope.variables.frequencyVariables.push({ id : 15, name : 'Minutely'});}
     if(!$rootScope.user){qmService.refreshUser();}
-    $scope.$on('$ionicView.beforeEnter', function(){
+    $scope.$on('$ionicView.beforeEnter', function(){ qmService.logInfo('ReminderAddCtrl beforeEnter...');
+        var backView = $ionicHistory.backView();
         $scope.state.moreUnits = $rootScope.manualTrackingUnitObjects;
         $rootScope.hideNavigationMenu = false;
-        console.debug('ReminderAddCtrl beforeEnter...');
         qmService.sendToLoginIfNecessaryAndComeBack();
         if($stateParams.variableObject){ $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName; }
         if($stateParams.reminder){ $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName; }
@@ -157,7 +157,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
     };
     var setupByVariableObject = function(selectedVariable){
-        console.debug("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable).substring(0, 140) + '...');
+        qmService.logInfo("remindersAdd.setupByVariableObject: " + selectedVariable.name);
         if (!selectedVariable.variableCategoryName) { $scope.state.showAddVariableCard = true; }
         $rootScope.variableObject=selectedVariable;
         setupVariableCategory(selectedVariable.variableCategoryName);
