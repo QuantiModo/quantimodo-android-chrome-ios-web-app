@@ -21,10 +21,11 @@ function getUrlParameter(parameterName, url, shouldDecode) {
     }
     return null;
 }
-var manifest, appSettings;
-if(typeof chrome !== "undefined"){manifest = chrome.runtime.getManifest();}
+var appSettings;
+function isChromeExtension(){return (typeof chrome !== "undefined" && typeof chrome.runtime !== "undefined" && typeof chrome.runtime.onInstalled !== "undefined");}
+function getChromeManifest() {if(isChromeExtension()){return manifest = chrome.runtime.getManifest();}}
 function getAppName() {
-    if(manifest){return manifest.name;}
+    if(getChromeManifest()){return getChromeManifest().name;}
     return getUrlParameter('appName');
 }
 function getClientId() {
@@ -32,7 +33,7 @@ function getClientId() {
     return getUrlParameter('clientId');
 }
 function getAppVersion() {
-    if(manifest){return manifest.version;}
+    if(getChromeManifest()){return getChromeManifest().version;}
     if(appSettings){return appSettings.versionNumber;}
     return getUrlParameter('appVersion');
 }
@@ -84,7 +85,7 @@ function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
 }
-if(typeof chrome !== "undefined") {
+if(isChromeExtension()) {
     /*
     **	Called when the extension is installed
     */
@@ -112,7 +113,7 @@ if(typeof chrome !== "undefined") {
     });
 }
 function openOrFocusPopupWindow(windowParams, focusWindow) {
-    if(typeof chrome === "undefined"){
+    if(isChromeExtension()){
         console.log("Can't open popup because chrome is undefined");
         return;
     }
@@ -144,7 +145,7 @@ function openOrFocusPopupWindow(windowParams, focusWindow) {
     }
 }
 function openPopup(notificationId, focusWindow) {
-    if(typeof chrome === "undefined"){
+    if(isChromeExtension()){
         console.log("Can't open popup because chrome is undefined");
         return;
     }
@@ -166,7 +167,7 @@ function openPopup(notificationId, focusWindow) {
 	//chrome.windows.create(windowParams);
 	if(notificationId){chrome.notifications.clear(notificationId);}
 }
-if(typeof chrome !== "undefined"){
+if(isChromeExtension()){
     /*
      **	Called when the notification is clicked
      */
@@ -218,7 +219,7 @@ function objectLength(obj) {
     return result;
 }
 function showSignInNotification() {
-    if(typeof chrome === "undefined"){
+    if(isChromeExtension()){
         console.log("Can't showSignInNotification because chrome is undefined");
         return;
     }
@@ -231,12 +232,12 @@ function getRequestUrl(path) {
     return url;
 }
 function updateBadgeText(string) {
-    if(typeof chrome !== "undefined"){
+    if(isChromeExtension()){
         chrome.browserAction.setBadgeText({text: string});
     }
 }
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
-    if(typeof chrome === "undefined"){
+    if(isChromeExtension()){
         console.log("Can't checkForNotificationsAndShowPopupIfSo because chrome is undefined");
         return;
     }
@@ -265,7 +266,7 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     return notificationParams;
 }
 function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
-    if(typeof chrome === "undefined"){
+    if(isChromeExtension()){
         console.log("Can't checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary because chrome is undefined");
         return;
     }
