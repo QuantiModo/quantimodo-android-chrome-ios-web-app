@@ -2648,21 +2648,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return trackingReminderNotifications;
     };
-    qmService.getTrackingReminderNotificationsDeferred = function(variableCategoryName){
-        var deferred = $q.defer();
-        var trackingReminderNotifications = qmService.getTrackingReminderNotificationsFromLocalStorage(variableCategoryName);
-        if(trackingReminderNotifications && trackingReminderNotifications.length){
-            deferred.resolve(trackingReminderNotifications);
-            return deferred.promise;
-        }
-        $rootScope.numberOfPendingNotifications = 0;
-        qmService.refreshTrackingReminderNotifications().then(function () {
-            trackingReminderNotifications = qmService.getElementsFromLocalStorageItemWithFilters(
-                'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
-            deferred.resolve(trackingReminderNotifications);
-        }, function(error){deferred.reject(error);});
-        return deferred.promise;
-    };
     qmService.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests){
         var deferred = $q.defer();
         var options = {};
