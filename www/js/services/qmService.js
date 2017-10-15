@@ -2791,17 +2791,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return deferred.promise;
         }
         qmService.deleteTrackingReminder(reminderToDelete.id, function(response){
-            if(response && response.success) {
-                // Delete again in case we refreshed before deletion completed
-                qmService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
-                deferred.resolve();
-            }
-            else {deferred.reject();}
+            // Delete again in case we refreshed before deletion completed
+            qmService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
+            deferred.resolve(response);
         }, function(error){
             //logError(error);
             qmService.deleteTrackingReminderFromLocalStorage(reminderToDelete);
-            //deferred.reject(error);
-            deferred.resolve(); // Not sure why this is returning error on successful deletion
+            deferred.reject(error); // Not sure why this is returning error on successful deletion
         });
         return deferred.promise;
     };
