@@ -12,6 +12,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler) {
+        if(!response){qmService.logError("No response provided to qmSdkApiResponseHandler"); return;}
         console.debug(response.status + " response from " + response.req.url);
         if (error) {
             qmApiGeneralErrorHandler(error, data, response);
