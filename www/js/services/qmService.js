@@ -7,7 +7,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         recordMeasurement: 'ion-compose',
         charts: 'ion-arrow-graph-up-right',
         settings: 'ion-settings',
-        help: 'ion-help'
+        help: 'ion-help',
+        refresh: 'ion-android-refresh'
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler) {
@@ -6716,7 +6717,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         addReminder: { text: '<i class="icon ' + qmService.ionIcons.reminder + '"></i>Add Reminder'},
         charts: { text: '<i class="icon ' + qmService.ionIcons.charts + '"></i>Charts'},
         settings: { text: '<i class="icon ' + qmService.ionIcons.settings + '"></i>Settings'},
-        help: { text: '<i class="icon ' + qmService.ionIcons.help + '"></i>Help'}
+        help: { text: '<i class="icon ' + qmService.ionIcons.help + '"></i>Help'},
+        refresh: { text: '<i class="icon ' + qmService.ionIcons.refresh + '"></i>Refresh'}
     };
     qmService.getHistoryActionSheetButton = function(variableName){
         if(!variableName){variableName = '';}
