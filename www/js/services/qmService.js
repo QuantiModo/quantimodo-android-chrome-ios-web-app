@@ -6686,8 +6686,19 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.getAllReminderTypes = function(variableCategoryName, type){
         var deferred = $q.defer();
         qmService.getTrackingRemindersDeferred(variableCategoryName).then(function (trackingReminders) {
+            var count = 0;
+            if(trackingReminders && trackingReminders.length){count = trackingReminders.length;}
+            qmService.logInfo("Got " + count + " unprocessed " + variableCategoryName +  " category trackingReminders");
             var reminderTypesArray = processTrackingReminders(trackingReminders, variableCategoryName);
-            if(type){deferred.resolve(reminderTypesArray[type]);} else {deferred.resolve(reminderTypesArray);}
+            if(type){
+                count = 0;
+                if(reminderTypesArray[type] && reminderTypesArray[type].length){count = reminderTypesArray[type].length;}
+                qmService.logInfo("Got " + count + " " + variableCategoryName +  " category " + type + "s");
+                deferred.resolve(reminderTypesArray[type]);
+            } else {
+                qmService.logInfo("Returning reminderTypesArray from getTrackingRemindersDeferred");
+                deferred.resolve(reminderTypesArray);
+            }
         });
         return deferred.promise;
     };
