@@ -1710,14 +1710,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
         return defer.promise;
     };
-    qmService.syncPrimaryOutcomeVariableMeasurements = function(){
+    qmService.syncPrimaryOutcomeVariableMeasurements = function(minimumSecondsBetweenGets){
         var defer = $q.defer();
         if(!weHaveUserOrAccessToken()){
             logDebug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
             defer.resolve();
             return defer.promise;
         }
-        var minimumSecondsBetweenGets = 10;
+        if(!minimumSecondsBetweenGets){minimumSecondsBetweenGets = 10;}
         if(!canWeSyncYet("lastMeasurementSyncTime", minimumSecondsBetweenGets)){
             defer.reject('Cannot sync because already did within the last ' + minimumSecondsBetweenGets + ' seconds');
             return defer.promise;
