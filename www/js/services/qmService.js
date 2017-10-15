@@ -1291,15 +1291,20 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
         return deferred.promise;
     };
+    function getDeviceTokenToSync(){return localStorage.getItem('deviceTokenToSync');}
     qmService.registerDeviceToken = function(){
         var deferred = $q.defer();
         if(!$rootScope.isMobile){
             deferred.reject('Not on mobile so not posting device token');
             return deferred.promise;
         }
-        var deviceTokenToSync = localStorage.getItem('deviceTokenToSync');
+        if(!$rootScope.user){
+            deferred.reject('Cannot post device token yet because we are not logged in');
+            return deferred.promise;
+        }
+        var deviceTokenToSync = getDeviceTokenToSync();
         if(!deviceTokenToSync){
-            deferred.reject('No ' + 'deviceTokenToSync' + ' in localStorage');
+            deferred.reject('No deviceTokenToSync in localStorage');
             return deferred.promise;
         }
         if(localStorage.getItem('lastPushTimestamp') > getUnixTimestampInSeconds() - 86400){
@@ -2676,6 +2681,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.getTrackingReminderNotificationsFromApi(params, function(response){
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
+                    if(trackingReminderNotifications.length && $rootScope.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
                     if($rootScope.isAndroid){qmService.showPopupForMostRecentNotification();}
                     if (window.chrome && window.chrome.browserAction) {
                         chrome.browserAction.setBadgeText({text: "?"});
@@ -7742,6 +7748,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 }
             }
         };
+        qmService.registerDeviceToken();
     };
     qmService.setupVariableByVariableObject = function(variableObject) {
         $rootScope.variableName = variableObject.name;
