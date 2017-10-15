@@ -7,7 +7,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         recordMeasurement: 'ion-compose',
         charts: 'ion-arrow-graph-up-right',
         settings: 'ion-settings',
-        help: 'ion-help'
+        help: 'ion-help',
+        refresh: 'ion-android-refresh'
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler) {
@@ -5867,8 +5868,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         };
     }
 
+    function getLastPostedWeatherAtTimeUnixtime() {
+        return Number(qmService.getLocalStorageItemAsString('lastPostedWeatherAt'));
+    }
+
     function alreadyPostedWeatherSinceNoonYesterday(){
-        var lastPostedWeatherAt = Number(qmService.getLocalStorageItemAsString('lastPostedWeatherAt'));
+        var lastPostedWeatherAt = getLastPostedWeatherAtTimeUnixtime();
         if(!lastPostedWeatherAt){return false;}
         if(lastPostedWeatherAt && lastPostedWeatherAt > getYesterdayNoonTimestamp()){
             logDebug("recently posted weather already");
@@ -5905,7 +5910,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if(response && response.data && response.data.userVariables){
                     qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);
                 }
-                if(!lastPostedWeatherAt){qmService.setLocalStorageItem('lastPostedWeatherAt', getUnixTimestampInSeconds());}
+                qmService.setLocalStorageItem('lastPostedWeatherAt', getUnixTimestampInSeconds());
             }, function (error) {logDebug("could not post weather measurements: " + error);});
         }).error(function (error) {
             logError("forecast.io request failed!  error: " + error,  {error_response: error, request_url: url});
@@ -6630,7 +6635,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         addReminder: { text: '<i class="icon ' + qmService.ionIcons.reminder + '"></i>Add Reminder'},
         charts: { text: '<i class="icon ' + qmService.ionIcons.charts + '"></i>Charts'},
         settings: { text: '<i class="icon ' + qmService.ionIcons.settings + '"></i>Settings'},
-        help: { text: '<i class="icon ' + qmService.ionIcons.help + '"></i>Help'}
+        help: { text: '<i class="icon ' + qmService.ionIcons.help + '"></i>Help'},
+        refresh: { text: '<i class="icon ' + qmService.ionIcons.refresh + '"></i>Refresh'}
     };
     qmService.getHistoryActionSheetButton = function(variableName){
         if(!variableName){variableName = '';}
