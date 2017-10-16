@@ -974,8 +974,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return (qmService.getUrlParameter('accessToken')) ? qmService.getUrlParameter('accessToken') : qmService.getUrlParameter('quantimodoAccessToken');
     };
     function authDebug(message) {
-        var tokenDebug = false;
-        if(tokenDebug){logDebug(message);}
+        var tokenDebug = true;
+        if(tokenDebug){logInfo(message);}
     }
     qmService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
@@ -6433,7 +6433,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.setLocalStorageItem('afterLoginGoToUrl', afterLoginGoToUrl);
     }
     qmService.sendToLoginIfNecessaryAndComeBack = function(afterLoginGoToState, afterLoginGoToUrl){
-        logDebug("Called qmService.sendToLoginIfNecessaryAndComeBack");
+        authDebug("Called qmService.sendToLoginIfNecessaryAndComeBack");
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if(!weHaveUserOrAccessToken()){
             if(afterLoginGoToState){
