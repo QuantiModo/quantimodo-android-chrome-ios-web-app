@@ -1,4 +1,4 @@
-angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
+angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope, $http,
 										  qmService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
 										  //$ionicDeploy,
 										  $ionicPlatform) {
@@ -180,7 +180,9 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	}
 	function logOutOfWebsite() {
 		var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
-        qmService.get(logoutUrl);
+        //qmService.get(logoutUrl);
+        var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
+        $http(request);
 		//window.location.replace(logoutUrl);
 	}
 	$scope.logout = function(ev) {
