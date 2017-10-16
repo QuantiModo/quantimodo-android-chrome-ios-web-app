@@ -1,6 +1,3 @@
-/***
-****	EVENT HANDLERS
-***/
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 function getUrlParameter(parameterName, url, shouldDecode) {
     if(!url){url = window.location.href;}
@@ -21,10 +18,122 @@ function getUrlParameter(parameterName, url, shouldDecode) {
     }
     return null;
 }
-var manifest, appSettings;
-if(typeof chrome !== "undefined"){manifest = chrome.runtime.getManifest();}
+var appSettings;
+// SubDomain : Filename
+var appConfigFileNames = {
+    "app" : "quantimodo",
+    "energymodo" : "energymodo",
+    "default" : "default",
+    "ionic" : "quantimodo",
+    "local" : "quantimodo",
+    "medimodo" : "medimodo",
+    "mindfirst" : "mindfirst",
+    "moodimodo" : "moodimodo",
+    "oauth" : "quantimodo",
+    "quantimodo" : "quantimodo",
+    "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
+};
+window.isTruthy = function(value){return value && value !== "false"; }
+window.getDebugMode = function() {
+    if(getUrlParameter('debug') || getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && isTruthy(appSettings.debugMode))){
+        window.debugMode = true;
+    }
+    return window.debugMode;
+};
+window.logDebug = function(message, stackTrace) {
+    if(getDebugMode()){console.debug(message);}
+};
+function getSubDomain(){
+    var full = window.location.host;
+    var parts = full.split('.');
+    return parts[0].toLowerCase();
+}
+function getClientIdFromQueryParameters() {
+    var clientId = getUrlParameter('clientId');
+    if(!clientId){clientId = getUrlParameter('appName');}
+    if(!clientId){clientId = getUrlParameter('lowerCaseAppName');}
+    if(!clientId){clientId = getUrlParameter('quantimodoClientId');}
+    if(clientId){localStorage.setItem('clientId', clientId);}
+    return clientId;
+}
+
+function getQuantiModoClientId() {
+    if(onMobile()){
+        console.debug("Using default.config.js because we're on mobile");
+        return "default"; // On mobile
+    }
+    var clientId = getClientIdFromQueryParameters();
+    if(clientId){
+        console.debug("Using clientIdFromQueryParams: " + clientId);
+        return clientId;
+    }
+    if(!clientId){clientId = localStorage.getItem('clientId');}
+    if(clientId){
+        console.debug("Using clientId From localStorage: " + clientId);
+        return clientId;
+    }
+    if(window.location.href.indexOf('quantimo.do') === -1){
+        console.debug("Using default.config.js because we're not on a quantimo.do domain");
+        return "default"; // On mobile
+    }
+    var subdomain = getSubDomain();
+    var clientIdFromAppConfigName = appConfigFileNames[getSubDomain()];
+    if(clientIdFromAppConfigName){
+        console.debug("Using client id " + clientIdFromAppConfigName + " derived from appConfigFileNames using subdomain: " + subdomain);
+        return clientIdFromAppConfigName;
+    }
+    logDebug("Using subdomain as client id: " + subdomain);
+    return subdomain;
+}
+function onMobile() {
+    return window.location.href.indexOf('https://') === -1;
+}
+var appsManager = { // jshint ignore:line
+    defaultApp : "default",
+    getAppConfig : function(){
+        console.debug('getQuantiModoClientId returns ' + getQuantiModoClientId());
+        if(getQuantiModoClientId()){
+            return 'configs/' + getQuantiModoClientId() + '.js';
+        } else {
+            return 'configs/' + appsManager.defaultApp + '.js';
+        }
+    },
+    getPrivateConfig : function(){
+        if(getQuantiModoClientId()){
+            return './private_configs/'+ getQuantiModoClientId() + '.config.js';
+        } else {
+            return './private_configs/'+ appsManager.defaultApp + '.config.js';
+        }
+    },
+    getUrlParameter: function (parameterName, url, shouldDecode) {
+        return getUrlParameter(parameterName, url, shouldDecode);
+    },
+    getQuantiModoClientId: function () {
+        return getQuantiModoClientId();
+    },
+    getQuantiModoApiUrl: function () {
+        var apiUrl = getUrlParameter('apiUrl');
+        if(!apiUrl){apiUrl = localStorage.getItem('apiUrl');}
+        if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
+        if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
+        if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
+        if(!apiUrl){apiUrl = "https://app.quantimo.do";}
+        if(apiUrl.indexOf("https://") === -1){apiUrl = "https://" + apiUrl;}
+        apiUrl = apiUrl.replace("https://https", "https");
+        return apiUrl;
+    },
+    shouldWeUseLocalConfig: function (clientId) {
+        if(clientId === "default"){return true;}
+        if(onMobile()){return true;}
+        var designMode = window.location.href.indexOf('configuration-index.html') !== -1;
+        if(designMode){return false;}
+        if(getClientIdFromQueryParameters() === 'app'){return true;}
+    }
+};
+function isChromeExtension(){return (typeof chrome !== "undefined" && typeof chrome.runtime !== "undefined" && typeof chrome.runtime.onInstalled !== "undefined");}
+function getChromeManifest() {if(isChromeExtension()){return manifest = chrome.runtime.getManifest();}}
 function getAppName() {
-    if(manifest){return manifest.name;}
+    if(getChromeManifest()){return getChromeManifest().name;}
     return getUrlParameter('appName');
 }
 function getClientId() {
@@ -32,7 +141,7 @@ function getClientId() {
     return getUrlParameter('clientId');
 }
 function getAppVersion() {
-    if(manifest){return manifest.version;}
+    if(getChromeManifest()){return getChromeManifest().version;}
     if(appSettings){return appSettings.versionNumber;}
     return getUrlParameter('appVersion');
 }
@@ -66,14 +175,16 @@ function getQueryParameterString() {
     }
     showSignInNotification();
 }
+
+
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', 'configs/default.config.json', true);
     xobj.onreadystatechange = function () {
-        if (xobj.readyState == 4) {
+        if (xobj.readyState === 4) {
             var json = xobj.responseText;
-            console.log("AppSettings:" + json);
+            logDebug("AppSettings:" + json);
             appSettings = JSON.parse(json);
         }
     };
@@ -84,7 +195,7 @@ function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
 }
-if(typeof chrome !== "undefined") {
+if(isChromeExtension()) {
     /*
     **	Called when the extension is installed
     */
@@ -112,12 +223,12 @@ if(typeof chrome !== "undefined") {
     });
 }
 function openOrFocusPopupWindow(windowParams, focusWindow) {
-    if(typeof chrome === "undefined"){
-        console.log("Can't open popup because chrome is undefined");
+    if(!isChromeExtension()){
+        logDebug("Can't open popup because chrome is undefined");
         return;
     }
     windowParams.focused = true;
-    console.log('openOrFocusPopupWindow', windowParams );
+    logDebug('openOrFocusPopupWindow', windowParams );
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
@@ -144,8 +255,8 @@ function openOrFocusPopupWindow(windowParams, focusWindow) {
     }
 }
 function openPopup(notificationId, focusWindow) {
-    if(typeof chrome === "undefined"){
-        console.log("Can't open popup because chrome is undefined");
+    if(isChromeExtension()){
+        logDebug("Can't open popup because chrome is undefined");
         return;
     }
 	if(!notificationId){notificationId = null;}
@@ -166,7 +277,7 @@ function openPopup(notificationId, focusWindow) {
 	//chrome.windows.create(windowParams);
 	if(notificationId){chrome.notifications.clear(notificationId);}
 }
-if(typeof chrome !== "undefined"){
+if(isChromeExtension()){
     /*
      **	Called when the notification is clicked
      */
@@ -184,7 +295,6 @@ if(typeof chrome !== "undefined"){
         if(request.message === "uploadMeasurements") {pushMeasurements(request.payload, null);}
     });
 }
-
 /***
 ****	HELPER FUNCTIONS
 ***/
@@ -192,6 +302,7 @@ function pushMeasurements(measurements, onDoneListener) {
 	postToQuantiModo(measurements,"v1/measurements", onDoneListener);
 }
 function postTrackingReminderNotification(trackingReminderNotification, onDoneListener) {
+    deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'trackingReminderNotificationId', trackingReminderNotification.trackingReminderNotificationId);
     postToQuantiModo(trackingReminderNotification, "v1/trackingReminderNotifications", onDoneListener);
 }
 function postToQuantiModo(body, path, onDoneListener) {
@@ -217,7 +328,7 @@ function objectLength(obj) {
     return result;
 }
 function showSignInNotification() {
-    if(typeof chrome === "undefined"){
+    if(isChromeExtension()){
         console.log("Can't showSignInNotification because chrome is undefined");
         return;
     }
@@ -230,12 +341,12 @@ function getRequestUrl(path) {
     return url;
 }
 function updateBadgeText(string) {
-    if(typeof chrome !== "undefined"){
+    if(isChromeExtension()){
         chrome.browserAction.setBadgeText({text: string});
     }
 }
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
-    if(typeof chrome === "undefined"){
+    if(isChromeExtension()){
         console.log("Can't checkForNotificationsAndShowPopupIfSo because chrome is undefined");
         return;
     }
@@ -264,7 +375,7 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     return notificationParams;
 }
 function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
-    if(typeof chrome === "undefined"){
+    if(isChromeExtension()){
         console.log("Can't checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary because chrome is undefined");
         return;
     }
@@ -302,4 +413,108 @@ function IsJsonString(str) {
         return false;
     }
     return true;
+}
+window.deleteElementsOfLocalStorageItemByProperty = function(localStorageItemName, propertyName, propertyValue){
+    var elementsToKeep = [];
+    var localStorageItemArray = JSON.parse(localStorage.getItem(localStorageItemName));
+    if(!localStorageItemArray){
+        logError("Local storage item " + localStorageItemName + " not found");
+    } else {
+        for(var i = 0; i < localStorageItemArray.length; i++){
+            if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
+        }
+        localStorage.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+    }
+};
+window.logError = function(message, additionalMetaData, stackTrace) {
+    if(message && message.message){message = message.message;}
+    bugsnagNotify(message, additionalMetaData, stackTrace);
+    console.error(message);
+};
+function addQueryParameter(url, name, value){
+    if(url.indexOf('?') === -1){
+        return url + "?" + name + "=" + value;
+    }
+    return url + "&" + name + "=" + value;
+}
+function bugsnagNotify(message, additionalMetaData, stackTrace){
+    function obfuscateSecrets(object){
+        if(typeof object !== 'object'){return object;}
+        try {
+            object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
+        } catch (error) {
+            Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
+            //qmService.logError(error, object); // Avoid infinite recursion
+            return object;
+        }
+        for (var propertyName in object) {
+            if (object.hasOwnProperty(propertyName)) {
+                var lowerCaseProperty = propertyName.toLowerCase();
+                if(lowerCaseProperty.indexOf('secret') !== -1 || lowerCaseProperty.indexOf('password') !== -1 || lowerCaseProperty.indexOf('token') !== -1){
+                    object[propertyName] = "HIDDEN";
+                } else {
+                    object[propertyName] = obfuscateSecrets(object[propertyName]);
+                }
+            }
+        }
+        return object;
+    }
+    if(typeof Bugsnag !== "undefined"){ console.debug("Bugsnag not defined"); return; }
+    function getTestUrl() {
+        function getCurrentRoute() {
+            var parts = window.location.href.split("#/app");
+            return parts[1];
+        }
+        var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
+        if($rootScope.user){url +=  "?userEmail=" + encodeURIComponent($rootScope.user.email);}
+        return url;
+    }
+    function getInstalledPluginList(){
+        function localNotificationsPluginInstalled() {
+            if(typeof cordova === "undefined"){return false;}
+            if(typeof cordova.plugins === "undefined"){return false;}
+            if(typeof cordova.plugins.notification === "undefined"){return false;}
+            return true;
+        }
+        return {
+            "Analytics": (typeof Analytics !== "undefined"),
+            "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined"),
+            "cordova.plugins.notification": localNotificationsPluginInstalled(),
+            "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
+            "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus) ? true : false,
+            "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
+            "ionic": (typeof ionic !== "undefined"),
+            "ionicDeploy": (typeof $ionicDeploy !== "undefined"),
+            "PushNotification": (typeof PushNotification !== "undefined"),
+            "SplashScreen": (typeof navigator !== "undefined" && typeof navigator.splashscreen !== "undefined"),
+            "UserVoice": (typeof UserVoice !== "undefined")
+        };
+    }
+    var name = message;
+    if(window.mobileDebug){alert(message);}
+    var metaData = {groupingHash: name, stackTrace: stackTrace};
+    metaData.push_data = {
+        "deviceTokenOnServer": localStorage.getItem('deviceTokenOnServer'),
+        "deviceTokenToSync": localStorage.getItem('deviceTokenToSync')
+    };
+    if(typeof config !== "undefined"){
+        metaData.build_server = config.appSettings.buildServer;
+        metaData.build_link = config.appSettings.buildLink;
+    }
+    metaData.test_app_url = getTestUrl();
+    if(additionalMetaData && additionalMetaData.apiResponse){
+        var request = additionalMetaData.apiResponse.req;
+        metaData.test_api_url = request.method + " " + request.url;
+        if(request.header.Authorization){
+            metaData.test_api_url = addQueryParameter(metaData.test_api_url, "access_token", request.header.Authorization.replace("Bearer ", ""));
+        }
+        console.error("API ERROR URL " + metaData.test_api_url);
+        delete additionalMetaData.apiResponse;
+    }
+    //metaData.appSettings = config.appSettings;  // Request Entity Too Large
+    if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
+    //if($rootScope.user){metaData.user = $rootScope.user;} // Request Entity Too Large
+    metaData.installed_plugins = getInstalledPluginList();
+    Bugsnag.context = $state.current.name;
+    Bugsnag.notify(name, message, obfuscateSecrets(metaData), "error");
 }
