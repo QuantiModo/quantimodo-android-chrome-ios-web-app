@@ -323,6 +323,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             destructiveButtonClicked: function() {
                 favorite.hide = true;
                 qmService.deleteTrackingReminderDeferred(favorite);
+                return true;
             }
         });
         $timeout(function() {hideSheet();}, 20000);
