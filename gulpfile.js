@@ -683,7 +683,7 @@ gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToCh
             'default_popup': 'chrome_default_popup_iframe.html'
         },
         'background': {
-            'scripts': ['js/chrome/background.js'],
+            'scripts': ['js/qmHelpers.js'],
             'persistent': false
         }
     };
