@@ -362,6 +362,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 backView.stateParams = stateParams;
                 backView.stateId = stateId;
             }
+            qmService.logDebug("Going back to " + backView.stateId + "  with stateParams " + JSON.stringify(backView.stateParams));
             $ionicHistory.goBack();
         } else {
             qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);

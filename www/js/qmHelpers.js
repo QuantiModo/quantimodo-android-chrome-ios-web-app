@@ -33,15 +33,63 @@ var appConfigFileNames = {
     "quantimodo" : "quantimodo",
     "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
-window.isTruthy = function(value){return value && value !== "false"; }
+function getStackTrace() {
+    var err = new Error();
+    var stackTrace = err.stack;
+    stackTrace = stackTrace.substring(stackTrace.indexOf('getStackTrace')).replace('getStackTrace', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logDebug')).replace('window.logDebug', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logInfo')).replace('window.logInfo', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logError')).replace('window.logError', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('qmService.logDebug')).replace('qmService.logDebug', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('qmService.logInfo')).replace('qmService.logInfo', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('qmService.logError')).replace('qmService.logError', '');
+    return stackTrace;
+}
+function addStackTraceToMessage(message, stackTrace) {
+    if(message.toLowerCase().indexOf('stacktrace') !== -1){return message;}
+    if(!stackTrace){stackTrace = getStackTrace();}
+    return message + ".  StackTrace: " + stackTrace;
+}
+function addCallerFunctionToMessage(message) {
+    var calleeFunction = arguments.callee.caller.caller;
+    if(calleeFunction && calleeFunction.name && calleeFunction.name !== ""){
+        message = "callee " + calleeFunction.name + ": " + message
+    } else if (getDebugMode()) {
+        return addStackTraceToMessage(message);
+    }
+    try {
+        var callerFunction = calleeFunction.caller;
+    } catch (error) {
+        console.error(error);
+    }
+    if(callerFunction && callerFunction.name && callerFunction.name !== ""){
+        return "Caller " + callerFunction.name + " called " + message;
+    } else if (getDebugMode()) {
+        return addStackTraceToMessage(message);
+    }
+    return message;
+}
+window.isTruthy = function(value){return value && value !== "false"; };
 window.getDebugMode = function() {
+    return true;
     if(getUrlParameter('debug') || getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && isTruthy(appSettings.debugMode))){
         window.debugMode = true;
     }
     return window.debugMode;
 };
 window.logDebug = function(message, stackTrace) {
+    message = addCallerFunctionToMessage(message);
     if(getDebugMode()){console.debug(message);}
+};
+window.logInfo = function(message, stackTrace) {
+    message = addCallerFunctionToMessage(message);
+    console.info(message);
+};
+window.logError = function(message, additionalMetaData, stackTrace) {
+    if(message && message.message){message = message.message;}
+    message = addCallerFunctionToMessage(message);
+    bugsnagNotify(message, additionalMetaData, stackTrace);
+    console.error(message);
 };
 function getSubDomain(){
     var full = window.location.host;
@@ -426,11 +474,7 @@ window.deleteElementsOfLocalStorageItemByProperty = function(localStorageItemNam
         localStorage.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
     }
 };
-window.logError = function(message, additionalMetaData, stackTrace) {
-    if(message && message.message){message = message.message;}
-    bugsnagNotify(message, additionalMetaData, stackTrace);
-    console.error(message);
-};
+
 function addQueryParameter(url, name, value){
     if(url.indexOf('?') === -1){
         return url + "?" + name + "=" + value;
@@ -444,7 +488,7 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
             object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
         } catch (error) {
             Bugsnag.notify("Could not decouple object: " + error , "object = JSON.parse(JSON.stringify(object))", object, "error");
-            //qmService.logError(error, object); // Avoid infinite recursion
+            //logError(error, object); // Avoid infinite recursion
             return object;
         }
         for (var propertyName in object) {
