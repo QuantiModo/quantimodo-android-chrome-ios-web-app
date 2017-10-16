@@ -875,6 +875,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.setLocalStorageItem('onboarded', true);
                 qmService.setLocalStorageItem('introSeen', true);
                 qmService.setLocalStorageItem('afterLoginGoToState', null);
+                qmService.setLocalStorageItem('afterLoginGoToUrl', null);
             }
         }
         authDebug("getAccessTokenFromUrl: returning this access token: " + $rootScope.accessTokenFromUrl);
