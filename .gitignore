@@ -93,7 +93,6 @@ www/index.html
 www/custom-lib/quantimodo/
 .DS_Store
 .io-config.json
-
 www/data/units\.json
-
 ghostinspector\.json
+ngrok*

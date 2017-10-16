@@ -404,6 +404,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     var canWeMakeRequestYet = function(type, route, options){
         var blockRequests = false;
+        if(options && options.blockRequests){blockRequests = options.blockRequests;}
         var minimumSecondsBetweenRequests;
         if(options && options.minimumSecondsBetweenRequests){
             minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;
@@ -418,7 +419,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(options){metaData.options = options;}
             qmService.logError(message);
             if(!isTestUser()){Bugsnag.notify(name, message, metaData, "error");}
-            if(blockRequests){return false;}
+            if(blockRequests){
+                qmService.logError("BLOCKING REQUEST because " + message);
+                return false;
+            }
         }
         qmService.setLocalStorageItem(requestVariableName, Math.floor(Date.now() / 1000));
         return true;
@@ -1559,7 +1563,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return primaryOutcomeMeasurements;
     }
     function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
-        if(getUnixTimestampInSeconds() - localStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
+        if(localStorage.getItem(localStorageItemName) && getUnixTimestampInSeconds() - localStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
             var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
             qmService.logErrorOrInfoIfTesting(errorMessage);
             return false;
@@ -2595,7 +2599,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var deferred = $q.defer();
         var options = {};
         options.minimumSecondsBetweenRequests = 3;
-        if(minimumSecondsBetweenRequests){options.minimumSecondsBetweenRequests = minimumSecondsBetweenRequests;}
+        if(minimumSecondsBetweenRequests){
+            options.minimumSecondsBetweenRequests = minimumSecondsBetweenRequests;
+            options.blockRequests = true;
+        }
         if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', options)){
             deferred.reject('Already called refreshTrackingReminderNotifications within last ' + options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
             return deferred.promise;
