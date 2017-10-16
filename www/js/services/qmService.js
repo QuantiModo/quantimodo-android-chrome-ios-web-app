@@ -2408,31 +2408,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!lastGotNotificationsAt){ lastGotNotificationsAt = 0; }
         return parseInt((getUnixTimestampInMilliseconds() - lastGotNotificationsAt)/1000);
     };
-    qmService.postTrackingRemindersDeferred = function(trackingRemindersArray){
-        var deferred = $q.defer();
-        var postTrackingRemindersToApiAndHandleResponse = function(){
-            qmService.postTrackingRemindersToApi(trackingRemindersArray, function(response){
-                if(response && response.data){
-                    if(response.data.trackingReminderNotifications){
-                        // Don't update inbox because it might add notifications that we have already tracked since the API returned these ones
-                        //putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);
-                        qmService.setLocalStorageItem('trackingReminderNotifications',  JSON.stringify(response.data.trackingReminderNotifications));
-                    }
-                    qmService.deleteItemFromLocalStorage('trackingReminderSyncQueue');
-                    if(response.data.trackingReminders){qmService.setLocalStorageItem('trackingReminders', JSON.stringify(response.data.trackingReminders));}
-                    if(response.data.userVariables){qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);}
-                }
-                deferred.resolve(response);
-            }, function(error){deferred.reject(error);});
-        };
-        qmService.postTrackingReminderNotificationsDeferred().then(function () {
-            postTrackingRemindersToApiAndHandleResponse();
-        }, function(error){
-            postTrackingRemindersToApiAndHandleResponse();
-            deferred.reject(error);
-        });
-        return deferred.promise;
-    };
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
         var trackingReminderNotificationsArray = qmService.getLocalStorageItemAsObject('notificationsSyncQueue');
@@ -2752,11 +2727,37 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var deferred = $q.defer();
         var trackingReminderSyncQueue = qmService.getLocalStorageItemAsObject('trackingReminderSyncQueue');
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
-            qmService.postTrackingRemindersDeferred(trackingReminderSyncQueue).then(function (response) {
-                qmService.setLocalStorageItem('trackingReminders', JSON.stringify(response.trackingReminders));
-                putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.trackingReminderNotifications);
-                deferred.resolve(response);
-            }, function(error) { qmService.logError(error); });
+            var postTrackingRemindersToApiAndHandleResponse = function(){
+                qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
+                    if(response && response.data){
+                        qmService.deleteItemFromLocalStorage('trackingReminderSyncQueue');
+                        if(response.data.userVariables){qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);}
+                        if(!response.data.trackingReminders){
+                            qmService.logError("No response.trackingReminders returned from postTrackingRemindersDeferred")
+                        } else if(!response.data.trackingReminders.length){
+                            qmService.logError("response.trackingReminders is an empty array in postTrackingRemindersDeferred")
+                        } else {
+                            qmService.setLocalStorageItem('trackingReminders', JSON.stringify(response.data.trackingReminders));
+                        }
+                        if(!response.data.trackingReminderNotifications){
+                            qmService.logError("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
+                        } else if(!response.data.trackingReminderNotifications.length){
+                            qmService.logError("response.trackingReminderNotifications is an empty array in postTrackingRemindersDeferred")
+                        } else {
+                            // Don't update inbox because it might add notifications that we have already tracked since the API returned these ones
+                            //putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);
+                            qmService.setLocalStorageItem('trackingReminderNotifications',  JSON.stringify(response.data.trackingReminderNotifications));
+                        }
+                    }
+                    deferred.resolve(response);
+                }, function(error){deferred.reject(error);});
+            };
+            qmService.postTrackingReminderNotificationsDeferred().then(function () {
+                postTrackingRemindersToApiAndHandleResponse();
+            }, function(error){
+                postTrackingRemindersToApiAndHandleResponse();
+                deferred.reject(error);
+            });
         } else {
             qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
                 qmService.setLocalStorageItem('trackingReminders', JSON.stringify(trackingReminders));
