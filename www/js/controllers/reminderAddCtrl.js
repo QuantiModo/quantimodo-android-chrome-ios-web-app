@@ -318,7 +318,7 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         if($scope.state.trackingReminder.id){qmService.deleteElementOfLocalStorageItemById('trackingReminders', $scope.state.trackingReminder.id);}
         qmService.showBasicLoader();
         qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('trackingReminderSyncQueue', remindersArray).then(function() {
-            qmService.postTrackingRemindersDeferred(remindersArray).then(function () {
+            qmService.syncTrackingReminders(true).then(function () {
                 var toastMessage = $scope.state.trackingReminder.variableName + ' saved';
                 qmService.showInfoToast(toastMessage);
                 qmService.hideLoader();
