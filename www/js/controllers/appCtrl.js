@@ -438,15 +438,15 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     var sendCouponEmail = function () {
         qmService.sendEmailViaAPIDeferred('couponInstructions');
-        qmService.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.', event);
+        qmService.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.');
     };
     var sendFitbitEmail = function () {
         qmService.sendEmailViaAPIDeferred('fitbit');
-        qmService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
+        qmService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.');
     };
     var sendChromeEmail = function () {
         qmService.sendEmailViaAPIDeferred('chrome');
-        qmService.showMaterialAlert('Get the Chrome Extension', 'Please check your email at ' +  $rootScope.user.email + ' for your link.', event);
+        qmService.showMaterialAlert('Get the Chrome Extension', 'Please check your email at ' +  $rootScope.user.email + ' for your link.');
     };
     $scope.sendEmailAfterVerification = function(emailType) {
         if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }
