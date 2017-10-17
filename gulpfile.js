@@ -1934,6 +1934,21 @@ gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
         'buildAndroidApp',
         callback);
 });
+gulp.task('buildAllChromeExtensionsAndAndroidAppsWithoutCleaning', function (callback) {
+    runSequence(
+        'cleanBuildFolder',
+        'prepareRepositoryForAndroidWithoutCleaning',
+        'setMediModoEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'setMoodiModoEnvs',
+        'buildChromeExtension',
+        //'buildAndroidApp',
+        'setQuantiModoEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        callback);
+});
 gulp.task('buildQuantiModoChromeExtension', function (callback) {
     runSequence(
         'setQuantiModoEnvs',
