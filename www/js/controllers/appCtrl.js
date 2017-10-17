@@ -323,6 +323,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             destructiveButtonClicked: function() {
                 favorite.hide = true;
                 qmService.deleteTrackingReminderDeferred(favorite);
+                return true;
             }
         });
         $timeout(function() {hideSheet();}, 20000);
@@ -348,9 +349,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             var backView = $ionicHistory.backView();
             var stateId = backView.stateName;
             if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
-                $ionicHistory.goBack(-2);
+                $ionicHistory.removeBackView();
+                backView = $ionicHistory.backView();  // TODO: Figure out why $stateParams are null
+                stateId = backView.stateName;
+                //$ionicHistory.goBack(-2);
                 //qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
-                return;
+                //return;
             }
             if(stateParams){
                 for (var key in stateParams) {
@@ -359,6 +363,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 backView.stateParams = stateParams;
                 backView.stateId = stateId;
             }
+            qmService.logDebug("Going back to " + backView.stateId + "  with stateParams " + JSON.stringify(backView.stateParams));
             $ionicHistory.goBack();
         } else {
             qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
@@ -435,15 +440,15 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     var sendCouponEmail = function () {
         qmService.sendEmailViaAPIDeferred('couponInstructions');
-        qmService.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.', event);
+        qmService.showMaterialAlert('Coupon Redemption', 'Please go check your email at ' +  $rootScope.user.email + ' for instructions to redeem your coupon.');
     };
     var sendFitbitEmail = function () {
         qmService.sendEmailViaAPIDeferred('fitbit');
-        qmService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.', event);
+        qmService.showMaterialAlert('Get Fitbit', 'Please check your email at ' +  $rootScope.user.email + ' for instructions to get and connect Fitbit.');
     };
     var sendChromeEmail = function () {
         qmService.sendEmailViaAPIDeferred('chrome');
-        qmService.showMaterialAlert('Get the Chrome Extension', 'Please check your email at ' +  $rootScope.user.email + ' for your link.', event);
+        qmService.showMaterialAlert('Get the Chrome Extension', 'Please check your email at ' +  $rootScope.user.email + ' for your link.');
     };
     $scope.sendEmailAfterVerification = function(emailType) {
         if(emailType === 'couponInstructions'){ verifyEmailAddressAndExecuteCallback(sendCouponEmail); }

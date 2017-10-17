@@ -27,7 +27,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		noRemindersText: "You don't have any reminders, yet.",
 		noRemindersIcon: "ion-android-notifications-none"
 	};
-	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter RemindersManageCtrl");
+	$scope.$on('$ionicView.beforeEnter', function(e) { qmService.logInfo("beforeEnter RemindersManageCtrl");
 		if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
 		qmService.showBasicLoader();
 		$rootScope.hideNavigationMenu = false;
@@ -56,6 +56,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		}
         actionButtons[4] = qmService.actionSheetButtons.recordMeasurement;
         actionButtons[5] = qmService.actionSheetButtons.charts;
+        actionButtons[6] = qmService.actionSheetButtons.refresh;
 		$scope.state.showButtons = true;
 		getTrackingReminders();
 		$rootScope.showActionSheetMenu = function() {
@@ -71,6 +72,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
                     if(index === 3){qmService.goToState('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 4){qmService.goToState('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 5){qmService.goToState('app.chartSearch', {variableCategoryName : $stateParams.variableCategoryName});}
+                    if(index === 6){$scope.refreshReminders();}
 					return true;
 				}
 			});
@@ -91,12 +93,18 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	function addRemindersToScope(allTrackingReminderTypes) {
 		hideLoader();
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
+			qmService.logInfo("No reminders!");
 			$scope.state.showNoRemindersCard = true;
 			return;
 		}
+        qmService.logInfo("Got " + allTrackingReminderTypes.allTrackingReminders.length  + " " + $stateParams.variableCategoryName +
+			" category allTrackingReminderTypes.allTrackingReminders!");
 		$scope.state.showNoRemindersCard = false;
 		$scope.state.favorites = allTrackingReminderTypes.favorites;
 		$scope.state.trackingReminders = allTrackingReminderTypes.trackingReminders;
+        var count = 0;
+        if(allTrackingReminderTypes.trackingReminders && allTrackingReminderTypes.trackingReminders.length){count = allTrackingReminderTypes.trackingReminders.length;}
+        qmService.logInfo("Got " + count + " " + $stateParams.variableCategoryName +  " category allTrackingReminderTypes.trackingReminders");
 		$scope.state.archivedTrackingReminders = allTrackingReminderTypes.archivedTrackingReminders;
 		showAppropriateHelpInfoCards();
 	}
@@ -108,7 +116,11 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		});
 	};
 	var getTrackingReminders = function(){
-		qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {addRemindersToScope(allTrackingReminderTypes);});
+		if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
+		qmService.logInfo("Getting " + $stateParams.variableCategoryName + " category reminders");
+		qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {
+			addRemindersToScope(allTrackingReminderTypes);
+		});
 	};
 	$scope.showMoreNotificationInfoPopup = function(){
 		var moreNotificationInfoPopup = $ionicPopup.show({
@@ -140,7 +152,8 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	};
 	$scope.deleteReminder = function(reminder){
 		reminder.hide = true;
-		qmService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId).then(function(){getTrackingReminders();});
+		qmService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId);
+			//.then(function(){getTrackingReminders();});
 		qmService.deleteTrackingReminderDeferred(reminder).then(function(){console.debug("Reminder deleted");}, function(error){
 			qmService.logError('Failed to Delete Reminder: ' + error);
 		});

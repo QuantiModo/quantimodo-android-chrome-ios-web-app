@@ -100,6 +100,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             navigator.splashscreen.hide();
         }
         qmService.hideLoader(0.5);
+        qmService.getDevCredentials();
     });
     $scope.register = function() {
         var register = true;

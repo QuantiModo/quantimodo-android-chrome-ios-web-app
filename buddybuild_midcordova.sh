@@ -2,6 +2,8 @@
 
 echo "=== buddybuild_midcordova.sh ==="
 
+npm install -g gulp bower
+
 #echo "Running gulp configureAppAfterNpmInstall in buddybuild_midcordova.sh"
 #gulp configureAppAfterNpmInstall
 

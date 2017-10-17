@@ -1,4 +1,4 @@
-angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope,
+angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope, $http,
 										  qmService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
 										  //$ionicDeploy,
 										  $ionicPlatform) {
@@ -7,6 +7,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.userEmail = qmService.getUrlParameter('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+        $scope.drawOverAppsEnabled = (localStorage.getItem('drawOverAppsEnabled') == 'true');
 		$rootScope.hideNavigationMenu = false;
 		if(qmService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
@@ -49,7 +50,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		if($rootScope.isMobile){qmService.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 		} else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
 	};
-
 	$scope.sendBugReport = function() {
 		qmService.sendBugReport();
 	};
@@ -180,7 +180,10 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	}
 	function logOutOfWebsite() {
 		var logoutUrl = qmService.getQuantiModoUrl("api/v2/auth/logout?afterLogoutGoToUrl=" + encodeURIComponent(qmService.getQuantiModoUrl('ionic/Modo/www/index.html#/app/intro')));
-		window.location.replace(logoutUrl);
+        //qmService.get(logoutUrl);
+        var request = {method: 'GET', url: logoutUrl, responseType: 'json', headers: {'Content-Type': "application/json"}};
+        $http(request);
+		//window.location.replace(logoutUrl);
 	}
 	$scope.logout = function(ev) {
 		$rootScope.accessTokenFromUrl = null;
@@ -301,4 +304,5 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
         } else { webDowngrade(); }
     };
+    if($rootScope.isAndroid){$scope.toggleDrawOverApps = function(ev){qmService.toggleDrawOverApps(ev);};}
 });
