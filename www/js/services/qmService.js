@@ -2537,7 +2537,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(trackingReminderNotifications.length){
             $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
         }
-        return window.getTrackingReminderNotificationsFromLocalStorage ;
+        return trackingReminderNotifications;
     };
     qmService.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests){
         var deferred = $q.defer();
@@ -5435,14 +5435,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return matchingElements;
     };
     qmService.sortByProperty = function(arrayToSort, propertyName){
-        if(!arrayToSort){return [];}
-        if(arrayToSort.length < 2){return arrayToSort;}
-        if(propertyName.indexOf('-') > -1){
-            arrayToSort.sort(function(a, b){return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];});
-        } else {
-            arrayToSort.sort(function(a, b){return a[propertyName] - b[propertyName];});
-        }
-        return arrayToSort;
+        return window.sortByProperty(arrayToSort, propertyName);
     };
     qmService.getLocalStorageItemAsObject = function(key) {
         if ($rootScope.isChromeApp) {
@@ -7717,10 +7710,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!drawOverAppsEnabled()){qmService.logDebug("Can only show popups on Android"); return;}
         var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
         if(trackingReminderNotification) {
-            qmService.drawOverAppsNotification(trackingReminderNotification);
-        } else {
-            qmService.logDebug("No notifications for popup");
+            return qmService.drawOverAppsNotification(trackingReminderNotification);
         }
+        window.refreshNotificationsIfEmpty();
+        qmService.logDebug("No notifications for popup");
     };
     return qmService;
 });

@@ -664,10 +664,27 @@ window.setLocalStorageItem = function(key, value){
 };
 window.getMostRecentRatingNotificationFromLocalStorage = function (){
     var trackingReminderNotifications = window.getElementsFromLocalStorageItemWithFilters('trackingReminderNotifications', 'unitAbbreviatedName', '/5');
+    trackingReminderNotifications = window.sortByProperty(trackingReminderNotifications, 'trackingReminderNotificationTime');
     if(trackingReminderNotifications.length) {
-        window.logDebug("Got this notification: " + JSON.stringify(trackingReminderNotifications[0]));
-        return trackingReminderNotifications[0];
+        window.logDebug("Got this notification: " + JSON.stringify(trackingReminderNotifications[trackingReminderNotifications.length - 1]));
+        return trackingReminderNotifications[trackingReminderNotifications.length - 1];
     } else {
+        window.refreshNotificationsIfEmpty();
         window.logDebug("No notifications for popup");
+    }
+};
+window.sortByProperty = function(arrayToSort, propertyName){
+    if(!arrayToSort){return [];}
+    if(arrayToSort.length < 2){return arrayToSort;}
+    if(propertyName.indexOf('-') > -1){
+        arrayToSort.sort(function(a, b){return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];});
+    } else {
+        arrayToSort.sort(function(a, b){return a[propertyName] - b[propertyName];});
+    }
+    return arrayToSort;
+};
+window.refreshNotificationsIfEmpty = function(){
+    if(!window.getTrackingReminderNotificationsFromLocalStorage().length){
+        refreshNotificationsAndShowPopupIfSo();
     }
 };
