@@ -163,6 +163,11 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
     }
 	var getFallbackInboxContent = function () {
 		if(!$scope.state.numberOfDisplayedNotifications){
+            if($stateParams.variableCategoryName){
+				qmService.getTrackingReminderNotificationsFromApi({variableCategoryName: $stateParams.variableCategoryName, onlyPast: true}, function (response) {
+                    $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(response.data);
+                });
+            }
 			getWeekdayCharts();
             getDiscoveries();
 		}

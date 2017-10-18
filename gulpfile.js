@@ -1792,7 +1792,7 @@ gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     logInfo('gulp configureAppAfterNpmInstall');
     if (process.env.BUDDYBUILD_SCHEME) {
-        process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0,str.indexOf(' '));
+        process.env.QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
         logInfo('BUDDYBUILD_SCHEME is ' + process.env.BUDDYBUILD_SCHEME + ' so going to prepareIosApp');
         runSequence(
             'prepareIosApp',
@@ -1923,6 +1923,21 @@ gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
     runSequence(
         'cleanBuildFolder',
         'prepareRepositoryForAndroid',
+        'setMediModoEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        'setMoodiModoEnvs',
+        'buildChromeExtension',
+        //'buildAndroidApp',
+        'setQuantiModoEnvs',
+        'buildChromeExtension',
+        'buildAndroidApp',
+        callback);
+});
+gulp.task('buildAllChromeExtensionsAndAndroidAppsWithoutCleaning', function (callback) {
+    runSequence(
+        'cleanBuildFolder',
+        'prepareRepositoryForAndroidWithoutCleaning',
         'setMediModoEnvs',
         'buildChromeExtension',
         'buildAndroidApp',
