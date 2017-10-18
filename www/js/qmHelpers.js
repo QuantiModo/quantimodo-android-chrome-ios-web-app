@@ -1,5 +1,5 @@
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
-function getUrlParameter(parameterName, url, shouldDecode) {
+window.getUrlParameter = function(parameterName, url, shouldDecode) {
     if(!url){url = window.location.href;}
     if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
     if(url.split('?').length > 1){
@@ -36,7 +36,7 @@ var appConfigFileNames = {
 window.isTruthy = function(value){return value && value !== "false"; };
 window.getDebugMode = function() {
     //return true;
-    if(getUrlParameter('debug') || getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && window.isTruthy(appSettings.debugMode))){
+    if(window.getUrlParameter('debug') || window.getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && window.isTruthy(appSettings.debugMode))){
         window.debugMode = true;
     }
     return window.debugMode;
@@ -98,10 +98,10 @@ function getSubDomain(){
     return parts[0].toLowerCase();
 }
 function getClientIdFromQueryParameters() {
-    var clientId = getUrlParameter('clientId');
-    if(!clientId){clientId = getUrlParameter('appName');}
-    if(!clientId){clientId = getUrlParameter('lowerCaseAppName');}
-    if(!clientId){clientId = getUrlParameter('quantimodoClientId');}
+    var clientId = window.getUrlParameter('clientId');
+    if(!clientId){clientId = window.getUrlParameter('appName');}
+    if(!clientId){clientId = window.getUrlParameter('lowerCaseAppName');}
+    if(!clientId){clientId = window.getUrlParameter('quantimodoClientId');}
     if(clientId){localStorage.setItem('clientId', clientId);}
     return clientId;
 }
@@ -154,13 +154,13 @@ var appsManager = { // jshint ignore:line
         }
     },
     getUrlParameter: function (parameterName, url, shouldDecode) {
-        return getUrlParameter(parameterName, url, shouldDecode);
+        return window.getUrlParameter(parameterName, url, shouldDecode);
     },
     getQuantiModoClientId: function () {
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        var apiUrl = getUrlParameter('apiUrl');
+        var apiUrl = window.getUrlParameter('apiUrl');
         if(!apiUrl){apiUrl = localStorage.getItem('apiUrl');}
         if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
@@ -182,21 +182,21 @@ function isChromeExtension(){return (typeof chrome !== "undefined" && typeof chr
 function getChromeManifest() {if(isChromeExtension()){return chrome.runtime.getManifest();}}
 function getAppName() {
     if(getChromeManifest()){return getChromeManifest().name;}
-    return getUrlParameter('appName');
+    return window.getUrlParameter('appName');
 }
 function getClientId() {
     if(appSettings){return appSettings.clientId;}
-    return getUrlParameter('clientId');
+    return window.getUrlParameter('clientId');
 }
 function getAppVersion() {
     if(getChromeManifest()){return getChromeManifest().version;}
     if(appSettings){return appSettings.versionNumber;}
-    return getUrlParameter('appVersion');
+    return window.getUrlParameter('appVersion');
 }
-function getAccessToken() {
+window.window.getAccessToken = function() {
     if(localStorage.accessToken){return localStorage.accessToken;}
-    return getUrlParameter('accessToken');
-}
+    return window.getUrlParameter('accessToken');
+};
 function getUser() {
     if(user){return user;}
     if(localStorage.getItem('user')){
@@ -221,8 +221,8 @@ if (!localStorage.introSeen) {
     openOrFocusChromePopupWindow(introWindowParams, focusWindow);
 }
 function getQueryParameterString() {
-    if (getAccessToken()) {
-        var queryParameterString = '?access_token=' + getAccessToken();
+    if (window.getAccessToken()) {
+        var queryParameterString = '?access_token=' + window.getAccessToken();
         if(getAppName()){queryParameterString += "&appName=" + encodeURIComponent(getAppName());}
         if(getAppVersion()){queryParameterString += "&appVersion=" + encodeURIComponent(getAppVersion());}
         if(getClientId()){queryParameterString += "&clientId=" + encodeURIComponent(getClientId());}
@@ -243,7 +243,7 @@ function loadAppSettings() {  // I think adding appSettings to the chrome manife
     };
     xobj.send(null);
 }
-if(!getUrlParameter('clientId')){loadAppSettings();}
+if(!window.getUrlParameter('clientId')){loadAppSettings();}
 function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";
@@ -334,20 +334,19 @@ if(isChromeExtension()){
     // Handles extension-specific requests that come in, such as a request to upload a new measurement
     chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         console.debug("Received request: " + request.message);
-        if(request.message === "uploadMeasurements") {pushMeasurements(request.payload, null);}
+        if(request.message === "uploadMeasurements") {window.pushMeasurements(request.payload, null);}
     });
 }
-function pushMeasurements(measurements, onDoneListener) {
+window.pushMeasurements = function(measurements, onDoneListener) {
 	postToQuantiModo(measurements,"v1/measurements", onDoneListener);
-}
-function postTrackingReminderNotification(trackingReminderNotification, onDoneListener) {
-    window.deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'trackingReminderNotificationId',
-        trackingReminderNotification.trackingReminderNotificationId);
+};
+window.postTrackingReminderNotification = function(trackingReminderNotification, onDoneListener) {
     postToQuantiModo(trackingReminderNotification, "v1/trackingReminderNotifications", onDoneListener);
-}
+    window.deleteTrackingReminderNotificationFromLocalStorage(trackingReminderNotification.trackingReminderNotificationId);
+};
 function postToQuantiModo(body, path, onDoneListener) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST",  getRequestUrl(path), true);
+    xhr.open("POST",  window.getRequestUrl(path), true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {  // If the request is completed
             console.log("POST " + path + " response:" + xhr.responseText);
@@ -374,15 +373,15 @@ function showSignInNotification() {
     var notificationId = 'signin';
     chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
 }
-function getRequestUrl(path) {
+window.getRequestUrl = function(path) {
     var url = getAppHostName() + "/api/" + path + getQueryParameterString();
     console.log("Making API request to " + url);
     return url;
-}
+};
 function updateBadgeText(string) {if(isChromeExtension()){chrome.browserAction.setBadgeText({text: string});}}
 function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", getRequestUrl("v1/trackingReminderNotifications/past"), false);
+    xhr.open("GET", window.getRequestUrl("v1/trackingReminderNotifications/past"), false);
     xhr.onreadystatechange = function () {
         var notificationId;
         if (xhr.status === 401) {
@@ -666,8 +665,10 @@ window.getMostRecentRatingNotificationFromLocalStorage = function (){
     var trackingReminderNotifications = window.getElementsFromLocalStorageItemWithFilters('trackingReminderNotifications', 'unitAbbreviatedName', '/5');
     trackingReminderNotifications = window.sortByProperty(trackingReminderNotifications, 'trackingReminderNotificationTime');
     if(trackingReminderNotifications.length) {
-        window.logDebug("Got this notification: " + JSON.stringify(trackingReminderNotifications[trackingReminderNotifications.length - 1]));
-        return trackingReminderNotifications[trackingReminderNotifications.length - 1];
+        var notification = trackingReminderNotifications[trackingReminderNotifications.length - 1];
+        window.logDebug("Got this notification: " + JSON.stringify(notification));
+        window.deleteTrackingReminderNotificationFromLocalStorage(notification.trackingReminderNotificationId);
+        return notification;
     } else {
         window.refreshNotificationsIfEmpty();
         window.logDebug("No notifications for popup");
@@ -684,7 +685,22 @@ window.sortByProperty = function(arrayToSort, propertyName){
     return arrayToSort;
 };
 window.refreshNotificationsIfEmpty = function(){
-    if(!window.getTrackingReminderNotificationsFromLocalStorage().length){
+    var count = window.getTrackingReminderNotificationsFromLocalStorage().length;
+    if(!count){
+        window.logInfo("No notifications in local storage");
         refreshNotificationsAndShowPopupIfSo();
+    } else {
+        window.logInfo(count + " notifications in local storage");
+    }
+};
+window.deleteTrackingReminderNotificationFromLocalStorage = function(body){
+    var trackingReminderNotificationId = body;
+    if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotification){trackingReminderNotificationId = body.trackingReminderNotification.id;}
+    if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotificationId){trackingReminderNotificationId = body.trackingReminderNotificationId;}
+    if(window.getTrackingReminderNotificationsFromLocalStorage().length){
+        window.logInfo("Deleting notification with id " + trackingReminderNotificationId);
+        window.deleteElementOfLocalStorageItemById('trackingReminderNotifications', trackingReminderNotificationId);
+    } else {
+        window.refreshNotificationsIfEmpty();
     }
 };

@@ -2747,18 +2747,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.deleteTrackingReminderNotificationFromLocalStorage = function(body){
-        var trackingReminderNotificationId = body;
-        if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotification){trackingReminderNotificationId = body.trackingReminderNotification.id;}
-        if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotificationId){trackingReminderNotificationId = body.trackingReminderNotificationId;}
         $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
-        qmService.deleteElementOfLocalStorageItemById('trackingReminderNotifications',
-            trackingReminderNotificationId);
-        /* We don't have separate items for categories
-         if(body.trackingReminderNotification && typeof body.trackingReminderNotification.variableCategoryName !== "undefined"){
-         qmService.deleteElementOfLocalStorageItemById('trackingReminderNotifications' +
-         body.trackingReminderNotification.variableCategoryName,
-         trackingReminderNotificationId);
-         }*/
+        window.deleteTrackingReminderNotificationFromLocalStorage(body);
     };
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
         var result = [];
@@ -4818,7 +4808,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 ongoing: false,
                 title: "Track " + trackingReminder.variableName,
                 text: "Tap to record measurement",
-                ionIcon: 'ic_stat_icon_bw',
+                icon: 'ic_stat_icon_bw',
                 id: trackingReminder.id
             };
             if($rootScope.numberOfPendingNotifications){
@@ -7212,10 +7202,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if (!qmService.shouldWeUseIonicLocalNotifications()){return;}
         cordova.plugins.notification.local.schedule({
             text: "How are you?",
-            message: "1 day left for your favorite show to Begin!",
+            message: "Tap to open your inbox",
             firstAt: new Date(),
-            every: "minute",
-            icon: "res://mipmap-hdpi/icon.png"
+            every: "hour",
+            icon: 'ic_stat_icon_bw',
+            smallIcon: 'ic_stat_icon_bw'
         }, function(data){
             qmService.logInfo("cordova.plugins.notification.local callback. data: " + JSON.stringify(data));
             qmService.showPopupForMostRecentNotification();

@@ -1,16 +1,5 @@
-function getApiUrl() {
-    try {
-        if(typeof chrome !== "undefined"){
-            var manifest = chrome.runtime.getManifest();
-            if(manifest.apiUrl){return manifest.apiUrl;}
-        }
-    } catch (error){
-        console.log(error);
-    }
-    return "https://app.quantimo.do";
-}
 function clearNotifications() {
-    if(typeof chrome === "undefined"){ console.log("Can't clearNotifications because chrome is undefined"); return;}
+    if(typeof chrome === "undefined"){ window.logDebug("Can't clearNotifications because chrome is undefined"); return;}
     var badgeParams = {text: ""};
     chrome.browserAction.setBadgeText(badgeParams);
     chrome.notifications.clear("moodReportNotification", function() {});
@@ -21,13 +10,22 @@ function setFaceButtonListeners() {
     document.getElementById('buttonMoodOk').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodHappy').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodEcstatic').onclick = onFaceButtonClicked;
+    document.getElementById('buttonInbox').onclick = inboxButtonClicked;
 }
 function getVariableName() {
-    if(getUrlParameter('variableName')){return getUrlParameter('variableName');}
+    if(window.getUrlParameter('variableName')){return window.getUrlParameter('variableName');}
 }
 function valenceNegative() {
-    if(getUrlParameter('valence') === "negative"){return true;}
+    if(window.getUrlParameter('valence') === "negative"){return true;}
 }
+var inboxButtonClicked = function() {
+    if(typeof OverApps !== "undefined"){
+        OverApps.openApp();
+        OverApps.closeWebView();
+    } else {
+        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams, true);
+    }
+};
 var onFaceButtonClicked = function() {
     var buttonId = this.id;
     var ratingValue; // Figure out what rating was selected
@@ -36,8 +34,8 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodOk") {ratingValue = 3;
     } else if (buttonId === "buttonMoodHappy") {if(valenceNegative()){ ratingValue = 2; } else { ratingValue = 4;}
     } else if (buttonId === "buttonMoodEcstatic") {if(valenceNegative()){ ratingValue = 1; } else { ratingValue = 5;}}
-    if(getUrlParameter('trackingReminderNotificationId')){
-        postTrackingReminderNotification({trackingReminderNotificationId: getUrlParameter('trackingReminderNotificationId'), modifiedValue: ratingValue});
+    if(window.getUrlParameter('trackingReminderNotificationId')){
+        window.postTrackingReminderNotification({trackingReminderNotificationId: window.getUrlParameter('trackingReminderNotificationId'), modifiedValue: ratingValue});
         closePopup();
         return;
     }
@@ -52,7 +50,7 @@ var onFaceButtonClicked = function() {
             unit: "/5"
         }]
     };
-    pushMeasurements(request.payload, null);
+    window.pushMeasurements(request.payload, null);
     if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
     closePopup();
 };
@@ -65,7 +63,7 @@ function displaySendingTextAndPostMeasurements() {
         sectionSendingMood.innerText = "Sending mood";
         sectionSendingMood.style.display = "block";
         sectionSendingMood.className = "visible";
-        pushMeasurements(measurement, function(response) {
+        window.pushMeasurements(measurement, function(response) {
             sectionSendingMood.className = "invisible";
             setTimeout(function()
             {
@@ -86,12 +84,12 @@ function closePopup() {
     }
 }
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("question").innerHTML = "How is your " + getUrlParameter("variableName").toLowerCase() + "?";
+    document.getElementById("question").innerHTML = "How is your " + window.getUrlParameter("variableName").toLowerCase() + "?";
     var wDiff = (380 - window.innerWidth);
     var hDiff = (70 - window.innerHeight);
     window.resizeBy(wDiff, hDiff);
     function openLoginWindowIfWeCannotGetUser() {
-        if(getAccessToken()){
+        if(window.getAccessToken()){
             console.log("We already have an access token so no need for user request");
             return;
         }
@@ -100,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", getApiUrl() + "/api/user/me", true);
+        xhr.open("GET", window.getRequestUrl("user/me"), true);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 var userObject = JSON.parse(xhr.responseText);
@@ -110,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof userObject.displayName !== "undefined") {
                     console.debug(userObject.displayName + " is logged in.  ");
                 } else {
-                    var url = getApiUrl() + "/api/v2/auth/login";
+                    var url = window.getRequestUrl("v2/auth/login");
                     chrome.tabs.create({"url": url, "selected": true});
                 }
             }
@@ -119,4 +117,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     openLoginWindowIfWeCannotGetUser();
     setFaceButtonListeners();
+    window.refreshNotificationsIfEmpty();
 });
