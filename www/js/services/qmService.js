@@ -4414,8 +4414,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function localNotificationsPluginInstalled() {
         var installed = true;
         if(typeof cordova === "undefined"){installed = false;}
-        if(typeof cordova.plugins === "undefined"){installed = false;}
-        if(typeof cordova.plugins.notification === "undefined"){installed = false;}
+        else if(typeof cordova.plugins === "undefined"){installed = false;}
+        else if(typeof cordova.plugins.notification === "undefined"){installed = false;}
         qmService.logInfo("localNotificationsPluginInstalled: " + installed);
         return installed;
     }
