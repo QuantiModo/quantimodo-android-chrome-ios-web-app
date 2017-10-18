@@ -71,7 +71,7 @@ function addCallerFunctionToMessage(message) {
 }
 window.isTruthy = function(value){return value && value !== "false"; };
 window.getDebugMode = function() {
-    return true;
+    //return true;
     if(getUrlParameter('debug') || getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && isTruthy(appSettings.debugMode))){
         window.debugMode = true;
     }
@@ -452,7 +452,7 @@ window.deleteElementsOfLocalStorageItemByProperty = function(localStorageItemNam
     var elementsToKeep = [];
     var localStorageItemArray = JSON.parse(localStorage.getItem(localStorageItemName));
     if(!localStorageItemArray){
-        logError("Local storage item " + localStorageItemName + " not found");
+        logError("Local storage item " + localStorageItemName + " not found! Local storage items: " + JSON.stringify(getLocalStorageList()));
     } else {
         for(var i = 0; i < localStorageItemArray.length; i++){
             if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
@@ -544,4 +544,15 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
     metaData.installed_plugins = getInstalledPluginList();
     Bugsnag.context = $state.current.name;
     Bugsnag.notify(name, message, obfuscateSecrets(metaData), "error");
+}
+function getLocalStorageList(){
+    var localStorageItemsArray = [];
+    for (var i = 0; i < localStorage.length; i++){
+        localStorageItemsArray.push({
+            name: localStorage.key(i),
+            value: localStorage.getItem(localStorage.key(i)),
+            kB: Math.round(localStorage.getItem(localStorage.key(i)).length*16/(8*1024))
+        });
+    }
+    return localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
 }

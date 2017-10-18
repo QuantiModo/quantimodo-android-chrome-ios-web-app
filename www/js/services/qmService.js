@@ -379,9 +379,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             minimumSecondsBetweenRequests = 1;
         }
         var requestVariableName = 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
-        if(localStorage.getItem(requestVariableName) && localStorage.getItem(requestVariableName) > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+        var secondsSinceLastRequest = 99999999;
+        if(localStorage.getItem(requestVariableName)){
+            secondsSinceLastRequest = getUnixTimestampInSeconds() - localStorage.getItem(requestVariableName);
+        }
+        if(secondsSinceLastRequest < minimumSecondsBetweenRequests){
             var name = 'Just made a ' + type + ' request to ' + route;
-            var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds. stackTrace: ' + options.stackTrace;
+            var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
+                secondsSinceLastRequest + ' ago). stackTrace: ' + options.stackTrace;
             var metaData = {type: type, route: route, groupingHash: name, state: $state.current, stackTrace: options.stackTrace};
             if(options){metaData.options = options;}
             qmService.logError(message);
@@ -5415,7 +5420,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 localStorage.setItem(key, value);
                 deferred.resolve();
             } catch(error) {
-                var metaData = { localStorageItems: qmService.getLocalStorageList() };
+                var metaData = { localStorageItems: getLocalStorageList() };
                 var name = error;
                 var message = 'Error saving ' + key + ' to local storage';
                 var severity = 'error';
@@ -5430,17 +5435,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         for (var i = 0; i < localStorageItemsArray.length; i++){
             if(localStorageItemsArray[i].kB > 2000){ localStorage.removeItem(localStorageItemsArray[i].name); }
         }
-    };
-    qmService.getLocalStorageList = function(){
-        var localStorageItemsArray = [];
-        for (var i = 0; i < localStorage.length; i++){
-            localStorageItemsArray.push({
-                name: localStorage.key(i),
-                value: localStorage.getItem(localStorage.key(i)),
-                kB: Math.round(localStorage.getItem(localStorage.key(i)).length*16/(8*1024))
-            });
-        }
-        return localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
     };
     qmService.getLocalStorageItemAsStringWithCallback = function(key, callback){
         if ($rootScope.isChromeApp) {
