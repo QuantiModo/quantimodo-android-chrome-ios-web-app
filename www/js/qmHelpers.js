@@ -18,7 +18,7 @@ function getUrlParameter(parameterName, url, shouldDecode) {
     }
     return null;
 }
-var appSettings;
+var appSettings, user;
 // SubDomain : Filename
 var appConfigFileNames = {
     "app" : "quantimodo",
@@ -104,7 +104,6 @@ function getClientIdFromQueryParameters() {
     if(clientId){localStorage.setItem('clientId', clientId);}
     return clientId;
 }
-
 function getQuantiModoClientId() {
     if(onMobile()){
         console.debug("Using default.config.js because we're on mobile");
@@ -197,6 +196,13 @@ function getAccessToken() {
     if(localStorage.accessToken){return localStorage.accessToken;}
     return getUrlParameter('accessToken');
 }
+function getUser() {
+    if(user){return user;}
+    if(localStorage.getItem('user')){
+        user = JSON.parse(localStorage.getItem('user'));
+        return user;
+    }
+}
 var v = null;
 var vid = null;
 function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
@@ -211,7 +217,7 @@ var signInNotificationParams = { type: "basic", title: "How are you?", message: 
 if (!localStorage.introSeen) {
     window.localStorage.setItem('introSeen', true);
     var focusWindow = true;
-    openOrFocusPopupWindow(introWindowParams, focusWindow);
+    openOrFocusChromePopupWindow(introWindowParams, focusWindow);
 }
 function getQueryParameterString() {
     if (getAccessToken()) {
@@ -223,8 +229,6 @@ function getQueryParameterString() {
     }
     showSignInNotification();
 }
-
-
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
@@ -244,10 +248,7 @@ function getAppHostName() {
     return "https://app.quantimo.do";
 }
 if(isChromeExtension()) {
-    /*
-    **	Called when the extension is installed
-    */
-    chrome.runtime.onInstalled.addListener(function () {
+    chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
         var notificationInterval = parseInt(localStorage.notificationInterval || "60");
         if (notificationInterval === -1) {
             chrome.alarms.clear("moodReportAlarm");
@@ -258,25 +259,22 @@ if(isChromeExtension()) {
             console.debug("Alarm set, every " + notificationInterval + " minutes");
         }
     });
-    /*
-    **	Called when an alarm goes off (we only have one)
-    */
-    chrome.alarms.onAlarm.addListener(function (alarm) {
+    chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         console.debug('onAlarm Listener heard this alarm ', alarm);
         if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
-            openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
+            openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
         } else {
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
         }
     });
 }
-function openOrFocusPopupWindow(windowParams, focusWindow) {
+function openOrFocusChromePopupWindow(windowParams, focusWindow) {
     if(!isChromeExtension()){
         logDebug("Can't open popup because chrome is undefined");
         return;
     }
     windowParams.focused = true;
-    logDebug('openOrFocusPopupWindow', windowParams );
+    logDebug('openOrFocusChromePopupWindow', windowParams );
     if (vid) {
         chrome.windows.get(vid, function (chromeWindow) {
             if (!chrome.runtime.lastError && chromeWindow) {
@@ -302,7 +300,7 @@ function openOrFocusPopupWindow(windowParams, focusWindow) {
         );
     }
 }
-function openPopup(notificationId, focusWindow) {
+function openChromePopup(notificationId, focusWindow) {
     if(isChromeExtension()){
         logDebug("Can't open popup because chrome is undefined");
         return;
@@ -311,54 +309,46 @@ function openPopup(notificationId, focusWindow) {
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
 	if(notificationId === "moodReportNotification") {
-        openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
+        openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
 	} else if (notificationId === "signin") {
-        openOrFocusPopupWindow(loginPopupWindowParams, focusWindow);
+        openOrFocusChromePopupWindow(loginPopupWindowParams, focusWindow);
 	} else if (notificationId && IsJsonString(notificationId)) {
         var windowParams = reminderInboxPopupWindowParams;
 		windowParams.url = "index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
-        openOrFocusPopupWindow(windowParams, focusWindow);
+        openOrFocusChromePopupWindow(windowParams, focusWindow);
 	} else {
-        openOrFocusPopupWindow(reminderInboxPopupWindowParams, focusWindow);
+        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams, focusWindow);
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
 	//chrome.windows.create(windowParams);
 	if(notificationId){chrome.notifications.clear(notificationId);}
 }
 if(isChromeExtension()){
-    /*
-     **	Called when the notification is clicked
-     */
+    // Called when the notification is clicked
     chrome.notifications.onClicked.addListener(function(notificationId) {
         console.debug('onClicked: notificationId:', notificationId);
         var focusWindow = true;
-        openPopup(notificationId, focusWindow);
+        openChromePopup(notificationId, focusWindow);
     });
-    /*
-    **	Handles extension-specific requests that come in, such as a
-    ** 	request to upload a new measurement
-    */
+    // Handles extension-specific requests that come in, such as a request to upload a new measurement
     chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         console.debug("Received request: " + request.message);
         if(request.message === "uploadMeasurements") {pushMeasurements(request.payload, null);}
     });
 }
-/***
-****	HELPER FUNCTIONS
-***/
 function pushMeasurements(measurements, onDoneListener) {
 	postToQuantiModo(measurements,"v1/measurements", onDoneListener);
 }
 function postTrackingReminderNotification(trackingReminderNotification, onDoneListener) {
-    deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'trackingReminderNotificationId', trackingReminderNotification.trackingReminderNotificationId);
+    deleteElementsOfLocalStorageItemByProperty('trackingReminderNotifications', 'trackingReminderNotificationId',
+        trackingReminderNotification.trackingReminderNotificationId);
     postToQuantiModo(trackingReminderNotification, "v1/trackingReminderNotifications", onDoneListener);
 }
 function postToQuantiModo(body, path, onDoneListener) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST",  getRequestUrl(path), true);
     xhr.onreadystatechange = function() {
-        // If the request is completed
-        if (xhr.readyState === 4) {
+        if (xhr.readyState === 4) {  // If the request is completed
             console.log("POST " + path + " response:" + xhr.responseText);
             if(onDoneListener) {onDoneListener(xhr.responseText);}
         }
@@ -388,11 +378,7 @@ function getRequestUrl(path) {
     console.log("Making API request to " + url);
     return url;
 }
-function updateBadgeText(string) {
-    if(isChromeExtension()){
-        chrome.browserAction.setBadgeText({text: string});
-    }
-}
+function updateBadgeText(string) {if(isChromeExtension()){chrome.browserAction.setBadgeText({text: string});}}
 function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     if(isChromeExtension()){
         console.log("Can't checkForNotificationsAndShowPopupIfSo because chrome is undefined");
@@ -412,9 +398,9 @@ function checkForNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                 updateBadgeText("?");
                 //chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
                 chrome.notifications.create(notificationId, inboxNotificationParams, function (id) {});
-                openPopup(notificationId);
+                openChromePopup(notificationId);
             } else {
-                openOrFocusPopupWindow(facesRatingPopupWindowParams, focusWindow);
+                openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
                 updateBadgeText("");
             }
         }
@@ -474,11 +460,8 @@ window.deleteElementsOfLocalStorageItemByProperty = function(localStorageItemNam
         localStorage.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
     }
 };
-
 function addQueryParameter(url, name, value){
-    if(url.indexOf('?') === -1){
-        return url + "?" + name + "=" + value;
-    }
+    if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
     return url + "&" + name + "=" + value;
 }
 function bugsnagNotify(message, additionalMetaData, stackTrace){
@@ -510,7 +493,7 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
             return parts[1];
         }
         var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
-        if($rootScope.user){url +=  "?userEmail=" + encodeURIComponent($rootScope.user.email);}
+        if(getUser()){url +=  "?userEmail=" + encodeURIComponent(getUser().email);}
         return url;
     }
     function getInstalledPluginList(){
@@ -557,7 +540,7 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
     }
     //metaData.appSettings = config.appSettings;  // Request Entity Too Large
     if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
-    //if($rootScope.user){metaData.user = $rootScope.user;} // Request Entity Too Large
+    //if(getUser()){metaData.user = getUser();} // Request Entity Too Large
     metaData.installed_plugins = getInstalledPluginList();
     Bugsnag.context = $state.current.name;
     Bugsnag.notify(name, message, obfuscateSecrets(metaData), "error");
