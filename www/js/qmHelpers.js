@@ -542,7 +542,7 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
     if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
     //if(getUser()){metaData.user = getUser();} // Request Entity Too Large
     metaData.installed_plugins = getInstalledPluginList();
-    Bugsnag.context = $state.current.name;
+    //Bugsnag.context = $state.current.name;
     Bugsnag.notify(name, message, obfuscateSecrets(metaData), "error");
 }
 function getLocalStorageList(){

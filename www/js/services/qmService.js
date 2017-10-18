@@ -128,6 +128,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function addAppDisplayName(array){return JSON.parse(JSON.stringify(array).replace('__APP_DISPLAY_NAME__', $rootScope.appSettings.appDisplayName));}
     function addStateNameToMessage(message) {
         if($state.current.name){message = message + " in state " + $state.current.name;}
+        Bugsnag.context = $state.current.name;
         return message;
     }
     qmService.getDebugMode = function() {
