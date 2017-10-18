@@ -41,16 +41,7 @@ angular.module('starter').controller('IntroCtrl', function($scope, $state, $ioni
             $scope.myIntro.ready = true;
             $rootScope.hideNavigationMenu = true;
         }
-
-        try {
-            localStorage.setItem('introSeen', true);
-        } catch(error) {
-            var metaData = { localStorageItems: qmService.getLocalStorageList() };
-            var name = error;
-            var message = 'Error saving introSeen to local storage';
-            var severity = 'error';
-            qmService.bugsnagNotify(name, message, metaData, severity);
-        }
+        qmService.setLocalStorageItem('introSeen', true);
     });
     $scope.$on('$ionicView.afterEnter', function(){
         qmService.hideLoader();
