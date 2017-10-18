@@ -71,7 +71,7 @@ function addCallerFunctionToMessage(message) {
 }
 window.isTruthy = function(value){return value && value !== "false"; };
 window.getDebugMode = function() {
-    return true;
+    //return true;
     if(getUrlParameter('debug') || getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && isTruthy(appSettings.debugMode))){
         window.debugMode = true;
     }
@@ -542,6 +542,6 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
     if(additionalMetaData){metaData.additionalInfo = additionalMetaData;}
     //if(getUser()){metaData.user = getUser();} // Request Entity Too Large
     metaData.installed_plugins = getInstalledPluginList();
-    Bugsnag.context = $state.current.name;
+    //Bugsnag.context = $state.current.name;
     Bugsnag.notify(name, message, obfuscateSecrets(metaData), "error");
 }
