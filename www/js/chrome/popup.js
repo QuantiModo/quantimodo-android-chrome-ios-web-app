@@ -1,4 +1,3 @@
-document.getElementById("question").innerHTML = "How is your " + getUrlParameter("variableName").toLowerCase() + "?";
 function getApiUrl() {
     try {
         if(typeof chrome !== "undefined"){
@@ -87,6 +86,7 @@ function closePopup() {
     }
 }
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("question").innerHTML = "How is your " + getUrlParameter("variableName").toLowerCase() + "?";
     var wDiff = (380 - window.innerWidth);
     var hDiff = (70 - window.innerHeight);
     window.resizeBy(wDiff, hDiff);
