@@ -4624,8 +4624,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             }
         }
         cordova.plugins.notification.local.on("trigger", function (currentNotification) {
-            qmService.logInfo("onTrigger: just triggered this notification: ",  currentNotification);
-            qmService.showPopupForMostRecentNotification();
+            qmService.logInfo("onTrigger: just triggered this notification: " + JSON.stringify(currentNotification));
             /*                   I don't think this is necessary because we're going to check the API anyway
              if(currentNotification.badge < 1){
              $ionicPlatform.ready(function () {
@@ -5284,9 +5283,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return localTimeString;
     };
     qmService.humanFormat = function(hhmmssFormatString){
-        var intitialTimeFormat = "HH:mm:ss";
+        var initialTimeFormat = "HH:mm:ss";
         var humanTimeFormat = "h:mm A";
-        return moment(hhmmssFormatString, intitialTimeFormat).format(humanTimeFormat);
+        return moment(hhmmssFormatString, initialTimeFormat).format(humanTimeFormat);
     };
     qmService.getUtcTimeStringFromLocalString = function (localTimeString) {
         var returnTimeFormat = "HH:mm:ss";
@@ -7332,19 +7331,25 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
         changeFavicon();
     };
+    function initializeLocalPopupNotifications(){
+        if (!qmService.shouldWeUseIonicLocalNotifications()){return;}
+        cordova.plugins.notification.local.schedule({
+            text: "Delayed Notification",
+            firstAt: new Date(),
+            every: "minute",
+            icon: "file://img/icons/icon_48.png"
+        }, function(data){
+            qmService.logInfo("cordova.plugins.notification.local callback. data: " + JSON.stringify(data));
+            qmService.showPopupForMostRecentNotification();
+        });
+        cordova.plugins.notification.local.on("trigger", function (currentNotification) {
+            qmService.logInfo("onTrigger: just triggered this notification: " + JSON.stringify(currentNotification));
+            qmService.showPopupForMostRecentNotification();
+        });
+    }
     function initializeLocalNotifications(){
         qmService.logInfo("initializeLocalNotifications: shouldWeUseIonicLocalNotifications returns" + qmService.shouldWeUseIonicLocalNotifications());
         if (qmService.shouldWeUseIonicLocalNotifications()) {
-            cordova.plugins.notification.local.schedule({
-                text: "Delayed Notification",
-                firstAt: new Date(),
-                every: "minute",
-                icon: "file://img/icons/icon_48.png"
-            }, function(data){
-                qmService.logInfo("cordova.plugins.notification.local callback. data: " + JSON.stringify(data));
-                qmService.showPopupForMostRecentNotification();
-            });
-            return;
             qmService.logInfo("Going to try setting on trigger and on click actions for notifications when device is ready");
             $ionicPlatform.ready(function () {
                 qmService.scheduleAllNotificationsByTrackingReminders();
@@ -7358,7 +7363,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     }
     qmService.initializeApplication = function(appSettingsResponse){
-
+        initializeLocalPopupNotifications();
         if(window.config){return;}
         var appSettings = (appSettingsResponse.data.appSettings) ? appSettingsResponse.data.appSettings : appSettingsResponse.data;
         qmService.configureAppSettings(appSettings);
@@ -7804,7 +7809,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
 
     };
     qmService.toggleDrawOverApps = function(ev){
-        initializeLocalNotifications();
+        initializeLocalPopupNotifications();
         function disablePopups() {
             qmService.showInfoToast("Rating popups disabled");
             qmService.setLocalStorageItem('drawOverAppsEnabled', false);
