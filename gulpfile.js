@@ -1717,7 +1717,7 @@ gulp.task('copyAppResources', [
     logInfo('If this doesn\'t work, make sure there are no symlinks in the apps folder!');
     var sourcePath = 'apps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*'
     logInfo("Copying " + sourcePath + "...");
-    return copyFiles(sourcePath, '.');
+    //return copyFiles(sourcePath, '.');
     return gulp.src([sourcePath], {
         base: 'apps/' + process.env.QUANTIMODO_CLIENT_ID
     }).pipe(gulp.dest('.'));
