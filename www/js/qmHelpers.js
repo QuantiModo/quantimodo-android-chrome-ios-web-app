@@ -486,7 +486,7 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
         }
         return object;
     }
-    if(typeof Bugsnag !== "undefined"){ console.debug("Bugsnag not defined"); return; }
+    if(typeof Bugsnag === "undefined"){ console.debug("Bugsnag not defined"); return; }
     function getTestUrl() {
         function getCurrentRoute() {
             var parts = window.location.href.split("#/app");
