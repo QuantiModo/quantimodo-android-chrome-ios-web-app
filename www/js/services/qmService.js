@@ -2398,7 +2398,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     };
     var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
-        qmService.setLocalStorageItem('lastGotNotificationsAt', getUnixTimestampInMilliseconds());
+        qmService.setLocalStorageItem('lastGotNotificationsAtMilliseconds', getUnixTimestampInMilliseconds());
         trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
         qmService.setLocalStorageItem('trackingReminderNotifications',
             JSON.stringify(trackingReminderNotifications)).then(function () {
@@ -2409,9 +2409,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return trackingReminderNotifications;
     };
     qmService.getSecondsSinceWeLastGotNotifications = function () {
-        var lastGotNotificationsAt = localStorage.getItem('lastGotNotificationsAt');
-        if(!lastGotNotificationsAt){ lastGotNotificationsAt = 0; }
-        return parseInt((getUnixTimestampInMilliseconds() - lastGotNotificationsAt)/1000);
+        var lastGotNotificationsAtMilliseconds = localStorage.getItem('lastGotNotificationsAtMilliseconds');
+        if(!lastGotNotificationsAtMilliseconds){ lastGotNotificationsAtMilliseconds = 0; }
+        return parseInt((getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds)/1000);
     };
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
