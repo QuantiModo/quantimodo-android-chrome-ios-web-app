@@ -294,7 +294,6 @@ angular.module('starter').controller('ReminderAddCtrl', function($scope, $state,
         remindersArray[0] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
         if($scope.state.firstReminderStartTimeMoment){
             $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeMoment);
-            console.log($scope.state.firstReminderStartTimeMoment);
             $scope.state.firstReminderStartTimeEpochTime = parseInt($scope.state.firstReminderStartTimeMoment.format("X"));
         }
         remindersArray[0] = configureReminderTimeSettings(remindersArray[0], $scope.state.firstReminderStartTimeEpochTime);
