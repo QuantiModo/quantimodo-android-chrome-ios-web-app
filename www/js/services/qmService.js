@@ -7638,10 +7638,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             window.logDebug("drawOverApps is disabled");
             return;
         }
-        $ionicPlatform.ready(function() {window.drawOverAppsNotification();});
+        $ionicPlatform.ready(function() {window.drawOverAppsNotification(trackingReminderNotification);});
     };
     qmService.toggleDrawOverApps = function(ev){
-        initializeLocalPopupNotifications();
         function disablePopups() {
             qmService.showInfoToast("Rating popups disabled");
             qmService.setLocalStorageItem('drawOverAppsEnabled', false);
@@ -7650,6 +7649,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var title = 'Enable Rating Popups';
             var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in a fraction of a second?';
             function yesCallback() {
+                qmService.scheduleSingleMostFrequentLocalNotification();
                 window.overApps.checkPermission(function(msg){console.log(msg);});
                 qmService.setLocalStorageItem('drawOverAppsEnabled', true);
                 qmService.showPopupForMostRecentNotification();
