@@ -215,11 +215,6 @@ var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: sc
 var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
 var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2};
 var signInNotificationParams = { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2};
-if (!localStorage.introSeen) {
-    window.localStorage.setItem('introSeen', true);
-    var focusWindow = true;
-    openOrFocusChromePopupWindow(introWindowParams, focusWindow);
-}
 function getQueryParameterString() {
     if (window.getAccessToken()) {
         var queryParameterString = '?access_token=' + window.getAccessToken();
@@ -249,6 +244,12 @@ function getAppHostName() {
     return "https://app.quantimo.do";
 }
 if(isChromeExtension()) {
+    if (!localStorage.introSeen) {
+        window.logInfo("introSeen false on chrome extension so opening intro window popup");
+        window.localStorage.setItem('introSeen', true);
+        var focusWindow = true;
+        openOrFocusChromePopupWindow(introWindowParams, focusWindow);
+    }
     chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
         var notificationInterval = parseInt(localStorage.notificationInterval || "60");
         if (notificationInterval === -1) {
