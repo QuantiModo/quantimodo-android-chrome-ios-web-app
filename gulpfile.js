@@ -1707,9 +1707,18 @@ gulp.task('cleanCombinedFiles', [], function () {
 gulp.task('cleanBuildFolder', [], function () {
     return cleanFolder(buildPath);
 });
-gulp.task('copyAppResources', ['cleanResources'], function () {
+gulp.task('copyAppResources', [
+    //'cleanResources'
+], function () {
+    if(!process.env.QUANTIMODO_CLIENT_ID){
+        logError("No QUANTIMODO_CLIENT_ID so falling back to quantimodo");
+        process.env.QUANTIMODO_CLIENT_ID = 'quantimodo';
+    }
     logInfo('If this doesn\'t work, make sure there are no symlinks in the apps folder!');
-    return gulp.src(['apps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*'], {
+    var sourcePath = 'apps/' + process.env.QUANTIMODO_CLIENT_ID + '/**/*'
+    logInfo("Copying " + sourcePath + "...");
+    //return copyFiles(sourcePath, '.');
+    return gulp.src([sourcePath], {
         base: 'apps/' + process.env.QUANTIMODO_CLIENT_ID
     }).pipe(gulp.dest('.'));
 });
