@@ -4634,6 +4634,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     function getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi){
+        if(!trackingRemindersFromApi){
+            trackingRemindersFromApi = JSON.parse(localStorage.getItem('trackingReminders'));
+        }
         var shortestInterval = 86400;
         if(trackingRemindersFromApi){
             for (var i = 0; i < trackingRemindersFromApi.length; i++) {
@@ -4648,9 +4651,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.scheduleSingleMostFrequentLocalNotification = function(trackingRemindersFromApi) {
         qmService.logInfo("scheduleSingleMostFrequentLocalNotification");
         if($rootScope.user.combineNotifications === false){
-            console.warn("scheduleSingleMostFrequentLocalNotification: $rootScope.user.combineNotifications === false" +
-                " so we shouldn't be calling this function");
-            return;
+            qmService.logDebug("scheduleSingleMostFrequentLocalNotification: $rootScope.user.combineNotifications === false so we shouldn't be calling this function");
+            //return;
         }
         var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
         if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
@@ -4665,8 +4667,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var notificationSettings = {every: mostFrequentIntervalInMinutes, at: at};
             var previousSettings = qmService.getLocalStorageItemAsObject('previousSingleNotificationSettings')
             if(previousSettings && notificationSettings === previousSettings){
-                qmService.logInfo("scheduleSingleMostFrequentLocalNotification: Notification settings haven't changed so" +
-                    " no need to scheduleGenericNotification", notificationSettings);
+                qmService.logInfo("scheduleSingleMostFrequentLocalNotification: Notification settings haven't changed so no need to scheduleGenericNotification", notificationSettings);
                 return;
             }
             qmService.logInfo("scheduleSingleMostFrequentLocalNotification: Going to schedule generic notification", notificationSettings);
@@ -4958,7 +4959,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $ionicPlatform.ready(function () {
             if (localNotificationsPluginInstalled()) {
                 cordova.plugins.notification.local.getAll(function (notifications) {
-                    qmService.logInfo("scheduleGenericNotification: All notifications before scheduling", notifications);
+                    qmService.logInfo("scheduleGenericNotification: Local notifications before scheduling: " + JSON.stringify(notifications));
                     if(notifications[0] && notifications[0].length === 1 &&
                         notifications[0].every === notificationSettings.every) {
                         qmService.logInfo("Not scheduling generic notification because we already have one with the same frequency.");
@@ -4967,7 +4968,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     cordova.plugins.notification.local.cancelAll(function () {
                         qmService.logInfo('cancelAllNotifications: notifications have been cancelled');
                         cordova.plugins.notification.local.getAll(function (notifications) {
-                            qmService.logInfo("cancelAllNotifications: All notifications after cancelling", notifications);
+                            qmService.logInfo("cancelAllNotifications: All notifications after cancelling: " + JSON.stringify(notifications));
                             initializeLocalPopupNotifications(notificationSettings);
                         });
                     });
@@ -7180,6 +7181,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         changeFavicon();
     };
     function initializeLocalPopupNotifications(notificationSettings){
+        //notificationSettings.every = "minute";
+        if(!notificationSettings.sound){notificationSettings.sound = null;}
         $ionicPlatform.ready(function () {
             cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                 qmService.logInfo('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings));
