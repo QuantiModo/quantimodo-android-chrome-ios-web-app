@@ -1216,6 +1216,7 @@ gulp.task('decryptAllPrivateConfigs', [], function () {
     });
 });
 gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+    logInfo("Running minify-js-generate-css-and-index-html...");
     var jsFilter = filter("**/*.js", { restore: true });
     var cssFilter = filter("**/*.css", { restore: true });
     var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
@@ -1691,7 +1692,7 @@ gulp.task('cleanPlatforms', [], function () {
     return cleanFolder('platforms');
 });
 function cleanFiles(filesArray) {
-    logInfo("Cleaning " + JSON.stringify(filesArray));
+    logInfo("Cleaning " + JSON.stringify(filesArray) + '...');
     return gulp.src(filesArray, {read: false}).pipe(clean());
 }
 function cleanFolder(folderPath) {
@@ -1702,6 +1703,7 @@ gulp.task('cleanChromeBuildFolder', [], function () {
     return cleanFolder(chromeExtensionBuildPath);
 });
 gulp.task('cleanCombinedFiles', [], function () {
+    logInfo("Running cleanCombinedFiles...");
     return cleanFiles(['www/css/combined*.css', 'www/scripts/combined*.js']);
 });
 gulp.task('cleanBuildFolder', [], function () {
