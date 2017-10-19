@@ -4649,6 +4649,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
 
     qmService.scheduleSingleMostFrequentLocalNotification = function(trackingRemindersFromApi) {
+        if(!$rootScope.user){
+            qmService.logDebug("No user for scheduleSingleMostFrequentLocalNotification");
+            return;
+        }
+        if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
+            qmService.logDebug("Can only schedule notification on mobile or Chrome extension");
+            return;
+        }
         qmService.logInfo("scheduleSingleMostFrequentLocalNotification");
         if($rootScope.user.combineNotifications === false){
             qmService.logDebug("scheduleSingleMostFrequentLocalNotification: $rootScope.user.combineNotifications === false so we shouldn't be calling this function");
@@ -4665,7 +4673,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 }
             }
             var notificationSettings = {every: mostFrequentIntervalInMinutes, at: at};
-            var previousSettings = qmService.getLocalStorageItemAsObject('previousSingleNotificationSettings')
+            var previousSettings = qmService.getLocalStorageItemAsObject('previousSingleNotificationSettings');
             if(previousSettings && notificationSettings === previousSettings){
                 qmService.logInfo("scheduleSingleMostFrequentLocalNotification: Notification settings haven't changed so no need to scheduleGenericNotification", notificationSettings);
                 return;
