@@ -2717,6 +2717,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         window.deleteTrackingReminderNotificationFromLocalStorage(body);
     };
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
+        if(trackingReminderNotifications.constructor !== Array){
+            qmService.logError("trackingReminderNotifications is not an array! trackingReminderNotifications: " + JSON.stringify(trackingReminders));
+            return;
+        } else {
+            qmService.logDebug("trackingReminderNotifications is an array");
+        }
         var result = [];
         var reference = moment().local();
         var today = reference.clone().startOf('day');
