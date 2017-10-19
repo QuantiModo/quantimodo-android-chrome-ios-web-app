@@ -880,8 +880,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
                 qmService.setLocalStorageItem('onboarded', true);
                 qmService.setLocalStorageItem('introSeen', true);
-                //qmService.setLocalStorageItem('afterLoginGoToState', null);
-                //qmService.setLocalStorageItem('afterLoginGoToUrl', null);
+                if($state.current.name !== 'app.login'){
+                    qmService.setLocalStorageItem('afterLoginGoToState', null);
+                    qmService.setLocalStorageItem('afterLoginGoToUrl', null);
+                }
             }
         }
         authDebug("getAccessTokenFromUrl: returning this access token: " + $rootScope.accessTokenFromUrl);
