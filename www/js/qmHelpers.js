@@ -682,6 +682,7 @@ window.getMostRecentRatingNotificationFromLocalStorage = function (){
         refreshNotificationsAndShowPopupIfSo();
         //window.refreshNotificationsIfEmpty();
         window.logInfo("No notifications for popup");
+        return null;
     }
 };
 window.sortByProperty = function(arrayToSort, propertyName){
