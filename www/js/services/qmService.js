@@ -2718,7 +2718,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
         if(trackingReminderNotifications.constructor !== Array){
-            qmService.logError("trackingReminderNotifications is not an array! trackingReminderNotifications: " + JSON.stringify(trackingReminders));
+            qmService.logError("trackingReminderNotifications is not an array! trackingReminderNotifications: " + JSON.stringify(trackingReminderNotifications));
             return;
         } else {
             qmService.logDebug("trackingReminderNotifications is an array");
