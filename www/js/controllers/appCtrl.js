@@ -9,7 +9,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.primaryOutcomeVariableDetails = qmService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
-        console.debug('appCtrl enter in state ' + $state.current.name + " and url is " + window.location.href);
+        qmService.logDebug('appCtrl enter in state ' + $state.current.name + " and url is " + window.location.href);
         //$scope.showHelpInfoPopupIfNecessary(e);
         if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
             $scope.showCalendarButton = true;
@@ -153,7 +153,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(variableObject.shareUserMeasurements){showShareVariableConfirmation(variableObject, ev);} else {showUnshareVariableConfirmation(variableObject, ev);}
     };
     $rootScope.setLocalStorageFlagTrue = function (flagName) {
-        console.debug('Set ' + flagName + ' to true');
+        qmService.logDebug('Set ' + flagName + ' to true');
         $rootScope[flagName] = true;
         qmService.setLocalStorageItem(flagName, true);
     };
@@ -196,7 +196,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 0;
                 correlationObject.vote = 0;
-                qmService.postVoteDeferred(correlationObject).then(function () {console.debug('Down voted!');}, function () {qmService.logError('Down vote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {qmService.logDebug('Down voted!');}, function () {qmService.logError('Down vote failed!');});
             };
             noCallback = function() {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -218,7 +218,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 1;
                 correlationObject.vote = 1;
-                qmService.postVoteDeferred(correlationObject).then(function () {console.debug('upVote');}, function () {qmService.logError('upVote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {qmService.logDebug('upVote');}, function () {qmService.logError('upVote failed!');});
             };
             noCallback = function () {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -234,7 +234,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     function deleteVote(correlationObject, $index) {
         correlationObject.userVote = null;
         qmService.deleteVoteDeferred(correlationObject, function(response){
-            console.debug("deleteVote response", response);
+            qmService.logDebug("deleteVote response", response);
         }, function(response){
             qmService.logError("deleteVote response", response);
         });
@@ -246,7 +246,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         } else {this.$apply(fn);}
     };
     $scope.onTextClick = function ($event) {
-        console.debug("Auto selecting text so the user doesn't have to press backspace...");
+        qmService.logDebug("Auto selecting text so the user doesn't have to press backspace...");
         $event.target.select();
     };
     $scope.favoriteValidationFailure = function (message) {
@@ -261,7 +261,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         trackingReminder.displayTotal = "Recorded " + (trackingReminder.total + " " + trackingReminder.unitAbbreviatedName).replace(' /', '/');
         qmService.postMeasurementByReminder(trackingReminder, trackingReminder.total)
             .then(function () {
-                console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                qmService.logDebug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
             }, function(error) {
                 qmService.logError('Failed to track favorite! ', trackingReminder);
             });
@@ -282,7 +282,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             if(trackingReminder.tally) {
                 qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
                     .then(function () {
-                        console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                        qmService.logDebug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                     }, function(error) {
                         qmService.logError(error);
                         qmService.logError('Failed to Track by favorite! ', trackingReminder);
@@ -310,9 +310,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             buttons: actionMenuButtons,
             destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {console.debug('CANCELLED');},
+            cancel: function() {qmService.logDebug('CANCELLED');},
             buttonClicked: function(index) {
-                console.debug('BUTTON CLICKED', index);
+                qmService.logDebug('BUTTON CLICKED', index);
                 if(index === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
                 if(index === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
                 if(index === 2){qmService.goToState('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
@@ -336,7 +336,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
         qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
             .then(function () {
-                console.debug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                qmService.logDebug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
             }, function(error) {
                 qmService.logError('Failed to Track by favorite! ', $rootScope.bloodPressure);
             });
@@ -399,10 +399,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.trackLocationChange = function(event, trackLocation) {
         if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}
-        console.debug('trackLocation', $rootScope.user.trackLocation);
+        qmService.logDebug('trackLocation', $rootScope.user.trackLocation);
         qmService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
         if($rootScope.user && $rootScope.user.trackLocation){
-            console.debug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
+            qmService.logDebug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
             qmService.backgroundGeolocationInit();
         }
         if($rootScope.user.trackLocation){
@@ -412,7 +412,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(!$rootScope.user.trackLocation) {
             qmService.showInfoToast('Location tracking disabled');
             qmService.backgroundGeolocationStop();
-            console.debug("Do not track location");
+            qmService.logDebug("Do not track location");
         }
     };
     $scope.$on('$stateChangeSuccess', function() {

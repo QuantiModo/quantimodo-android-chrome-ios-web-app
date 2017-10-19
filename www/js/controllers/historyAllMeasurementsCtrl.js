@@ -22,7 +22,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
         $rootScope.hideHistoryPageInstructionsCard = qmService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
     });
     $scope.$on('$ionicView.enter', function(e) {
-        console.debug($state.current.name + ": " + "Entering state " + $state.current.name);
+        qmService.logDebug($state.current.name + ": " + "Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         $scope.state.loading = true;
         $scope.state.offset = 0;
@@ -88,7 +88,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 					{ text: '<i class="icon ion-ios-location-outline"></i>Locations'}
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {console.debug('CANCELLED');},
+				cancel: function() {qmService.logDebug('CANCELLED');},
 				buttonClicked: function(index) {
 					if(index === 0) {qmService.goToState('app.historyAll', {variableCategoryName: 'Emotions'});}
 					if(index === 1) {qmService.goToState('app.historyAll', {variableCategoryName: 'Foods'});}
@@ -129,9 +129,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			],
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-			cancel: function() {console.debug($state.current.name + ": " + 'CANCELLED');},
+			cancel: function() {qmService.logDebug($state.current.name + ": " + 'CANCELLED');},
 			buttonClicked: function(index) {
-				console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
+				qmService.logDebug($state.current.name + ": " + 'BUTTON CLICKED', index);
 				if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
 				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
 				if(index === 2) {qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}

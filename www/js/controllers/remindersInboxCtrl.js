@@ -1,7 +1,7 @@
 angular.module('starter').controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService, $ionicLoading, $mdToast) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
 	$scope.controller_name = "RemindersInboxCtrl";
-	console.debug('Loading ' + $scope.controller_name);
+	qmService.logDebug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.state = {
 		showMeasurementBox : false,
@@ -29,7 +29,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	//createWordCloudFromNotes();
 	$scope.$on('$ionicView.beforeEnter', function(e) {
-		console.debug("RemindersInboxCtrl beforeEnter ");
+		qmService.logDebug("RemindersInboxCtrl beforeEnter ");
         if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
 		$scope.loading = true;
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
@@ -39,7 +39,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		setPageTitle();
 	});
 	$scope.$on('$ionicView.enter', function(e) {
-        console.debug("RemindersInboxCtrl enter");
+        qmService.logDebug("RemindersInboxCtrl enter");
         $scope.defaultHelpCards = qmService.setupHelpCards();
         getTrackingReminderNotifications();
         getFavorites();
@@ -58,9 +58,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {console.debug('CANCELLED');},
+				cancel: function() {qmService.logDebug('CANCELLED');},
 				buttonClicked: function(index) {
-					console.debug('BUTTON CLICKED', index);
+					qmService.logDebug('BUTTON CLICKED', index);
                     if(index === 0){qmService.goToState('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
                     if(index === 1){qmService.goToState('app.reminderSearch', {variableCategoryName : $stateParams.variableCategoryName});}
                     if(index === 2){qmService.goToState('app.measurementAddSearch', {variableCategoryName : $stateParams.variableCategoryName});}
@@ -85,17 +85,17 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			$timeout(function() {hideSheet();}, 20000);
 		};
 		if(navigator && navigator.splashscreen) {
-			console.debug('ReminderInbox: Hiding splash screen because app is ready');
+			qmService.logDebug('ReminderInbox: Hiding splash screen because app is ready');
 			navigator.splashscreen.hide();
 		}
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
-        console.debug("RemindersInboxCtrl afterEnter");
+        qmService.logDebug("RemindersInboxCtrl afterEnter");
         var secondsSinceWeLastGotNotifications = qmService.getSecondsSinceWeLastGotNotifications();
         if(!$rootScope.numberOfPendingNotifications || secondsSinceWeLastGotNotifications > 600){$scope.refreshTrackingReminderNotifications();}
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
-		console.debug("RemindersInboxCtrl afterLeave");
+		qmService.logDebug("RemindersInboxCtrl afterLeave");
 		$rootScope.hideHomeButton = false;
 		$rootScope.hideBackButton = false;
 	});
@@ -119,14 +119,14 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	var isGhostClick = function ($event) {
 		if(!$rootScope.isMobile){return false;}
 		if($event && $scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 && $scope.state.lastClientX === $event.clientX && $scope.state.lastClientY === $event.clientY) {
-			console.debug('This event is probably a ghost click so not registering.', $event);
+			qmService.logDebug('This event is probably a ghost click so not registering.', $event);
 			return true;
 		} else {
 		    if(!$event){
 		        qmService.logError("No event provided to isGhostClick!");
 		        return false;
             }
-			console.debug('This Track event is not a ghost click so registering.', $event);
+			qmService.logDebug('This Track event is not a ghost click so registering.', $event);
 			$scope.state.lastButtonPressTimeStamp = $event.timeStamp;
 			$scope.state.lastClientX = $event.clientX;
 			$scope.state.lastClientY = $event.clientY;
@@ -268,14 +268,14 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		for (var i = 0; i < trackingReminderNotifications.length; i++){
 			trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
 		}
-		//console.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
+		//qmService.logDebug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
 		$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 		if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}
 		if($state.current.name === "app.remindersInboxCompact"){
 			$scope.trackingReminderNotifications = trackingReminderNotifications;
 		} else {
 			$scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-			//console.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
+			//qmService.logDebug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
 			getFallbackInboxContent();
 		}
 	};
@@ -300,7 +300,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			});
 	};
 	$scope.$on('getTrackingReminderNotificationsFromLocalStorage', function(){
-		console.debug('getTrackingReminderNotificationsFromLocalStorage broadcast received..');
+		qmService.logDebug('getTrackingReminderNotificationsFromLocalStorage broadcast received..');
 		if(!$stateParams.today) {getFilteredTrackingReminderNotificationsFromLocalStorage();}
 	});
 	var getTrackingReminderNotifications = function () {
@@ -345,7 +345,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	};
 	function skipAllForVariable(trackingReminderNotification) {
         trackingReminderNotification.hide = true;
-        console.debug("Skipping all notifications for trackingReminder", trackingReminderNotification);
+        qmService.logDebug("Skipping all notifications for trackingReminder", trackingReminderNotification);
         var params = {trackingReminderId : trackingReminderNotification.trackingReminderId};
         //qmService.showInfoToast('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
         qmService.skipAllTrackingReminderNotificationsDeferred(params)
@@ -386,10 +386,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 			buttons: buttons,
 			//destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-			cancel: function() {console.debug('CANCELLED');},
+			cancel: function() {qmService.logDebug('CANCELLED');},
 			buttonClicked: function(index) {
-				console.debug('BUTTON CLICKED', index);
-                if(index === 0){console.debug("clicked variable name");}
+				qmService.logDebug('BUTTON CLICKED', index);
+                if(index === 0){qmService.logDebug("clicked variable name");}
 				if(index === 1){$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);}
 				if(index === 2){qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 3){qmService.goToState('app.historyAllVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}

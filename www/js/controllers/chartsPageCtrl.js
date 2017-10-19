@@ -17,12 +17,12 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     };
     var maximumMeasurements = 999; // Highcharts will only show 1000 measurements with notes
     function getTruncatedVariableName(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}}
-    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.enter', function(e) { qmService.logDebug("Entering state " + $state.current.name);
         if(qmService.getUrlParameter('variableName')){$stateParams.variableName = qmService.getUrlParameter('variableName', window.location.href, true);}
         $rootScope.hideNavigationMenu = false;
         $scope.stopGettingMeasurements = false;
         qmService.hideLoader();
-        console.debug("variablePageCtrl: enter");
+        qmService.logDebug("variablePageCtrl: enter");
         if($stateParams.variableObject){
             $rootScope.variableObject = $stateParams.variableObject;
             refreshUserVariable($rootScope.variableObject.name);
@@ -48,7 +48,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         $rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;
     });
     $scope.$on('$ionicView.beforeLeave', function(){
-        console.debug('Leaving so setting $scope.stopGettingMeasurements to true');
+        qmService.logDebug('Leaving so setting $scope.stopGettingMeasurements to true');
         $scope.stopGettingMeasurements = true;
     });
     if (!clipboard.supported) {
@@ -56,7 +56,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         $scope.hideClipboardButton = true;
     }
     $scope.addNewReminderButtonClick = function() {
-        console.debug("addNewReminderButtonClick");
+        qmService.logDebug("addNewReminderButtonClick");
         qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});
     };
     $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});};

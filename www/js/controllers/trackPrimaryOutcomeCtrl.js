@@ -7,14 +7,14 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
     $scope.averagePrimaryOutcomeVariableValue = false;
     $scope.primaryOutcomeVariable = qmService.getPrimaryOutcomeVariable();
     var syncDisplayText = 'Syncing ' + qmService.getPrimaryOutcomeVariable().name + ' measurements...';
-    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-        console.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..');
+    $scope.$on('$ionicView.enter', function(e) { qmService.logDebug("Entering state " + $state.current.name);
+        qmService.logDebug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..');
         $rootScope.hideNavigationMenu = false;
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;
         qmService.showInfoToast(syncDisplayText);
-        console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
+        qmService.logDebug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
         qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
             updateCharts();
             qmService.hideLoader();
@@ -58,7 +58,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         }
     };
     $scope.$on('updateCharts', function(){
-        console.debug('updateCharts broadcast received..');
+        qmService.logDebug('updateCharts broadcast received..');
         updateCharts();
     });
 });

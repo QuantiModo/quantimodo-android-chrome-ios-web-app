@@ -5340,6 +5340,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront = function(localStorageItemName, replacementElementArray){
+        qmService.logInfo("addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront in " + localStorageItemName + ": " + JSON.stringify(replacementElementArray));
         var deferred = $q.defer();
         if(replacementElementArray.constructor !== Array){ replacementElementArray = [replacementElementArray]; }
         // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
