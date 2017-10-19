@@ -4352,7 +4352,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return installed;
     }
     qmService.shouldWeUseIonicLocalNotifications = function(){
-        return true;
+        return $rootScope.isAndroid;
         return localNotificationsPluginInstalled();
         $ionicPlatform.ready(function () {
             qmService.logInfo('$ionicPlatform.ready');
