@@ -17,7 +17,7 @@ window.getUrlParameter = function(parameterName, url, shouldDecode) {
         }
     }
     return null;
-}
+};
 var appSettings, user;
 // SubDomain : Filename
 var appConfigFileNames = {
@@ -343,6 +343,7 @@ window.pushMeasurements = function(measurements, onDoneListener) {
 window.postTrackingReminderNotification = function(trackingReminderNotification, onDoneListener) {
     postToQuantiModo(trackingReminderNotification, "v1/trackingReminderNotifications", onDoneListener);
     window.deleteTrackingReminderNotificationFromLocalStorage(trackingReminderNotification.trackingReminderNotificationId);
+    window.showPopupForMostRecentNotification();
 };
 function postToQuantiModo(body, path, onDoneListener) {
     var xhr = new XMLHttpRequest();
@@ -380,8 +381,11 @@ window.getRequestUrl = function(path) {
 };
 function updateBadgeText(string) {if(isChromeExtension()){chrome.browserAction.setBadgeText({text: string});}}
 function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
+    var type = "GET";
+    var route = "v1/trackingReminderNotifications/past";
+    if(!canWeMakeRequestYet(type, route, {blockRequests: true, minimumSecondsBetweenRequests: 300})){return;}
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.getRequestUrl("v1/trackingReminderNotifications/past"), false);
+    xhr.open(type, window.getRequestUrl(route), false);
     xhr.onreadystatechange = function () {
         var notificationId;
         if (xhr.status === 401) {
@@ -666,12 +670,17 @@ window.getMostRecentRatingNotificationFromLocalStorage = function (){
     trackingReminderNotifications = window.sortByProperty(trackingReminderNotifications, 'trackingReminderNotificationTime');
     if(trackingReminderNotifications.length) {
         var notification = trackingReminderNotifications[trackingReminderNotifications.length - 1];
-        window.logDebug("Got this notification: " + JSON.stringify(notification));
+        if(notification.trackingReminderNotificationTimeEpoch < getUnixTimestampInSeconds() - 86400){
+            window.logInfo("Got this notification but it's from yesterday: " + JSON.stringify(notification));
+            return;
+        }
+        window.logInfo("Got this notification: " + JSON.stringify(notification));
         window.deleteTrackingReminderNotificationFromLocalStorage(notification.trackingReminderNotificationId);
         return notification;
     } else {
-        window.refreshNotificationsIfEmpty();
-        window.logDebug("No notifications for popup");
+        refreshNotificationsAndShowPopupIfSo();
+        //window.refreshNotificationsIfEmpty();
+        window.logInfo("No notifications for popup");
     }
 };
 window.sortByProperty = function(arrayToSort, propertyName){
@@ -704,3 +713,105 @@ window.deleteTrackingReminderNotificationFromLocalStorage = function(body){
         window.refreshNotificationsIfEmpty();
     }
 };
+window.showPopupForMostRecentNotification = function(){
+    var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
+    if(trackingReminderNotification) {
+        //window.logInfo("No notifications for popup");
+        window.drawOverAppsNotification(trackingReminderNotification);
+    } else {
+        window.refreshNotificationsIfEmpty();
+        window.logInfo("No notifications for popup");
+    }
+};
+window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
+window.drawOverAppsNotification = function(trackingReminderNotification) {
+    if(typeof window.overApps === "undefined"){
+        window.logError("window.overApps is undefined!");
+        return;
+    }
+    window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
+    var options = {
+        path: "android_popup.html?variableName=" + trackingReminderNotification.variableName +
+        "&valence=" + trackingReminderNotification.valence +
+        "&trackingReminderNotificationId=" + trackingReminderNotification.trackingReminderNotificationId +
+        "&clientId=" + window.getClientId() +
+        "&accessToken=" + window.getAccessToken(),          // file path to display as view content.
+        hasHead: false,              // display over app head image which open the view up on click.
+        dragToSide: false,          // enable auto move of head to screen side after dragging stop.
+        enableBackBtn: true,       // enable hardware back button to close view.
+        enableCloseBtn: true,      //  whether to show native close btn or to hide it.
+        verticalPosition: "bottom",    // set vertical alignment of view.
+        horizontalPosition: "center"  // set horizontal alignment of view.
+    };
+    window.logInfo("drawOverAppsNotification options: " + JSON.stringify(options));
+    window.overApps.startOverApp(options, function (success){
+        window.logInfo("startOverApp success: " + success);
+    },function (err){
+        window.logError("startOverApp error: " + err);
+    });
+};
+window.getUnixTimestampInSeconds = function(dateTimeString) {
+    if(!dateTimeString){dateTimeString = new Date().getTime();}
+    return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
+};
+function getSecondsSinceLastRequest(type, route){
+    var secondsSinceLastRequest = 99999999;
+    if(localStorage.getItem(getLocalStorageNameForRequest(type, route))){
+        secondsSinceLastRequest = window.getUnixTimestampInSeconds() - localStorage.getItem(getLocalStorageNameForRequest(type, route));
+    }
+    return secondsSinceLastRequest;
+}
+function getLocalStorageNameForRequest(type, route) {
+    return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
+}
+window.canWeMakeRequestYet = function(type, route, options){
+    var blockRequests = false;
+    if(options && options.blockRequests){blockRequests = options.blockRequests;}
+    var minimumSecondsBetweenRequests;
+    if(options && options.minimumSecondsBetweenRequests){
+        minimumSecondsBetweenRequests = options.minimumSecondsBetweenRequests;
+    } else {
+        minimumSecondsBetweenRequests = 1;
+    }
+    if(getSecondsSinceLastRequest(type, route) < minimumSecondsBetweenRequests){
+        var name = 'Just made a ' + type + ' request to ' + route;
+        var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
+            getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
+        window.logError(message);
+        if(blockRequests){
+            window.logError("BLOCKING REQUEST because " + message);
+            return false;
+        }
+    }
+    window.setLocalStorageItem(getLocalStorageNameForRequest(type, route), getUnixTimestampInSeconds());
+    return true;
+};
+window.getUser = function(){
+    if(window.user){return user;}
+    if(localStorage.getItem('user')){window.user = localStorage.getItem('user');}
+    if(window.user){return window.user;}
+};
+window.getUnixTimestampInMilliseconds = function(dateTimeString) {
+    if(!dateTimeString){return new Date().getTime();}
+    return new Date(dateTimeString).getTime();
+};
+window.getUserFromApi = function(){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", window.getRequestUrl("user/me"), true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            window.user = JSON.parse(xhr.responseText);
+            localStorage.setItem('user', window.user);
+            if (typeof window.user.displayName !== "undefined") {
+                console.debug(window.user.displayName + " is logged in.  ");
+            } else {
+                if(isChromeExtension()){
+                    var url = window.getRequestUrl("v2/auth/login");
+                    chrome.tabs.create({"url": url, "selected": true});
+                }
+            }
+        }
+    };
+    xhr.send();
+};
+window.isTestUser = function(){return getUser() && getUser().displayName.indexOf('test') !== -1 && getUser().id !== 230;}

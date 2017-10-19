@@ -16,13 +16,16 @@ function getVariableName() {
     if(window.getUrlParameter('variableName')){return window.getUrlParameter('variableName');}
 }
 function valenceNegative() {
-    if(window.getUrlParameter('valence') === "negative"){return true;}
+    if(window.trackingReminderNotification.valence === "negative"){return true;}
 }
 var inboxButtonClicked = function() {
+    window.logInfo("inboxButtonClicked");
     if(typeof OverApps !== "undefined"){
+        window.logInfo("Calling  OverApps.openApp");
         OverApps.openApp();
-        OverApps.closeWebView();
+        //OverApps.closeWebView();
     } else {
+        window.logInfo("OverApps not defined");
         openOrFocusChromePopupWindow(reminderInboxPopupWindowParams, true);
     }
 };
@@ -34,9 +37,18 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodOk") {ratingValue = 3;
     } else if (buttonId === "buttonMoodHappy") {if(valenceNegative()){ ratingValue = 2; } else { ratingValue = 4;}
     } else if (buttonId === "buttonMoodEcstatic") {if(valenceNegative()){ ratingValue = 1; } else { ratingValue = 5;}}
-    if(window.getUrlParameter('trackingReminderNotificationId')){
-        window.postTrackingReminderNotification({trackingReminderNotificationId: window.getUrlParameter('trackingReminderNotificationId'), modifiedValue: ratingValue});
-        closePopup();
+    if(window.trackingReminderNotification){
+        window.trackingReminderNotification.action = 'track';
+        window.trackingReminderNotification.modifiedValue = ratingValue;
+        if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
+        window.notificationsSyncQueue.push(window.trackingReminderNotification);
+        window.trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
+        if(window.trackingReminderNotification){
+            updateQuestion(window.trackingReminderNotification.variableName);
+        } else {
+            window.postTrackingReminderNotification(window.notificationsSyncQueue);
+            closePopup();
+        }
         return;
     }
     var request = {
@@ -83,39 +95,19 @@ function closePopup() {
         console.error("OverApps is undefined!");
     }
 }
+function updateQuestion(variableName) {
+    document.getElementById("question").innerHTML = "How is your " + variableName.toLowerCase() + "?";
+}
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("question").innerHTML = "How is your " + window.getUrlParameter("variableName").toLowerCase() + "?";
+    if(window.getUrlParameter("trackingReminderNotificationId")){
+        window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.getUrlParameter('trackingReminderNotificationId'),
+            variableName: window.getUrlParameter("variableName"), valence: window.getUrlParameter("valence")};
+        updateQuestion(window.getUrlParameter("variableName"));
+    }
     var wDiff = (380 - window.innerWidth);
     var hDiff = (70 - window.innerHeight);
     window.resizeBy(wDiff, hDiff);
-    function openLoginWindowIfWeCannotGetUser() {
-        if(window.getAccessToken()){
-            console.log("We already have an access token so no need for user request");
-            return;
-        }
-        if(typeof chrome === "undefined"){
-            console.log("Cannot open new tab to login in android. Please include accessToken in url params");
-            return;
-        }
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", window.getRequestUrl("user/me"), true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                var userObject = JSON.parse(xhr.responseText);
-                /*
-             * it should hide and show sign in button based upon if the user is logged in or not
-             */
-                if (typeof userObject.displayName !== "undefined") {
-                    console.debug(userObject.displayName + " is logged in.  ");
-                } else {
-                    var url = window.getRequestUrl("v2/auth/login");
-                    chrome.tabs.create({"url": url, "selected": true});
-                }
-            }
-        };
-        xhr.send();
-    }
-    openLoginWindowIfWeCannotGetUser();
+    if(!window.getUser()){window.getUserFromApi();}
     setFaceButtonListeners();
     window.refreshNotificationsIfEmpty();
 });
