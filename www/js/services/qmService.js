@@ -2678,6 +2678,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         } else if(!response.data.trackingReminders.length){
                             qmService.logError("response.trackingReminders is an empty array in postTrackingRemindersDeferred")
                         } else {
+                            qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
                             qmService.setLocalStorageItem('trackingReminders', JSON.stringify(response.data.trackingReminders));
                         }
                         if(!response.data.trackingReminderNotifications){
@@ -2701,6 +2702,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             });
         } else {
             qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
+                qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 qmService.setLocalStorageItem('trackingReminders', JSON.stringify(trackingReminders));
                 deferred.resolve(trackingReminders);
             }, function(error){
@@ -4631,30 +4633,53 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return deferred.promise;
     };
-    qmService.scheduleSingleMostFrequentNotification = function(trackingRemindersFromApi) {
-        qmService.logInfo("scheduleSingleMostFrequentNotification");
-        if($rootScope.user.combineNotifications === false){
-            console.warn("scheduleSingleMostFrequentNotification: $rootScope.user.combineNotifications === false" +
-                " so we shouldn't be calling this function");
-            return;
+    function getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi){
+        if(!trackingRemindersFromApi){
+            trackingRemindersFromApi = JSON.parse(localStorage.getItem('trackingReminders'));
         }
         var shortestInterval = 86400;
-        var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-        if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
+        if(trackingRemindersFromApi){
             for (var i = 0; i < trackingRemindersFromApi.length; i++) {
                 if(trackingRemindersFromApi[i].reminderFrequency < shortestInterval){
                     shortestInterval = trackingRemindersFromApi[i].reminderFrequency;
-                    at.setUTCSeconds(trackingRemindersFromApi[i].nextReminderTimeEpochSeconds);
                 }
             }
-            var notificationSettings = {every: shortestInterval/60, at: at};
-            if($rootScope.previousSingleNotificationSettings && notificationSettings === $rootScope.previousSingleNotificationSettings){
-                qmService.logDebug("scheduleSingleMostFrequentNotification: Notification settings haven't changed so" +
-                    " no need to scheduleGenericNotification", notificationSettings);
+        }
+        return shortestInterval/60;
+    }
+
+    qmService.scheduleSingleMostFrequentLocalNotification = function(trackingRemindersFromApi) {
+        if(!$rootScope.user){
+            qmService.logDebug("No user for scheduleSingleMostFrequentLocalNotification");
+            return;
+        }
+        if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
+            qmService.logDebug("Can only schedule notification on mobile or Chrome extension");
+            return;
+        }
+        qmService.logInfo("scheduleSingleMostFrequentLocalNotification");
+        if($rootScope.user.combineNotifications === false){
+            qmService.logDebug("scheduleSingleMostFrequentLocalNotification: $rootScope.user.combineNotifications === false so we shouldn't be calling this function");
+            //return;
+        }
+        var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+        if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
+            var mostFrequentIntervalInMinutes = getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi);
+            if(trackingRemindersFromApi){
+                for (var i = 0; i < trackingRemindersFromApi.length; i++) {
+                    if(trackingRemindersFromApi[i].reminderFrequency === mostFrequentIntervalInMinutes * 60){
+                        at.setUTCSeconds(trackingRemindersFromApi[i].nextReminderTimeEpochSeconds);
+                    }
+                }
+            }
+            var notificationSettings = {every: mostFrequentIntervalInMinutes, at: at};
+            var previousSettings = qmService.getLocalStorageItemAsObject('previousSingleNotificationSettings');
+            if(previousSettings && notificationSettings === previousSettings){
+                qmService.logInfo("scheduleSingleMostFrequentLocalNotification: Notification settings haven't changed so no need to scheduleGenericNotification", notificationSettings);
                 return;
             }
-            qmService.logDebug("scheduleSingleMostFrequentNotification: Going to schedule generic notification", notificationSettings);
-            $rootScope.previousSingleNotificationSettings = notificationSettings;
+            qmService.logInfo("scheduleSingleMostFrequentLocalNotification: Going to schedule generic notification", notificationSettings);
+            qmService.setLocalStorageItem('previousSingleNotificationSettings', notificationSettings);
             this.scheduleGenericNotification(notificationSettings);
         }
     };
@@ -4897,10 +4922,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.scheduleGenericNotification = function(notificationSettings){
         var deferred = $q.defer();
         if(!notificationSettings.every){
-            qmService.logError("scheduleGenericNotification: Called scheduleGenericNotification without providing " +
-                "notificationSettings.every " +
+            qmService.logError("scheduleGenericNotification: Called scheduleGenericNotification without providing notificationSettings.every " +
                 notificationSettings.every + ". Not going to scheduleGenericNotification.");
-            deferred.resolve();
+            deferred.reject();
             return deferred.promise;
         }
         if(!notificationSettings.at){
@@ -4910,12 +4934,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             notificationSettings.at = at;
         }
         if(!notificationSettings.id){notificationSettings.id = qmService.getPrimaryOutcomeVariable().id;}
-        notificationSettings.title = "Time to track!";
+        notificationSettings.title = "How are you?";
         notificationSettings.text = "Open reminder inbox";
-        notificationSettings.sound = "file://sound/silent.ogg";
+        if($rootScope.isIOS){notificationSettings.sound = "file://sound/silent.ogg";}
+        if($rootScope.isAndroid){notificationSettings.sound = null;}
         notificationSettings.badge = 0;
         if($rootScope.numberOfPendingNotifications > 0) {
-            notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
+            //notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
             notificationSettings.badge = 1; // Less stressful
             //notificationSettings.badge = $rootScope.numberOfPendingNotifications;
         }
@@ -4940,26 +4965,19 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.logDebug("Alarm set, every " + intervalInMinutes + " minutes");
         }
         $ionicPlatform.ready(function () {
-            if (typeof cordova !== "undefined") {
-                if(!qmService.shouldWeUseIonicLocalNotifications()) {
-                    deferred.resolve();
-                    return deferred.promise;
-                }
+            if (localNotificationsPluginInstalled()) {
                 cordova.plugins.notification.local.getAll(function (notifications) {
-                    qmService.logDebug("scheduleGenericNotification: All notifications before scheduling", notifications);
+                    qmService.logInfo("scheduleGenericNotification: Local notifications before scheduling: " + JSON.stringify(notifications));
                     if(notifications[0] && notifications[0].length === 1 &&
                         notifications[0].every === notificationSettings.every) {
-                        console.warn("Not scheduling generic notification because we already have one with " +
-                            "the same frequency.");
+                        qmService.logInfo("Not scheduling generic notification because we already have one with the same frequency.");
                         return;
                     }
                     cordova.plugins.notification.local.cancelAll(function () {
-                        qmService.logDebug('cancelAllNotifications: notifications have been cancelled');
+                        qmService.logInfo('cancelAllNotifications: notifications have been cancelled');
                         cordova.plugins.notification.local.getAll(function (notifications) {
-                            qmService.logDebug("cancelAllNotifications: All notifications after cancelling", notifications);
-                            cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                                qmService.logDebug('scheduleGenericNotification: notification scheduled' + JSON.stringify(notificationSettings));
-                            });
+                            qmService.logInfo("cancelAllNotifications: All notifications after cancelling: " + JSON.stringify(notifications));
+                            initializeLocalPopupNotifications(notificationSettings);
                         });
                     });
                 });
@@ -7170,18 +7188,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
         changeFavicon();
     };
-    function initializeLocalPopupNotifications(){
-        if (!qmService.shouldWeUseIonicLocalNotifications()){return;}
+    function initializeLocalPopupNotifications(notificationSettings){
+        //notificationSettings.every = "minute";
+        if(!notificationSettings.sound){notificationSettings.sound = null;}
         $ionicPlatform.ready(function () {
-            cordova.plugins.notification.local.schedule({
-                title: "How are you?",
-                text: "Tap to open your inbox",
-                at: new Date(),
-                every: "minute",
-                sound: null,
-                icon: 'ic_stat_icon_bw',
-                //smallIcon: 'ic_stat_icon_bw'
-            }, function(data){
+            cordova.plugins.notification.local.schedule(notificationSettings, function(data){
+                qmService.logInfo('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings));
                 qmService.logInfo("cordova.plugins.notification.local callback. data: " + JSON.stringify(data));
                 qmService.showPopupForMostRecentNotification();
             });
@@ -7219,7 +7231,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.getUserAndSetupGoogleAnalytics();
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
         //initializeLocalNotifications();
-        initializeLocalPopupNotifications();
+        qmService.scheduleSingleMostFrequentLocalNotification();
         if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
         if($rootScope.isAndroid && localStorage.getItem('drawOverAppsEnabled') === null){qmService.toggleDrawOverApps();}
     };

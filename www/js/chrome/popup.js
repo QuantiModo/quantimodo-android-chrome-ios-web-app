@@ -22,8 +22,10 @@ var inboxButtonClicked = function() {
     window.logInfo("inboxButtonClicked");
     if(typeof OverApps !== "undefined"){
         window.logInfo("Calling  OverApps.openApp");
-        OverApps.openApp();
+        //OverApps.openApp();
         //OverApps.closeWebView();
+        OverApps.closeWebView();
+        OverApps.openApp();
     } else {
         window.logInfo("OverApps not defined");
         openOrFocusChromePopupWindow(reminderInboxPopupWindowParams, true);
