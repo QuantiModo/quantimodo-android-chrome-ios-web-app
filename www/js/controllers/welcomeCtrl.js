@@ -18,7 +18,7 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     };
     $scope.skipInterval = function(){
         $scope.showIntervalCard = false;
-        console.debug('skipInterval: Going to login state...');
+        qmService.logDebug('skipInterval: Going to login state...');
         qmService.sendToLogin();
     };
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
@@ -51,12 +51,12 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     };
     $scope.init = function(){
         $rootScope.hideNavigationMenu = true;
-        console.debug($state.current.name + ' initializing...');
+        qmService.logDebug($state.current.name + ' initializing...');
 
     };
     $scope.$on('$ionicView.beforeEnter', function(){
         if($rootScope.user){
-            console.debug('Already have user so no need to welcome. Going to default state.');
+            qmService.logDebug('Already have user so no need to welcome. Going to default state.');
             qmService.goToState(config.appSettings.appDesign.defaultState);
         }
     });

@@ -9,7 +9,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     $scope.data = { "search" : '' };
     $scope.filterSearchQuery = '';
     $scope.searching = true;
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) { qmService.logDebug("beforeEnter state " + $state.current.name);
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
         $rootScope.hideNavigationMenu = false;
@@ -37,7 +37,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     });
     $rootScope.toggleFilterBar = function () {$scope.showSearchFilterBox = !$scope.showSearchFilterBox;};
     $scope.filterSearch = function () {
-        console.debug($scope.data.search);
+        qmService.logDebug($scope.data.search);
         if($scope.outcomeList) {
             $scope.state.correlationObjects = $scope.state.correlationObjects.filter(function( obj ) {
                 return obj.effectVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1; });
@@ -102,26 +102,26 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 { text: '<i class="icon ion-arrow-up-c"></i>Descending Correlation' }
             ],
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { console.debug('CANCELLED'); },
+            cancel: function() { qmService.logDebug('CANCELLED'); },
             buttonClicked: function(index) {
-                console.debug('BUTTON CLICKED', index);
+                qmService.logDebug('BUTTON CLICKED', index);
                 if(index === 0){
-                    console.debug("Sort by Statistical Significance");
+                    qmService.logDebug("Sort by Statistical Significance");
                     $scope.state.requestParams.sort = '-statisticalSignificance';
                     populateCorrelationList();
                 }
                 if(index === 1){
-                    console.debug("Sort by QM Score");
+                    qmService.logDebug("Sort by QM Score");
                     $scope.state.requestParams.sort = '-qmScore';
                     populateCorrelationList();
                 }
                 if(index === 2){
-                    console.debug("Ascending Predictive Correlation");
+                    qmService.logDebug("Ascending Predictive Correlation");
                     $scope.state.requestParams.sort = 'correlationCoefficient';
                     populateCorrelationList();
                 }
                 if(index === 3){
-                    console.debug("Descending Predictive Correlation");
+                    qmService.logDebug("Descending Predictive Correlation");
                     $scope.state.requestParams.sort = '-correlationCoefficient';
                     populateCorrelationList();
                 }
@@ -130,7 +130,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         });
     };
     $scope.openStore = function(name){
-        console.debug("open store for ", name); // make url
+        qmService.logDebug("open store for ", name); // make url
         name = name.split(' ').join('+'); // launch inAppBrowser
         var url  = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
         $scope.openUrl(url);

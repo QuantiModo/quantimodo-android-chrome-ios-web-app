@@ -6,11 +6,11 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
         bodyText: "One moment please..."
     };
     if (!clipboard.supported) {
-        console.debug('Sorry, copy to clipboard is not supported');
+        qmService.logDebug('Sorry, copy to clipboard is not supported');
         $scope.hideClipboardButton = true;
     }
     $scope.$on('$ionicView.afterEnter', function(){
-        console.debug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
+        qmService.logDebug('StudyCreationCtrl afterEnter in state ' + $state.current.name);
         qmService.hideLoader();
     });
     $scope.copyLinkText = 'Copy Shareable Link to Clipboard';
@@ -57,19 +57,19 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             }
             qmService.searchVariablesIncludingLocalDeferred(query, dataToPass.requestParams)
                 .then(function(results){
-                    console.debug("Got " + results.length + " results matching " + query);
+                    qmService.logDebug("Got " + results.length + " results matching " + query);
                     deferred.resolve(loadAll(results));
                 });
             return deferred.promise;
         }
-        function searchTextChange(text) { console.debug('Text changed to ' + text); }
+        function searchTextChange(text) { qmService.logDebug('Text changed to ' + text); }
         function selectedItemChange(item) {
             if(!item){return;}
             self.selectedItem = item;
             self.buttonText = dataToPass.buttonText;
             $scope.variable = item.variable;
             qmService.addVariableToLocalStorage(item.variable);
-            console.debug('Item changed to ' + item.variable.name);
+            qmService.logDebug('Item changed to ' + item.variable.name);
         }
 
         /**
@@ -110,7 +110,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             $scope.outcomeVariable = variable;
             $scope.outcomeVariableName = variable.name;
             qmService.logDebug("Selected outcome " + variable.name);
-        }, function() {console.debug('User cancelled selection');});
+        }, function() {qmService.logDebug('User cancelled selection');});
     };
     $scope.selectPredictorVariable = function (ev) {
         $mdDialog.show({
@@ -135,7 +135,7 @@ angular.module('starter').controller('StudyCreationCtrl', function($scope, $stat
             $scope.predictorVariableName = variable.name;
             qmService.logDebug("Selected predictor " + variable.name);
         }, function() {
-            console.debug('User cancelled selection');
+            qmService.logDebug('User cancelled selection');
         });
     };
 });

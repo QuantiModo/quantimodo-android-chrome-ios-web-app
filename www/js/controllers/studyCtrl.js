@@ -3,7 +3,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
     $scope.controller_name = "StudyCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on("$ionicView.beforeEnter", function() {
-        console.debug("beforeEnter state " + $state.current.name);
+        qmService.logDebug("beforeEnter state " + $state.current.name);
         $scope.state = {
             title: "Loading study...",
             requestParams: {},
@@ -13,7 +13,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
         qmService.hideLoader(); // Hide before robot is called in afterEnter
     });
     $scope.$on("$ionicView.enter", function() {
-        console.debug("enter state " + $state.current.name);
+        qmService.logDebug("enter state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         if($stateParams.correlationObject){
             qmService.setLocalStorageItem('lastStudy', JSON.stringify($stateParams.correlationObject));
@@ -54,7 +54,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
     };
     $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: $rootScope.correlationObject}); };
     if (!clipboard.supported) {
-        console.debug("Sorry, copy to clipboard is not supported");
+        qmService.logDebug("Sorry, copy to clipboard is not supported");
         $scope.hideClipboardButton = true;
     }
     $scope.copyLinkText = "Copy Shareable Link to Clipboard";
@@ -148,7 +148,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             ],
             destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { console.debug($state.current.name + ": " + 'CANCELLED'); },
+            cancel: function() { qmService.logDebug($state.current.name + ": " + 'CANCELLED'); },
             buttonClicked: function(index) {
                 if(index === 0){ qmService.goToState("app.variableSettings", {variableName: $rootScope.correlationObject.causeVariableName}); }
                 if(index === 1){ qmService.goToState("app.variableSettings", {variableName: $rootScope.correlationObject.effectVariableName}); }
@@ -185,7 +185,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             qmService.postUserVariableDeferred(postData).then(function (response) {
                 getStudy();
             });
-        }, function() {console.debug("User cancelled selection");});
+        }, function() {qmService.logDebug("User cancelled selection");});
     };
     function VariableSettingsController(qmService, dataToPass) {
         var self = this;
