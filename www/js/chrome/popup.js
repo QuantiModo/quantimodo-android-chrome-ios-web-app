@@ -49,6 +49,7 @@ var onFaceButtonClicked = function() {
         if(window.trackingReminderNotification){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
+            showLoader();
             window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
             //closePopup();
         }
@@ -69,6 +70,22 @@ var onFaceButtonClicked = function() {
     if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
     closePopup();
 };
+function showLoader() {
+    var sectionRate = document.getElementById("sectionRate");
+    var loader = document.getElementById("loader");
+    sectionRate.className = "invisible";
+    sectionRate.style.display = "none";
+    loader.style.display = "block";
+    loader.className = "visible";
+}
+function hideLoader() {
+    var sectionRate = document.getElementById("sectionRate");
+    var loader = document.getElementById("loader");
+    loader.className = "invisible";
+    loader.style.display = "none";
+    sectionRate.style.display = "block";
+    sectionRate.className = "visible";
+}
 function displaySendingTextAndPostMeasurements() {
     var sectionRate = document.getElementById("sectionRate");
     var sectionSendingMood = document.getElementById("sectionSendingMood");
