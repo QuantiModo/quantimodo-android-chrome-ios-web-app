@@ -63,15 +63,30 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 		}
 		function successHandler(measurements) {
             measurements = qmService.addInfoAndImagesToMeasurements(measurements);
-            if(!measurements ||!measurements.length){$scope.state.showLoadMoreButton = false;} else {$scope.state.showLoadMoreButton = true;}
-            if (concat) {$scope.state.history = $scope.state.history.concat(measurements);} else {$scope.state.history = measurements;}
+            if(!measurements || !measurements.length){
+            	$scope.state.showLoadMoreButton = false;
+            } else {
+            	$scope.state.showLoadMoreButton = true;
+                if (concat) {
+                    if($scope.state.history.constructor !== Array){
+                        qmService.logError("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
+                        $scope.state.history = measurements;
+                    } else {
+                        $scope.state.history = $scope.state.history.concat(measurements);
+					}
+                } else {
+                    $scope.state.history = measurements;
+                }
+            }
             hideLoader();
             if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
         }
         function errorHandler(error) {
+			qmService.logError("History update error: " + error);
             $scope.state.noHistory = true;
             hideLoader();
         }
+        qmService.showBasicLoader();
         qmService.getMeasurements(params, successHandler, errorHandler);
 	};
 	function setupVariableCategoryActionSheet() {
