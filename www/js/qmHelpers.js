@@ -48,9 +48,9 @@ function getStackTrace() {
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.logDebug')).replace('window.logDebug', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.logInfo')).replace('window.logInfo', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.logError')).replace('window.logError', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.window.logDebug')).replace('window.window.logDebug', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logDebug')).replace('window.logDebug', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.logInfo')).replace('window.logInfo', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.window.logError')).replace('window.window.logError', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logError')).replace('window.logError', '');
     return stackTrace;
 }
 function addStackTraceToMessage(message, stackTrace) {
@@ -193,7 +193,7 @@ function getAppVersion() {
     if(appSettings){return appSettings.versionNumber;}
     return window.getUrlParameter('appVersion');
 }
-window.window.getAccessToken = function() {
+window.getAccessToken = function() {
     if(localStorage.accessToken){return localStorage.accessToken;}
     return window.getUrlParameter('accessToken');
 };
