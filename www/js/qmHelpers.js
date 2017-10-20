@@ -729,7 +729,7 @@ window.drawOverAppsNotification = function(trackingReminderNotification) {
         window.logError("window.overApps is undefined!");
         return;
     }
-    window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
+    //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
     var options = {
         path: "android_popup.html?variableName=" + trackingReminderNotification.variableName +
         "&valence=" + trackingReminderNotification.valence +

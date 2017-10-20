@@ -6,14 +6,8 @@
 	body { width: 100%; height: 56px; margin: auto; background: white; text-align: center; }
 	#sectionRate { width: 100%; opacity: 1; height: 56px; padding-top: 1px; padding-bottom: 1px; overflow: hidden; }
 	#sectionRate img { width: 13%; display: inline-block; padding-left: 6px; padding-right: 6px; background-color: #FFFFFF; transition: all 200ms linear; }
-	#sectionRate img:hover { -webkit-filter: blur(1px) brightness(110%) saturate(150%); }
-	#loader{
-		display: none;
-		opacity: 0;
-		width: 380px;
-		height: 70px;
-		transition: opacity 400ms linear;
-	}
+	/*#sectionRate img:hover { -webkit-filter: blur(1px) brightness(110%) saturate(150%); }*/
+	#loader{  display: none;  opacity: 0;  width: 380px;  height: 70px;  transition: opacity 400ms linear; margin: auto;  }
 	.invisible {
 		-webkit-animation-name: fadeOut;
 		-webkit-animation-duration:0.4s;
@@ -53,7 +47,8 @@
 		  <img src="img/rating/face_rating_button_256_ecstatic.png" id="buttonMoodEcstatic">
 	  </section>
 	  <section id="loader">
-		  <img src="img/loaders/pop_tart_cat_blue_background.gif" id="popTartCat">
+		  <img src="img/loaders/rainbow-loader.gif" id="popTartCat">
+		  <!--<img src="img/loaders/pop_tart_cat_blue_background.gif" id="popTartCat">-->
 	  </section>
   </body>
 </html>
