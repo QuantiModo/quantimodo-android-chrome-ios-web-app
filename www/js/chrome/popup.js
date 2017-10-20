@@ -10,7 +10,8 @@ function setFaceButtonListeners() {
     document.getElementById('buttonMoodOk').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodHappy').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodEcstatic').onclick = onFaceButtonClicked;
-    document.getElementById('buttonInbox').onclick = inboxButtonClicked;
+    //document.getElementById('buttonInbox').onclick = inboxButtonClicked;
+    document.getElementById('question').onclick = inboxButtonClicked;
 }
 function getVariableName() {
     if(window.getUrlParameter('variableName')){return window.getUrlParameter('variableName');}
@@ -48,8 +49,8 @@ var onFaceButtonClicked = function() {
         if(window.trackingReminderNotification){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
-            window.postTrackingReminderNotification(window.notificationsSyncQueue);
-            closePopup();
+            window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
+            //closePopup();
         }
         return;
     }
