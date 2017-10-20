@@ -164,7 +164,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	var getFallbackInboxContent = function () {
 		if(!$scope.state.numberOfDisplayedNotifications){
             if($stateParams.variableCategoryName){
+                qmService.logInfo("Falling back to getTrackingReminderNotificationsFromApi request for category " + $stateParams.variableCategoryName);
 				qmService.getTrackingReminderNotificationsFromApi({variableCategoryName: $stateParams.variableCategoryName, onlyPast: true}, function (response) {
+                    qmService.logInfo("getTrackingReminderNotificationsFromApi response for " + $stateParams.variableCategoryName + ": " + JSON.stringify(response));
                     $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(response.data);
                 });
             }
