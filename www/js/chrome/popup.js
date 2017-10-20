@@ -126,6 +126,7 @@ function updateQuestion(variableName) {
     window.logInfo("Updating question to " + questionText);
     document.getElementById("question").innerHTML = questionText;
     document.title = questionText;
+    if(isChromeExtension()){document.getElementById("question").display = "none";}
 }
 document.addEventListener('DOMContentLoaded', function() {
     if(window.getUrlParameter("trackingReminderNotificationId")){
