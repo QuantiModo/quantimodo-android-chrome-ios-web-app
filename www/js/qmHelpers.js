@@ -80,11 +80,11 @@ function addCallerFunctionToMessage(message) {
     }
     return message;
 }
-window.logDebug = function(message, stackTrace) {
+window.logDebug = function(message) {
     message = addCallerFunctionToMessage(message);
     if(window.getDebugMode()){console.debug(message);}
 };
-window.logInfo = function(message, stackTrace) {
+window.logInfo = function(message) {
     message = addCallerFunctionToMessage(message);
     console.info(message);
 };
@@ -218,15 +218,17 @@ var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: sc
 var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
 var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2};
 var signInNotificationParams = { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2};
-function getQueryParameterString() {
+function addGlobalQueryParameters(url) {
     if (window.getAccessToken()) {
-        var queryParameterString = '?access_token=' + window.getAccessToken();
-        if(getAppName()){queryParameterString += "&appName=" + encodeURIComponent(getAppName());}
-        if(getAppVersion()){queryParameterString += "&appVersion=" + encodeURIComponent(getAppVersion());}
-        if(getClientId()){queryParameterString += "&clientId=" + encodeURIComponent(getClientId());}
-        return queryParameterString;
+        url = addQueryParameter(url, 'access_token', window.getAccessToken());
+    } else {
+        window.logError("No access token!");
+        showSignInNotification();
     }
-    showSignInNotification();
+    if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
+    if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
+    if(getClientId()){url = addQueryParameter(url, 'clientId', getClientId());}
+    return url;
 }
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
@@ -372,7 +374,7 @@ function objectLength(obj) {
     return result;
 }
 function showSignInNotification() {
-    if(isChromeExtension()){
+    if(!isChromeExtension()){
         console.log("Can't showSignInNotification because chrome is undefined");
         return;
     }
@@ -380,7 +382,7 @@ function showSignInNotification() {
     chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
 }
 window.getRequestUrl = function(path) {
-    var url = getAppHostName() + "/api/" + path + getQueryParameterString();
+    var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
     console.log("Making API request to " + url);
     return url;
 };
@@ -408,8 +410,8 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                     updateBadgeText("?");
                     //chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
                     chrome.notifications.create(notificationId, inboxNotificationParams, function (id) {});
+                    openChromePopup(notificationId);
                 }
-                openChromePopup(notificationId);
             } else {
                 openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
                 updateBadgeText("");
@@ -823,4 +825,4 @@ window.getUserFromApi = function(){
     };
     xhr.send();
 };
-window.isTestUser = function(){return getUser() && getUser().displayName.indexOf('test') !== -1 && getUser().id !== 230;}
+window.isTestUser = function(){return getUser() && getUser().displayName.indexOf('test') !== -1 && getUser().id !== 230;};

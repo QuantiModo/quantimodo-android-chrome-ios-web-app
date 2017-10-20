@@ -122,7 +122,10 @@ function closePopup() {
     }
 }
 function updateQuestion(variableName) {
-    document.getElementById("question").innerHTML = "How is your " + variableName.toLowerCase() + "?";
+    var questionText = "How is your " + variableName.toLowerCase() + "?";
+    window.logInfo("Updating question to " + questionText);
+    document.getElementById("question").innerHTML = questionText;
+    document.title = questionText;
 }
 document.addEventListener('DOMContentLoaded', function() {
     if(window.getUrlParameter("trackingReminderNotificationId")){
