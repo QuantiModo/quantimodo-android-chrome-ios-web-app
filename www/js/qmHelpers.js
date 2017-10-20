@@ -341,10 +341,8 @@ if(isChromeExtension()){
 window.pushMeasurements = function(measurements, onDoneListener) {
 	postToQuantiModo(measurements,"v1/measurements", onDoneListener);
 };
-window.postTrackingReminderNotification = function(trackingReminderNotification, onDoneListener) {
-    postToQuantiModo(trackingReminderNotification, "v1/trackingReminderNotifications", onDoneListener);
-    window.deleteTrackingReminderNotificationFromLocalStorage(trackingReminderNotification.trackingReminderNotificationId);
-    window.showPopupForMostRecentNotification();
+window.postTrackingReminderNotifications = function(trackingReminderNotifications, onDoneListener) {
+    postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
 };
 function postToQuantiModo(body, path, onDoneListener) {
     var xhr = new XMLHttpRequest();
