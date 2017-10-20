@@ -96,7 +96,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
     };
     // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
-        console.debug("$ionicView.enter " + $state.current.name);
+        qmService.logDebug("$ionicView.enter " + $state.current.name);
     });
     $scope.$on('$ionicView.beforeEnter', function(){
         $scope.state.title = 'Record a Tag';
@@ -116,7 +116,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
                 qmService.hideLoader();
             });
         }
-        console.debug($state.current.name + ": beforeEnter");
+        qmService.logDebug($state.current.name + ": beforeEnter");
 
     });
 });

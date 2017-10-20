@@ -1,7 +1,7 @@
 angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        console.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
+        qmService.logDebug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
         $rootScope.hideNavigationMenu = true;
         if(qmService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
         qmService.setupOnboardingPages();
@@ -10,7 +10,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        console.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
+        qmService.logDebug('OnboardingCtrl afterEnter in state ' + $state.current.name);
         qmService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
     var removeImportPage = function () {

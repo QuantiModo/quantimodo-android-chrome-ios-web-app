@@ -2,9 +2,9 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                  $stateParams, $ionicHistory, $ionicActionSheet, qmService) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) { qmService.logDebug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
-        console.debug($state.current.name + ' initializing...');
+        qmService.logDebug($state.current.name + ' initializing...');
         $scope.loading = true;
         if($stateParams.variableObject){
             qmService.setupVariableByVariableObject($stateParams.variableObject);
@@ -29,7 +29,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         qmService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){$rootScope.variableObject = userVariable;});
     }
     $rootScope.showActionSheetMenu = function() {
-        console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
+        qmService.logDebug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
                 qmService.actionSheetButtons.recordMeasurement,
@@ -41,7 +41,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             ],
             destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { console.debug('CANCELLED'); },
+            cancel: function() { qmService.logDebug('CANCELLED'); },
             buttonClicked: function(index) {
                 if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
@@ -53,7 +53,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             },
             destructiveButtonClicked: function() {qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject); return true;}
         });
-        console.debug('Setting hideSheet timeout');
+        qmService.logDebug('Setting hideSheet timeout');
         $timeout(function() { hideSheet(); }, 20000);
     };
     $scope.openTagVariableSearchDialog = function($event) {
@@ -258,7 +258,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             }).catch(function (error) {qmService.logError(error);});
             return deferred.promise;
         }
-        function searchTextChange(text) { console.debug('Text changed to ' + text); }
+        function searchTextChange(text) { qmService.logDebug('Text changed to ' + text); }
         function selectedItemChange(item) {
             $rootScope.variableObject.wikipediaPage = item.page;
             $rootScope.variableObject.wikipediaExtract = item.page.extract;
@@ -300,7 +300,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         }).then(function(page) {
             $rootScope.variableObject.wikipediaPage = page;
         }, function() {
-            console.debug('User cancelled selection');
+            qmService.logDebug('User cancelled selection');
         });
     };
     $scope.resetVariableToDefaultSettings = function(variableObject) {

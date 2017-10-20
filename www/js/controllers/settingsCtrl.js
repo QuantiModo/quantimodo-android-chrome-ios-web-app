@@ -6,7 +6,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.state = {};
 	$scope.userEmail = qmService.getUrlParameter('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
-	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+	$scope.$on('$ionicView.beforeEnter', function(e) { qmService.logDebug("beforeEnter state " + $state.current.name);
         $scope.drawOverAppsEnabled = (localStorage.getItem('drawOverAppsEnabled') == 'true');
 		$rootScope.hideNavigationMenu = false;
 		if(qmService.getUrlParameter('userEmail')){
@@ -68,7 +68,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 				'You will only get a single generic notification instead of a separate notification for each reminder that you create.  All ' +
 				'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.', ev);
 			qmService.cancelAllNotifications().then(function() {
-				console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
+				qmService.logDebug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
 					"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
 					"frequency reminder");
 				if(!localStorage.getItem('deviceTokenOnServer')){
@@ -113,14 +113,14 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$scope.state.earliestReminderTimePickerConfiguration = {
 			callback: function (val) {
 				if (typeof (val) === 'undefined') {
-					console.debug('Time not selected');
+					qmService.logDebug('Time not selected');
 				} else {
 					var a = new Date();
 					var params = {timeZoneOffset: a.getTimezoneOffset()};
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
 					a.setMinutes(selectedTime.getUTCMinutes());
-					console.debug('Selected epoch is : ', val, 'and the time is ',
+					qmService.logDebug('Selected epoch is : ', val, 'and the time is ',
 						selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 					var newEarliestReminderTime = moment(a).format('HH:mm:ss');
 					if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
@@ -144,14 +144,14 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$scope.state.latestReminderTimePickerConfiguration = {
 			callback: function (val) {
 				if (typeof (val) === 'undefined') {
-					console.debug('Time not selected');
+					qmService.logDebug('Time not selected');
 				} else {
 					var a = new Date();
 					var params = {timeZoneOffset: a.getTimezoneOffset()};
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
 					a.setMinutes(selectedTime.getUTCMinutes());
-					console.debug('Selected epoch is : ', val, 'and the time is ',
+					qmService.logDebug('Selected epoch is : ', val, 'and the time is ',
 						selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 					var newLatestReminderTime = moment(a).format('HH:mm:ss');
 					if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
@@ -211,7 +211,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             function noCallback(){afterLogoutDoNotDeleteMeasurements();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
-		console.debug('Logging out...');
+		qmService.logDebug('Logging out...');
 		$rootScope.user = null;
 		showDataClearPopup(ev);
 	};
@@ -262,12 +262,12 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         qmService.showBlackRingLoader();
         qmService.postDowngradeSubscriptionDeferred().then(function (user) {
             qmService.hideLoader();
-            console.debug(JSON.stringify(user));
+            qmService.logDebug(JSON.stringify(user));
             qmService.showMaterialAlert('Downgraded', 'Successfully downgraded to QuantiModo Lite');
         }, function (error) {
             qmService.hideLoader();
             qmService.showMaterialAlert('Error', 'An error occurred while downgrading. Please email mike@quantimo.do');
-            console.debug(JSON.stringify(error));
+            qmService.logDebug(JSON.stringify(error));
         });
     };
     var androidDowngrade = function () {
@@ -279,7 +279,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         confirmPopup.then(function(res) {
             if(res) {
                 qmService.postDowngradeSubscriptionDeferred().then(function (user) {
-                    console.debug(JSON.stringify(user));
+                    qmService.logDebug(JSON.stringify(user));
                 }, function (error) { qmService.logError(error); });
                 window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
@@ -292,7 +292,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             if(res) {
                 $rootScope.user.stripeActive = false;
                 qmService.postDowngradeSubscriptionDeferred().then(function (user) {
-                    console.debug(JSON.stringify(user));
+                    qmService.logDebug(JSON.stringify(user));
                 }, function (error) { qmService.logError(error); });
                 window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
@@ -305,4 +305,12 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         } else { webDowngrade(); }
     };
     if($rootScope.isAndroid){$scope.toggleDrawOverApps = function(ev){qmService.toggleDrawOverApps(ev);};}
+    if($rootScope.isAndroid){
+    	$scope.togglePushNotificationsEnabled = function(){
+            $rootScope.user.pushNotificationsEnabled = !$rootScope.user.pushNotificationsEnabled;
+            qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
+            if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
+            if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}
+        }
+    }
 });

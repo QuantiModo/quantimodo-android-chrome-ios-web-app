@@ -19,11 +19,11 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 	};
 	$scope.$on('$ionicView.beforeEnter', function(){
 		$rootScope.hideNavigationMenu = false;
-		console.debug('HistoryPrimaryOutcomeCtrl beforeEnter...');
+		qmService.logDebug('HistoryPrimaryOutcomeCtrl beforeEnter...');
 		$scope.refreshMeasurementHistory();
 	});
 	$scope.$on('updatePrimaryOutcomeHistory', function(){
-		console.debug($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
+		qmService.logDebug($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
 		$scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
 	});
 	$scope.showActionSheet = function(measurement) {
@@ -41,9 +41,9 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 				qmService.actionSheetButtons.analysisSettings
 			],
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-			cancel: function() {console.debug($state.current.name + ": " + 'CANCELLED');},
+			cancel: function() {qmService.logDebug($state.current.name + ": " + 'CANCELLED');},
 			buttonClicked: function(index) {
-				console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
+				qmService.logDebug($state.current.name + ": " + 'BUTTON CLICKED', index);
 				if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
 				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
 				if(index === 2) {qmService.goToState('app.track');}

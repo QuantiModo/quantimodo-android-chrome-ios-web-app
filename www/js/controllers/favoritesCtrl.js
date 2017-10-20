@@ -1,7 +1,7 @@
 angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, qmService, $rootScope,
 										  $stateParams) {
     $scope.controller_name = "FavoritesCtrl";
-    console.debug('Loading ' + $scope.controller_name);
+    qmService.logDebug('Loading ' + $scope.controller_name);
     $scope.state = {
         selected1to5Value : false,
         loading : true,
@@ -15,7 +15,7 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
         moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
     };
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.enter', function(e) { qmService.logDebug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         $rootScope.bloodPressure = {systolicValue: null, diastolicValue: null, displayTotal: "Blood Pressure"};
         if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
@@ -44,7 +44,7 @@ angular.module('starter').controller('FavoritesCtrl', function($scope, $state, $
     };
     $scope.favoriteAddButtonClick = function () {qmService.goToState('app.favoriteSearch');};
     $scope.refreshFavorites = function () {
-        console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+        qmService.logDebug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
         qmService.showInfoToast('Syncing...');
         qmService.syncTrackingReminders(true).then(function () {
             getFavoritesFromLocalStorage();
