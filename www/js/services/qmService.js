@@ -260,13 +260,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if($rootScope.offlineConnectionErrorShowing){ $rootScope.offlineConnectionErrorShowing = false; }
         var bodyString = JSON.stringify(body);
         if(!qmService.getDebugMode()){bodyString = bodyString.substring(0, 140);}
-        qmService.logDebug('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, options.stackTrace);
+        qmService.logInfo('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, options.stackTrace);
         qmService.getAccessTokenFromAnySource().then(function(accessToken){
             for (var i = 0; i < body.length; i++) {
                 var item = body[i];
                 for (var j = 0; j < requiredFields.length; j++) {
                     if (!(requiredFields[j] in item)) {
-                        qmService.bugsnagNotify('Missing required field', requiredFields[j] + ' in ' + route + ' request!', body);
+                        qmService.logError('Missing required field', requiredFields[j] + ' in ' + route + ' request!', body);
                         //throw 'missing required field in POST data; required fields: ' + requiredFields.toString();
                     }
                 }
@@ -274,12 +274,16 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var url = qmService.getQuantiModoUrl(route) + '?' + addGlobalUrlParamsToArray([]).join('&');
             var request = {method : 'POST', url: url, responseType: 'json', headers : {'Content-Type': "application/json", 'Accept': "application/json"}, data : JSON.stringify(body)};
             if(accessToken) {
-                qmService.logDebug('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
+                authDebug('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
                 request.headers = {"Authorization" : "Bearer " + accessToken, 'Content-Type': "application/json", 'Accept': "application/json"};
             } else {
-                qmService.logDebug('No access token for POST ' + route + ". User is " + JSON.stringify($rootScope.user), options.stackTrace);
+                authDebug('No access token for POST ' + route + ". User is " + JSON.stringify($rootScope.user), options.stackTrace);
             }
-            $http(request).success(successHandler).error(function(data, status, headers){
+            function generalSuccessHandler(response){
+                qmService.logInfo('Response from POST ' + route + ": " + JSON.stringify(response));
+                if(successHandler){successHandler(response);}
+            }
+            $http(request).success(generalSuccessHandler).error(function(data, status, headers){
                 generalApiErrorHandler(data, status, headers, request, options);
                 if(requestSpecificErrorHandler){requestSpecificErrorHandler(data);}
             });
@@ -2382,7 +2386,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
         var trackingReminderNotificationsArray = qmService.getLocalStorageItemAsObject('notificationsSyncQueue');
-        qmService.logInfo("postTrackingReminderNotificationsDeferred: " + JSON.stringify(trackingReminderNotificationsArray));
+        qmService.logInfo("postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: " + JSON.stringify(trackingReminderNotificationsArray));
         qmService.deleteItemFromLocalStorage('notificationsSyncQueue');
         if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
             if(successHandler){successHandler();}
@@ -2673,8 +2677,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmService.logInfo("syncTrackingReminders: Sync queue NOT empty so posting notifications");
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
+                    qmService.logInfo("postTrackingRemindersToApi response: " + JSON.stringify(response));
                     if(response && response.data){
-                        qmService.logInfo("postTrackingRemindersToApi response: " + JSON.stringify(response));
                         qmService.deleteItemFromLocalStorage('trackingReminderSyncQueue');
                         if(response.data.userVariables){qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', response.data.userVariables);}
                         if(!response.data.trackingReminders){
@@ -2694,6 +2698,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                             //putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);
                             qmService.setLocalStorageItem('trackingReminderNotifications',  JSON.stringify(response.data.trackingReminderNotifications));
                         }
+                    } else {
+                        qmService.logError("No postTrackingRemindersToApi response.data!")
                     }
                     deferred.resolve(response);
                 }, function(error){deferred.reject(error);});
