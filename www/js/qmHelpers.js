@@ -66,10 +66,12 @@ function addCallerFunctionToMessage(message) {
         return addStackTraceToMessage(message);
     }
     var callerFunction;
-    try {
-        callerFunction = calleeFunction.caller;
-    } catch (error) {
-        console.error(error);
+    if(calleeFunction){
+        try {
+            callerFunction = calleeFunction.caller;
+        } catch (error) {
+            console.error(error);
+        }
     }
     if(callerFunction && callerFunction.name && callerFunction.name !== ""){
         return "Caller " + callerFunction.name + " called " + message;
@@ -264,7 +266,10 @@ if(isChromeExtension()) {
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         console.debug('onAlarm Listener heard this alarm ', alarm);
-        if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
+        if(window.getMostRecentRatingNotificationFromLocalStorage()){
+            openOrFocusChromePopupWindow(facesRatingPopupWindowParamsAndroid, true);
+            updateBadgeText("");
+        } else if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
             openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
         } else {
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
