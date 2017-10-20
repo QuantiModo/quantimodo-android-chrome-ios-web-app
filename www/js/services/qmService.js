@@ -12,7 +12,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     $rootScope.offlineConnectionErrorShowing = false; // to prevent more than one popup
     function qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler) {
-        if(!response){qmService.logError("No response provided to qmSdkApiResponseHandler"); return;}
+        if(!response){
+            qmService.logError("No response provided to qmSdkApiResponseHandler");
+            return;
+        }
         console.debug(response.status + " response from " + response.req.url);
         if (error) {
             qmApiGeneralErrorHandler(error, data, response);
@@ -4364,13 +4367,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function localNotificationsPluginInstalled() {
         var installed = true;
         if(typeof cordova === "undefined"){
-            qmService.logInfo("cordova undefined");
+            qmService.logInfo("cordova is undefined!");
             installed = false;
         } else if (typeof cordova.plugins === "undefined"){
-            qmService.logInfo("cordova.plugins undefined");
+            qmService.logInfo("cordova.plugins is undefined");
             installed = false;
         } else if (typeof cordova.plugins.notification === "undefined"){
-            qmService.logInfo("cordova.plugins.notification undefined");
+            qmService.logInfo("cordova.plugins.notification is undefined");
             installed = false;
         }
         qmService.logInfo("localNotificationsPluginInstalled: " + installed);
@@ -7379,178 +7382,184 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         Analytics.trackEvent(category, action, label, value, noninteraction, { dimension15: 'My Custom Dimension', metric18: 8000 });
     };
     qmService.configurePushNotifications = function(){
-        if($rootScope.isMobile){if(typeof PushNotification === "undefined"){qmService.reportErrorDeferred('PushNotification is undefined on mobile!');}}
-        if (typeof PushNotification !== "undefined") {
-            var pushConfig = {
-                android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
-                browser: {pushServiceURL: 'http://push.api.phonegap.com/v1/push'},
-                ios: {alert: "false", badge: "true", sound: "false", clearBadge: true},
-                windows: {}
-            };
-            qmService.logDebug("Going to try to register push with " + JSON.stringify(pushConfig));
-            var push = PushNotification.init(pushConfig);
-            push.on('registration', function(registerResponse) {
-                qmService.logInfo('Registered device for push notifications.  registerResponse: ' + JSON.stringify(registerResponse));
-                if(!registerResponse.registrationId){qmService.bugsnagNotify('No registerResponse.registrationId from push registration');}
-                qmService.logInfo("Got device token for push notifications: " + registerResponse.registrationId);
-                var deviceTokenOnServer = localStorage.getItem('deviceTokenOnServer');
-                if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
-                    qmService.setLocalStorageItem('deviceTokenToSync', registerResponse.registrationId);
+        $ionicPlatform.ready(function() {
+            if($rootScope.isMobile){
+                if(typeof PushNotification === "undefined"){
+                    qmService.reportErrorDeferred('PushNotification is undefined on mobile!');
                 }
-            });
-            var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
-            push.on('notification', function(data) {
-                qmService.logDebug('Received push notification: ' + JSON.stringify(data));
-                qmService.updateLocationVariablesAndPostMeasurementIfChanged();
-                if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
-                    qmService.drawOverAppsNotification(data.additionalData);
-                } else {
-                    qmService.refreshTrackingReminderNotifications(300).then(function(){
-                        qmService.logDebug('push.on.notification: successfully refreshed notifications');
-                    }, function (error) {
-                        console.error('push.on.notification: ' + error);
-                    });
-                }
+            }
+            if (typeof PushNotification !== "undefined") {
+                var pushConfig = {
+                    android: {senderID: "1052648855194", badge: true, sound: false, vibrate: false, icon: 'ic_stat_icon_bw', clearBadge: true},
+                    browser: {pushServiceURL: 'http://push.api.phonegap.com/v1/push'},
+                    ios: {alert: "false", badge: "true", sound: "false", clearBadge: true},
+                    windows: {}
+                };
+                qmService.logDebug("Going to try to register push with " + JSON.stringify(pushConfig));
+                var push = PushNotification.init(pushConfig);
+                push.on('registration', function(registerResponse) {
+                    qmService.logInfo('Registered device for push notifications.  registerResponse: ' + JSON.stringify(registerResponse));
+                    if(!registerResponse.registrationId){qmService.bugsnagNotify('No registerResponse.registrationId from push registration');}
+                    qmService.logInfo("Got device token for push notifications: " + registerResponse.registrationId);
+                    var deviceTokenOnServer = localStorage.getItem('deviceTokenOnServer');
+                    if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
+                        qmService.setLocalStorageItem('deviceTokenToSync', registerResponse.registrationId);
+                    }
+                });
+                var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
+                push.on('notification', function(data) {
+                    qmService.logDebug('Received push notification: ' + JSON.stringify(data));
+                    qmService.updateLocationVariablesAndPostMeasurementIfChanged();
+                    if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
+                        qmService.drawOverAppsNotification(data.additionalData);
+                    } else {
+                        qmService.refreshTrackingReminderNotifications(300).then(function(){
+                            qmService.logDebug('push.on.notification: successfully refreshed notifications');
+                        }, function (error) {
+                            console.error('push.on.notification: ' + error);
+                        });
+                    }
 
-                // data.message,
-                // data.title,
-                // data.count,
-                // data.sound,
-                // data.image,
-                // data.additionalData
-                if(!finishPushes) {
-                    qmService.logDebug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
-                    return;
-                }
-                push.finish(function () {qmService.logDebug("processing of push data is finished: " + JSON.stringify(data));});
-                data.deviceToken = localStorage.getItem('deviceTokenOnServer');
-                qmService.logEventToGA('pushNotification', 'received');
-                if(data.additionalData.acknowledge){
-                    $http.post("https://utopia.quantimo.do/api/v1/trackingReminderNotification/received", data)
-                        .success(function (response) {
-                            qmService.logDebug("notification received success response: " + JSON.stringify(response));
-                        }).error(function (response) {
-                        qmService.logError("notification received error response: "  + JSON.stringify(response));
-                    });
-                }
-            });
-            push.on('error', function(e) {qmService.reportException(e, e.message, pushConfig);});
-            var finishPush = function (data) {
-                qmService.setLocalStorageItem('lastPushTimestamp', window.getUnixTimestampInSeconds());
-                $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');  // Refresh Reminders Inbox
-                if(!finishPushes){
-                    qmService.logDebug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
-                    return;
-                }
-                push.finish(function() {
-                    qmService.logDebug('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                }, function() {
-                    qmService.logDebug('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                }, data.additionalData.notId);
-            };
-            window.trackYesAction = function (data){
-                qmService.logDebug("trackYesAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackNoAction = function (data){
-                qmService.logDebug("trackNoAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackZeroAction = function (data){
-                qmService.logDebug("trackZeroAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackOneRatingAction = function (data){
-                qmService.logDebug("trackOneRatingAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackTwoRatingAction = function (data){
-                qmService.logDebug("trackTwoRatingAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackThreeRatingAction = function (data){
-                qmService.logDebug("trackThreeRatingAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackFourRatingAction = function (data){
-                qmService.logDebug("trackFourRatingAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackFiveRatingAction = function (data){
-                qmService.logDebug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackDefaultValueAction = function (data){
-                qmService.logDebug("trackDefaultValueAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.snoozeAction = function (data){
-                qmService.logDebug("snoozeAction push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
-                qmService.snoozeTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackLastValueAction = function (data){
-                qmService.logDebug("trackLastValueAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.lastValue};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackSecondToLastValueAction = function (data){
-                qmService.logDebug("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.secondToLastValue};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-            window.trackThirdToLastValueAction = function (data){
-                qmService.logDebug("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
-                var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.thirdToLastValue};
-                qmService.trackTrackingReminderNotificationDeferred(body);
-                finishPush(data);
-            };
-        }
-        window.notification_callback = function(reportedVariable, reportingTime){
-            var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
-            var val = false;
-            if(reportedVariable === "repeat_rating"){
-                val = localStorage['lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage['lastReportedPrimaryOutcomeVariableValue']) : false;
-            } else {
-                val = qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
+                    // data.message,
+                    // data.title,
+                    // data.count,
+                    // data.sound,
+                    // data.image,
+                    // data.additionalData
+                    if(!finishPushes) {
+                        qmService.logDebug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                        return;
+                    }
+                    push.finish(function () {qmService.logDebug("processing of push data is finished: " + JSON.stringify(data));});
+                    data.deviceToken = localStorage.getItem('deviceTokenOnServer');
+                    qmService.logEventToGA('pushNotification', 'received');
+                    if(data.additionalData.acknowledge){
+                        $http.post("https://utopia.quantimo.do/api/v1/trackingReminderNotification/received", data)
+                            .success(function (response) {
+                                qmService.logDebug("notification received success response: " + JSON.stringify(response));
+                            }).error(function (response) {
+                            qmService.logError("notification received error response: "  + JSON.stringify(response));
+                        });
+                    }
+                });
+                push.on('error', function(e) {qmService.reportException(e, e.message, pushConfig);});
+                var finishPush = function (data) {
+                    qmService.setLocalStorageItem('lastPushTimestamp', window.getUnixTimestampInSeconds());
+                    $rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');  // Refresh Reminders Inbox
+                    if(!finishPushes){
+                        qmService.logDebug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                        return;
+                    }
+                    push.finish(function() {
+                        qmService.logDebug('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
+                    }, function() {
+                        qmService.logDebug('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
+                    }, data.additionalData.notId);
+                };
+                window.trackYesAction = function (data){
+                    qmService.logDebug("trackYesAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackNoAction = function (data){
+                    qmService.logDebug("trackNoAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackZeroAction = function (data){
+                    qmService.logDebug("trackZeroAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 0};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackOneRatingAction = function (data){
+                    qmService.logDebug("trackOneRatingAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 1};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackTwoRatingAction = function (data){
+                    qmService.logDebug("trackTwoRatingAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 2};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackThreeRatingAction = function (data){
+                    qmService.logDebug("trackThreeRatingAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 3};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackFourRatingAction = function (data){
+                    qmService.logDebug("trackFourRatingAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 4};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackFiveRatingAction = function (data){
+                    qmService.logDebug("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: 5};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackDefaultValueAction = function (data){
+                    qmService.logDebug("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.snoozeAction = function (data){
+                    qmService.logDebug("snoozeAction push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
+                    qmService.snoozeTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackLastValueAction = function (data){
+                    qmService.logDebug("trackLastValueAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.lastValue};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackSecondToLastValueAction = function (data){
+                    qmService.logDebug("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.secondToLastValue};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
+                window.trackThirdToLastValueAction = function (data){
+                    qmService.logDebug("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
+                    var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId, modifiedValue: data.additionalData.thirdToLastValue};
+                    qmService.trackTrackingReminderNotificationDeferred(body);
+                    finishPush(data);
+                };
             }
-            if(val){
-                localStorage['lastReportedPrimaryOutcomeVariableValue'] = val;
-                var allMeasurementsObject = {storedValue : val, value : val, startTime : startTime};
-                if(localStorage['primaryOutcomeVariableMeasurements']){
-                    var allMeasurements = JSON.parse(localStorage['primaryOutcomeVariableMeasurements']);
-                    allMeasurements.push(allMeasurementsObject);
-                    localStorage['primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
+            window.notification_callback = function(reportedVariable, reportingTime){
+                var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
+                var val = false;
+                if(reportedVariable === "repeat_rating"){
+                    val = localStorage['lastReportedPrimaryOutcomeVariableValue']? JSON.parse(localStorage['lastReportedPrimaryOutcomeVariableValue']) : false;
+                } else {
+                    val = qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable]? qmService.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[reportedVariable] : false;
                 }
-                if(localStorage['measurementsQueue']){
-                    var measurementsQueue = JSON.parse(localStorage['measurementsQueue']);
-                    measurementsQueue.push(allMeasurementsObject);
-                    localStorage['measurementsQueue'] = JSON.stringify(measurementsQueue);
+                if(val){
+                    localStorage['lastReportedPrimaryOutcomeVariableValue'] = val;
+                    var allMeasurementsObject = {storedValue : val, value : val, startTime : startTime};
+                    if(localStorage['primaryOutcomeVariableMeasurements']){
+                        var allMeasurements = JSON.parse(localStorage['primaryOutcomeVariableMeasurements']);
+                        allMeasurements.push(allMeasurementsObject);
+                        localStorage['primaryOutcomeVariableMeasurements'] = JSON.stringify(allMeasurements);
+                    }
+                    if(localStorage['measurementsQueue']){
+                        var measurementsQueue = JSON.parse(localStorage['measurementsQueue']);
+                        measurementsQueue.push(allMeasurementsObject);
+                        localStorage['measurementsQueue'] = JSON.stringify(measurementsQueue);
+                    }
                 }
-            }
-        };
-        qmService.registerDeviceToken();
+            };
+            qmService.registerDeviceToken();
+        });
     };
     qmService.setupVariableByVariableObject = function(variableObject) {
         $rootScope.variableName = variableObject.name;
@@ -7667,10 +7676,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             var title = 'Enable Rating Popups';
             var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in a fraction of a second?';
             function yesCallback() {
-                qmService.scheduleSingleMostFrequentLocalNotification();
-                window.overApps.checkPermission(function(msg){console.log(msg);});
-                qmService.setLocalStorageItem('drawOverAppsEnabled', true);
-                qmService.showPopupForMostRecentNotification();
+                $ionicPlatform.ready(function() {
+                    qmService.scheduleSingleMostFrequentLocalNotification();
+                    window.overApps.checkPermission(function(msg){console.log(msg);});
+                    qmService.setLocalStorageItem('drawOverAppsEnabled', true);
+                    qmService.showPopupForMostRecentNotification();
+                });
             }
             function noCallback() {disablePopups();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);

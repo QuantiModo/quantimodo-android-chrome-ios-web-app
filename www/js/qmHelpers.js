@@ -48,9 +48,9 @@ function getStackTrace() {
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.logDebug')).replace('window.logDebug', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.logInfo')).replace('window.logInfo', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.logError')).replace('window.logError', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.window.logDebug')).replace('window.window.logDebug', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logDebug')).replace('window.logDebug', '');
     stackTrace = stackTrace.substring(stackTrace.indexOf('window.logInfo')).replace('window.logInfo', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.window.logError')).replace('window.window.logError', '');
+    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logError')).replace('window.logError', '');
     return stackTrace;
 }
 function addStackTraceToMessage(message, stackTrace) {
@@ -66,10 +66,12 @@ function addCallerFunctionToMessage(message) {
         return addStackTraceToMessage(message);
     }
     var callerFunction;
-    try {
-        callerFunction = calleeFunction.caller;
-    } catch (error) {
-        console.error(error);
+    if(calleeFunction){
+        try {
+            callerFunction = calleeFunction.caller;
+        } catch (error) {
+            console.error(error);
+        }
     }
     if(callerFunction && callerFunction.name && callerFunction.name !== ""){
         return "Caller " + callerFunction.name + " called " + message;
@@ -78,11 +80,11 @@ function addCallerFunctionToMessage(message) {
     }
     return message;
 }
-window.logDebug = function(message, stackTrace) {
+window.logDebug = function(message) {
     message = addCallerFunctionToMessage(message);
     if(window.getDebugMode()){console.debug(message);}
 };
-window.logInfo = function(message, stackTrace) {
+window.logInfo = function(message) {
     message = addCallerFunctionToMessage(message);
     console.info(message);
 };
@@ -193,7 +195,7 @@ function getAppVersion() {
     if(appSettings){return appSettings.versionNumber;}
     return window.getUrlParameter('appVersion');
 }
-window.window.getAccessToken = function() {
+window.getAccessToken = function() {
     if(localStorage.accessToken){return localStorage.accessToken;}
     return window.getUrlParameter('accessToken');
 };
@@ -210,20 +212,23 @@ function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
 var introWindowParams = { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var facesRatingPopupWindowParams = { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
+var facesRatingPopupWindowParamsAndroid = { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
 var loginPopupWindowParams = { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
 var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
 var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2};
 var signInNotificationParams = { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2};
-function getQueryParameterString() {
+function addGlobalQueryParameters(url) {
     if (window.getAccessToken()) {
-        var queryParameterString = '?access_token=' + window.getAccessToken();
-        if(getAppName()){queryParameterString += "&appName=" + encodeURIComponent(getAppName());}
-        if(getAppVersion()){queryParameterString += "&appVersion=" + encodeURIComponent(getAppVersion());}
-        if(getClientId()){queryParameterString += "&clientId=" + encodeURIComponent(getClientId());}
-        return queryParameterString;
+        url = addQueryParameter(url, 'access_token', window.getAccessToken());
+    } else {
+        window.logError("No access token!");
+        showSignInNotification();
     }
-    showSignInNotification();
+    if(getAppName()){url = addQueryParameter(url, 'appName', getAppName());}
+    if(getAppVersion()){url = addQueryParameter(url, 'appVersion', getAppVersion());}
+    if(getClientId()){url = addQueryParameter(url, 'clientId', getClientId());}
+    return url;
 }
 function loadAppSettings() {  // I think adding appSettings to the chrome manifest breaks installation
     var xobj = new XMLHttpRequest();
@@ -263,7 +268,10 @@ if(isChromeExtension()) {
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         console.debug('onAlarm Listener heard this alarm ', alarm);
-        if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
+        if(window.getMostRecentRatingNotificationFromLocalStorage()){
+            openOrFocusChromePopupWindow(facesRatingPopupWindowParamsAndroid, true);
+            updateBadgeText("");
+        } else if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
             openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
         } else {
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
@@ -366,7 +374,7 @@ function objectLength(obj) {
     return result;
 }
 function showSignInNotification() {
-    if(isChromeExtension()){
+    if(!isChromeExtension()){
         console.log("Can't showSignInNotification because chrome is undefined");
         return;
     }
@@ -374,7 +382,7 @@ function showSignInNotification() {
     chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
 }
 window.getRequestUrl = function(path) {
-    var url = getAppHostName() + "/api/" + path + getQueryParameterString();
+    var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
     console.log("Making API request to " + url);
     return url;
 };
@@ -392,15 +400,18 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
         } else if (xhr.readyState === 4) {
             var notificationsObject = JSON.parse(xhr.responseText);
             var numberOfWaitingNotifications = objectLength(notificationsObject.data);
-            if (numberOfWaitingNotifications > 0) {
+            if(window.getMostRecentRatingNotificationFromLocalStorage()){
+                openOrFocusChromePopupWindow(facesRatingPopupWindowParamsAndroid, true);
+                updateBadgeText("");
+            } else if (numberOfWaitingNotifications > 0) {
                 window.setLocalStorageItem('trackingReminderNotifications', notificationsObject.data);
                 if(isChromeExtension()){
                     notificationId = alarm.name;
                     updateBadgeText("?");
                     //chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
                     chrome.notifications.create(notificationId, inboxNotificationParams, function (id) {});
+                    openChromePopup(notificationId);
                 }
-                openChromePopup(notificationId);
             } else {
                 openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
                 updateBadgeText("");
@@ -411,7 +422,7 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     return notificationParams;
 }
 function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
-    if(isChromeExtension()){
+    if(!isChromeExtension()){
         console.log("Can't checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary because chrome is undefined");
         return;
     }
@@ -729,7 +740,7 @@ window.drawOverAppsNotification = function(trackingReminderNotification) {
         window.logError("window.overApps is undefined!");
         return;
     }
-    window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
+    //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
     var options = {
         path: "android_popup.html?variableName=" + trackingReminderNotification.variableName +
         "&valence=" + trackingReminderNotification.valence +
@@ -814,4 +825,4 @@ window.getUserFromApi = function(){
     };
     xhr.send();
 };
-window.isTestUser = function(){return getUser() && getUser().displayName.indexOf('test') !== -1 && getUser().id !== 230;}
+window.isTestUser = function(){return getUser() && getUser().displayName.indexOf('test') !== -1 && getUser().id !== 230;};

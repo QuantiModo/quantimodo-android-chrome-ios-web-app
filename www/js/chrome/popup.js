@@ -46,7 +46,7 @@ var onFaceButtonClicked = function() {
         if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
         window.notificationsSyncQueue.push(window.trackingReminderNotification);
         window.trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
-        if(window.trackingReminderNotification){
+        if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
             showLoader();
@@ -73,8 +73,14 @@ var onFaceButtonClicked = function() {
 function showLoader() {
     var sectionRate = document.getElementById("sectionRate");
     var loader = document.getElementById("loader");
+    var question = document.getElementById("question");
+    var body = document.getElementById("body");
+    body.style.width = "0px";
+    body.style.height = "0px";
     sectionRate.className = "invisible";
     sectionRate.style.display = "none";
+    question.className = "invisible";
+    question.style.display = "none";
     loader.style.display = "block";
     loader.className = "visible";
 }
@@ -116,7 +122,11 @@ function closePopup() {
     }
 }
 function updateQuestion(variableName) {
-    document.getElementById("question").innerHTML = "How is your " + variableName.toLowerCase() + "?";
+    var questionText = "How is your " + variableName.toLowerCase() + "?";
+    window.logInfo("Updating question to " + questionText);
+    document.getElementById("question").innerHTML = questionText;
+    document.title = questionText;
+    if(isChromeExtension()){document.getElementById("question").display = "none";}
 }
 document.addEventListener('DOMContentLoaded', function() {
     if(window.getUrlParameter("trackingReminderNotificationId")){
