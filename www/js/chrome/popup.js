@@ -46,7 +46,7 @@ var onFaceButtonClicked = function() {
         if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
         window.notificationsSyncQueue.push(window.trackingReminderNotification);
         window.trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
-        if(window.trackingReminderNotification){
+        if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
             showLoader();
@@ -73,8 +73,14 @@ var onFaceButtonClicked = function() {
 function showLoader() {
     var sectionRate = document.getElementById("sectionRate");
     var loader = document.getElementById("loader");
+    var question = document.getElementById("question");
+    var body = document.getElementById("body");
+    body.style.width = "0px";
+    body.style.height = "0px";
     sectionRate.className = "invisible";
     sectionRate.style.display = "none";
+    question.className = "invisible";
+    question.style.display = "none";
     loader.style.display = "block";
     loader.className = "visible";
 }

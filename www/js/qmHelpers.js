@@ -210,6 +210,7 @@ function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
 var introWindowParams = { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var facesRatingPopupWindowParams = { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
+var facesRatingPopupWindowParamsAndroid = { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
 var loginPopupWindowParams = { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
 var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
@@ -392,7 +393,10 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
         } else if (xhr.readyState === 4) {
             var notificationsObject = JSON.parse(xhr.responseText);
             var numberOfWaitingNotifications = objectLength(notificationsObject.data);
-            if (numberOfWaitingNotifications > 0) {
+            if(window.getMostRecentRatingNotificationFromLocalStorage()){
+                openOrFocusChromePopupWindow(facesRatingPopupWindowParamsAndroid, true);
+                updateBadgeText("");
+            } else if (numberOfWaitingNotifications > 0) {
                 window.setLocalStorageItem('trackingReminderNotifications', notificationsObject.data);
                 if(isChromeExtension()){
                     notificationId = alarm.name;
@@ -411,7 +415,7 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     return notificationParams;
 }
 function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm) {
-    if(isChromeExtension()){
+    if(!isChromeExtension()){
         console.log("Can't checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary because chrome is undefined");
         return;
     }
