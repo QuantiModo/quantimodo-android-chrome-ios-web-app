@@ -529,13 +529,14 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
         if(getUser()){url +=  "?userEmail=" + encodeURIComponent(getUser().email);}
         return url;
     }
+    function cordovaPluginsAvailable() {
+        if(typeof cordova === "undefined"){return false;}
+        if(typeof cordova.plugins === "undefined"){return false;}
+        return true;
+    }
     function getInstalledPluginList(){
-        function localNotificationsPluginInstalled() {
-            if(typeof cordova === "undefined"){return false;}
-            if(typeof cordova.plugins === "undefined"){return false;}
-            if(typeof cordova.plugins.notification === "undefined"){return false;}
-            return true;
-        }
+        function localNotificationsPluginInstalled() {return cordovaPluginsAvailable() && typeof cordova.plugins.notification !== "undefined";}
+        function localNotificationsPluginInstalled() {return cordovaPluginsAvailable() && typeof cordova.plugins.drawOverApps !== "undefined";}
         return {
             "Analytics": (typeof Analytics !== "undefined"),
             "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined"),
@@ -543,6 +544,7 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
             "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
             "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus) ? true : false,
             "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
+            "drawOverApps": (typeof window.cordova !== "undefined"),
             "ionic": (typeof ionic !== "undefined"),
             "ionicDeploy": (typeof $ionicDeploy !== "undefined"),
             "PushNotification": (typeof PushNotification !== "undefined"),
