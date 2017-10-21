@@ -297,6 +297,7 @@ if(isChromeExtension()) {
     });
 }
 function openOrFocusChromePopupWindow(windowParams, focusWindow) {
+    if(focusWindow !== true){focusWindow = false;}
     if(!isChromeExtension()){
         window.logDebug("Can't open popup because chrome is undefined");
         return;
@@ -314,7 +315,7 @@ function openOrFocusChromePopupWindow(windowParams, focusWindow) {
                 windowParams,
                 function (chromeWindow) {
                     vid = chromeWindow.id;
-                    chrome.windows.update(vid, { focused: false });
+                    chrome.windows.update(vid, { focused: focusWindow });
                 }
             );
         });
@@ -323,7 +324,7 @@ function openOrFocusChromePopupWindow(windowParams, focusWindow) {
             windowParams,
             function (chromeWindow) {
                 vid = chromeWindow.id;
-                chrome.windows.update(vid, { focused: false });
+                chrome.windows.update(vid, { focused: focusWindow });
             }
         );
     }
@@ -529,19 +530,19 @@ function bugsnagNotify(message, additionalMetaData, stackTrace){
         if(getUser()){url +=  "?userEmail=" + encodeURIComponent(getUser().email);}
         return url;
     }
+    function cordovaPluginsAvailable() {
+        if(typeof cordova === "undefined"){return false;}
+        return typeof cordova.plugins !== "undefined";
+    }
     function getInstalledPluginList(){
-        function localNotificationsPluginInstalled() {
-            if(typeof cordova === "undefined"){return false;}
-            if(typeof cordova.plugins === "undefined"){return false;}
-            if(typeof cordova.plugins.notification === "undefined"){return false;}
-            return true;
-        }
+        function localNotificationsPluginInstalled() {return cordovaPluginsAvailable() && typeof cordova.plugins.notification !== "undefined";}
         return {
             "Analytics": (typeof Analytics !== "undefined"),
             "backgroundGeoLocation": (typeof backgroundGeoLocation !== "undefined"),
             "cordova.plugins.notification": localNotificationsPluginInstalled(),
             "facebookConnectPlugin": (typeof facebookConnectPlugin !== "undefined"),
             "window.plugins.googleplus": (window && window.plugins && window.plugins.googleplus) ? true : false,
+            "window.overApps": (cordovaPluginsAvailable() && typeof window.overApps !== "undefined"),
             "inAppPurchase": (typeof window.inAppPurchase !== "undefined"),
             "ionic": (typeof ionic !== "undefined"),
             "ionicDeploy": (typeof $ionicDeploy !== "undefined"),
@@ -702,7 +703,7 @@ window.getMostRecentRatingNotificationFromLocalStorage = function (){
         var notification = trackingReminderNotifications[trackingReminderNotifications.length - 1];
         if(notification.trackingReminderNotificationTimeEpoch < getUnixTimestampInSeconds() - 86400){
             window.logInfo("Got this notification but it's from yesterday: " + JSON.stringify(notification).substring(0, 140) + '...');
-            return;
+            //return;
         }
         window.logInfo("Got this notification: " + JSON.stringify(notification).substring(0, 140) + '...');
         window.deleteTrackingReminderNotificationFromLocalStorage(notification.trackingReminderNotificationId);

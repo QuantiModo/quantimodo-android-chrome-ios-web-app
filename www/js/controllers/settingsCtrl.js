@@ -257,7 +257,6 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		if(type === 'pdf'){verifyEmailAddressAndExecuteCallback(exportPdf);}
 		if(type === 'xls'){verifyEmailAddressAndExecuteCallback(exportXls);}
 	};
-
     var webDowngrade = function() {
         qmService.showBlackRingLoader();
         qmService.postDowngradeSubscriptionDeferred().then(function (user) {
@@ -304,10 +303,14 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         } else if ($rootScope.user.subscriptionProvider === 'apple') { appleDowngrade();
         } else { webDowngrade(); }
     };
-    if($rootScope.isAndroid){$scope.toggleDrawOverApps = function(ev){qmService.toggleDrawOverApps(ev);};}
+    if($rootScope.isAndroid){
+    	$scope.toggleDrawOverApps = function(ev){
+    	qmService.toggleDrawOverApps(ev);};
+    }
     if($rootScope.isAndroid){
     	$scope.togglePushNotificationsEnabled = function(){
-            $rootScope.user.pushNotificationsEnabled = !$rootScope.user.pushNotificationsEnabled;
+    		// Toggle is done by the HTML
+            //$rootScope.user.pushNotificationsEnabled = !$rootScope.user.pushNotificationsEnabled;
             qmService.updateUserSettingsDeferred({pushNotificationsEnabled: $rootScope.user.pushNotificationsEnabled});
             if($rootScope.user.pushNotificationsEnabled){qmService.showInfoToast('Push notifications enabled');}
             if(!$rootScope.user.pushNotificationsEnabled) {qmService.showInfoToast('Push notifications disabled');}

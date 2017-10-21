@@ -420,6 +420,10 @@ function logError(message, object) {
     console.error(obfuscateStringify(message, object));
     bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
 }
+function logErrorAndThrowException(message, object) {
+    logError(message, object);
+    throw message;
+}
 function postAppStatus() {
     var options = getPostRequestOptions();
     options.body.appStatus = appSettings.appStatus;
@@ -1422,6 +1426,45 @@ gulp.task('addGooglePlusPlugin', [], function () {
     });
     return deferred.promise;
 });
+gulp.task('checkDrawOverAppsPlugin', [], function (callback) {
+    fs.exists('./platforms/android/assets/www/plugins/cordova-plugin-drawoverapps/www/OverApps.js', function (exists) {
+        if (exists) {
+            logInfo('drawoverapps plugin installed');
+            if(callback){callback();}
+        } else {
+            logError('drawoverapps plugin NOT installed! Installing now');
+            execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
+                if (error !== null) {
+                    logError('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
+                } else {
+                    logInfo('drawoverapps PLUGIN ADDED');
+                }
+                if(callback){callback();}
+            });
+        }
+    });
+});
+gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
+    logInfo('We have to reinstall DrawOverAppsPlugin with new client id to fix "package com.quantimodo.quantimodo does not exist" error');
+    execute("cordova plugin remove cordova-plugin-drawoverapps", function (error) {
+        if (error !== null) {
+            logError('ERROR: Failed to remove drawoverapps PLUGIN! error: ' + error);
+        } else {
+            logInfo('drawoverapps plugin REMOVED');
+        }
+        if(callback){callback();}
+    });
+});
+gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function (callback) {
+    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
+        if (error !== null) {
+            logError('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
+        } else {
+            logInfo('drawoverapps PLUGIN ADDED');
+        }
+        if(callback){callback();}
+    });
+});
 gulp.task('fixResourcesPlist', function () {
     var deferred = q.defer();
     if (!appSettings.appDisplayName) {deferred.reject('Please export appSettings.appDisplayName');}
@@ -1930,6 +1973,18 @@ gulp.task('buildAllAndroidApps', function (callback) {
         'buildAndroidApp',
         callback);
 });
+gulp.task('buildAllAndroidAppsWithCleaning', function (callback) {
+    runSequence(
+        'setMediModoEnvs',
+        'cleanBuildFolder',
+        'prepareRepositoryForAndroid',
+        'buildAndroidApp',
+        'setQuantiModoEnvs',
+        'cleanBuildFolder',
+        'prepareRepositoryForAndroid',
+        'buildAndroidApp',
+        callback);
+});
 gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
     runSequence(
         'cleanBuildFolder',
@@ -2054,7 +2109,7 @@ gulp.task('prepareAndroidApp', function (callback) {
     platformCurrentlyBuildingFor = 'android';
     runSequence(
         'configureApp',
-        //'copyAppResources',
+        'copyAppResources',
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
@@ -2064,6 +2119,7 @@ gulp.task('prepareAndroidApp', function (callback) {
         'generateAndroidResources',
         'copyAndroidResources',
         'copyIconsToWwwImg',
+        'reinstallDrawOverAppsPlugin',
         callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
@@ -2087,6 +2143,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'bowerInstall',
         'prepareAndroidApp',
         'ionicInfo',
+        'checkDrawOverAppsPlugin',
         'cordovaBuildAndroidRelease',
         'outputArmv7ApkVersionCode',
         'outputX86ApkVersionCode',
