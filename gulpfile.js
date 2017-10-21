@@ -2143,6 +2143,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'bowerInstall',
         'prepareAndroidApp',
         'ionicInfo',
+        'checkDrawOverAppsPlugin',
         'cordovaBuildAndroidRelease',
         'outputArmv7ApkVersionCode',
         'outputX86ApkVersionCode',
