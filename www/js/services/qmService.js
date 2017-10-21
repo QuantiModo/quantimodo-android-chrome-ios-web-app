@@ -7413,7 +7413,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     qmService.logDebug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
-                        qmService.drawOverAppsNotification(data.additionalData);
+                        qmService.drawOverAppsRatingNotification(data.additionalData);
                     } else {
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmService.logDebug('push.on.notification: successfully refreshed notifications');
@@ -7658,7 +7658,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     //     });
     // };
     function isFalsey(value) {if(value === false || value === "false"){return true;}}
-    qmService.drawOverAppsNotification = function(trackingReminderNotification) {
+    qmService.drawOverAppsRatingNotification = function(trackingReminderNotification) {
         if(!$rootScope.isAndroid){
             qmService.logDebug("Can only show popups on android");
             return;
@@ -7667,7 +7667,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             window.logDebug("drawOverApps is disabled");
             return;
         }
-        $ionicPlatform.ready(function() {window.drawOverAppsNotification(trackingReminderNotification);});
+        $ionicPlatform.ready(function() {window.drawOverAppsRatingNotification(trackingReminderNotification);});
     };
     qmService.toggleDrawOverApps = function(ev){
         function disablePopups() {
