@@ -1444,6 +1444,27 @@ gulp.task('checkDrawOverAppsPlugin', [], function (callback) {
         }
     });
 });
+gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
+    logInfo('We have to reinstall DrawOverAppsPlugin with new client id to fix "package com.quantimodo.quantimodo does not exist" error');
+    execute("cordova plugin remove cordova-plugin-drawoverapps", function (error) {
+        if (error !== null) {
+            logError('ERROR: Failed to remove drawoverapps PLUGIN! error: ' + error);
+        } else {
+            logInfo('drawoverapps plugin REMOVED');
+        }
+        if(callback){callback();}
+    });
+});
+gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function (callback) {
+    return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
+        if (error !== null) {
+            logError('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
+        } else {
+            logInfo('drawoverapps PLUGIN ADDED');
+        }
+        if(callback){callback();}
+    });
+});
 gulp.task('fixResourcesPlist', function () {
     var deferred = q.defer();
     if (!appSettings.appDisplayName) {deferred.reject('Please export appSettings.appDisplayName');}
@@ -2070,14 +2091,13 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
         'ionicInfo',
-        'checkDrawOverAppsPlugin',
         callback);
 });
 gulp.task('prepareAndroidApp', function (callback) {
     platformCurrentlyBuildingFor = 'android';
     runSequence(
         'configureApp',
-        //'copyAppResources',
+        'copyAppResources',
         'uncommentCordovaJsInIndexHtml',
         'generateConfigXmlFromTemplate',
         'cordovaPlatformVersionAndroid',
@@ -2087,6 +2107,7 @@ gulp.task('prepareAndroidApp', function (callback) {
         'generateAndroidResources',
         'copyAndroidResources',
         'copyIconsToWwwImg',
+        'reinstallDrawOverAppsPlugin',
         callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
