@@ -1973,6 +1973,18 @@ gulp.task('buildAllAndroidApps', function (callback) {
         'buildAndroidApp',
         callback);
 });
+gulp.task('buildAllAndroidAppsWithCleaning', function (callback) {
+    runSequence(
+        'setMediModoEnvs',
+        'cleanBuildFolder',
+        'prepareRepositoryForAndroid',
+        'buildAndroidApp',
+        'setQuantiModoEnvs',
+        'cleanBuildFolder',
+        'prepareRepositoryForAndroid',
+        'buildAndroidApp',
+        callback);
+});
 gulp.task('buildAllChromeExtensionsAndAndroidApps', function (callback) {
     runSequence(
         'cleanBuildFolder',
