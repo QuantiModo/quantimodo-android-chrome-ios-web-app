@@ -7683,7 +7683,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 $ionicPlatform.ready(function() {
                     qmService.scheduleSingleMostFrequentLocalNotification();
                     if(typeof window.overApps !== "undefined"){
-                        window.overApps.checkPermission(function(msg){console.log(msg);});
+                        window.overApps.checkPermission(function(msg){qmService.logInfo("overApps.checkPermission: " + msg);});
                     } else {
                         qmService.logError("window.overApps is undefined!");
                     }
