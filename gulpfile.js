@@ -420,6 +420,10 @@ function logError(message, object) {
     console.error(obfuscateStringify(message, object));
     bugsnag.notify(new Error(obfuscateStringify(message), obfuscateSecrets(object)));
 }
+function logErrorAndThrowException(message, object) {
+    logError(message, object);
+    throw message;
+}
 function postAppStatus() {
     var options = getPostRequestOptions();
     options.body.appStatus = appSettings.appStatus;
@@ -1422,6 +1426,15 @@ gulp.task('addGooglePlusPlugin', [], function () {
     });
     return deferred.promise;
 });
+gulp.task('checkDrawOverAppsPlugin', [], function () {
+    fs.exists('./platforms/android/assets/www/plugins/cordova-plugin-drawoverapps/www/OverApps.js', function (exists) {
+        if (exists) {
+            logInfo('drawoverapps plugin installed');
+        } else {
+            logErrorAndThrowException('drawoverapps plugin NOT installed!');
+        }
+    });
+});
 gulp.task('fixResourcesPlist', function () {
     var deferred = q.defer();
     if (!appSettings.appDisplayName) {deferred.reject('Please export appSettings.appDisplayName');}
@@ -2088,6 +2101,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'prepareAndroidApp',
         'ionicInfo',
         'cordovaBuildAndroidRelease',
+        'checkDrawOverAppsPlugin',
         'outputArmv7ApkVersionCode',
         'outputX86ApkVersionCode',
         'outputCombinedApkVersionCode',

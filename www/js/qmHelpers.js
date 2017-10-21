@@ -702,7 +702,7 @@ window.getMostRecentRatingNotificationFromLocalStorage = function (){
         var notification = trackingReminderNotifications[trackingReminderNotifications.length - 1];
         if(notification.trackingReminderNotificationTimeEpoch < getUnixTimestampInSeconds() - 86400){
             window.logInfo("Got this notification but it's from yesterday: " + JSON.stringify(notification).substring(0, 140) + '...');
-            return;
+            //return;
         }
         window.logInfo("Got this notification: " + JSON.stringify(notification).substring(0, 140) + '...');
         window.deleteTrackingReminderNotificationFromLocalStorage(notification.trackingReminderNotificationId);
