@@ -315,7 +315,7 @@ function openOrFocusChromePopupWindow(windowParams, focusWindow) {
                 windowParams,
                 function (chromeWindow) {
                     vid = chromeWindow.id;
-                    chrome.windows.update(vid, { focused: false });
+                    chrome.windows.update(vid, { focused: focusWindow });
                 }
             );
         });
