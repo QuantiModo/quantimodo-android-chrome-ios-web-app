@@ -6605,11 +6605,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             //$scope.status = 'You cancelled the dialog.';
         });
     };
-    qmService.showMaterialConfirmationDialog = function(title, textContent, yesCallbackFunction, noCallbackFunction, ev){
+    qmService.showMaterialConfirmationDialog = function(title, textContent, yesCallbackFunction, noCallbackFunction, ev, noText){
+        if(!noText){noText = 'Cancel';}
         function ConfirmationDialogController($scope, $mdDialog, dataToPass) {
             var self = this;
             self.title = dataToPass.title;
             self.textContent = dataToPass.textContent;
+            self.noText = dataToPass.noText;
             $scope.hide = function() {$mdDialog.hide();};
             $scope.cancel = function() {$mdDialog.cancel();};
             $scope.answer = function(answer) {$mdDialog.hide(answer);};
@@ -6622,7 +6624,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             targetEvent: ev,
             clickOutsideToClose: false,
             fullscreen: false,
-            locals: {dataToPass: {title: title, textContent: textContent}}
+            locals: {dataToPass: {title: title, textContent: textContent, noText: noText}}
         }).then(function(answer) {
             if(answer === "help"){qmService.goToState('app.help');}
             if(answer === 'yes'){yesCallbackFunction(ev);}
@@ -7675,20 +7677,28 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         function showEnablePopupsConfirmation(){
             var title = 'Enable Rating Popups';
             var textContent = 'Would you like to receive subtle popups allowing you to rating symptoms or emotions in a fraction of a second?';
+            var noText = 'No';
             function yesCallback() {
+                qmService.setLocalStorageItem('drawOverAppsEnabled', true);
                 $ionicPlatform.ready(function() {
                     qmService.scheduleSingleMostFrequentLocalNotification();
                     window.overApps.checkPermission(function(msg){console.log(msg);});
-                    qmService.setLocalStorageItem('drawOverAppsEnabled', true);
                     qmService.showPopupForMostRecentNotification();
                 });
             }
             function noCallback() {disablePopups();}
-            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
+            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
         }
-        if(drawOverAppsEnabled()){disablePopups();} else {showEnablePopupsConfirmation();}
+        if(drawOverAppsEnabled()){
+            disablePopups();
+        } else {
+            showEnablePopupsConfirmation();
+        }
     };
-    function drawOverAppsEnabled(){return localStorage.getItem('drawOverAppsEnabled') === 'true';}
+    function drawOverAppsEnabled(){
+        var drawOverAppsEnabled =  localStorage.getItem('drawOverAppsEnabled');
+        return drawOverAppsEnabled == 'true';
+    }
     qmService.showPopupForMostRecentNotification = function(){
         if(!drawOverAppsEnabled()){qmService.logInfo("Can only show popups on Android"); return;}
         window.showPopupForMostRecentNotification();

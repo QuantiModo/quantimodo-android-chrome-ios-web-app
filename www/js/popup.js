@@ -74,15 +74,18 @@ function showLoader() {
     var sectionRate = document.getElementById("sectionRate");
     var loader = document.getElementById("loader");
     var question = document.getElementById("question");
-    var body = document.getElementById("body");
-    body.style.width = "0px";
-    body.style.height = "0px";
+    if (document.getElementsByTagName("body")[0]) {
+        document.getElementsByTagName("body")[0].style.width = "0px";
+        document.getElementsByTagName("body")[0].style.height = "0px";
+    } else {
+        window.logInfo("document.getElementsByTagName(body)[0] does not exist")
+    }
     sectionRate.className = "invisible";
     sectionRate.style.display = "none";
     question.className = "invisible";
     question.style.display = "none";
-    loader.style.display = "block";
-    loader.className = "visible";
+    //loader.style.display = "block";
+    //loader.className = "visible";
 }
 function hideLoader() {
     var sectionRate = document.getElementById("sectionRate");
@@ -126,7 +129,12 @@ function updateQuestion(variableName) {
     window.logInfo("Updating question to " + questionText);
     document.getElementById("question").innerHTML = questionText;
     document.title = questionText;
-    if(isChromeExtension()){document.getElementById("question").display = "none";}
+    if(isChromeExtension()){
+        window.logInfo("Setting question display to none ");
+        document.getElementById("question").style.display = "none";
+    } else {
+        window.logInfo("NOT setting question display to none because not on Chrome");
+    }
 }
 document.addEventListener('DOMContentLoaded', function() {
     if(window.getUrlParameter("trackingReminderNotificationId")){
