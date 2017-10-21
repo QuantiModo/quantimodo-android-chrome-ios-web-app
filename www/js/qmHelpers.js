@@ -297,6 +297,7 @@ if(isChromeExtension()) {
     });
 }
 function openOrFocusChromePopupWindow(windowParams, focusWindow) {
+    if(focusWindow !== true){focusWindow = false;}
     if(!isChromeExtension()){
         window.logDebug("Can't open popup because chrome is undefined");
         return;
@@ -323,7 +324,7 @@ function openOrFocusChromePopupWindow(windowParams, focusWindow) {
             windowParams,
             function (chromeWindow) {
                 vid = chromeWindow.id;
-                chrome.windows.update(vid, { focused: false });
+                chrome.windows.update(vid, { focused: focusWindow });
             }
         );
     }
