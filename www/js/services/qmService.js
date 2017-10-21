@@ -7682,7 +7682,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.setLocalStorageItem('drawOverAppsEnabled', true);
                 $ionicPlatform.ready(function() {
                     qmService.scheduleSingleMostFrequentLocalNotification();
-                    window.overApps.checkPermission(function(msg){console.log(msg);});
+                    if(typeof window.overApps !== "undefined"){
+                        window.overApps.checkPermission(function(msg){console.log(msg);});
+                    } else {
+                        qmService.logError("window.overApps is undefined!");
+                    }
                     qmService.showPopupForMostRecentNotification();
                 });
             }
