@@ -180,7 +180,22 @@ var appsManager = { // jshint ignore:line
         if(getClientIdFromQueryParameters() === 'app'){return true;}
     }
 };
-function isChromeExtension(){return (typeof chrome !== "undefined" && typeof chrome.runtime !== "undefined" && typeof chrome.runtime.onInstalled !== "undefined");}
+function isChromeExtension(){
+    if(typeof chrome === "undefined"){
+        window.logDebug("chrome is undefined");
+        return false;
+    }
+    if(typeof chrome.runtime === "undefined"){
+        window.logDebug("chrome.runtime is undefined");
+        return false;
+    }
+    if(typeof chrome.alarms === "undefined"){
+        window.logDebug("chrome.alarms is undefined");
+        return false;
+    }
+    window.logDebug("isChromeExtension returns true");
+    return true;
+}
 function getChromeManifest() {if(isChromeExtension()){return chrome.runtime.getManifest();}}
 function getAppName() {
     if(getChromeManifest()){return getChromeManifest().name;}
@@ -212,12 +227,14 @@ function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
 var introWindowParams = { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var facesRatingPopupWindowParams = { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
-var facesRatingPopupWindowParamsAndroid = { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
 var loginPopupWindowParams = { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
 var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
 var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
 var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2};
 var signInNotificationParams = { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2};
+function getChromeRatingNotificationParams(trackingReminderNotification){
+    return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110}
+}
 function addGlobalQueryParameters(url) {
     if (window.getAccessToken()) {
         url = addQueryParameter(url, 'access_token', window.getAccessToken());
@@ -268,8 +285,9 @@ if(isChromeExtension()) {
     });
     chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
         console.debug('onAlarm Listener heard this alarm ', alarm);
-        if(window.getMostRecentRatingNotificationFromLocalStorage()){
-            openOrFocusChromePopupWindow(facesRatingPopupWindowParamsAndroid, true);
+        var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
+        if(trackingReminderNotification){
+            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification), true);
             updateBadgeText("");
         } else if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
             openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
@@ -400,8 +418,10 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
         } else if (xhr.readyState === 4) {
             var notificationsObject = JSON.parse(xhr.responseText);
             var numberOfWaitingNotifications = objectLength(notificationsObject.data);
-            if(window.getMostRecentRatingNotificationFromLocalStorage()){
-                openOrFocusChromePopupWindow(facesRatingPopupWindowParamsAndroid, true);
+            window.setLocalStorageItem('trackingReminderNotifications', notificationsObject.data);
+            var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
+            if(trackingReminderNotification){
+                openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification), true);
                 updateBadgeText("");
             } else if (numberOfWaitingNotifications > 0) {
                 window.setLocalStorageItem('trackingReminderNotifications', notificationsObject.data);
@@ -681,10 +701,10 @@ window.getMostRecentRatingNotificationFromLocalStorage = function (){
     if(trackingReminderNotifications.length) {
         var notification = trackingReminderNotifications[trackingReminderNotifications.length - 1];
         if(notification.trackingReminderNotificationTimeEpoch < getUnixTimestampInSeconds() - 86400){
-            window.logInfo("Got this notification but it's from yesterday: " + JSON.stringify(notification));
+            window.logInfo("Got this notification but it's from yesterday: " + JSON.stringify(notification).substring(0, 140) + '...');
             return;
         }
-        window.logInfo("Got this notification: " + JSON.stringify(notification));
+        window.logInfo("Got this notification: " + JSON.stringify(notification).substring(0, 140) + '...');
         window.deleteTrackingReminderNotificationFromLocalStorage(notification.trackingReminderNotificationId);
         return notification;
     } else {
@@ -735,6 +755,13 @@ window.showPopupForMostRecentNotification = function(){
     }
 };
 window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
+function getRatingNotificationPath(trackingReminderNotification){
+    return "android_popup.html?variableName=" + trackingReminderNotification.variableName +
+    "&valence=" + trackingReminderNotification.valence +
+    "&trackingReminderNotificationId=" + trackingReminderNotification.trackingReminderNotificationId +
+    "&clientId=" + window.getClientId() +
+    "&accessToken=" + window.getAccessToken();
+}
 window.drawOverAppsNotification = function(trackingReminderNotification) {
     if(typeof window.overApps === "undefined"){
         window.logError("window.overApps is undefined!");
@@ -742,11 +769,7 @@ window.drawOverAppsNotification = function(trackingReminderNotification) {
     }
     //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
     var options = {
-        path: "android_popup.html?variableName=" + trackingReminderNotification.variableName +
-        "&valence=" + trackingReminderNotification.valence +
-        "&trackingReminderNotificationId=" + trackingReminderNotification.trackingReminderNotificationId +
-        "&clientId=" + window.getClientId() +
-        "&accessToken=" + window.getAccessToken(),          // file path to display as view content.
+        path: getRatingNotificationPath(trackingReminderNotification),          // file path to display as view content.
         hasHead: false,              // display over app head image which open the view up on click.
         dragToSide: false,          // enable auto move of head to screen side after dragging stop.
         enableBackBtn: true,       // enable hardware back button to close view.
