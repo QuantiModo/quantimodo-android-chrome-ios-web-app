@@ -1426,12 +1426,21 @@ gulp.task('addGooglePlusPlugin', [], function () {
     });
     return deferred.promise;
 });
-gulp.task('checkDrawOverAppsPlugin', [], function () {
+gulp.task('checkDrawOverAppsPlugin', [], function (callback) {
     fs.exists('./platforms/android/assets/www/plugins/cordova-plugin-drawoverapps/www/OverApps.js', function (exists) {
         if (exists) {
             logInfo('drawoverapps plugin installed');
+            if(callback){callback();}
         } else {
-            logErrorAndThrowException('drawoverapps plugin NOT installed!');
+            logError('drawoverapps plugin NOT installed! Installing now');
+            execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
+                if (error !== null) {
+                    logError('ERROR: ADDING THE drawoverapps PLUGIN: ' + error);
+                } else {
+                    logInfo('drawoverapps PLUGIN ADDED');
+                }
+                if(callback){callback();}
+            });
         }
     });
 });
@@ -2061,6 +2070,7 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'ionicPlatformAddAndroid',
         'ionicAddCrosswalk',
         'ionicInfo',
+        'checkDrawOverAppsPlugin',
         callback);
 });
 gulp.task('prepareAndroidApp', function (callback) {
@@ -2101,7 +2111,6 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'prepareAndroidApp',
         'ionicInfo',
         'cordovaBuildAndroidRelease',
-        'checkDrawOverAppsPlugin',
         'outputArmv7ApkVersionCode',
         'outputX86ApkVersionCode',
         'outputCombinedApkVersionCode',
