@@ -693,13 +693,14 @@ window.deleteTrackingReminderNotificationFromLocalStorage = function(body){
         window.refreshNotificationsIfEmpty();
     }
 };
-window.showPopupForMostRecentNotification = function(){
+window.showAndroidPopupForMostRecentNotification = function(){
+    if(!drawOverAppsEnabled()){qmService.logInfo("Can only show popups on Android"); return;}
     var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
     if(trackingReminderNotification) {
         //window.logInfo("No notifications for popup");
         window.drawOverAppsRatingNotification(trackingReminderNotification);
-    } else if (window.getTrackingReminderNotificationsFromLocalStorage().length) {
-        window.drawOverAppsCompactInboxNotification();
+    // } else if (window.getTrackingReminderNotificationsFromLocalStorage().length) {
+    //     window.drawOverAppsCompactInboxNotification();  // TODO: Fix me
     } else {
         window.refreshNotificationsIfEmpty();
         window.logInfo("No notifications for popup");
