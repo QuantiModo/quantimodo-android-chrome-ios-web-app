@@ -41,7 +41,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
-            qmService.logError(error);
+            qmLog.error(error);
             goBack();
         });
     };
@@ -90,13 +90,13 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
         qmService.postUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
-            qmService.logError(error);
+            qmLog.error(error);
             goBack();
         });
     };
     // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
-        qmService.logDebug("$ionicView.enter " + $state.current.name);
+        qmLog.debug("$ionicView.enter " + $state.current.name);
     });
     $scope.$on('$ionicView.beforeEnter', function(){
         $scope.state.title = 'Record a Tag';
@@ -116,7 +116,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
                 qmService.hideLoader();
             });
         }
-        qmService.logDebug($state.current.name + ": beforeEnter");
+        qmLog.debug($state.current.name + ": beforeEnter");
 
     });
 });

@@ -2,6 +2,7 @@
 // BLACK BOX THESE
 // \.min\.js$ — for all minified sources
 // qmLogger.js
+// qmLogService.js
 // bugsnag.js
 // node_modules and bower_components — for dependencies
 //     ~ — home for dependencies in Webpack bundle

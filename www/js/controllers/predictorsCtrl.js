@@ -1,4 +1,4 @@
-angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, qmService,
+angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, qmService, qmLog,
                                            $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
@@ -9,7 +9,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     $scope.data = { "search" : '' };
     $scope.filterSearchQuery = '';
     $scope.searching = true;
-    $scope.$on('$ionicView.beforeEnter', function(e) { qmService.logDebug("beforeEnter state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) { qmLog.debug("beforeEnter state " + $state.current.name);
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
         $rootScope.hideNavigationMenu = false;
@@ -37,7 +37,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     });
     $rootScope.toggleFilterBar = function () {$scope.showSearchFilterBox = !$scope.showSearchFilterBox;};
     $scope.filterSearch = function () {
-        qmService.logDebug($scope.data.search);
+        qmLog.debug($scope.data.search);
         if($scope.outcomeList) {
             $scope.state.correlationObjects = $scope.state.correlationObjects.filter(function( obj ) {
                 return obj.effectVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1; });
@@ -78,7 +78,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 $scope.searching = false;
-                qmService.logError('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
+                qmLog.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
     }
     $scope.loadMore = function () {
@@ -102,26 +102,26 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 { text: '<i class="icon ion-arrow-up-c"></i>Descending Correlation' }
             ],
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmService.logDebug('CANCELLED'); },
+            cancel: function() { qmLog.debug('CANCELLED'); },
             buttonClicked: function(index) {
-                qmService.logDebug('BUTTON CLICKED', index);
+                qmLog.debug('BUTTON CLICKED', index);
                 if(index === 0){
-                    qmService.logDebug("Sort by Statistical Significance");
+                    qmLog.debug("Sort by Statistical Significance");
                     $scope.state.requestParams.sort = '-statisticalSignificance';
                     populateCorrelationList();
                 }
                 if(index === 1){
-                    qmService.logDebug("Sort by QM Score");
+                    qmLog.debug("Sort by QM Score");
                     $scope.state.requestParams.sort = '-qmScore';
                     populateCorrelationList();
                 }
                 if(index === 2){
-                    qmService.logDebug("Ascending Predictive Correlation");
+                    qmLog.debug("Ascending Predictive Correlation");
                     $scope.state.requestParams.sort = 'correlationCoefficient';
                     populateCorrelationList();
                 }
                 if(index === 3){
-                    qmService.logDebug("Descending Predictive Correlation");
+                    qmLog.debug("Descending Predictive Correlation");
                     $scope.state.requestParams.sort = '-correlationCoefficient';
                     populateCorrelationList();
                 }
@@ -130,7 +130,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         });
     };
     $scope.openStore = function(name){
-        qmService.logDebug("open store for ", name); // make url
+        qmLog.debug("open store for ", name); // make url
         name = name.split(' ').join('+'); // launch inAppBrowser
         var url  = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
         $scope.openUrl(url);
@@ -145,7 +145,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
             clickOutsideToClose: false // I think true causes auto-close on iOS
         });
     };
-    var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log) {
+    var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLog, $q, $log) {
         var self = this;
         self.correlations        = loadAll();
         self.querySearch   = querySearch;

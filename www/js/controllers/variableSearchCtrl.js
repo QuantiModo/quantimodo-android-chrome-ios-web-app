@@ -9,7 +9,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     if(!$scope.state.title) {$scope.state.title = "Select Variable";}
     if(!$scope.state.variableSearchPlaceholderText) {$scope.state.variableSearchPlaceholderText = "Search for a variable here...";}
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        qmService.logDebug($state.current.name + " beforeEnter...");
+        qmLog.debug($state.current.name + " beforeEnter...");
         $rootScope.hideNavigationMenu = false;
         if(qmService.getUrlParameter('variableCategoryName')){
             $scope.state.variableSearchParameters.variableCategoryName = qmService.getUrlParameter('variableCategoryName');
@@ -22,7 +22,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         setHelpText();
     });
     $scope.$on('$ionicView.enter', function(e) {
-        qmService.logDebug($state.current.name + " enter...");
+        qmLog.debug($state.current.name + " enter...");
         // We always need to repopulate in case variable was updated in local storage and the search view was cached
         populateUserVariables();
         populateCommonVariables();
@@ -30,7 +30,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         qmService.hideLoader();
     });
     $scope.selectVariable = function(variableObject) {
-        qmService.logDebug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject).substring(0, 140) + '...');
+        qmLog.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject).substring(0, 140) + '...');
         if(variableObject.lastValue !== null){qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);}
         qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variableObject);
         var userTagData;
@@ -101,7 +101,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         // If no results or no exact match, show "+ Add [variable]" button for query
         if ((variables.length < 1 || !found)) {
             $scope.showSearchLoader = false;
-            qmService.logDebug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
+            qmLog.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
             $scope.state.showAddVariableButton = true;
             if ($scope.state.nextState === "app.reminderAdd") {
                 $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
@@ -128,7 +128,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.onVariableSearch = function(){
         $scope.state.noVariablesFoundCard.show = false;
         $scope.state.showAddVariableButton = false;
-        qmService.logDebug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
+        qmLog.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
             qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
@@ -136,7 +136,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
                     $scope.state.variableSearchResults = variables;
-                    qmService.logDebug("variable search results", variables);
+                    qmLog.debug("variable search results", variables);
                     $scope.state.searching = false;
                     showAddVariableButtonIfNecessary(variables);
                     showNoVariablesFoundCardIfNecessary();
@@ -158,7 +158,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.searching = false;
                 }
             }
-        }, function (error) {qmService.logError(error);});
+        }, function (error) {qmLog.error(error);});
     };
     var populateUserVariables = function(){
         if($scope.state.variableSearchQuery.name.length > 2){return;}
@@ -182,13 +182,13 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 }
                 if($scope.state.variableSearchResults.length < 1 && $scope.state.variableSearchParameters.includePublic){populateCommonVariables();}
             }
-        }, function (error) {qmService.logError(error);});
+        }, function (error) {qmLog.error(error);});
     };
     $scope.addNewVariable = function(){
         var variableObject = {};
         variableObject.name = $scope.state.variableSearchQuery.name;
         if($scope.state.variableSearchParameters.variableCategoryName && $scope.state.variableSearchParameters.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;}
-        qmService.logDebug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
+        qmLog.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
         if ($scope.state.nextState) {
             $scope.state.variableObject = variableObject;
             qmService.goToState($scope.state.nextState, $scope.state);
@@ -228,8 +228,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     var checkNameExists = function (item) {
         if(!item.name){
             var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-            qmService.logError(message);
-            qmService.logError(message);
+            qmLog.error(message);
+            qmLog.error(message);
             return false;
         }
         return true;

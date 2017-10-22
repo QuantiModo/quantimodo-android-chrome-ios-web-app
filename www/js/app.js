@@ -42,7 +42,7 @@ angular.module('starter',
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-                qmService.reportErrorDeferred(errorMsg);
+                qmLog.error(errorMsg);
             };
         }
         qmService.configurePushNotifications();

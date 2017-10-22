@@ -1,9 +1,9 @@
-angular.module("starter").controller("StudyCtrl", function($scope, $state, qmService, $stateParams, $ionicHistory, $rootScope,
+angular.module("starter").controller("StudyCtrl", function($scope, $state, qmService, qmLog, $stateParams, $ionicHistory, $rootScope,
                                       $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog) {
     $scope.controller_name = "StudyCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on("$ionicView.beforeEnter", function() {
-        qmService.logDebug("beforeEnter state " + $state.current.name);
+        qmLog.debug("beforeEnter state " + $state.current.name);
         $scope.state = {
             title: "Loading study...",
             requestParams: {},
@@ -13,7 +13,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
         qmService.hideLoader(); // Hide before robot is called in afterEnter
     });
     $scope.$on("$ionicView.enter", function() {
-        qmService.logDebug("enter state " + $state.current.name);
+        qmLog.debug("enter state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
         if($stateParams.correlationObject){
             qmService.setLocalStorageItem('lastStudy', JSON.stringify($stateParams.correlationObject));
@@ -54,7 +54,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
     };
     $scope.joinStudy = function () { qmService.goToState("app.studyJoin", {correlationObject: $rootScope.correlationObject}); };
     if (!clipboard.supported) {
-        qmService.logDebug("Sorry, copy to clipboard is not supported");
+        qmLog.debug("Sorry, copy to clipboard is not supported");
         $scope.hideClipboardButton = true;
     }
     $scope.copyLinkText = "Copy Shareable Link to Clipboard";
@@ -95,9 +95,9 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
                 if(causeData.data.query.pages[0].thumbnail){ $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source; }
             } else {
                 var error = "Wiki not found for " + causeSearchTerm;
-                qmService.logError(error);
+                qmLog.error(error);
             }
-        }).catch(function (error) { qmService.logError(error); });
+        }).catch(function (error) { qmLog.error(error); });
         /** @namespace $rootScope.correlationObject.effectVariableCommonAlias */
         var effectSearchTerm = $rootScope.correlationObject.effectVariableCommonAlias;
         if(!effectSearchTerm){ effectSearchTerm = $scope.state.requestParams.effectVariableName; }
@@ -113,14 +113,14 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
                 if(effectData.data.query.pages[0].thumbnail){ $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source; }
             } else {
                 var error = "Wiki not found for " + effectSearchTerm;
-                qmService.logError(error);
+                qmLog.error(error);
             }
-        }).catch(function (error) { qmService.logError(error); });
+        }).catch(function (error) { qmLog.error(error); });
     }
     $scope.weightedPeriod = 5;
     function getStudy() {
         if(!$scope.state.requestParams.causeVariableName || !$scope.state.requestParams.effectVariableName){
-            qmService.logError('Cannot get study. Missing cause or effect variable name.');
+            qmLog.error('Cannot get study. Missing cause or effect variable name.');
             qmService.goToState(config.appSettings.appDesign.defaultState);
             return;
         }
@@ -132,7 +132,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             $scope.loadingCharts = false;
             $rootScope.correlationObject = study.statistics;
         }, function (error) {
-            qmService.logError(error);
+            qmLog.error(error);
             qmService.hideLoader();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;
@@ -148,7 +148,7 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             ],
             destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmService.logDebug($state.current.name + ": " + 'CANCELLED'); },
+            cancel: function() { qmLog.debug($state.current.name + ": " + 'CANCELLED'); },
             buttonClicked: function(index) {
                 if(index === 0){ qmService.goToState("app.variableSettings", {variableName: $rootScope.correlationObject.causeVariableName}); }
                 if(index === 1){ qmService.goToState("app.variableSettings", {variableName: $rootScope.correlationObject.effectVariableName}); }
@@ -185,9 +185,9 @@ angular.module("starter").controller("StudyCtrl", function($scope, $state, qmSer
             qmService.postUserVariableDeferred(postData).then(function (response) {
                 getStudy();
             });
-        }, function() {qmService.logDebug("User cancelled selection");});
+        }, function() {qmLog.debug("User cancelled selection");});
     };
-    function VariableSettingsController(qmService, dataToPass) {
+    function VariableSettingsController(qmService, qmLog, dataToPass) {
         var self = this;
         self.title = qmService.explanations[dataToPass.propertyToUpdate].title;
         self.helpText = qmService.explanations[dataToPass.propertyToUpdate].explanation;
