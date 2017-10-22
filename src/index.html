@@ -4,14 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
       <!-- DO NOT CHANGE LINE ENDINGS ON <!DOCTYPE html> LINE OR IT WILL ADD WHITE BAR TO TOP OF ANDROID APP -->
-<!--  <meta http-equiv="Content-Security-Policy" content="script-src 'self'
-      https://maps.googleapis.com/ https://maps.gstatic.com/
-      https://mts0.googleapis.com/
-      https://*.quantimo.do/
-      https://cdn.rawgit.com/
-      https://widget.intercom.io/
-      https://js.intercomcdn.com
-      'unsafe-inline' 'unsafe-eval'"> -->
+<!--  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://maps.googleapis.com/ https://maps.gstatic.com/ https://mts0.googleapis.com/ https://*.quantimo.do/ https://cdn.rawgit.com/ https://widget.intercom.io/ https://js.intercomcdn.com 'unsafe-inline' 'unsafe-eval'"> -->
     <meta http-equiv="Content-Security-Policy" content="frame-src * gap://ready; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com/;">
     <title></title>
     <link href="css/app.min.css" rel="stylesheet">
@@ -70,17 +63,8 @@
     <script src="js/controllers/studyJoinCtrl.js"></script>
     <script src="js/controllers/studyCreationCtrl.js"></script>
     <script src="js/directives.js"></script>
-<!-- Don't think we need Intercom
-      <script>
-          window.Intercom('boot', {app_id: "wsj1w4xj" });
-          moment().calendar(null, {
-              sameDay: '[Today]',
-              nextDay: '[Tomorrow]',
-              nextWeek: 'dddd',
-              lastDay: '[Yesterday]',
-              lastWeek: '[Last] dddd',
-              sameElse: 'DD/MM/YYYY HH:MM'
-          });
+<!-- Don't think we need Intercom <script> window.Intercom('boot', {app_id: "wsj1w4xj" });
+          moment().calendar(null, { sameDay: '[Today]', nextDay: '[Tomorrow]', nextWeek: 'dddd', lastDay: '[Yesterday]', lastWeek: '[Last] dddd', sameElse: 'DD/MM/YYYY HH:MM' });
       </script>-->
   </head>
   <body ng-app="starter">
