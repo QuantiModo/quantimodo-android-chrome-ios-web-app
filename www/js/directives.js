@@ -59,7 +59,7 @@ angular.module('starter')
                                     if (Array.isArray(searchResponse.data)) {
                                         response(
                                             jQuery.map(searchResponse.data, function (result) {
-                                                console.debug(result);
+                                                window.qmLog.debug(null, result, null);
                                                 return {
                                                     label: result.name,
                                                     value: result.name
@@ -96,7 +96,7 @@ angular.module('starter')
         link: function(scope, element, attrs) {
             element.bind('change', function(e) {
 
-                console.debug('onReadFile directive called');
+                window.qmLog.debug(null, 'onReadFile directive called', null);
 
                 var onFileReadFn = $parse(attrs.onReadFile);
                 var reader = new FileReader();

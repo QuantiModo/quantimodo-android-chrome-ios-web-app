@@ -42,6 +42,9 @@
     "UserVoice" : false,
     "backgroundGeoLocation" : false,
     "inAppPurchase" : false,
-    "HumanConnect": false
+    "HumanConnect": false,
+    "qmLog": false,
+    "qmStorage": false,
+    "Quantimodo": false
   }
 }

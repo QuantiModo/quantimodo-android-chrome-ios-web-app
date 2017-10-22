@@ -1,4 +1,4 @@
-angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, qmService, qmLog,
+angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService,
                                            $rootScope, $ionicActionSheet, $mdDialog) {
     $scope.controller_name = "PredictorsCtrl";
     $scope.state = {
@@ -9,7 +9,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     $scope.data = { "search" : '' };
     $scope.filterSearchQuery = '';
     $scope.searching = true;
-    $scope.$on('$ionicView.beforeEnter', function(e) { qmLog.debug("beforeEnter state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
         $scope.showSearchFilterBox = false;
         $rootScope.showFilterBarSearchIcon = true;
         $rootScope.hideNavigationMenu = false;
@@ -37,7 +37,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
     });
     $rootScope.toggleFilterBar = function () {$scope.showSearchFilterBox = !$scope.showSearchFilterBox;};
     $scope.filterSearch = function () {
-        qmLog.debug($scope.data.search);
+        qmLogService.debug(null, $scope.data.search, null);
         if($scope.outcomeList) {
             $scope.state.correlationObjects = $scope.state.correlationObjects.filter(function( obj ) {
                 return obj.effectVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1; });
@@ -78,7 +78,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 $scope.searching = false;
-                qmLog.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
+                qmLogService.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
             });
     }
     $scope.loadMore = function () {
@@ -102,26 +102,26 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 { text: '<i class="icon ion-arrow-up-c"></i>Descending Correlation' }
             ],
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmLog.debug('CANCELLED'); },
+            cancel: function() { qmLogService.debug(null, 'CANCELLED', null); },
             buttonClicked: function(index) {
-                qmLog.debug('BUTTON CLICKED', index);
+                qmLogService.debug(null, 'BUTTON CLICKED', null, index);
                 if(index === 0){
-                    qmLog.debug("Sort by Statistical Significance");
+                    qmLogService.debug(null, 'Sort by Statistical Significance', null);
                     $scope.state.requestParams.sort = '-statisticalSignificance';
                     populateCorrelationList();
                 }
                 if(index === 1){
-                    qmLog.debug("Sort by QM Score");
+                    qmLogService.debug(null, 'Sort by QM Score', null);
                     $scope.state.requestParams.sort = '-qmScore';
                     populateCorrelationList();
                 }
                 if(index === 2){
-                    qmLog.debug("Ascending Predictive Correlation");
+                    qmLogService.debug(null, 'Ascending Predictive Correlation', null);
                     $scope.state.requestParams.sort = 'correlationCoefficient';
                     populateCorrelationList();
                 }
                 if(index === 3){
-                    qmLog.debug("Descending Predictive Correlation");
+                    qmLogService.debug(null, 'Descending Predictive Correlation', null);
                     $scope.state.requestParams.sort = '-correlationCoefficient';
                     populateCorrelationList();
                 }
@@ -130,7 +130,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         });
     };
     $scope.openStore = function(name){
-        qmLog.debug("open store for ", name); // make url
+        qmLogService.debug(null, 'open store for ', null, name); // make url
         name = name.split(' ').join('+'); // launch inAppBrowser
         var url  = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
         $scope.openUrl(url);
@@ -145,7 +145,7 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
             clickOutsideToClose: false // I think true causes auto-close on iOS
         });
     };
-    var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLog, $q, $log) {
+    var CorrelationSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log) {
         var self = this;
         self.correlations        = loadAll();
         self.querySearch   = querySearch;
@@ -187,12 +187,12 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
                 .then(function (data) { deferred.resolve(loadAll(data.correlations)); }, function (error) { deferred.reject(error); });
             return deferred.promise;
         }
-        function searchTextChange(text) { $log.debug('Text changed to ' + text); }
+        function searchTextChange(text) { $log.debug(null, 'Text changed to ' + text, null); }
         function selectedItemChange(item) {
             self.selectedItem = item;
             self.correlationObject = item.correlationObject;
             self.buttonText = "Go to Study";
-            $log.info('Item changed to ' + item.name);
+            $log.info(null, 'Item changed to ' + item.name, null);
         }
         function loadAll(correlations) {
             if(!correlations){ return []; }

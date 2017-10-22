@@ -1,7 +1,7 @@
-angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLog) {
+angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        qmLog.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);
+        qmLogService.debug(null, 'OnboardingCtrl beforeEnter in state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = true;
         if(qmService.sendToLoginIfNecessaryAndComeBack('app.onboarding')){ return; }
         qmService.setupOnboardingPages();
@@ -10,12 +10,12 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     });
     $scope.$on('$ionicView.afterEnter', function(){
-        qmLog.debug('OnboardingCtrl afterEnter in state ' + $state.current.name);
+        qmLogService.debug(null, 'OnboardingCtrl afterEnter in state ' + $state.current.name, null);
         qmService.getConnectorsDeferred(); // Make sure they're ready in advance
     });
     var removeImportPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id.indexOf('import') === -1;});
-        if(!$rootScope.appSettings.designMode){qmService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));}
+        if(!$rootScope.appSettings.designMode){qmService.qmStorage.setItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));}
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
     };
     $scope.onboardingGoToImportPage = function () {
@@ -40,7 +40,7 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         $rootScope.hideMenuButton = true;
         if(!$rootScope.user){
             $rootScope.appSettings.appDesign.onboarding.active = null;
-            qmService.deleteItemFromLocalStorage('onboardingPages');
+            qmStorage.removeItem('onboardingPages');
             qmService.goToState('app.onboarding');
             return;
         }
@@ -58,11 +58,11 @@ angular.module('starter').controller('OnboardingCtrl', function($scope, $state, 
         qmService.goToState('app.remindersInbox');
         $rootScope.hideMenuButton = false;
         window.localStorage.onboarded = true;
-        qmService.deleteItemFromLocalStorage('onboardingPages');
+        qmStorage.removeItem('onboardingPages');
     };
     $scope.hideOnboardingPage = function () {
         $rootScope.appSettings.appDesign.onboarding.active = $rootScope.appSettings.appDesign.onboarding.active.filter(function( obj ) {return obj.id !== $rootScope.appSettings.appDesign.onboarding.active[0].id;});
-        qmService.setLocalStorageItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
+        qmService.qmStorage.setItem('onboardingPages', JSON.stringify($rootScope.appSettings.appDesign.onboarding.active));
         $scope.circlePage = $rootScope.appSettings.appDesign.onboarding.active[0];
         if(!$rootScope.appSettings.appDesign.onboarding.active || $rootScope.appSettings.appDesign.onboarding.active.length === 0){
             $rootScope.hideMenuButton = false;

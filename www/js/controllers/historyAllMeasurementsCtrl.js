@@ -1,5 +1,5 @@
 angular.module('starter').controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout,
-																			$ionicActionSheet, qmService, qmLog, $ionicLoading) {
+																			$ionicActionSheet, qmService, qmLogService, $ionicLoading) {
 	$scope.controller_name = "historyAllMeasurementsCtrl";
 	$scope.state = {
 		offset : 0,
@@ -19,10 +19,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
         qmService.hideLoader();
     }
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        $rootScope.hideHistoryPageInstructionsCard = qmService.getLocalStorageItemAsString('hideHistoryPageInstructionsCard');
+        $rootScope.hideHistoryPageInstructionsCard = qmStorage.getAsString('hideHistoryPageInstructionsCard');
     });
     $scope.$on('$ionicView.enter', function(e) {
-        qmLog.debug($state.current.name + ": " + "Entering state " + $state.current.name);
+        qmLogService.debug(null, $state.current.name + ': ' + 'Entering state ' + $state.current.name, null);
         $rootScope.hideNavigationMenu = false;
         $scope.state.loading = true;
         $scope.state.offset = 0;
@@ -58,7 +58,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			if(!$rootScope.variableObject){
 				qmService.searchUserVariablesDeferred('*', {variableName: params.variableName}).then(function (variables) {
 					$rootScope.variableObject = variables[0];
-				}, function (error) {qmLog.error(error);});
+				}, function (error) {qmLogService.error(error);});
 			}
 		}
 		function successHandler(measurements) {
@@ -69,7 +69,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
             	$scope.state.showLoadMoreButton = true;
                 if (concat) {
                     if($scope.state.history.constructor !== Array){
-                        qmLog.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
+                        qmLogService.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
                         $scope.state.history = measurements;
                     } else {
                         $scope.state.history = $scope.state.history.concat(measurements);
@@ -82,7 +82,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
             if(measurements.length < $scope.state.limit){$scope.state.noHistory = measurements.length === 0;}
         }
         function errorHandler(error) {
-			qmLog.error("History update error: " + error);
+			qmLogService.error("History update error: " + error);
             $scope.state.noHistory = true;
             hideLoader();
         }
@@ -103,7 +103,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 					{ text: '<i class="icon ion-ios-location-outline"></i>Locations'}
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {qmLog.debug('CANCELLED');},
+				cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
 				buttonClicked: function(index) {
 					if(index === 0) {qmService.goToState('app.historyAll', {variableCategoryName: 'Emotions'});}
 					if(index === 1) {qmService.goToState('app.historyAll', {variableCategoryName: 'Foods'});}
@@ -144,9 +144,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
 			],
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-			cancel: function() {qmLog.debug($state.current.name + ": " + 'CANCELLED');},
+			cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
 			buttonClicked: function(index) {
-				qmLog.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
+				qmLogService.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
 				if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
 				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
 				if(index === 2) {qmService.goToState('app.charts', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}

@@ -1,9 +1,9 @@
-angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $rootScope, qmService, qmLog, $stateParams) {
+angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $rootScope, qmService, qmLogService, $stateParams) {
     $scope.controller_name = "WelcomeCtrl";
     $rootScope.hideNavigationMenu = true;
     $scope.reportedVariableValue = false;
     $rootScope.showFilterBarSearchIcon = false;
-    qmService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
+    qmService.qmStorage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
         function(primaryOutcomeRatingFrequencyDescription) {
             if (primaryOutcomeRatingFrequencyDescription) {$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;}
             if (!primaryOutcomeRatingFrequencyDescription && $rootScope.isIOS) {$scope.primaryOutcomeRatingFrequencyDescription = 'day';}
@@ -18,7 +18,7 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     };
     $scope.skipInterval = function(){
         $scope.showIntervalCard = false;
-        qmLog.debug('skipInterval: Going to login state...');
+        qmLogService.debug(null, 'skipInterval: Going to login state...', null);
         qmService.sendToLogin();
     };
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
@@ -51,12 +51,12 @@ angular.module('starter').controller('WelcomeCtrl', function($scope, $state, $ro
     };
     $scope.init = function(){
         $rootScope.hideNavigationMenu = true;
-        qmLog.debug($state.current.name + ' initializing...');
+        qmLogService.debug(null, $state.current.name + ' initializing...', null);
 
     };
     $scope.$on('$ionicView.beforeEnter', function(){
         if($rootScope.user){
-            qmLog.debug('Already have user so no need to welcome. Going to default state.');
+            qmLogService.debug(null, 'Already have user so no need to welcome. Going to default state.', null);
             qmService.goToState(config.appSettings.appDesign.defaultState);
         }
     });

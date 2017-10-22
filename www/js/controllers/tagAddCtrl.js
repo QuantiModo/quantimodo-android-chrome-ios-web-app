@@ -1,5 +1,5 @@
 angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, $ionicLoading, qmService, qmLog) {
+                                               $ionicActionSheet, $ionicHistory, $ionicLoading, qmService, qmLogService) {
     $scope.controller_name = "TagAddCtrl";
     $scope.state = { };
     $scope.cancel = function(){
@@ -35,13 +35,13 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
                 });
         }
 
-        qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables',
             $rootScope.variableObject);
 
         qmService.deleteUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
-            qmLog.error(error);
+            qmLogService.error(error);
             goBack();
         });
     };
@@ -84,19 +84,19 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
 
         qmService.showBlackRingLoader();
 
-        qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables',
+        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables',
             $rootScope.variableObject);
 
         qmService.postUserTagDeferred(userTagData).then(function (response) {
             goBack();
         }, function (error) {
-            qmLog.error(error);
+            qmLogService.error(error);
             goBack();
         });
     };
     // update data when view is navigated to
     $scope.$on('$ionicView.enter', function(e) {
-        qmLog.debug("$ionicView.enter " + $state.current.name);
+        qmLogService.debug(null, '$ionicView.enter ' + $state.current.name, null);
     });
     $scope.$on('$ionicView.beforeEnter', function(){
         $scope.state.title = 'Record a Tag';
@@ -116,7 +116,7 @@ angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout
                 qmService.hideLoader();
             });
         }
-        qmLog.debug($state.current.name + ": beforeEnter");
+        qmLogService.debug(null, $state.current.name + ': beforeEnter', null);
 
     });
 });
