@@ -1,5 +1,5 @@
 angular.module('starter')
-.controller('IframeScreenCtrl', function ($stateParams, $scope, $ionicLoading, $sce, $state, $rootScope, qmService) {
+.controller('IframeScreenCtrl', function ($stateParams, $scope, $ionicLoading, $sce, $state, $rootScope, qmService, qmLog) {
     qmLog.debug('IframeScreenCtrl works!');
     $rootScope.showFilterBarSearchIcon = false;
     var embedPlugin;

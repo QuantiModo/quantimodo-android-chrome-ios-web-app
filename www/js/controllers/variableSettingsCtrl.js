@@ -1,5 +1,5 @@
 angular.module('starter').controller('VariableSettingsCtrl', function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading,
-                 $stateParams, $ionicHistory, $ionicActionSheet, qmService) {
+                 $stateParams, $ionicHistory, $ionicActionSheet, qmService, qmLog) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.$on('$ionicView.beforeEnter', function(e) { qmLog.debug("Entering state " + $state.current.name);

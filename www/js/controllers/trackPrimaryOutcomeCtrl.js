@@ -1,4 +1,4 @@
-angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService) {
+angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService, qmLog) {
     $scope.controller_name = "TrackPrimaryOutcomeCtrl";
     $scope.state = {};
     $rootScope.showFilterBarSearchIcon = false;

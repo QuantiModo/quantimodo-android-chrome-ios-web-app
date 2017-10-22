@@ -305,7 +305,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
             fullscreen: $scope.customFullscreen
         });
     };
-    function LoginModalController($scope, $mdDialog, qmService) {
+    function LoginModalController($scope, $mdDialog, qmService, qmLog) {
         $scope.credentials = {};
         $scope.close = function () { $mdDialog.cancel(); };
         $scope.hide = function () { $mdDialog.hide(); };

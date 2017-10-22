@@ -31,7 +31,7 @@ angular.module('starter',
         //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLog) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();

@@ -1,5 +1,5 @@
 angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
-													  $rootScope, qmService) {
+													  $rootScope, qmService, qmLog) {
 	$scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 	$scope.state = {history : []};
 	$scope.syncDisplayText = 'Syncing ' + qmService.getPrimaryOutcomeVariable().name + ' measurements...';

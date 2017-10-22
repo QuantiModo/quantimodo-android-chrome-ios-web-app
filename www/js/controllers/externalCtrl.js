@@ -1,5 +1,5 @@
 angular.module('starter')  // Handles all views that have an iFrame
-.controller('ExternalCtrl', function($scope, $stateParams, $rootScope, $state, qmService) {
+.controller('ExternalCtrl', function($scope, $stateParams, $rootScope, $state, qmService, qmLog) {
 	$scope.controller_name = "ExternalCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
 	// when page load completes

@@ -1,4 +1,4 @@
-angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  qmService) {
+angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  qmService, qmLog) {
 	$scope.controller_name = "RemindersManageCtrl";
 	qmLog.debug('Loading ' + $scope.controller_name);
 	$rootScope.showFilterBarSearchIcon = false;

@@ -1,5 +1,5 @@
 angular.module('starter').controller('TagAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, $ionicLoading, qmService) {
+                                               $ionicActionSheet, $ionicHistory, $ionicLoading, qmService, qmLog) {
     $scope.controller_name = "TagAddCtrl";
     $scope.state = { };
     $scope.cancel = function(){

@@ -1,4 +1,4 @@
-angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService) {
+angular.module('starter').controller('OnboardingCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLog) {
     if(!$rootScope.appSettings){$rootScope.appSettings = window.config.appSettings;}
     $scope.$on('$ionicView.beforeEnter', function(e) {
         qmLog.debug('OnboardingCtrl beforeEnter in state ' + $state.current.name);

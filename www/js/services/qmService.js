@@ -4314,7 +4314,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         deferred.resolve();
         return deferred.promise;
     };
-    qmService.setOnClickActionForLocalNotifications = function(qmService) {
+    qmService.setOnClickActionForLocalNotifications = function(qmService, qmLog) {
         var deferred = $q.defer();
         if(!qmService.shouldWeUseIonicLocalNotifications()) {
             deferred.resolve();
@@ -7119,7 +7119,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.scheduleAllNotificationsByTrackingReminders();
                 qmLog.info("Setting on trigger and on click actions for notifications");
                 qmService.setOnTriggerActionForLocalNotifications();
-                qmService.setOnClickActionForLocalNotifications(qmService);
+                qmService.setOnClickActionForLocalNotifications(qmService, qmLog);
                 qmService.setOnUpdateActionForLocalNotifications();
             });
         } else {
