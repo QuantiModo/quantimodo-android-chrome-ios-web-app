@@ -12,7 +12,7 @@ angular.module('starter').factory('qmLog', function($state, $q, $rootScope) {
     var qmLog = {};
     function stringifyIfNecessary(variable){
         if(!variable || typeof message === "string"){return variable;}
-        return stringify(variable);
+        return JSON.stringify(variable);
     }
     function addStateNameToMessage(message) {
         if($state.current.name){message = message + " in state " + $state.current.name;}
