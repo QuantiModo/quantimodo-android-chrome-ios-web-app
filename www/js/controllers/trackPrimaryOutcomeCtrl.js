@@ -1,4 +1,4 @@
-angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService) {
+angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService, qmLog) {
     $scope.controller_name = "TrackPrimaryOutcomeCtrl";
     $scope.state = {};
     $rootScope.showFilterBarSearchIcon = false;
@@ -7,14 +7,14 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
     $scope.averagePrimaryOutcomeVariableValue = false;
     $scope.primaryOutcomeVariable = qmService.getPrimaryOutcomeVariable();
     var syncDisplayText = 'Syncing ' + qmService.getPrimaryOutcomeVariable().name + ' measurements...';
-    $scope.$on('$ionicView.enter', function(e) { qmService.logDebug("Entering state " + $state.current.name);
-        qmService.logDebug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..');
+    $scope.$on('$ionicView.enter', function(e) { qmLog.debug("Entering state " + $state.current.name);
+        qmLog.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..');
         $rootScope.hideNavigationMenu = false;
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;
         qmService.showInfoToast(syncDisplayText);
-        qmService.logDebug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
+        qmLog.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
         qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
             updateCharts();
             qmService.hideLoader();
@@ -58,7 +58,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
         }
     };
     $scope.$on('updateCharts', function(){
-        qmService.logDebug('updateCharts broadcast received..');
+        qmLog.debug('updateCharts broadcast received..');
         updateCharts();
     });
 });

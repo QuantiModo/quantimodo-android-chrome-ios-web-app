@@ -1,10 +1,10 @@
 angular.module('starter').controller('VariableSettingsCtrl', function($scope, $state, $rootScope, $timeout, $q, $mdDialog, $ionicLoading,
-                 $stateParams, $ionicHistory, $ionicActionSheet, qmService) {
+                 $stateParams, $ionicHistory, $ionicActionSheet, qmService, qmLog) {
     $scope.controller_name = "VariableSettingsCtrl";
     $rootScope.showFilterBarSearchIcon = false;
-    $scope.$on('$ionicView.beforeEnter', function(e) { qmService.logDebug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.beforeEnter', function(e) { qmLog.debug("Entering state " + $state.current.name);
         $rootScope.hideNavigationMenu = false;
-        qmService.logDebug($state.current.name + ' initializing...');
+        qmLog.debug($state.current.name + ' initializing...');
         $scope.loading = true;
         if($stateParams.variableObject){
             qmService.setupVariableByVariableObject($stateParams.variableObject);
@@ -17,7 +17,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             qmService.setupVariableByVariableObject($rootScope.variableObject);
             refreshUserVariable($rootScope.variableObject.name);
         } else {
-            qmService.logError("Variable name not provided to variable settings controller!");
+            qmLog.error("Variable name not provided to variable settings controller!");
             qmService.goToState(config.appSettings.appDesign.defaultState);
             //$ionicHistory.goBack();  Plain goBack can cause infinite loop if we came from a tagAdd controller
         }
@@ -29,7 +29,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         qmService.refreshUserVariableByNameDeferred(variableName).then(function(userVariable){$rootScope.variableObject = userVariable;});
     }
     $rootScope.showActionSheetMenu = function() {
-        qmService.logDebug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
+        qmLog.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
         var hideSheet = $ionicActionSheet.show({
             buttons: [
                 qmService.actionSheetButtons.recordMeasurement,
@@ -41,7 +41,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             ],
             destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() { qmService.logDebug('CANCELLED'); },
+            cancel: function() { qmLog.debug('CANCELLED'); },
             buttonClicked: function(index) {
                 if(index === 0){qmService.goToState('app.measurementAddVariable', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
                 if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, variableName: $rootScope.variableObject.name});}
@@ -53,7 +53,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             },
             destructiveButtonClicked: function() {qmService.showDeleteAllMeasurementsForVariablePopup($rootScope.variableObject); return true;}
         });
-        qmService.logDebug('Setting hideSheet timeout');
+        qmLog.debug('Setting hideSheet timeout');
         $timeout(function() { hideSheet(); }, 20000);
     };
     $scope.openTagVariableSearchDialog = function($event) {
@@ -66,7 +66,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             clickOutsideToClose:true
         });
     };
-    var TagVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log) {
+    var TagVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLog, $q, $log) {
         var self = this;
         self.variables        = loadAll();
         self.querySearch   = querySearch;
@@ -148,7 +148,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             clickOutsideToClose:true
         });
     };
-    var JoinVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log) {
+    var JoinVariableSearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLog, $q, $log) {
         var self = this;
         self.variables        = loadAll();
         self.querySearch   = querySearch;
@@ -174,7 +174,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                 $rootScope.variableObject = response.data.parentVariable;
             }, function (error) {
                 qmService.hideLoader();
-                qmService.logError(error);
+                qmLog.error(error);
             });
             $mdDialog.hide();
         };
@@ -220,7 +220,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             return function filterFn(item) { return (item.id !== $rootScope.variableObject.id); };
         }
     };
-    var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log, dataToPass) {
+    var SelectWikpdediaArticleController = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLog, $q, $log, dataToPass) {
         var self = this;
         // list of `state` value/display objects
         self.items        = loadAll();
@@ -252,13 +252,13 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
                     if(repsonse.data.query.pages[0].thumbnail){$scope.causeWikiImage = repsonse.data.query.pages[0].thumbnail.source;}
                 } else {
                     var error = 'Wiki not found for ' + query;
-                    qmService.logError(error);
-                    qmService.logError(error);
+                    qmLog.error(error);
+                    qmLog.error(error);
                 }
-            }).catch(function (error) {qmService.logError(error);});
+            }).catch(function (error) {qmLog.error(error);});
             return deferred.promise;
         }
-        function searchTextChange(text) { qmService.logDebug('Text changed to ' + text); }
+        function searchTextChange(text) { qmLog.debug('Text changed to ' + text); }
         function selectedItemChange(item) {
             $rootScope.variableObject.wikipediaPage = item.page;
             $rootScope.variableObject.wikipediaExtract = item.page.extract;
@@ -300,7 +300,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
         }).then(function(page) {
             $rootScope.variableObject.wikipediaPage = page;
         }, function() {
-            qmService.logDebug('User cancelled selection');
+            qmLog.debug('User cancelled selection');
         });
     };
     $scope.resetVariableToDefaultSettings = function(variableObject) {
@@ -318,7 +318,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             try {
                 experimentStartTimeString = variableObject.experimentStartTimeString.toISOString();
             } catch (error){
-                qmService.logError("Could not convert experimentStartTimeString to ISO format",
+                qmLog.error("Could not convert experimentStartTimeString to ISO format",
                     {experimentStartTimeString: variableObject.experimentStartTimeString, errorMessage: error});
             }
         }
@@ -326,7 +326,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             try {
                 experimentEndTimeString = variableObject.experimentEndTimeString.toISOString();
             } catch (error){
-                qmService.logError("Could not convert experimentEndTimeString to ISO format",
+                qmLog.error("Could not convert experimentEndTimeString to ISO format",
                     {experimentEndTimeString: variableObject.experimentEndTimeString, errorMessage: error});
             }
         }
@@ -353,7 +353,7 @@ angular.module('starter').controller('VariableSettingsCtrl', function($scope, $s
             $scope.goBack({variableObject: userVariable});  // Temporary workaround to make tests pass
         }, function(error) {
             qmService.hideLoader();
-            qmService.logError(error);
+            qmLog.error(error);
         });
     };
 });

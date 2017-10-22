@@ -31,7 +31,7 @@ angular.module('starter',
         //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLog) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();
@@ -42,7 +42,7 @@ angular.module('starter',
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-                qmService.reportErrorDeferred(errorMsg);
+                qmLog.error(errorMsg);
             };
         }
         qmService.configurePushNotifications();

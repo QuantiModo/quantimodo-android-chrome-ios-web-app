@@ -1,6 +1,6 @@
-angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, qmService, $rootScope, $stateParams) {
+angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, qmService, qmLog, $rootScope, $stateParams) {
     $scope.controller_name = "StudyJoinCtrl";
-    if(window.debugMode){qmService.logDebug($scope.controller_name + ' first starting in state: ' + $state.current.name);}
+    if(window.debugMode){qmLog.debug($scope.controller_name + ' first starting in state: ' + $state.current.name);}
     var green = { backgroundColor: "#0f9d58", circleColor: "#03c466" };
     var blue = { backgroundColor: "#3467d6", circleColor: "#5b95f9" };
     var yellow = { backgroundColor: "#f09402", circleColor: "#fab952" };
@@ -13,9 +13,9 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
             "aggregated form as is done in epidemiological studies."
     };
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        if(window.debugMode){qmService.logDebug($scope.controller_name + ' $ionicView.beforeEnter in state: ' + $state.current.name);}
+        if(window.debugMode){qmLog.debug($scope.controller_name + ' $ionicView.beforeEnter in state: ' + $state.current.name);}
         if(!$rootScope.user){
-            qmService.logDebug('Hiding nav menu because we do not have a user');
+            qmLog.debug('Hiding nav menu because we do not have a user');
             $rootScope.hideNavigationMenu = true;
         }
         $scope.requestParams = {
@@ -35,7 +35,7 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
             $scope.requestParams.effectVariableName;
     });
     $scope.$on('$ionicView.enter', function(e) {
-        if(window.debugMode){qmService.logDebug($scope.controller_name + ' $ionicView.enter in state: ' + $state.current.name);}
+        if(window.debugMode){qmLog.debug($scope.controller_name + ' $ionicView.enter in state: ' + $state.current.name);}
         qmService.hideLoader();
         if(getParameterByName('alreadyJoined')){ $scope.joinStudy(); }
     });
@@ -65,7 +65,7 @@ angular.module('starter').controller('StudyJoinCtrl', function($scope, $state, q
             $scope.showGetStartedButton = true;
         }, function (error) {
             qmService.hideLoader();
-            qmService.reportErrorDeferred(error);
+            qmLog.error(error);
             qmService.showMaterialAlert("Could not join study!", "Please contact mike@quantimo.do and he'll fix it for you.  Thanks!");
         });
     };

@@ -1,4 +1,4 @@
-angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, qmService, $cordovaOauth,
+angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, qmService, qmLog, $cordovaOauth,
                                                             $ionicActionSheet, Upload, $timeout, $ionicPopup) {
 	$scope.controller_name = "ImportCtrl";
 	$rootScope.showFilterBarSearchIcon = false;
@@ -6,7 +6,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 	    return $rootScope.user.stripeActive || config.appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled;
 	}
 	$scope.$on('$ionicView.beforeEnter', function(e) {
-		qmService.logDebug("ImportCtrl beforeEnter");
+		qmLog.debug("ImportCtrl beforeEnter");
         if(typeof $rootScope.hideNavigationMenu === "undefined") {$rootScope.hideNavigationMenu = false;}
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
         loadNativeConnectorPage();
@@ -19,12 +19,12 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 		window.localStorage.hideImportHelpCard = true;
 	};
 	var goToWebImportDataPage = function() {
-		qmService.logDebug('importCtrl.init: Going to qmService.getAccessTokenFromAnySource');
+		qmLog.debug('importCtrl.init: Going to qmService.getAccessTokenFromAnySource');
 		qmService.goToState(config.appSettings.appDesign.defaultState);
 		qmService.getAccessTokenFromAnySource().then(function(accessToken){
 			qmService.hideLoader();
 			if(ionic.Platform.platforms[0] === "browser"){
-				qmService.logDebug("Browser Detected");
+				qmLog.debug("Browser Detected");
 				var url = qmService.getQuantiModoUrl("api/v2/account/connectors", true);
 				if(accessToken){ url += "access_token=" + accessToken; }
 				var newTab = window.open(url,'_blank');
@@ -44,7 +44,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
 			}
 		}, function(){
 			qmService.hideLoader();
-			qmService.logDebug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
+			qmLog.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
             qmService.sendToLoginIfNecessaryAndComeBack();
 		});
 	};
@@ -56,7 +56,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 $scope.connectors = connectors;
 				if(connectors) {
 					$scope.$broadcast('scroll.refreshComplete');
-					$ionicLoading.hide().then(function(){qmService.logDebug("The loading indicator is now hidden");});
+					$ionicLoading.hide().then(function(){qmLog.debug("The loading indicator is now hidden");});
 				}
 				$scope.refreshConnectors();
 			});
@@ -69,7 +69,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             buttons: buttons,
             //destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {qmService.logDebug('CANCELLED');},
+            cancel: function() {qmLog.debug('CANCELLED');},
             buttonClicked: function(index) {
                 if(index === 0){qmService.goToState('app.historyAll', {connectorName: connector.name});}
                 return true;
@@ -83,7 +83,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             return;
         }
         if(!file){
-            qmService.logDebug('No file provided to uploadAppFile');
+            qmLog.debug('No file provided to uploadAppFile');
             return;
         }
         $scope.f = file;
@@ -97,7 +97,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             file.upload.then(function (response) {
                 button.text = "Import Scheduled";
                 connector.message = "You should start seeing your data within the next hour or so";
-                qmService.logDebug("File upload response: ", response);
+                qmLog.debug("File upload response: ", response);
                 $timeout(function () {file.result = response.data;});
                 qmService.hideLoader();
             }, function (response) {
@@ -122,10 +122,10 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         button.text = "Import Scheduled";
         connector.updateStatus = "CONNECTING"; // Need to make error message hidden
         var connectWithToken = function(response) {
-            qmService.logDebug("Response Object -> " + JSON.stringify(response));
+            qmLog.debug("Response Object -> " + JSON.stringify(response));
             var body = { connectorCredentials: {token: response}, connector: connector };
             qmService.connectConnectorWithTokenDeferred(body).then(function(result){
-                qmService.logDebug(JSON.stringify(result));
+                qmLog.debug(JSON.stringify(result));
                 $scope.refreshConnectors();
             }, function (error) {
                 connectorErrorHandler(error);
@@ -133,11 +133,11 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
             });
         };
         var connectWithAuthCode = function(authorizationCode, connector){
-            qmService.logDebug(connector.name + " connect result is " + JSON.stringify(authorizationCode));
+            qmLog.debug(connector.name + " connect result is " + JSON.stringify(authorizationCode));
             qmService.connectConnectorWithAuthCodeDeferred(authorizationCode, connector.name).then(function (){
                 $scope.refreshConnectors();
             }, function() {
-                qmService.logError("error on connectWithAuthCode for " + connector.name);
+                qmLog.error("error on connectWithAuthCode for " + connector.name);
                 $scope.refreshConnectors();
             });
         };
@@ -149,10 +149,10 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                     'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                     'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                 }, function (response) {
-                    qmService.logDebug('window.plugins.googleplus.login response:' + JSON.stringify(response));
+                    qmLog.debug('window.plugins.googleplus.login response:' + JSON.stringify(response));
                     connectWithAuthCode(response.serverAuthCode, connector);
                 }, function (errorMessage) {
-                    qmService.reportErrorDeferred("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                    qmLog.error("ERROR: googleLogin could not get userData!  Fallback to qmService.nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
                 });
             }
         }
@@ -439,7 +439,7 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
         qmService.disconnectConnectorDeferred(connector.name).then(function (){
             $scope.refreshConnectors();
         }, function(error) {
-            qmService.logError("error disconnecting " + error);
+            qmLog.error("error disconnecting " + error);
         });
     };
     var getItHere = function (connector){ window.open(connector.getItUrl, '_blank'); };
@@ -460,25 +460,25 @@ angular.module('starter').controller('ImportCtrl', function($scope, $ionicLoadin
                 $scope.$broadcast('scroll.refreshComplete');
                 qmService.hideLoader();
             }, function(response){
-                qmService.logError(response);
+                qmLog.error(response);
                 $scope.$broadcast('scroll.refreshComplete');
                 qmService.hideLoader();
             });
     };
     function connectorErrorHandler(error){
-        qmService.logError(error);
+        qmLog.error(error);
     }
     var webConnect = function (connector) {
         /** @namespace connector.connectInstructions */
         var url = connector.connectInstructions.url;
-        qmService.logDebug('targetUrl is ',  url);
+        qmLog.debug('targetUrl is ',  url);
         var ref = window.open(url,'', "width=600,height=800");
-        qmService.logDebug('Opened ' + url);
+        qmLog.debug('Opened ' + url);
     };
     function connectWithParams(params, lowercaseConnectorName) {
         qmService.connectConnectorWithParamsDeferred(params, lowercaseConnectorName)
             .then(function(result){
-                qmService.logDebug(JSON.stringify(result));
+                qmLog.debug(JSON.stringify(result));
                 $scope.refreshConnectors();
             }, function (error) {
                 connectorErrorHandler(error);

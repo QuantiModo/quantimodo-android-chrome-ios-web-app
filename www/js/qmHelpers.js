@@ -694,7 +694,7 @@ window.deleteTrackingReminderNotificationFromLocalStorage = function(body){
     }
 };
 window.showAndroidPopupForMostRecentNotification = function(){
-    if(!drawOverAppsEnabled()){qmService.logInfo("Can only show popups on Android"); return;}
+    if(!drawOverAppsEnabled()){window.logInfo("Can only show popups on Android"); return;}
     var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
     if(trackingReminderNotification) {
         //window.logInfo("No notifications for popup");
