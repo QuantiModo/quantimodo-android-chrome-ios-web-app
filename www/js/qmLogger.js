@@ -1,4 +1,12 @@
 // A separate logger file allows us to use "black-boxing" in the Chrome dev console to preserve actual file line numbers
+// BLACK BOX THESE
+// \.min\.js$ — for all minified sources
+// qmLogger.js
+// bugsnag.js
+// node_modules and bower_components — for dependencies
+//     ~ — home for dependencies in Webpack bundle
+// bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
+// \(webpack\)-hot-middleware — HMR
 window.isTruthy = function(value){return value && value !== "false"; };
 window.getDebugMode = function() {
     //return true;
