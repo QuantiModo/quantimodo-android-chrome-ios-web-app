@@ -34,66 +34,7 @@ var appConfigFileNames = {
     "your_quantimodo_client_id_here": "your_quantimodo_client_id_here"
 };
 window.isTruthy = function(value){return value && value !== "false"; };
-window.getDebugMode = function() {
-    //return true;
-    if(window.getUrlParameter('debug') || window.getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && window.isTruthy(appSettings.debugMode))){
-        window.debugMode = true;
-    }
-    return window.debugMode;
-};
-function getStackTrace() {
-    var err = new Error();
-    var stackTrace = err.stack;
-    stackTrace = stackTrace.substring(stackTrace.indexOf('getStackTrace')).replace('getStackTrace', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logDebug')).replace('window.logDebug', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logInfo')).replace('window.logInfo', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logError')).replace('window.logError', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logDebug')).replace('window.logDebug', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logInfo')).replace('window.logInfo', '');
-    stackTrace = stackTrace.substring(stackTrace.indexOf('window.logError')).replace('window.logError', '');
-    return stackTrace;
-}
-function addStackTraceToMessage(message, stackTrace) {
-    if(message.toLowerCase().indexOf('stacktrace') !== -1){return message;}
-    if(!stackTrace){stackTrace = getStackTrace();}
-    return message + ".  StackTrace: " + stackTrace;
-}
-function addCallerFunctionToMessage(message) {
-    var calleeFunction = arguments.callee.caller.caller;
-    if(calleeFunction && calleeFunction.name && calleeFunction.name !== ""){
-        message = "callee " + calleeFunction.name + ": " + message;
-    } else if (window.getDebugMode()) {
-        return addStackTraceToMessage(message);
-    }
-    var callerFunction;
-    if(calleeFunction){
-        try {
-            callerFunction = calleeFunction.caller;
-        } catch (error) {
-            console.error(error);
-        }
-    }
-    if(callerFunction && callerFunction.name && callerFunction.name !== ""){
-        return "Caller " + callerFunction.name + " called " + message;
-    } else if (window.getDebugMode()) {
-        return addStackTraceToMessage(message);
-    }
-    return message;
-}
-window.logDebug = function(message) {
-    message = addCallerFunctionToMessage(message);
-    if(window.getDebugMode()){console.debug(message);}
-};
-window.logInfo = function(message) {
-    message = addCallerFunctionToMessage(message);
-    console.info(message);
-};
-window.logError = function(message, additionalMetaData, stackTrace) {
-    if(message && message.message){message = message.message;}
-    message = addCallerFunctionToMessage(message);
-    bugsnagNotify(message, additionalMetaData, stackTrace);
-    console.error(message);
-};
+window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
 function getSubDomain(){
     var full = window.location.host;
     var parts = full.split('.');
@@ -225,15 +166,23 @@ var v = null;
 var vid = null;
 function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
-var introWindowParams = { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
-var facesRatingPopupWindowParams = { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110};
-var loginPopupWindowParams = { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750};
-var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750};
-var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
-var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2};
-var signInNotificationParams = { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2};
+var introWindowParams = { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2),
+    left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true};
+var facesRatingPopupWindowParams = { url: "templates/chrome/faces_popup.html", type: 'panel',
+    top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true};
+var loginPopupWindowParams = { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2),
+    left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true};
+var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: screen.height - 800,
+    left: screen.width - 455, width: 450, height: 750};
+var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel',
+    top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
+var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox",
+    iconUrl: "img/icons/icon_700.png", priority: 2};
+var signInNotificationParams = { type: "basic", title: "How are you?",
+    message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2};
 function getChromeRatingNotificationParams(trackingReminderNotification){
-    return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110}
+    return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
+        left: screen.width - 380, width: 390, height: 110, focused: true}
 }
 function addGlobalQueryParameters(url) {
     if (window.getAccessToken()) {
@@ -269,8 +218,7 @@ if(isChromeExtension()) {
     if (!localStorage.introSeen) {
         window.logInfo("introSeen false on chrome extension so opening intro window popup");
         window.localStorage.setItem('introSeen', true);
-        var focusWindow = true;
-        openOrFocusChromePopupWindow(introWindowParams, focusWindow);
+        openOrFocusChromePopupWindow(introWindowParams);
     }
     chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
         var notificationInterval = parseInt(localStorage.notificationInterval || "60");
@@ -287,47 +235,48 @@ if(isChromeExtension()) {
         console.debug('onAlarm Listener heard this alarm ', alarm);
         var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
         if(trackingReminderNotification){
-            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification), true);
+            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification));
             updateBadgeText("");
         } else if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
-            openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
+            openOrFocusChromePopupWindow(compactInboxPopupWindowParams);
+            //openOrFocusChromePopupWindow(facesRatingPopupWindowParams);
         } else {
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
         }
     });
 }
-function openOrFocusChromePopupWindow(windowParams, focusWindow) {
-    if(focusWindow !== true){focusWindow = false;}
+function openOrFocusChromePopupWindow(windowParams) {
     if(!isChromeExtension()){
-        window.logDebug("Can't open popup because chrome is undefined");
+        window.logInfo("Can't open popup because chrome is undefined");
         return;
     }
-    windowParams.focused = true;
-    window.logDebug('openOrFocusChromePopupWindow', windowParams );
-    if (vid) {
-        chrome.windows.get(vid, function (chromeWindow) {
-            if (!chrome.runtime.lastError && chromeWindow) {
-                // Commenting existing window focus so we don't irritate users
-				if(focusWindow){ chrome.windows.update(vid, {focused: true}); }
-                return;
-            }
-            chrome.windows.create(
-                windowParams,
-                function (chromeWindow) {
-                    vid = chromeWindow.id;
-                    chrome.windows.update(vid, { focused: focusWindow });
-                }
-            );
+    window.logInfo('openOrFocusChromePopupWindow checking if a window is already open', windowParams );
+    function createWindow(windowParams) {
+        chrome.windows.create(windowParams, function (chromeWindow) {
+            localStorage.setItem('chromeWindowId', chromeWindow.id);
+            chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
         });
-    } else {
-        chrome.windows.create(
-            windowParams,
-            function (chromeWindow) {
-                vid = chromeWindow.id;
-                chrome.windows.update(vid, { focused: focusWindow });
-            }
-        );
     }
+    var chromeWindowId = parseInt(localStorage.getItem('chromeWindowId'), null);
+    if(!chromeWindowId){
+        window.logInfo('openOrFocusChromePopupWindow: No window id from localStorage. Creating one...', windowParams );
+        createWindow(windowParams);
+        return;
+    }
+    window.logInfo('openOrFocusChromePopupWindow: window id from localStorage: ' + chromeWindowId, windowParams );
+    chrome.windows.get(chromeWindowId, function (chromeWindow) {
+        if (!chrome.runtime.lastError && chromeWindow){
+            if(windowParams.focused){
+                window.logInfo('openOrFocusChromePopupWindow: Window already open. Focusing...', windowParams );
+                chrome.windows.update(chromeWindowId, {focused: true});
+            } else {
+                window.logInfo('openOrFocusChromePopupWindow: Window already open. NOT focusing...', windowParams );
+            }
+        } else {
+            window.logInfo('openOrFocusChromePopupWindow: Window NOT already open. Creating one...', windowParams );
+            createWindow(windowParams);
+        }
+    });
 }
 function openChromePopup(notificationId, focusWindow) {
     if(!isChromeExtension()){
@@ -338,15 +287,14 @@ function openChromePopup(notificationId, focusWindow) {
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
 	if(notificationId === "moodReportNotification") {
-        openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
+        openOrFocusChromePopupWindow(facesRatingPopupWindowParams);
 	} else if (notificationId === "signin") {
-        openOrFocusChromePopupWindow(loginPopupWindowParams, focusWindow);
+        openOrFocusChromePopupWindow(loginPopupWindowParams);
 	} else if (notificationId && IsJsonString(notificationId)) {
-        var windowParams = reminderInboxPopupWindowParams;
-		windowParams.url = "index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
-        openOrFocusChromePopupWindow(windowParams, focusWindow);
+        reminderInboxPopupWindowParams.url = "index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
+        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams);
 	} else {
-        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams, focusWindow);
+        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams);
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
 	//chrome.windows.create(windowParams);
@@ -422,7 +370,7 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
             window.setLocalStorageItem('trackingReminderNotifications', notificationsObject.data);
             var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
             if(trackingReminderNotification){
-                openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification), true);
+                openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification));
                 updateBadgeText("");
             } else if (numberOfWaitingNotifications > 0) {
                 window.setLocalStorageItem('trackingReminderNotifications', notificationsObject.data);
@@ -434,7 +382,7 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                     openChromePopup(notificationId);
                 }
             } else {
-                openOrFocusChromePopupWindow(facesRatingPopupWindowParams, focusWindow);
+                openOrFocusChromePopupWindow(facesRatingPopupWindowParams);
                 updateBadgeText("");
             }
         }
@@ -711,7 +659,7 @@ window.getMostRecentRatingNotificationFromLocalStorage = function (){
     } else {
         refreshNotificationsAndShowPopupIfSo();
         //window.refreshNotificationsIfEmpty();
-        window.logInfo("No notifications for popup");
+        console.info("No notifications for popup");
         return null;
     }
 };
@@ -745,17 +693,19 @@ window.deleteTrackingReminderNotificationFromLocalStorage = function(body){
         window.refreshNotificationsIfEmpty();
     }
 };
-window.showPopupForMostRecentNotification = function(){
+window.showAndroidPopupForMostRecentNotification = function(){
+    if(!drawOverAppsEnabled()){qmService.logInfo("Can only show popups on Android"); return;}
     var trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
     if(trackingReminderNotification) {
         //window.logInfo("No notifications for popup");
-        window.drawOverAppsNotification(trackingReminderNotification);
+        window.drawOverAppsRatingNotification(trackingReminderNotification);
+    // } else if (window.getTrackingReminderNotificationsFromLocalStorage().length) {
+    //     window.drawOverAppsCompactInboxNotification();  // TODO: Fix me
     } else {
         window.refreshNotificationsIfEmpty();
         window.logInfo("No notifications for popup");
     }
 };
-window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
 function getRatingNotificationPath(trackingReminderNotification){
     return "android_popup.html?variableName=" + trackingReminderNotification.variableName +
     "&valence=" + trackingReminderNotification.valence +
@@ -763,14 +713,20 @@ function getRatingNotificationPath(trackingReminderNotification){
     "&clientId=" + window.getClientId() +
     "&accessToken=" + window.getAccessToken();
 }
-window.drawOverAppsNotification = function(trackingReminderNotification) {
+window.drawOverAppsRatingNotification = function(trackingReminderNotification) {
+    window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification));
+};
+window.drawOverAppsCompactInboxNotification = function() {
+    window.drawOverAppsPopup(compactInboxPopupWindowParams.url);
+};
+window.drawOverAppsPopup = function(path){
     if(typeof window.overApps === "undefined"){
         window.logError("window.overApps is undefined!");
         return;
     }
     //window.overApps.checkPermission(function(msg){console.log("checkPermission: " + msg);});
     var options = {
-        path: getRatingNotificationPath(trackingReminderNotification),          // file path to display as view content.
+        path: path,          // file path to display as view content.
         hasHead: false,              // display over app head image which open the view up on click.
         dragToSide: false,          // enable auto move of head to screen side after dragging stop.
         enableBackBtn: true,       // enable hardware back button to close view.
@@ -778,7 +734,7 @@ window.drawOverAppsNotification = function(trackingReminderNotification) {
         verticalPosition: "bottom",    // set vertical alignment of view.
         horizontalPosition: "center"  // set horizontal alignment of view.
     };
-    window.logInfo("drawOverAppsNotification options: " + JSON.stringify(options));
+    window.logInfo("drawOverAppsRatingNotification options: " + JSON.stringify(options));
     window.overApps.startOverApp(options, function (success){
         window.logInfo("startOverApp success: " + success);
     },function (err){

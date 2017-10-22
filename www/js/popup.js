@@ -29,7 +29,8 @@ var inboxButtonClicked = function() {
         OverApps.openApp();
     } else {
         window.logInfo("OverApps not defined");
-        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams, true);
+        reminderInboxPopupWindowParams.focused = true;
+        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams);
     }
 };
 var onFaceButtonClicked = function() {

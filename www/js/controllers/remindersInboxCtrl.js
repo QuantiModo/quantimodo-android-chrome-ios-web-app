@@ -196,6 +196,10 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		trackingReminderNotification.hide = true;
         $rootScope.numberOfPendingNotifications--;
         $scope.state.numberOfDisplayedNotifications--;
+        if($state.current.name === "app.remindersInboxCompact"){
+            if(!$scope.state.numberOfDisplayedNotifications){window.close();}
+			$scope.trackingReminderNotifications.shift();
+        }
         closeWindowIfNecessary();
         getFallbackInboxContent();
 		$scope.showUndoToast($scope.lastAction);

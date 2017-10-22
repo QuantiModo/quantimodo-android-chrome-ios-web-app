@@ -2534,7 +2534,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if(response.success) {
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
-                    if($rootScope.isAndroid){qmService.showPopupForMostRecentNotification();}
+                    if($rootScope.isAndroid){qmService.showAndroidPopupForMostRecentNotification();}
                     if (window.chrome && window.chrome.browserAction) {
                         chrome.browserAction.setBadgeText({text: "?"});
                         //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
@@ -7218,11 +7218,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             cordova.plugins.notification.local.schedule(notificationSettings, function(data){
                 qmService.logInfo('scheduleGenericNotification: notification scheduled.  Settings: ' + JSON.stringify(notificationSettings));
                 qmService.logInfo("cordova.plugins.notification.local callback. data: " + JSON.stringify(data));
-                qmService.showPopupForMostRecentNotification();
+                qmService.showAndroidPopupForMostRecentNotification();
             });
             cordova.plugins.notification.local.on("trigger", function (currentNotification) {
                 qmService.logInfo("onTrigger: just triggered this notification: " + JSON.stringify(currentNotification));
-                qmService.showPopupForMostRecentNotification();
+                qmService.showAndroidPopupForMostRecentNotification();
             });
         });
     }
@@ -7413,7 +7413,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     qmService.logDebug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
-                        qmService.drawOverAppsNotification(data.additionalData);
+                        qmService.drawOverAppsRatingNotification(data.additionalData);
                     } else {
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
                             qmService.logDebug('push.on.notification: successfully refreshed notifications');
@@ -7658,7 +7658,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     //     });
     // };
     function isFalsey(value) {if(value === false || value === "false"){return true;}}
-    qmService.drawOverAppsNotification = function(trackingReminderNotification) {
+    qmService.drawOverAppsRatingNotification = function(trackingReminderNotification) {
         if(!$rootScope.isAndroid){
             qmService.logDebug("Can only show popups on android");
             return;
@@ -7667,7 +7667,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             window.logDebug("drawOverApps is disabled");
             return;
         }
-        $ionicPlatform.ready(function() {window.drawOverAppsNotification(trackingReminderNotification);});
+        $ionicPlatform.ready(function() {window.drawOverAppsRatingNotification(trackingReminderNotification);});
     };
     qmService.toggleDrawOverApps = function(ev){
         function disablePopups() {
@@ -7687,7 +7687,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     } else {
                         qmService.logError("window.overApps is undefined!");
                     }
-                    qmService.showPopupForMostRecentNotification();
+                    qmService.showAndroidPopupForMostRecentNotification();
                 });
             }
             function noCallback() {disablePopups();}
@@ -7703,9 +7703,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var drawOverAppsEnabled =  localStorage.getItem('drawOverAppsEnabled');
         return drawOverAppsEnabled == 'true';
     }
-    qmService.showPopupForMostRecentNotification = function(){
-        if(!drawOverAppsEnabled()){qmService.logInfo("Can only show popups on Android"); return;}
-        window.showPopupForMostRecentNotification();
+    qmService.showAndroidPopupForMostRecentNotification = function(){
+        window.showAndroidPopupForMostRecentNotification();
     };
     return qmService;
 });
