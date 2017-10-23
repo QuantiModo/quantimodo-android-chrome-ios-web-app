@@ -1,13 +1,13 @@
 angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, $rootScope, $http,
-										  qmService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
+										  qmService, qmLogService, ionicTimePicker, $stateParams, $ionicHistory, $ionicLoading,
 										  //$ionicDeploy,
 										  $ionicPlatform) {
 	$scope.controller_name = "SettingsCtrl";
 	$scope.state = {};
 	$scope.userEmail = qmService.getUrlParameter('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
-	$scope.$on('$ionicView.beforeEnter', function(e) { qmService.logDebug("beforeEnter state " + $state.current.name);
-        $scope.drawOverAppsEnabled = (localStorage.getItem('drawOverAppsEnabled') == 'true');
+	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
+        $scope.drawOverAppsEnabled = (qmStorage.getItem(qmStorage.items.drawOverAppsEnabled) == 'true');
 		$rootScope.hideNavigationMenu = false;
 		if(qmService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
@@ -17,7 +17,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 				$scope.state.loading = false;
 				qmService.hideLoader();
 			}, function(error){
-				qmService.logError(error);
+				qmLogService.error(error);
 				$scope.state.loading = false;
 				qmService.hideLoader();
 			});
@@ -29,7 +29,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	});
     $scope.$on('$ionicView.afterEnter', function(e) {qmService.hideLoader();});
     $scope.completelyResetAppStateAndSendToLogin = function(){qmService.completelyResetAppStateAndSendToLogin();};
-	qmService.getLocalStorageItemAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+	qmService.qmStorage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 		$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		if($rootScope.isIOS){
 			if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
@@ -37,7 +37,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 				$scope.primaryOutcomeRatingFrequencyDescription !== 'never'
 			) {
 				$scope.primaryOutcomeRatingFrequencyDescription = 'day';
-				qmService.setLocalStorageItem('primaryOutcomeRatingFrequencyDescription', 'day');
+				qmService.qmStorage.setItem('primaryOutcomeRatingFrequencyDescription', 'day');
 			}
 		}
 	});
@@ -68,10 +68,10 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 				'You will only get a single generic notification instead of a separate notification for each reminder that you create.  All ' +
 				'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.', ev);
 			qmService.cancelAllNotifications().then(function() {
-				qmService.logDebug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
-					"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
-					"frequency reminder");
-				if(!localStorage.getItem('deviceTokenOnServer')){
+				qmLogService.debug(null, 'SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
+                    'refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest ' +
+                    "frequency reminder", null);
+				if(!qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
 					console.warn("Could not find device token for push notifications so scheduling combined local notifications");
 					qmService.syncTrackingReminders();
 				}
@@ -113,14 +113,14 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$scope.state.earliestReminderTimePickerConfiguration = {
 			callback: function (val) {
 				if (typeof (val) === 'undefined') {
-					qmService.logDebug('Time not selected');
+					qmLogService.debug(null, 'Time not selected', null);
 				} else {
 					var a = new Date();
 					var params = {timeZoneOffset: a.getTimezoneOffset()};
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
 					a.setMinutes(selectedTime.getUTCMinutes());
-					qmService.logDebug('Selected epoch is : ', val, 'and the time is ',
+					qmLogService.debug('Selected epoch is : ', val, 'and the time is ',
 						selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 					var newEarliestReminderTime = moment(a).format('HH:mm:ss');
 					if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
@@ -144,14 +144,14 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 		$scope.state.latestReminderTimePickerConfiguration = {
 			callback: function (val) {
 				if (typeof (val) === 'undefined') {
-					qmService.logDebug('Time not selected');
+					qmLogService.debug(null, 'Time not selected', null);
 				} else {
 					var a = new Date();
 					var params = {timeZoneOffset: a.getTimezoneOffset()};
 					var selectedTime = new Date(val * 1000);
 					a.setHours(selectedTime.getUTCHours());
 					a.setMinutes(selectedTime.getUTCMinutes());
-					qmService.logDebug('Selected epoch is : ', val, 'and the time is ',
+					qmLogService.debug('Selected epoch is : ', val, 'and the time is ',
 						selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 					var newLatestReminderTime = moment(a).format('HH:mm:ss');
 					if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
@@ -173,8 +173,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	};
 	function saveDeviceTokenToSyncWhenWeLogInAgain(){
 		// Getting token so we can post as the new user if they log in again
-		if(localStorage.getItem('deviceTokenOnServer')){
-			localStorage.setItem('deviceTokenToSync', localStorage.getItem('deviceTokenOnServer'));
+		if(qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
+			qmStorage.setItem(qmStorage.items.deviceTokenToSync, qmStorage.getItem(qmStorage.items.deviceTokenOnServer));
 			qmService.deleteDeviceTokenFromServer();
 		}
 	}
@@ -198,7 +198,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             qmService.showBlackRingLoader();
 			$rootScope.user = null;
 			saveDeviceTokenToSyncWhenWeLogInAgain();
-			qmService.clearOAuthTokensFromLocalStorage();
+			window.qmStorage.clearOAuthTokens();
 			logOutOfWebsite();
 			window.localStorage.introSeen = false;
 			window.localStorage.onboarded = false;
@@ -211,7 +211,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             function noCallback(){afterLogoutDoNotDeleteMeasurements();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
 		};
-		qmService.logDebug('Logging out...');
+		qmLogService.debug(null, 'Logging out...', null);
 		$rootScope.user = null;
 		showDataClearPopup(ev);
 	};
@@ -243,9 +243,9 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	};
 	function exportMeasurements(type, ev){
 		qmService.postMeasurementsExport(type, function(response){
-			if(!response.success) {qmService.reportErrorDeferred("Could not export measurements. Response: " + JSON.stringify(response));}
+			if(!response.success) {qmLogService.error("Could not export measurements. Response: " + JSON.stringify(response));}
 		}, function(error){
-			qmService.reportErrorDeferred("Could not export measurements. Response: " + JSON.stringify(error));
+			qmLogService.error("Could not export measurements. Response: " + JSON.stringify(error));
 		});
 		exportRequestAlert(ev);
 	}
@@ -261,12 +261,12 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         qmService.showBlackRingLoader();
         qmService.postDowngradeSubscriptionDeferred().then(function (user) {
             qmService.hideLoader();
-            qmService.logDebug(JSON.stringify(user));
+            qmLogService.debug(null, JSON.stringify(user), null);
             qmService.showMaterialAlert('Downgraded', 'Successfully downgraded to QuantiModo Lite');
         }, function (error) {
             qmService.hideLoader();
             qmService.showMaterialAlert('Error', 'An error occurred while downgrading. Please email mike@quantimo.do');
-            qmService.logDebug(JSON.stringify(error));
+            qmLogService.debug(null, JSON.stringify(error), null);
         });
     };
     var androidDowngrade = function () {
@@ -278,8 +278,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
         confirmPopup.then(function(res) {
             if(res) {
                 qmService.postDowngradeSubscriptionDeferred().then(function (user) {
-                    qmService.logDebug(JSON.stringify(user));
-                }, function (error) { qmService.logError(error); });
+                    qmLogService.debug(null, JSON.stringify(user), null);
+                }, function (error) { qmLogService.error(error); });
                 window.open("https://support.google.com/googleplay/answer/7018481", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
         });
@@ -291,8 +291,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
             if(res) {
                 $rootScope.user.stripeActive = false;
                 qmService.postDowngradeSubscriptionDeferred().then(function (user) {
-                    qmService.logDebug(JSON.stringify(user));
-                }, function (error) { qmService.logError(error); });
+                    qmLogService.debug(null, JSON.stringify(user), null);
+                }, function (error) { qmLogService.error(error); });
                 window.open("https://support.apple.com/en-us/HT202039", '_blank', 'location=yes');
             } else { console.log('You are not sure'); }
         });

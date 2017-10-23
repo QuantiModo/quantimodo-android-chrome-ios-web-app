@@ -1,4 +1,4 @@
-angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, qmService, clipboard) {
+angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard) {
     $scope.controller_name = "ChartsPageCtrl";
     $scope.addReminderButtonText = "Add Reminder";
     $scope.recordMeasurementButtonText = "Record Measurement";
@@ -17,12 +17,12 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     };
     var maximumMeasurements = 999; // Highcharts will only show 1000 measurements with notes
     function getTruncatedVariableName(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}}
-    $scope.$on('$ionicView.enter', function(e) { qmService.logDebug("Entering state " + $state.current.name);
+    $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
         if(qmService.getUrlParameter('variableName')){$stateParams.variableName = qmService.getUrlParameter('variableName', window.location.href, true);}
         $rootScope.hideNavigationMenu = false;
         $scope.stopGettingMeasurements = false;
         qmService.hideLoader();
-        qmService.logDebug("variablePageCtrl: enter");
+        qmLogService.debug(null, 'variablePageCtrl: enter', null);
         if($stateParams.variableObject){
             $rootScope.variableObject = $stateParams.variableObject;
             refreshUserVariable($rootScope.variableObject.name);
@@ -44,11 +44,11 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             $scope.state.title = qmService.getTruncatedVariableName($rootScope.variableObject.name);
             getDailyHistoryForVariable(params);
             getHistoryForVariable(params);
-        } else {qmService.logError($state.current.name + ' ERROR: $rootScope.variableObject.name not defined!', $rootScope.variableObject);}
+        } else {qmLogService.error($state.current.name + ' ERROR: $rootScope.variableObject.name not defined!', $rootScope.variableObject);}
         $rootScope.showActionSheetMenu = qmService.variableObjectActionSheet;
     });
     $scope.$on('$ionicView.beforeLeave', function(){
-        qmService.logDebug('Leaving so setting $scope.stopGettingMeasurements to true');
+        qmLogService.debug(null, 'Leaving so setting $scope.stopGettingMeasurements to true', null);
         $scope.stopGettingMeasurements = true;
     });
     if (!clipboard.supported) {
@@ -56,7 +56,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
         $scope.hideClipboardButton = true;
     }
     $scope.addNewReminderButtonClick = function() {
-        qmService.logDebug("addNewReminderButtonClick");
+        qmLogService.debug(null, 'addNewReminderButtonClick', null);
         qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});
     };
     $scope.recordMeasurementButtonClick = function() {qmService.goToState('app.measurementAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name});};
@@ -90,7 +90,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     var getHistoryForVariable = function(params){
         if($scope.stopGettingMeasurements){return;}
         if(!params.variableName){
-            qmService.logError("ERROR: params.variableName not provided to getHistoryForVariable.  params are: ", params);
+            qmLogService.error("ERROR: params.variableName not provided to getHistoryForVariable.  params are: ", params);
             return;
         }
         if(qmService.getUrlParameter('doNotProcess')){params.doNotProcess = true;}
@@ -107,7 +107,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 if ($scope.state.history.length > 0) {updateCharts();}
             }
         }, function(error){
-            qmService.logError($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
+            qmLogService.error($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
             $scope.state.loadingHistory = false;
         }, function(history) {
             $scope.state.history = $scope.state.history.concat(history);
@@ -116,7 +116,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     var getDailyHistoryForVariable = function(params){
         if($scope.stopGettingMeasurements){return;}
         if(!params.variableName){
-            qmService.logError("ERROR: params.variableName not provided to getHistoryForVariable. params: " + JSON.stringify(params));
+            qmLogService.error("ERROR: params.variableName not provided to getHistoryForVariable. params: " + JSON.stringify(params));
             return;
         }
         $scope.state.loadingDailyHistory = true;
@@ -132,7 +132,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
                 if ($scope.state.dailyHistory.length > 0) {updateDailyCharts();}
             }
         }, function(error){
-            qmService.logError($state.current.name + ' error getting dailyHistory measurements: ' + JSON.stringify(error));
+            qmLogService.error($state.current.name + ' error getting dailyHistory measurements: ' + JSON.stringify(error));
             $scope.state.loadingDailyHistory = false;
         }, function(history) {
             $scope.state.loadingDailyHistory = false;

@@ -1,6 +1,6 @@
 angular.module('starter')// Parent Controller - This controller runs before every one else
 .controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
-                                $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService,
+                                $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService, qmLogService,
                                 $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
                                 $locale, $mdDialog, $mdToast, wikipediaFactory, appSettingsResponse) {
     $scope.controller_name = "AppCtrl";
@@ -9,7 +9,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     $scope.primaryOutcomeVariableDetails = qmService.getPrimaryOutcomeVariable();
     $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
     $scope.$on('$ionicView.enter', function (e) {
-        qmService.logDebug('appCtrl enter in state ' + $state.current.name + " and url is " + window.location.href);
+        qmLogService.debug(null, 'appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href, null);
         //$scope.showHelpInfoPopupIfNecessary(e);
         if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
             $scope.showCalendarButton = true;
@@ -62,7 +62,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             ' and ' + correlationObject.effectVariableName + ' measurements publicly visible? You can make them private again at any time on this study page.';
         function yesCallback() {
             correlationObject.shareUserMeasurements = true;
-            qmService.setLocalStorageItem('lastStudy', JSON.stringify(correlationObject));
+            qmService.qmStorage.setItem('lastStudy', JSON.stringify(correlationObject));
             var body = {causeVariableId: correlationObject.causeVariableId, effectVariableId: correlationObject.effectVariableId, shareUserMeasurements: true};
             qmService.showBlackRingLoader();
             qmService.postStudyDeferred(body).then(function () {
@@ -70,7 +70,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 if(sharingUrl){qmService.openSharingUrl(sharingUrl);}
             }, function (error) {
                 qmService.hideLoader();
-                qmService.logError(error);
+                qmLogService.error(error);
             });
         }
         function noCallback() {correlationObject.shareUserMeasurements = false;}
@@ -94,10 +94,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.shareStudy = function(correlationObject, sharingUrl, ev){
         if(!correlationObject){
-            qmService.logError("No correlationObject provided to shareStudy!");
+            qmLogService.error("No correlationObject provided to shareStudy!");
             return;
         }
-        if(!sharingUrl){qmService.logError("No sharing url for this correlation: ", {correlation: correlationObject});}
+        if(!sharingUrl){qmLogService.error("No sharing url for this correlation: ", {correlation: correlationObject});}
         if(sharingUrl.indexOf('userId') !== -1 && !correlationObject.shareUserMeasurements){
             showShareStudyConfirmation(correlationObject, sharingUrl, ev);
             return;
@@ -130,7 +130,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 qmService.openSharingUrl(sharingUrl);
             }, function (error) {
                 qmService.hideLoader();
-                qmService.logError(error);
+                qmLogService.error(error);
             });
         }
         function noCallback() {variableObject.shareUserMeasurements = false;}
@@ -144,7 +144,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function yesCallback() {
             variableObject.shareUserMeasurements = false;
             var body = {variableId: variableObject.id, shareUserMeasurements: false};
-            qmService.postUserVariableDeferred(body).then(function () {}, function (error) {qmService.logError(error);});
+            qmService.postUserVariableDeferred(body).then(function () {}, function (error) {qmLogService.error(error);});
         }
         function noCallback() {variableObject.shareUserMeasurements = true;}
         qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -153,9 +153,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(variableObject.shareUserMeasurements){showShareVariableConfirmation(variableObject, ev);} else {showUnshareVariableConfirmation(variableObject, ev);}
     };
     $rootScope.setLocalStorageFlagTrue = function (flagName) {
-        qmService.logDebug('Set ' + flagName + ' to true');
+        qmLogService.debug(null, 'Set ' + flagName + ' to true', null);
         $rootScope[flagName] = true;
-        qmService.setLocalStorageItem(flagName, true);
+        qmService.qmStorage.setItem(flagName, true);
     };
     $scope.showHelpInfoPopup = function (explanationId, ev) {
         qmService.showMaterialAlert(qmService.explanations[explanationId].title, qmService.explanations[explanationId].textContent);
@@ -196,7 +196,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 0;
                 correlationObject.vote = 0;
-                qmService.postVoteDeferred(correlationObject).then(function () {qmService.logDebug('Down voted!');}, function () {qmService.logError('Down vote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {qmLogService.debug(null, 'Down voted!', null);}, function () {qmLogService.error('Down vote failed!');});
             };
             noCallback = function() {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -218,7 +218,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             yesCallback = function() {
                 correlationObject.userVote = 1;
                 correlationObject.vote = 1;
-                qmService.postVoteDeferred(correlationObject).then(function () {qmService.logDebug('upVote');}, function () {qmService.logError('upVote failed!');});
+                qmService.postVoteDeferred(correlationObject).then(function () {qmLogService.debug(null, 'upVote', null);}, function () {qmLogService.error('upVote failed!');});
             };
             noCallback = function () {};
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
@@ -234,9 +234,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     function deleteVote(correlationObject, $index) {
         correlationObject.userVote = null;
         qmService.deleteVoteDeferred(correlationObject, function(response){
-            qmService.logDebug("deleteVote response", response);
+            qmLogService.debug(null, 'deleteVote response', null, response);
         }, function(response){
-            qmService.logError("deleteVote response", response);
+            qmLogService.error("deleteVote response", response);
         });
     }
     $scope.safeApply = function(fn) {
@@ -246,12 +246,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         } else {this.$apply(fn);}
     };
     $scope.onTextClick = function ($event) {
-        qmService.logDebug("Auto selecting text so the user doesn't have to press backspace...");
+        qmLogService.debug(null, 'Auto selecting text so the user doesn\'t have to press backspace...', null);
         $event.target.select();
     };
     $scope.favoriteValidationFailure = function (message) {
         qmService.showMaterialAlert('Whoops!', message);
-        qmService.logError(message);
+        qmLogService.error(message);
     };
     $scope.trackFavoriteByValueField = function(trackingReminder, $index){
         if(trackingReminder.total === null){
@@ -261,9 +261,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         trackingReminder.displayTotal = "Recorded " + (trackingReminder.total + " " + trackingReminder.unitAbbreviatedName).replace(' /', '/');
         qmService.postMeasurementByReminder(trackingReminder, trackingReminder.total)
             .then(function () {
-                qmService.logDebug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder), null);
             }, function(error) {
-                qmService.logError('Failed to track favorite! ', trackingReminder);
+                qmLogService.error('Failed to track favorite! ', trackingReminder);
             });
     };
     $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
@@ -276,16 +276,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(trackingReminder.combinationOperation === "SUM"){trackingReminder.tally += modifiedReminderValue;} else {trackingReminder.tally = modifiedReminderValue;}
         $timeout(function() {
             if(typeof trackingReminder === "undefined"){
-                qmService.logError("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+                qmLogService.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
                 return;
             }
             if(trackingReminder.tally) {
                 qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
                     .then(function () {
-                        qmService.logDebug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                        qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder), null);
                     }, function(error) {
-                        qmService.logError(error);
-                        qmService.logError('Failed to Track by favorite! ', trackingReminder);
+                        qmLogService.error(error);
+                        qmLogService.error('Failed to Track by favorite! ', trackingReminder);
                     });
                 trackingReminder.tally = 0;
             }
@@ -310,9 +310,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             buttons: actionMenuButtons,
             destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-            cancel: function() {qmService.logDebug('CANCELLED');},
+            cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
             buttonClicked: function(index) {
-                qmService.logDebug('BUTTON CLICKED', index);
+                qmLogService.debug(null, 'BUTTON CLICKED', null, index);
                 if(index === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
                 if(index === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
                 if(index === 2){qmService.goToState('app.charts', {trackingReminder: favorite, fromState: $state.current.name, fromUrl: window.location.href});}
@@ -336,9 +336,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
         qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
             .then(function () {
-                qmService.logDebug("Successfully qmService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                qmLogService.debug(null, 'Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
             }, function(error) {
-                qmService.logError('Failed to Track by favorite! ', $rootScope.bloodPressure);
+                qmLogService.error('Failed to Track by favorite! ', $rootScope.bloodPressure);
             });
     };
     $scope.showExplanationsPopup = function(settingName, ev) {
@@ -363,7 +363,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 backView.stateParams = stateParams;
                 backView.stateId = stateId;
             }
-            qmService.logDebug("Going back to " + backView.stateId + "  with stateParams " + JSON.stringify(backView.stateParams));
+            qmLogService.debug(null, 'Going back to ' + backView.stateId + '  with stateParams ' + JSON.stringify(backView.stateParams), null);
             $ionicHistory.goBack();
         } else {
             qmService.goToState(config.appSettings.appDesign.defaultState, stateParams);
@@ -372,7 +372,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
 
     $scope.getUserVariableByName = function (variableName, refresh, hideLoader) {
         if(!variableName){
-            qmService.reportErrorDeferred('No variable name provided to $scope.getUserVariableByName');
+            qmLogService.error('No variable name provided to $scope.getUserVariableByName');
             return;
         }
         if($rootScope.variableObject && $rootScope.variableObject.name !== variableName){ $rootScope.variableObject = null; }
@@ -389,7 +389,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
             qmService.hideLoader();
-            qmService.logError(error);
+            qmLogService.error(error);
         });
     };
     $scope.refreshUserVariable = function (hideLoader) {
@@ -399,10 +399,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.trackLocationChange = function(event, trackLocation) {
         if(trackLocation !== null && typeof trackLocation !== "undefined"){$rootScope.user.trackLocation = trackLocation;}
-        qmService.logDebug('trackLocation', $rootScope.user.trackLocation);
+        qmLogService.debug(null, 'trackLocation', null, $rootScope.user.trackLocation);
         qmService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
         if($rootScope.user && $rootScope.user.trackLocation){
-            qmService.logDebug('Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready');
+            qmLogService.debug(null, 'Going to execute qmService.backgroundGeolocationInit if $ionicPlatform.ready', null);
             qmService.backgroundGeolocationInit();
         }
         if($rootScope.user.trackLocation){
@@ -412,7 +412,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         if(!$rootScope.user.trackLocation) {
             qmService.showInfoToast('Location tracking disabled');
             qmService.backgroundGeolocationStop();
-            qmService.logDebug("Do not track location");
+            qmLogService.debug(null, 'Do not track location', null);
         }
     };
     $scope.$on('$stateChangeSuccess', function() {
@@ -488,7 +488,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
     };
     $scope.goToStudyPage = function(correlationObject) {qmService.goToStudyPageViaCorrelationObject(correlationObject);};
     $scope.goToStudyPageWithVariableNames = function(causeVariableName, effectVariableName) {
-        qmService.logDebug("Clicked go goToStudyPageWithVariableNames for " + causeVariableName + " and " + effectVariableName);
+        qmLogService.debug(null, 'Clicked go goToStudyPageWithVariableNames for ' + causeVariableName + ' and ' + effectVariableName, null);
         if($rootScope.correlationObject && ($rootScope.correlationObject.causeVariableName !== causeVariableName || $rootScope.correlationObject.effectVariableName !== effectVariableName)){
             $rootScope.correlationObject = null;
         }

@@ -1885,7 +1885,7 @@ gulp.task('configureApp', [], function (callback) {
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
     if(!appSettings.appStatus.buildEnabled.chromeExtension){
         logError("Not building chrome extension because appSettings.appStatus.buildEnabled.chromeExtension is " +
-            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can enabled it at " + getAppDesignerUrl());
+            appSettings.appStatus.buildEnabled.chromeExtension + ".  You can re-enable it at " + getAppDesignerUrl());
         return;
     }
     runSequence(
@@ -2120,6 +2120,42 @@ gulp.task('prepareAndroidApp', function (callback) {
         'copyAndroidResources',
         'copyIconsToWwwImg',
         'reinstallDrawOverAppsPlugin',
+        callback);
+});
+gulp.task('buildAndroidAppWithCleaning', ['getAppConfigs'], function (callback) {
+    /** @namespace appSettings.additionalSettings.monetizationSettings */
+    /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
+    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){
+        logError("Please add your playPublicLicenseKey at " + getAppDesignerUrl());
+        logError("No playPublicLicenseKey so disabling subscriptions on Android build");
+        appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
+        generateDefaultConfigJson(appSettings);
+    }
+    /** @namespace appSettings.appStatus.buildEnabled */
+    /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
+    if(!appSettings.appStatus.buildEnabled.androidRelease){
+        logInfo("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is "
+            + appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
+        return;
+    }
+    runSequence(
+        'prepareRepositoryForAndroid',
+        'copyAndroidLicenses',
+        'bowerInstall',
+        'prepareAndroidApp',
+        'ionicInfo',
+        'checkDrawOverAppsPlugin',
+        'cordovaBuildAndroidRelease',
+        'outputArmv7ApkVersionCode',
+        'outputX86ApkVersionCode',
+        'outputCombinedApkVersionCode',
+        'cordovaBuildAndroidDebug',
+        //'copyAndroidBuild',
+        "upload-x86-release-apk-to-s3",
+        "upload-armv7-release-apk-to-s3",
+        "upload-combined-release-apk-to-s3",
+        "fastlaneSupplyBeta",
+        "post-app-status",
         callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {

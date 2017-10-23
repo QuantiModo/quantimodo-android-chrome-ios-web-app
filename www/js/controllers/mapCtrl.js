@@ -11,7 +11,7 @@ angular.module('starter') // Controls the settings page
 				for (var i = 0; i < results.length; i++) {
 					var place = results[i];
 					//createMarker(results[i]);
-					console.debug("Place is ", place);
+					window.qmLog.debug(null, 'Place is ', null, place);
 				}
 			}
 		}
@@ -51,7 +51,7 @@ angular.module('starter') // Controls the settings page
 
 		}, function(error) {
 			qmService.hideLoader();
-			qmService.logError(error);
+			qmLogService.error(null, error);
 		});
 
 

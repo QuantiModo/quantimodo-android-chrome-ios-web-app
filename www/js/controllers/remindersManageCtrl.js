@@ -1,6 +1,6 @@
-angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  qmService) {
+angular.module('starter').controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter, $ionicActionSheet,  qmService, qmLogService) {
 	$scope.controller_name = "RemindersManageCtrl";
-	qmService.logDebug('Loading ' + $scope.controller_name);
+	qmLogService.debug(null, 'Loading ' + $scope.controller_name, null);
 	$rootScope.showFilterBarSearchIcon = false;
     qmService.sendToLoginIfNecessaryAndComeBack();
 	$scope.state = {
@@ -27,7 +27,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 		noRemindersText: "You don't have any reminders, yet.",
 		noRemindersIcon: "ion-android-notifications-none"
 	};
-	$scope.$on('$ionicView.beforeEnter', function(e) { qmService.logInfo("beforeEnter RemindersManageCtrl");
+	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.info(null, 'beforeEnter RemindersManageCtrl', null);
 		if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
 		qmService.showBasicLoader();
 		$rootScope.hideNavigationMenu = false;
@@ -63,9 +63,9 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			var hideSheet = $ionicActionSheet.show({
 				buttons: actionButtons,
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {qmService.logDebug('CANCELLED');},
+				cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
 				buttonClicked: function(index) {
-					qmService.logDebug('BUTTON CLICKED', index);
+					qmLogService.debug(null, 'BUTTON CLICKED', null, index);
 					if(index === 0){$rootScope.reminderOrderParameter = 'variableName';}
 					if(index === 1){$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';}
 					if(index === 2){qmService.goToState('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});}
@@ -93,18 +93,18 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	function addRemindersToScope(allTrackingReminderTypes) {
 		hideLoader();
 		if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
-			qmService.logInfo("No reminders!");
+			qmLogService.info(null, 'No reminders!', null);
 			$scope.state.showNoRemindersCard = true;
 			return;
 		}
-        qmService.logInfo("Got " + allTrackingReminderTypes.allTrackingReminders.length  + " " + $stateParams.variableCategoryName +
-			" category allTrackingReminderTypes.allTrackingReminders!");
+        qmLogService.info(null, 'Got ' + allTrackingReminderTypes.allTrackingReminders.length + ' ' + $stateParams.variableCategoryName +
+            " category allTrackingReminderTypes.allTrackingReminders!", null);
 		$scope.state.showNoRemindersCard = false;
 		$scope.state.favorites = allTrackingReminderTypes.favorites;
 		$scope.state.trackingReminders = allTrackingReminderTypes.trackingReminders;
         var count = 0;
         if(allTrackingReminderTypes.trackingReminders && allTrackingReminderTypes.trackingReminders.length){count = allTrackingReminderTypes.trackingReminders.length;}
-        qmService.logInfo("Got " + count + " " + $stateParams.variableCategoryName +  " category allTrackingReminderTypes.trackingReminders");
+        qmLogService.info(null, 'Got ' + count + ' ' + $stateParams.variableCategoryName + ' category allTrackingReminderTypes.trackingReminders', null);
 		$scope.state.archivedTrackingReminders = allTrackingReminderTypes.archivedTrackingReminders;
 		showAppropriateHelpInfoCards();
 	}
@@ -117,7 +117,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	};
 	var getTrackingReminders = function(){
 		if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
-		qmService.logInfo("Getting " + $stateParams.variableCategoryName + " category reminders");
+		qmLogService.info(null, 'Getting ' + $stateParams.variableCategoryName + ' category reminders', null);
 		qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function (allTrackingReminderTypes) {
 			addRemindersToScope(allTrackingReminderTypes);
 		});
@@ -134,7 +134,7 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 				{text: 'OK', type: 'button-assertive'}
 			]
 		});
-		moreNotificationInfoPopup.then(function(res) { qmService.logDebug('Tapped!', res); });
+		moreNotificationInfoPopup.then(function(res) { qmLogService.debug(null, 'Tapped!', null, res); });
 	};
 	$scope.edit = function(trackingReminder){
 		trackingReminder.fromState = $state.current.name;
@@ -152,10 +152,10 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 	};
 	$scope.deleteReminder = function(reminder){
 		reminder.hide = true;
-		qmService.deleteElementOfLocalStorageItemById('trackingReminders', reminder.trackingReminderId);
+		qmService.qmStorage.deleteById('trackingReminders', reminder.trackingReminderId);
 			//.then(function(){getTrackingReminders();});
-		qmService.deleteTrackingReminderDeferred(reminder).then(function(){qmService.logDebug("Reminder deleted");}, function(error){
-			qmService.logError('Failed to Delete Reminder: ' + error);
+		qmService.deleteTrackingReminderDeferred(reminder).then(function(){qmLogService.debug(null, 'Reminder deleted', null);}, function(error){
+			qmLogService.error('Failed to Delete Reminder: ' + error);
 		});
 	};
 	$scope.showActionSheet = function(trackingReminder) {
@@ -170,9 +170,9 @@ angular.module('starter').controller('RemindersManageCtrl', function($scope, $st
 			],
 			destructiveText: '<i class="icon ion-trash-a"></i>Delete',
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-			cancel: function() {qmService.logDebug('CANCELLED');},
+			cancel: function() {qmLogService.debug(null, 'CANCELLED', null);},
 			buttonClicked: function(index) {
-				qmService.logDebug('BUTTON CLICKED', index);
+				qmLogService.debug(null, 'BUTTON CLICKED', null, index);
 				if(index === 0){$scope.edit(trackingReminder);}
 				if(index === 1){qmService.goToState('app.measurementAdd', {variableObject: variableObject, variableName: variableObject.name});}
 				if(index === 2){qmService.goToState('app.charts', {variableObject: variableObject, variableName: variableObject.name});}

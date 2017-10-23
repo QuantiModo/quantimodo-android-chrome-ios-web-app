@@ -161,22 +161,22 @@ angular.module('starter')
         return track_factors[value]? track_factors[value] : 0;
     };
 })
-.filter('positiveImageByValue', function(qmService){
+.filter('positiveImageByValue', function(qmService, qmLogService){
     return function(ratingValue){
         return qmService.getPositiveImageByRatingValue(ratingValue);
     };
 })
-.filter('negativeImageByValue', function(qmService){
+.filter('negativeImageByValue', function(qmService, qmLogService){
     return function(ratingValue){
         return qmService.getNegativeImageByRatingValue(ratingValue);
     };
 })
-.filter('numericImageByValue', function(qmService){
+.filter('numericImageByValue', function(qmService, qmLogService){
     return function(ratingValue){
         return qmService.getNumericImageByRatingValue(ratingValue);
     };
 })
-.filter('PrimaryOutcomeVariableByNumber', function(qmService){
+.filter('PrimaryOutcomeVariableByNumber', function(qmService, qmLogService){
     return function(value){
         return qmService.getPrimaryOutcomeVariableByNumber(value);
     };
