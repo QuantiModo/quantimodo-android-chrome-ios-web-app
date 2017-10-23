@@ -1,4 +1,4 @@
-angular.module('starter').controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLog) {
+angular.module('starter').controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService) {
     $scope.controller_name = "VariableSearchCtrl";
     $rootScope.showFilterBarSearchIcon = false;
     $scope.state = $stateParams;
@@ -9,7 +9,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     if(!$scope.state.title) {$scope.state.title = "Select Variable";}
     if(!$scope.state.variableSearchPlaceholderText) {$scope.state.variableSearchPlaceholderText = "Search for a variable here...";}
     $scope.$on('$ionicView.beforeEnter', function(e) {
-        qmLog.debug($state.current.name + " beforeEnter...");
+        qmLogService.debug(null, $state.current.name + ' beforeEnter...', null);
         $rootScope.hideNavigationMenu = false;
         if(qmService.getUrlParameter('variableCategoryName')){
             $scope.state.variableSearchParameters.variableCategoryName = qmService.getUrlParameter('variableCategoryName');
@@ -22,7 +22,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         setHelpText();
     });
     $scope.$on('$ionicView.enter', function(e) {
-        qmLog.debug($state.current.name + " enter...");
+        qmLogService.debug(null, $state.current.name + ' enter...', null);
         // We always need to repopulate in case variable was updated in local storage and the search view was cached
         populateUserVariables();
         populateCommonVariables();
@@ -30,9 +30,9 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         qmService.hideLoader();
     });
     $scope.selectVariable = function(variableObject) {
-        qmLog.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject).substring(0, 140) + '...');
-        if(variableObject.lastValue !== null){qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('userVariables', variableObject);}
-        qmService.addToOrReplaceElementOfLocalStorageItemByIdOrMoveToFront('commonVariables', variableObject);
+        qmLogService.debug(null, $state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
+        if(variableObject.lastValue !== null){qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', variableObject);}
+        qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('commonVariables', variableObject);
         var userTagData;
         if($state.current.name === 'app.favoriteSearch') {
             qmService.addToFavoritesUsingVariableObject(variableObject);
@@ -101,7 +101,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
         // If no results or no exact match, show "+ Add [variable]" button for query
         if ((variables.length < 1 || !found)) {
             $scope.showSearchLoader = false;
-            qmLog.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
+            qmLogService.debug(null, $state.current.name + ': ' + '$scope.onVariableSearch: Set showAddVariableButton to true', null);
             $scope.state.showAddVariableButton = true;
             if ($scope.state.nextState === "app.reminderAdd") {
                 $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
@@ -128,7 +128,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     $scope.onVariableSearch = function(){
         $scope.state.noVariablesFoundCard.show = false;
         $scope.state.showAddVariableButton = false;
-        qmLog.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
+        qmLogService.debug(null, $state.current.name + ': ' + 'Search term: ', null, $scope.state.variableSearchQuery.name);
         if($scope.state.variableSearchQuery.name.length > 2){
             $scope.state.searching = true;
             qmService.searchUserVariablesDeferred($scope.state.variableSearchQuery.name, $scope.state.variableSearchParameters)
@@ -136,7 +136,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.noVariablesFoundCard.show = false;
                     $scope.state.showAddVariableButton = false;
                     $scope.state.variableSearchResults = variables;
-                    qmLog.debug("variable search results", variables);
+                    qmLogService.debug(null, 'variable search results', null, variables);
                     $scope.state.searching = false;
                     showAddVariableButtonIfNecessary(variables);
                     showNoVariablesFoundCardIfNecessary();
@@ -158,7 +158,7 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                     $scope.state.searching = false;
                 }
             }
-        }, function (error) {qmLog.error(error);});
+        }, function (error) {qmLogService.error(null, error);});
     };
     var populateUserVariables = function(){
         if($scope.state.variableSearchQuery.name.length > 2){return;}
@@ -182,13 +182,13 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
                 }
                 if($scope.state.variableSearchResults.length < 1 && $scope.state.variableSearchParameters.includePublic){populateCommonVariables();}
             }
-        }, function (error) {qmLog.error(error);});
+        }, function (error) {qmLogService.error(null, error);});
     };
     $scope.addNewVariable = function(){
         var variableObject = {};
         variableObject.name = $scope.state.variableSearchQuery.name;
         if($scope.state.variableSearchParameters.variableCategoryName && $scope.state.variableSearchParameters.variableCategoryName !== 'Anything'){variableObject.variableCategoryName = $scope.state.variableSearchParameters.variableCategoryName;}
-        qmLog.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
+        qmLogService.debug(null, $state.current.name + ': ' + '$scope.addNewVariable: ' + JSON.stringify(variableObject), null);
         if ($scope.state.nextState) {
             $scope.state.variableObject = variableObject;
             qmService.goToState($scope.state.nextState, $scope.state);
@@ -228,8 +228,8 @@ angular.module('starter').controller('VariableSearchCtrl', function($scope, $sta
     var checkNameExists = function (item) {
         if(!item.name){
             var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-            qmLog.error(message);
-            qmLog.error(message);
+            qmLogService.error(null, message);
+            qmLogService.error(null, message);
             return false;
         }
         return true;

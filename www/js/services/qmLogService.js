@@ -1,4 +1,5 @@
-angular.module('starter').factory('qmLog', function($state, $q, $rootScope) {
+/** @namespace window.qmLog */
+angular.module('starter').factory('qmLogService', function($state, $q, $rootScope) {
     // A separate logger file allows us to use "black-boxing" in the Chrome dev console to preserve actual file line numbers
     // BLACK BOX THESE
     // \.min\.js$ — for all minified sources
@@ -9,11 +10,7 @@ angular.module('starter').factory('qmLog', function($state, $q, $rootScope) {
     //     ~ — home for dependencies in Webpack bundle
     // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
     // \(webpack\)-hot-middleware — HMR
-    var qmLog = {};
-    function stringifyIfNecessary(variable){
-        if(!variable || typeof message === "string"){return variable;}
-        return JSON.stringify(variable);
-    }
+    var qmLogService = {};
     function addStateNameToMessage(message) {
         if($state.current.name){message = message + " in state " + $state.current.name;}
         Bugsnag.context = $state.current.name;
@@ -33,7 +30,7 @@ angular.module('starter').factory('qmLog', function($state, $q, $rootScope) {
         if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
         return env;
     }
-    qmLog.setupBugsnag = function(){
+    qmLogService.setupBugsnag = function(){
         var deferred = $q.defer();
         if (typeof Bugsnag !== "undefined") {
             //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
@@ -49,39 +46,44 @@ angular.module('starter').factory('qmLog', function($state, $q, $rootScope) {
         } else {deferred.reject('Bugsnag is not defined');}
         return deferred.promise;
     };
-    qmLog.getDebugMode = function() {
-        if(getUrlParameter('debug') || getUrlParameter('debugMode') || (typeof appSettings !== "undefined" && isTruthy(appSettings.debugMode))){
-            qmLog.debugMode = true;
-            window.debugMode = true;
-        }
-        return window.debugMode || qmLog.debugMode;
-    };
-    qmLog.debug = function(message, stackTrace) {
+    qmLogService.debug = function (name, message, metaData, stackTrace) {
+        message = message || name;
+        name = name || message;
+        metaData = metaData || null;
         message = addStateNameToMessage(message);
-        logDebug(message, stackTrace);
+        qmLog.debug(name, message, metaData, stackTrace);
     };
-    qmLog.info = function(message, stackTrace) {
+    qmLogService.info = function (name, message, metaData, stackTrace) {
+        message = message || name;
+        name = name || message;
+        metaData = metaData || null;
         message = addStateNameToMessage(message);
-        logInfo(message, stackTrace);
+        qmLog.info(name, message, metaData, stackTrace);
     };
-    qmLog.errorOrInfoIfTesting = function(message, additionalMetaData, stackTrace) {
+    qmLogService.errorOrInfoIfTesting = function (name, message, metaData, stackTrace) {
+        message = message || name;
+        name = name || message;
+        metaData = metaData || null;
         if(envIsTesting()){
-            qmLog.info(message, stackTrace)
+            qmLogService.info(name, message, metaData, stackTrace);
         } else {
-            qmLog.error(message, additionalMetaData, stackTrace);
+            qmLogService.error(name, message, metaData, stackTrace);
         }
     };
-    qmLog.error = function(message, additionalMetaData, stackTrace){
+    qmLogService.error = function (name, message, metaData, stackTrace){
+        message = message || name;
+        name = name || message;
+        metaData = metaData || null;
         if(message && message.message){message = message.message;}
-        message = stringifyIfNecessary(message);
+        message = window.stringifyIfNecessary(message);
         message = addStateNameToMessage(message);
-        window.logError(message, additionalMetaData, stackTrace);
+        window.qmLog.error(name, message, metaData, stackTrace);
     };
-    qmLog.exception = function(exception, name, metaData){
-        qmLog.error('ERROR: ' + exception.message);
-        qmLog.setupBugsnag().then(function () {
+    qmLogService.exception = function(exception, name, metaData){
+        qmLogService.error('ERROR: ' + exception.message);
+        qmLogService.setupBugsnag().then(function () {
             Bugsnag.notifyException(exception, name, metaData);
-        }, function (error) {qmLog.error(error);});
+        }, function (error) {qmLogService.error(error);});
     };
-    return qmLog;
+    return qmLogService;
 });

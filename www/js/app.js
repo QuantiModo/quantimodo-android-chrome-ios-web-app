@@ -1,5 +1,6 @@
 // Database
 //var db = null;
+/** @namespace window.qmLog */
 angular.module('starter',
     [
         'ionic',
@@ -31,7 +32,7 @@ angular.module('starter',
         //'ui-iconpicker'
     ]
 )
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLog) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, qmService, qmLogService) {
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();
@@ -42,7 +43,7 @@ angular.module('starter',
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 errorMsg = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-                qmLog.error(errorMsg);
+                qmLogService.error(null, errorMsg);
             };
         }
         qmService.configurePushNotifications();
@@ -80,11 +81,11 @@ angular.module('starter',
         }
         if(localStorage.user){
             $rootScope.hideNavigationMenu = false;
-            console.debug('registerBackButtonAction: Going to default state...');
+            window.qmLog.debug(null, 'registerBackButtonAction: Going to default state...', null);
             qmService.goToState(config.appSettings.appDesign.defaultState);
             return;
         }
-        console.debug('registerBackButtonAction: Closing the app');
+        window.qmLog.debug(null, 'registerBackButtonAction: Closing the app', null);
         ionic.Platform.exitApp();
     }, 100);
 
@@ -146,7 +147,7 @@ angular.module('starter',
                 settingsUrl = appsManager.getQuantiModoApiUrl() + '/api/v1/appSettings?clientId=' + clientId;
                 if(window.designMode){settingsUrl += '&designMode=true';}
             }
-            console.debug("Getting app settings from " + settingsUrl);
+            window.qmLog.debug(null, 'Getting app settings from ' + settingsUrl, null);
             return $http({method: 'GET', url: settingsUrl});
         }
     };

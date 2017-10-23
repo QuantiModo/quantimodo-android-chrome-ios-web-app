@@ -1,5 +1,5 @@
 angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
-													  $rootScope, qmService, qmLog) {
+													  $rootScope, qmService, qmLogService) {
 	$scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 	$scope.state = {history : []};
 	$scope.syncDisplayText = 'Syncing ' + qmService.getPrimaryOutcomeVariable().name + ' measurements...';
@@ -19,11 +19,11 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 	};
 	$scope.$on('$ionicView.beforeEnter', function(){
 		$rootScope.hideNavigationMenu = false;
-		qmLog.debug('HistoryPrimaryOutcomeCtrl beforeEnter...');
+		qmLogService.debug(null, 'HistoryPrimaryOutcomeCtrl beforeEnter...', null);
 		$scope.refreshMeasurementHistory();
 	});
 	$scope.$on('updatePrimaryOutcomeHistory', function(){
-		qmLog.debug($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
+		qmLogService.debug(null, $state.current.name + ': ' + 'updatePrimaryOutcomeHistory broadcast received..', null);
 		$scope.history = qmService.getLocalPrimaryOutcomeMeasurements();
 	});
 	$scope.showActionSheet = function(measurement) {
@@ -41,9 +41,9 @@ angular.module('starter').controller('HistoryPrimaryOutcomeCtrl', function($scop
 				qmService.actionSheetButtons.analysisSettings
 			],
 			cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-			cancel: function() {qmLog.debug($state.current.name + ": " + 'CANCELLED');},
+			cancel: function() {qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);},
 			buttonClicked: function(index) {
-				qmLog.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
+				qmLogService.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
 				if(index === 0){$scope.editMeasurement($rootScope.variableObject);}
 				if(index === 1){qmService.goToState('app.reminderAdd', {variableObject: $rootScope.variableObject, fromState: $state.current.name, fromUrl: window.location.href});}
 				if(index === 2) {qmService.goToState('app.track');}

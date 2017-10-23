@@ -1,5 +1,5 @@
 function clearNotifications() {
-    if(typeof chrome === "undefined"){ window.logDebug("Can't clearNotifications because chrome is undefined"); return;}
+    if(typeof chrome === "undefined"){ window.qmLog.debug(null, 'Can\'t clearNotifications because chrome is undefined', null, null); return;}
     var badgeParams = {text: ""};
     chrome.browserAction.setBadgeText(badgeParams);
     chrome.notifications.clear("moodReportNotification", function() {});
@@ -20,15 +20,15 @@ function valenceNegative() {
     if(window.trackingReminderNotification.valence === "negative"){return true;}
 }
 var inboxButtonClicked = function() {
-    window.logInfo("inboxButtonClicked");
+    window.qmLog.info(null, 'inboxButtonClicked', null);
     if(typeof OverApps !== "undefined"){
-        window.logInfo("Calling  OverApps.openApp");
+        window.qmLog.info(null, 'Calling  OverApps.openApp', null);
         //OverApps.openApp();
         //OverApps.closeWebView();
         OverApps.closeWebView();
         OverApps.openApp();
     } else {
-        window.logInfo("OverApps not defined");
+        window.qmLog.info(null, 'OverApps not defined', null);
         reminderInboxPopupWindowParams.focused = true;
         openOrFocusChromePopupWindow(reminderInboxPopupWindowParams);
     }
@@ -46,7 +46,7 @@ var onFaceButtonClicked = function() {
         window.trackingReminderNotification.modifiedValue = ratingValue;
         if(!window.notificationsSyncQueue){window.notificationsSyncQueue = [];}
         window.notificationsSyncQueue.push(window.trackingReminderNotification);
-        window.trackingReminderNotification = window.getMostRecentRatingNotificationFromLocalStorage();
+        window.trackingReminderNotification = window.qmStorage.getMostRecentRatingNotification();
         if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
@@ -79,7 +79,7 @@ function showLoader() {
         document.getElementsByTagName("body")[0].style.width = "0px";
         document.getElementsByTagName("body")[0].style.height = "0px";
     } else {
-        window.logInfo("document.getElementsByTagName(body)[0] does not exist")
+        window.qmLog.info(null, 'document.getElementsByTagName(body)[0] does not exist', null)
     }
     sectionRate.className = "invisible";
     sectionRate.style.display = "none";
@@ -127,14 +127,14 @@ function closePopup() {
 }
 function updateQuestion(variableName) {
     var questionText = "How is your " + variableName.toLowerCase() + "?";
-    window.logInfo("Updating question to " + questionText);
+    window.qmLog.info(null, 'Updating question to ' + questionText, null);
     document.getElementById("question").innerHTML = questionText;
     document.title = questionText;
     if(isChromeExtension()){
-        window.logInfo("Setting question display to none ");
+        window.qmLog.info(null, 'Setting question display to none ', null);
         document.getElementById("question").style.display = "none";
     } else {
-        window.logInfo("NOT setting question display to none because not on Chrome");
+        window.qmLog.info(null, 'NOT setting question display to none because not on Chrome', null);
     }
 }
 document.addEventListener('DOMContentLoaded', function() {
