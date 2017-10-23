@@ -91,8 +91,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
         qmLogService.debug(null, 'RemindersInboxCtrl afterEnter', null);
-        var secondsSinceWeLastGotNotifications = qmService.getSecondsSinceWeLastGotNotifications();
-        if(!$rootScope.numberOfPendingNotifications || secondsSinceWeLastGotNotifications > 600){$scope.refreshTrackingReminderNotifications();}
+        if(!$rootScope.numberOfPendingNotifications){$scope.refreshTrackingReminderNotifications(600);}
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);
@@ -320,9 +319,9 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		$scope.loading = true;
 		$timeout(function() {if($scope.loading) {$scope.loading = false;}}, 10000);
 	};
-	$scope.refreshTrackingReminderNotifications = function () {
+	$scope.refreshTrackingReminderNotifications = function (minimumSecondsBetweenRequests) {
 		showLoader();
-		qmService.refreshTrackingReminderNotifications().then(function(){
+		qmService.refreshTrackingReminderNotifications(minimumSecondsBetweenRequests).then(function(){
             hideInboxLoader();
 			getTrackingReminderNotifications();
 		}, function (error) {

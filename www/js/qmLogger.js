@@ -9,10 +9,24 @@
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {};
+var logMetaData = false;
+if(!window.qmUser){
+    window.qmUser = localStorage.getItem('user');
+    if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
+}
 qmLog.mobileDebug = false;
 qmLog.loglevel = null;
 window.isTruthy = function(value){return value && value !== "false"; };
-window.qmLog.getLogLevel = function() {
+window.stringifyIfNecessary = function(variable){
+    if(!variable || typeof message === "string"){return variable;}
+    try {
+        return JSON.stringify(variable);
+    } catch (error) {
+        console.error("Could not stringify", variable);
+        return "Could not stringify";
+    }
+};
+window.qmLog.getLogLevelName = function() {
     if(qmLog.loglevel){return qmLog.loglevel;}
     if(getUrlParameter('debug') || getUrlParameter('debugMode')){
         qmLog.loglevel = "debug";
@@ -24,8 +38,8 @@ window.qmLog.getLogLevel = function() {
     }
     return "error";
 };
-window.qmLog.getDebugMode = function() {return qmLog.getLogLevel() === "debug";};
-function getStackTrace() {
+window.qmLog.getDebugMode = function() {return qmLog.getLogLevelName() === "debug";};
+window.qmLog.getStackTrace = function() {
     var err = new Error();
     var stackTrace = err.stack;
     stackTrace = stackTrace.substring(stackTrace.indexOf('getStackTrace')).replace('getStackTrace', '');
@@ -39,11 +53,11 @@ function getStackTrace() {
 }
 function addStackTraceToMessage(message, stackTrace) {
     if(message.toLowerCase().indexOf('stacktrace') !== -1){return message;}
-    if(!stackTrace){stackTrace = getStackTrace();}
+    if(!stackTrace){stackTrace = qmLog.getStackTrace();}
     return message + ".  StackTrace: " + stackTrace;
 }
 function getCalleeFunction() {
-    return arguments.callee.caller.caller;
+    return arguments.callee.caller.caller.caller.caller;
 }
 function getCalleeFunctionName() {
     if(getCalleeFunction() && getCalleeFunction().name && getCalleeFunction().name !== ""){
@@ -74,15 +88,24 @@ function addCallerFunctionToMessage(message) {
     return message;
 }
 function addGlobalMetaDataAndLog(name, message, metaData, stacktrace) {
+    var i = 0;
     metaData = addGlobalMetaData(name, message, metaData, stacktrace);
+    if (!logMetaData){return metaData;}
     for (var propertyName in metaData) {
         if (metaData.hasOwnProperty(propertyName)) {
-            console.log(propertyName + ": " + metaData[propertyName]);
+            if(metaData[propertyName]){
+                i++;
+                console.log(propertyName + ": " + window.stringifyIfNecessary(metaData[propertyName]));
+                if(i > 10){
+                    break;
+                }
+            }
         }
     }
     return metaData;
 }
 function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
+    metaData = metaData || {};
     function obfuscateSecrets(object){
         if(typeof object !== 'object'){return object;}
         try {
@@ -110,7 +133,7 @@ function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
             return parts[1];
         }
         var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
-        if(getUser()){url +=  "?userEmail=" + encodeURIComponent(getUser().email);}
+        if(window.qmUser){url +=  "?userEmail=" + encodeURIComponent(window.qmUser.email);}
         return url;
     }
     function cordovaPluginsAvailable() {
@@ -146,7 +169,7 @@ function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
     if (stackTrace) {
         metaData.stackTrace = stackTrace;
     } else {
-        metaData.stackTrace = getStackTrace();
+        metaData.stackTrace = qmLog.getStackTrace();
     }
     if(metaData.apiResponse){
         var request = metaData.apiResponse.req;
@@ -159,18 +182,17 @@ function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
     }
     //metaData.appSettings = config.appSettings;  // Request Entity Too Large
     //if(metaData){metaData.additionalInfo = metaData;}
-    //if(getUser()){metaData.user = getUser();} // Request Entity Too Large
+    //if(window.qmUser){metaData.user = window.qmUser;} // Request Entity Too Large
     metaData = obfuscateSecrets(metaData);
     return metaData;
 }
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
-    if(typeof Bugsnag === "undefined"){ window.qmLog.debug(null, 'Bugsnag not defined', null); return; }
+    if(typeof Bugsnag === "undefined"){ console.error('Bugsnag not defined'); return; }
     metaData = addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
-    Bugsnag.notify(name, message, obfuscateSecrets(metaData), logLevel);
+    Bugsnag.notify(name, message, metaData, logLevel);
 }
-window.qmLog.loglevel = "error";
 window.qmLog.shouldWeLog = function(providedLogLevelName) {
-    var globalLogLevelValue = logLevels[window.qmLog.loglevel];
+    var globalLogLevelValue = logLevels[qmLog.getLogLevelName()];
     var providedLogLevelValue = logLevels[providedLogLevelName];
     return globalLogLevelValue >= providedLogLevelValue;
 };
@@ -179,31 +201,42 @@ var logLevels = {
   "info": 2,
   "debug": 3
 };
+function getConsoleLogString(name, message, metaData, stackTrace){
+    var logString = name;
+    if(logString !== message){logString = logString + ": " + message;}
+    logString = addCallerFunctionToMessage(logString);
+    if(stackTrace){logString = logString + ". stackTrace: " + stackTrace;}
+    if(metaData){logString = logString + ". metaData: " + metaData;}
+    return logString;
+}
 window.qmLog.debug = function (name, message, metaData, stackTrace) {
     message = message || name;
     name = name || message;
     metaData = metaData || null;
     if(!qmLog.shouldWeLog("debug")){return;}
     message = addCallerFunctionToMessage(message);
-    console.debug(message);
-    addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
+    var logString = name;
+    if(logString !== message){logString = logString + ": " + message;}
+    if(stackTrace){logString = logString + ". stackTrace: " + stackTrace;}
+    console.debug("DEBUG: " + getConsoleLogString(name, message, metaData, stackTrace));
+    //metaData = addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
+    //bugsnagNotify(name, message, metaData, "debug", stackTrace);
 };
 window.qmLog.info = function (name, message, metaData, stackTrace) {
     name = name || message;
     metaData = metaData || null;
     if(!qmLog.shouldWeLog("info")){return;}
     message = addCallerFunctionToMessage(message);
-    console.info(message);
-    metaData = addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
-    bugsnagNotify(name, message, metaData, "info", stackTrace);
+    console.info("INFO: " + getConsoleLogString(name, message, metaData, stackTrace));
+    //metaData = addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
+    //bugsnagNotify(name, message, metaData, "info", stackTrace);
 };
 window.qmLog.error = function (name, message, metaData, stackTrace) {
     if(!qmLog.shouldWeLog("error")){return;}
     message = message || name;
     name = name || message;
     if(message && message.message){message = message.message;}
-    message = addCallerFunctionToMessage(message);
-    console.error(message);
+    console.error("ERROR: " + getConsoleLogString(name, message, metaData, stackTrace));
     metaData = addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     bugsnagNotify(name, message, metaData, "error", stackTrace);
     if(window.qmLog.mobileDebug){alert(name + ": " + message);}

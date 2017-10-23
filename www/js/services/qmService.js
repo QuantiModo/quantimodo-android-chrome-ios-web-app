@@ -590,6 +590,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
     };
     qmService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
+        qmLogService.debug("getTrackingReminderNotificationsFromApi", null, params, qmLog.qmLog.getStackTrace());
         configureQmApiClient();
         var apiInstance = new Quantimodo.RemindersApi();
         function callback(error, data, response) {
@@ -743,7 +744,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if($rootScope.isAndroid){platform = 'android';}
         if($rootScope.isIOS){platform = 'ios';}
         if($rootScope.isWindows){platform = 'windows';}
-        var params = {platform: platform, deviceToken: deviceToken, clientId: qmService.getClientId(), stacktrace: getStackTrace()};
+        var params = {platform: platform, deviceToken: deviceToken, clientId: qmService.getClientId(), stacktrace: qmLog.getStackTrace()};
         qmService.post('api/v3/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
     };
     qmService.deleteDeviceTokenFromServer = function(successHandler, errorHandler) {
@@ -831,7 +832,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
     }
     qmService.goToState = function(to, params, options){
-        qmLogService.debug(null, 'Called goToState: ' + to, null, getStackTrace());
+        qmLogService.debug(null, 'Called goToState: ' + to, null, qmLog.getStackTrace());
         $state.go(to, params, options);
     };
     qmService.setUser = function(user){
@@ -958,7 +959,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(response.status === 401){
             if(!options || !options.doNotSendToLogin){setAfterLoginGoToUrlAndSendToLogin();}
         } else {
-            qmLogService.error(error, {apiResponse: response});
+            qmLogService.error(response.error.message, null, {apiResponse: response});
         }
     }
     qmService.getMeasurements = function(params, successHandler, errorHandler){
@@ -1253,7 +1254,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmService.getUserVariablesFromLocalStorageOrApiDeferred();
     };
     qmService.refreshUser = function(){
-        var stackTrace = getStackTrace();
+        var stackTrace = qmLog.getStackTrace();
         var deferred = $q.defer();
         if(qmService.getUrlParameter('logout')){
             qmLogService.debug(null, 'Not refreshing user because we have a logout parameter', null);
@@ -1374,7 +1375,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.getStudyDeferred = function (params){
         var deferred = $q.defer();
         if(qmService.getUrlParameter('aggregated')){params.aggregated = true;}
-        qmLogService.debug(null, 'qmService.getStudy params: ' + prettyJsonStringify(params), null, getStackTrace());
+        qmLogService.debug(null, 'qmService.getStudy params: ' + prettyJsonStringify(params), null, qmLog.getStackTrace());
         qmService.getStudy(params, function (response) {
             qmLogService.debug(null, 'qmService.getStudy response: ' + prettyJsonStringify(response), null);
             var study;
@@ -1898,10 +1899,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.refreshConnectors = function(){
-        var stackTrace = getStackTrace();
+        var stackTrace = qmLog.getStackTrace();
         if(window.qmLog.getDebugMode()){qmLogService.debug(null, 'Called refresh connectors: ' + stackTrace, null);}
         var deferred = $q.defer();
-        qmService.getConnectorsFromApi({stackTrace: getStackTrace()}, function(response){
+        qmService.getConnectorsFromApi({stackTrace: qmLog.getStackTrace()}, function(response){
             qmService.qmStorage.setItem('connectors', JSON.stringify(response.connectors));
             var connectors = hideBrokenConnectors(response.connectors);
             deferred.resolve(connectors);
@@ -2189,11 +2190,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function (trackingReminderNotifications) {
         qmService.qmStorage.setItem('lastGotNotificationsAtMilliseconds', window.getUnixTimestampInMilliseconds());
         trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
-        qmService.qmStorage.setItem('trackingReminderNotifications',
-            JSON.stringify(trackingReminderNotifications)).then(function () {
-            $rootScope.$broadcast('qmStorage.getTrackingReminderNotifications');
-            //qmLogService.debug('Just put ' + trackingReminderNotifications.length + ' trackingReminderNotifications in local storage');
-        });
+        qmStorage.setTrackingReminderNotifications(trackingReminderNotifications);
+        $rootScope.$broadcast('qmStorage.getTrackingReminderNotifications');
         $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
         return trackingReminderNotifications;
     };
@@ -2205,7 +2203,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.postTrackingReminderNotificationsDeferred = function(successHandler, errorHandler){
         var deferred = $q.defer();
         var trackingReminderNotificationsArray = qmStorage.getAsObject('notificationsSyncQueue');
-        qmLogService.info(null, 'postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray), null);
+        qmLogService.info('postTrackingReminderNotificationsDeferred trackingReminderNotificationsArray: ' + JSON.stringify(trackingReminderNotificationsArray), null);
         qmStorage.removeItem('notificationsSyncQueue');
         if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
             if(successHandler){successHandler();}
@@ -2336,7 +2334,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             options.minimumSecondsBetweenRequests = minimumSecondsBetweenRequests;
             options.blockRequests = true;
         }
-        if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', options)){
+        if(!canWeMakeRequestYet('GET', apiPaths.trackingReminderNotificationsPast, options)){
             deferred.reject('Already called refreshTrackingReminderNotifications within last ' + options.minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
             return deferred.promise;
         }
@@ -2493,7 +2491,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var deferred = $q.defer();
         var trackingReminderSyncQueue = qmStorage.getAsObject('trackingReminderSyncQueue');
         if(trackingReminderSyncQueue && trackingReminderSyncQueue.length){
-            qmLogService.info(null, 'syncTrackingReminders: Sync queue NOT empty so posting notifications', null);
+            qmLogService.info('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ' + JSON.stringify(trackingReminderSyncQueue), null, trackingReminderSyncQueue);
             var postTrackingRemindersToApiAndHandleResponse = function(){
                 qmService.postTrackingRemindersToApi(trackingReminderSyncQueue, function(response){
                     qmLogService.info(null, 'postTrackingRemindersToApi response: ' + JSON.stringify(response), null);
@@ -2515,7 +2513,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         } else {
                             // Don't update inbox because it might add notifications that we have already tracked since the API returned these ones
                             //putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data.trackingReminderNotifications);
-                            qmService.qmStorage.setItem('trackingReminderNotifications',  JSON.stringify(response.data.trackingReminderNotifications));
+                            var notifications = response.data.trackingReminderNotifications;
+                            var notificationExists = false;
+                            for (var i = 0; i < notifications.length; i++){
+                                if(notifications[i].variableName === trackingReminderSyncQueue[0].variableName){
+                                    notificationExists = true;
+                                    break;
+                                }
+                            }
+                            if(!notificationExists){
+                                qmLogService.error("Notification not found for reminder we just created!", null, {'reminder': trackingReminderSyncQueue[0]});
+                            }
+                            qmStorage.setTrackingReminderNotifications(notifications);
                         }
                     } else {
                         qmLogService.error("No postTrackingRemindersToApi response.data!")
@@ -2530,7 +2539,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 deferred.reject(error);
             });
         } else {
-            qmLogService.info(null, 'syncTrackingReminders: Sync queue empty so just fetching from API', null);
+            qmLogService.info(null, 'syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
             qmService.getTrackingRemindersFromApi({force: force}, function(trackingReminders){
                 qmService.scheduleSingleMostFrequentLocalNotification(trackingReminders);
                 qmService.qmStorage.setItem('trackingReminders', JSON.stringify(trackingReminders));
@@ -6462,9 +6471,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function sendToLogin() {
         if(getUrlParameter('access_token')){
             if(!qmService.getAccessTokenFromCurrentUrl()){
-                qmLogService.error("Not detecting snake case access_token", {}, getStackTrace());
+                qmLogService.error("Not detecting snake case access_token", {}, qmLog.getStackTrace());
             }
-            qmLogService.error("Why are we sending to login if we have an access token?", {}, getStackTrace());
+            qmLogService.error("Why are we sending to login if we have an access token?", {}, qmLog.getStackTrace());
             return;
         }
         qmLogService.debug(null, 'Sending to app.login', null);
@@ -6660,7 +6669,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return planFeatureCards;
     };
     qmService.showBasicLoader = function(){
-        qmLogService.debug(null, 'Called showBasicLoader in ' + $state.current.name, null, getStackTrace());
+        qmLogService.debug(null, 'Called showBasicLoader in ' + $state.current.name, null, qmLog.getStackTrace());
         $ionicLoading.show({duration: 10000});
     };
     qmService.showBlackRingLoader = function(){
@@ -6669,11 +6678,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         } else {
             $ionicLoading.show({templateUrl: "templates/loaders/ring-loader.html", duration: 10000});
         }
-        qmLogService.debug(null, 'Called showBlackRingLoader in ' + $state.current.name, null, getStackTrace());
+        qmLogService.debug(null, 'Called showBlackRingLoader in ' + $state.current.name, null, qmLog.getStackTrace());
     };
     qmService.hideLoader = function(delay){
         if(getUrlParameter('loaderDebug')){
-            qmLogService.debug(null, 'Called hideLoader in ' + $state.current.name, null, getStackTrace());
+            qmLogService.debug(null, 'Called hideLoader in ' + $state.current.name, null, qmLog.getStackTrace());
         }
         if(delay){
             $timeout(function() { $ionicLoading.hide(); }, delay * 1000);
@@ -6694,8 +6703,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             $rootScope.refreshUser = false;
         }
         if(!$rootScope.user){
-            $rootScope.user = JSON.parse(qmStorage.getAsString('user'));
-            if($rootScope.user){qmLogService.debug(null, 'Got user from local storage', null);}
+            $rootScope.user = window.qmUser;
+            if($rootScope.user){qmLogService.debug('Got $rootScope.user', null, $rootScope.user);}
         }
         qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
         if($rootScope.user){
@@ -6942,8 +6951,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //window.config.appSettings.appDesign.menu = qmService.convertHrefInAllMenus(window.config.appSettings.appDesign.menu);  // Should be done on server
         //window.config.appSettings.appDesign.floatingActionButton = qmService.convertHrefInFab(window.config.appSettings.appDesign.floatingActionButton);
         $rootScope.appSettings = window.config.appSettings;
-        qmLogService.debug(null, 'appSettings.clientId is ' + $rootScope.appSettings.clientId, null);
-        if(window.qmLog.getDebugMode()){qmLogService.debug(null, '$rootScope.appSettings: ' + JSON.stringify($rootScope.appSettings), null);}
+        qmLogService.debug('appSettings.clientId is ' + $rootScope.appSettings.clientId);
+        qmLogService.debug('$rootScope.appSettings: ', null, $rootScope.appSettings);
         if(!$rootScope.appSettings.appDesign.ionNavBarClass){ $rootScope.appSettings.appDesign.ionNavBarClass = "bar-positive"; }
         changeFavicon();
     };

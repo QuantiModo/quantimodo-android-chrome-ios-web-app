@@ -1,3 +1,4 @@
+/** @namespace window.qmLog */
 angular.module('starter').factory('qmLogService', function($state, $q, $rootScope) {
     // A separate logger file allows us to use "black-boxing" in the Chrome dev console to preserve actual file line numbers
     // BLACK BOX THESE
@@ -10,10 +11,6 @@ angular.module('starter').factory('qmLogService', function($state, $q, $rootScop
     // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
     // \(webpack\)-hot-middleware — HMR
     var qmLogService = {};
-    function stringifyIfNecessary(variable){
-        if(!variable || typeof message === "string"){return variable;}
-        return JSON.stringify(variable);
-    }
     function addStateNameToMessage(message) {
         if($state.current.name){message = message + " in state " + $state.current.name;}
         Bugsnag.context = $state.current.name;
@@ -49,7 +46,6 @@ angular.module('starter').factory('qmLogService', function($state, $q, $rootScop
         } else {deferred.reject('Bugsnag is not defined');}
         return deferred.promise;
     };
-
     qmLogService.debug = function (name, message, metaData, stackTrace) {
         message = message || name;
         name = name || message;
@@ -79,7 +75,7 @@ angular.module('starter').factory('qmLogService', function($state, $q, $rootScop
         name = name || message;
         metaData = metaData || null;
         if(message && message.message){message = message.message;}
-        message = stringifyIfNecessary(message);
+        message = window.stringifyIfNecessary(message);
         message = addStateNameToMessage(message);
         window.qmLog.error(name, message, metaData, stackTrace);
     };
