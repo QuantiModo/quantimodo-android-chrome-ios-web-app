@@ -87,9 +87,9 @@ function addCallerFunctionToMessage(message) {
     if(getCallerFunctionName()){message = "Caller " + getCallerFunctionName() + " called " + message;}
     return message;
 }
-function addGlobalMetaDataAndLog(name, message, metaData, stacktrace) {
+qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
     var i = 0;
-    metaData = addGlobalMetaData(name, message, metaData, stacktrace);
+    metaData = qmLog.addGlobalMetaData(name, message, metaData, stacktrace);
     if (!logMetaData){return metaData;}
     for (var propertyName in metaData) {
         if (metaData.hasOwnProperty(propertyName)) {
@@ -104,7 +104,7 @@ function addGlobalMetaDataAndLog(name, message, metaData, stacktrace) {
     }
     return metaData;
 }
-function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
+window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, stackTrace) {
     metaData = metaData || {};
     function obfuscateSecrets(object){
         if(typeof object !== 'object'){return object;}
@@ -190,7 +190,7 @@ function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
 }
 function bugsnagNotify(name, message, metaData, logLevel, stackTrace){
     if(typeof Bugsnag === "undefined"){ console.error('Bugsnag not defined'); return; }
-    metaData = addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
+    metaData = qmLog.addGlobalMetaData(name, message, metaData, logLevel, stackTrace);
     Bugsnag.notify(name, message, metaData, logLevel);
 }
 window.qmLog.shouldWeLog = function(providedLogLevelName) {
@@ -221,7 +221,7 @@ window.qmLog.debug = function (name, message, metaData, stackTrace) {
     if(logString !== message){logString = logString + ": " + message;}
     if(stackTrace){logString = logString + ". stackTrace: " + stackTrace;}
     console.debug("DEBUG: " + getConsoleLogString(name, message, metaData, stackTrace));
-    //metaData = addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
+    //metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     //bugsnagNotify(name, message, metaData, "debug", stackTrace);
 };
 window.qmLog.info = function (name, message, metaData, stackTrace) {
@@ -230,7 +230,7 @@ window.qmLog.info = function (name, message, metaData, stackTrace) {
     if(!qmLog.shouldWeLog("info")){return;}
     message = addCallerFunctionToMessage(message);
     console.info("INFO: " + getConsoleLogString(name, message, metaData, stackTrace));
-    //metaData = addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
+    //metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     //bugsnagNotify(name, message, metaData, "info", stackTrace);
 };
 window.qmLog.error = function (name, message, metaData, stackTrace) {
@@ -239,7 +239,7 @@ window.qmLog.error = function (name, message, metaData, stackTrace) {
     name = name || message;
     if(message && message.message){message = message.message;}
     console.error("ERROR: " + getConsoleLogString(name, message, metaData, stackTrace));
-    metaData = addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
+    metaData = qmLog.addGlobalMetaDataAndLog(name, message, metaData, stackTrace);
     bugsnagNotify(name, message, metaData, "error", stackTrace);
     if(window.qmLog.mobileDebug){alert(name + ": " + message);}
 };
