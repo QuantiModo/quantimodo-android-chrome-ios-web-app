@@ -156,7 +156,8 @@ function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
     };
     metaData.push_data = {
         "deviceTokenOnServer": localStorage.getItem('deviceTokenOnServer'),
-        "deviceTokenToSync": localStorage.getItem('deviceTokenToSync')
+        "deviceTokenToSync": localStorage.getItem('deviceTokenToSync'),
+        "last_push": window.qmPush.getHoursSinceLastPush + " hours ago"
     };
     if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){
         metaData.build_server = config.appSettings.buildServer;

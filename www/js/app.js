@@ -103,7 +103,7 @@ angular.module('starter',
     });
     window.debugMode = (appsManager.getUrlParameter('debug') || appsManager.getUrlParameter('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
-    if(appsManager.getUrlParameter('apiUrl')){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter('apiUrl'));}
+    if(appsManager.getUrlParameter(qmStorage.items.apiUrl)){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter(qmStorage.items.apiUrl));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
     if(ionic.Platform.isAndroid()){
         var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
