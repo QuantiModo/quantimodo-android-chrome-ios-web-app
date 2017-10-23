@@ -1,5 +1,7 @@
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
 window.qmStorage = {};
+window.timeHelper = {};
+window.qmPush = {};
 if(!window.qmUser){
     window.qmUser = localStorage.getItem('user');
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
@@ -678,7 +680,7 @@ window.qmStorage.getMostRecentRatingNotification = function (){
     trackingReminderNotifications = window.sortByProperty(trackingReminderNotifications, 'trackingReminderNotificationTime');
     if(trackingReminderNotifications.length) {
         var notification = trackingReminderNotifications[trackingReminderNotifications.length - 1];
-        if(notification.trackingReminderNotificationTimeEpoch < getUnixTimestampInSeconds() - 86400){
+        if(notification.trackingReminderNotificationTimeEpoch < timeHelper.getUnixTimestampInSeconds() - 86400){
             window.qmLog.info(null, 'Got this notification but it\'s from yesterday: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
             //return;
         }
@@ -770,7 +772,7 @@ window.drawOverAppsPopup = function(path){
         window.qmLog.error(null, 'startOverApp error: ' + err);
     });
 };
-window.getUnixTimestampInSeconds = function(dateTimeString) {
+window.timeHelper.getUnixTimestampInSeconds = function(dateTimeString) {
     if(!dateTimeString){dateTimeString = new Date().getTime();}
     return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);
 };
@@ -781,13 +783,13 @@ window.qmStorage.setLastNotificationsRefreshTime = function(){
     window.qmStorage.setLastRequestTime("GET", apiPaths.trackingReminderNotificationsPast);
 };
 window.qmStorage.setLastRequestTime = function(type, route){
-    window.qmStorage.setItem(getLocalStorageNameForRequest(type, route), getUnixTimestampInSeconds());
+    window.qmStorage.setItem(getLocalStorageNameForRequest(type, route), timeHelper.getUnixTimestampInSeconds());
 };
 window.canWeMakeRequestYet = function(type, route, options){
     function getSecondsSinceLastRequest(type, route){
         var secondsSinceLastRequest = 99999999;
         if(qmStorage.getItem(getLocalStorageNameForRequest(type, route))){
-            secondsSinceLastRequest = window.getUnixTimestampInSeconds() - qmStorage.getItem(getLocalStorageNameForRequest(type, route));
+            secondsSinceLastRequest = window.timeHelper.getUnixTimestampInSeconds() - qmStorage.getItem(getLocalStorageNameForRequest(type, route));
         }
         return secondsSinceLastRequest;
     }
@@ -809,7 +811,7 @@ window.canWeMakeRequestYet = function(type, route, options){
             return false;
         }
     }
-    window.qmStorage.setItem(getLocalStorageNameForRequest(type, route), getUnixTimestampInSeconds());
+    window.qmStorage.setItem(getLocalStorageNameForRequest(type, route), timeHelper.getUnixTimestampInSeconds());
     return true;
 };
 window.getUnixTimestampInMilliseconds = function(dateTimeString) {
@@ -836,3 +838,7 @@ window.getUserFromApi = function(){
     xhr.send();
 };
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
+window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem('lastPushTimestamp');};
+window.qmPush.getHoursSinceLastPush = function(){
+    return (window.timeHelper.getUnixTimestampInSeconds() - qmService.qmPush.getLastPushTimeStampInSeconds())/3600;
+};

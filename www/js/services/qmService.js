@@ -1102,7 +1102,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.reject('No deviceTokenToSync in localStorage');
             return deferred.promise;
         }
-        if(qmStorage.getItem('lastPushTimestamp') > window.getUnixTimestampInSeconds() - 86400){
+        if(qmStorage.getItem('lastPushTimestamp') > window.timeHelper.getUnixTimestampInSeconds() - 86400){
             qmLogService.error("Registering for pushes even though we got a notification in the last 24 hours");
         }
         qmStorage.removeItem('deviceTokenToSync');
@@ -1181,7 +1181,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             UserVoice.push(['identify', {
                 email: user.email, // User’s email address
                 name: user.displayName, // User’s real name
-                created_at: window.getUnixTimestampInSeconds(user.userRegistered), // Unix timestamp for the date the user signed up
+                created_at: window.timeHelper.getUnixTimestampInSeconds(user.userRegistered), // Unix timestamp for the date the user signed up
                 id: user.id, // Optional: Unique id of the user (if set, this should not change)
                 type: getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
                 account: {
@@ -1441,7 +1441,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     function checkIfStartTimeEpochIsWithinTheLastYear(startTimeEpoch) {
-        var result = startTimeEpoch > window.getUnixTimestampInSeconds() - 365 * 86400;
+        var result = startTimeEpoch > window.timeHelper.getUnixTimestampInSeconds() - 365 * 86400;
         if(!result){
             var errorName = 'startTimeEpoch is earlier than last year';
             var errorMessage = startTimeEpoch + ' ' + errorName;
@@ -1481,12 +1481,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.syncPrimaryOutcomeVariableMeasurements = function(minimumSecondsBetweenGets){
         function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
-            if(qmStorage.getItem(localStorageItemName) && window.getUnixTimestampInSeconds() - qmStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
+            if(qmStorage.getItem(localStorageItemName) && window.timeHelper.getUnixTimestampInSeconds() - qmStorage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs) {
                 var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
                 qmLogService.errorOrInfoIfTesting(null, errorMessage);
                 return false;
             }
-            qmService.qmStorage.setItem(localStorageItemName, window.getUnixTimestampInSeconds());
+            qmService.qmStorage.setItem(localStorageItemName, window.timeHelper.getUnixTimestampInSeconds());
             return true;
         }
         var defer = $q.defer();
@@ -1551,7 +1551,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             variableName: qmService.getPrimaryOutcomeVariable().name,
             variableCategoryName: qmService.getPrimaryOutcomeVariable().variableCategoryName,
             valence: qmService.getPrimaryOutcomeVariable().valence,
-            startTimeEpoch: window.getUnixTimestampInSeconds(),
+            startTimeEpoch: window.timeHelper.getUnixTimestampInSeconds(),
             unitAbbreviatedName: qmService.getPrimaryOutcomeVariable().unitAbbreviatedName,
             value: numericRatingValue,
             note: null
@@ -1593,7 +1593,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         });
     }
     function isStartTimeInMilliseconds(measurementInfo){
-        var oneWeekInFuture = window.getUnixTimestampInSeconds() + 7 * 86400;
+        var oneWeekInFuture = window.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
         if(measurementInfo.startTimeEpoch > oneWeekInFuture){
             measurementInfo.startTimeEpoch = measurementInfo.startTimeEpoch / 1000;
             console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
@@ -1625,7 +1625,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                 measurements : [
                     {
-                        startTimeEpoch:  window.getUnixTimestampInSeconds(),
+                        startTimeEpoch:  window.timeHelper.getUnixTimestampInSeconds(),
                         value: value,
                         note : null
                     }
@@ -1665,7 +1665,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.postBloodPressureMeasurements = function(parameters){
         var deferred = $q.defer();
         /** @namespace parameters.startTimeEpochSeconds */
-        if(!parameters.startTimeEpochSeconds){parameters.startTimeEpochSeconds = window.getUnixTimestampInSeconds();}
+        if(!parameters.startTimeEpochSeconds){parameters.startTimeEpochSeconds = window.timeHelper.getUnixTimestampInSeconds();}
         var measurementSets = [
             {
                 variableId: 1874,
@@ -2026,7 +2026,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if(geoLookupResult.type){localStorage.lastLocationResultType = geoLookupResult.type;} else {qmService.bugsnagNotify('Geolocation error', "No geolocation lookup type", geoLookupResult);}
         if(geoLookupResult.latitude){localStorage.lastLatitude = geoLookupResult.latitude;} else {qmService.bugsnagNotify('Geolocation error', "No latitude!", geoLookupResult);}
         if(geoLookupResult.longitude){localStorage.lastLongitude = geoLookupResult.longitude;} else {qmService.bugsnagNotify('Geolocation error', "No longitude!", geoLookupResult);}
-        localStorage.lastLocationUpdateTimeEpochSeconds = window.getUnixTimestampInSeconds();
+        localStorage.lastLocationUpdateTimeEpochSeconds = window.timeHelper.getUnixTimestampInSeconds();
         if(geoLookupResult.address) {
             localStorage.lastLocationAddress = geoLookupResult.address;
             if(geoLookupResult.address === localStorage.lastLocationName){localStorage.lastLocationNameAndAddress = localStorage.lastLocationAddress;
@@ -2038,7 +2038,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if (lastLocationName && lastLocationName !== "undefined") {return lastLocationName;}
     }
     function getHoursAtLocation(){
-        var secondsAtLocation = window.getUnixTimestampInSeconds() - localStorage.lastLocationUpdateTimeEpochSeconds;
+        var secondsAtLocation = window.timeHelper.getUnixTimestampInSeconds() - localStorage.lastLocationUpdateTimeEpochSeconds;
         return Math.round(secondsAtLocation/3600 * 100) / 100;
     }
     function getGeoLocationSourceName(isBackground) {
@@ -2108,7 +2108,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.reject(message);
             return deferred.promise;
         }
-        var currentTimestamp = window.getUnixTimestampInSeconds();
+        var currentTimestamp = window.timeHelper.getUnixTimestampInSeconds();
         var lastLocationPostUnixtime = parseInt(qmStorage.getItem('lastLocationPostUnixtime'));
         var secondsSinceLastPostedLocation = currentTimestamp - lastLocationPostUnixtime;
         if(lastLocationPostUnixtime && secondsSinceLastPostedLocation < 300){
@@ -5513,7 +5513,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 if(response && response.data && response.data.userVariables){
                     qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', response.data.userVariables);
                 }
-                qmService.qmStorage.setItem('lastPostedWeatherAt', window.getUnixTimestampInSeconds());
+                qmService.qmStorage.setItem('lastPostedWeatherAt', window.timeHelper.getUnixTimestampInSeconds());
             }, function (error) {qmLogService.debug(null, 'could not post weather measurements: ' + error, null);});
         }).error(function (error) {
             qmLog.error(null, 'forecast.io request failed!  error: ' + error, {error_response: error, request_url: url});
@@ -7058,14 +7058,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function checkHoursSinceLastPushNotificationReceived() {
         if(!$rootScope.isMobile){return;}
-        var lastPushTimestamp =  qmStorage.getItem('lastPushTimestamp');
-        if(!lastPushTimestamp){
+        if(!qmPush.getLastPushTimeStampInSeconds()){
             qmLogService.error("Push never received!");
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         }
-        var hoursSinceLastPushRecieved = (window.getUnixTimestampInSeconds - qmStorage.getItem('lastPushTimestamp'))/3600;
-        if(hoursSinceLastPushRecieved > 24){
-            qmLogService.error("No pushes received in last 24 hours!");
+        if(qmPush.getHoursSinceLastPush() > 24){
+            qmLogService.error("No pushes received in last 24 hours!", "Last push was " +  qmPush.getHoursSinceLastPush() + " hours ago");
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
         }
     }
@@ -7189,7 +7187,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 });
                 push.on('error', function(e) {qmLogService.exception(e, e.message, pushConfig);});
                 var finishPush = function (data) {
-                    qmService.qmStorage.setItem('lastPushTimestamp', window.getUnixTimestampInSeconds());
+                    qmService.qmStorage.setItem('lastPushTimestamp', window.timeHelper.getUnixTimestampInSeconds());
                     $rootScope.$broadcast('qmStorage.getTrackingReminderNotifications');  // Refresh Reminders Inbox
                     if(!finishPushes){
                         qmLogService.debug(null, 'Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId, null);
