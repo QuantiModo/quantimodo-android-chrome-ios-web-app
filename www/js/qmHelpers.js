@@ -24,6 +24,15 @@ window.qmStorage = {
 };
 window.timeHelper = {};
 window.qmPush = {};
+window.qmChrome = {
+    introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
+    facesRatingPopupWindowParams: { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
+    loginPopupWindowParams: { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
+    reminderInboxPopupWindowParams: { url: "index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750},
+    compactInboxPopupWindowParams: { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360},
+    inboxNotificationParams: { type: "basic", title: "How are you?", message: "Click to open reminder inbox", iconUrl: "img/icons/icon_700.png", priority: 2},
+    signInNotificationParams: { type: "basic", title: "How are you?", message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2},
+};
 if(!window.qmUser){
     window.qmUser = localStorage.getItem(qmStorage.items.user);
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
@@ -194,23 +203,9 @@ window.getAccessToken = function() {
     return window.getUrlParameter('accessToken');
 };
 var v = null;
-var vid = null;
 function multiplyScreenHeight(factor) {return parseInt(factor * screen.height);}
 function multiplyScreenWidth(factor) {return parseInt(factor * screen.height);}
-var introWindowParams = { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2),
-    left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true};
-var facesRatingPopupWindowParams = { url: "templates/chrome/faces_popup.html", type: 'panel',
-    top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true};
-var loginPopupWindowParams = { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2),
-    left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true};
-var reminderInboxPopupWindowParams = { url: "index.html", type: 'panel', top: screen.height - 800,
-    left: screen.width - 455, width: 450, height: 750};
-var compactInboxPopupWindowParams = { url: "index.html#/app/reminders-inbox-compact", type: 'panel',
-    top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360};
-var inboxNotificationParams = { type: "basic", title: "How are you?", message: "Click to open reminder inbox",
-    iconUrl: "img/icons/icon_700.png", priority: 2};
-var signInNotificationParams = { type: "basic", title: "How are you?",
-    message: "Click to sign in and record a measurement", iconUrl: "img/icons/icon_700.png", priority: 2};
+
 function getChromeRatingNotificationParams(trackingReminderNotification){
     return { url: getRatingNotificationPath(trackingReminderNotification), type: 'panel', top: screen.height - 150,
         left: screen.width - 380, width: 390, height: 110, focused: true}
@@ -251,7 +246,7 @@ if(isChromeExtension()) {
     if (!localStorage.introSeen) {
         window.qmLog.info(null, 'introSeen false on chrome extension so opening intro window popup', null);
         window.qmStorage.setItem('introSeen', true);
-        openOrFocusChromePopupWindow(introWindowParams);
+        openOrFocusChromePopupWindow(qmChrome.introWindowParams);
     }
     chrome.runtime.onInstalled.addListener(function () { // Called when the extension is installed
         var notificationInterval = parseInt(localStorage.notificationInterval || "60");
@@ -271,8 +266,8 @@ if(isChromeExtension()) {
             openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification));
             updateBadgeText("");
         } else if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
-            openOrFocusChromePopupWindow(compactInboxPopupWindowParams);
-            //openOrFocusChromePopupWindow(facesRatingPopupWindowParams);
+            openOrFocusChromePopupWindow(qmChrome.compactInboxPopupWindowParams);
+            //openOrFocusChromePopupWindow(qmChrome.facesRatingPopupWindowParams);
         } else {
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
         }
@@ -320,14 +315,14 @@ function openChromePopup(notificationId, focusWindow) {
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
 	if(notificationId === "moodReportNotification") {
-        openOrFocusChromePopupWindow(facesRatingPopupWindowParams);
+        openOrFocusChromePopupWindow(qmChrome.facesRatingPopupWindowParams);
 	} else if (notificationId === "signin") {
-        openOrFocusChromePopupWindow(loginPopupWindowParams);
+        openOrFocusChromePopupWindow(qmChrome.loginPopupWindowParams);
 	} else if (notificationId && IsJsonString(notificationId)) {
-        reminderInboxPopupWindowParams.url = "index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
-        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams);
+        qmChrome.reminderInboxPopupWindowParams.url = "index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
+        openOrFocusChromePopupWindow(qmChrome.reminderInboxPopupWindowParams);
 	} else {
-        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams);
+        openOrFocusChromePopupWindow(qmChrome.reminderInboxPopupWindowParams);
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
 	//chrome.windows.create(windowParams);
@@ -379,7 +374,7 @@ function showSignInNotification() {
         return;
     }
     var notificationId = 'signin';
-    chrome.notifications.create(notificationId, signInNotificationParams, function (id) {});
+    chrome.notifications.create(notificationId, qmChrome.signInNotificationParams, function (id) {});
 }
 window.getRequestUrl = function(path) {
     var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
@@ -417,11 +412,11 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
                     notificationId = alarm.name;
                     updateBadgeText("?");
                     //chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
-                    chrome.notifications.create(notificationId, inboxNotificationParams, function (id) {});
+                    chrome.notifications.create(notificationId, qmChrome.inboxNotificationParams, function (id) {});
                     openChromePopup(notificationId);
                 }
             } else {
-                openOrFocusChromePopupWindow(facesRatingPopupWindowParams);
+                openOrFocusChromePopupWindow(qmChrome.facesRatingPopupWindowParams);
                 updateBadgeText("");
             }
         }
@@ -450,7 +445,7 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
         }
     }
 	if (IsJsonString(alarm.name)) {
-        var notificationParams = inboxNotificationParams;
+        var notificationParams = qmChrome.inboxNotificationParams;
 		window.qmLog.debug(null, 'alarm.name IsJsonString', null, alarm);
 		var trackingReminder = JSON.parse(alarm.name);
 		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';
@@ -458,7 +453,7 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
         refreshNotificationsAndShowPopupIfSo(notificationParams, alarm);
 	} else {
 		window.qmLog.debug(null, 'alarm.name is not a json object', null, alarm);
-        refreshNotificationsAndShowPopupIfSo(inboxNotificationParams, alarm);
+        refreshNotificationsAndShowPopupIfSo(qmChrome.inboxNotificationParams, alarm);
 	}
 }
 function IsJsonString(str) {
@@ -771,7 +766,7 @@ window.drawOverAppsRatingNotification = function(trackingReminderNotification) {
     window.drawOverAppsPopup(getRatingNotificationPath(trackingReminderNotification));
 };
 window.drawOverAppsCompactInboxNotification = function() {
-    window.drawOverAppsPopup(compactInboxPopupWindowParams.url);
+    window.drawOverAppsPopup(qmChrome.compactInboxPopupWindowParams.url);
 };
 window.drawOverAppsPopup = function(path){
     if(typeof window.overApps === "undefined"){
