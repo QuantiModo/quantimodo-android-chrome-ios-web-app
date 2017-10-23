@@ -7,7 +7,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.userEmail = qmService.getUrlParameter('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
-        $scope.drawOverAppsEnabled = (qmStorage.getItem('drawOverAppsEnabled') == 'true');
+        $scope.drawOverAppsEnabled = (qmStorage.getItem(qmStorage.items.drawOverAppsEnabled) == 'true');
 		$rootScope.hideNavigationMenu = false;
 		if(qmService.getUrlParameter('userEmail')){
 			$scope.state.loading = true;
@@ -71,7 +71,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 				qmLogService.debug(null, 'SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now ' +
                     'refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest ' +
                     "frequency reminder", null);
-				if(!qmStorage.getItem('deviceTokenOnServer')){
+				if(!qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
 					console.warn("Could not find device token for push notifications so scheduling combined local notifications");
 					qmService.syncTrackingReminders();
 				}
@@ -173,8 +173,8 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	};
 	function saveDeviceTokenToSyncWhenWeLogInAgain(){
 		// Getting token so we can post as the new user if they log in again
-		if(qmStorage.getItem('deviceTokenOnServer')){
-			qmStorage.setItem('deviceTokenToSync', qmStorage.getItem('deviceTokenOnServer'));
+		if(qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
+			qmStorage.setItem(qmStorage.items.deviceTokenToSync, qmStorage.getItem(qmStorage.items.deviceTokenOnServer));
 			qmService.deleteDeviceTokenFromServer();
 		}
 	}

@@ -1,9 +1,31 @@
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
-window.qmStorage = {};
+window.qmStorage = {
+    items: {
+        accessToken: 'accessToken',
+        apiUrl: 'apiUrl',
+        chromeWindowId: 'chromeWindowId',
+        clientId: 'clientId',
+        defaultHelpCards: 'defaultHelpCards',
+        deviceTokenOnServer: 'deviceTokenOnServer',
+        deviceTokenToSync: 'deviceTokenToSync'
+        drawOverAppsEnabled: 'drawOverAppsEnabled',
+        expiresAtMilliseconds: 'expiresAtMilliseconds',
+        lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
+        lastLatitude: 'lastLatitude',
+        lastLocationName: 'lastLocationName',
+        lastLocationPostUnixtime: 'lastLocationPostUnixtime',
+        lastLongitude: 'lastLongitude',
+        lastPushTimestamp: 'lastPushTimestamp',
+        notifications: 'trackingReminderNotifications',
+        refreshToken: 'refreshToken',
+        trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
+        trackingReminders: 'trackingcordReminders',
+    }
+};
 window.timeHelper = {};
 window.qmPush = {};
 if(!window.qmUser){
-    window.qmUser = localStorage.getItem('user');
+    window.qmUser = localStorage.getItem(qmStorage.items.user);
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
 window.qmStorage.getItem = function(key){
@@ -74,7 +96,7 @@ function getQuantiModoClientId() {
         window.qmLog.debug(null, 'Using clientIdFromQueryParams: ' + clientId, null);
         return clientId;
     }
-    if(!clientId){clientId = qmStorage.getItem('clientId');}
+    if(!clientId){clientId = qmStorage.getItem(qmStorage.items.clientId);}
     if(clientId){
         window.qmLog.debug(null, 'Using clientId From localStorage: ' + clientId, null);
         return clientId;
@@ -119,8 +141,8 @@ var appsManager = { // jshint ignore:line
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        var apiUrl = window.getUrlParameter('apiUrl');
-        if(!apiUrl){apiUrl = qmStorage.getItem('apiUrl');}
+        var apiUrl = window.getUrlParameter(qmStorage.items.apiUrl);
+        if(!apiUrl){apiUrl = qmStorage.getItem(qmStorage.items.apiUrl);}
         if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){apiUrl = "https://utopia.quantimo.do";}
@@ -268,7 +290,7 @@ function openOrFocusChromePopupWindow(windowParams) {
             chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
         });
     }
-    var chromeWindowId = parseInt(qmStorage.getItem('chromeWindowId'), null);
+    var chromeWindowId = parseInt(qmStorage.getItem(qmStorage.items.chromeWindowId), null);
     if(!chromeWindowId){
         window.qmLog.info('openOrFocusChromePopupWindow: No window id from localStorage. Creating one...', windowParams );
         createWindow(windowParams);
@@ -685,7 +707,8 @@ window.qmStorage.getMostRecentRatingNotification = function (){
             //return;
         }
         window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
-        window.qmStorage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
+        //window.qmStorage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
+        qmStorage.deleteByProperty(qmStorage.items.notifications, 'variableName', notification.variable.name);
         return notification;
     } else {
         refreshNotificationsAndShowPopupIfSo();
@@ -838,7 +861,7 @@ window.getUserFromApi = function(){
     xhr.send();
 };
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
-window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem('lastPushTimestamp');};
+window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem(qmStorage.items.lastPushTimestamp);};
 window.qmPush.getHoursSinceLastPush = function(){
     return (window.timeHelper.getUnixTimestampInSeconds() - qmService.qmPush.getLastPushTimeStampInSeconds())/3600;
 };
