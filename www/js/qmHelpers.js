@@ -468,7 +468,7 @@ window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName
     var elementsToKeep = [];
     var localStorageItemArray = JSON.parse(qmStorage.getItem(localStorageItemName));
     if(!localStorageItemArray){
-        window.qmLog.error(null, 'Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(getLocalStorageList()));
+        window.qmLog.error(null, 'Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
     } else {
         for(var i = 0; i < localStorageItemArray.length; i++){
             if(localStorageItemArray[i][propertyName] !== propertyValue){elementsToKeep.push(localStorageItemArray[i]);}
@@ -480,13 +480,16 @@ function addQueryParameter(url, name, value){
     if(url.indexOf('?') === -1){return url + "?" + name + "=" + value;}
     return url + "&" + name + "=" + value;
 }
-function getLocalStorageList(){
+window.qmStorage.getLocalStorageList = function(summary){
     var localStorageItemsArray = [];
     for (var i = 0; i < localStorage.length; i++){
+        var key = localStorage.key(i);
+        var value = localStorage.getItem(key);
+        if(summary){value = value.substring(0, 20, '...');}
         localStorageItemsArray.push({
-            name: localStorage.key(i),
-            value: qmStorage.getItem(localStorage.key(i)),
-            kB: Math.round(qmStorage.getItem(localStorage.key(i)).length*16/(8*1024))
+            name: key,
+            value: value,
+            kB: Math.round(qmStorage.getItem(key).length*16/(8*1024))
         });
     }
     return localStorageItemsArray.sort( function ( a, b ) { return b.kB - a.kB; } );
@@ -610,7 +613,7 @@ window.qmStorage.setItem = function(key, value){
                 if(localStorageItemsArray[i].kB > 2000){ qmStorage.removeItem(localStorageItemsArray[i].name); }
             }
         }
-        var metaData = { localStorageItems: getLocalStorageList() };
+        var metaData = { localStorageItems: qmStorage.getLocalStorageList() };
         var name = 'Error saving ' + key + ' to local storage';
         window.qmLog.error(name, null, metaData);
         deleteLargeLocalStorageItems(metaData.localStorageItems);
