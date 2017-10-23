@@ -7093,8 +7093,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             if(qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){template = template + '\r\n' + "deviceTokenOnServer: " + qmStorage.getItem(qmStorage.items.deviceTokenOnServer) + '\r\n' + '\r\n';}
             if(qmStorage.getItem(qmStorage.items.deviceTokenToSync)){template = template + '\r\n' + "deviceTokenToSync: " + qmStorage.getItem(qmStorage.items.deviceTokenToSync) + '\r\n' + '\r\n';}
             reconfigurePushNotificationsIfNoTokenOnServerOrToSync();
-            if(qmStorage.getItem('lastPushTimestamp')){
-                template = template + '\r\n' + "lastPushReceived: " + convertUnixTimeStampToISOString(qmStorage.getItem('lastPushTimestamp')) + '\r\n' + '\r\n';
+            if(qmStorage.getItem(qmStorage.items.lastPushTimestamp)){
+                template = template + '\r\n' + "lastPushReceived: " + convertUnixTimeStampToISOString(qmStorage.getItem(qmStorage.items.lastPushTimestamp)) + '\r\n' + '\r\n';
             } else {
                 template + '\r\n' + "lastPushReceived: NEVER " + '\r\n' + '\r\n';
             }
@@ -7121,7 +7121,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         } else {qmService.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);}
     };
     qmService.logEventToGA = function(category, action, label, value, noninteraction, customDimension, customMetric){
-        if(!label){label = $rootScope.user.id.toString();}
+        if(!label){label = (qmUser) ? qmUser.id : "NotLoggedIn";}
         if(typeof noninteraction === "undefined"){noninteraction = true;}
         Analytics.trackEvent(category, action, label, value, noninteraction, { dimension15: 'My Custom Dimension', metric18: 8000 });
     };
@@ -7142,6 +7142,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmLogService.debug(null, 'Going to try to register push with ' + JSON.stringify(pushConfig), null);
                 var push = PushNotification.init(pushConfig);
                 push.on('registration', function(registerResponse) {
+                    qmService.logEventToGA("PushNotifications", "registered");
                     qmLogService.info(null, 'Registered device for push notifications.  registerResponse: ' + JSON.stringify(registerResponse), null);
                     if(!registerResponse.registrationId){qmService.bugsnagNotify('No registerResponse.registrationId from push registration');}
                     qmLogService.info(null, 'Got device token for push notifications: ' + registerResponse.registrationId, null);
@@ -7152,13 +7153,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 });
                 var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
                 push.on('notification', function(data) {
-                    qmLogService.debug(null, 'Received push notification: ' + JSON.stringify(data), null);
+                    qmService.logEventToGA("PushNotifications", "received");
+                    qmLogService.debug('Received push notification: ' + JSON.stringify(data));
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                     if(typeof window.overApps !== "undefined" && data.additionalData.unitAbbreviatedName === '/5'){
                         qmService.drawOverAppsRatingNotification(data.additionalData);
                     } else {
                         qmService.refreshTrackingReminderNotifications(300).then(function(){
-                            qmLogService.debug(null, 'push.on.notification: successfully refreshed notifications', null);
+                            qmLogService.debug('push.on.notification: successfully refreshed notifications');
                         }, function (error) {
                             console.error('push.on.notification: ' + error);
                         });
@@ -7177,6 +7179,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     data.deviceToken = qmStorage.getItem(qmStorage.items.deviceTokenOnServer);
                     qmService.logEventToGA('pushNotification', 'received');
                     if(data.additionalData.acknowledge){
+                        qmService.logEventToGA("PushNotifications", "sendAcknowledgement");
                         $http.post("https://utopia.quantimo.do/api/v1/trackingReminderNotification/received", data)
                             .success(function (response) {
                                 qmLogService.debug(null, 'notification received success response: ' + JSON.stringify(response), null);
@@ -7185,9 +7188,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                         });
                     }
                 });
-                push.on('error', function(e) {qmLogService.exception(e, e.message, pushConfig);});
+                push.on('error', function(e) {
+                    qmService.logEventToGA("PushNotifications", "error", e.message);
+                    qmLogService.exception(e, e.message, pushConfig);
+                });
                 var finishPush = function (data) {
-                    qmService.qmStorage.setItem('lastPushTimestamp', window.timeHelper.getUnixTimestampInSeconds());
+                    qmService.qmStorage.setItem(qmStorage.items.lastPushTimestamp, window.timeHelper.getUnixTimestampInSeconds());
                     $rootScope.$broadcast('qmStorage.getTrackingReminderNotifications');  // Refresh Reminders Inbox
                     if(!finishPushes){
                         qmLogService.debug(null, 'Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId, null);
@@ -7408,7 +7414,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             window.qmLog.debug(null, 'drawOverApps is disabled', null, null);
             return;
         }
-        $ionicPlatform.ready(function() {window.drawOverAppsRatingNotification(trackingReminderNotification);});
+        $ionicPlatform.ready(function() {
+            qmService.logEventToGA("drawOverApps", "showNotification");
+            window.drawOverAppsRatingNotification(trackingReminderNotification);
+        });
     };
     qmService.toggleDrawOverApps = function(ev){
         function disablePopups() {

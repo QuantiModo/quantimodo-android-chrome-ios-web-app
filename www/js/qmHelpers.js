@@ -7,7 +7,7 @@ window.qmStorage = {
         clientId: 'clientId',
         defaultHelpCards: 'defaultHelpCards',
         deviceTokenOnServer: 'deviceTokenOnServer',
-        deviceTokenToSync: 'deviceTokenToSync'
+        deviceTokenToSync: 'deviceTokenToSync',
         drawOverAppsEnabled: 'drawOverAppsEnabled',
         expiresAtMilliseconds: 'expiresAtMilliseconds',
         lastGotNotificationsAtMilliseconds: 'lastGotNotificationsAtMilliseconds',
@@ -19,7 +19,7 @@ window.qmStorage = {
         notifications: 'trackingReminderNotifications',
         refreshToken: 'refreshToken',
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
-        trackingReminders: 'trackingcordReminders',
+        trackingReminders: 'trackingReminders',
     }
 };
 window.timeHelper = {};
