@@ -29,8 +29,8 @@ var inboxButtonClicked = function() {
         OverApps.openApp();
     } else {
         window.qmLog.info(null, 'OverApps not defined', null);
-        reminderInboxPopupWindowParams.focused = true;
-        openOrFocusChromePopupWindow(reminderInboxPopupWindowParams);
+        qmChrome.reminderInboxPopupWindowParams.focused = true;
+        openOrFocusChromePopupWindow(qmChrome.reminderInboxPopupWindowParams);
     }
 };
 var onFaceButtonClicked = function() {
@@ -50,7 +50,7 @@ var onFaceButtonClicked = function() {
         if(window.trackingReminderNotification && window.notificationsSyncQueue.length < 10){
             updateQuestion(window.trackingReminderNotification.variableName);
         } else {
-            showLoader();
+            hidePopup();
             window.postTrackingReminderNotifications(window.notificationsSyncQueue, closePopup);
             //closePopup();
         }
@@ -71,7 +71,7 @@ var onFaceButtonClicked = function() {
     if(typeof chrome !== "undefined"){chrome.extension.sendMessage(request); } // Request our background script to upload it for us
     closePopup();
 };
-function showLoader() {
+function hidePopup() {
     var sectionRate = document.getElementById("sectionRate");
     var loader = document.getElementById("loader");
     var question = document.getElementById("question");
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var wDiff = (380 - window.innerWidth);
     var hDiff = (70 - window.innerHeight);
     window.resizeBy(wDiff, hDiff);
-    if(!window.getUser()){window.getUserFromApi();}
+    if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
     window.refreshNotificationsIfEmpty();
 });
