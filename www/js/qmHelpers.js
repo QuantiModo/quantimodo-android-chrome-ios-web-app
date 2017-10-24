@@ -698,7 +698,7 @@ window.qmStorage.getMostRecentRatingNotification = function (){
         }
         window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
         //window.qmStorage.deleteTrackingReminderNotification(notification.trackingReminderNotificationId);
-        qmStorage.deleteByProperty(qmStorage.items.notifications, 'variableName', notification.variable.name);
+        qmStorage.deleteByProperty(qmStorage.items.notifications, 'variableName', notification.variableName);
         return notification;
     } else {
         refreshNotificationsAndShowPopupIfSo();
