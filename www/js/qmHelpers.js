@@ -24,6 +24,7 @@ window.qmStorage = {
 };
 window.timeHelper = {};
 window.qmPush = {};
+window.qmNotifications = {};
 window.qmChrome = {
     introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
     facesRatingPopupWindowParams: { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
@@ -745,8 +746,12 @@ window.qmStorage.deleteTrackingReminderNotification = function(body){
         window.refreshNotificationsIfEmpty();
     }
 };
+window.qmNotifications.drawOverAppsEnabled = function(){
+    var drawOverAppsEnabled =  qmStorage.getItem(qmStorage.items.drawOverAppsEnabled);
+    return drawOverAppsEnabled == 'true';
+}
 window.showAndroidPopupForMostRecentNotification = function(){
-    if(!drawOverAppsEnabled()){window.qmLog.info(null, 'Can only show popups on Android', null); return;}
+    if(!qmNotifications.drawOverAppsEnabled()){window.qmLog.info(null, 'Can only show popups on Android', null); return;}
     var trackingReminderNotification = window.qmStorage.getMostRecentRatingNotification();
     if(trackingReminderNotification) {
         //window.qmLog.info("No notifications for popup");
@@ -826,9 +831,9 @@ window.canWeMakeRequestYet = function(type, route, options){
         var name = 'Just made a ' + type + ' request to ' + route;
         var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
             getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
-        window.qmLog.error(null, message);
+        window.qmLog.error(name, message, options);
         if(blockRequests){
-            window.qmLog.error(null, 'BLOCKING REQUEST because ' + message);
+            window.qmLog.error('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
             return false;
         }
     }
@@ -861,5 +866,5 @@ window.getUserFromApi = function(){
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
 window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem(qmStorage.items.lastPushTimestamp);};
 window.qmPush.getHoursSinceLastPush = function(){
-    return (window.timeHelper.getUnixTimestampInSeconds() - qmService.qmPush.getLastPushTimeStampInSeconds())/3600;
+    return (window.timeHelper.getUnixTimestampInSeconds() - qmPush.getLastPushTimeStampInSeconds())/3600;
 };
