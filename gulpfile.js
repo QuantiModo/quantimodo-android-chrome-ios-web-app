@@ -654,9 +654,8 @@ gulp.task('scripts', function () {
             .pipe(gulp.dest('www/scripts'));
     }
 });
-gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToChromeExtension'], function () {
-    appSettings.appStatus.buildStatus.chromeExtension = "BUILDING";
-    postAppStatus();
+function createChromeManifest(outputPath) {
+    outputPath = outputPath || chromeExtensionBuildPath + '/manifest.json';
     var chromeExtensionManifest = {
         'manifest_version': 2,
         'name': appSettings.appDisplayName,
@@ -687,15 +686,22 @@ gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToCh
             'default_popup': 'chrome_default_popup_iframe.html'
         },
         'background': {
-            'scripts': ['js/qmHelpers.js'],
+            'scripts': ['custom-lib/bugsnag.js','js/qmLogger.js','js/qmHelpers.js'],
             'persistent': false
         }
     };
     //chromeExtensionManifest.appSettings = appSettings; // I think adding appSettings to the chrome manifest breaks installation
     chromeExtensionManifest = JSON.stringify(chromeExtensionManifest, null, 2);
-    var chromeManifestPath = chromeExtensionBuildPath + '/manifest.json';
-    logInfo("Creating chrome manifest at " + chromeManifestPath);
-    writeToFile(chromeManifestPath, chromeExtensionManifest);
+    logInfo("Creating chrome manifest at " + outputPath);
+    writeToFile(outputPath, chromeExtensionManifest);
+}
+gulp.task('createChromeManifestInWwwFolder', ['getAppConfigs'], function () {
+    createChromeManifest('www/manifest.json');
+});
+gulp.task('copyWwwFolderToChromeExtensionAndCreateManifest', ['copyWwwFolderToChromeExtension'], function () {
+    appSettings.appStatus.buildStatus.chromeExtension = "BUILDING";
+    postAppStatus();
+    createChromeManifest();
 });
 function writeToFile(filePath, stringContents) {
     logDebug("Writing to " + filePath);
