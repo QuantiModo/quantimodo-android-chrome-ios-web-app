@@ -133,7 +133,9 @@ function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
             return parts[1];
         }
         var url = "https://local.quantimo.do/ionic/Modo/www/index.html#/app" + getCurrentRoute();
-        if(window.qmUser){url +=  "?userEmail=" + encodeURIComponent(window.qmUser.email);}
+        if(window.qmUser){
+            url +=  "?userEmail=" + encodeURIComponent(window.qmUser.email);
+        }
         return url;
     }
     function cordovaPluginsAvailable() {
@@ -157,7 +159,7 @@ function addGlobalMetaData(name, message, metaData, logLevel, stackTrace) {
     metaData.push_data = {
         "deviceTokenOnServer": localStorage.getItem('deviceTokenOnServer'),
         "deviceTokenToSync": localStorage.getItem('deviceTokenToSync'),
-        "last_push": window.qmPush.getHoursSinceLastPush + " hours ago"
+        "last_push": window.qmPush.getHoursSinceLastPush() + " hours ago"
     };
     metaData.local_storage = window.qmStorage.getLocalStorageList(true);
     if(typeof config !== "undefined" && typeof config.appSettings !== "undefined"){
