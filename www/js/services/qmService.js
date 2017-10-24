@@ -7107,6 +7107,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             template = template + "PushNotification installed: " + (typeof PushNotification !== "undefined") + '\r\n';
             template = template + "Splashscreen plugin installed: " + (navigator && navigator.splashscreen) + '\r\n';
             template = addSnapShotList(template);
+            // TODO: Maybe fix me
+            //var metaData = qmLog.addGlobalMetaData("Bug Report", "Bug Report", {});
+            //template = template + prettyJsonStringify(metaData);
             qmLogService.error("Bug Report");
             return template;
         }
