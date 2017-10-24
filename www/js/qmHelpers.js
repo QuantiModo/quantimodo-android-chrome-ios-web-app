@@ -866,5 +866,5 @@ window.getUserFromApi = function(){
 window.isTestUser = function(){return window.qmUser && window.qmUser.displayName.indexOf('test') !== -1 && window.qmUser.id !== 230;};
 window.qmPush.getLastPushTimeStampInSeconds = function(){return qmStorage.getItem(qmStorage.items.lastPushTimestamp);};
 window.qmPush.getHoursSinceLastPush = function(){
-    return (window.timeHelper.getUnixTimestampInSeconds() - qmService.qmPush.getLastPushTimeStampInSeconds())/3600;
+    return (window.timeHelper.getUnixTimestampInSeconds() - qmPush.getLastPushTimeStampInSeconds())/3600;
 };
