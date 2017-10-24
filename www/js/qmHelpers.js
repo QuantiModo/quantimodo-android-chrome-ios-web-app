@@ -24,8 +24,15 @@ window.qmStorage = {
     }
 };
 window.timeHelper = {};
+window.apiHelper = {};
 window.qmPush = {};
 window.qmNotifications = {};
+window.qmAnalytics = {
+    eventCategories: {
+        pushNotifications: "pushNotifications",
+        inbox: "inbox"
+    }
+};
 window.qmChrome = {
     introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
     facesRatingPopupWindowParams: { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
@@ -359,7 +366,7 @@ window.postTrackingReminderNotifications = function(trackingReminderNotification
 };
 function postToQuantiModo(body, path, onDoneListener) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST",  window.getRequestUrl(path), true);
+    xhr.open("POST",  window.apiHelper.getRequestUrl(path), true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {  // If the request is completed
             console.log("POST " + path + " response:" + xhr.responseText);
@@ -386,7 +393,7 @@ function showSignInNotification() {
     var notificationId = 'signin';
     chrome.notifications.create(notificationId, qmChrome.signInNotificationParams, function (id) {});
 }
-window.getRequestUrl = function(path) {
+window.apiHelper.getRequestUrl = function(path) {
     var url = addGlobalQueryParameters(getAppHostName() + "/api/" + path);
     console.log("Making API request to " + url);
     return url;
@@ -404,7 +411,7 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
     var route = apiPaths.trackingReminderNotificationsPast;
     if(!canWeMakeRequestYet(type, route, {blockRequests: true, minimumSecondsBetweenRequests: 300})){return;}
     var xhr = new XMLHttpRequest();
-    xhr.open(type, window.getRequestUrl(route), false);
+    xhr.open(type, window.apiHelper.getRequestUrl(route), false);
     xhr.onreadystatechange = function () {
         var notificationId;
         if (xhr.status === 401) {
@@ -862,7 +869,7 @@ window.getUnixTimestampInMilliseconds = function(dateTimeString) {
 };
 window.getUserFromApi = function(){
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.getRequestUrl("user/me"), true);
+    xhr.open("GET", window.apiHelper.getRequestUrl("user/me"), true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             window.qmUser = JSON.parse(xhr.responseText);
@@ -871,7 +878,7 @@ window.getUserFromApi = function(){
                 window.qmLog.debug(null, window.qmUser.displayName + ' is logged in.  ', null);
             } else {
                 if(isChromeExtension()){
-                    var url = window.getRequestUrl("v2/auth/login");
+                    var url = window.apiHelper.getRequestUrl("v2/auth/login");
                     chrome.tabs.create({"url": url, "selected": true});
                 }
             }
