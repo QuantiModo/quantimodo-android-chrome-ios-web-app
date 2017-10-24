@@ -661,7 +661,7 @@ function createChromeManifest(outputPath) {
         'name': appSettings.appDisplayName,
         'description': appSettings.appDescription,
         'version': versionNumbers.ionicApp,
-        'options_page': 'chrome_extension/options/options.html',
+        'options_page': 'chrome_options.html',
         'icons': {
             '16': 'img/icons/icon_16.png',
             '48': 'img/icons/icon_48.png',

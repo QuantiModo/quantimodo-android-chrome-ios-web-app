@@ -877,11 +877,10 @@ if(isChromeExtension()) {
             window.qmLog.debug(null, 'Alarm set, every ' + notificationInterval + ' minutes', null);
         }
     });
-    chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
-        window.qmLog.debug(null, 'onAlarm Listener heard this alarm ', null, alarm);
-        var trackingReminderNotification = window.qmStorage.getMostRecentRatingNotification();
-        if(trackingReminderNotification){
-            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification));
+    window.qmChrome.showRatingOrInboxPopup = function (alarm) {
+        var ratingNotification = window.qmStorage.getMostRecentRatingNotification();
+        if(ratingNotification){
+            openOrFocusChromePopupWindow(getChromeRatingNotificationParams(ratingNotification));
             updateBadgeText("");
         } else if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
             openOrFocusChromePopupWindow(qmChrome.compactInboxPopupWindowParams);
@@ -889,5 +888,9 @@ if(isChromeExtension()) {
         } else {
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
         }
+    };
+    chrome.alarms.onAlarm.addListener(function (alarm) { // Called when an alarm goes off (we only have one)
+        window.qmLog.debug(null, 'onAlarm Listener heard this alarm ', null, alarm);
+        qmChrome.showRatingOrInboxPopup(alarm);
     });
 }
