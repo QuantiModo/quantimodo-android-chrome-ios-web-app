@@ -35,7 +35,7 @@ window.qmAnalytics = {
 };
 window.qmChrome = {
     introWindowParams: { url: "index.html#/app/intro", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
-    facesRatingPopupWindowParams: { url: "templates/chrome/faces_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
+    facesRatingPopupWindowParams: { url: "android_popup.html", type: 'panel', top: screen.height - 150, left: screen.width - 380, width: 390, height: 110, focused: true},
     loginPopupWindowParams: { url: "index.html#/app/login", type: 'panel', top: multiplyScreenHeight(0.2), left: multiplyScreenWidth(0.4), width: 450, height: 750, focused: true},
     reminderInboxPopupWindowParams: { url: "index.html", type: 'panel', top: screen.height - 800, left: screen.width - 455, width: 450, height: 750},
     compactInboxPopupWindowParams: { url: "index.html#/app/reminders-inbox-compact", type: 'panel', top: screen.height - 360 - 30, left: screen.width - 350, width: 350, height: 360},
@@ -177,7 +177,7 @@ var appsManager = { // jshint ignore:line
         if(getClientIdFromQueryParameters() === 'app'){return true;}
     }
 };
-function isChromeExtension(){
+window.isChromeExtension = function (){
     if(typeof chrome === "undefined"){
         window.qmLog.debug(null, 'chrome is undefined', null, null);
         return false;
