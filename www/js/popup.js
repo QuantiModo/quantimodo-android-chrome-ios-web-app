@@ -74,46 +74,46 @@ var onFaceButtonClicked = function() {
     closePopup();
 };
 function hidePopup() {
-    originalHeight = 56;
-    var sectionRate = document.getElementById("sectionRate");
-    var loader = document.getElementById("loader");
-    var question = document.getElementById("question");
+    //originalHeight = 56;
+    //var sectionRate = document.getElementById("sectionRate");
+    //var loader = document.getElementById("loader");
+    //var question = document.getElementById("question");
     if (document.getElementsByTagName("body")[0]) {
         originalHeight = document.getElementsByTagName("body")[0].style.height;
         document.getElementsByTagName("body")[0].style.height = "0px";
     } else {
-        window.qmLog.info(null, 'document.getElementsByTagName(body)[0] does not exist', null)
+        window.qmLog.error('document.getElementsByTagName(body)[0] does not exist');
     }
-    sectionRate.className = "invisible";
-    sectionRate.style.display = "none";
-    question.className = "invisible";
-    question.style.display = "none";
+    //sectionRate.className = "invisible";
+    //sectionRate.style.display = "none";
+    //question.className = "invisible";
+    //question.style.display = "none";
     //loader.style.display = "block";
     //loader.className = "visible";
 }
 function unHidePopup() {
-    var sectionRate = document.getElementById("sectionRate");
-    var question = document.getElementById("question");
+    //var sectionRate = document.getElementById("sectionRate");
+    //var question = document.getElementById("question");
     if (document.getElementsByTagName("body")[0]) {
-        document.getElementsByTagName("body")[0].style.height = originalHeight + "px";
+        document.getElementsByTagName("body")[0].style.height = originalHeight;
     } else {
-        window.qmLog.info(null, 'document.getElementsByTagName(body)[0] does not exist', null)
+        window.qmLog.error('document.getElementsByTagName(body)[0] does not exist');
     }
-    sectionRate.className = "visible";
-    sectionRate.style.display = "block";
-    question.className = "visible";
-    question.style.display = "block";
+    //sectionRate.className = "visible";
+    //sectionRate.style.display = "block";
+    //question.className = "visible";
+    //question.style.display = "block";
     //loader.style.display = "block";
     //loader.className = "visible";
 }
-function hideLoader() {
-    var sectionRate = document.getElementById("sectionRate");
-    var loader = document.getElementById("loader");
-    loader.className = "invisible";
-    loader.style.display = "none";
-    sectionRate.style.display = "block";
-    sectionRate.className = "visible";
-}
+// function hideLoader() {
+//     var sectionRate = document.getElementById("sectionRate");
+//     var loader = document.getElementById("loader");
+//     loader.className = "invisible";
+//     loader.style.display = "none";
+//     sectionRate.style.display = "block";
+//     sectionRate.className = "visible";
+// }
 function displaySendingTextAndPostMeasurements() {
     var sectionRate = document.getElementById("sectionRate");
     var sectionSendingMood = document.getElementById("sectionSendingMood");
