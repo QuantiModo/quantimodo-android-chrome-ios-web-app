@@ -7443,16 +7443,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             function noCallback() {disablePopups();}
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev, noText);
         }
-        if(drawOverAppsEnabled()){
+        if(qmNotifications.drawOverAppsEnabled()){
             disablePopups();
         } else {
             showEnablePopupsConfirmation();
         }
     };
-    function drawOverAppsEnabled(){
-        var drawOverAppsEnabled =  qmStorage.getItem(qmStorage.items.drawOverAppsEnabled);
-        return drawOverAppsEnabled == 'true';
-    }
     qmService.showAndroidPopupForMostRecentNotification = function(){
         window.showAndroidPopupForMostRecentNotification();
     };
