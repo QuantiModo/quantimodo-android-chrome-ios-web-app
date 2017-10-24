@@ -9,6 +9,7 @@
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {};
+Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
 var logMetaData = false;
 if(!window.qmUser){
     window.qmUser = localStorage.getItem('user');
