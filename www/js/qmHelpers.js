@@ -831,9 +831,9 @@ window.canWeMakeRequestYet = function(type, route, options){
         var name = 'Just made a ' + type + ' request to ' + route;
         var message = name + ". We made the same request within the last " + minimumSecondsBetweenRequests + ' seconds (' +
             getSecondsSinceLastRequest(type, route) + ' ago). stackTrace: ' + options.stackTrace;
-        window.qmLog.error(null, message);
+        window.qmLog.error(name, message, options);
         if(blockRequests){
-            window.qmLog.error(null, 'BLOCKING REQUEST because ' + message);
+            window.qmLog.error('BLOCKING REQUEST: ' + name, 'BLOCKING REQUEST because ' + message, options);
             return false;
         }
     }
