@@ -3,10 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<title>Settings</title>
-	<link id="favicon" rel="icon" type="image/png" sizes="16x16" href="../../img/icons/icon_16.png">
-	<link rel="stylesheet" href="options-shared.css">
-	<link rel="stylesheet" href="navigation.css">
-	<script src="navigation.js"></script>
+	<link id="favicon" rel="icon" type="image/png" sizes="16x16" href="img/icons/icon_16.png">
+	<link rel="stylesheet" href="chrome_extension/options/options-shared.css">
+	<link rel="stylesheet" href="chrome_extension/options/navigation.css">
+	<script src="chrome_extension/options/navigation.js"></script>
 </head>
 <body style="height: 100%;">
 	<div id="navigation" data-width="155" class="changing-content" style="-webkit-transform: translateX(0px); font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 75%; width: 155px; margin-top: -20px; z-index: 3; left: 0; height: 100%;">
@@ -24,10 +24,10 @@
 		</ul>
 	</div>
 	<div id="settingsContent" class="iframe-container" style="bottom: 0; left: 155px; position: absolute; right: 0;top: 0; z-index: 2;">
-		<iframe src="settings.html" style="border: none; display: block; height: 100%; width: 100%;"></iframe>
+		<iframe src="chrome_settings.html" style="border: none; display: block; height: 100%; width: 100%;"></iframe>
 	</div>
 	<div id="appearanceContent" class="iframe-container" style="bottom: 0; left: 155px; position: absolute; right: 0;top: 0; z-index: 1;">
-		<iframe src="appearance.html" style="border: none; display: block; height: 100%; width: 100%;"></iframe>
+		<iframe src="chrome_appearance.html" style="border: none; display: block; height: 100%; width: 100%;"></iframe>
 	</div>
 </body>
 </html>

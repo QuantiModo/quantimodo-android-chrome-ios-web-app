@@ -6,6 +6,7 @@ function clearNotifications() {
     chrome.notifications.clear("moodReportNotification", function() {});
 }
 function setFaceButtonListeners() {
+    qmLog.debug("Setting face button listeners");
     document.getElementById('buttonMoodDepressed').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodSad').onclick = onFaceButtonClicked;
     document.getElementById('buttonMoodOk').onclick = onFaceButtonClicked;
@@ -15,27 +16,32 @@ function setFaceButtonListeners() {
     document.getElementById('question').onclick = inboxButtonClicked;
 }
 function getVariableName() {
-    if(window.getUrlParameter('variableName')){return window.getUrlParameter('variableName');}
+    var variableName = window.getUrlParameter('variableName');
+    if(variableName){
+        qmLog.debug("Got variableName " + variableName + " from url");
+        return variableName;
+    }
 }
 function valenceNegative() {
     if(window.trackingReminderNotification.valence === "negative"){return true;}
 }
 var inboxButtonClicked = function() {
-    window.qmLog.info(null, 'inboxButtonClicked', null);
+    window.qmLog.info('inboxButtonClicked');
     if(typeof OverApps !== "undefined"){
-        window.qmLog.info(null, 'Calling  OverApps.openApp', null);
+        window.qmLog.info('Calling OverApps.openApp');
         //OverApps.openApp();
         //OverApps.closeWebView();
         OverApps.closeWebView();
         OverApps.openApp();
     } else {
-        window.qmLog.info(null, 'OverApps not defined', null);
+        window.qmLog.error('OverApps not defined');
         qmChrome.reminderInboxPopupWindowParams.focused = true;
         openOrFocusChromePopupWindow(qmChrome.reminderInboxPopupWindowParams);
     }
 };
 var onFaceButtonClicked = function() {
     var buttonId = this.id;
+    window.qmLog.info('onFaceButtonClicked buttonId ' + buttonId);
     var ratingValue; // Figure out what rating was selected
     if (buttonId === "buttonMoodDepressed") {if(valenceNegative()){ ratingValue = 5; } else { ratingValue = 1;}
     } else if (buttonId === "buttonMoodSad") {if(valenceNegative()){ ratingValue = 4; } else { ratingValue = 2;}
@@ -74,6 +80,7 @@ var onFaceButtonClicked = function() {
     closePopup();
 };
 function hidePopup() {
+    window.qmLog.info('hidePopup');
     //originalHeight = 56;
     //var sectionRate = document.getElementById("sectionRate");
     //var loader = document.getElementById("loader");
@@ -92,6 +99,7 @@ function hidePopup() {
     //loader.className = "visible";
 }
 function unHidePopup() {
+    window.qmLog.info('unHidePopup');
     //var sectionRate = document.getElementById("sectionRate");
     //var question = document.getElementById("question");
     if (document.getElementsByTagName("body")[0]) {
@@ -134,6 +142,7 @@ function displaySendingTextAndPostMeasurements() {
     }, 400 );
 }
 function closePopup() {
+    window.qmLog.info('closePopup');
     clearNotifications();
     window.close();
     if(typeof OverApps !== "undefined"){
@@ -146,11 +155,11 @@ function closePopup() {
 function updateQuestion(variableName) {
     unHidePopup();
     var questionText = "How is your " + variableName.toLowerCase() + "?";
-    window.qmLog.info(null, 'Updating question to ' + questionText, null);
+    window.qmLog.info(null, 'Updating question to ' + questionText);
     document.getElementById("question").innerHTML = questionText;
     document.title = questionText;
     if(isChromeExtension()){
-        window.qmLog.info(null, 'Setting question display to none ', null);
+        window.qmLog.info(null, 'Setting question display to none ');
         document.getElementById("question").style.display = "none";
     } else {
         window.qmLog.info(null, 'NOT setting question display to none because not on Chrome', null);
