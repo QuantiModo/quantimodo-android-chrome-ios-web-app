@@ -1879,7 +1879,7 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
 });
 gulp.task('configureApp', [], function (callback) {
     runSequence(
-        'deleteSuccessFile',
+        //'deleteSuccessFile',  // I think this breaks iOS build
         'setClientId',
         'copyIonIconsToWww',
         'sass',
