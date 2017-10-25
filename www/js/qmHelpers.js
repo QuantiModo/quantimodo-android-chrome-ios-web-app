@@ -301,7 +301,7 @@ function openOrFocusChromePopupWindow(windowParams) {
         }
     });
 }
-notificationsHelper.updateChromeBadge = function(numberOfNotifications){
+qmChrome.updateChromeBadge = function(numberOfNotifications){
     var text = "";
     if(isChromeExtension() && typeof chrome.browserAction !== "undefined"){
         if(numberOfNotifications){text = numberOfNotifications.toString();}
@@ -313,7 +313,7 @@ function openChromePopup(notificationId, focusWindow) {
     if(!isChromeExtension()){return;}
 	if(!notificationId){notificationId = null;}
 	var windowParams;
-	notificationsHelper.updateChromeBadge(0);
+	qmChrome.updateChromeBadge(0);
 	if(notificationId === "moodReportNotification") {
         openOrFocusChromePopupWindow(qmChrome.facesRatingPopupWindowParams);
 	} else if (notificationId === "signin") {
@@ -415,7 +415,7 @@ notificationsHelper.refreshAndShowPopupIfNecessary = function(notificationParams
             var ratingNotification = window.qmStorage.getMostRecentRatingNotification();
             if(ratingNotification){
                 openOrFocusChromePopupWindow(getChromeRatingNotificationParams(ratingNotification));
-                notificationsHelper.updateChromeBadge(0);
+                qmChrome.updateChromeBadge(0);
             } else if (numberOfWaitingNotifications > 0) {
                 qmChrome.createSmallNotificationAndOpenInboxInBackground(alarm);
             }
@@ -555,7 +555,7 @@ window.qmStorage.getTrackingReminderNotifications = function(variableCategoryNam
     if(trackingReminderNotifications.length){
         if (isChromeExtension()) {
             //noinspection JSUnresolvedFunction
-            notificationsHelper.updateChromeBadge(trackingReminderNotifications.length);
+            qmChrome.updateChromeBadge(trackingReminderNotifications.length);
         }
     }
     return trackingReminderNotifications;
@@ -588,7 +588,9 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
 };
 window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
     qmLog.info(null, 'qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray), null);
-    if(!replacementElementArray instanceof Array){ replacementElementArray = [replacementElementArray]; }
+    if(!(replacementElementArray instanceof Array)){
+        replacementElementArray = [replacementElementArray];
+    }
     // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
     var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
     var localStorageItemArray = JSON.parse(qmStorage.getAsString(localStorageItemName));
@@ -895,7 +897,7 @@ if(isChromeExtension()) {
         var ratingNotification = window.qmStorage.getMostRecentRatingNotification();
         if(ratingNotification){
             openOrFocusChromePopupWindow(getChromeRatingNotificationParams(ratingNotification));
-            notificationsHelper.updateChromeBadge(0);
+            qmChrome.updateChromeBadge(0);
         } else if (localStorage.useSmallInbox && localStorage.useSmallInbox === "true") {
             openOrFocusChromePopupWindow(qmChrome.compactInboxPopupWindowParams);
         } else if (alarm) {

@@ -605,7 +605,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             successHandler();
             return;
         }
-        if(!trackingReminderNotificationsArray instanceof Array){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
+        if(!(trackingReminderNotificationsArray instanceof Array)){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
         var options = {};
         options.doNotSendToLogin = false;
         options.doNotShowOfflineError = true;
@@ -636,7 +636,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
         qmLogService.info(null, 'postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray), null);
-        if(!trackingRemindersArray instanceof Array){trackingRemindersArray = [trackingRemindersArray];}
+        if(!(trackingRemindersArray instanceof Array)){trackingRemindersArray = [trackingRemindersArray];}
         var d = new Date();
         for(var i = 0; i < trackingRemindersArray.length; i++){trackingRemindersArray[i].timeZoneOffset = d.getTimezoneOffset();}
         qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
@@ -676,7 +676,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.postUserTag = function(userTagData, successHandler, errorHandler) {
-        if(!userTagData instanceof Array){userTagData = [userTagData];}
+        if(!(userTagData instanceof Array)){userTagData = [userTagData];}
         qmService.post('api/v3/userTags', [], userTagData, successHandler, errorHandler);
     };
     qmService.postVariableJoinDeferred = function(tagData) {
@@ -689,7 +689,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.postVariableJoin = function(variableJoinData, successHandler, errorHandler) {
-        if(!variableJoinData instanceof Array){variableJoinData = [variableJoinData];}
+        if(!(variableJoinData instanceof Array)){variableJoinData = [variableJoinData];}
         qmService.post('api/v3/variables/join', [], variableJoinData, successHandler, errorHandler);
     };
     qmService.deleteVariableJoinDeferred = function(tagData) {
@@ -2349,7 +2349,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
                     if($rootScope.isAndroid){qmService.showAndroidPopupForMostRecentNotification();}
-                    notificationsHelper.updateChromeBadge(trackingReminderNotifications.length);
+                    qmChrome.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
                 }
@@ -2552,8 +2552,18 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
         window.qmStorage.deleteTrackingReminderNotification(body);
     };
+    function isArray(variable){
+        var isArray = Array.isArray(trackingReminderNotifications);
+        if(isArray){return true;}
+        var constructorArray = trackingReminderNotifications.constructor === Array;
+        if(constructorArray){return true;}
+        var instanceOfArray = trackingReminderNotifications instanceof Array;
+        if(instanceOfArray){return true;}
+        var prototypeArray = Object.prototype.toString.call(trackingReminderNotifications) === '[object Array]';
+        if(prototypeArray){return true;}
+    }
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
-        if(!trackingReminderNotifications instanceof Array){
+        if(!isArray(trackingReminderNotifications)){
             qmLogService.error("trackingReminderNotifications is not an array! trackingReminderNotifications: " + JSON.stringify(trackingReminderNotifications));
             return;
         } else {
@@ -2563,8 +2573,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var reference = moment().local();
         var today = reference.clone().startOf('day');
         var yesterday = reference.clone().subtract(1, 'days').startOf('day');
-        var weekold = reference.clone().subtract(7, 'days').startOf('day');
-        var monthold = reference.clone().subtract(30, 'days').startOf('day');
+        var weekOld = reference.clone().subtract(7, 'days').startOf('day');
+        var monthOld = reference.clone().subtract(30, 'days').startOf('day');
         var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
             /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
             return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
@@ -2576,16 +2586,16 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if (yesterdayResult.length) {result.push({name: "Yesterday", trackingReminderNotifications: yesterdayResult});}
         var last7DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
             var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
-            return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+            return date.isAfter(weekOld) === true && date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
         });
         if (last7DayResult.length) {result.push({name: "Last 7 Days", trackingReminderNotifications: last7DayResult});}
         var last30DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
             var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
-            return date.isAfter(monthold) === true && date.isBefore(weekold) === true && date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+            return date.isAfter(monthOld) === true && date.isBefore(weekOld) === true && date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
         });
         if (last30DayResult.length) {result.push({name: "Last 30 Days", trackingReminderNotifications: last30DayResult});}
         var olderResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
-            return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
+            return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthOld) === true;
         });
         if (olderResult.length) {result.push({name: "Older", trackingReminderNotifications: olderResult});}
         return result;
@@ -4150,7 +4160,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function putCommonVariablesInLocalStorageUsingJsonFile(){
         var deferred = $q.defer();
         $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
-            if(!commonVariables instanceof Array){
+            if(!(commonVariables instanceof Array)){
                 qmLogService.error('commonVariables.json is not present!');
                 deferred.reject('commonVariables.json is not present!');
             } else {
@@ -4340,7 +4350,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                     /** @namespace window.chrome */
                     /** @namespace window.chrome.browserAction */
-                    notificationsHelper.updateChromeBadge(response.data.length);
+                    qmChrome.updateChromeBadge(response.data.length);
                     if (!$rootScope.numberOfPendingNotifications) {
                         if(!qmService.shouldWeUseIonicLocalNotifications()) {return;}
                         qmLogService.debug(null, 'onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications', null);
@@ -4431,14 +4441,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.decrementNotificationBadges = function(){
         if($rootScope.numberOfPendingNotifications > 0){
-            notificationsHelper.updateChromeBadge($rootScope.numberOfPendingNotifications);
+            qmChrome.updateChromeBadge($rootScope.numberOfPendingNotifications);
             this.updateOrRecreateNotifications();
         }
     };
     qmService.setNotificationBadge = function(numberOfPendingNotifications){
         qmLogService.debug(null, 'setNotificationBadge: numberOfPendingNotifications is ' + numberOfPendingNotifications, null);
         $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
-        notificationsHelper.updateChromeBadge($rootScope.numberOfPendingNotifications);
+        qmChrome.updateChromeBadge($rootScope.numberOfPendingNotifications);
         this.updateOrRecreateNotifications();
     };
     qmService.updateOrRecreateNotifications = function() {
@@ -5448,6 +5458,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         };
     }
     function createCloudCoverMeasurement(data) {
+        /** @namespace data.daily.data[0].cloudCover */
         return {
             variableCategoryName: "Environment",
             variableName: "Cloud Cover",
@@ -6164,7 +6175,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function separateFavoritesAndArchived(trackingReminders){
         var reminderTypesArray = {allTrackingReminders: trackingReminders};
         qmLogService.debug('separateFavoritesAndArchived: allTrackingReminders is: ' + JSON.stringify(trackingReminders), null);
-        if(!trackingReminders instanceof Array){
+        if(!(trackingReminders instanceof Array)){
             qmLogService.debug('trackingReminders is not an array! trackingReminders:', null, trackingReminders);
         } else {
             qmLogService.debug('trackingReminders is an array');
