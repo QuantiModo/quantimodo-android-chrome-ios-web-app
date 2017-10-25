@@ -588,7 +588,7 @@ window.qmStorage.getElementOfLocalStorageItemById = function(localStorageItemNam
 };
 window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemName, replacementElementArray){
     qmLog.info(null, 'qmStorage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' + JSON.stringify(replacementElementArray), null);
-    if(replacementElementArray.constructor !== Array){ replacementElementArray = [replacementElementArray]; }
+    if(!replacementElementArray instanceof Array){ replacementElementArray = [replacementElementArray]; }
     // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
     var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
     var localStorageItemArray = JSON.parse(qmStorage.getAsString(localStorageItemName));

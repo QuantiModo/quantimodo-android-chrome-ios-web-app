@@ -605,7 +605,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             successHandler();
             return;
         }
-        if(trackingReminderNotificationsArray.constructor !== Array){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
+        if(!trackingReminderNotificationsArray instanceof Array){trackingReminderNotificationsArray = [trackingReminderNotificationsArray];}
         var options = {};
         options.doNotSendToLogin = false;
         options.doNotShowOfflineError = true;
@@ -636,7 +636,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler) {
         qmLogService.info(null, 'postTrackingRemindersToApi: ' + JSON.stringify(trackingRemindersArray), null);
-        if(trackingRemindersArray.constructor !== Array){trackingRemindersArray = [trackingRemindersArray];}
+        if(!trackingRemindersArray instanceof Array){trackingRemindersArray = [trackingRemindersArray];}
         var d = new Date();
         for(var i = 0; i < trackingRemindersArray.length; i++){trackingRemindersArray[i].timeZoneOffset = d.getTimezoneOffset();}
         qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
@@ -676,7 +676,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.postUserTag = function(userTagData, successHandler, errorHandler) {
-        if(userTagData.constructor !== Array){userTagData = [userTagData];}
+        if(!userTagData instanceof Array){userTagData = [userTagData];}
         qmService.post('api/v3/userTags', [], userTagData, successHandler, errorHandler);
     };
     qmService.postVariableJoinDeferred = function(tagData) {
@@ -689,7 +689,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return deferred.promise;
     };
     qmService.postVariableJoin = function(variableJoinData, successHandler, errorHandler) {
-        if(variableJoinData.constructor !== Array){variableJoinData = [variableJoinData];}
+        if(!variableJoinData instanceof Array){variableJoinData = [variableJoinData];}
         qmService.post('api/v3/variables/join', [], variableJoinData, successHandler, errorHandler);
     };
     qmService.deleteVariableJoinDeferred = function(tagData) {
@@ -2553,11 +2553,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         window.qmStorage.deleteTrackingReminderNotification(body);
     };
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
-        if(trackingReminderNotifications.constructor !== Array){
+        if(!trackingReminderNotifications instanceof Array){
             qmLogService.error("trackingReminderNotifications is not an array! trackingReminderNotifications: " + JSON.stringify(trackingReminderNotifications));
             return;
         } else {
-            qmLogService.debug(null, 'trackingReminderNotifications is an array', null);
+            qmLogService.debug('trackingReminderNotifications is an array', null);
         }
         var result = [];
         var reference = moment().local();
@@ -4150,7 +4150,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     function putCommonVariablesInLocalStorageUsingJsonFile(){
         var deferred = $q.defer();
         $http.get('data/commonVariables.json').success(function(commonVariables) { // Generated in `gulp configureAppAfterNpmInstall` with `gulp getCommonVariables`
-            if(commonVariables.constructor !== Array){
+            if(!commonVariables instanceof Array){
                 qmLogService.error('commonVariables.json is not present!');
                 deferred.reject('commonVariables.json is not present!');
             } else {
@@ -6163,11 +6163,11 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     }
     function separateFavoritesAndArchived(trackingReminders){
         var reminderTypesArray = {allTrackingReminders: trackingReminders};
-        qmLogService.debug(null, 'separateFavoritesAndArchived: allTrackingReminders is: ' + JSON.stringify(trackingReminders), null);
-        if(trackingReminders.constructor !== Array){
-            qmLogService.debug(null, 'trackingReminders is not an array! trackingReminders:', null, trackingReminders);
+        qmLogService.debug('separateFavoritesAndArchived: allTrackingReminders is: ' + JSON.stringify(trackingReminders), null);
+        if(!trackingReminders instanceof Array){
+            qmLogService.debug('trackingReminders is not an array! trackingReminders:', null, trackingReminders);
         } else {
-            qmLogService.debug(null, 'trackingReminders is an array', null);
+            qmLogService.debug('trackingReminders is an array');
         }
         try {
             reminderTypesArray.favorites = trackingReminders.filter(function( trackingReminder ) {
