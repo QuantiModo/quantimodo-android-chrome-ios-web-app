@@ -2152,7 +2152,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'cordovaBuildAndroidRelease',
         //'outputArmv7ApkVersionCode',
         //'outputX86ApkVersionCode',
-        'outputCombinedApkVersionCode',
+        //'outputCombinedApkVersionCode',
         'cordovaBuildAndroidDebug',
         //"upload-x86-release-apk-to-s3",
         //"upload-armv7-release-apk-to-s3",
