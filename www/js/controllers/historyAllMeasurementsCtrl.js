@@ -68,7 +68,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', function($sco
             } else {
             	$scope.state.showLoadMoreButton = true;
                 if (concat) {
-                    if($scope.state.history.constructor !== Array){
+                    if(!($scope.state.history.constructor instanceof Array)){
                         qmLogService.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
                         $scope.state.history = measurements;
                     } else {

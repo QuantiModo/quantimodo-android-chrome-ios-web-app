@@ -136,6 +136,7 @@ var devCredentialsPath = privateConfigDirectoryPath + 'dev-credentials.json';
 var defaultAppConfigPath = appConfigDirectoryPath + 'default.config.json';
 var pathToOutputApks = 'platforms/android/build/outputs/apk';
 var pathToCombinedReleaseApk = pathToOutputApks + '/android-release.apk';
+var pathToCombinedDebugApk = pathToOutputApks + '/android-debug.apk';
 var androidArm7ReleaseApkName = 'android-armv7-release';
 var pathToReleaseArmv7Apk = pathToOutputApks + '/' + androidArm7ReleaseApkName + '.apk';
 var androidX86ReleaseApkName = 'android-x86-release';
@@ -661,7 +662,7 @@ function createChromeManifest(outputPath) {
         'name': appSettings.appDisplayName,
         'description': appSettings.appDescription,
         'version': versionNumbers.ionicApp,
-        'options_page': 'chrome_extension/options/options.html',
+        'options_page': 'chrome_options.html',
         'icons': {
             '16': 'img/icons/icon_16.png',
             '48': 'img/icons/icon_48.png',
@@ -708,6 +709,8 @@ function writeToFile(filePath, stringContents) {
     if(typeof stringContents !== "string"){stringContents = JSON.stringify(stringContents);}
     return fs.writeFileSync(filePath, stringContents);
 }
+gulp.task('createSuccessFile', function () {return fs.writeFileSync('success');});
+gulp.task('deleteSuccessFile', function () {return clean(['success']);});
 gulp.task('setClientId', function (callback) {setClientId(callback);});
 gulp.task('validateAndSaveDevCredentials', ['setClientId'], function () {
     var options = getRequestOptions('/api/v1/user');
@@ -1078,6 +1081,11 @@ gulp.task("upload-armv7-release-apk-to-s3", function() {
 gulp.task("upload-combined-release-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
         return uploadBuildToS3(pathToCombinedReleaseApk);
+    }
+});
+gulp.task("upload-combined-debug-apk-to-s3", function() {
+    if(!buildSettings.xwalkMultipleApk){
+        return uploadBuildToS3(pathToCombinedDebugApk);
     }
 });
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
@@ -1861,7 +1869,6 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
         logInfo('Building Android because BUDDYBUILD_SCHEME is not set and we know we\'re on BuddyBuild because BUDDYBUILD_SECURE_FILES is set to: ' + process.env.BUDDYBUILD_SECURE_FILES);
         runSequence(
             'prepareRepositoryForAndroid',
-            'prepareAndroidApp',
             //'buildQuantiModoAndroid',  // Had to do this previously because buildAndroid wasn't working
             callback);
     } else {
@@ -1872,6 +1879,7 @@ gulp.task('configureAppAfterNpmInstall', [], function (callback) {
 });
 gulp.task('configureApp', [], function (callback) {
     runSequence(
+        'deleteSuccessFile',
         'setClientId',
         'copyIonIconsToWww',
         'sass',
@@ -1886,6 +1894,7 @@ gulp.task('configureApp', [], function (callback) {
         'verifyExistenceOfDefaultConfig',
         'copyIconsToWwwImg',
         'setVersionNumberInFiles',
+        'createSuccessFile',
         callback);
 });
 gulp.task('buildChromeExtension', ['getAppConfigs'], function (callback) {
@@ -2052,6 +2061,7 @@ gulp.task('cordovaBuildAndroidDebug', function (callback) {
     if(buildDebug){
         appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7DebugApkName)] = "BUILDING";
         appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86DebugApkName)] = "BUILDING";
+        appSettings.appStatus.buildStatus.androidDebug = "BUILDING";
         postAppStatus();
         return execute(getCordovaBuildCommand('debug', 'android'), callback);
     } else {
@@ -2062,6 +2072,7 @@ gulp.task('cordovaBuildAndroidDebug', function (callback) {
 gulp.task('cordovaBuildAndroidRelease', function (callback) {
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidArm7ReleaseApkName)] = "BUILDING";
     appSettings.appStatus.buildStatus[convertFilePathToPropertyName(androidX86ReleaseApkName)] = "BUILDING";
+    appSettings.appStatus.buildStatus.androidRelease = "BUILDING";
     postAppStatus();
     return execute(getCordovaBuildCommand('release', 'android'), callback);
 });
@@ -2071,7 +2082,7 @@ gulp.task('prepareQuantiModoIos', function (callback) {
         'prepareIosApp',
         callback);
 });
-gulp.task('generateAndroidResources', [], function (callback) {
+gulp.task('ionicResourcesAndroid', [], function (callback) {
     return execute('ionic resources android', callback);
 });
 gulp.task('ionicRunAndroid', [], function (callback) {
@@ -2111,57 +2122,10 @@ gulp.task('prepareRepositoryForAndroidWithoutCleaning', function (callback) {
         'ionicInfo',
         callback);
 });
-gulp.task('prepareAndroidApp', function (callback) {
-    platformCurrentlyBuildingFor = 'android';
-    runSequence(
-        'configureApp',
-        'copyAppResources',
-        'uncommentCordovaJsInIndexHtml',
-        'generateConfigXmlFromTemplate',
-        'cordovaPlatformVersionAndroid',
-        'decryptBuildJson',
-        'generatePlayPublicLicenseKeyManifestJson',
-        'downloadAndroidReleaseKeystore',
-        'generateAndroidResources',
-        'copyAndroidResources',
-        'copyIconsToWwwImg',
-        'reinstallDrawOverAppsPlugin',
-        callback);
-});
-gulp.task('buildAndroidAppWithCleaning', ['getAppConfigs'], function (callback) {
-    /** @namespace appSettings.additionalSettings.monetizationSettings */
-    /** @namespace appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled */
-    if(!appSettings.additionalSettings.monetizationSettings.playPublicLicenseKey && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled){
-        logError("Please add your playPublicLicenseKey at " + getAppDesignerUrl());
-        logError("No playPublicLicenseKey so disabling subscriptions on Android build");
-        appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled = false;
-        generateDefaultConfigJson(appSettings);
-    }
-    /** @namespace appSettings.appStatus.buildEnabled */
-    /** @namespace appSettings.appStatus.buildEnabled.androidRelease */
-    if(!appSettings.appStatus.buildEnabled.androidRelease){
-        logInfo("Not building android app because appSettings.appStatus.buildEnabled.androidRelease is "
-            + appSettings.appStatus.buildEnabled.androidRelease + ".  You can enabled it at " + getAppDesignerUrl());
-        return;
-    }
+gulp.task('buildAndroidAfterCleaning', [], function (callback) {
     runSequence(
         'prepareRepositoryForAndroid',
-        'copyAndroidLicenses',
-        'bowerInstall',
-        'prepareAndroidApp',
-        'ionicInfo',
-        'checkDrawOverAppsPlugin',
-        'cordovaBuildAndroidRelease',
-        'outputArmv7ApkVersionCode',
-        'outputX86ApkVersionCode',
-        'outputCombinedApkVersionCode',
-        'cordovaBuildAndroidDebug',
-        //'copyAndroidBuild',
-        "upload-x86-release-apk-to-s3",
-        "upload-armv7-release-apk-to-s3",
-        "upload-combined-release-apk-to-s3",
-        "fastlaneSupplyBeta",
-        "post-app-status",
+        'buildAndroidApp',
         callback);
 });
 gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
@@ -2183,25 +2147,30 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
     runSequence(
         'copyAndroidLicenses',
         'bowerInstall',
-        'prepareAndroidApp',
+        'configureApp',
+        'copyAppResources',
+        'uncommentCordovaJsInIndexHtml',
+        'generateConfigXmlFromTemplate',
+        'cordovaPlatformVersionAndroid',
+        'decryptBuildJson',
+        'generatePlayPublicLicenseKeyManifestJson',
+        'downloadAndroidReleaseKeystore',
+        'ionicResourcesAndroid',
+        'copyAndroidResources',
+        'copyIconsToWwwImg',
+        'reinstallDrawOverAppsPlugin',
         'ionicInfo',
         'checkDrawOverAppsPlugin',
         'cordovaBuildAndroidRelease',
-        'outputArmv7ApkVersionCode',
-        'outputX86ApkVersionCode',
-        'outputCombinedApkVersionCode',
+        //'outputArmv7ApkVersionCode',
+        //'outputX86ApkVersionCode',
+        //'outputCombinedApkVersionCode',
         'cordovaBuildAndroidDebug',
-        //'copyAndroidBuild',
-        "upload-x86-release-apk-to-s3",
-        "upload-armv7-release-apk-to-s3",
+        //"upload-x86-release-apk-to-s3",
+        //"upload-armv7-release-apk-to-s3",
         "upload-combined-release-apk-to-s3",
+        "upload-combined-debug-apk-to-s3",
         "fastlaneSupplyBeta",
         "post-app-status",
-        callback);
-});
-gulp.task('prepareQuantiModoAndroid', function (callback) {
-    runSequence(
-        'setQuantiModoEnvs',
-        'prepareAndroidApp',
         callback);
 });

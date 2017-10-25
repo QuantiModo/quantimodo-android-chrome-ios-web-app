@@ -1,9 +1,13 @@
 <html id="t" i18n-values="dir:textdirection" class="focus-outline-visible" dir="ltr" hasflashplugin="" flashpluginsupportsclearsitedata="" enablepepperflashsettings=""><head>
 <meta charset="utf-8">
 <title i18n-content="optionsPageTitle">Settings</title>
-	<link rel="stylesheet" href="options-shared.css">
-	<link rel="stylesheet" href="options-content.css">
-	<script src="settings.js"></script>
+	<link rel="stylesheet" href="chrome_extension/options/options-shared.css">
+	<link rel="stylesheet" href="chrome_extension/options/options-content.css">
+	<script src="custom-lib/bugsnag.js"></script>
+	<script src="js/qmLogger.js"></script>
+	<script src="js/qmHelpers.js"></script>
+	<!--<script src="../../js/popup.js"></script>-->
+	<script src="chrome_extension/options/settings.js"></script>
 </head>
 <body class="uber-frame" i18n-values=".style.fontFamily:fontfamily;.style.fontSize:fontsize" style="font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 75%;">
 <div id="mainview" style="background: white">
@@ -59,9 +63,9 @@
 					  </div>
 					  <div class="checkbox">
 						<span class="controlled-setting-with-label">
-						  <input id="showNotificationCheckbox" type="checkbox">
+						  <input id="showSmallNotificationCheckbox" type="checkbox">
 						  <span>
-							<label for="showNotificationCheckbox">Show a more subtle notification that disappears after a few seconds</label>
+							<label for="showSmallNotificationCheckbox">Show a more subtle notification that disappears after a few seconds</label>
 						  </span>
 						</span>
 					  </div>

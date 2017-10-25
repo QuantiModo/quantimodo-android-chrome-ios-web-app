@@ -38,10 +38,15 @@ var onIntervalChanged = function() {
 			chrome.alarms.create("moodReportAlarm", alarmInfo)
 			console.log("Alarm set, every " + notificationInterval + " minutes");
 		}
+        qmChrome.showRatingOrInboxPopup();
 	}
 };
-var onShowNotificationChanged = function() {localStorage["showNotification"] = this.checked;};
-var onUseSmallInboxChanged = function() {localStorage.useSmallInbox = this.checked;};
+var onShowSmallNotificationChanged = function() {
+	localStorage["showSmallNotification"] = this.checked;
+};
+var onUseSmallInboxChanged = function() {
+	localStorage.useSmallInbox = this.checked;
+};
 var showBadgeChanged = function() {localStorage["showBadge"] = this.checked;};
 document.addEventListener('DOMContentLoaded', function () {
 	loadAccountDetails();
@@ -56,9 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 	notificationIntervalSelect.onchange=onIntervalChanged;
-	var showNotificationCheckbox = document.getElementById('showNotificationCheckbox');
-	showNotificationCheckbox.checked = localStorage["showNotification"] == "true" ? true : false;
-	showNotificationCheckbox.onchange=onShowNotificationChanged;
+	var showSmallNotificationCheckbox = document.getElementById('showSmallNotificationCheckbox');
+	showSmallNotificationCheckbox.checked = localStorage["showSmallNotification"] == "true" ? true : false;
+	showSmallNotificationCheckbox.onchange=onShowSmallNotificationChanged;
     var useSmallInboxCheckbox = document.getElementById('useSmallInboxCheckbox');
     useSmallInboxCheckbox.checked = localStorage.useSmallInbox === "true";
     useSmallInboxCheckbox.onchange=onUseSmallInboxChanged;
