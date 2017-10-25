@@ -274,6 +274,7 @@ function openOrFocusChromePopupWindow(windowParams) {
     if(!isChromeExtension()){return;}
     window.qmLog.info('openOrFocusChromePopupWindow checking if a window is already open', null, windowParams );
     function createWindow(windowParams) {
+        qmLog.info("creating popup window", null, windowParams);
         chrome.windows.create(windowParams, function (chromeWindow) {
             qmStorage.setItem('chromeWindowId', chromeWindow.id);
             chrome.windows.update(chromeWindow.id, { focused: windowParams.focused });
@@ -330,7 +331,6 @@ function openChromePopup(notificationId, focusWindow) {
         openOrFocusChromePopupWindow(qmChrome.reminderInboxPopupWindowParams);
 		console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
 	}
-	//chrome.windows.create(windowParams);
 	if(notificationId){chrome.notifications.clear(notificationId);}
 }
 if(isChromeExtension()){
@@ -391,9 +391,12 @@ qmStorage.setTrackingReminderNotifications = function(notifications){
     qmStorage.setItem(qmStorage.items.trackingReminderNotifications, notifications);
 };
 qmChrome.createSmallNotificationAndOpenInboxInBackground = function(alarm){
-    var notificationId = alarm.name;
+    var notificationId = "inbox";
+    if(alarm){notificationId = alarm.name;}
     chrome.notifications.create(notificationId, qmChrome.inboxNotificationParams, function (id) {});
-    openChromePopup(notificationId, false);
+    var windowParams = qmChrome.reminderInboxPopupWindowParams;
+    windowParams.focused = false;
+    openOrFocusChromePopupWindow(windowParams);
 };
 notificationsHelper.refreshAndShowPopupIfNecessary = function(notificationParams, alarm) {
     var type = "GET";
@@ -898,7 +901,7 @@ if(isChromeExtension()) {
         } else if (alarm) {
             checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm);
         } else if (notificationsHelper.getNumberInGlobalsOrLocalStorage()) {
-            openOrFocusChromePopupWindow(qmChrome.compactInboxPopupWindowParams);
+            qmChrome.createSmallNotificationAndOpenInboxInBackground();
         } else {
             notificationsHelper.refreshIfEmpty();
         }
