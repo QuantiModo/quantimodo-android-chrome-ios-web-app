@@ -1,8 +1,7 @@
 var originalHeight;
 function clearNotifications() {
     if(typeof chrome === "undefined"){ window.qmLog.debug(null, 'Can\'t clearNotifications because chrome is undefined', null, null); return;}
-    var badgeParams = {text: ""};
-    chrome.browserAction.setBadgeText(badgeParams);
+    notificationsHelper.updateChromeBadge(0);
     chrome.notifications.clear("moodReportNotification", function() {});
 }
 function setFaceButtonListeners() {

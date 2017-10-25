@@ -2349,10 +2349,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     var trackingReminderNotifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(response.data);
                     if(trackingReminderNotifications.length && $rootScope.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
                     if($rootScope.isAndroid){qmService.showAndroidPopupForMostRecentNotification();}
-                    if (window.chrome && window.chrome.browserAction) {
-                        chrome.browserAction.setBadgeText({text: "?"});
-                        //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
-                    }
+                    notificationsHelper.updateChromeBadge(trackingReminderNotifications.length);
                     qmService.refreshingTrackingReminderNotifications = false;
                     deferred.resolve(trackingReminderNotifications);
                 }
@@ -4343,10 +4340,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                     }
                     /** @namespace window.chrome */
                     /** @namespace window.chrome.browserAction */
-                    if (window.chrome && window.chrome.browserAction) {
-                        chrome.browserAction.setBadgeText({text: "?"});
-                        //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
-                    }
+                    notificationsHelper.updateChromeBadge(response.data.length);
                     if (!$rootScope.numberOfPendingNotifications) {
                         if(!qmService.shouldWeUseIonicLocalNotifications()) {return;}
                         qmLogService.debug(null, 'onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications', null);
@@ -4437,21 +4431,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.decrementNotificationBadges = function(){
         if($rootScope.numberOfPendingNotifications > 0){
-            if (window.chrome && window.chrome.browserAction) {
-                //noinspection JSUnresolvedFunction
-                chrome.browserAction.setBadgeText({text: "?"});
-                //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
-            }
+            notificationsHelper.updateChromeBadge($rootScope.numberOfPendingNotifications);
             this.updateOrRecreateNotifications();
         }
     };
     qmService.setNotificationBadge = function(numberOfPendingNotifications){
         qmLogService.debug(null, 'setNotificationBadge: numberOfPendingNotifications is ' + numberOfPendingNotifications, null);
         $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
-        if (window.chrome && window.chrome.browserAction) {
-            chrome.browserAction.setBadgeText({text: "?"});
-            //chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
-        }
+        notificationsHelper.updateChromeBadge($rootScope.numberOfPendingNotifications);
         this.updateOrRecreateNotifications();
     };
     qmService.updateOrRecreateNotifications = function() {

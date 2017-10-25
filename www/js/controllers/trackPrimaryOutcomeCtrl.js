@@ -26,7 +26,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', function($scope,
     $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
         $scope.timeRemaining = true;
         $scope.showRatingFaces = false;
-        if (window.chrome && window.chrome.browserAction) {chrome.browserAction.setBadgeText({text: ""});}
+        notificationsHelper.updateChromeBadge(0);
         var primaryOutcomeMeasurement = qmService.createPrimaryOutcomeMeasurement(numericRatingValue);
         qmService.addToMeasurementsQueue(primaryOutcomeMeasurement);
         updateCharts();
