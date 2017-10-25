@@ -96,3 +96,7 @@ www/custom-lib/quantimodo/
 www/data/units\.json
 ghostinspector\.json
 ngrok*
+gradlew
+gradlew.bat
+local.properties
+gradle/
