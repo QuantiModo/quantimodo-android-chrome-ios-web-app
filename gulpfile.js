@@ -2143,7 +2143,7 @@ gulp.task('buildAndroidApp', ['getAppConfigs'], function (callback) {
         'decryptBuildJson',
         'generatePlayPublicLicenseKeyManifestJson',
         'downloadAndroidReleaseKeystore',
-        //'ionicResourcesAndroid',
+        'ionicResourcesAndroid',
         'copyAndroidResources',
         'copyIconsToWwwImg',
         'reinstallDrawOverAppsPlugin',
