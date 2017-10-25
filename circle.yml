@@ -101,7 +101,7 @@ deployment:
     branch: develop
     commands:
       - gulp buildAllChromeExtensions # Build Chrome first in case Android upload fails
-      - gulp buildAllAndroidApps
+      - gulp buildAllAndroidAppsWithCleaning
       - gulp mergeToMasterAndTriggerRebuildsForAllApps
   production:
     branch: master
