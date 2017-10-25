@@ -1,5 +1,9 @@
 /** @namespace window.qmLog */
 String.prototype.toCamel = function(){return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});};
+window.qm = {
+    trackingReminderNotifications : []
+};
+window.notificationsHelper = {};
 window.qmStorage = {
     items: {
         accessToken: 'accessToken',
@@ -20,6 +24,7 @@ window.qmStorage = {
         notifications: 'trackingReminderNotifications',
         refreshToken: 'refreshToken',
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
+        trackingReminderNotifications: 'trackingReminderNotifications',
         trackingReminders: 'trackingReminders',
     }
 };
@@ -46,6 +51,10 @@ if(!window.qmUser){
     window.qmUser = localStorage.getItem(qmStorage.items.user);
     if(window.qmUser){window.qmUser = JSON.parse(window.qmUser);}
 }
+notificationsHelper.getFromGlobalsOrLocalStorage = function(){
+    if(qm.trackingReminderNotifications){return qm.trackingReminderNotifications;}
+    return qm.trackingReminderNotifications = qmStorage.getAsObject(qmStorage.items.trackingReminderNotifications);
+};
 window.qmStorage.getItem = function(key){
     var item = localStorage.getItem(key);
     if (typeof item === "string"){
@@ -375,7 +384,7 @@ qmStorage.setTrackingReminderNotifications = function(notifications){
     qmStorage.setLastNotificationsRefreshTime();
     qmStorage.setItem('trackingReminderNotifications', notifications);
 };
-function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
+notificationsHelper.refreshAndShowPopupIfNecessary = function(notificationParams, alarm) {
     var type = "GET";
     var route = apiPaths.trackingReminderNotificationsPast;
     if(!canWeMakeRequestYet(type, route, {blockRequests: true, minimumSecondsBetweenRequests: 300})){return;}
@@ -389,9 +398,9 @@ function refreshNotificationsAndShowPopupIfSo(notificationParams, alarm) {
             var notificationsObject = JSON.parse(xhr.responseText);
             var numberOfWaitingNotifications = objectLength(notificationsObject.data);
             qmStorage.setTrackingReminderNotifications(notificationsObject.data);
-            var trackingReminderNotification = window.qmStorage.getMostRecentRatingNotification();
-            if(trackingReminderNotification){
-                openOrFocusChromePopupWindow(getChromeRatingNotificationParams(trackingReminderNotification));
+            var ratingNotification = window.qmStorage.getMostRecentRatingNotification();
+            if(ratingNotification){
+                openOrFocusChromePopupWindow(getChromeRatingNotificationParams(ratingNotification));
                 updateBadgeText("");
             } else if (numberOfWaitingNotifications > 0) {
                 if(isChromeExtension()){
@@ -436,10 +445,10 @@ function checkTimePastNotificationsAndExistingPopupAndShowPopupIfNecessary(alarm
 		var trackingReminder = JSON.parse(alarm.name);
 		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';
 		notificationParams.message = 'Click to add measurement';
-        refreshNotificationsAndShowPopupIfSo(notificationParams, alarm);
+        notificationsHelper.refreshAndShowPopupIfNecessary(notificationParams, alarm);
 	} else {
-		window.qmLog.debug(null, 'alarm.name is not a json object', null, alarm);
-        refreshNotificationsAndShowPopupIfSo(qmChrome.inboxNotificationParams, alarm);
+		window.qmLog.debug('alarm.name is not a json object', null, alarm);
+        notificationsHelper.refreshAndShowPopupIfNecessary(qmChrome.inboxNotificationParams, alarm);
 	}
 }
 
@@ -688,12 +697,12 @@ window.qmStorage.saveAccessToken = function (accessResponse) {
         {groupingHash: groupingHash}, "error");
 };
 window.qmStorage.getMostRecentRatingNotification = function (){
-    var trackingReminderNotifications = window.qmStorage.getWithFilters('trackingReminderNotifications', 'unitAbbreviatedName', '/5');
-    trackingReminderNotifications = window.sortByProperty(trackingReminderNotifications, 'trackingReminderNotificationTime');
-    if(trackingReminderNotifications.length) {
-        var notification = trackingReminderNotifications[trackingReminderNotifications.length - 1];
+    var ratingNotifications = window.qmStorage.getWithFilters('trackingReminderNotifications', 'unitAbbreviatedName', '/5');
+    ratingNotifications = window.sortByProperty(ratingNotifications, 'trackingReminderNotificationTime');
+    if(ratingNotifications.length) {
+        var notification = ratingNotifications[ratingNotifications.length - 1];
         if(notification.trackingReminderNotificationTimeEpoch < timeHelper.getUnixTimestampInSeconds() - 86400){
-            window.qmLog.info(null, 'Got this notification but it\'s from yesterday: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
+            window.qmLog.info('Got this notification but it\'s from yesterday: ' + JSON.stringify(notification).substring(0, 140) + '...');
             //return;
         }
         window.qmLog.info(null, 'Got this notification: ' + JSON.stringify(notification).substring(0, 140) + '...', null);
@@ -701,9 +710,7 @@ window.qmStorage.getMostRecentRatingNotification = function (){
         qmStorage.deleteByProperty(qmStorage.items.notifications, 'variableName', notification.variableName);
         return notification;
     } else {
-        refreshNotificationsAndShowPopupIfSo();
-        //window.refreshNotificationsIfEmpty();
-        console.info('No notifications for popup', null);
+        console.info('No rating notifications for popup');
         return null;
     }
 };
@@ -717,13 +724,13 @@ window.sortByProperty = function(arrayToSort, propertyName){
     }
     return arrayToSort;
 };
-window.refreshNotificationsIfEmpty = function(){
+window.notificationsHelper.refreshIfEmpty = function(){
     var count = window.qmStorage.getTrackingReminderNotifications().length;
     if(!count){
-        window.qmLog.info(null, 'No notifications in local storage', null);
-        refreshNotificationsAndShowPopupIfSo();
+        window.qmLog.info('No notifications in local storage');
+        notificationsHelper.refreshAndShowPopupIfNecessary();
     } else {
-        window.qmLog.info(null, count + ' notifications in local storage', null);
+        window.qmLog.info(count + ' notifications in local storage');
     }
 };
 window.qmStorage.deleteTrackingReminderNotification = function(body){
@@ -734,7 +741,7 @@ window.qmStorage.deleteTrackingReminderNotification = function(body){
         window.qmLog.info(null, 'Deleting notification with id ' + trackingReminderNotificationId, null);
         window.qmStorage.deleteById('trackingReminderNotifications', trackingReminderNotificationId);
     } else {
-        window.refreshNotificationsIfEmpty();
+        window.notificationsHelper.refreshIfEmpty();
     }
 };
 window.qmNotifications.drawOverAppsEnabled = function(){
@@ -743,15 +750,15 @@ window.qmNotifications.drawOverAppsEnabled = function(){
 };
 window.showAndroidPopupForMostRecentNotification = function(){
     if(!qmNotifications.drawOverAppsEnabled()){window.qmLog.info(null, 'Can only show popups on Android', null); return;}
-    var trackingReminderNotification = window.qmStorage.getMostRecentRatingNotification();
-    if(trackingReminderNotification) {
+    var ratingNotification = window.qmStorage.getMostRecentRatingNotification();
+    if(ratingNotification) {
         //window.qmLog.info("No notifications for popup");
-        window.drawOverAppsRatingNotification(trackingReminderNotification);
+        window.drawOverAppsRatingNotification(ratingNotification);
     // } else if (window.qmStorage.getTrackingReminderNotifications().length) {
     //     window.drawOverAppsCompactInboxNotification();  // TODO: Fix me
     } else {
-        window.refreshNotificationsIfEmpty();
-        window.qmLog.info(null, 'No notifications for popup', null);
+        window.qmLog.info('No notifications for popup! Refreshing if empty...');
+        window.notificationsHelper.refreshIfEmpty();
     }
 };
 function getRatingNotificationPath(trackingReminderNotification){

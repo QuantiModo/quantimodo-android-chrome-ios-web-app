@@ -176,5 +176,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.resizeBy(wDiff, hDiff);
     if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
-    window.refreshNotificationsIfEmpty();
+    window.notificationsHelper.refreshIfEmpty();
 });
