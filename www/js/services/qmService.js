@@ -2553,13 +2553,13 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         window.qmStorage.deleteTrackingReminderNotification(body);
     };
     function isArray(variable){
-        var isArray = Array.isArray(trackingReminderNotifications);
+        var isArray = Array.isArray(variable);
         if(isArray){return true;}
-        var constructorArray = trackingReminderNotifications.constructor === Array;
+        var constructorArray = variable.constructor === Array;
         if(constructorArray){return true;}
-        var instanceOfArray = trackingReminderNotifications instanceof Array;
+        var instanceOfArray = variable instanceof Array;
         if(instanceOfArray){return true;}
-        var prototypeArray = Object.prototype.toString.call(trackingReminderNotifications) === '[object Array]';
+        var prototypeArray = Object.prototype.toString.call(variable) === '[object Array]';
         if(prototypeArray){return true;}
     }
     qmService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
