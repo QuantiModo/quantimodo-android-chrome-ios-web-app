@@ -91,7 +91,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	});
 	$scope.$on('$ionicView.afterEnter', function(){
         qmLogService.debug(null, 'RemindersInboxCtrl afterEnter', null);
-        if(!$rootScope.numberOfPendingNotifications){$scope.refreshTrackingReminderNotifications(600);}
+        if(!$rootScope.numberOfPendingNotifications){$scope.refreshTrackingReminderNotifications();}
 	});
 	$scope.$on('$ionicView.afterLeave', function(){
 		qmLogService.debug(null, 'RemindersInboxCtrl afterLeave', null);
