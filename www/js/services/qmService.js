@@ -1167,7 +1167,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
         qmLogService.debug(null, 'setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null);
         $rootScope.user = user;
-        if(qmService.getUrlParameter('doNotRemember')){return;}
         if(urlHelper.getParam('doNotRemember')){return;}
         if(!user.accessToken){
             qmLogService.error("User does not have access token!", {userToSave: user});
