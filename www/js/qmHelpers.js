@@ -714,9 +714,7 @@ window.qmStorage.appendToArray = function(localStorageItemName, elementToAdd){
         }
         return localStorageItem;
     }
-    var array = [];
-    var string = window.qmStorage.getItem(localStorageItemName);
-    if(string){array = JSON.parse(string);}
+    var array = window.qmStorage.getAsObject(localStorageItemName) || [];
     array = removeArrayElementsWithSameId(array, elementToAdd);
     array.push(elementToAdd);
     window.qmStorage.setItem(localStorageItemName, array);

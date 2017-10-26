@@ -3956,21 +3956,20 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getUserVariableByNameFromLocalStorageOrApiDeferred = function(name, params, refresh){
         var deferred = $q.defer();
-        qmService.qmStorage.getAsStringWithCallback('userVariables', function (userVariables) {
-            if(!refresh && userVariables){
-                userVariables = JSON.parse(userVariables);
-                for(var i = 0; i < userVariables.length; i++){
-                    if(userVariables[i].name === name){
-                        deferred.resolve(userVariables[i]);
-                        return;
-                    }
+        var userVariables = qmStorage.getAsObject(qmItems.userVariables);
+        if(!refresh && userVariables){
+            for(var i = 0; i < userVariables.length; i++){
+                if(userVariables[i].name === name){
+                    qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, userVariables[i]);
+                    deferred.resolve(userVariables[i]);
+                    return;
                 }
             }
-            qmService.getVariablesByNameFromApi(name, params, function(variable){
-                qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', variable);
-                deferred.resolve(variable);
-            }, function(error){ deferred.reject(error); });
-        });
+        }
+        qmService.getVariablesByNameFromApi(name, params, function(variable){
+            qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, variable);
+            deferred.resolve(variable);
+        }, function(error){ deferred.reject(error); });
         return deferred.promise;
     };
     qmService.addWikipediaExtractAndThumbnail = function(variableObject){
