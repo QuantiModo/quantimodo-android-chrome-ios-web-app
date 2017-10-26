@@ -261,10 +261,10 @@ function uploadToS3(filePath) {
     }));
 }
 function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');}
-function execute(command, callback) {
+function execute(command, callback, suppressErrors) {
     logDebug('executing ' + command);
     var my_child_process = exec(command, function (error, stdout, stderr) {
-        if (error !== null) {logError('ERROR: exec ' + error);}
+        if (error !== null && !suppressErrors) {logError('ERROR: exec ' + error);}
         callback(error, stdout);
     });
     my_child_process.stdout.pipe(process.stdout);
@@ -1460,6 +1460,7 @@ gulp.task('checkDrawOverAppsPlugin', [], function (callback) {
 });
 gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
     logInfo('We have to reinstall DrawOverAppsPlugin with new client id to fix "package com.quantimodo.quantimodo does not exist" error');
+    var suppressErrors = true;
     execute("cordova plugin remove cordova-plugin-drawoverapps", function (error) {
         if (error !== null) {
             logError('ERROR: Failed to remove drawoverapps PLUGIN! error: ' + error);
@@ -1467,7 +1468,7 @@ gulp.task('removeDrawOverAppsPlugin', [], function (callback) {
             logInfo('drawoverapps plugin REMOVED');
         }
         if(callback){callback();}
-    });
+    }, suppressErrors);
 });
 gulp.task('reinstallDrawOverAppsPlugin', ['removeDrawOverAppsPlugin'], function (callback) {
     return execute("cordova plugin add https://github.com/mikepsinn/cordova-plugin-drawoverapps.git", function (error) {
