@@ -29,12 +29,12 @@ window.stringifyIfNecessary = function(variable){
 };
 window.qmLog.getLogLevelName = function() {
     if(qmLog.loglevel){return qmLog.loglevel;}
-    if(getUrlParameter('debug') || getUrlParameter('debugMode')){
+    if(urlHelper.getParam('debug') || urlHelper.getParam('debugMode')){
         qmLog.loglevel = "debug";
         return qmLog.loglevel;
     }
-    if(getUrlParameter('logLevel')){
-        qmLog.loglevel = getUrlParameter('logLevel');
+    if(urlHelper.getParam('logLevel')){
+        qmLog.loglevel = urlHelper.getParam('logLevel');
         return qmLog.loglevel;
     }
     return "error";

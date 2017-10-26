@@ -42,7 +42,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
-            if(qmService.getUrlParameter(passableUrlParameters[i])){urlParams.push(encodeURIComponent(passableUrlParameters[i]) + '=' + qmService.getUrlParameter(passableUrlParameters[i]));}
+            if(urlHelper.getParam(passableUrlParameters[i])){urlParams.push(encodeURIComponent(passableUrlParameters[i]) + '=' + urlHelper.getParam(passableUrlParameters[i]));}
         }
         //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));  //We can't append access token to Ionic requests for some reason
         return urlParams;
@@ -63,7 +63,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         var passableUrlParameters = ['userId', 'log', 'pwd', 'userEmail'];
         for(var i = 0; i < passableUrlParameters.length; i++){
-            if(qmService.getUrlParameter(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = qmService.getUrlParameter(passableUrlParameters[i]);}
+            if(urlHelper.getParam(passableUrlParameters[i])){urlParams[passableUrlParameters[i]] = urlHelper.getParam(passableUrlParameters[i]);}
         }
         //urlParams.access_token = encodeURIComponent(tokenObject.accessToken);  //We can't append access token to Ionic requests for some reason
         return urlParams;
@@ -287,7 +287,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             status: status,
             request: request,
             requestOptions: options,
-            requestParams: getAllQueryParamsFromUrlString(request.url)
+            requestParams: urlHelper.getAllQueryParamsFromUrlString(request.url)
         };
         if (data.error) {
             metaData.groupingHash = JSON.stringify(data.error);
@@ -797,7 +797,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getAccessTokenFromCurrentUrl = function(){
         qmLog.authDebug("getAccessTokenFromCurrentUrl " + window.location.href);
-        return (qmService.getUrlParameter('accessToken')) ? qmService.getUrlParameter('accessToken') : qmService.getUrlParameter('quantimodoAccessToken');
+        return (urlHelper.getParam('accessToken')) ? urlHelper.getParam('accessToken') : urlHelper.getParam('quantimodoAccessToken');
     };
     qmService.getAccessTokenFromUrl = function(){
         if(!$rootScope.accessTokenFromUrl){
@@ -867,7 +867,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.qmStorage.clearEverything();
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Cleared local storage because user.accessToken does not match $rootScope.accessTokenFromUrl");
             }
-            if(!qmService.getUrlParameter('doNotRemember')){
+            if(!urlHelper.getParam('doNotRemember')){
                 qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
                 qmService.qmStorage.setItem('accessToken', $rootScope.accessTokenFromUrl);
             }
@@ -1001,9 +1001,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var authorizationUrl = event.url;
         if(!authorizationUrl) {authorizationUrl = event.data;}
         if(!isQuantiMoDoDomain(authorizationUrl)){return;}
-        var authorizationCode = qmService.getUrlParameter('code', authorizationUrl);
+        var authorizationCode = urlHelper.getParam('code', authorizationUrl);
         if(authorizationCode){qmLogService.debug(null, 'got authorization code from ' + authorizationUrl, null);}
-        //if(!authorizationCode) {authorizationCode = qmService.getUrlParameter('token', authorizationUrl);}
+        //if(!authorizationCode) {authorizationCode = urlHelper.getParam('token', authorizationUrl);}
         return authorizationCode;
     };
     qmService.getAccessTokenFromAuthorizationCode = function (authorizationCode) {
@@ -1167,7 +1167,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
         qmLogService.debug(null, 'setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null);
         $rootScope.user = user;
-        if(qmService.getUrlParameter('doNotRemember')){return;}
+        if(urlHelper.getParam('doNotRemember')){return;}
         if(!user.accessToken){
             qmLogService.error("User does not have access token!", {userToSave: user});
         }
@@ -1256,7 +1256,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.refreshUser = function(){
         var stackTrace = qmLog.getStackTrace();
         var deferred = $q.defer();
-        if(qmService.getUrlParameter('logout')){
+        if(urlHelper.getParam('logout')){
             qmLogService.debug(null, 'Not refreshing user because we have a logout parameter', null);
             deferred.reject('Not refreshing user because we have a logout parameter');
             return deferred.promise;
@@ -1374,7 +1374,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getStudyDeferred = function (params){
         var deferred = $q.defer();
-        if(qmService.getUrlParameter('aggregated')){params.aggregated = true;}
+        if(urlHelper.getParam('aggregated')){params.aggregated = true;}
         qmLogService.debug(null, 'qmService.getStudy params: ' + prettyJsonStringify(params), null, qmLog.getStackTrace());
         qmService.getStudy(params, function (response) {
             qmLogService.debug(null, 'qmService.getStudy response: ' + prettyJsonStringify(response), null);
@@ -1772,7 +1772,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getClientId = function(){
         if(typeof config !== "undefined" && $rootScope.appSettings.clientId){
-            if(getUrlParameter('clientIdDebug')){qmLogService.debug(null, '$rootScope.appSettings.clientId is ' + $rootScope.appSettings.clientId, null);}
+            if(urlHelper.getParam('clientIdDebug')){qmLogService.debug(null, '$rootScope.appSettings.clientId is ' + $rootScope.appSettings.clientId, null);}
             return $rootScope.appSettings.clientId;
         } else {
             qmLogService.debug(null, '$rootScope.appSettings.clientId is not present', null);
@@ -1848,45 +1848,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return fullString.slice(0, search.length) === search;
     };
-    // returns bool | string
-    // if search param is found: returns its value
-    // returns false if not found
-    function getUrlParameter(parameterName, url, shouldDecode) {
-        if(!url){url = window.location.href;}
-        if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
-        if(url.split('?').length > 1){
-            var queryString = url.split('?')[1];
-            var parameterKeyValuePairs = queryString.split('&');
-            for (var i = 0; i < parameterKeyValuePairs.length; i++) {
-                var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-                if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
-                    if(typeof shouldDecode !== "undefined")  {
-                        return decodeURIComponent(currentParameterKeyValuePair[1]);
-                    } else {
-                        return currentParameterKeyValuePair[1];
-                    }
-                }
-            }
-        }
-        return null;
-    }
-    qmService.getUrlParameter = function (parameterName, url, shouldDecode) {
-        return getUrlParameter(parameterName, url, shouldDecode);
-    };
-    function getAllQueryParamsFromUrlString(url){
-        if(!url){url = window.location.href;}
-        var keyValuePairsObject = {};
-        var array = [];
-        if(url.split('?').length > 1){
-            var queryString = url.split('?')[1];
-            var parameterKeyValueSubstrings = queryString.split('&');
-            for (var i = 0; i < parameterKeyValueSubstrings.length; i++) {
-                array = parameterKeyValueSubstrings[i].split('=');
-                keyValuePairsObject[array[0]] = array[1];
-            }
-        }
-        return keyValuePairsObject;
-    }
     qmService.getConnectorsDeferred = function(){
         var deferred = $q.defer();
         qmService.qmStorage.getAsStringWithCallback('connectors', function(connectors){
@@ -5322,8 +5283,8 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return isHttps && matchesQuantiModo;
     }
     qmService.checkLoadStartEventUrlForErrors = function(ref, event){
-        if(qmService.getUrlParameter('error', event.url)) {
-            var errorMessage = "nonNativeMobileLogin: error occurred:" + qmService.getUrlParameter('error', event.url);
+        if(urlHelper.getParam('error', event.url)) {
+            var errorMessage = "nonNativeMobileLogin: error occurred:" + urlHelper.getParam('error', event.url);
             qmLogService.error(errorMessage);
             ref.close();
         }
@@ -6467,7 +6428,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         sendToLogin();
     };
     function sendToLogin() {
-        if(getUrlParameter('access_token')){
+        if(urlHelper.getParam('access_token')){
             if(!qmService.getAccessTokenFromCurrentUrl()){
                 qmLogService.error("Not detecting snake case access_token", {}, qmLog.getStackTrace());
             }
@@ -6679,7 +6640,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         qmLogService.debug(null, 'Called showBlackRingLoader in ' + $state.current.name, null, qmLog.getStackTrace());
     };
     qmService.hideLoader = function(delay){
-        if(getUrlParameter('loaderDebug')){
+        if(urlHelper.getParam('loaderDebug')){
             qmLogService.debug(null, 'Called hideLoader in ' + $state.current.name, null, qmLog.getStackTrace());
         }
         if(delay){
@@ -6693,7 +6654,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.getUserFromLocalStorageOrRefreshIfNecessary = function(){
         qmLogService.debug(null, 'getUserFromLocalStorageOrRefreshIfNecessary', null);
-        if(qmService.getUrlParameter('refreshUser')){
+        if(urlHelper.getParam('refreshUser')){
             qmService.qmStorage.clearEverything();
             qmService.qmStorage.setItem('onboarded', true);
             qmService.qmStorage.setItem('introSeen', true);
@@ -6836,7 +6797,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             return menuItem;
         }
         if(menuItem.href && !menuItem.params){
-            menuItem.params = getAllQueryParamsFromUrlString(menuItem.href);
+            menuItem.params = urlHelper.getAllQueryParamsFromUrlString(menuItem.href);
         }
         menuItem.href = stripQueryString(menuItem.href);
         if(menuItem.href && menuItem.href.indexOf('-category') !== -1 && !menuItem.params.variableCategoryName){
@@ -6997,7 +6958,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
         //initializeLocalNotifications();
         qmService.scheduleSingleMostFrequentLocalNotification();
-        if(getUrlParameter('finish_url')){$rootScope.finishUrl = getUrlParameter('finish_url', null, true);}
+        if(urlHelper.getParam('finish_url')){$rootScope.finishUrl = urlHelper.getParam('finish_url', null, true);}
         if($rootScope.isAndroid && qmStorage.getItem(qmStorage.items.drawOverAppsEnabled) === null){qmService.toggleDrawOverApps();}
     };
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {

@@ -4,15 +4,15 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 										  $ionicPlatform) {
 	$scope.controller_name = "SettingsCtrl";
 	$scope.state = {};
-	$scope.userEmail = qmService.getUrlParameter('userEmail');
+	$scope.userEmail = urlHelper.getParam('userEmail');
 	$rootScope.showFilterBarSearchIcon = false;
 	$scope.$on('$ionicView.beforeEnter', function(e) { qmLogService.debug(null, 'beforeEnter state ' + $state.current.name, null);
         $scope.drawOverAppsEnabled = (qmStorage.getItem(qmStorage.items.drawOverAppsEnabled) == 'true');
 		$rootScope.hideNavigationMenu = false;
-		if(qmService.getUrlParameter('userEmail')){
+		if(urlHelper.getParam('userEmail')){
 			$scope.state.loading = true;
 			qmService.showBlackRingLoader();
-			qmService.refreshUserEmailPreferencesDeferred({userEmail: qmService.getUrlParameter('userEmail')}, function(user){
+			qmService.refreshUserEmailPreferencesDeferred({userEmail: urlHelper.getParam('userEmail')}, function(user){
 				$scope.user = user;
 				$scope.state.loading = false;
 				qmService.hideLoader();
@@ -89,7 +89,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	//$scope.updateApp = function(){qmService.updateApp();};
 	var sendReminderNotificationEmailsChange = function (ev) {
 		var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
-		if(qmService.getUrlParameter('userEmail')){params.userEmail = qmService.getUrlParameter('userEmail');}
+		if(urlHelper.getParam('userEmail')){params.userEmail = urlHelper.getParam('userEmail');}
 		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendReminderNotificationEmails){
             qmService.showMaterialAlert('Reminder Emails Enabled', "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email.", ev);
@@ -100,7 +100,7 @@ angular.module('starter').controller('SettingsCtrl', function( $state, $scope, $
 	$scope.sendReminderNotificationEmailsChange = function() {verifyEmailAddressAndExecuteCallback(sendReminderNotificationEmailsChange);};
 	var sendPredictorEmailsChange = function (ev) {
 		var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
-		if(qmService.getUrlParameter('userEmail')){params.userEmail = qmService.getUrlParameter('userEmail');}
+		if(urlHelper.getParam('userEmail')){params.userEmail = urlHelper.getParam('userEmail');}
 		qmService.updateUserSettingsDeferred(params);
 		if($rootScope.user.sendPredictorEmails){
             qmService.showMaterialAlert('Discovery Emails Enabled', "I'll send you a weekly email with new discoveries from your data.", ev);

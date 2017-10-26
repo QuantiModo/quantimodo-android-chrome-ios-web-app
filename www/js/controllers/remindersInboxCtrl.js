@@ -30,7 +30,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 	//createWordCloudFromNotes();
 	$scope.$on('$ionicView.beforeEnter', function(e) {
 		qmLogService.debug(null, 'RemindersInboxCtrl beforeEnter ', null);
-        if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
+        if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
 		$scope.loading = true;
         if(qmService.sendToLoginIfNecessaryAndComeBack()){ return; }
 		$rootScope.hideBackButton = true;
@@ -268,7 +268,7 @@ angular.module('starter').controller('RemindersInboxCtrl', function($scope, $sta
 		});
 	}
 	var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
-		if(qmService.getUrlParameter('variableCategoryName')){$stateParams.variableCategoryName = qmService.getUrlParameter('variableCategoryName');}
+		if(urlHelper.getParam('variableCategoryName')){$stateParams.variableCategoryName = urlHelper.getParam('variableCategoryName');}
 		var trackingReminderNotifications = qmService.qmStorage.getTrackingReminderNotifications($stateParams.variableCategoryName);
 		for (var i = 0; i < trackingReminderNotifications.length; i++){
 			trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);

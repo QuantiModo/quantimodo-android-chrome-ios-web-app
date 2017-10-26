@@ -16,7 +16,7 @@ function setFaceButtonListeners() {
     document.getElementById('question').onclick = inboxButtonClicked;
 }
 function getVariableName() {
-    var variableName = window.getUrlParameter('variableName');
+    var variableName = window.urlHelper.getParam('variableName');
     if(variableName){
         qmLog.debug("Got variableName " + variableName + " from url");
         return variableName;
@@ -168,10 +168,10 @@ function updateQuestion(variableName) {
     }
 }
 document.addEventListener('DOMContentLoaded', function() {
-    if(window.getUrlParameter("trackingReminderNotificationId")){
-        window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.getUrlParameter('trackingReminderNotificationId'),
-            variableName: window.getUrlParameter("variableName"), valence: window.getUrlParameter("valence")};
-        updateQuestion(window.getUrlParameter("variableName"));
+    if(window.urlHelper.getParam("trackingReminderNotificationId")){
+        window.trackingReminderNotification = {action: 'track', trackingReminderNotificationId: window.urlHelper.getParam('trackingReminderNotificationId'),
+            variableName: window.urlHelper.getParam("variableName"), valence: window.urlHelper.getParam("valence")};
+        updateQuestion(window.urlHelper.getParam("variableName"));
     }
     var wDiff = (380 - window.innerWidth);
     var hDiff = (70 - window.innerHeight);
