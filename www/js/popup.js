@@ -40,6 +40,7 @@ var inboxButtonClicked = function() {
 };
 var onFaceButtonClicked = function() {
     var buttonId = this.id;
+    console.log('onFaceButtonClicked');
     window.qmLog.info('onFaceButtonClicked buttonId ' + buttonId);
     var ratingValue; // Figure out what rating was selected
     if (buttonId === "buttonMoodDepressed") {if(valenceNegative()){ ratingValue = 5; } else { ratingValue = 1;}
@@ -79,6 +80,7 @@ var onFaceButtonClicked = function() {
     closePopup();
 };
 function hidePopup() {
+    console.log('hidePopup');
     window.qmLog.info('hidePopup');
     //originalHeight = 56;
     //var sectionRate = document.getElementById("sectionRate");
