@@ -2517,12 +2517,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     qmService.qmStorage.getTrackingReminders = function (variableCategoryName){
         var deferred = $q.defer();
         var filteredReminders = [];
-        var unfilteredReminders = qmStorage.getItem(qmItems.trackingReminders);
+        var unfilteredReminders = qmStorage.getAsObject(qmItems.trackingReminders);
         if(!unfilteredReminders){
             deferred.resolve([]);
             return deferred.promise;
         }
-        var syncQueue = qmStorage.getItem(qmItems.trackingReminderSyncQueue);
+        var syncQueue = qmStorage.getAsObject(qmItems.trackingReminderSyncQueue);
         if(syncQueue){unfilteredReminders = unfilteredReminders.concat(syncQueue);}
         unfilteredReminders = qmService.attachVariableCategoryIcons(unfilteredReminders);
         if(unfilteredReminders) {

@@ -657,6 +657,10 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
 };
 window.qmStorage.setGlobal = function(key, value){qm.globals[key] = value;};
 window.qmStorage.setItem = function(key, value){
+    if(value === qmStorage.getGlobal(key)){
+        qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + JSON.stringify(value));
+        return;
+    }
     qmStorage.setGlobal(key, value);
     if(typeof value !== "string"){value = JSON.stringify(value);}
     window.qmLog.debug('Setting localStorage.' + key + ' to ' + value.substring(0, 18) + '...');
@@ -687,11 +691,6 @@ window.qmStorage.getItem = function(key){
     }
     return item;
 };
-window.qmStorage.clearOAuthTokens = function(){
-    window.qmStorage.setItem('accessToken', null);
-    window.qmStorage.setItem('refreshToken', null);
-    window.qmStorage.setItem('expiresAtMilliseconds', null);
-};
 var convertToObjectIfJsonString = function(stringOrObject) {
     try {stringOrObject = JSON.parse(stringOrObject);} catch (e) {return stringOrObject;}
     return stringOrObject;
@@ -701,6 +700,11 @@ qmStorage.getAsObject = function(key) {
     item = convertToObjectIfJsonString(item);
     qm[key] = item;
     return item;
+};
+window.qmStorage.clearOAuthTokens = function(){
+    window.qmStorage.setItem('accessToken', null);
+    window.qmStorage.setItem('refreshToken', null);
+    window.qmStorage.setItem('expiresAtMilliseconds', null);
 };
 window.qmStorage.appendToArray = function(localStorageItemName, elementToAdd){
     function removeArrayElementsWithSameId(localStorageItem, elementToAdd) {
@@ -874,8 +878,8 @@ qmNotifications.canWeShowPopupYet = function() {
     var mostFrequentReminderIntervalInSeconds = qmStorage.getItem(qmItems.mostFrequentReminderIntervalInSeconds);
     var secondsSinceLastPopup = timeHelper.getUnixTimestampInSeconds() - lastPopupNotificationUnixtimeSeconds;
     if(secondsSinceLastPopup > mostFrequentReminderIntervalInSeconds){return qmNotifications.setLastPopupTime();}
-    qmLog.info('Cannot show popup because last one was only ' + secondsSinceLastPopup + ' seconds ago and mostFrequentReminderIntervalInSeconds:is ' +
-        mostFrequentReminderIntervalInSeconds);
+    qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + secondsSinceLastPopup +
+        ' seconds ago and mostFrequentReminderIntervalInSeconds is ' + mostFrequentReminderIntervalInSeconds);
     return false;
 };
 window.timeHelper.getUnixTimestampInSeconds = function(dateTimeString) {
