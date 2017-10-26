@@ -9,7 +9,6 @@
 // bundle.js — it’s a bundle itself (we use sourcemaps, don’t we?)
 // \(webpack\)-hot-middleware — HMR
 window.qmLog = {};
-Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
 var logMetaData = false;
 if(!window.qmUser){
     window.qmUser = localStorage.getItem('user');
@@ -110,18 +109,20 @@ window.qmLog.getEnv = function(){
     if(window.location.origin.indexOf('local') !== -1){env = "development";}
     if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
     if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-    if($rootScope.user){
-        if($rootScope.user.email && $rootScope.user.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-        if($rootScope.user.displayName && $rootScope.user.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
+    if(qmUser){
+        if(qmUser.email && qmUser.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+        if(qmUser.displayName && qmUser.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
     }
     if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
     return env;
 };
 window.qmLog.setupBugsnag = function(){
     if (typeof Bugsnag !== "undefined") {
-        //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+        Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
         //Bugsnag.notifyReleaseStages = ['Production','Staging'];
         Bugsnag.releaseStage = qmLog.getEnv();
+        if(typeof Bugsnag.metaData === "undefined"){Bugsnag.metaData = {};}
+        Bugsnag.metaData = qmLog.addGlobalMetaData(null, null, Bugsnag.metaData, null, null);
         if(typeof config !== "undefined"){
             Bugsnag.appVersion = config.appSettings.versionNumber;
             Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
@@ -131,6 +132,7 @@ window.qmLog.setupBugsnag = function(){
         qmLog.error('Bugsnag is not defined');
     }
 };
+window.qmLog.setupBugsnag();
 window.qmLog.setupUserVoice = function() {
     if (typeof UserVoice !== "undefined") {
         UserVoice.push(['identify', {
