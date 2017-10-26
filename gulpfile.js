@@ -264,7 +264,13 @@ function prettyJSONStringify(object) {return JSON.stringify(object, null, '\t');
 function execute(command, callback, suppressErrors) {
     logDebug('executing ' + command);
     var my_child_process = exec(command, function (error, stdout, stderr) {
-        if (error !== null && !suppressErrors) {logError('ERROR: exec ' + error);}
+        if (error !== null) {
+            if (suppressErrors) {
+                logInfo('ERROR: exec ' + error);
+            } else {
+                logError('ERROR: exec ' + error);
+            }
+        }
         callback(error, stdout);
     });
     my_child_process.stdout.pipe(process.stdout);
@@ -1271,10 +1277,18 @@ gulp.task('ionicStateReset', function (callback) {
     executeCommand('ionic state reset', callback);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
-    fastlaneSupply('beta', callback);
+    try {
+        fastlaneSupply('beta', callback, true);
+    } catch (error) {
+        logInfo(error);
+    }
 });
 gulp.task('fastlaneSupplyProduction', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
-    fastlaneSupply('production', callback);
+    try {
+        fastlaneSupply('production', callback, true);
+    } catch (error) {
+        logInfo(error);
+    }
 });
 gulp.task('ionicResources', function (callback) {
     executeCommand('ionic resources', callback);
