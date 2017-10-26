@@ -43,8 +43,8 @@ if [ -z ${BUDDYBUILD_SCHEME} ];
         #print_sha1 armv7-debug
         #print_sha1 x86-release
         #print_sha1 armv7-release
-        print_sha1 debug
-        print_sha1 release
+        #print_sha1 debug # keytool: command not found on buddybuild
+        #print_sha1 release # keytool: command not found on buddybuild
     else
         echo "BUILDING IOS APP because BUDDYBUILD_SCHEME env is ${BUDDYBUILD_SCHEME} AND NOT BUILDING ANDROID APP because BUDDYBUILD_SCHEME env is set"
 fi
