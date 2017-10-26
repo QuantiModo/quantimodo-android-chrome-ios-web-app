@@ -49,6 +49,7 @@ window.qmStorage = {
         trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
         trackingReminderNotifications: 'trackingReminderNotifications',
         trackingReminders: 'trackingReminders',
+        user: 'user'
     }
 };
 window.timeHelper = {};
@@ -457,8 +458,9 @@ window.userHelper = {
     },
     setUser: function(user){
         window.qmUser = user;
+        window.qmLog.debug(window.qmUser.displayName + ' is logged in.');
         if(urlHelper.getParam('doNotRemember')){return;}
-        qmStorage.setItem('user', user);
+        qmStorage.setItem(qmStorage.items.user, user);
         if(!user.accessToken){
             qmLog.error("User does not have access token!", null, {userToSave: user});
         } else {
@@ -884,10 +886,9 @@ window.getUserFromApi = function(){
     xhr.open("GET", window.apiHelper.getRequestUrl("user/me"), true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            window.qmUser = JSON.parse(xhr.responseText);
-            qmStorage.setItem('user', window.qmUser);
-            if (typeof window.qmUser.displayName !== "undefined") {
-                window.qmLog.debug(null, window.qmUser.displayName + ' is logged in.  ', null);
+            var userFromApi = JSON.parse(xhr.responseText);
+            if (userFromApi && typeof userFromApi.displayName !== "undefined") {
+                userHelper.setUser(userFromApi);
             } else {
                 if(qm.platform.isChromeExtension()){
                     var url = window.apiHelper.getRequestUrl("v2/auth/login");

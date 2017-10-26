@@ -179,4 +179,5 @@ document.addEventListener('DOMContentLoaded', function() {
     if(!window.qmUser){window.getUserFromApi();}
     setFaceButtonListeners();
     window.notificationsHelper.refreshIfEmpty();
+    window.qmLog.setupBugsnag();
 });
