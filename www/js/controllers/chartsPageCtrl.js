@@ -18,7 +18,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
     var maximumMeasurements = 999; // Highcharts will only show 1000 measurements with notes
     function getTruncatedVariableName(variableName) {if(variableName.length > 18){return variableName.substring(0, 18) + '...';} else { return variableName;}}
     $scope.$on('$ionicView.enter', function(e) { qmLogService.debug(null, 'Entering state ' + $state.current.name, null);
-        if(qmService.getUrlParameter('variableName')){$stateParams.variableName = qmService.getUrlParameter('variableName', window.location.href, true);}
+        if(urlHelper.getParam('variableName')){$stateParams.variableName = urlHelper.getParam('variableName', window.location.href, true);}
         $rootScope.hideNavigationMenu = false;
         $scope.stopGettingMeasurements = false;
         qmService.hideLoader();
@@ -93,7 +93,7 @@ angular.module('starter').controller('ChartsPageCtrl', function($scope, $q, $sta
             qmLogService.error("ERROR: params.variableName not provided to getHistoryForVariable.  params are: ", params);
             return;
         }
-        if(qmService.getUrlParameter('doNotProcess')){params.doNotProcess = true;}
+        if(urlHelper.getParam('doNotProcess')){params.doNotProcess = true;}
         $scope.state.loadingHistory = true;
         qmService.getMeasurementsFromApi(params, function(history){
             $scope.state.history = $scope.state.history.concat(history);

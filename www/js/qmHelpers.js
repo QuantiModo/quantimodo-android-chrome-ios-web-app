@@ -83,25 +83,44 @@ window.qmStorage.getItem = function(key){
     }
     return item;
 };
-window.getUrlParameter = function(parameterName, url, shouldDecode) {
-    if(!url){url = window.location.href;}
-    if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
-    if(url.split('?').length > 1){
-        var queryString = url.split('?')[1];
-        var parameterKeyValuePairs = queryString.split('&');
-        for (var i = 0; i < parameterKeyValuePairs.length; i++) {
-            var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
-            if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
-                if(typeof shouldDecode !== "undefined")  {
-                    return decodeURIComponent(currentParameterKeyValuePair[1]);
-                } else {
-                    return currentParameterKeyValuePair[1];
-                }
-            }
-        }
-    }
-    return null;
-};
+// returns bool | string
+// if search param is found: returns its value
+// returns false if not found
+window.urlHelper = {
+     getParam: function(parameterName, url, shouldDecode) {
+         if(!url){url = window.location.href;}
+         if(parameterName.toLowerCase().indexOf('name') !== -1){shouldDecode = true;}
+         if(url.split('?').length > 1){
+             var queryString = url.split('?')[1];
+             var parameterKeyValuePairs = queryString.split('&');
+             for (var i = 0; i < parameterKeyValuePairs.length; i++) {
+                 var currentParameterKeyValuePair = parameterKeyValuePairs[i].split('=');
+                 if (currentParameterKeyValuePair[0].toCamel().toLowerCase() === parameterName.toCamel().toLowerCase()) {
+                     if(typeof shouldDecode !== "undefined")  {
+                         return decodeURIComponent(currentParameterKeyValuePair[1]);
+                     } else {
+                         return currentParameterKeyValuePair[1];
+                     }
+                 }
+             }
+         }
+         return null;
+     },
+     getAllQueryParamsFromUrlString: function(url){
+         if(!url){url = window.location.href;}
+         var keyValuePairsObject = {};
+         var array = [];
+         if(url.split('?').length > 1){
+             var queryString = url.split('?')[1];
+             var parameterKeyValueSubstrings = queryString.split('&');
+             for (var i = 0; i < parameterKeyValueSubstrings.length; i++) {
+                 array = parameterKeyValueSubstrings[i].split('=');
+                 keyValuePairsObject[array[0]] = array[1];
+             }
+         }
+         return keyValuePairsObject;
+     }
+ };
 window.isTruthy = function(value){return value && value !== "false"; };
 window.isFalsey = function(value) {if(value === false || value === "false"){return true;}};
 function getSubDomain(){
@@ -110,10 +129,10 @@ function getSubDomain(){
     return parts[0].toLowerCase();
 }
 function getClientIdFromQueryParameters() {
-    var clientId = window.getUrlParameter('clientId');
-    if(!clientId){clientId = window.getUrlParameter('appName');}
-    if(!clientId){clientId = window.getUrlParameter('lowerCaseAppName');}
-    if(!clientId){clientId = window.getUrlParameter('quantimodoClientId');}
+    var clientId = window.urlHelper.getParam('clientId');
+    if(!clientId){clientId = window.urlHelper.getParam('appName');}
+    if(!clientId){clientId = window.urlHelper.getParam('lowerCaseAppName');}
+    if(!clientId){clientId = window.urlHelper.getParam('quantimodoClientId');}
     if(clientId){qmStorage.setItem('clientId', clientId);}
     return clientId;
 }
@@ -165,14 +184,11 @@ var appsManager = { // jshint ignore:line
             return './private_configs/'+ appsManager.defaultApp + '.config.js';
         }
     },
-    getUrlParameter: function (parameterName, url, shouldDecode) {
-        return window.getUrlParameter(parameterName, url, shouldDecode);
-    },
     getQuantiModoClientId: function () {
         return getQuantiModoClientId();
     },
     getQuantiModoApiUrl: function () {
-        var apiUrl = window.getUrlParameter(qmStorage.items.apiUrl);
+        var apiUrl = window.urlHelper.getParam(qmStorage.items.apiUrl);
         if(!apiUrl){apiUrl = qmStorage.getItem(qmStorage.items.apiUrl);}
         if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){apiUrl = "https://staging.quantimo.do";}
         if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){apiUrl = "https://local.quantimo.do";}
@@ -205,23 +221,23 @@ window.isChromeExtension = function (){
     }
     window.qmLog.debug(null, 'isChromeExtension returns true', null, null);
     return true;
-}
+};
 function getChromeManifest() {if(isChromeExtension()){return chrome.runtime.getManifest();}}
 function getAppName() {
     if(getChromeManifest()){return getChromeManifest().name;}
-    return window.getUrlParameter('appName');
+    return window.urlHelper.getParam('appName');
 }
 function getClientId() {
     if(appSettings){return appSettings.clientId;}
-    return window.getUrlParameter('clientId');
+    return window.urlHelper.getParam('clientId');
 }
 function getAppVersion() {
     if(getChromeManifest()){return getChromeManifest().version;}
     if(appSettings){return appSettings.versionNumber;}
-    return window.getUrlParameter('appVersion');
+    return window.urlHelper.getParam('appVersion');
 }
 window.getAccessToken = function() {
-    if(getUrlParameter('accessToken')){return getUrlParameter('accessToken');}
+    if(urlHelper.getParam('accessToken')){return urlHelper.getParam('accessToken');}
     if(userHelper.getUser() && userHelper.getUser().accessToken){return userHelper.getUser().accessToken;}
     if(localStorage.accessToken){return localStorage.accessToken;}
     qmLog.info("No access token or user!");
@@ -265,7 +281,7 @@ function loadAppSettings() {  // I think adding appSettings to the chrome manife
     };
     xobj.send(null);
 }
-if(!window.getUrlParameter('clientId')){loadAppSettings();}
+if(!window.urlHelper.getParam('clientId')){loadAppSettings();}
 function getAppHostName() {
     if(appSettings && appSettings.apiUrl){return "https://" + appSettings.apiUrl;}
     return "https://app.quantimo.do";

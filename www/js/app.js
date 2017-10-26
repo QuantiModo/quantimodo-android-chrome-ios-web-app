@@ -36,7 +36,7 @@ angular.module('starter',
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();
-    if(appsManager.getUrlParameter('logout')){localStorage.clear(); $rootScope.user = null;}
+    if(urlHelper.getParam('logout')){localStorage.clear(); $rootScope.user = null;}
     qmService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
@@ -90,7 +90,7 @@ angular.module('starter',
     }, 100);
 
     var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
-    if (appsManager.getUrlParameter('existingUser') || appsManager.getUrlParameter('introSeen') || appsManager.getUrlParameter('refreshUser')) {
+    if (urlHelper.getParam('existingUser') || urlHelper.getParam('introSeen') || urlHelper.getParam('refreshUser')) {
         window.localStorage.introSeen = true;
         window.localStorage.onboarded = true;
     }
@@ -101,9 +101,9 @@ angular.module('starter',
         orgId: '10d58117acb546c08a2cae66d650480d',
         appId: 'fc62a74505'
     });
-    window.debugMode = (appsManager.getUrlParameter('debug') || appsManager.getUrlParameter('debugMode'));
+    window.debugMode = (urlHelper.getParam('debug') || urlHelper.getParam('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
-    if(appsManager.getUrlParameter(qmStorage.items.apiUrl)){localStorage.setItem('apiUrl', "https://" + appsManager.getUrlParameter(qmStorage.items.apiUrl));}
+    if(urlHelper.getParam(qmStorage.items.apiUrl)){localStorage.setItem('apiUrl', "https://" + urlHelper.getParam(qmStorage.items.apiUrl));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
     if(ionic.Platform.isAndroid()){
         var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;

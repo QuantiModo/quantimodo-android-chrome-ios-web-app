@@ -81,7 +81,7 @@ angular.module('starter').controller('LoginCtrl', function($scope, $state, $root
         qmLogService.debug(null, 'beforeEnter in state ' + $state.current.name, null);
         leaveIfLoggedIn();
         if($rootScope.appSettings.appDisplayName !== "MoodiModo"){$scope.hideFacebookButton = true;}
-        if(qmService.getUrlParameter('loggingIn') || qmService.getAccessTokenFromUrl()){
+        if(urlHelper.getParam('loggingIn') || qmService.getAccessTokenFromUrl()){
             loginTimeout();
         } else {
             qmLogService.debug(null, 'refreshUser in beforeEnter in state ' + $state.current.name + ' in case we\'re on a Chrome extension that we can\'t redirect to with a token', null);

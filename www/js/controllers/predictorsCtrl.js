@@ -14,9 +14,9 @@ angular.module('starter').controller('PredictorsCtrl', function($scope, $ionicLo
         $rootScope.showFilterBarSearchIcon = true;
         $rootScope.hideNavigationMenu = false;
         if($stateParams.requestParams){ $scope.state.requestParams = $stateParams.requestParams; }
-        $scope.state.requestParams.aggregated = qmService.getUrlParameter('aggregated');
-        if(qmService.getUrlParameter('causeVariableName')){ $stateParams.causeVariableName = qmService.getUrlParameter('causeVariableName', window.location.href, true); }
-        if(qmService.getUrlParameter('effectVariableName')){ $stateParams.effectVariableName = qmService.getUrlParameter('effectVariableName', window.location.href, true); }
+        $scope.state.requestParams.aggregated = urlHelper.getParam('aggregated');
+        if(urlHelper.getParam('causeVariableName')){ $stateParams.causeVariableName = urlHelper.getParam('causeVariableName', window.location.href, true); }
+        if(urlHelper.getParam('effectVariableName')){ $stateParams.effectVariableName = urlHelper.getParam('effectVariableName', window.location.href, true); }
         if(!$stateParams.causeVariableName && ! $stateParams.effectVariableName) { $stateParams.effectVariableName = qmService.getPrimaryOutcomeVariable().name; }
         $scope.state.requestParams.offset = 0;
         $scope.state.requestParams.limit = 10;

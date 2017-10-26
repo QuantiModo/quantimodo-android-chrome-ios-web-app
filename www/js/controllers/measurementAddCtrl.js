@@ -42,15 +42,15 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
             setupTrackingByReminderNotification($stateParams.trackingReminder);
         } else if ($stateParams.measurement){
             setupTrackingByMeasurement($stateParams.measurement);
-        } else if (qmService.getUrlParameter('measurementObject', window.location.href, true)) {
-            setupTrackingByMeasurement(JSON.parse(qmService.getUrlParameter('measurementObject', window.location.href, true)));
+        } else if (urlHelper.getParam('measurementObject', window.location.href, true)) {
+            setupTrackingByMeasurement(JSON.parse(urlHelper.getParam('measurementObject', window.location.href, true)));
         } else if ($stateParams.variableObject) {
             setupFromVariableObject($stateParams.variableObject);
-        } else if (qmService.getUrlParameter('trackingReminderObject', window.location.href, true)) {
-            setupTrackingByReminderNotification(JSON.parse(qmService.getUrlParameter('trackingReminderObject', window.location.href, true)));
+        } else if (urlHelper.getParam('trackingReminderObject', window.location.href, true)) {
+            setupTrackingByReminderNotification(JSON.parse(urlHelper.getParam('trackingReminderObject', window.location.href, true)));
         } else if ($stateParams.reminderNotification){
             setupTrackingByReminderNotification($stateParams.reminderNotification);
-        } else if (qmService.getUrlParameter('measurementId', location.href, true)){
+        } else if (urlHelper.getParam('measurementId', location.href, true)){
             setMeasurementVariablesByMeasurementId().then(function() {if(!$scope.state.measurementIsSetup){ $scope.goBack();}});
         } else if ($stateParams.variableName){
             setupFromVariableName($stateParams.variableName);
@@ -212,10 +212,10 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     $scope.toggleShowUnits = function(){ $scope.state.showUnits = !$scope.state.showUnits; };
     $scope.showUnitsDropDown = function(){ $scope.showUnitsDropDown = true; };
     var setupFromUrlParameters = function() {
-        var unitAbbreviatedName = qmService.getUrlParameter('unitAbbreviatedName', location.href, true);
-        var variableName = qmService.getUrlParameter('variableName', location.href, true);
-        var startTimeEpoch = qmService.getUrlParameter('startTimeEpoch', location.href, true);
-        var value = qmService.getUrlParameter('value', location.href, true);
+        var unitAbbreviatedName = urlHelper.getParam('unitAbbreviatedName', location.href, true);
+        var variableName = urlHelper.getParam('variableName', location.href, true);
+        var startTimeEpoch = urlHelper.getParam('startTimeEpoch', location.href, true);
+        var value = urlHelper.getParam('value', location.href, true);
         if (unitAbbreviatedName || variableName || startTimeEpoch || value) {
             var measurementObject = {};
             measurementObject.unitAbbreviatedName = unitAbbreviatedName;
@@ -272,7 +272,7 @@ angular.module('starter').controller('MeasurementAddCtrl', function($scope, $q, 
     var setMeasurementVariablesByMeasurementId = function(){
         var deferred = $q.defer();
         qmService.showBlackRingLoader();
-        qmService.getMeasurementById(qmService.getUrlParameter('measurementId', location.href, true))
+        qmService.getMeasurementById(urlHelper.getParam('measurementId', location.href, true))
             .then(function(measurementObject) {
                 qmService.hideLoader();
                 $scope.state.measurementIsSetup = true;
