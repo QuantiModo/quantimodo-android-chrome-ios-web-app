@@ -1,3 +1,4 @@
+/** @namespace window.qmLog */
 var originalHeight;
 function clearNotifications() {
     if(typeof chrome === "undefined"){ window.qmLog.debug(null, 'Can\'t clearNotifications because chrome is undefined', null, null); return;}
@@ -34,8 +35,8 @@ var inboxButtonClicked = function() {
         OverApps.openApp();
     } else {
         window.qmLog.error('OverApps not defined');
-        qmChrome.reminderInboxPopupWindowParams.focused = true;
-        openOrFocusChromePopupWindow(qmChrome.reminderInboxPopupWindowParams);
+        qmChrome.fullInboxWindowParams.focused = true;
+        openOrFocusChromePopupWindow(qmChrome.fullInboxWindowParams);
     }
 };
 var onFaceButtonClicked = function() {
