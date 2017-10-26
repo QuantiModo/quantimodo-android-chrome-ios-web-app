@@ -514,7 +514,7 @@ function parseIfJsonString(jsonString) {
 }
 window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName, propertyValue){
     var elementsToKeep = [];
-    var localStorageItemArray = JSON.parse(qmStorage.getItem(localStorageItemName));
+    var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     if(!localStorageItemArray){
         window.qmLog.error(null, 'Local storage item ' + localStorageItemName + ' not found! Local storage items: ' + JSON.stringify(qmStorage.getLocalStorageList()));
     } else {
