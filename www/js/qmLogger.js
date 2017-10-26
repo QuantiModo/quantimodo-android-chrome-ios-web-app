@@ -169,8 +169,8 @@ window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, sta
         "UserVoice": (typeof UserVoice !== "undefined") ? "installed" : "not installed"
     };
     metaData.push_data = {
-        "deviceTokenOnServer": localStorage.getItem('deviceTokenOnServer'),
-        "deviceTokenToSync": localStorage.getItem('deviceTokenToSync'),
+        "deviceTokenOnServer": qmStorage.getItem(qmItems.deviceTokenOnServer),
+        "deviceTokenToSync": qmStorage.getItem(qmItems.deviceTokenToSync),
         "last_push": window.qmPush.getHoursSinceLastPush() + " hours ago"
     };
     metaData.local_storage = window.qmStorage.getLocalStorageList(true);

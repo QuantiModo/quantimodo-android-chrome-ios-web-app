@@ -36,7 +36,7 @@ angular.module('starter',
     window.developmentMode = window.location.href.indexOf("://localhost:") !== -1;
     qmService.getPrivateConfigs();
     qmService.showBlackRingLoader();
-    if(urlHelper.getParam('logout')){localStorage.clear(); $rootScope.user = null;}
+    if(urlHelper.getParam('logout')){qmStorage.clear(); qmService.setUserInLocalStorageBugsnagIntercomPush(null);}
     qmService.setPlatformVariables();
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
@@ -79,7 +79,7 @@ angular.module('starter',
             $ionicHistory.goBack();
             return;
         }
-        if(localStorage.user){
+        if(qmStorage.getItem(qmItems.user)){
             $rootScope.hideNavigationMenu = false;
             window.qmLog.debug(null, 'registerBackButtonAction: Going to default state...', null);
             qmService.goToState(config.appSettings.appDesign.defaultState);
@@ -91,8 +91,8 @@ angular.module('starter',
 
     var intervalChecker = setInterval(function(){if(typeof config !== "undefined"){clearInterval(intervalChecker);}}, 500);
     if (urlHelper.getParam('existingUser') || urlHelper.getParam('introSeen') || urlHelper.getParam('refreshUser')) {
-        window.localStorage.introSeen = true;
-        window.localStorage.onboarded = true;
+        qmStorage.setItem(qmItems.introSeen, true);
+        qmStorage.setItem(qmItems.onboarded, true);
     }
 })
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
@@ -103,14 +103,14 @@ angular.module('starter',
     });
     window.debugMode = (urlHelper.getParam('debug') || urlHelper.getParam('debugMode'));
     window.designMode = (window.location.href.indexOf('configuration-index.html') !== -1);
-    if(urlHelper.getParam(qmStorage.items.apiUrl)){localStorage.setItem('apiUrl', "https://" + urlHelper.getParam(qmStorage.items.apiUrl));}
+    if(urlHelper.getParam(qmItems.apiUrl)){qmStorage.setItem(qmItems.apiUrl, "https://" + urlHelper.getParam(qmItems.apiUrl));}
     var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by config.appSettings.additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
     if(ionic.Platform.isAndroid()){
-        var clientId = window.localStorage.GA_LOCAL_STORAGE_KEY;
+        var clientId = qmStorage.getItem('GA_LOCAL_STORAGE_KEY');
         if(!clientId){
             clientId = Math.floor((Math.random() * 9999999999) + 1000000000);
             clientId = clientId+'.'+Math.floor((Math.random() * 9999999999) + 1000000000);
-            window.localStorage.setItem('GA_LOCAL_STORAGE_KEY', clientId);
+            window.qmStorage.setItem('GA_LOCAL_STORAGE_KEY', clientId);
         }
         analyticsOptions.fields = {storage: 'none', fields: clientId};
     }
@@ -1214,10 +1214,10 @@ angular.module('starter',
             }
         });
 
-    if (!window.localStorage.introSeen) {
+    if (!qmStorage.introSeen) {
         //console.debug("Intro not seen so setting default route to intro");
         $urlRouterProvider.otherwise('/');
-    } else if (!window.localStorage.onboarded) {
+    } else if (!qmStorage.getItem(qmStorage.g)) {
         //console.debug("Not onboarded so setting default route to onboarding");
         $urlRouterProvider.otherwise('/app/onboarding');
     } else {
