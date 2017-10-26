@@ -16,34 +16,16 @@ angular.module('starter').factory('qmLogService', function($state, $q, $rootScop
         Bugsnag.context = $state.current.name;
         return message;
     }
-    function envIsDevelopment() {return getEnv() === 'development';}
-    function envIsTesting() {return getEnv() === 'testing';}
-    function getEnv(){
-        var env = "production";
-        if(window.location.origin.indexOf('local') !== -1){env = "development";}
-        if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
-        if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
-        if($rootScope.user){
-            if($rootScope.user.email && $rootScope.user.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
-            if($rootScope.user.displayName && $rootScope.user.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
-        }
-        if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
-        return env;
-    }
     qmLogService.setupBugsnag = function(){
         var deferred = $q.defer();
         if (typeof Bugsnag !== "undefined") {
-            //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-            //Bugsnag.notifyReleaseStages = ['Production','Staging'];
-            Bugsnag.releaseStage = getEnv();
-            Bugsnag.metaData = {platform: ionic.Platform.platform(), platformVersion: ionic.Platform.version()};
-            if(typeof config !== "undefined"){
-                Bugsnag.appVersion = config.appSettings.versionNumber;
-                Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
-            }
-            if($rootScope.user){Bugsnag.metaData.user = {name: $rootScope.user.displayName, email: $rootScope.user.email};}
+            qmLog.setupBugsnag();
+            Bugsnag.metaData.platform = ionic.Platform.platform();
+            Bugsnag.metaData.platformVersion = ionic.Platform.version();
             deferred.resolve();
-        } else {deferred.reject('Bugsnag is not defined');}
+        } else {
+            deferred.reject('Bugsnag is not defined');
+        }
         return deferred.promise;
     };
     qmLogService.debug = function (name, message, metaData, stackTrace) {

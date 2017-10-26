@@ -160,7 +160,7 @@ function updateQuestion(variableName) {
     window.qmLog.info(null, 'Updating question to ' + questionText);
     document.getElementById("question").innerHTML = questionText;
     document.title = questionText;
-    if(isChromeExtension()){
+    if(qm.platform.isChromeExtension()){
         window.qmLog.info(null, 'Setting question display to none ');
         document.getElementById("question").style.display = "none";
     } else {

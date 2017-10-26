@@ -837,8 +837,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.setUser = function(user){
         $rootScope.user = user;
-        window.qmUser = user;
-
+        userHelper.setUser(user);
     };
     qmService.refreshUserUsingAccessTokenInUrlIfNecessary = function(){
         qmLog.authDebug("Called refreshUserUsingAccessTokenInUrlIfNecessary");
@@ -1129,12 +1128,12 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         Analytics.registerScriptTags();
         Analytics.registerTrackers();
         // you can set any advanced configuration here
-        Analytics.set('&uid', user.id);
-        Analytics.set('&ds', $rootScope.currentPlatform);
-        Analytics.set('&cn', $rootScope.appSettings.appDisplayName);
-        Analytics.set('&cs', $rootScope.appSettings.appDisplayName);
+        if(user){Analytics.set('&uid', user.id);}
+        Analytics.set('&ds', config.currentPlatform);
+        Analytics.set('&cn', config.appSettings.appDisplayName);
+        Analytics.set('&cs', config.appSettings.appDisplayName);
         Analytics.set('&cm', $rootScope.currentPlatform);
-        Analytics.set('&an', $rootScope.appSettings.appDisplayName);
+        Analytics.set('&an', config.appSettings.appDisplayName);
         if(config.appSettings.additionalSettings && config.appSettings.additionalSettings.appIds && config.appSettings.additionalSettings.appIds.googleReversedClientId){
             Analytics.set('&aid', config.appSettings.additionalSettings.appIds.googleReversedClientId);
         }
@@ -1142,72 +1141,28 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         // Register a custom dimension for the default, unnamed account object
         // e.g., ga('set', 'dimension1', 'Paid');
         Analytics.set('dimension1', 'Paid');
-        Analytics.set('dimension2', user.id.toString());
+        if(user){Analytics.set('dimension2', user.id.toString());}
         // Register a custom dimension for a named account object
         // e.g., ga('accountName.set', 'dimension2', 'Paid');
         //Analytics.set('dimension2', 'Paid', 'accountName');
         Analytics.pageView(); // send data to Google Analytics
         //qmLogService.debug('Just set up Google Analytics');
     };
-    qmService.getUserAndSetupGoogleAnalytics = function(){
-        if(Analytics){
-            if($rootScope.user){
-                setupGoogleAnalytics($rootScope.user);
-                return;
-            }
-            qmService.qmStorage.getAsStringWithCallback('user', function (userString) {
-                qmLogService.debug(null, 'getLocalStorageItemAsStringWithCallback userString: ' + userString, null);
-                if(userString){
-                    var user = JSON.parse(userString);
-                    setupGoogleAnalytics(user);
-                }
-            });
-        }
-    };
     qmService.setUserInLocalStorageBugsnagIntercomPush = function(user){
-        qmLogService.debug(null, 'setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null);
+        qmLogService.debug('setUserInLocalStorageBugsnagIntercomPush:' + JSON.stringify(user), null, user);
         $rootScope.user = user;
+        qmService.setUser(user);
         if(urlHelper.getParam('doNotRemember')){return;}
-        if(!user.accessToken){
-            qmLogService.error("User does not have access token!", {userToSave: user});
-        }
-        qmService.qmStorage.setItem('user', JSON.stringify(user));
-        localStorage.user = JSON.stringify(user); // For Chrome Extension
-        qmStorage.saveAccessToken(user);
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
-        qmService.getUserAndSetupGoogleAnalytics();
-        if (typeof UserVoice !== "undefined") {
-            UserVoice.push(['identify', {
-                email: user.email, // User’s email address
-                name: user.displayName, // User’s real name
-                created_at: window.timeHelper.getUnixTimestampInSeconds(user.userRegistered), // Unix timestamp for the date the user signed up
-                id: user.id, // Optional: Unique id of the user (if set, this should not change)
-                type: getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
-                account: {
-                    //id: 123, // Optional: associate multiple users with a single account
-                    name: getSourceName() + ' v' + config.appSettings.versionNumber, // Account name
-                    //created_at: 1364406966, // Unix timestamp for the date the account was created
-                    //monthly_rate: 9.99, // Decimal; monthly rate of the account
-                    //ltv: 1495.00, // Decimal; lifetime value of the account
-                    //plan: 'Subscribed' // Plan name for the account
-                }
-            }]);
+        setupGoogleAnalytics(userHelper.getUser());
+        qmLog.setupUserVoice();
+        //qmLog.setupIntercom();
+        if(qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){
+            qmLogService.debug('This token is already on the server: ' + qmStorage.getItem(qmStorage.items.deviceTokenOnServer));
         }
-        /*            Don't need Intercom
-                window.intercomSettings = {
-                    app_id: "uwtx2m33",
-                    name: user.displayName,
-                    email: user.email,
-                    user_id: user.id,
-                    app_name: $rootScope.appSettings.appDisplayName,
-                    app_version: config.appSettings.versionNumber,
-                    platform: $rootScope.currentPlatform
-                };
-                */
-        if(qmStorage.getItem(qmStorage.items.deviceTokenOnServer)){qmLogService.debug(null, 'This token is already on the server: ' + qmStorage.getItem(qmStorage.items.deviceTokenOnServer), null);}
         qmService.registerDeviceToken();
-        if($rootScope.sendReminderNotificationEmails){
+        if ($rootScope.sendReminderNotificationEmails) {
             qmService.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
             $rootScope.sendReminderNotificationEmails = null;
         }
@@ -1559,10 +1514,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         measurementObject = addLocationAndSourceDataToMeasurement(measurementObject);
         return measurementObject;
     };
-    function getSourceName() {return $rootScope.appSettings.appDisplayName + " for " + $rootScope.currentPlatform;}
+
     var addLocationAndSourceDataToMeasurement = function(measurementObject){
         addLocationDataToMeasurement(measurementObject);
-        if(!measurementObject.sourceName){measurementObject.sourceName = getSourceName();}
+        if(!measurementObject.sourceName){measurementObject.sourceName = qm.getSourceName();}
         return measurementObject;
     };
     function addLocationDataToMeasurement(measurementObject) {
@@ -1620,7 +1575,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var measurementSet = [
             {
                 variableName: trackingReminder.variableName,
-                sourceName: getSourceName(),
+                sourceName: qm.getSourceName(),
                 variableCategoryName: trackingReminder.variableCategoryName,
                 unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                 measurements : [
@@ -1669,14 +1624,14 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var measurementSets = [
             {
                 variableId: 1874,
-                sourceName: getSourceName(),
+                sourceName: qm.getSourceName(),
                 startTimeEpoch:  checkIfStartTimeEpochIsWithinTheLastYear(parameters.startTimeEpochSeconds),
                 value: parameters.systolicValue,
                 note: parameters.note
             },
             {
                 variableId: 5554981,
-                sourceName: getSourceName(),
+                sourceName: qm.getSourceName(),
                 startTimeEpoch:  checkIfStartTimeEpochIsWithinTheLastYear(parameters.startTimeEpochSeconds),
                 value: parameters.diastolicValue,
                 note: parameters.note
@@ -2003,7 +1958,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         return Math.round(secondsAtLocation/3600 * 100) / 100;
     }
     function getGeoLocationSourceName(isBackground) {
-        var sourceName = localStorage.lastLocationResultType + ' on ' + getSourceName();
+        var sourceName = localStorage.lastLocationResultType + ' on ' + qm.getSourceName();
         if(isBackground){sourceName = sourceName + " (Background Geolocation)";}
         return sourceName;
     }
@@ -6954,7 +6909,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         putCommonVariablesInLocalStorageUsingApi();
         qmService.backgroundGeolocationInit();
         qmLogService.setupBugsnag();
-        qmService.getUserAndSetupGoogleAnalytics();
+        setupGoogleAnalytics(userHelper.getUser());
         if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) { $rootScope.hideNavigationMenu = true; }
         //initializeLocalNotifications();
         qmService.scheduleSingleMostFrequentLocalNotification();

@@ -104,7 +104,63 @@ qmLog.addGlobalMetaDataAndLog = function(name, message, metaData, stacktrace) {
         }
     }
     return metaData;
-}
+};
+window.qmLog.getEnv = function(){
+    var env = "production";
+    if(window.location.origin.indexOf('local') !== -1){env = "development";}
+    if(window.location.origin.indexOf('staging') !== -1){env = "staging";}
+    if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){env = "staging";}
+    if($rootScope.user){
+        if($rootScope.user.email && $rootScope.user.email.toLowerCase().indexOf('test') !== -1){env = "testing";}
+        if($rootScope.user.displayName && $rootScope.user.displayName.toLowerCase().indexOf('test') !== -1){env = "testing";}
+    }
+    if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
+    return env;
+};
+window.qmLog.setupBugsnag = function(){
+    if (typeof Bugsnag !== "undefined") {
+        //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+        //Bugsnag.notifyReleaseStages = ['Production','Staging'];
+        Bugsnag.releaseStage = getEnv();
+        if(typeof config !== "undefined"){
+            Bugsnag.appVersion = config.appSettings.versionNumber;
+            Bugsnag.metaData.appDisplayName = config.appSettings.appDisplayName;
+        }
+        if(qmUser){Bugsnag.metaData.user = {name: qmUser.displayName, email: qmUser.email, id: qmUser.id};}
+    } else {
+        qmLog.error('Bugsnag is not defined');
+    }
+};
+window.qmLog.setupUserVoice = function() {
+    if (typeof UserVoice !== "undefined") {
+        UserVoice.push(['identify', {
+            email: qmUser.email, // User’s email address
+            name: qmUser.displayName, // User’s real name
+            created_at: window.timeHelper.getUnixTimestampInSeconds(user.userRegistered), // Unix timestamp for the date the user signed up
+            id: user.id, // Optional: Unique id of the user (if set, this should not change)
+            type: qm.getSourceName() + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
+            account: {
+                //id: 123, // Optional: associate multiple users with a single account
+                name: qm.getSourceName() + ' v' + config.appSettings.versionNumber, // Account name
+                //created_at: 1364406966, // Unix timestamp for the date the account was created
+                //monthly_rate: 9.99, // Decimal; monthly rate of the account
+                //ltv: 1495.00, // Decimal; lifetime value of the account
+                //plan: 'Subscribed' // Plan name for the account
+            }
+        }]);
+    }
+};
+window.qmLog.setupIntercom = function() {
+    window.intercomSettings = {
+        app_id: "uwtx2m33",
+        name: user.displayName,
+        email: user.email,
+        user_id: user.id,
+        app_name: config.appSettings.appDisplayName,
+        app_version: config.appSettings.versionNumber,
+        platform: qm.getPlatform()
+    };
+};
 window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, stackTrace) {
     metaData = metaData || {};
     function obfuscateSecrets(object){
