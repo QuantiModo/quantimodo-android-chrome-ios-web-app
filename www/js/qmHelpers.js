@@ -50,6 +50,7 @@ window.qmItems = {
     lastLongitude: 'lastLongitude',
     lastPopupNotificationUnixtimeSeconds: 'lastPopupNotificationUnixtimeSeconds',
     lastPushTimestamp: 'lastPushTimestamp',
+    measurementsQueue: 'measurementsQueue',
     mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
     notifications: 'trackingReminderNotifications',
     onboarded: 'onboarded',
@@ -58,7 +59,8 @@ window.qmItems = {
     trackingReminderNotificationSyncScheduled: 'trackingReminderNotificationSyncScheduled',
     trackingReminders: 'trackingReminders',
     trackingReminderSyncQueue: ' trackingReminderSyncQueue',
-    user: 'user'
+    user: 'user',
+    userVariables: 'userVariables'
 };
 window.qmStorage = {};
 window.timeHelper = {};
@@ -504,14 +506,6 @@ function IsJsonString(str) {
     }
     return true;
 }
-function parseIfJsonString(jsonString) {
-    try {
-        var jsonObject = JSON.parse(jsonString);
-    } catch (exception) {
-        return jsonString;
-    }
-    return jsonObject;
-}
 window.qmStorage.deleteByProperty = function (localStorageItemName, propertyName, propertyValue){
     var elementsToKeep = [];
     var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
@@ -638,7 +632,7 @@ window.qmStorage.addToOrReplaceByIdAndMoveToFront = function(localStorageItemNam
     }
     // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
     var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
-    var localStorageItemArray = JSON.parse(qmStorage.getAsString(localStorageItemName));
+    var localStorageItemArray = qmStorage.getAsObject(localStorageItemName);
     var found = false;
     if(localStorageItemArray){
         for(var i = 0; i < localStorageItemArray.length; i++){
@@ -691,13 +685,18 @@ window.qmStorage.getItem = function(key){
     }
     return item;
 };
-var convertToObjectIfJsonString = function(stringOrObject) {
-    try {stringOrObject = JSON.parse(stringOrObject);} catch (e) {return stringOrObject;}
-    return stringOrObject;
+var parseIfJsonString = function(stringOrObject) {
+    if(!stringOrObject){return stringOrObject;}
+    if(typeof stringOrObject !== "string"){return stringOrObject;}
+    try {
+        return JSON.parse(stringOrObject);
+    } catch (e) {
+        return stringOrObject;
+    }
 };
 qmStorage.getAsObject = function(key) {
     var item = qmStorage.getItem(key);
-    item = convertToObjectIfJsonString(item);
+    item = parseIfJsonString(item);
     qm[key] = item;
     return item;
 };
@@ -875,13 +874,25 @@ qmNotifications.setLastPopupTime = function(){
 qmNotifications.canWeShowPopupYet = function() {
     var lastPopupNotificationUnixtimeSeconds = qmStorage.getItem(qmItems.lastPopupNotificationUnixtimeSeconds);
     if(!lastPopupNotificationUnixtimeSeconds){return qmNotifications.setLastPopupTime();}
-    var mostFrequentReminderIntervalInSeconds = qmStorage.getItem(qmItems.mostFrequentReminderIntervalInSeconds);
+    var mostFrequentReminderIntervalInSeconds = qmNotifications.getMostFrequentReminderIntervalInMinutes() * 60;
     var secondsSinceLastPopup = timeHelper.getUnixTimestampInSeconds() - lastPopupNotificationUnixtimeSeconds;
     if(secondsSinceLastPopup > mostFrequentReminderIntervalInSeconds){return qmNotifications.setLastPopupTime();}
     qmLog.error('Too soon to show popup!', 'Cannot show popup because last one was only ' + secondsSinceLastPopup +
         ' seconds ago and mostFrequentReminderIntervalInSeconds is ' + mostFrequentReminderIntervalInSeconds);
     return false;
 };
+qmNotifications.getMostFrequentReminderIntervalInMinutes = function(trackingReminders){
+    if(!trackingReminders){trackingReminders = qmStorage.getAsObject(qmItems.trackingReminders);}
+    var shortestInterval = 86400;
+    if(trackingReminders){
+        for (var i = 0; i < trackingReminders.length; i++) {
+            if(trackingReminders[i].reminderFrequency < shortestInterval){
+                shortestInterval = trackingReminders[i].reminderFrequency;
+            }
+        }
+    }
+    return shortestInterval/60;
+}
 window.timeHelper.getUnixTimestampInSeconds = function(dateTimeString) {
     if(!dateTimeString){dateTimeString = new Date().getTime();}
     return Math.round(window.getUnixTimestampInMilliseconds(dateTimeString)/1000);

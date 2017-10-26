@@ -22,7 +22,9 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmApiGeneralErrorHandler(error, data, response);
             if(errorHandler){errorHandler(error);}
         } else {
-            successHandler(data, response);
+            if(successHandler){
+                successHandler(data, response);
+            }
         }
     }
     // GET method with the added token
@@ -440,6 +442,19 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         var options = {};
         //qmService.get('api/v3/aggregatedCorrelations', ['correlationCoefficient', 'causeVariableName', 'effectVariableName'], params, successHandler, errorHandler, options);
     };
+    qmService.getUnitsFromApi = function(){
+        configureQmApiClient();
+        var apiInstance = new Quantimodo.UnitsApi();
+        function callback(error, data, response) {
+            if(data){
+                qmStorage.setItem('units', data);
+                addUnitsToRootScope(data);
+            }
+            qmSdkApiResponseHandler(error, data, response);
+        }
+        var params = addGlobalUrlParamsToObject({});
+        apiInstance.getUnits(callback);
+    };
     qmService.getCommonVariablesFromApi = function(params, successHandler, errorHandler){
         configureQmApiClient();
         var apiInstance = new Quantimodo.VariablesApi();
@@ -848,7 +863,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
                 qmService.qmStorage.clearEverything();
                 qmLog.authDebug("Cleared local storage because accessTokenFromLocalStorage does not match accessTokenFromUrl");
             }
-            var user = JSON.parse(qmStorage.getItem(qmItems.user));
+            var user = qmStorage.getAsObject(qmItems.user);
             if(!user){
                 user = $rootScope.user;
                 qmLog.authDebug("No user from local storage");
@@ -1407,24 +1422,22 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             defer.reject(errorMessage);
             return defer.promise;
         }
-        qmService.qmStorage.getAsStringWithCallback('measurementsQueue', function(measurementsQueueString) {
-            var parsedMeasurementsQueue = JSON.parse(measurementsQueueString);
-            if(!parsedMeasurementsQueue || parsedMeasurementsQueue.length < 1){
-                if(successHandler){successHandler();}
-                return;
+        var parsedMeasurementsQueue = qmStorage.getAsObject(qmItems.measurementsQueue);
+        if(!parsedMeasurementsQueue || parsedMeasurementsQueue.length < 1){
+            if(successHandler){successHandler();}
+            return;
+        }
+        qmService.postMeasurementsToApi(parsedMeasurementsQueue, function (response) {
+            if(response && response.data && response.data.userVariables){
+                qmService.qmStorage.addToOrReplaceByIdAndMoveToFront(qmItems.userVariables, response.data.userVariables);
             }
-            qmService.postMeasurementsToApi(parsedMeasurementsQueue, function (response) {
-                if(response && response.data && response.data.userVariables){
-                    qmService.qmStorage.addToOrReplaceByIdAndMoveToFront('userVariables', response.data.userVariables);
-                }
-                qmService.qmStorage.setItem('measurementsQueue', JSON.stringify([]));
-                if(successHandler){successHandler();}
-                defer.resolve();
-            }, function (error) {
-                qmService.qmStorage.setItem('measurementsQueue', measurementsQueueString);
-                if(errorHandler){errorHandler();}
-                defer.reject(error);
-            });
+            qmStorage.setItem(qmItems.measurementsQueue, []);
+            if(successHandler){successHandler();}
+            defer.resolve();
+        }, function (error) {
+            qmStorage.setItem(qmItems.measurementsQueue, parsedMeasurementsQueue);
+            if(errorHandler){errorHandler();}
+            defer.reject(error);
         });
         return defer.promise;
     };
@@ -1673,15 +1686,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         $rootScope.manualTrackingUnitsIndexedByAbbreviatedName = manualTrackingUnitsIndexedByAbbreviatedName;
         $rootScope.manualTrackingUnitObjects = manualTrackingUnitObjects;
     }
-    qmService.getUnits = function(){
-        var deferred = $q.defer();
-        $http.get('data/units.json').success(function(units) {
-            addUnitsToRootScope(units);
-            deferred.resolve(units);
-        });
-        return deferred.promise;
-    };
-    qmService.getUnits();
     qmService.variableCategories = [];
     $rootScope.variableCategories = [];
     $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
@@ -3933,10 +3937,10 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
     };
     qmService.qmStorage.getVariables = function(requestParams){
         var variables;
-        if(!variables){ variables = JSON.parse(qmStorage.getAsString('userVariables')); }
+        if(!variables){ variables = qmStorage.getAsObject('userVariables'); }
         if(requestParams.includePublic){
             if(!variables){variables = [];}
-            var commonVariables = JSON.parse(qmStorage.getAsString('commonVariables'));
+            var commonVariables = qmStorage.getAsObject('commonVariables');
             if(commonVariables && commonVariables.constructor === Array){
                 variables = variables.concat(commonVariables);
             } else {
@@ -4034,7 +4038,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             deferred.resolve([]);
             return deferred.promise;
         }
-        userVariables = JSON.parse(qmStorage.getAsString('userVariables'));
+        userVariables = qmStorage.getAsObject('userVariables');
         if(userVariables && userVariables.length){
             qmLogService.debug(null, 'We already have userVariables that didn\'t match filters so no need to refresh them', null);
             deferred.resolve([]);
@@ -4382,21 +4386,6 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         }
         return deferred.promise;
     };
-    function getMostFrequentReminderIntervalInMinutes(trackingRemindersFromApi){
-        if(!trackingRemindersFromApi){
-            trackingRemindersFromApi = JSON.parse(qmStorage.getItem(qmItems.trackingReminders));
-        }
-        var shortestInterval = 86400;
-        if(trackingRemindersFromApi){
-            for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                if(trackingRemindersFromApi[i].reminderFrequency < shortestInterval){
-                    shortestInterval = trackingRemindersFromApi[i].reminderFrequency;
-                }
-            }
-        }
-        qmStorage.setItem(qmItems.mostFrequentReminderIntervalInSeconds, shortestInterval);
-        return shortestInterval/60;
-    }
     qmService.scheduleSingleMostFrequentLocalNotification = function(trackingRemindersFromApi) {
         if(!$rootScope.user){
             qmLogService.debug('No user for scheduleSingleMostFrequentLocalNotification', null);
@@ -5128,7 +5117,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
             qmLogService.error('No params provided to getCachedResponse');
             return false;
         }
-        var cachedResponse = JSON.parse(qmStorage.getAsString(requestName));
+        var cachedResponse = qmStorage.getAsObject(requestName);
         if(!cachedResponse || !cachedResponse.expirationTimeMilliseconds){return false;}
         var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
         if(!paramsMatch){return false;}
@@ -6898,6 +6887,7 @@ angular.module('starter').factory('qmService', function($http, $q, $rootScope, $
         //initializeLocalNotifications();
         qmService.scheduleSingleMostFrequentLocalNotification();
         if(urlHelper.getParam('finish_url')){$rootScope.finishUrl = urlHelper.getParam('finish_url', null, true);}
+        if(!qmStorage.getItem('units')){qmService.getUnitsFromApi();} else {addUnitsToRootScope(qmStorage.getItem('units'));}
         if($rootScope.isAndroid && qmStorage.getItem(qmItems.drawOverAppsEnabled) === null){qmService.toggleDrawOverApps();}
     };
     function convertStateNameAndParamsToHrefInActiveAndCustomMenus(menu) {

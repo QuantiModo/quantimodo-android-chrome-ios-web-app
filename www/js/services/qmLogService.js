@@ -46,7 +46,7 @@ angular.module('starter').factory('qmLogService', function($state, $q, $rootScop
         message = message || name;
         name = name || message;
         metaData = metaData || null;
-        if(envIsTesting()){
+        if(qmLog.envIsTesting()){
             qmLogService.info(name, message, metaData, stackTrace);
         } else {
             qmLogService.error(name, message, metaData, stackTrace);

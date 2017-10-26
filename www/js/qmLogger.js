@@ -116,6 +116,9 @@ window.qmLog.getEnv = function(){
     if(window.location.href.indexOf("heroku") !== -1){env = "testing";}
     return env;
 };
+qmLog.envIsTesting = function(){
+    return qmLog.getEnv() === 'testing';
+};
 window.qmLog.addGlobalMetaData = function(name, message, metaData, logLevel, stackTrace) {
     metaData = metaData || {};
     function obfuscateSecrets(object){
